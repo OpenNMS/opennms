@@ -3,7 +3,7 @@
 
 This section describes how to turn on default notifications in {page-component-title}.
 
-{page-component-title} uses notifications to inform users about events in the network without requiring them to log in to the web UI.
+{page-component-title} uses notifications to inform users about xref:operation:deep-dive/events/introduction.adoc[events] in the network without requiring them to log in to the web UI.
 Notifications are commonly sent through email and text/pager messages, but can be customized to send to a variety of external systems.
 For additional information, including alternative notification mechanisms, see xref:operation:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section and the xref:reference:daemons/daemon-config-files/notifd.adoc[notifd daemon] reference section.
 
@@ -29,7 +29,7 @@ The following event notifications are defined by default:
 
 [options="header"]
 [cols="1,1"]
-| ===
+|===
 
 | Notification
 | Default State
@@ -60,7 +60,7 @@ The following event notifications are defined by default:
 
 | nodeLostService
 | ON
-| ===
+|===
 
 You can turn them on and off in the menu:Event Management[Configure Notifications > Configure Event Notifications] screen.
 See xref:operation:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section for more information.
@@ -76,25 +76,27 @@ You must specify a destination path to receive notifications from {page-componen
 The `Email-Admin` destination path is defined by default, and is the notification path when no other destination paths are specified.
 It sends email notifications to users in the Admin group.
 
-This example specifies a destination path that sends notifications to users in the Admin group (currently just the admin user) and to an email address that you specify.
+For the `Email-Admin` destination path to work, you have to configure your email server, which is beyond the scope of this Quick Start guide.
+For this example, we will specify a destination path that sends browser pop-up notifications to users in the Admin group (currently the default admin user and the personalized user you created in xref:operation:quick-start/users.adoc#create-user[Step 1: First-Time Login]).
 
 . Click the *Gear* symbol in the top-right of the screen.
 . Under Event Management, click *Configure Notifications*.
 . Under Configure Notifications, click *Configure Destination Paths*.
 . Click *New Path* and configure it:
-.. Specify a name for the path (for example, Email-Bob) and define an initial delay.
+.. Specify a name for the path (for example, Browser) and define an initial delay.
++
+The initial delay specifies how long to wait before sending the first notification.
 .. Click *Edit*.
 .. Under Send to Selected Groups, choose `Admin`.
-.. Click *Add Address*, type an email address in the box, and click *OK*
-+
-The address appears in the Send to Email Addresses list.
 .. Click *Next Step*.
 +
 You are prompted to define the time to wait between sending notifications to each member of a group.
 +
 .. For the purpose of the Quick Start, do not specify a delay interval, and click *Next Step*.
-.. Select `javaEmail` from the list of commands and make sure it is on.
+.. Select `browser` from the list of commands and make sure it is on.
 .. Click *Next Step*.
 +
 The `Admin` group and the email address you specified appear in the Initial Targets list.
 . Verify the settings, and click *Finish*.
+
+Users in the Admin group will see pop-up notifications in their browsers about events in {page-component-title}.
