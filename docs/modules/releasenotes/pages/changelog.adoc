@@ -1,8 +1,10 @@
 
 [[release-31-changelog]]
+
 = Changelog
 
 [[releasenotes-changelog-31.0.0]]
+
 == Release 31.0.0
 
 Release 31.0.0 is a new major release.
@@ -29,6 +31,7 @@ The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[
 * H31 OpenShift compatibility (Issue http://issues.opennms.org/browse/NMS-14881[NMS-14881])
 * H31 Topology Discovery Improvements (Issue http://issues.opennms.org/browse/NMS-14883[NMS-14883])
 * H31 OpenAPI Improvements (Issue http://issues.opennms.org/browse/NMS-14893[NMS-14893])
+
 === Bug
 
 * BSMAdminIT flapping (Issue http://issues.opennms.org/browse/NMS-9334[NMS-9334])
@@ -59,6 +62,7 @@ The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[
 * Alarms and Events: filter and advanced search / method POST is not supported (Issue http://issues.opennms.org/browse/NMS-14918[NMS-14918])
 * Docs for Cortex plugin are incorrect (Issue http://issues.opennms.org/browse/NMS-14945[NMS-14945])
 * Wrong example of snmp-graph config for `SNMP Trap Performance Data` article (Issue http://issues.opennms.org/browse/NMS-14961[NMS-14961])
+
 === Story
 
 * Flow Thresholds: Split processing and persistence (Issue http://issues.opennms.org/browse/NMS-13770[NMS-13770])
@@ -105,6 +109,7 @@ The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[
 * Create scheduled EventIngestor for Velocloud events (Issue http://issues.opennms.org/browse/NMS-14929[NMS-14929])
 * Replace 'exit' with 'quit' in Juniper DCB scripts (Issue http://issues.opennms.org/browse/NMS-14939[NMS-14939])
 * SNMP systemDef added for appliance products (Issue http://issues.opennms.org/browse/NMS-14956[NMS-14956])
+
 === Task
 
 * Update Heatmap chapter (Issue http://issues.opennms.org/browse/NMS-13674[NMS-13674])
@@ -122,11 +127,12 @@ The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[
 * Refactor Enlinkd Test NetworkBuilder Class (Issue http://issues.opennms.org/browse/NMS-14762[NMS-14762])
 * H31 Release testing  (Issue http://issues.opennms.org/browse/NMS-14797[NMS-14797])
 * Update documentation to reflect removal of UI Preview (Issue http://issues.opennms.org/browse/NMS-14825[NMS-14825])
-*  Documentation for Cloud Services Connector and Time Series DB (Issue http://issues.opennms.org/browse/NMS-14844[NMS-14844])
+* Documentation for Cloud Services Connector and Time Series DB (Issue http://issues.opennms.org/browse/NMS-14844[NMS-14844])
 * Changes to package-lock.json causes eslint to be not found (Issue http://issues.opennms.org/browse/NMS-14943[NMS-14943])
 * Assign sysObjectID for Appliance Mini (Issue http://issues.opennms.org/browse/NMS-14955[NMS-14955])
 * Release notes blurb about OpenShift (Issue http://issues.opennms.org/browse/NMS-14960[NMS-14960])
 * Release notes: Only one plug-in shows in UI (Issue http://issues.opennms.org/browse/NMS-14982[NMS-14982])
+
 === Enhancement
 
 * HostResourceSwRunMonitor uncovered parameter for min-services and max-services (Issue http://issues.opennms.org/browse/NMS-11825[NMS-11825])
@@ -156,12 +162,15 @@ The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[
 * Dynamic Yaml Generation, code and output clean up (Issue http://issues.opennms.org/browse/NMS-14810[NMS-14810])
 * Add support for rows in Grafana Dashboard Report (Issue http://issues.opennms.org/browse/NMS-14885[NMS-14885])
 * Move Enlinkd daemon docs to Reference section (Issue http://issues.opennms.org/browse/NMS-14913[NMS-14913])
+
 === Upgrade
 
 * features/topology: upgrade dependencies (Issue http://issues.opennms.org/browse/NMS-14341[NMS-14341])
+
 === Unexpected Behavior
 
 * Missing datacollection file does not bring valueable error message (Issue http://issues.opennms.org/browse/NMS-12991[NMS-12991])
+
 === Research
 
 * Can the OG nav-bar coexist with a Feather / Vue app? (Issue http://issues.opennms.org/browse/NMS-14731[NMS-14731])
