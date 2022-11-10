@@ -178,7 +178,7 @@ After you start the {page-component-title} core services, access the web applica
 
 The default user login is `admin` with the password `admin`.
 
-IMPORTANT: Immediately change the `admin` account password to a secure one.
+IMPORTANT: After you log in for the first time, immediately change the `admin` account's password to a secure one.
 
 The first time you log in, we prompt for permission to allow the Data Choices module to collect and publish anonymous usage statistics to https://stats.opennms.org.
 The OpenNMS Group uses this anonymized information to help determine product use and to improve the {page-component-title} software.
