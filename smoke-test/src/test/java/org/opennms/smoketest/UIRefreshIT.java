@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.model.OnmsNode;
@@ -68,9 +69,13 @@ public class UIRefreshIT extends OpenNMSSeleniumIT {
         assertEquals("ItsRainingItsPouring", node.getLabel());
 
         // Switch to the new UI
+        // Commenting-out for now - the "UI Preview" button has been removed
+        // Need to find a better way of testing for existence of new UI
+        /*
         wait.until(pageContainsText("UI Preview"));
         clickElement(By.id("ui-preview-btn"));
         wait.until(pageContainsText("Back to main page"));
+         */
     }
 
     @After
@@ -79,6 +84,7 @@ public class UIRefreshIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore("Cannot get to new UI via UI Preview button, need to rework this test")
     public void canRender() {
         // The node label should be displayed on the landing page
         wait.until(pageContainsText("ItsRainingItsPouring"));

@@ -31,7 +31,6 @@ package org.opennms.netmgt.config.poller;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -88,9 +87,6 @@ public class PollerConfiguration implements Serializable {
     @XmlAttribute(name="defaultCriticalPathIp")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress m_defaultCriticalPathIp;
-
-    @XmlAttribute(name="defaultCriticalPathService")
-    private String m_defaultCriticalPathService;
 
     @XmlAttribute(name="defaultCriticalPathTimeout")
     private Integer m_defaultCriticalPathTimeout;
@@ -174,10 +170,9 @@ public class PollerConfiguration implements Serializable {
 
     public List<Package> getPackages() {
         if (m_packages == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableList(m_packages);
+            m_packages = new ArrayList<>();
         }
+        return m_packages;
     }
 
     public void setPackages(final List<Package> packages) {
@@ -185,15 +180,15 @@ public class PollerConfiguration implements Serializable {
     }
 
     public void addPackage(final Package pack) throws IndexOutOfBoundsException {
-        m_packages.add(pack);
+        getPackages().add(pack);
     }
 
     public boolean removePackage(final Package pack) {
-        return m_packages.remove(pack);
+        return getPackages().remove(pack);
     }
 
     public Package getPackage(final String packageName) {
-        for (final Package pkg : m_packages) {
+        for (final Package pkg : getPackages()) {
             if (pkg.getName().equals(packageName)) {
                 return pkg;
             }
@@ -203,10 +198,9 @@ public class PollerConfiguration implements Serializable {
 
     public List<Monitor> getMonitors() {
         if (m_monitors == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableList(m_monitors);
+            m_monitors = new ArrayList<>();
         }
+        return m_monitors;
     }
 
     public void setMonitors(final List<Monitor> monitors) {
@@ -214,7 +208,7 @@ public class PollerConfiguration implements Serializable {
     }
 
     public void addMonitor(final Monitor monitor) throws IndexOutOfBoundsException {
-        m_monitors.add(monitor);
+        getMonitors().add(monitor);
     }
 
     public void addMonitor(final String service, final String className) {
@@ -222,7 +216,7 @@ public class PollerConfiguration implements Serializable {
     }
 
     public boolean removeMonitor(final Monitor monitor) {
-        return m_monitors.remove(monitor);
+        return getMonitors().remove(monitor);
     }
 
     public PollerConfiguration getPollerConfigurationForPackages(final List<String> pollingPackageNames) {
@@ -285,7 +279,9 @@ public class PollerConfiguration implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_threads, m_nextOutageId, m_serviceUnresponsiveEnabled, m_pathOutageEnabled, m_defaultCriticalPathIp, m_defaultCriticalPathService, m_defaultCriticalPathTimeout, m_defaultCriticalPathRetries, m_nodeOutage, m_packages, m_monitors);
+        return Objects.hash(getThreads(), getNextOutageId(), getServiceUnresponsiveEnabled(), getPathOutageEnabled(),
+                getDefaultCriticalPathIp(), getDefaultCriticalPathTimeout(), getDefaultCriticalPathRetries(),
+                getNodeOutage(), getPackages(), getMonitors());
     }
 
     @Override
@@ -293,32 +289,30 @@ public class PollerConfiguration implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final PollerConfiguration that = (PollerConfiguration) o;
-        return Objects.equals(m_threads, that.m_threads)
-                && Objects.equals(m_nextOutageId, that.m_nextOutageId)
-                && Objects.equals(m_serviceUnresponsiveEnabled, that.m_serviceUnresponsiveEnabled)
-                && Objects.equals(m_pathOutageEnabled, that.m_pathOutageEnabled)
-                && Objects.equals(m_defaultCriticalPathIp, that.m_defaultCriticalPathIp)
-                && Objects.equals(m_defaultCriticalPathService, that.m_defaultCriticalPathService)
-                && Objects.equals(m_defaultCriticalPathTimeout, that.m_defaultCriticalPathTimeout)
-                && Objects.equals(m_defaultCriticalPathRetries, that.m_defaultCriticalPathRetries)
-                && Objects.equals(m_nodeOutage, that.m_nodeOutage)
-                && Objects.equals(m_packages, that.m_packages)
-                && Objects.equals(m_monitors, that.m_monitors);
+        return Objects.equals(getThreads(), that.getThreads())
+                && Objects.equals(getNextOutageId(), that.getNextOutageId())
+                && Objects.equals(getServiceUnresponsiveEnabled(), that.getServiceUnresponsiveEnabled())
+                && Objects.equals(getPathOutageEnabled(), that.getPathOutageEnabled())
+                && Objects.equals(getDefaultCriticalPathIp(), that.getDefaultCriticalPathIp())
+                && Objects.equals(getDefaultCriticalPathTimeout(), that.getDefaultCriticalPathTimeout())
+                && Objects.equals(getDefaultCriticalPathRetries(), that.getDefaultCriticalPathRetries())
+                && Objects.equals(getNodeOutage(), that.getNodeOutage())
+                && Objects.equals(getPackages(), that.getPackages())
+                && Objects.equals(getMonitors(), that.getMonitors());
     }
     @Override
     public String toString() {
         return "PollerConfiguration[" +
-                "threads=" + m_threads +
-                ",nextOutageId=" + m_nextOutageId +
-                ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
-                ",pathOutageEnabled=" + m_pathOutageEnabled +
-                ",pathOutageDefaultCriticalPathIp=" + m_defaultCriticalPathIp +
-                ",pathOutageDefaultCriticalPathService=" + m_defaultCriticalPathService +
-                ",pathOutageDefaultCriticalPathTimeout=" + m_defaultCriticalPathTimeout +
-                ",pathOutageDefaultCriticalPathRetries=" + m_defaultCriticalPathRetries +
-                ",nodeOutage=" + m_nodeOutage +
-                ",packages=" + m_packages +
-                ",monitors=" + m_monitors +
+                "threads=" + getThreads() +
+                ",nextOutageId=" + getNextOutageId() +
+                ",serviceUnresponsiveEnabled=" + getServiceUnresponsiveEnabled() +
+                ",pathOutageEnabled=" + getPathOutageEnabled() +
+                ",pathOutageDefaultCriticalPathIp=" + getDefaultCriticalPathIp() +
+                ",pathOutageDefaultCriticalPathTimeout=" + getDefaultCriticalPathTimeout() +
+                ",pathOutageDefaultCriticalPathRetries=" + getDefaultCriticalPathRetries() +
+                ",nodeOutage=" + getNodeOutage() +
+                ",packages=" + getPackages() +
+                ",monitors=" + getMonitors() +
                 "]";
     }
 

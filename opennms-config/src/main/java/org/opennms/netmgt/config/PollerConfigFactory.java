@@ -134,7 +134,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
             IOUtils.closeQuietly(stream);
         }
 
-        validate(config.getConfiguration());
+        validate(config.getLocalConfiguration());
 
         setInstance(config);
     }

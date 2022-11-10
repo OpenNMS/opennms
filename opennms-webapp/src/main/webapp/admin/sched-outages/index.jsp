@@ -80,7 +80,7 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
-			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
@@ -164,7 +164,7 @@
 					PollerConfigFactory.init(); //Force init
 			
 					List<String> pollingOutages = new ArrayList<>();
-					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 						pollingOutages.addAll(pkg.getOutageCalendars());
 					}
 

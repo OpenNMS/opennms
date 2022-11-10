@@ -402,11 +402,20 @@ public interface PollerConfig extends PathOutageConfig {
     void addMonitor(String svcName, String className);
 
     /**
-     * <p>getConfiguration</p>
+     * <p>getLocalConfiguration</p>
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
-    PollerConfiguration getConfiguration();
+    PollerConfiguration getLocalConfiguration();
+
+    /**
+     * <p>getExtendedConfiguration</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
+     */
+    default PollerConfiguration getExtendedConfiguration() {
+        return getLocalConfiguration();
+    }
 
     /**
      * <p>getServiceMonitorLocators</p>
@@ -416,6 +425,8 @@ public interface PollerConfig extends PathOutageConfig {
     Collection<ServiceMonitorLocator> getServiceMonitorLocators();
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
+
+    default void setExternalData(List<Package> externalPackages, List<Monitor> externalMonitors) {};
 
     /**
      * <p>getReadLock</p>

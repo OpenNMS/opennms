@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -230,7 +231,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public Page open() {
             driver.get(url);
-            new WebDriverWait(driver, 5).until(driver -> getTabs().size() == expectedTabs.size());
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> getTabs().size() == expectedTabs.size());
             return this;
         }
 
@@ -290,7 +291,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         public void click() {
             getElement().click();
             sleep(2000);
-            new WebDriverWait(driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
@@ -360,7 +361,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public void update() {
            getSaveButtonElement().click();
-           new WebDriverWait(driver, 5, 500).until(webDriver -> !isDirty());
+           new WebDriverWait(driver, Duration.ofSeconds(5), Duration.ofMillis(500)).until(webDriver -> !isDirty());
         }
 
         WebElement getSaveButtonElement() {

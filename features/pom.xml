@@ -98,7 +98,6 @@
 
     <!-- Topology Map -->
     <module>topology-map</module>
-    <module>vaadin-node-maps</module>
 
     <!-- webapps -->
     <module>root-webapp</module>

@@ -2,7 +2,7 @@
 [[newts-configure]]
 = Configure {page-component-title} Core to Use Newts
 
-.Create a configuration file with the time series storage settings
+.Create a configuration file with the time series database settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/timeseries.properties

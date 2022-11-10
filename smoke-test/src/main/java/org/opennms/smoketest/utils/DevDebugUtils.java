@@ -65,6 +65,7 @@ public class DevDebugUtils {
     private static final TimeLimiter LIMITER = SimpleTimeLimiter.create(Executors.newCachedThreadPool(new ThreadFactoryBuilder()
             .setNameFormat("dev-debug-utils-pool-%d")
             .build()));
+    public static final String CONTAINER_STDOUT_STDERR = "container_stdout_stderr";
 
     public static String convertToContainerAccessibleUrl(String url, String defaultAlias, int defaultPort) {
         final URI uri;
@@ -104,6 +105,11 @@ public class DevDebugUtils {
     }
 
     public static void triggerThreadDump(Container container) {
+        if (!container.isRunning()) {
+            LOG.warn("triggerThreadDump can only be used on a running container. Container is not running: {}", container);
+            return;
+        }
+
         try {
             LIMITER.callWithTimeout(() -> {
                 LOG.info("kill -3 -1");
@@ -125,7 +131,7 @@ public class DevDebugUtils {
             throw new RuntimeException("Failed to create " + targetLogFolder, e);
         }
 
-        final Path containerLogOutputFile = targetLogFolder.resolve("container_stdout_stderr");
+        final Path containerLogOutputFile = targetLogFolder.resolve(CONTAINER_STDOUT_STDERR);
         try {
             LIMITER.runWithTimeout(() -> {
                 try {

@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -98,7 +99,7 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         // try every 5 seconds, for 120 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 120).until(input -> {
+            new WebDriverWait(driver, Duration.ofSeconds(120)).until(input -> {
                 // refresh page
                 input.get(getBaseUrlInternal() + "opennms/index.jsp");
 

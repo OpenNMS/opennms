@@ -48,7 +48,7 @@ public class DefaultOnmsReportDaoTest {
     private static final String SVG_TEMPLATE = "SVGAvailReport.xsl";
     private static final String PDF_TEMPLATE = "PDFAvailReport.xsl";
     private static final String HTML_TEMPLATE = "HTMLAvailReport.xsl";
-    private static final String LOGO = "logo.gif";
+    private static final String LOGO = "logo.png";
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
     private static final String STRING_NAME = "offenderCount";

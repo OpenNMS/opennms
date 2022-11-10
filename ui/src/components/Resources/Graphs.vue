@@ -1,5 +1,10 @@
 <template>
   <div class="feather-row">
+    <div class="feather-col-12">
+      <BreadCrumbs :items="breadcrumbs" />
+    </div>
+  </div>
+  <div class="feather-row">
     <div class="feather-col-11">
       <div class="controls">
         <TimeControls @updateTime="updateTime" />
@@ -33,6 +38,8 @@ import { StartEndTime } from '@/types'
 import { FeatherInput } from '@featherds/input'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { BreadCrumb } from '@/types'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
@@ -54,6 +61,16 @@ const props = defineProps({
   label: {
     type: String
   }
+})
+
+const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+
+const breadcrumbs = computed<BreadCrumb[]>(() => {
+  return [
+    { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+    { label: 'Resource Graphs', to: '/resource-graphs' },
+    { label: 'Graphs', to: '#', position: 'last' }
+  ]
 })
 
 const resources = props.singleGraphResourceId ?

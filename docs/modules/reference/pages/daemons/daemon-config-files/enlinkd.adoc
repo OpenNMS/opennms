@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-enlinkd]]
 = Enlinkd
 
-The enhanced link daemon collects xref:operation:topology/enlinkd/introduction.adoc[topology information] via SNMP to determine neighboring nodes.
+The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/introduction.adoc[topology information] via SNMP to determine neighboring nodes.
 The daemon essentially asks each device the following question: "What is the network topology from your point of view?"
 The enlinkd discovery process attempts to discover bridge domain links with the data coming from all collected bridge forwarding tables.
 The enlinkd updaters correlate all collected topology data to generate a global topology layout of your network.
