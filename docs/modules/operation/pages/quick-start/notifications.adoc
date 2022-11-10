@@ -1,7 +1,7 @@
 
 = Step 2: Turn on Default Notifications
 
-This section describes how to turn on default notifications in {page-component-title}.
+This section describes how to turn default notifications on in {page-component-title}.
 
 {page-component-title} uses notifications to inform users about xref:operation:deep-dive/events/introduction.adoc[events] in the network without requiring them to log in to the web UI.
 Notifications are commonly sent through email and text or pager messages, but can be customized to send to a variety of external systems.
@@ -88,7 +88,7 @@ The initial delay specifies how long to wait before sending the first notificati
 .. Click *Next Step*.
 .. You are prompted to define the time to wait between sending notifications to each member of a group.
 For the purpose of this Quick Start guide, do not specify a delay interval, and click *Next Step*.
-.. Select `browser` from the list of commands and make sure that it is on.
+.. Select `Browser` from the list of commands and make sure that it is on.
 .. Click *Next Step*.
 +
 The Admin group and the email address you specified appear in the Initial Targets list.

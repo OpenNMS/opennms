@@ -54,6 +54,6 @@ A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) wi
 For more information on notifications, refer to xref:operation:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section.
 Topics include:
 
-* xref:operation:deep-dive/notifications/concepts.adoc[Concepts (events, UEIs, on-call roles, and so on)]
+* xref:operation:deep-dive/notifications/concepts.adoc[Concepts] (events, UEIs, on-call roles, and so on)
 * xref:operation:deep-dive/notifications/configuration.adoc#path-outage-notification[Configure path outages]
 * xref:operation:deep-dive/notifications/commands.adoc[Notification commands]
