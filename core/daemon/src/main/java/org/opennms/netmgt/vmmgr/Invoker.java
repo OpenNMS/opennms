@@ -424,7 +424,7 @@ public class Invoker {
                     }
 
                     LOG.debug("pass {} on service {} will invoke method \"{}\" as step {}",
-                            pass, name, invoke.getMethod(), pb.getCurrent());
+                            pass, name, invoke.getMethod(), pb != null ? pb.getCurrent() : "-");
                     if (pb != null) {
                         setExtraMessageWithPadding(pb, pass, service.getShortName(), longestShortName);
                         pb.refresh(); // make sure we output updates for quick services
