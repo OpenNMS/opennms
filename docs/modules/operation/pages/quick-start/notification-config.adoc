@@ -55,5 +55,5 @@ For more information on notifications, refer to xref:operation:deep-dive/notific
 Topics include:
 
 * xref:operation:deep-dive/notifications/concepts.adoc[Concepts] (events, UEIs, on-call roles, and so on)
-* xref:operation:deep-dive/notifications/configuration.adoc#path-outage-notification[Configure path outages]
+* xref:operation:deep-dive/notifications/configuration.adoc#path-outage-notification[Path outages]
 * xref:operation:deep-dive/notifications/commands.adoc[Notification commands]
