@@ -180,24 +180,24 @@ The default user login is `admin` with the password `admin`.
 
 IMPORTANT: After you log in for the first time, immediately change the `admin` account's password to a secure one.
 
-The first time you log in, we prompt for permission to allow the Data Choices module to collect and publish anonymous usage statistics to https://stats.opennms.org.
+The first time you log in, {page-component-title} prompts for permission to allow the Data Choices module to collect and publish anonymous usage statistics to https://stats.opennms.org.
 The OpenNMS Group uses this anonymized information to help determine product use and to improve the {page-component-title} software.
-We do not share it with third parties and we will not use it for sales purposes.
+We do not share it with third parties, and we will not use it for sales purposes.
 
-.Data sources collection permission
-image::deployment/core/data-sources.png[prompt,300]
+.Data sources collection permission prompt
+image::deployment/core/data-sources.png[Data sources collection permission prompt displaying opt-in and opt-out buttons,400]
 
-Click *Show me what is being sent* to see what xref:operation:deep-dive/admin/housekeeping/introduction.adoc#ga-data-collection[information we collect].
+Click *Show Me What is Being Sent* to see xref:operation:deep-dive/admin/housekeeping/introduction.adoc#ga-data-collection[what information we collect].
 Statistics collection and publication happen only if an admin user opts in.
 
-NOTE: Admin users can xref:operation:deep-dive/admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable usage statistics collection] at any time.
+NOTE: Admin users can xref:operation:deep-dive/admin/housekeeping/introduction.adoc#disable-data-collection[enable or disable statistics collection] at any time.
 
-. On the top menu bar, click menu:admin[Change Password].
-. Type the current and new passwords in the appropriate fields.
-. Confirm the new password and click *Submit*.
+. On the top menu bar, click menu:Admin[Change Password].
+. Type your current password and new password in the appropriate fields.
+. Confirm your new password, and click *Submit*.
 
-We encourage you to use {page-component-title} with a personalized account instead of the `admin` account.
-This allows you to see who is completing tasks like clearing or acknowledging alarms, instead of everything being done by the `admin user.
+We encourage you to use {page-component-title} with individual user accounts instead of the `admin` account.
+If all users have individual accounts, you can see who is completing tasks like clearing or acknowledging alarms.
 
 For information on how to create a personalized user account, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
 

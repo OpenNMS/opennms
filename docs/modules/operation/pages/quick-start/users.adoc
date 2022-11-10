@@ -1,12 +1,12 @@
 
 = Step 1: First-Time Login
 
-As part of the installation process, we recommend logging in using the default user name (`admin`) and password (`admin`).
+As part of the installation process, we recommend logging in using the default `admin` account.
 If you have not already done so, log in for the first time and opt in or out of usage statistics data collection (see xref:deployment:core/getting-started.adoc#ga-data-choices[First login and data choices]).
 
 This section describes how to create a personal user account.
 
-For additional information and procedures on user management, including user groups, user configuration, and security roles, see xref:deep-dive/user-management/user-config.adoc[User Management] in the Deep Dive section.
+For additional information on user management, including user groups, user configuration, and security roles, see xref:deep-dive/user-management/user-config.adoc[User Management] in the Deep Dive section.
 
 [[create-user]]
 == Create a new user
