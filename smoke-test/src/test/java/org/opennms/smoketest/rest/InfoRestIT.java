@@ -21,11 +21,12 @@
  */
 package org.opennms.smoketest.rest;
 
-import io.restassured.http.ContentType;
-import org.junit.Test;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+
+import org.junit.Test;
+
+import io.restassured.http.ContentType;
 
 public class InfoRestIT extends AbstractRestIT {
 
@@ -34,9 +35,9 @@ public class InfoRestIT extends AbstractRestIT {
     }
 
     @Test
-    public void testServices() {
+    public void testServices() throws InterruptedException {
         given().accept(ContentType.JSON).get()
-                .then().log().status()
+                .then().log().all()
                 .assertThat()
                 .statusCode(200)
                 .body("packageName", is("opennms"))
