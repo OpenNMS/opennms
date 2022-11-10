@@ -328,7 +328,12 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
 if "build" in What_to_build and not build_mappings["experimental"]:
     build_mappings["build-deploy"] = True
 
-if "doc" in git_keywords or "docs" in git_keywords or "docs" in What_to_build:
+if (
+    "doc" in git_keywords
+    or "docs" in git_keywords
+    or "doc" in What_to_build
+    or "docs" in What_to_build
+):
     build_mappings["docs"] = True
 
 if "ui" in git_keywords or "ui" in What_to_build:

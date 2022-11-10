@@ -43,7 +43,7 @@ public class NMS12517_Test {
         final MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("eventtext", "'öäü<>'");
 
-        eventQueryServlet.doGet(request, response);
+        eventQueryServlet.doPost(request, response);
 
         assertEquals(302, response.getStatus());
         System.err.println("->"+response.getHeader("Location")+"<-");
