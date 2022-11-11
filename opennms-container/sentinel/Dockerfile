@@ -3,9 +3,24 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
-FROM ${BASE_IMAGE} as sentinel-base
+FROM ${BASE_IMAGE} as sentinel-tarball
 
-ADD --chown=10001:10001 ./tarball-root/ /usr/share/sentinel/
+ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/sentinel/
+RUN chmod -R g-w /opt/usr-share/sentinel && \
+    chmod -R g=u \
+        /opt/usr-share/sentinel/etc \
+        /opt/usr-share/sentinel/data \
+        && \
+    chmod -R a+x /opt/usr-share/sentinel/bin && \
+    chmod g=u /opt/usr-share/sentinel && \
+    find \
+        /opt/usr-share/sentinel/data \
+        /opt/usr-share/sentinel/deploy \
+        /opt/usr-share/sentinel/system \
+        /opt/usr-share/sentinel/repositories \
+        -type d -print0 | xargs -0 chmod 2775
+
+FROM ${BASE_IMAGE} as sentinel-base
 
 ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime"
 
@@ -38,6 +53,10 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
 ##
 FROM sentinel-base
 
+# If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
+# We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
+COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
+
 SHELL ["/bin/bash", "-c"]
 
 # Create Sentinel user with a specific group ID
@@ -45,33 +64,26 @@ RUN groupadd -g 10001 sentinel && \
     useradd \
       --system \
       --uid 10001 \
-      --gid 10001 \
+      --gid 0 \
       --home-dir /usr/share/sentinel \
       --no-create-home \
       --shell /usr/bin/bash \
       sentinel
 
-# we want these to break the caching so yum will re-install now that
-# we're not copying DEBs into /tmp/debs by default
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
-ARG ADD_DEB_PACKAGES
 
 RUN id sentinel
 RUN  getent group sentinel
 RUN  getent passwd sentinel
 
 # Install any spare packages and create some compatibility links
-RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
-        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
-    fi && \
-    install -d -g 10001 -o 10001 -m 755 \
+RUN install -d -o 10001 -g 0 -m 775 \
         /var/lib/sentinel \
         /usr/share/sentinel/data/{log,tmp} && \
     ln -s /usr/share/sentinel/data /var/lib/sentinel/data && \
     ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
-    chown 10001:10001 /var/lib/sentinel/* && \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./assets/* /
