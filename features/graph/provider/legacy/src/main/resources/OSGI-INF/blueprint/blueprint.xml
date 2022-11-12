@@ -30,10 +30,13 @@
     </service>
 
     <!-- Enhanced Linkd Adapter -->
-    <bean id="enlinkdGraphProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphProvider">
+    <bean id="enlinkdGraphContainer" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphContainer">
         <argument ref="enlinkdMetaTopologyProvider"/>
     </bean>
-    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="enlinkdGraphProvider">
+    <bean id="enlinkdGraphContainerProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphContainerProvider">
+        <argument ref="enlinkdGraphContainer"/>
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" ref="enlinkdGraphContainerProvider">
         <service-properties>
             <entry key="cacheInvalidateInterval" value="${linkd.cacheInvalidateInterval}" />
         </service-properties>
