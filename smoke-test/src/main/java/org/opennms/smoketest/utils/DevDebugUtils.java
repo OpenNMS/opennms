@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.FileSystemUtils;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.SelinuxContext;
@@ -125,6 +126,10 @@ public class DevDebugUtils {
     }
 
     public static void copyLogs(Container container, Path targetLogFolder, Path sourceLogFolder, List<String> logFiles) {
+        // We don't want to intermix old and new log files.
+        if (Files.exists(targetLogFolder)) {
+            FileSystemUtils.deleteRecursively(targetLogFolder.toFile());
+        }
         try {
             Files.createDirectories(targetLogFolder);
         } catch (IOException e) {
