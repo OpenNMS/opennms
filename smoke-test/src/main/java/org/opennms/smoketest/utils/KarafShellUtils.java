@@ -89,13 +89,16 @@ public class KarafShellUtils {
     }
 
     /**
-     * Awaits that the health check succeeds within the given amount of minutes.
+     * Awaits that the health check succeeds within 3 minutes.
      *
      * @throws RuntimeException if the health check does not succeed.
      */
-    public static void awaitHealthCheckSucceeded(InetSocketAddress addr, int timeoutMinutes, String what) {
+    public static void awaitHealthCheckSucceeded(KarafContainer container) {
+        InetSocketAddress addr = container.getSshAddress();
         Objects.requireNonNull(addr);
-        await(what + " health check").atMost(timeoutMinutes, MINUTES)
+        await(container.getDockerImageName() + " health check").atMost(3, MINUTES)
+                .failFast("container is no longer running", () -> !container.isRunning())
+                .pollDelay(Duration.ZERO) // Poll immediately in case it's already up so we can move on
                 .pollInterval(5, SECONDS)
                 .ignoreExceptions()
                 .untilAsserted(() -> testHealthCheckSucceeded(addr));

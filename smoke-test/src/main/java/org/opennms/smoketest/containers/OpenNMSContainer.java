@@ -457,8 +457,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             // currently required to pass.
             if (container.getModel().isElasticsearchEnabled()) {
                 LOG.info("Waiting for OpenNMS health check...");
-                final InetSocketAddress karafSsh = container.getSshAddress();
-                awaitHealthCheckSucceeded(karafSsh, 3, "OpenNMS");
+                awaitHealthCheckSucceeded(container);
                 LOG.info("Health check passed.");
             }
         }
