@@ -139,6 +139,10 @@ public class KarafShellUtils {
      */
     @SuppressWarnings("java:S5443")
     public static void saveCoverage(final KarafContainer container, final String prefix, final String type) {
+        if (!container.isRunning()) {
+            LOG.warn("Container [{}] isn't running, cannot save coverage data", container.getDockerImageName());
+            return;
+        }
         try {
             LOG.info("Triggering code coverage data file dump...");
             KarafShellUtils.triggerCoverageDump(container, "/tmp/jacoco.exec");
