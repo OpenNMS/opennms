@@ -35,10 +35,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.FileSystemUtils;
@@ -46,6 +48,7 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.SelinuxContext;
 
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -153,6 +156,7 @@ public class DevDebugUtils {
             LOG.info("Failed to copy stdout/stderr from container to file {}: {}", containerLogOutputFile, e.getMessage());
         }
 
+        var missingLogs = new TreeSet<String>();
         for (String logFile : logFiles) {
             try {
                 LIMITER.runWithTimeout(() -> {
@@ -168,8 +172,15 @@ public class DevDebugUtils {
                 // Don't attempt to copy any further files
                 return;
             } catch (Exception e) {
-                LOG.info("Failed to copy log file {} from container: {}", logFile, e.getMessage());
+                if (ExceptionUtils.getRootCause(e).getClass() == NotFoundException.class) {
+                    missingLogs.add(logFile);
+                } else {
+                    LOG.warn("Failed to copy log file {} from container: {}", logFile, e.getMessage());
+                }
             }
+        }
+        if (!missingLogs.isEmpty()) {
+            LOG.warn("Failed to copy log files from the container because container does not have files: {}", missingLogs);
         }
     }
 
