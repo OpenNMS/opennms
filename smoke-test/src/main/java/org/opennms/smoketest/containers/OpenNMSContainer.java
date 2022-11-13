@@ -157,7 +157,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         this.overlay = writeOverlay();
 
-        String containerCommand = "-s";
+        String containerCommand = "-S";
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
@@ -478,7 +478,14 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
-                container.waitUntilReadyException = e;
+                var logs =
+                        "\n\t\t----------------------------------------------------------\n"
+                                + container.getLogs()
+                                .replaceFirst("(?ms)(.*?)(^An error occurred while attempting to start the .*?)\\s*^Stopping OpenNMS.*", "$2\n")
+                                .replaceAll("(?m)^", "\t\t")
+                                + "\t\t----------------------------------------------------------";
+
+                container.waitUntilReadyException = new IllegalStateException("Failed to start container. OpenNMS exception (if any)/container logs:" + logs, e);
 
                 throw e;
             }
@@ -565,9 +572,17 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "karaf.log",
                 "manager.log",
                 "poller.log",
+                "progressbar.log",
                 "provisiond.log",
                 "trapd.log",
-                "web.log");
+                "web.log",
+                // These are from entrypoint.sh when -S is used
+                "output.log",
+                "initConfigWhenEmpty.log",
+                "processConfdTemplates.log",
+                "applyOverlayConfig.log",
+                "configTester.log",
+                "initOrUpdate.log");
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.copyLogs(container,
                 // dest
