@@ -56,7 +56,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.awaitility.core.ConditionTimeoutException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -475,17 +474,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             LOG.info("Waiting for OpenNMS REST API...");
             final long timeoutMins = 5;
             final RestClient restClient = container.getRestClient();
-            try {
-                await("waiting for OpenNMS REST API")
-                        .atMost(timeoutMins, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .failFast("container is no longer running", () -> !container.isRunning())
-                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                        .until(restClient::getDisplayVersion, notNullValue());
-            } catch(ConditionTimeoutException e) {
-                LOG.error("OpenNMS did not finish starting after {} minutes.", timeoutMins);
-                throw new RuntimeException(e);
-            }
+
+            await("waiting for OpenNMS REST API")
+                    .atMost(timeoutMins, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(restClient::getDisplayVersion, notNullValue());
             LOG.info("OpenNMS REST API is online.");
 
             // Wait until all daemons have finished starting up

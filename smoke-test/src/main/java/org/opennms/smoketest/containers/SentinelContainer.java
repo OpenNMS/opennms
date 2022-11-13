@@ -52,7 +52,6 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
@@ -305,18 +304,13 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for Minion health check...");
-            try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await("waiting for good health check probe")
-                        .atMost(5, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .failFast("container is no longer running", () -> !container.isRunning())
-                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
-                throw new RuntimeException(e);
-            }
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
         }
     }
