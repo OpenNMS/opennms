@@ -29,6 +29,7 @@
 package org.opennms.smoketest.containers;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
@@ -107,18 +108,16 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
         if (!succeeded) {
             LOG.info("Gathering logs...");
-            copyLogs(this, prefix);
+            Path targetLogFolder = Paths.get("target", "logs", prefix, "postgresql");
+            DevDebugUtils.clearLogs(targetLogFolder);
+            DevDebugUtils.copyLogs(this,
+                    // dest
+                    targetLogFolder,
+                    // source folder
+                    Paths.get("/var", "lib", "postgresql", "data"),
+                    // no log files to copy, everything is available via the container logs
+                    Collections.emptyList());
         }
-    }
-
-    private static void copyLogs(PostgreSQLContainer container, String prefix) {
-        DevDebugUtils.copyLogs(container,
-                // dest
-                Paths.get("target", "logs", prefix, "postgresql"),
-                // source folder
-                Paths.get("/var", "lib", "postgresql", "data"),
-                // no log files to copy, everything is available via the container logs
-                Collections.emptyList());
     }
 
 }

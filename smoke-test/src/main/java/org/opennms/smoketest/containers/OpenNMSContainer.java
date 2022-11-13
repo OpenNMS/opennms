@@ -92,6 +92,7 @@ import com.google.common.collect.ImmutableMap;
  */
 @SuppressWarnings("java:S2068")
 public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> implements KarafContainer<OpenNMSContainer>, TestLifecycleAware {
+    public static final String IMAGE = "opennms/horizon";
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
     public static final String KAFKA_ALIAS = "kafka";
@@ -100,6 +101,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public static final String ADMIN_USER = "admin";
     public static final String ADMIN_PASSWORD = "admin";
+    public static final Path CONTAINER_LOG_DIR = Paths.get("/opt", ALIAS, "logs");
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
@@ -141,7 +143,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
-        super("opennms/horizon");
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 
@@ -475,7 +477,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 var logs =
                         "\n\t\t----------------------------------------------------------\n"
                                 + container.getLogs()
-                                .replaceFirst("(?ms)(.*?)(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*", "$2\n")
+                                .replaceFirst(
+                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*",
+                                        "$1\n")
                                 .replaceAll("(?m)^", "\t\t")
                                 + "\t\t----------------------------------------------------------";
 
@@ -487,7 +491,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
         protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
-            final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
+            final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
                     .atMost(3, MINUTES)
                     .failFast("container is no longer running", () -> !container.isRunning())
@@ -549,17 +553,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        var logs = copyLogs(this, prefix);
-        LOG.info("Logs: {}", logs.toUri());
-        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-    }
-
-    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("alarmd.log",
+        final List<String> logFiles = Arrays.asList(
+                "alarmd.log",
                 "collectd.log",
                 "eventd.log",
                 "jetty-server.log",
@@ -568,16 +564,30 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 "poller.log",
                 "provisiond.log",
                 "trapd.log",
-                "web.log");
+                "web.log"
+        );
+
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.clearLogs(targetLogFolder);
+
+        LOG.info("Gathering thread dump...");
+        final var threadDump = DevDebugUtils.gatherThreadDump(this,
+                targetLogFolder, CONTAINER_LOG_DIR.resolve("output.log"));
+
+        LOG.info("Gathering logs...");
+        DevDebugUtils.copyLogs(this,
                 // dest
                 targetLogFolder,
                 // source folder
-                Paths.get("/opt", ALIAS, "logs"),
+                CONTAINER_LOG_DIR,
                 // log files
                 logFiles);
-        return targetLogFolder;
-    }
 
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
+    }
 }
