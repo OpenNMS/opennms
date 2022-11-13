@@ -29,11 +29,11 @@
 package org.opennms.smoketest.containers;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.Assert.assertNotNull;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -43,11 +43,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -499,7 +499,6 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 container.followOutput(logConsumer);
             }
 
-            LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
             await("waiting for startup to begin")
                     .atMost(3, MINUTES)
@@ -507,30 +506,26 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                     .ignoreException(NotFoundException.class)
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
-            LOG.info("OpenNMS has begun starting up.");
 
-            LOG.info("Waiting for OpenNMS REST API...");
-            final long timeoutMins = 5;
-            final RestClient restClient = container.getRestClient();
-
-            await("waiting for OpenNMS REST API")
-                    .atMost(timeoutMins, MINUTES)
-                    .pollInterval(10, SECONDS)
-                    .failFast("container is no longer running", () -> !container.isRunning())
-                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                    .until(restClient::getDisplayVersion, notNullValue());
-            LOG.info("OpenNMS REST API is online.");
-
-            // Wait until all daemons have finished starting up
-            // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
-            // have been given a chance to bind
-            LOG.info("Waiting for startup to complete.");
+            final Path progressBarLog = Paths.get("/opt", ALIAS, "logs", "progressbar.log");
             await("waiting for startup to complete")
-                    .atMost(5, MINUTES)
+                    .atMost(10, MINUTES)
+                    .pollInterval(Duration.ofSeconds(2))
                     .failFast("container is no longer running", () -> !container.isRunning())
-                    .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
-                            containsString("Starter: Startup complete"));
-            LOG.info("OpenNMS has started.");
+                    .ignoreException(NotFoundException.class)
+                    .until(() -> { return TestContainerUtils.getFileFromContainerAsString(container, progressBarLog); },
+                            /*
+                             * matchesRegex needs to match *the entire log file*, so this gets a little interesting.
+                             * We want to match "Starting OpenNMS: .* All Passes Complete" on a single line but
+                             * *not* spanning multiple lines. We don't want to accidentally match a case where OpenNMS
+                             * begins to startup, gets an error, and then shuts down successfully where you'd have
+                             * "Starting OpenNMS:" on one line and then "Stopping OpenNMS: .* All Passes Complete"
+                             * on another. Since the 's' flag changes '.' to match anything, including newlines, we
+                             * can't use '.*' in the middle of our regex.
+                             */
+                            matchesRegex("(?ms).*?^Starting OpenNMS: [^\r\n]* All Passes Complete\\s*$.*"));
+
+            assertNotNull("REST display version non-null", container.getRestClient().getDisplayVersion());
 
             // Defer the health-check (if we do run it) until the system has completely started
             // in order to give all the health checks a chance to load.
