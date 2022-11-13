@@ -25,11 +25,11 @@ E_ILLEGAL_ARGS=126
 E_INIT_CONFIG=127
 
 MYID="$(id -u)"
-MYUSER="$(getent passwd "${MYID}" | cut -d: -f1)"
+MYUSER="$(getent passwd "${MYID}" | cut -d: -f1 || true)"
 
 export RUNAS="${MYUSER}"
 
-if [ "$MYID" -eq 0 ]; then
+if [ "$MYID" -eq 0 ] && [ -n "${MYUSER}" ]; then
   if ! grep -Fxq "RUNAS=${MYUSER}" "${OPENNMS_HOME}/etc/opennms.conf"; then
       echo "RUNAS=${MYUSER}" >> "${OPENNMS_HOME}/etc/opennms.conf"
   fi
