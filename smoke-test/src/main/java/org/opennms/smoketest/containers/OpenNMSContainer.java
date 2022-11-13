@@ -79,6 +79,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
@@ -492,6 +493,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
 
         protected void waitUntilReadyWrapped() {
+            // If we're not running CI, follow output from the OpenNMS container since it starts up slow
+            if (System.getenv("CI") == null) {
+                Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOG);
+                container.followOutput(logConsumer);
+            }
+
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
             await("waiting for startup to begin")
