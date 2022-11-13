@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
@@ -88,6 +89,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private final StackModel model;
     private final SentinelProfile profile;
     private final Path overlay;
+    private Exception waitUntilReadyException = null;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
         super(ALIAS);
@@ -254,6 +256,34 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         return SENTINEL_JETTY_PORT;
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
@@ -264,6 +294,17 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Sentinel health check...");
+            try {
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
+            }
+        }
+
+        protected void waitUntilReadyWrapped() {
+            LOG.info("Waiting for Minion health check...");
             try {
                 RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
                 await("waiting for good health check probe")

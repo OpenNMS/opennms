@@ -57,6 +57,7 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.awaitility.core.ConditionTimeoutException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -137,6 +138,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final Path overlay;
     private int generatedUserId = -1;
     private boolean afterTestCalled = false;
+    private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
@@ -413,6 +415,34 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         return model;
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause with OpenNMS startup errors further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     private static class WaitForOpenNMS extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final OpenNMSContainer container;
 
@@ -422,6 +452,16 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         @Override
         protected void waitUntilReady() {
+            try {
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
+            }
+        }
+
+        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
             await("waiting for startup to begin")
