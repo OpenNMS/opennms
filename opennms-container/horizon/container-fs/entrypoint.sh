@@ -10,7 +10,8 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -euo pipefail
+trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 umask 002
 export OPENNMS_HOME="/usr/share/opennms"
@@ -64,10 +65,12 @@ initOrUpdate() {
     ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
 
     # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
-    if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
+    if [[ ! -v OPENNMS_TIMESERIES_STRATEGY ]]; then
+      echo "The time series strategy OPENNMS_TIMESERIES_STRATEGY is not set, so skip Newts keyspace initialisation. When unset, defaults to 'rrd' to use RRDTool."
+    elif  [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
       ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
     else
-      echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation. If unset defaults to rrd to use RRDTool."
+      echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, so skip Newts keyspace initialisation."
     fi
   fi
 }
