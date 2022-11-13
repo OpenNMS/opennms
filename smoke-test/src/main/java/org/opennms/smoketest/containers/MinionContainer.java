@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -274,9 +275,11 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             LOG.info("Waiting for Minion health check...");
             try {
                 RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
+                await("waiting for good health check probe")
+                        .atMost(5, MINUTES)
                         .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                         .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             } catch(ConditionTimeoutException e) {
                 LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);

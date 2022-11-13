@@ -38,6 +38,9 @@ import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,8 +49,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
@@ -58,10 +59,10 @@ import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -265,9 +266,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             LOG.info("Waiting for Sentinel health check...");
             try {
                 RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
+                await("waiting for good health check probe")
+                        .atMost(5, MINUTES)
                         .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                         .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             } catch(ConditionTimeoutException e) {
                 LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
