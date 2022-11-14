@@ -35,6 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,25 +56,29 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+@RunWith(JUnitParamsRunner.class)
 public class KafkaFlowForwarderIT {
 
     private KafkaFlowForwarder flowForwarder;
 
-    private static final String topicName = "flowDocuments";
+    private final String topicName = "flowDocuments";
+
     private final List<FlowDocument> flowDocuments = new ArrayList<>();
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
 
@@ -91,12 +96,14 @@ public class KafkaFlowForwarderIT {
         when(configAdmin.getConfiguration(KafkaFlowForwarder.KAFKA_CLIENT_PID).getProperties()).thenReturn(kafkaConfig);
         flowForwarder = new KafkaFlowForwarder(configAdmin, new MetricRegistry());
         flowForwarder.setTopicName(topicName);
-        flowForwarder.init();
     }
 
-
+    @Parameters({"true", "false"})
     @Test(timeout = 60000)
-    public void testKafkaPersistenceForFlows() throws Exception {
+    public void testKafkaPersistenceForFlows(boolean useJson) throws Exception {
+        flowForwarder.setUseJson(useJson);
+        flowForwarder.init();
+
         // start ES
         final var flow = EnrichedFlow.from(FlowDocumentTest.getMockFlow());
         flow.setSrcNodeInfo(new NodeInfo() {{
@@ -109,7 +116,7 @@ public class KafkaFlowForwarderIT {
         }});
         this.flowForwarder.persist(Lists.newArrayList(flow));
 
-        KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConfig, topicName);
+        KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConfig, topicName, useJson);
         Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->
                 getFlowDocuments().size(), Matchers.greaterThan(0));
@@ -137,11 +144,13 @@ public class KafkaFlowForwarderIT {
 
         private final KafkaConsumer<String, byte[]> kafkaConsumer;
         private final String topic;
+        private final boolean useJson;
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
-        public KafkaConsumerRunner(Hashtable properties, String topic) {
+        public KafkaConsumerRunner(Hashtable properties, String topic, boolean useJson) {
             this.kafkaConsumer = new KafkaConsumer<String, byte[]>(properties);
             this.topic = topic;
+            this.useJson = useJson;
         }
 
         @Override
@@ -152,7 +161,13 @@ public class KafkaFlowForwarderIT {
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofMillis(1000));
                     records.forEach(consumerRecord -> {
                         try {
-                            flowDocuments.add(FlowDocument.parseFrom(consumerRecord.value()));
+                            if (useJson) {
+                                FlowDocument.Builder builder = FlowDocument.newBuilder();
+                                JsonFormat.parser().merge(new String(consumerRecord.value(), StandardCharsets.UTF_8), builder);
+                                flowDocuments.add(builder.build());
+                            } else {
+                                flowDocuments.add(FlowDocument.parseFrom(consumerRecord.value()));
+                            }
                         } catch (InvalidProtocolBufferException e) {
                             //pass
                         }
