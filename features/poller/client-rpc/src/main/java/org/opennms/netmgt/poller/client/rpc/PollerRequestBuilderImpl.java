@@ -47,8 +47,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 
 public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
@@ -57,8 +57,6 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     private String systemId;
 
     private String className;
-
-    private ServiceMonitor serviceMonitor;
 
     private LocationAwarePollerClientImpl client;
 
@@ -87,15 +85,13 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public PollerRequestBuilder withMonitor(ServiceMonitor serviceMonitor) {
-        this.serviceMonitor = serviceMonitor;
-        return this;
+    public PollerRequestBuilder withMonitorLocator(ServiceMonitorLocator serviceMonitorLocator) {
+        return this.withMonitorClassName(serviceMonitorLocator.getServiceLocatorKey());
     }
 
     @Override
     public PollerRequestBuilder withMonitorClassName(String className) {
         this.className = className;
-        this.serviceMonitor = client.getRegistry().getMonitorFutureByClassName(className).getNow(null);
         return this;
     }
 
@@ -141,10 +137,15 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     @Override
     public CompletableFuture<PollerResponse> execute() {
-        if (serviceMonitor == null) {
-            throw new IllegalArgumentException("Monitor or monitor class name is required.");
+        if (className == null) {
+            throw new IllegalArgumentException("Monitor class name is required.");
         } else if (service == null) {
             throw new IllegalArgumentException("Monitored service is required.");
+        }
+
+        final var serviceMonitor = client.getRegistry().getMonitorByClassName(className);
+        if (serviceMonitor == null) {
+            throw new IllegalArgumentException("Monitor not found: " + className);
         }
 
         final Map<String, Object> interpolatedAttributes = this.getInterpolatedAttributes();
@@ -160,8 +161,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         final PollerRequestDTO request = new PollerRequestDTO();
         request.setLocation(target.getLocation());
         request.setSystemId(target.getSystemId());
-        final String pollerClassName = className != null ? className : serviceMonitor.getClass().getCanonicalName();
-        request.setClassName(pollerClassName);
+        request.setClassName(className);
         request.setServiceName(service.getSvcName());
         request.setAddress(service.getAddress());
         request.setNodeId(service.getNodeId());
@@ -173,7 +173,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         request.addAttributes(interpolatedAttributes);
         request.addTracingInfo(RpcRequest.TAG_NODE_ID, String.valueOf(service.getNodeId()));
         request.addTracingInfo(RpcRequest.TAG_NODE_LABEL, service.getNodeLabel());
-        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, pollerClassName);
+        request.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
         request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(service.getAddress()));
 
         // Retrieve the runtime attributes, which may include attributes

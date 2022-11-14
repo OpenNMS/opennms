@@ -79,6 +79,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -216,8 +217,8 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         }
 
         // Find the monitor implementation for the service name
-        final ServiceMonitor serviceMonitor = this.pollerConfig.getServiceMonitor(serviceMatch.get().service.getName());
-        if (serviceMonitor == null) {
+        final Optional<ServiceMonitorLocator> serviceMonitorLocator = this.pollerConfig.getServiceMonitorLocator(serviceMatch.get().service.getName());
+        if (!serviceMonitorLocator.isPresent()) {
             return;
         }
 
@@ -252,7 +253,7 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
                                                                                                node.getLabel(),
                                                                                                pkg,
                                                                                                serviceMatch.get(),
-                                                                                               serviceMonitor,
+                                                                                               serviceMonitorLocator.get(),
                                                                                                servicePerspective.getPerspectiveLocation(),
                                                                                                node.getLocation().getLocationName(),
                                                                                                rrdRepository.orElse(null),
