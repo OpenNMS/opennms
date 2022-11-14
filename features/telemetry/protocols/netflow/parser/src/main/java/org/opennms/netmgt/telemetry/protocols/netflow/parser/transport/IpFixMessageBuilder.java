@@ -42,7 +42,6 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
 import com.google.common.primitives.UnsignedLong;
+import com.google.protobuf.UInt32Value;
 
 public class IpFixMessageBuilder implements MessageBuilder {
 
@@ -123,6 +123,11 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long postDot1qCustomerVlanId = null;
         Long flowActiveTimeout = this.flowActiveTimeoutFallback;
         Long flowInactiveTimeout = this.flowInactiveTimeoutFallback;
+        UInt32Value ingressPhysicalInterface = null;
+        UInt32Value egressPhysicalInterface = null;
+        UInt32Value inputSnmp = null;
+        UInt32Value outputSnmp = null;
+
 
         for (Value<?> value : values) {
             switch (value.getName()) {
@@ -146,7 +151,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                     break;
                 case "flowDirection":
                     Long directionValue = getLongValue(value);
-                    Direction direction = Direction.UNRECOGNIZED;
+                    Direction direction = Direction.UNKNOWN;
                     if (directionValue != null) {
                         switch (directionValue.intValue()) {
                             case 0:
@@ -157,9 +162,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                                 break;
                         }
                     }
-                    if (!direction.equals(Direction.UNRECOGNIZED)) {
-                        builder.setDirection(direction);
-                    }
+                    builder.setDirection(direction);
                     break;
                 case "destinationIPv6Address":
                     destinationIPv6Address = getInetAddress(value);
@@ -192,7 +195,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                     getUInt64Value(value).ifPresent(builder::setFlowSeqNum);
                     break;
                 case "ingressInterface":
-                    getUInt32Value(value).ifPresent(builder::setInputSnmpIfindex);
+                    inputSnmp = getUInt32Value(value).orElse(null);
                     break;
                 case "ipVersion":
                     Long ipVersion = getLongValue(value);
@@ -201,7 +204,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                     }
                     break;
                 case "egressInterface":
-                    getUInt32Value(value).ifPresent(builder::setOutputSnmpIfindex);
+                    outputSnmp = getUInt32Value(value).orElse(null);
                     break;
                 case "protocolIdentifier":
                     getUInt32Value(value).ifPresent(builder::setProtocol);
@@ -365,8 +368,24 @@ public class IpFixMessageBuilder implements MessageBuilder {
                 case "flowInactiveTimeout":
                     flowInactiveTimeout = getLongValue(value);
                     break;
+                case "ingressPhysicalInterface":
+                    ingressPhysicalInterface = getUInt32Value(value).orElse(null);
+                    break;
+                case "egressPhysicalInterface":
+                    egressPhysicalInterface = getUInt32Value(value).orElse(null);
+                    break;
             }
         }
+
+        // Set input interface
+        first(ingressPhysicalInterface, inputSnmp).ifPresent(ifIndex -> {
+            builder.setInputSnmpIfindex(ifIndex);
+        });
+
+        // Set output interface
+        first(egressPhysicalInterface, outputSnmp).ifPresent(ifIndex -> {
+            builder.setOutputSnmpIfindex(ifIndex);
+        });
 
         first(octetDeltaCount,
                 postOctetDeltaCount,

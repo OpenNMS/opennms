@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+
+  foreign-source-dir="/opt/opennms/etc/foreign-sources" 
+  requistion-dir="/opt/opennms/etc/imports"
+  importThreads="11" scanThreads="10" rescanThreads="10" writeThreads="8" >
+
+  <requisition-def import-name="localhost" import-url-resource="dns://localhost/localhost">
+    <cron-schedule>0 0 0 * * ? *</cron-schedule>
+  </requisition-def>
+
+  <requisition-def import-name="the-import-name-to-use" import-url-resource="vmware://ip-address-or-hostname/foreignSource-Name?parameters">
+    <cron-schedule>0 0 0 * * ? *</cron-schedule>
+  </requisition-def>
+
+</provisiond-configuration>

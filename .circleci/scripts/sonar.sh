@@ -69,17 +69,13 @@ generate_test_folders()
 
 find_tests()
 {
-    perl -pi -e 's,/home/circleci,/root,g' target/structure-graph.json
+    perl -pi -e "s,/(root|home/circleci)/project/,${HOME}/project/,g" target/structure-graph.json
 
     # Now determine the Maven modules related to the tests we need to run
     cat "${FIND_TESTS_DIR}"/*_classnames | python3 .circleci/scripts/find-tests/find-tests.py generate-test-modules \
       --output=/tmp/this_node_projects \
       .
 }
-
-dnf -y module reset nodejs
-dnf -y module enable nodejs:18
-dnf -y module switch-to nodejs:18
 
 # shellcheck disable=SC1091
 . ./.circleci/scripts/lib.sh
@@ -102,7 +98,7 @@ fi
 
 echo "#### Unpacking Sonar CLI"
 unzip -o -q -d /tmp /tmp/sonar-scanner-cli.zip
-SONAR_DIR="$(find /tmp -type d -name sonar-scanner\*)"
+SONAR_DIR="$(find /tmp/sonar* -type d -name sonar-scanner\*)"
 
 echo "#### Determining Arguments for Sonar CLI"
 declare -a SONAR_ARGS=(

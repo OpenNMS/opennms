@@ -29,7 +29,10 @@
 package org.opennms.smoketest.containers;
 
 import static java.nio.file.Files.createTempDirectory;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
 import java.io.File;
@@ -44,15 +47,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
@@ -61,11 +66,13 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.google.common.base.Strings;
 
 public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
@@ -87,17 +94,32 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private final String location;
     private final GenericContainer container;
 
-    private MinionContainer(final StackModel model, final String id, final String location) {
+    private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
         super("minion");
         this.model = Objects.requireNonNull(model);
         this.id = Objects.requireNonNull(id);
         this.location = Objects.requireNonNull(location);
 
-        this.container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
+        Integer[] tcpPorts = {
+                MINION_DEBUG_PORT,
+                MINION_SSH_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_IPFIX_TCP_PORT,
+                MINION_JETTY_PORT,
+        };
+        int[] udpPorts = {
+                MINION_SYSLOG_PORT,
+                MINION_SNMP_TRAP_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_JTI_PORT,
+                MINION_TELEMETRY_NXOS_PORT,
+        };
+
+        this.container = withExposedPorts(tcpPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                    TestContainerUtils.exposePortsAsUdp(createCmd, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT);
+                    TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
@@ -108,14 +130,14 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
-                .waitingFor(new WaitForMinion(this));
+                .waitingFor(Objects.requireNonNull(waitStrategy).apply(this));
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
     }
 
     public MinionContainer(final StackModel model, final MinionProfile profile) {
-        this(model, profile.getId(), profile.getLocation());
+        this(model, profile.getId(), profile.getLocation(), profile.getWaitStrategy());
 
         container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
@@ -127,7 +149,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public MinionContainer(final StackModel model, final Map<String, String> configuration) {
-        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"));
+        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), WaitForMinion::new);
 
         for(final Map.Entry<String, String> entry : configuration.entrySet()) {
             container.addEnv(entry.getKey(), entry.getValue());
@@ -154,17 +176,23 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         String config = "{\n" +
                 "\t\"location\": \"" + profile.getLocation() + "\",\n" +
                 "\t\"id\": \"" + profile.getId() + "\",\n" +
-                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\",\n" +
-                "\t\"http-url\": \"http://" + OpenNMSContainer.ALIAS + ":8980/opennms\"\n" +
+                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
                 "}";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
-        
+
+        if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+            final String scvConfig = "{\"scv\": {\"provider\": \"dominion\"}}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvConfig, Map.class));
+
+            final String gprcConfig = "{\"dominion\": { \"grpc\": { \"client-secret\":\"" + profile.getDominionGrpcScvClientSecret() + "\"}}}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(gprcConfig, Map.class));
+        }
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaIpc = "{\n" +
                     "\t\"ipc\": {\n" +
                     "\t\t\"kafka\": {\n" +
                     "\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
-                    "\t\t\t\"acks\": 1,\n" +
                     "\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
                     "\t\t}\n" +
                     "\t}\n" +
@@ -234,7 +262,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         return new InetSocketAddress(getContainerIpAddress(), mappedPort);
     }
 
-    private static class WaitForMinion extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
+    public static class WaitForMinion extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final MinionContainer container;
 
         public WaitForMinion(MinionContainer container) {
@@ -244,8 +272,17 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
-            final InetSocketAddress sshAddr = container.getSshAddress();
-            awaitHealthCheckSucceeded(sshAddr, 5, "Minion");
+            try {
+                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+                await().atMost(5, MINUTES)
+                        .pollInterval(10, SECONDS)
+                        .ignoreExceptions()
+                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            } catch(ConditionTimeoutException e) {
+                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
+                throw new RuntimeException(e);
+            }
+            LOG.info("Health check passed.");
         }
     }
 

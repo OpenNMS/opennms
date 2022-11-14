@@ -4,12 +4,12 @@
 	       xsi:schemaLocation="
                 http://www.osgi.org/xmlns/blueprint/v1.0.0
                 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-                
+
                 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <cm:property-placeholder persistent-id="org.opennms.features.datachoices.cfg">
+    <cm:property-placeholder persistent-id="org.opennms.features.datachoices">
         <cm:default-properties>
             <!-- The Oracle JDK does not currently recognize the Let's Encrypt Certificate Chain
                  in default installations (the 'ISRG Root X1' root certificate in particular)
@@ -29,9 +29,42 @@
     <reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" availability="mandatory"/>
     <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" availability="mandatory"/>
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
+    <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory"/>
+    <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
+    <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
+    <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
+    <reference id="usageAnalyticDao" interface="org.opennms.features.usageanalytics.api.UsageAnalyticDao" />
+    <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" />
+    <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory"/>
+    <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
+    <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
+    
+    <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
+
+    <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.DestinationPathFactory.init</value></property>
+    </bean>
+
+    <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
+
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notifdConfigFactory" class="org.opennms.netmgt.config.NotifdConfigFactory" depends-on="notifdConfigFactory-init" factory-method="getInstance"/>
+
+    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+    </bean>
+
+    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
 
     <!-- The state manager will manually pull properties from the configuration file -->
-    <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager"/>
+    <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager">
+        <argument ref="configurationManagerService" />
+    </bean>
+
+    <bean id="dataSourceFactoryBean" class="org.opennms.core.db.DataSourceFactoryBean" />
 
 	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
@@ -47,6 +80,19 @@
         <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
         <property name="monitoringSystemDao" ref="monitoringSystemDao"/>
         <property name="featuresService" ref="featuresService"/>
+        <property name="provisiondConfigurationDao" ref="provisiondConfigDao"/>
+        <property name="businessServiceEdgeDao" ref="businessServiceEdgeDao"/>
+        <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
+        <property name="destinationPathFactory" ref="destinationPathFactory"/>
+        <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
+        <property name="groupFactory" ref="groupFactory"/>
+        <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
+        <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
+        <property name="usageAnalyticDao" ref="usageAnalyticDao"/>
+        <property name="deviceConfigDao" ref="deviceConfigDao"/>
+        <property name="applicationDao" ref="applicationDao"/>
+        <property name="outageDao" ref="outageDao"/>
+        <property name="notificationDao" ref="notificationDao"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

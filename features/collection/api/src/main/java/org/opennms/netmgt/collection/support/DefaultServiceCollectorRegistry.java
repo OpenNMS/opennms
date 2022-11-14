@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
@@ -66,7 +68,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
 
     private static final ServiceLoader<ServiceCollector> s_serviceCollectorLoader = ServiceLoader.load(ServiceCollector.class);
 
-    private final Map<String, ServiceCollector> m_collectorsByClassName = new HashMap<>();
+    private final Map<String, CompletableFuture<ServiceCollector>> m_collectorsByClassName = new HashMap<>();
 
     public DefaultServiceCollectorRegistry() {
         for (ServiceCollector serviceCollector : s_serviceCollectorLoader) {
@@ -86,7 +88,12 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
                         serviceCollector, properties);
                 return;
             }
-            m_collectorsByClassName.put(className, serviceCollector);
+            CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
+            if(future == null) {
+                future = new CompletableFuture<>();
+                m_collectorsByClassName.put(className, future);
+            }
+            future.complete(serviceCollector);
         }
     }
 
@@ -100,14 +107,20 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
                         serviceCollector, properties);
                 return;
             }
-            m_collectorsByClassName.remove(className, serviceCollector);
+            m_collectorsByClassName.remove(className);
         }
     }
 
     @Override
-    public ServiceCollector getCollectorByClassName(String className) {
-        return m_collectorsByClassName.get(className);
+    public synchronized CompletableFuture<ServiceCollector> getCollectorFutureByClassName(String className) {
+        CompletableFuture<ServiceCollector> future = m_collectorsByClassName.get(className);
+        if(future == null) {
+            future = new CompletableFuture<>();
+            m_collectorsByClassName.put(className, future);
+        }
+        return future;
     }
+
 
     @Override
     public Set<String> getCollectorClassNames() {

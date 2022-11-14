@@ -34,15 +34,18 @@ import static org.hamcrest.core.IsNull.nullValue;
 import java.util.Collections;
 import java.util.List;
 
+import javax.script.ScriptEngineManager;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.cache.CacheConfigBuilder;
-import org.opennms.core.rpc.utils.mate.ContextKey;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -52,6 +55,10 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.processing.TestFlow;
+import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
@@ -66,6 +73,7 @@ import com.google.common.collect.Lists;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -107,42 +115,44 @@ public class NodeIdentificationIT {
     @Test
     public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
-        final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), databasePopulator.getNodeDao(), interfaceToNodeCache, sessionUtils, classificationEngine,
+        final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
+                new MetricRegistry(),
+                databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0);
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
-        final FlowDocument flowDocument = new FlowDocument();
-        flowDocument.setSrcAddr("1.1.1.1");
-        flowDocument.setSrcPort(1);
-        flowDocument.setDstAddr("2.2.2.2");
-        flowDocument.setDstPort(2);
-        flowDocument.setProtocol(6);
-        flowDocument.setDirection(Direction.INGRESS);
-        TestFlow testFlow = new TestFlow(flowDocument);
+        final TestFlow testFlow = new TestFlow();
+        testFlow.setSrcAddr("1.1.1.1");
+        testFlow.setSrcPort(1);
+        testFlow.setDstAddr("2.2.2.2");
+        testFlow.setDstPort(2);
+        testFlow.setProtocol(6);
+        testFlow.setDirection(Flow.Direction.INGRESS);
 
-        List<FlowDocument> flowDocuments;
+        List<EnrichedFlow> flowDocuments;
 
         flowDocuments = documentEnricher.enrich(Lists.newArrayList(testFlow), new FlowSource(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.99.99", null));
-        Assert.assertThat(flowDocuments.get(0).getNodeExporter().getNodeId(), is(nodeAId));
+        Assert.assertThat(flowDocuments.get(0).getExporterNodeInfo().getNodeId(), is(nodeAId));
 
         flowDocuments = documentEnricher.enrich(Lists.newArrayList(testFlow), new FlowSource(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.11.11", null));
-        Assert.assertThat(flowDocuments.get(0).getNodeExporter().getNodeId(), is(nodeBId));
+        Assert.assertThat(flowDocuments.get(0).getExporterNodeInfo().getNodeId(), is(nodeBId));
 
         testFlow.setNodeIdentifier("99099");
         flowDocuments = documentEnricher.enrich(Lists.newArrayList(testFlow), new FlowSource(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.22.22", new ContextKey("testContext","testKey")));
-        Assert.assertThat(flowDocuments.get(0).getNodeExporter().getNodeId(), is(nodeAId));
+        Assert.assertThat(flowDocuments.get(0).getExporterNodeInfo().getNodeId(), is(nodeAId));
 
         testFlow.setNodeIdentifier("11011");
         flowDocuments = documentEnricher.enrich(Lists.newArrayList(testFlow), new FlowSource(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.22.22", new ContextKey("testContext","testKey")));
-        Assert.assertThat(flowDocuments.get(0).getNodeExporter().getNodeId(), is(nodeBId));
+        Assert.assertThat(flowDocuments.get(0).getExporterNodeInfo().getNodeId(), is(nodeBId));
 
         testFlow.setNodeIdentifier("22022");
         flowDocuments = documentEnricher.enrich(Lists.newArrayList(testFlow), new FlowSource(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "192.168.22.22", new ContextKey("testContext","testKey")));
-        Assert.assertThat(flowDocuments.get(0).getNodeExporter(), nullValue());
+        Assert.assertThat(flowDocuments.get(0).getExporterNodeInfo(), nullValue());
     }
 
     private OnmsNode buildNodeA() {

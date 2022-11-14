@@ -34,6 +34,7 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.scheduler.Executable;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
@@ -44,27 +45,23 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeCollector extends Discovery {
+public abstract class NodeCollector extends Executable {
     /**
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
-    private final LocationAwareSnmpClient m_locationAwareSnmpClient;
+    private final LocationAwareSnmpClient m_loLocationAwareSnmpClient;
 
     /**
      * Constructs a new SNMP collector for a node using the passed interface
      * as the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-     * @param nodeid
-     * @param config
-     *            The SnmpPeer object to collect from.
      */
-    public NodeCollector(final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node) {
-        super(interval, initial);
+    public NodeCollector(final LocationAwareSnmpClient snmpClient, final Node node, final int priority) {
+        super(priority);
         m_node = node;
-        m_locationAwareSnmpClient=locationAwareSnmpClient;
+        m_loLocationAwareSnmpClient = snmpClient;
     }
 
 
@@ -80,7 +77,7 @@ public abstract class NodeCollector extends Discovery {
      * thread context synchronization must be added.
      * </p>
      */
-    public void runDiscovery() {
+    public void runExecutable() {
             collect();
     }
 
@@ -139,25 +136,25 @@ public abstract class NodeCollector extends Discovery {
             return false;
         NodeCollector other = (NodeCollector) obj;
         if (m_node == null) {
-            if (other.m_node != null)
-                return false;
-        } else if (!m_node.equals(other.m_node))
-            return false;
-        return true;
+            return other.m_node == null;
+        } else return m_node.equals(other.m_node);
     }
     
     public SnmpAgentConfig getSnmpAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(m_node.getSnmpPrimaryIpAddr(), m_node.getLocation());
     }
 
-
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
-        return m_locationAwareSnmpClient;
+        return m_loLocationAwareSnmpClient;
     }
-
 
     public Node getNode() {
         return m_node;
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
     }
     	
 }

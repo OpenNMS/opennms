@@ -39,10 +39,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.core.rpc.utils.mate.EmptyScope;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;

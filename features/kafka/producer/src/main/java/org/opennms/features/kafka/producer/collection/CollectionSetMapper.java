@@ -34,6 +34,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.protobuf.DoubleValue;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -79,7 +81,7 @@ public class CollectionSetMapper {
         this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
-    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
+    public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet, ServiceParameters params) {
         CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
 
         collectionSet.visit(new CollectionSetVisitor() {
@@ -95,7 +97,10 @@ public class CollectionSetMapper {
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
                 long nodeId = 0;
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
+                if (!resource.shouldPersist(params)) {
+                    // DO NOTHING, do not persist this resource
+                }
+                else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                             nodeCriteria);
@@ -182,6 +187,7 @@ public class CollectionSetMapper {
 
                     if (number != null) {
                         attributeBuilder.setValue(number.doubleValue());
+                        attributeBuilder.setMetricValue(DoubleValue.of(number.doubleValue()));
                     } else {
                         attributeBuilder.setValue(Double.NaN);
                         RATE_LIMITED_LOG.error("Missing double value for non-string attribute (group='{}', name='{}', type='{}')", lastGroupName, attribute.getName(), attribute.getType().toString());

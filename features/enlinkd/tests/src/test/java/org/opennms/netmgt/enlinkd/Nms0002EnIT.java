@@ -30,27 +30,28 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE;
+import static org.junit.Assert.assertFalse;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RDeEssnBrue_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RDeEssnBrue_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Rluck001_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Rluck001_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Rluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue081_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue081_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue121_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue121_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue142_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue142_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue165_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue165_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Sluck001_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Sluck001_NAME;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.Sluck001_SNMP_RESOURCE;
 
 import java.util.List;
 
@@ -98,16 +99,15 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode routerJuniper = m_nodeDao.findByForeignId("linkd", Rluck001_NAME);
         final OnmsNode switchCisco = m_nodeDao.findByForeignId("linkd", Sluck001_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(routerJuniper.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switchCisco.getId()));
+
+        m_linkd.reload();
 
         assertEquals(0,m_lldpLinkDao.countAll());
 
@@ -239,10 +239,10 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode routerCisco = m_nodeDao.findByForeignId("linkd", RDeEssnBrue_NAME);
         final OnmsNode swicthAlu081 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue081_NAME);
@@ -250,12 +250,7 @@ public class Nms0002EnIT extends EnLinkdBuilderITCase {
         final OnmsNode swicthAlu142 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue142_NAME);
         final OnmsNode swicthAlu165 = m_nodeDao.findByForeignId("linkd", SDeEssnBrue165_NAME);
         
-        assertTrue(m_linkd.scheduleNodeCollection(routerCisco.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu081.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu121.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu142.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(swicthAlu165.getId()));
-
+        m_linkd.reload();
         assertEquals(0,m_lldpLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(routerCisco.getId()));

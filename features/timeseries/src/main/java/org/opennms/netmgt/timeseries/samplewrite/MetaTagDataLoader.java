@@ -38,10 +38,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;

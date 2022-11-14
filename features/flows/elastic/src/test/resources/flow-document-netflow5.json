@@ -46,6 +46,7 @@
     "foreign_source": "SomeRequisition",
     "foreign_id": "2",
     "node_id": 2,
+    "interface_id": 0,
     "categories": [
       "SomeCategory"
     ]
@@ -54,6 +55,7 @@
     "foreign_source": "SomeRequisition",
     "foreign_id": "3",
     "node_id": 3,
+    "interface_id": 0,
     "categories": [
       "SomeCategory"
     ]
@@ -62,6 +64,7 @@
     "foreign_source": "SomeRequisition",
     "foreign_id": "1",
     "node_id": 1,
+    "interface_id": 0,
     "categories": [
       "SomeCategory"
     ]

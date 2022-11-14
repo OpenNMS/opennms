@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>29.0.6-SNAPSHOT</version>
+  <version>31.0.1-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
@@ -12,16 +13,30 @@
     <camelVersion>2.19.1</camelVersion>
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
+    <groovyVersion>2.5.16</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.10.0</jackson2Version>
+    <jackson2Version>2.12.3</jackson2Version>
     <jersey.version>2.36</jersey.version>
-    <karafVersion>4.3.2</karafVersion>
-    <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.15.3</testcontainers.version>
+    <karafVersion>4.3.6</karafVersion>
+    <selenium.version>4.6.0</selenium.version>
+    <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
+         for the same version of selenium specified in selenium.version above.
+         https://github.com/seleniumhq-community/docker-seleniarm/releases -->
+    <seleniarm.version>4.6.0-20221104</seleniarm.version>
+    <testcontainers.version>1.17.5</testcontainers.version>
+    <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
+    <okhttpVersion>3.10.0</okhttpVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <!-- fix xerces/xalan pollution, use built-in factories -->
+    <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
+    <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
+
+    <!-- set memory and use XML overrides -->
+    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -60,6 +75,7 @@
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
             <skipTests>${skip.surefire.tests}</skipTests>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
@@ -68,7 +84,9 @@
           <version>${failsafeVersion}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
-            <systemPropertyVariables/>
+            <systemPropertyVariables>
+              <seleniarm.version>${seleniarm.version}</seleniarm.version>
+            </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
               Bamboo and Sonar tally the test results properly.
@@ -81,8 +99,9 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
-            <!-- Configure heap and GC -->
-            <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
+            <trimStackTrace>false</trimStackTrace>
+
+            <argLine>${argLine}</argLine>
           </configuration>
           <executions>
             <execution>
@@ -325,13 +344,54 @@
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty4Version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-xml</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-json</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <version>5.8.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-migrationsupport</artifactId>
+      <version>5.8.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.spotify</groupId>
+      <artifactId>hamcrest-jackson</artifactId>
+      <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -342,11 +402,31 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
         <groupId>org.opennms</groupId>
@@ -525,11 +605,6 @@
       <version>${testcontainers.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jetbrains</groupId>
-      <artifactId>annotations</artifactId>
-      <version>17.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
       <version>${selenium.version}</version>
@@ -577,7 +652,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.11.3</version>
+      <version>1.15.3</version>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>
@@ -607,6 +682,11 @@
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.processing</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -649,6 +729,39 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.persistence</groupId>
+      <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- for m1 -->
     <dependency>
       <groupId>net.java.dev.jna</groupId>
@@ -656,6 +769,14 @@
       <version>${jna.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- for FileEditorIT -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttpVersion}</version>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>

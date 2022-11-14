@@ -196,10 +196,6 @@ public abstract class Basethresholddef implements Serializable {
         m_value = ConfigUtils.assertNotNull(value, "value");
     }
 
-    public void setDoubleValue(final Double value) {
-        m_value = String.valueOf(value);
-    }
-
     public String getRearm() {
         return m_rearm;
     }
@@ -208,21 +204,12 @@ public abstract class Basethresholddef implements Serializable {
         m_rearm = ConfigUtils.assertNotNull(rearm, "rearm");
     }
 
-    public void setRearmValue(final Double rearm) {
-        m_rearm = String.valueOf(rearm);
-    }
-
     public String getTrigger() {
         return m_trigger;
     }
 
     public void setTrigger(final String trigger) {
         m_trigger = ConfigUtils.assertNotNull(trigger,  "trigger");
-    }
-
-    public void setTriggerValue(final Integer trigger) {
-        Integer triggerValue = ConfigUtils.assertMinimumInclusive(trigger, 1, "trigger");
-        m_trigger = String.valueOf(triggerValue);
     }
 
     public Optional<String> getDsLabel() {

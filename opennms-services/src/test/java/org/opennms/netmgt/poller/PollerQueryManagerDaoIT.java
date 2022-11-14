@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -42,11 +41,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -56,8 +53,9 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -75,6 +73,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -89,6 +88,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -101,7 +101,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
+		"classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
@@ -125,6 +126,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private OutageAnticipator m_outageAnticipator;
 
 	@Autowired
+	private DistPollerDao m_distPollerDao;
+
+	@Autowired
 	private QueryManager m_queryManager;
 	
 	@Autowired
@@ -137,6 +141,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private LocationAwarePollerClient m_locationAwarePollerClient;
 
 	private LocationAwarePingClient m_locationAwarePingClient;
+
+	@Autowired
+	private OutageDao m_outageDao;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -182,6 +189,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 //		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
 //		m_network.addService("SNMP");
 
+		m_db.setDistPoller(m_distPollerDao.whoami().getId());
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 
@@ -226,7 +234,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
+		m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
 		m_poller.setPersisterFactory(new MockPersisterFactory());
+		m_poller.setOutageDao(m_outageDao);
 	}
 
 	@After
@@ -238,23 +248,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
-
-	//
-	// Tests
-	//
-    @Test
-    public void testIsRemotePackage() {
-    	Properties p = new Properties();
-        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
-    	MockLogAppender.setupLogging(p);
-        Package pkg = new Package();
-        pkg.setName("SFO");
-        pkg.setPerspectiveOnly(true);
-        Poller poller = new Poller();
-		poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
-        poller = null;
-    }
 
     @Test
     public void testNullInterfaceOnNodeDown() {

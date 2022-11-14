@@ -1,0 +1,15 @@
+jobs:  
+  sentinel-image-single-arch:
+    executor: base-executor
+    resource_class: medium
+    parameters:
+      architecture:
+        type: string
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          container_name: sentinel
+          tarball_match: sentinel
+          tarball_path: /opennms-assemblies/sentinel/target

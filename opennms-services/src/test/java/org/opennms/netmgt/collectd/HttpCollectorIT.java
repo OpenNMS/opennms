@@ -88,6 +88,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -184,11 +185,11 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("collection", "default");
         m_collector.initialize();
-
+        String className = m_collector.getClass().getCanonicalName();
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default",
-                m_pollOutagesDao);
+                m_pollOutagesDao, className);
         m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default",
-                m_pollOutagesDao);
+                m_pollOutagesDao, className);
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
 
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
@@ -202,7 +203,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
-     *   org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
+     *   org.opennms.netmgt.collection.api.CollectionAgent, Map)}.
      */
     @Test
     @JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
@@ -422,7 +423,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         pkg.addService(service);
 
         CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector, new DefaultCollectdInstrumentation(),
-                CollectorTestUtils.createLocationAwareCollectorClient(), m_pollOutagesDao);
+                CollectorTestUtils.createLocationAwareCollectorClient(), m_pollOutagesDao, collector.getClass().getCanonicalName());
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());

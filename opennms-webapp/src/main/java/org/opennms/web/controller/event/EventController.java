@@ -135,7 +135,7 @@ public class EventController extends MultiActionController implements Initializi
         modelAndView.setViewName("event/list");
         return modelAndView;
     }
-    
+
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
     	// asking for a specific ID; only filter should be event ID
@@ -151,7 +151,7 @@ public class EventController extends MultiActionController implements Initializi
 
         return modelAndView;
     }
-    
+
     // index view
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
@@ -291,12 +291,12 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     private String getDisplay(HttpServletRequest request) {
-    	return request.getParameter("display");
+    	return getQueryParameter(request, "display");
     }
-    
+
     private int getLimit(HttpServletRequest request) {
     	final String display = getDisplay(request);
-        final String limitString = request.getParameter("limit");
+        String limitString = getQueryParameter(request, "limit");
     	int limit = "long".equals(display) ? DEFAULT_LONG_LIMIT : DEFAULT_SHORT_LIMIT;
         if (limitString != null) {
             try {
@@ -310,21 +310,22 @@ public class EventController extends MultiActionController implements Initializi
         }
         return limit;
     }
-    
+
     private int getMultiple(HttpServletRequest request) {
-    	final String multipleString = request.getParameter("multiple");
+    	final String multipleString = getQueryParameter(request, "multiple");
     	int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
                 multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
             } catch (NumberFormatException e) {
+                // ignoring invalid string as integer, default is set
             }
         }
         return multiple;
     }
-    
+
     private SortStyle getSortStyle(HttpServletRequest request) {
-    	final String sortStyleString = request.getParameter("sortby");
+    	final String sortStyleString = getQueryParameter(request, "sortby");
     	SortStyle sortStyle = DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
             SortStyle temp = SortStyle.getSortStyle(sortStyleString);
@@ -334,9 +335,9 @@ public class EventController extends MultiActionController implements Initializi
         }
         return sortStyle;
     }
-    
+
     private AcknowledgeType getAcknowledgeType(HttpServletRequest request) {
-    	 String ackTypeString = request.getParameter("acktype");
+    	 String ackTypeString = getQueryParameter(request, "acktype");
     	 AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
     	 // otherwise, apply filters/acktype/etc.
          if (ackTypeString != null) {
@@ -347,7 +348,33 @@ public class EventController extends MultiActionController implements Initializi
          }
          return ackType;
     }
-    
+
+    /**
+     * This is required as when the advanced search gets called there is a difference in the query parameters.
+     * Sometimes they are delimited with '&amp;' and sometimes its delimited with '&' This method handles both cases.
+     *
+     * @param request the HttpServletRequest
+     * @param key     the string key of the parameter
+     * @return the value for corresponding key
+     */
+    private String getQueryParameter(HttpServletRequest request, String key) {
+        String queryParams = request.getQueryString();
+        if (StringUtils.isNotEmpty(queryParams)) {
+            if (queryParams.contains("&amp;")) {
+                String[] querySplit = queryParams.split("&amp;");
+                for (String queryParam : querySplit) {
+                    String[] queryParamSplit = queryParam.split("=");
+                    if (queryParamSplit[0].equalsIgnoreCase(key)) {
+                        return queryParamSplit[1];
+                    }
+                }
+            } else {
+                return request.getParameter(key);
+            }
+        }
+        return null;
+    }
+
     private EventQueryParms createEventQueryParms(HttpServletRequest request, List<Filter> filterList, AcknowledgeType ackType) {
     	EventQueryParms parms = new EventQueryParms();
         parms.ackType = ackType;
@@ -355,7 +382,7 @@ public class EventController extends MultiActionController implements Initializi
         parms.filters = filterList;
         parms.limit = getLimit(request);
         parms.multiple =  getMultiple(request);
-        parms.sortStyle = getSortStyle(request);	
+        parms.sortStyle = getSortStyle(request);
         return parms;
     }
 
@@ -369,7 +396,7 @@ public class EventController extends MultiActionController implements Initializi
     	final EventQueryParms parms = createEventQueryParms(request, filterList, ackType);
         final EventCriteria queryCriteria = new EventCriteria(parms);
         final Event[] events = m_webEventRepository.getMatchingEvents(queryCriteria);
-        
+
         final ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", new NormalizedQueryParameters(parms));

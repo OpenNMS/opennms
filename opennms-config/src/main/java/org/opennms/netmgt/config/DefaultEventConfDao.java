@@ -285,6 +285,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
             // Load the root event file
             Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
             // Insert events exposed via the service registry
+            m_extContainer.reload();
             Events extEvents = m_extContainer.getObject();
             if (extEvents != null) {
                 // Prioritize events loaded from the registry along with any loaded from the root config

@@ -1,0 +1,35 @@
+= Value Mapping Property Extender
+The Value Mapping property extender provides a mechanism that works as a lookup table for converting collected values to a different data type.
+This allows you to do things such as map an enumerated set of string values to a corresponding set of integer values or the other way around.
+The resulting values are then persisted as time-series data to track state changes over time.
+
+== Configure the Value Mapping property extender
+The Value Mapping property extender expects zero or more parameters.
+There are currently three parameters with a fixed name:
+
+.Value Mapping Property Extender Parameters
+[options="header", cols="1,3,2"]
+|===
+| Name
+| Description
+| Default value
+
+3+| *Required*
+
+| source-attribute
+| The alias name of the property used for the value lookup.
+| n/a
+
+| target-type
+| The target data-type; for example, gauge.
+| string
+
+3+| *Optional*
+
+| default-value
+| The value for entries that cannot be matched.
+| n/a
+|===
+
+The remaining parameters are named for the input values, and their values represent the output values.
+

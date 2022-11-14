@@ -28,28 +28,29 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR1_SNMP_RESOURCE_2;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR2_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR2_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR2_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR2_SNMP_RESOURCE_2;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR3_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR3_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR3_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMR3_SNMP_RESOURCE_2;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW1_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW1_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW1_SNMP_RESOURCE_2;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.NMMSW2_SNMP_RESOURCE_2;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR1_IP;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR1_NAME;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR1_SNMP_RESOURCE_2;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR2_IP;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR2_NAME;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR2_SNMP_RESOURCE_2;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR3_IP;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR3_NAME;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR3_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMR3_SNMP_RESOURCE_2;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW1_IP;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW1_NAME;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW1_SNMP_RESOURCE_2;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW2_IP;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW2_NAME;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms8000NetworkBuilder.NMMSW2_SNMP_RESOURCE_2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW1_IP, port=161, resource=NMMSW1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE)
     })
-    public void testCdpLinks() throws Exception {
+    public void testCdpLinks() {
         m_nodeDao.save(builder.getNMMR1());
         m_nodeDao.save(builder.getNMMR2());
         m_nodeDao.save(builder.getNMMR3());
@@ -114,24 +115,19 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
-        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useLldpDiscovery());
         assertTrue(m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode nmmr1 = m_nodeDao.findByForeignId("linkd", NMMR1_NAME);
         final OnmsNode nmmr2 = m_nodeDao.findByForeignId("linkd", NMMR2_NAME);
         final OnmsNode nmmr3 = m_nodeDao.findByForeignId("linkd", NMMR3_NAME);
         final OnmsNode nmmsw1 = m_nodeDao.findByForeignId("linkd",NMMSW1_NAME);
         final OnmsNode nmmsw2 = m_nodeDao.findByForeignId("linkd",NMMSW2_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw2.getId()));
-        
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(nmmr1.getId()));
         assertEquals(3, m_cdpLinkDao.countAll());
@@ -167,7 +163,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
             @JUnitSnmpAgent(host=NMMSW1_IP, port=161, resource=NMMSW1_SNMP_RESOURCE_2),
             @JUnitSnmpAgent(host=NMMSW2_IP, port=161, resource=NMMSW2_SNMP_RESOURCE_2)
     })
-    public void testLldpLinks() throws Exception {
+    public void testLldpLinks() {
         m_nodeDao.save(builder.getNMMR1());
         m_nodeDao.save(builder.getNMMR2());
         m_nodeDao.save(builder.getNMMR3());
@@ -183,23 +179,18 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode nmmr1 = m_nodeDao.findByForeignId("linkd", NMMR1_NAME);
         final OnmsNode nmmr2 = m_nodeDao.findByForeignId("linkd", NMMR2_NAME);
         final OnmsNode nmmr3 = m_nodeDao.findByForeignId("linkd", NMMR3_NAME);
         final OnmsNode nmmsw1 = m_nodeDao.findByForeignId("linkd",NMMSW1_NAME);
         final OnmsNode nmmsw2 = m_nodeDao.findByForeignId("linkd",NMMSW2_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmr3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(nmmsw2.getId()));
-        
+
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(nmmr1.getId()));
         assertEquals(3, m_lldpLinkDao.countAll());
@@ -288,7 +279,7 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
             try {
                 reverseLink.setLldpPortIfindex(SystemProperties.getInteger(link.getLldpRemPortId()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 

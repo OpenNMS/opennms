@@ -37,17 +37,11 @@ import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 
-public interface OspfLinkDao extends OnmsDao<OspfLink, Integer> {
+public interface OspfLinkDao extends LinkDao<OspfLink, Integer> {
 
 
     OspfLink get(OnmsNode node, InetAddress ospfRemRouterId, InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex);
 
     OspfLink get(Integer nodeId, InetAddress ospfRemRouterId, InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex);
-    
-    List<OspfLink> findByNodeId(Integer nodeId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
-    public void deleteByNodeId(Integer nodeId);
 
 }

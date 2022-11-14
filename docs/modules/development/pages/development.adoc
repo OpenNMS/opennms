@@ -13,3 +13,4 @@ This section covers the following topics:
 * Develop against REST APIs
 * Write and publish documentation
 * Integration in environments using AMQP
+* Working with OSGi in OpenNMS

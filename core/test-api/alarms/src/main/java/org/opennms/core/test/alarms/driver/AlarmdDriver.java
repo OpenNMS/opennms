@@ -51,6 +51,7 @@ import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.drools.AlarmService;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -73,6 +74,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -114,6 +116,9 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
     @Autowired
     private AlarmService m_alarmService;
 
+    @Autowired
+    DistPollerDao m_distPollerDao;
+
     @Override
     public void setTemporaryDatabase(final MockDatabase database) {
         m_database = database;
@@ -127,6 +132,8 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
     public void setUp() {
         // Async.
         m_eventMgr.setSynchronous(false);
+
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
 
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);

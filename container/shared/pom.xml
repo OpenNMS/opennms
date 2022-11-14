@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>29.0.6-SNAPSHOT</version>
+        <version>31.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -48,15 +48,9 @@
                     <bootRepositories>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <!-- OPENNMS: Additional tools -->
                         <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
                     </bootRepositories>
-                    <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
-                    <!-- <descriptors>
-                        <!-/- OPENNMS: Add the OpenNMS Karaf extensions feature repository -/->
-                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
-                        <!-/- OPENNMS: Additional tools -/->
-                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-                    </descriptors> -->
                     <installedFeatures>
                         <feature>wrapper</feature>
 
@@ -116,32 +110,6 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/instance.bat" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/bin/shell.bat" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/etc/startup.properties" />
-                                <replace token="2.0.9" value="${paxLoggingVersion}" file="${project.build.directory}/assembly/system/org/apache/karaf/features/framework/${karafVersion}/framework-${karafVersion}-features.xml" />
-                                <delete>
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-api/2.0.9" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2/2.0.9" />
-                                  <fileset dir="target/assembly/system/org/ops4j/pax/logging/pax-logging-logback/2.0.9" />
-                                </delete>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>

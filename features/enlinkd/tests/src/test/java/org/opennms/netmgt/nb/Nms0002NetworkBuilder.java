@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,18 +40,299 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
+    //NMS0002
+    public static final String Rluck001_IP = "10.4.79.250";
+    public static final String Rluck001_NAME = "r-de-juet-luck-001";
+    public static  final String Rluck001_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscojuniper/" + Rluck001_NAME +".txt";
+    public static  final String Rluck001_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.39";
+    public static final Map<InetAddress,Integer> Rluck001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Rluck001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Rluck001_IP_MK_MAP = new HashMap<>();
+
+    public static final String Sluck001_IP = "10.4.68.215";
+    public static final String Sluck001_NAME = "s-de-juet-luck-001";
+    public static  final String Sluck001_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".txt";
+    //public static  final String Sluck001_SNMP_RESOURCE_VLAN100 = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan100.txt";
+    //public static  final String Sluck001_SNMP_RESOURCE_VLAN950 = "classpath:/linkd/nms0002ciscojuniper/" + Sluck001_NAME+ ".vlan950.txt";
+    public static  final String Sluck001_SYSOID = ".1.3.6.1.4.1.9.1.564";
+
+    public static final Map<InetAddress,Integer> Sluck001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> Sluck001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> Sluck001_IP_MK_MAP = new HashMap<>();
+
+    public static final String RPict001_IP = "10.140.252.57";
+    public static final String RPict001_NAME = "r-ro-suce-pict-001";
+    public static  final String RPict001_SNMP_RESOURCE = "classpath:/linkd/nms0002UkRoFakeLink/" + RPict001_NAME+".txt";
+    public static  final String RPict001_SYSOID = ".1.3.6.1.4.1.9.1.571";
+
+    public static final Map<InetAddress,Integer> RPict001_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RPict001_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RPict001_IP_MK_MAP = new HashMap<>();
+
+    public static final String RNewt103_IP = "10.239.9.22";
+    public static final String RNewt103_NAME = "r-uk-nott-newt-103";
+    //public static  final String RNewt103_SNMP_RESOURCE = "classpath:/linkd/nms0002UkRoFakeLink/" + RNewt103_NAME+".txt";
+    public static  final String RNewt103_SYSOID = ".1.3.6.1.4.1.9.1.571";
+
+    public static final Map<InetAddress,Integer> RNewt103_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RNewt103_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RNewt103_IP_MK_MAP = new HashMap<>();
+
+    public static final String RDeEssnBrue_IP = "10.167.254.40";
+    public static final String RDeEssnBrue_NAME = "r-de-essn-brue-001";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel2/" + RDeEssnBrue_NAME+ ".txt";
+    /*
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_400 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan400.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_450 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan450.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_451 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan451.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_452 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan452.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_453 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan453.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_500 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan500.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_501 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan501.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_502 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan502.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_503 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan503.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_504 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan504.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_505 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan505.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_506 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan506.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_507 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan507.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_508 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan508.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_509 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan509.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_510 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan510.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_511 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan511.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_512 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan512.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_513 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan513.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_514 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan514.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_515 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan515.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_516 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan516.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_517 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan517.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_518 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan518.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_519 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan519.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_520 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan520.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_750 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan750.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_751 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan751.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_752 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan752.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_753 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan753.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_754 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan754.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_755 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan755.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_756 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan756.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_757 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan757.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_758 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan758.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_760 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan760.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_800 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan800.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_801 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan801.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_850 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan850.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_851 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan851.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_852 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan852.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_900 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan900.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_950 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan950.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_951 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan951.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_952 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan952.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_953 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan953.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_954 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan954.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_955 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan955.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_956 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan956.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_957 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan957.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_958 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan958.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_959 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan959.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_960 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan960.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_961 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan961.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_962 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan962.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_963 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan963.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_964 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan964.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_965 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan965.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_966 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan966.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_967 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan967.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_968 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan968.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_969 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan969.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_970 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan970.txt";
+    public static  final String RDeEssnBrue_SNMP_RESOURCE_VLAN_979 = "classpath:/linkd/nms0002ciscoalcatel2/r-de-essn-brue-001.vlan979.txt";
+    */
+    public static  final String RDeEssnBrue_SYSOID = ".1.3.6.1.4.1.9.1.896";
+
+    public static final Map<InetAddress,Integer> RDeEssnBrue_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RDeEssnBrue_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RDeEssnBrue_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue081_IP = "10.165.62.91";
+    public static final String SDeEssnBrue081_NAME = "s-de-essn-brue-081";
+    public static  final String SDeEssnBrue081_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue081_NAME+ ".txt";
+    public static  final String SDeEssnBrue081_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue081_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue081_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue081_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue121_IP = "10.165.62.131";
+    public static final String SDeEssnBrue121_NAME = "s-de-essn-brue-121";
+    public static  final String SDeEssnBrue121_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue121_NAME+ ".txt";
+    public static  final String SDeEssnBrue121_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue121_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue121_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue121_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue142_IP = "10.165.62.152";
+    public static final String SDeEssnBrue142_NAME = "s-de-essn-brue-142";
+    public static  final String SDeEssnBrue142_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue142_NAME+ ".txt";
+    public static  final String SDeEssnBrue142_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue142_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue142_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue142_IP_MK_MAP = new HashMap<>();
+
+    public static final String SDeEssnBrue165_IP = "10.165.62.175";
+    public static final String SDeEssnBrue165_NAME = "s-de-essn-brue-165";
+    public static  final String SDeEssnBrue165_SNMP_RESOURCE ="classpath:/linkd/nms0002ciscoalcatel2/" + SDeEssnBrue165_NAME+ ".txt";
+    public static  final String SDeEssnBrue165_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SDeEssnBrue165_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SDeEssnBrue165_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SDeEssnBrue165_IP_MK_MAP = new HashMap<>();
+
+    public static final String RSeMalmNobe_IP = "10.111.253.9";
+    public static final String RSeMalmNobe_NAME = "r-se-malm-nobe-013";
+    /*
+    public static final String RSeMalmNobe_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1002 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1002.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1003 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1003.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1004 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1004.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_1005 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.1005.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_3 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.3.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_357 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.357.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_360 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.360.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_389 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.389.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_399 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.399.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_450 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.450.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_451 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.451.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_452 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.452.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_453 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.453.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_454 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.454.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_500 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.500.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_501 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.501.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_502 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.502.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_503 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.503.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_504 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.504.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_505 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.505.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_506 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.506.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_507 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.507.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_508 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.508.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_600 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.600.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_601 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.601.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_602 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.602.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_603 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.603.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_604 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.604.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_605 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.605.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_606 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.606.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_750 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.750.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_800 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.800.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_801 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.801.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_835 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.835.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_836 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.836.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_850 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.850.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_851 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.851.txt";
+    public static  final String RSeMalmNobe_SNMP_RESOURCE_VLAN_950 = "classpath:/linkd/nms0002ciscoalcatel/r-se-malm-nobe-013.vlan.950.txt";
+    */
+    public static  final String RSeMalmNobe_SYSOID = ".1.3.6.1.4.1.9.1.516";
+
+
+    public static final Map<InetAddress,Integer> RSeMalmNobe_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> RSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> RSeMalmNobe_IP_MK_MAP = new HashMap<>();
+
+    public static final String SSeMalmNobe_IP = "10.108.191.171";
+    public static final String SSeMalmNobe_NAME = "s-se-malm-nobe-561";
+    //public static final String SSeMalmNobe_SNMP_RESOURCE = "classpath:/linkd/nms0002ciscoalcatel/s-se-malm-nobe-561.txt";
+    public static  final String SSeMalmNobe_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.11.2.2";
+
+    public static final Map<InetAddress,Integer> SSeMalmNobe_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SSeMalmNobe_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SSeMalmNobe_IP_MK_MAP = new HashMap<>();
     static {
     try {
+        /*
+.1.3.6.1.2.1.4.20.1.2.10.0.0.1 = INTEGER: 22
+.1.3.6.1.2.1.4.20.1.2.10.0.0.6 = INTEGER: 548
+.1.3.6.1.2.1.4.20.1.2.10.0.0.16 = INTEGER: 22
+.1.3.6.1.2.1.4.20.1.2.10.4.68.200 = INTEGER: 549
+.1.3.6.1.2.1.4.20.1.2.10.4.79.18 = INTEGER: 510
+.1.3.6.1.2.1.4.20.1.2.10.4.79.250 = INTEGER: 16
+.1.3.6.1.2.1.4.20.1.2.10.4.116.1 = INTEGER: 550
+.1.3.6.1.2.1.4.20.1.2.127.0.0.1 = INTEGER: 21
+.1.3.6.1.2.1.4.20.1.2.128.0.0.1 = INTEGER: 22
+.1.3.6.1.2.1.4.20.1.2.128.0.0.6 = INTEGER: 548
+.1.3.6.1.2.1.4.20.1.2.128.0.1.16 = INTEGER: 22
+.1.3.6.1.2.1.4.20.1.3.10.0.0.1 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.10.0.0.6 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.10.0.0.16 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.10.4.68.200 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.4.79.18 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.4.79.250 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.10.4.116.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.127.0.0.1 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.128.0.0.1 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.128.0.0.6 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.128.0.1.16 = IpAddress: 255.255.255.255
+
+         */
+
+        Rluck001_IF_IFNAME_MAP.put(21,"lo0.16384");
+        Rluck001_IF_IFDESCR_MAP.put(21,"lo0.16384");
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 22);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.79.250"), 16);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.16"), 22);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.1.16"), 22);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 22);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.79.18"), 510);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.116.1"), 550);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.6"), 548);
-        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.6"), 548);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.6"), InetAddressUtils.addr("255.255.255.255"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.16"), 22);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.16"), InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.68.200"), 549);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.4.68.200"), InetAddressUtils.addr("255.255.255.0"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.79.18"), 510);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.4.79.18"), InetAddressUtils.addr("255.255.255.252"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.79.250"), 16);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.4.79.250"), InetAddressUtils.addr("255.255.255.255"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.116.1"), 550);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.4.116.1"), InetAddressUtils.addr("255.255.255.0"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 22);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.6"), 548);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.6"), InetAddressUtils.addr("255.255.255.255"));
+        Rluck001_IP_IF_MAP.put(InetAddressUtils.addr("128.0.1.16"), 22);
+        Rluck001_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.16"), InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IF_IFNAME_MAP.put(11, "pimd");
         Rluck001_IF_IFDESCR_MAP.put(11, "pimd");
         Rluck001_IF_IFNAME_MAP.put(511, "ge-0/0/3");
@@ -82,7 +367,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Rluck001_IF_IFNAME_MAP.put(550, "ge-0/0/2.950");
         Rluck001_IF_IFDESCR_MAP.put(550, "ge-0/0/2.950");
         Rluck001_IF_IFALIAS_MAP.put(550, "10.4.116.0/24-VoIP");
-        Rluck001_IF_NETMASK_MAP.put(550, InetAddressUtils.addr("255.255.255.0"));
         Rluck001_IF_IFNAME_MAP.put(551, "ge-0/0/2.32767");
         Rluck001_IF_IFDESCR_MAP.put(551, "ge-0/0/2.32767");
         Rluck001_IF_IFNAME_MAP.put(517, "ge-0/0/2");
@@ -115,7 +399,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Rluck001_IF_IFNAME_MAP.put(16, "lo0.0");
         Rluck001_IF_IFDESCR_MAP.put(16, "lo0.0");
         Rluck001_IF_IFALIAS_MAP.put(16, "Management");
-        Rluck001_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IF_IFNAME_MAP.put(536, "mt-0/0/0");
         Rluck001_IF_IFDESCR_MAP.put(536, "mt-0/0/0");
         Rluck001_IF_IFNAME_MAP.put(527, "ge-0/0/13");
@@ -126,12 +409,10 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Rluck001_IF_IFDESCR_MAP.put(533, "ip-0/0/0");
         Rluck001_IF_IFNAME_MAP.put(510, "ge-0/0/0.0");
         Rluck001_IF_IFDESCR_MAP.put(510, "ge-0/0/0.0");
-        Rluck001_IF_NETMASK_MAP.put(510, InetAddressUtils.addr("255.255.255.252"));
         Rluck001_IF_IFNAME_MAP.put(534, "lsq-0/0/0");
         Rluck001_IF_IFDESCR_MAP.put(534, "lsq-0/0/0");
         Rluck001_IF_IFNAME_MAP.put(548, "sp-0/0/0.16383");
         Rluck001_IF_IFDESCR_MAP.put(548, "sp-0/0/0.16383");
-        Rluck001_IF_NETMASK_MAP.put(548, InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IF_IFNAME_MAP.put(520, "ge-0/0/8");
         Rluck001_IF_IFDESCR_MAP.put(520, "ge-0/0/8");
         Rluck001_IF_IFNAME_MAP.put(529, "ge-0/0/14");
@@ -143,16 +424,15 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Rluck001_IF_IFNAME_MAP.put(549, "ge-0/0/2.100");
         Rluck001_IF_IFDESCR_MAP.put(549, "ge-0/0/2.100");
         Rluck001_IF_IFALIAS_MAP.put(549, "10.4.68.0/24-Client");
-        Rluck001_IF_NETMASK_MAP.put(549, InetAddressUtils.addr("255.255.255.0"));
         Rluck001_IF_IFNAME_MAP.put(22, "lo0.16385");
         Rluck001_IF_IFDESCR_MAP.put(22, "lo0.16385");
-        Rluck001_IF_NETMASK_MAP.put(22, InetAddressUtils.addr("255.255.255.255"));
         Rluck001_IF_IFNAME_MAP.put(502, "pp0");
         Rluck001_IF_IFDESCR_MAP.put(502, "pp0");
         Rluck001_IF_IFNAME_MAP.put(506, "ppd0");
         Rluck001_IF_IFDESCR_MAP.put(506, "ppd0");
         
         Sluck001_IP_IF_MAP.put(InetAddressUtils.addr("10.4.68.215"), 100);
+        Sluck001_IP_MK_MAP.put(InetAddressUtils.addr("10.4.68.215"), InetAddressUtils.addr("255.255.255.0"));
         Sluck001_IF_IFNAME_MAP.put(10021, "Fa0/21");
         Sluck001_IF_IFDESCR_MAP.put(10021, "FastEthernet0/21");
         Sluck001_IF_IFNAME_MAP.put(10008, "Fa0/8");
@@ -264,7 +544,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Sluck001_IF_IFNAME_MAP.put(100, "Vl100");
         Sluck001_IF_IFDESCR_MAP.put(100, "Vlan100");
         Sluck001_IF_IFALIAS_MAP.put(100, "Management Interface");
-        Sluck001_IF_NETMASK_MAP.put(100, InetAddressUtils.addr("255.255.255.0"));
         Sluck001_IF_IFNAME_MAP.put(10045, "Fa0/45");
         Sluck001_IF_IFDESCR_MAP.put(10045, "FastEthernet0/45");
         Sluck001_IF_IFALIAS_MAP.put(10045, "IPDA Port");
@@ -274,53 +553,86 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         Sluck001_IF_IFDESCR_MAP.put(10041, "FastEthernet0/41");
         Sluck001_IF_IFNAME_MAP.put(10038, "Fa0/38");
         Sluck001_IF_IFDESCR_MAP.put(10038, "FastEthernet0/38");
-        
-        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.247.65"), 12);
-        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.155.18"), 10);
+/*
+.1.3.6.1.2.1.4.20.1.1.10.140.155.1 = IpAddress: 10.140.155.1
+.1.3.6.1.2.1.4.20.1.1.10.140.155.18 = IpAddress: 10.140.155.18
+.1.3.6.1.2.1.4.20.1.1.10.140.247.65 = IpAddress: 10.140.247.65
+.1.3.6.1.2.1.4.20.1.1.10.140.252.57 = IpAddress: 10.140.252.57
+.1.3.6.1.2.1.4.20.1.1.176.16.128.4 = IpAddress: 176.16.128.4
+.1.3.6.1.2.1.4.20.1.1.192.168.2.2 = IpAddress: 192.168.2.2
+.1.3.6.1.2.1.4.20.1.2.10.140.155.1 = INTEGER: 9
+.1.3.6.1.2.1.4.20.1.2.10.140.155.18 = INTEGER: 10
+.1.3.6.1.2.1.4.20.1.2.10.140.247.65 = INTEGER: 12
+.1.3.6.1.2.1.4.20.1.2.10.140.252.57 = INTEGER: 8
+.1.3.6.1.2.1.4.20.1.2.176.16.128.4 = INTEGER: 5
+.1.3.6.1.2.1.4.20.1.2.192.168.2.2 = INTEGER: 11
+.1.3.6.1.2.1.4.20.1.3.10.140.155.1 = IpAddress: 255.255.255.240
+.1.3.6.1.2.1.4.20.1.3.10.140.155.18 = IpAddress: 255.255.255.248
+.1.3.6.1.2.1.4.20.1.3.10.140.247.65 = IpAddress: 255.255.255.224
+.1.3.6.1.2.1.4.20.1.3.10.140.252.57 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.176.16.128.4 = IpAddress: 255.255.255.224
+.1.3.6.1.2.1.4.20.1.3.192.168.2.2 = IpAddress: 255.255.255.0
+
+ */
         RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.155.1"), 9);
-        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("192.168.2.2"), 11);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("10.140.155.1"), InetAddressUtils.addr("255.255.255.240"));
+        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.155.18"), 10);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("10.140.155.18"), InetAddressUtils.addr("255.255.255.248"));
+        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.247.65"), 12);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("10.140.247.65"), InetAddressUtils.addr("255.255.255.224"));
         RPict001_IP_IF_MAP.put(InetAddressUtils.addr("10.140.252.57"), 8);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("10.140.252.57"), InetAddressUtils.addr("255.255.255.255"));
         RPict001_IP_IF_MAP.put(InetAddressUtils.addr("176.16.128.4"), 5);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("176.16.128.4"), InetAddressUtils.addr("255.255.255.224"));
+        RPict001_IP_IF_MAP.put(InetAddressUtils.addr("192.168.2.2"), 11);
+        RPict001_IP_MK_MAP.put(InetAddressUtils.addr("192.168.2.2"), InetAddressUtils.addr("255.255.255.0"));
+
         RPict001_IF_IFNAME_MAP.put(1, "Fa0");
         RPict001_IF_IFDESCR_MAP.put(1, "FastEthernet0");
         RPict001_IF_IFNAME_MAP.put(9, "Tu0");
         RPict001_IF_IFDESCR_MAP.put(9, "Tunnel0");
-        RPict001_IF_NETMASK_MAP.put(9, InetAddressUtils.addr("255.255.255.240"));
         RPict001_IF_IFNAME_MAP.put(7, "Vl1");
         RPict001_IF_IFDESCR_MAP.put(7, "Vlan1");
         RPict001_IF_IFNAME_MAP.put(8, "Lo0");
         RPict001_IF_IFDESCR_MAP.put(8, "Loopback0");
-        RPict001_IF_NETMASK_MAP.put(8, InetAddressUtils.addr("255.255.255.255"));
         RPict001_IF_IFNAME_MAP.put(3, "Fa2");
         RPict001_IF_IFDESCR_MAP.put(3, "FastEthernet2");
         RPict001_IF_IFNAME_MAP.put(13, "Vl13");
         RPict001_IF_IFDESCR_MAP.put(13, "Vlan13");
         RPict001_IF_IFNAME_MAP.put(12, "Vl2");
         RPict001_IF_IFDESCR_MAP.put(12, "Vlan2");
-        RPict001_IF_NETMASK_MAP.put(12, InetAddressUtils.addr("255.255.255.224"));
         RPict001_IF_IFNAME_MAP.put(5, "Fa4");
         RPict001_IF_IFDESCR_MAP.put(5, "FastEthernet4");
-        RPict001_IF_NETMASK_MAP.put(5, InetAddressUtils.addr("255.255.255.224"));
         RPict001_IF_IFNAME_MAP.put(11, "Vl3");
         RPict001_IF_IFDESCR_MAP.put(11, "Vlan3");
-        RPict001_IF_NETMASK_MAP.put(11, InetAddressUtils.addr("255.255.255.0"));
         RPict001_IF_IFNAME_MAP.put(2, "Fa1");
         RPict001_IF_IFDESCR_MAP.put(2, "FastEthernet1");
         RPict001_IF_IFNAME_MAP.put(10, "Tu3");
         RPict001_IF_IFDESCR_MAP.put(10, "Tunnel3");
-        RPict001_IF_NETMASK_MAP.put(10, InetAddressUtils.addr("255.255.255.248"));
         RPict001_IF_IFNAME_MAP.put(4, "Fa3");
         RPict001_IF_IFDESCR_MAP.put(4, "FastEthernet3");
         RPict001_IF_IFNAME_MAP.put(6, "Nu0");
         RPict001_IF_IFDESCR_MAP.put(6, "Null0");
-        RNewt103_IP_IF_MAP.put(InetAddressUtils.addr("10.239.9.22"), 8);
+
+/*
+.1.3.6.1.2.1.4.20.1.2.10.81.1.35 = INTEGER: 5
+.1.3.6.1.2.1.4.20.1.2.10.239.9.22 = INTEGER: 8
+.1.3.6.1.2.1.4.20.1.2.192.168.2.1 = INTEGER: 7
+.1.3.6.1.2.1.4.20.1.3.10.81.1.35 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.239.9.22 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.192.168.2.1 = IpAddress: 255.255.255.240
+*/
         RNewt103_IP_IF_MAP.put(InetAddressUtils.addr("10.81.1.35"), 5);
+        RNewt103_IP_MK_MAP.put(InetAddressUtils.addr("10.81.1.35"), InetAddressUtils.addr("255.255.255.0"));
+        RNewt103_IP_IF_MAP.put(InetAddressUtils.addr("10.239.9.22"), 8);
+        RNewt103_IP_MK_MAP.put(InetAddressUtils.addr("10.239.9.22"), InetAddressUtils.addr("255.255.255.255"));
         RNewt103_IP_IF_MAP.put(InetAddressUtils.addr("192.168.2.1"), 7);
+        RNewt103_IP_MK_MAP.put(InetAddressUtils.addr("192.168.2.1"), InetAddressUtils.addr("255.255.255.240"));
+
         RNewt103_IF_IFNAME_MAP.put(2, "Fa1");
         RNewt103_IF_IFDESCR_MAP.put(2, "FastEthernet1");
         RNewt103_IF_IFNAME_MAP.put(7, "Vl1");
         RNewt103_IF_IFDESCR_MAP.put(7, "Vlan1");
-        RNewt103_IF_NETMASK_MAP.put(7, InetAddressUtils.addr("255.255.255.240"));
         RNewt103_IF_IFNAME_MAP.put(4, "Fa3");
         RNewt103_IF_IFDESCR_MAP.put(4, "FastEthernet3");
         RNewt103_IF_IFNAME_MAP.put(9, "Lo10000");
@@ -334,79 +646,289 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RNewt103_IF_IFDESCR_MAP.put(6, "Null0");
         RNewt103_IF_IFNAME_MAP.put(8, "Lo0");
         RNewt103_IF_IFDESCR_MAP.put(8, "Loopback0");
-        RNewt103_IF_NETMASK_MAP.put(8, InetAddressUtils.addr("255.255.255.255"));
         RNewt103_IF_IFNAME_MAP.put(3, "Fa2");
         RNewt103_IF_IFDESCR_MAP.put(3, "FastEthernet2");
         RNewt103_IF_IFNAME_MAP.put(5, "Fa4");
         RNewt103_IF_IFDESCR_MAP.put(5, "FastEthernet4");
         RNewt103_IF_IFALIAS_MAP.put(5, "Connected to EON UK Lan");
-        RNewt103_IF_NETMASK_MAP.put(5, InetAddressUtils.addr("255.255.255.0"));
-        
-        
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.43.1"), 426);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.27.1"), 444);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.61.1"), 454);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.1"), 418);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.50.1"), 430);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.5.1"), 435);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.41.1"), 449);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.40.1"), 415);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.54.1"), 396);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.65"), 428);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.18.1"), 421);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.17.1"), 440);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.6.1"), 419);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.25.1"), 409);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.34.1"), 412);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.32.1"), 446);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.14.1"), 404);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.254.41"), 314);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.47.1"), 452);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.19.1"), 406);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.36.1"), 447);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.26.1"), 443);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.9.1"), 403);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.31.1"), 445);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.44.1"), 416);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.129"), 453);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.28.1"), 423);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.46.1"), 451);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.12.1"), 438);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.73"), 429);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.70"), 148);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.7.1"), 401);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.33.1"), 424);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.29.1"), 410);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.23.1"), 422);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.38.1"), 425);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.50.129"), 431);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.24.1"), 408);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.42.1"), 450);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.20.1"), 407);
+
+/*
+.1.3.6.1.2.1.4.20.1.2.10.165.0.1 = INTEGER: 398
+.1.3.6.1.2.1.4.20.1.2.10.165.1.1 = INTEGER: 399
+.1.3.6.1.2.1.4.20.1.2.10.165.2.1 = INTEGER: 400
+.1.3.6.1.2.1.4.20.1.2.10.165.3.1 = INTEGER: 433
+.1.3.6.1.2.1.4.20.1.2.10.165.4.1 = INTEGER: 434
+.1.3.6.1.2.1.4.20.1.2.10.165.5.1 = INTEGER: 435
+.1.3.6.1.2.1.4.20.1.2.10.165.6.1 = INTEGER: 419
+.1.3.6.1.2.1.4.20.1.2.10.165.7.1 = INTEGER: 401
+.1.3.6.1.2.1.4.20.1.2.10.165.8.1 = INTEGER: 402
+.1.3.6.1.2.1.4.20.1.2.10.165.9.1 = INTEGER: 403
+.1.3.6.1.2.1.4.20.1.2.10.165.10.1 = INTEGER: 436
+.1.3.6.1.2.1.4.20.1.2.10.165.11.1 = INTEGER: 437
+.1.3.6.1.2.1.4.20.1.2.10.165.12.1 = INTEGER: 438
+.1.3.6.1.2.1.4.20.1.2.10.165.13.1 = INTEGER: 420
+.1.3.6.1.2.1.4.20.1.2.10.165.14.1 = INTEGER: 404
+.1.3.6.1.2.1.4.20.1.2.10.165.15.1 = INTEGER: 405
+.1.3.6.1.2.1.4.20.1.2.10.165.16.1 = INTEGER: 439
+.1.3.6.1.2.1.4.20.1.2.10.165.17.1 = INTEGER: 440
+.1.3.6.1.2.1.4.20.1.2.10.165.18.1 = INTEGER: 421
+.1.3.6.1.2.1.4.20.1.2.10.165.19.1 = INTEGER: 406
+.1.3.6.1.2.1.4.20.1.2.10.165.20.1 = INTEGER: 407
+.1.3.6.1.2.1.4.20.1.2.10.165.21.1 = INTEGER: 441
+.1.3.6.1.2.1.4.20.1.2.10.165.22.1 = INTEGER: 442
+.1.3.6.1.2.1.4.20.1.2.10.165.23.1 = INTEGER: 422
+.1.3.6.1.2.1.4.20.1.2.10.165.24.1 = INTEGER: 408
+.1.3.6.1.2.1.4.20.1.2.10.165.25.1 = INTEGER: 409
+.1.3.6.1.2.1.4.20.1.2.10.165.26.1 = INTEGER: 443
+.1.3.6.1.2.1.4.20.1.2.10.165.27.1 = INTEGER: 444
+.1.3.6.1.2.1.4.20.1.2.10.165.28.1 = INTEGER: 423
+.1.3.6.1.2.1.4.20.1.2.10.165.29.1 = INTEGER: 410
+.1.3.6.1.2.1.4.20.1.2.10.165.30.1 = INTEGER: 411
+.1.3.6.1.2.1.4.20.1.2.10.165.31.1 = INTEGER: 445
+.1.3.6.1.2.1.4.20.1.2.10.165.32.1 = INTEGER: 446
+.1.3.6.1.2.1.4.20.1.2.10.165.33.1 = INTEGER: 424
+.1.3.6.1.2.1.4.20.1.2.10.165.34.1 = INTEGER: 412
+.1.3.6.1.2.1.4.20.1.2.10.165.35.1 = INTEGER: 413
+.1.3.6.1.2.1.4.20.1.2.10.165.36.1 = INTEGER: 447
+.1.3.6.1.2.1.4.20.1.2.10.165.37.1 = INTEGER: 448
+.1.3.6.1.2.1.4.20.1.2.10.165.38.1 = INTEGER: 425
+.1.3.6.1.2.1.4.20.1.2.10.165.39.1 = INTEGER: 414
+.1.3.6.1.2.1.4.20.1.2.10.165.40.1 = INTEGER: 415
+.1.3.6.1.2.1.4.20.1.2.10.165.41.1 = INTEGER: 449
+.1.3.6.1.2.1.4.20.1.2.10.165.42.1 = INTEGER: 450
+.1.3.6.1.2.1.4.20.1.2.10.165.43.1 = INTEGER: 426
+.1.3.6.1.2.1.4.20.1.2.10.165.44.1 = INTEGER: 416
+.1.3.6.1.2.1.4.20.1.2.10.165.45.1 = INTEGER: 417
+.1.3.6.1.2.1.4.20.1.2.10.165.46.1 = INTEGER: 451
+.1.3.6.1.2.1.4.20.1.2.10.165.47.1 = INTEGER: 452
+.1.3.6.1.2.1.4.20.1.2.10.165.48.1 = INTEGER: 427
+.1.3.6.1.2.1.4.20.1.2.10.165.49.1 = INTEGER: 395
+.1.3.6.1.2.1.4.20.1.2.10.165.50.1 = INTEGER: 430
+.1.3.6.1.2.1.4.20.1.2.10.165.50.129 = INTEGER: 431
+.1.3.6.1.2.1.4.20.1.2.10.165.54.1 = INTEGER: 396
+.1.3.6.1.2.1.4.20.1.2.10.165.55.1 = INTEGER: 397
+.1.3.6.1.2.1.4.20.1.2.10.165.56.1 = INTEGER: 418
+.1.3.6.1.2.1.4.20.1.2.10.165.56.65 = INTEGER: 428
+.1.3.6.1.2.1.4.20.1.2.10.165.56.129 = INTEGER: 453
+.1.3.6.1.2.1.4.20.1.2.10.165.61.1 = INTEGER: 454
+.1.3.6.1.2.1.4.20.1.2.10.165.62.1 = INTEGER: 432
+.1.3.6.1.2.1.4.20.1.2.10.167.242.66 = INTEGER: 301
+.1.3.6.1.2.1.4.20.1.2.10.167.242.70 = INTEGER: 148
+.1.3.6.1.2.1.4.20.1.2.10.167.242.73 = INTEGER: 429
+.1.3.6.1.2.1.4.20.1.2.10.167.254.40 = INTEGER: 312
+.1.3.6.1.2.1.4.20.1.2.10.167.254.41 = INTEGER: 314
+.1.3.6.1.2.1.4.20.1.2.127.0.0.51 = INTEGER: 308
+
+
+
+
+
+
+
+.1.3.6.1.2.1.4.20.1.3.10.165.0.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.1.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.2.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.3.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.4.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.5.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.6.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.7.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.8.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.9.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.10.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.11.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.12.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.13.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.14.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.15.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.16.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.17.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.18.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.19.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.20.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.21.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.22.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.23.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.24.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.25.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.26.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.27.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.28.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.29.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.30.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.31.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.32.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.33.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.34.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.35.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.36.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.37.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.38.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.39.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.40.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.41.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.42.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.43.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.44.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.45.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.46.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.47.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.48.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.49.1 = IpAddress: 255.255.255.128
+.1.3.6.1.2.1.4.20.1.3.10.165.50.1 = IpAddress: 255.255.255.128
+.1.3.6.1.2.1.4.20.1.3.10.165.50.129 = IpAddress: 255.255.255.128
+.1.3.6.1.2.1.4.20.1.3.10.165.54.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.10.165.55.1 = IpAddress: 255.255.255.128
+.1.3.6.1.2.1.4.20.1.3.10.165.56.1 = IpAddress: 255.255.255.192
+.1.3.6.1.2.1.4.20.1.3.10.165.56.65 = IpAddress: 255.255.255.224
+.1.3.6.1.2.1.4.20.1.3.10.165.56.129 = IpAddress: 255.255.255.128
+.1.3.6.1.2.1.4.20.1.3.10.165.61.1 = IpAddress: 255.255.255.192
+.1.3.6.1.2.1.4.20.1.3.10.165.62.1 = IpAddress: 255.255.254.0
+.1.3.6.1.2.1.4.20.1.3.10.167.242.66 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.167.242.70 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.167.242.73 = IpAddress: 255.255.255.248
+.1.3.6.1.2.1.4.20.1.3.10.167.254.40 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.10.167.254.41 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.127.0.0.51 = IpAddress: 255.0.0.0
+
+*/
+
+
+
+        RDeEssnBrue_IF_IFNAME_MAP.put(308,"EOBC0/0");
+        RDeEssnBrue_IF_IFDESCR_MAP.put(308,"EOBC0/0");
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.0.1"), 398);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.1"), 432);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.30.1"), 411);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.48.1"), 427);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.66"), 301);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.21.1"), 441);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.35.1"), 413);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.10.1"), 436);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.13.1"), 420);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.15.1"), 405);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.16.1"), 439);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.1.1"), 399);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.2.1"), 400);
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.3.1"), 433);
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.4.1"), 434);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.39.1"), 414);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.22.1"), 442);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.254.40"), 312);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.1.1"), 399);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.55.1"), 397);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.45.1"), 417);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.49.1"), 395);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.11.1"), 437);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.2.1"), 400);
-        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.37.1"), 448);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.5.1"), 435);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.6.1"), 419);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.7.1"), 401);
         RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.8.1"), 402);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.9.1"), 403);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.10.1"), 436);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.11.1"), 437);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.12.1"), 438);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.13.1"), 420);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.14.1"), 404);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.15.1"), 405);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.16.1"), 439);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.17.1"), 440);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.18.1"), 421);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.19.1"), 406);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.20.1"), 407);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.21.1"), 441);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.22.1"), 442);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.23.1"), 422);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.24.1"), 408);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.25.1"), 409);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.26.1"), 443);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.27.1"), 444);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.28.1"), 423);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.29.1"), 410);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.30.1"), 411);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.31.1"), 445);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.32.1"), 446);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.33.1"), 424);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.34.1"), 412);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.35.1"), 413);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.36.1"), 447);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.37.1"), 448);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.38.1"), 425);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.39.1"), 414);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.40.1"), 415);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.41.1"), 449);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.42.1"), 450);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.43.1"), 426);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.44.1"), 416);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.45.1"), 417);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.46.1"), 451);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.47.1"), 452);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.48.1"), 427);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.49.1"), 395);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.50.1"), 430);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.50.129"), 431);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.54.1"), 396);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.55.1"), 397);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.1"), 418);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.65"), 428);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.56.129"), 453);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.61.1"), 454);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.1"), 432);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.66"), 301);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.70"), 148);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.242.73"), 429);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.254.40"), 312);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("10.167.254.41"), 314);
+        RDeEssnBrue_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.51"), 308);
+
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.0.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.1.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.2.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.3.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.4.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.5.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.6.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.7.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.8.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.9.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.10.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.11.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.12.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.13.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.14.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.15.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.16.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.17.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.18.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.19.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.20.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.21.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.22.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.23.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.24.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.25.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.26.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.27.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.28.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.29.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.30.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.31.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.32.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.33.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.34.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.35.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.36.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.37.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.38.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.39.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.40.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.41.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.42.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.43.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.44.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.45.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.46.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.47.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.48.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.49.1"), InetAddressUtils.addr("255.255.255.128"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.50.1"), InetAddressUtils.addr("255.255.255.128"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.50.129"), InetAddressUtils.addr("255.255.255.128"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.54.1"), InetAddressUtils.addr("255.255.255.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.55.1"), InetAddressUtils.addr("255.255.255.128"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.56.1"), InetAddressUtils.addr("255.255.255.192"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.56.65"), InetAddressUtils.addr("255.255.255.224"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.56.129"), InetAddressUtils.addr("255.255.255.128"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.61.1"), InetAddressUtils.addr("255.255.255.192"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.165.62.1"), InetAddressUtils.addr("255.255.254.0"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.167.242.66"), InetAddressUtils.addr("255.255.255.252"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.167.242.70"), InetAddressUtils.addr("255.255.255.252"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.167.242.73"), InetAddressUtils.addr("255.255.255.248"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.167.254.40"), InetAddressUtils.addr("255.255.255.255"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("10.167.254.41"), InetAddressUtils.addr("255.255.255.255"));
+        RDeEssnBrue_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.51"), InetAddressUtils.addr("255.0.0.0"));
+
         RDeEssnBrue_IF_IFNAME_MAP.put(360, "Po105");
         RDeEssnBrue_IF_IFDESCR_MAP.put(360, "Port-channel105");
         RDeEssnBrue_IF_IFALIAS_MAP.put(360, "s-de-essn-brue-105");
@@ -434,11 +956,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(414, "Vl516");
         RDeEssnBrue_IF_IFDESCR_MAP.put(414, "Vlan516");
         RDeEssnBrue_IF_IFALIAS_MAP.put(414, "User Segment 1 - wing H");
-        RDeEssnBrue_IF_NETMASK_MAP.put(414, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(421, "Vl752");
         RDeEssnBrue_IF_IFDESCR_MAP.put(421, "Vlan752");
         RDeEssnBrue_IF_IFALIAS_MAP.put(421, "Printer Segment - wing C");
-        RDeEssnBrue_IF_NETMASK_MAP.put(421, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(208, "Gi2/2/7");
         RDeEssnBrue_IF_IFDESCR_MAP.put(208, "GigabitEthernet2/2/7");
         RDeEssnBrue_IF_IFALIAS_MAP.put(208, "s-de-essn-brue-036 -");
@@ -452,7 +972,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(415, "Vl517");
         RDeEssnBrue_IF_IFDESCR_MAP.put(415, "Vlan517");
         RDeEssnBrue_IF_IFALIAS_MAP.put(415, "User Segment 2 - wing H");
-        RDeEssnBrue_IF_NETMASK_MAP.put(415, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(75, "Gi1/2/27");
         RDeEssnBrue_IF_IFDESCR_MAP.put(75, "GigabitEthernet1/2/27");
         RDeEssnBrue_IF_IFALIAS_MAP.put(75, "s-de-essn-brue-014 -");
@@ -477,7 +996,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(403, "Vl505");
         RDeEssnBrue_IF_IFDESCR_MAP.put(403, "Vlan505");
         RDeEssnBrue_IF_IFALIAS_MAP.put(403, "User Segment 3 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(403, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(267, "Gi2/3/18");
         RDeEssnBrue_IF_IFDESCR_MAP.put(267, "GigabitEthernet2/3/18");
         RDeEssnBrue_IF_IFALIAS_MAP.put(267, "s-de-essn-brue-184 -");
@@ -486,7 +1004,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(400, "Vl502");
         RDeEssnBrue_IF_IFDESCR_MAP.put(400, "Vlan502");
         RDeEssnBrue_IF_IFALIAS_MAP.put(400, "User Segment 3 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(400, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(473, "VLAN-507");
         RDeEssnBrue_IF_IFDESCR_MAP.put(473, "unrouted VLAN 507");
         RDeEssnBrue_IF_IFNAME_MAP.put(343, "Po40");
@@ -543,7 +1060,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(401, "Vl503");
         RDeEssnBrue_IF_IFDESCR_MAP.put(401, "Vlan503");
         RDeEssnBrue_IF_IFALIAS_MAP.put(401, "User Segment 1 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(401, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(56, "Gi1/2/8");
         RDeEssnBrue_IF_IFDESCR_MAP.put(56, "GigabitEthernet1/2/8");
         RDeEssnBrue_IF_IFALIAS_MAP.put(56, "s-de-essn-brue-037 -");
@@ -570,7 +1086,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(425, "Vl756");
         RDeEssnBrue_IF_IFDESCR_MAP.put(425, "Vlan756");
         RDeEssnBrue_IF_IFALIAS_MAP.put(425, "Printer Segment - wing G");
-        RDeEssnBrue_IF_NETMASK_MAP.put(425, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(234, "Gi2/2/33");
         RDeEssnBrue_IF_IFDESCR_MAP.put(234, "GigabitEthernet2/2/33");
         RDeEssnBrue_IF_IFALIAS_MAP.put(234, "s-de-essn-brue-002 -");
@@ -581,14 +1096,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(452, "Vl969");
         RDeEssnBrue_IF_IFDESCR_MAP.put(452, "Vlan969");
         RDeEssnBrue_IF_IFALIAS_MAP.put(452, "VoIP Segment 2 - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(452, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(314, "Lo1");
         RDeEssnBrue_IF_IFDESCR_MAP.put(314, "Loopback1");
-        RDeEssnBrue_IF_NETMASK_MAP.put(314, InetAddressUtils.addr("255.255.255.255"));
         RDeEssnBrue_IF_IFNAME_MAP.put(420, "Vl751");
         RDeEssnBrue_IF_IFDESCR_MAP.put(420, "Vlan751");
         RDeEssnBrue_IF_IFALIAS_MAP.put(420, "Printer Segment - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(420, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(388, "Po183");
         RDeEssnBrue_IF_IFDESCR_MAP.put(388, "Port-channel183");
         RDeEssnBrue_IF_IFALIAS_MAP.put(388, "s-de-essn-brue-183");
@@ -613,7 +1125,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(412, "Vl514");
         RDeEssnBrue_IF_IFDESCR_MAP.put(412, "Vlan514");
         RDeEssnBrue_IF_IFALIAS_MAP.put(412, "User Segment 1 - wing G");
-        RDeEssnBrue_IF_NETMASK_MAP.put(412, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(495, "VLAN-758");
         RDeEssnBrue_IF_IFDESCR_MAP.put(495, "unrouted VLAN 758");
         RDeEssnBrue_IF_IFNAME_MAP.put(470, "VLAN-504");
@@ -635,7 +1146,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(431, "Vl851");
         RDeEssnBrue_IF_IFDESCR_MAP.put(431, "Vlan851");
         RDeEssnBrue_IF_IFALIAS_MAP.put(431, "VoIP/Disp");
-        RDeEssnBrue_IF_NETMASK_MAP.put(431, InetAddressUtils.addr("255.255.255.128"));
         RDeEssnBrue_IF_IFNAME_MAP.put(118, "Gi1/3/22");
         RDeEssnBrue_IF_IFDESCR_MAP.put(118, "GigabitEthernet1/3/22");
         RDeEssnBrue_IF_IFALIAS_MAP.put(118, "s-de-essn-brue-121 -");
@@ -648,11 +1158,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(444, "Vl961");
         RDeEssnBrue_IF_IFDESCR_MAP.put(444, "Vlan961");
         RDeEssnBrue_IF_IFALIAS_MAP.put(444, "VoIP Segment 2 - wing E");
-        RDeEssnBrue_IF_NETMASK_MAP.put(444, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(445, "Vl962");
         RDeEssnBrue_IF_IFDESCR_MAP.put(445, "Vlan962");
         RDeEssnBrue_IF_IFALIAS_MAP.put(445, "VoIP Segment 1 - wing F");
-        RDeEssnBrue_IF_NETMASK_MAP.put(445, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(215, "Gi2/2/14");
         RDeEssnBrue_IF_IFDESCR_MAP.put(215, "GigabitEthernet2/2/14");
         RDeEssnBrue_IF_IFALIAS_MAP.put(215, "s-de-essn-brue-043 -");
@@ -661,7 +1169,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFALIAS_MAP.put(224, "s-de-essn-brue-010 -");
         RDeEssnBrue_IF_IFNAME_MAP.put(396, "Vl452");
         RDeEssnBrue_IF_IFDESCR_MAP.put(396, "Vlan452");
-        RDeEssnBrue_IF_NETMASK_MAP.put(396, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(509, "VLAN-956");
         RDeEssnBrue_IF_IFDESCR_MAP.put(509, "unrouted VLAN 956");
         RDeEssnBrue_IF_IFNAME_MAP.put(323, "Po9");
@@ -680,7 +1187,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(398, "Vl500");
         RDeEssnBrue_IF_IFDESCR_MAP.put(398, "Vlan500");
         RDeEssnBrue_IF_IFALIAS_MAP.put(398, "User Segment 1 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(398, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(303, "Gi2/5/2");
         RDeEssnBrue_IF_IFDESCR_MAP.put(303, "GigabitEthernet2/5/2");
         RDeEssnBrue_IF_IFNAME_MAP.put(35, "Gi1/1/35");
@@ -690,7 +1196,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(434, "Vl951");
         RDeEssnBrue_IF_IFDESCR_MAP.put(434, "Vlan951");
         RDeEssnBrue_IF_IFALIAS_MAP.put(434, "VoIP Segment 2 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(434, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(222, "Gi2/2/21");
         RDeEssnBrue_IF_IFDESCR_MAP.put(222, "GigabitEthernet2/2/21");
         RDeEssnBrue_IF_IFALIAS_MAP.put(222, "s-de-essn-brue-008 -");
@@ -718,7 +1223,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(402, "Vl504");
         RDeEssnBrue_IF_IFDESCR_MAP.put(402, "Vlan504");
         RDeEssnBrue_IF_IFALIAS_MAP.put(402, "User Segment 2 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(402, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(379, "Po161");
         RDeEssnBrue_IF_IFDESCR_MAP.put(379, "Port-channel161");
         RDeEssnBrue_IF_IFALIAS_MAP.put(379, "s-de-essn-brue-161");
@@ -741,13 +1245,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(442, "Vl959");
         RDeEssnBrue_IF_IFDESCR_MAP.put(442, "Vlan959");
         RDeEssnBrue_IF_IFALIAS_MAP.put(442, "VoIP Segment 2 - wing D");
-        RDeEssnBrue_IF_NETMASK_MAP.put(442, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(515, "VLAN-962");
         RDeEssnBrue_IF_IFDESCR_MAP.put(515, "unrouted VLAN 962");
         RDeEssnBrue_IF_IFNAME_MAP.put(413, "Vl515");
         RDeEssnBrue_IF_IFDESCR_MAP.put(413, "Vlan515");
         RDeEssnBrue_IF_IFALIAS_MAP.put(413, "User Segment 2 - wing G");
-        RDeEssnBrue_IF_NETMASK_MAP.put(413, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(211, "Gi2/2/10");
         RDeEssnBrue_IF_IFDESCR_MAP.put(211, "GigabitEthernet2/2/10");
         RDeEssnBrue_IF_IFALIAS_MAP.put(211, "s-de-essn-brue-039 -");
@@ -809,7 +1311,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(447, "Vl964");
         RDeEssnBrue_IF_IFDESCR_MAP.put(447, "Vlan964");
         RDeEssnBrue_IF_IFALIAS_MAP.put(447, "VoIP Segment 1 - wing G");
-        RDeEssnBrue_IF_NETMASK_MAP.put(447, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(329, "Po15");
         RDeEssnBrue_IF_IFDESCR_MAP.put(329, "Port-channel15");
         RDeEssnBrue_IF_IFALIAS_MAP.put(329, "s-de-essn-brue-015");
@@ -836,7 +1337,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(443, "Vl960");
         RDeEssnBrue_IF_IFDESCR_MAP.put(443, "Vlan960");
         RDeEssnBrue_IF_IFALIAS_MAP.put(443, "VoIP Segment 1 - wing E");
-        RDeEssnBrue_IF_NETMASK_MAP.put(443, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(198, "Gi2/1/45");
         RDeEssnBrue_IF_IFDESCR_MAP.put(198, "GigabitEthernet2/1/45");
         RDeEssnBrue_IF_IFNAME_MAP.put(462, "VLAN-450");
@@ -850,7 +1350,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(395, "Vl450");
         RDeEssnBrue_IF_IFDESCR_MAP.put(395, "Vlan450");
         RDeEssnBrue_IF_IFALIAS_MAP.put(395, "Videoconferencing Segment");
-        RDeEssnBrue_IF_NETMASK_MAP.put(395, InetAddressUtils.addr("255.255.255.128"));
         RDeEssnBrue_IF_IFNAME_MAP.put(504, "VLAN-951");
         RDeEssnBrue_IF_IFDESCR_MAP.put(504, "unrouted VLAN 951");
         RDeEssnBrue_IF_IFNAME_MAP.put(216, "Gi2/2/15");
@@ -859,14 +1358,12 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(448, "Vl965");
         RDeEssnBrue_IF_IFDESCR_MAP.put(448, "Vlan965");
         RDeEssnBrue_IF_IFALIAS_MAP.put(448, "VoIP Segment 2 - wing G");
-        RDeEssnBrue_IF_NETMASK_MAP.put(448, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(89, "Gi1/2/41");
         RDeEssnBrue_IF_IFDESCR_MAP.put(89, "GigabitEthernet1/2/41");
         RDeEssnBrue_IF_IFALIAS_MAP.put(89, "s-de-essn-brue-104 -");
         RDeEssnBrue_IF_IFNAME_MAP.put(440, "Vl957");
         RDeEssnBrue_IF_IFDESCR_MAP.put(440, "Vlan957");
         RDeEssnBrue_IF_IFALIAS_MAP.put(440, "VoIP Segment 2 - wing C");
-        RDeEssnBrue_IF_NETMASK_MAP.put(440, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(187, "Gi2/1/34");
         RDeEssnBrue_IF_IFDESCR_MAP.put(187, "GigabitEthernet2/1/34");
         RDeEssnBrue_IF_IFNAME_MAP.put(66, "Gi1/2/18");
@@ -884,14 +1381,13 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(409, "Vl511");
         RDeEssnBrue_IF_IFDESCR_MAP.put(409, "Vlan511");
         RDeEssnBrue_IF_IFALIAS_MAP.put(409, "User Segment 2 - wing E");
-        RDeEssnBrue_IF_NETMASK_MAP.put(409, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(266, "Gi2/3/17");
         RDeEssnBrue_IF_IFDESCR_MAP.put(266, "GigabitEthernet2/3/17");
         RDeEssnBrue_IF_IFALIAS_MAP.put(266, "s-de-essn-brue-183 -");
         RDeEssnBrue_IF_IFNAME_MAP.put(408, "Vl510");
         RDeEssnBrue_IF_IFDESCR_MAP.put(408, "Vlan510");
         RDeEssnBrue_IF_IFALIAS_MAP.put(408, "User Segment 1 - wing E");
-        RDeEssnBrue_IF_NETMASK_MAP.put(408, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(408, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(239, "Gi2/2/38");
         RDeEssnBrue_IF_IFDESCR_MAP.put(239, "GigabitEthernet2/2/38");
         RDeEssnBrue_IF_IFALIAS_MAP.put(239, "s-de-essn-brue-087 -");
@@ -941,7 +1437,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(430, "Vl850");
         RDeEssnBrue_IF_IFDESCR_MAP.put(430, "Vlan850");
         RDeEssnBrue_IF_IFALIAS_MAP.put(430, "User/Workstation Segment Dispatching - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(430, InetAddressUtils.addr("255.255.255.128"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(430, InetAddressUtils.addr("255.255.255.128"));
         RDeEssnBrue_IF_IFNAME_MAP.put(183, "Gi2/1/30");
         RDeEssnBrue_IF_IFDESCR_MAP.put(183, "GigabitEthernet2/1/30");
         RDeEssnBrue_IF_IFNAME_MAP.put(100, "Gi1/3/4");
@@ -989,7 +1485,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(422, "Vl753");
         RDeEssnBrue_IF_IFDESCR_MAP.put(422, "Vlan753");
         RDeEssnBrue_IF_IFALIAS_MAP.put(422, "Printer Segment - wing D");
-        RDeEssnBrue_IF_NETMASK_MAP.put(422, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(422, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(166, "Gi2/1/13");
         RDeEssnBrue_IF_IFDESCR_MAP.put(166, "GigabitEthernet2/1/13");
         RDeEssnBrue_IF_IFNAME_MAP.put(93, "Gi1/2/45");
@@ -1018,7 +1514,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(301, "Te2/4/4");
         RDeEssnBrue_IF_IFDESCR_MAP.put(301, "TenGigabitEthernet2/4/4");
         RDeEssnBrue_IF_IFALIAS_MAP.put(301, "r-de-essn-glad-004 - L1075509");
-        RDeEssnBrue_IF_NETMASK_MAP.put(301, InetAddressUtils.addr("255.255.255.252"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(301, InetAddressUtils.addr("255.255.255.252"));
         RDeEssnBrue_IF_IFNAME_MAP.put(493, "VLAN-756");
         RDeEssnBrue_IF_IFDESCR_MAP.put(493, "unrouted VLAN 756");
         RDeEssnBrue_IF_IFNAME_MAP.put(339, "Po36");
@@ -1079,7 +1575,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(446, "Vl963");
         RDeEssnBrue_IF_IFDESCR_MAP.put(446, "Vlan963");
         RDeEssnBrue_IF_IFALIAS_MAP.put(446, "VoIP Segment 2 - wing F");
-        RDeEssnBrue_IF_NETMASK_MAP.put(446, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(446, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(200, "Gi2/1/47");
         RDeEssnBrue_IF_IFDESCR_MAP.put(200, "GigabitEthernet2/1/47");
         RDeEssnBrue_IF_IFNAME_MAP.put(147, "Te1/4/3");
@@ -1108,7 +1604,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(453, "Vl970");
         RDeEssnBrue_IF_IFDESCR_MAP.put(453, "Vlan970");
         RDeEssnBrue_IF_IFALIAS_MAP.put(453, "VoIP_EGS-Dispatching");
-        RDeEssnBrue_IF_NETMASK_MAP.put(453, InetAddressUtils.addr("255.255.255.128"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(453, InetAddressUtils.addr("255.255.255.128"));
         RDeEssnBrue_IF_IFNAME_MAP.put(54, "Gi1/2/6");
         RDeEssnBrue_IF_IFDESCR_MAP.put(54, "GigabitEthernet1/2/6");
         RDeEssnBrue_IF_IFALIAS_MAP.put(54, "s-de-essn-brue-035 -");
@@ -1123,13 +1619,13 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(404, "Vl506");
         RDeEssnBrue_IF_IFDESCR_MAP.put(404, "Vlan506");
         RDeEssnBrue_IF_IFALIAS_MAP.put(404, "User Segment 1 - wing C");
-        RDeEssnBrue_IF_NETMASK_MAP.put(404, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(404, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(47, "Gi1/1/47");
         RDeEssnBrue_IF_IFDESCR_MAP.put(47, "GigabitEthernet1/1/47");
         RDeEssnBrue_IF_IFNAME_MAP.put(435, "Vl952");
         RDeEssnBrue_IF_IFDESCR_MAP.put(435, "Vlan952");
         RDeEssnBrue_IF_IFALIAS_MAP.put(435, "VoIP Segment 3 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(435, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(435, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(18, "Gi1/1/18");
         RDeEssnBrue_IF_IFDESCR_MAP.put(18, "GigabitEthernet1/1/18");
         RDeEssnBrue_IF_IFNAME_MAP.put(169, "Gi2/1/16");
@@ -1159,7 +1655,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(148, "Te1/4/4");
         RDeEssnBrue_IF_IFDESCR_MAP.put(148, "TenGigabitEthernet1/4/4");
         RDeEssnBrue_IF_IFALIAS_MAP.put(148, "r-de-essn-ruhr-004 - L1075508");
-        RDeEssnBrue_IF_NETMASK_MAP.put(148, InetAddressUtils.addr("255.255.255.252"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(148, InetAddressUtils.addr("255.255.255.252"));
         RDeEssnBrue_IF_IFNAME_MAP.put(394, "Po255");
         RDeEssnBrue_IF_IFDESCR_MAP.put(394, "Port-channel255");
         RDeEssnBrue_IF_IFALIAS_MAP.put(394, "Virtual Switch Link");
@@ -1174,13 +1670,13 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(407, "Vl509");
         RDeEssnBrue_IF_IFDESCR_MAP.put(407, "Vlan509");
         RDeEssnBrue_IF_IFALIAS_MAP.put(407, "User Segment 2 - wing D");
-        RDeEssnBrue_IF_NETMASK_MAP.put(407, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(407, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(16, "Gi1/1/16");
         RDeEssnBrue_IF_IFDESCR_MAP.put(16, "GigabitEthernet1/1/16");
         RDeEssnBrue_IF_IFNAME_MAP.put(312, "Lo0");
         RDeEssnBrue_IF_IFDESCR_MAP.put(312, "Loopback0");
         RDeEssnBrue_IF_IFALIAS_MAP.put(312, "Management Interface");
-        RDeEssnBrue_IF_NETMASK_MAP.put(312, InetAddressUtils.addr("255.255.255.255"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(312, InetAddressUtils.addr("255.255.255.255"));
         RDeEssnBrue_IF_IFNAME_MAP.put(139, "Gi1/3/43");
         RDeEssnBrue_IF_IFDESCR_MAP.put(139, "GigabitEthernet1/3/43");
         RDeEssnBrue_IF_IFNAME_MAP.put(52, "Gi1/2/4");
@@ -1246,11 +1742,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(437, "Vl954");
         RDeEssnBrue_IF_IFDESCR_MAP.put(437, "Vlan954");
         RDeEssnBrue_IF_IFALIAS_MAP.put(437, "VoIP Segment 2 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(437, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(437, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(436, "Vl953");
         RDeEssnBrue_IF_IFDESCR_MAP.put(436, "Vlan953");
         RDeEssnBrue_IF_IFALIAS_MAP.put(436, "VoIP Segment 1 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(436, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(436, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(250, "Gi2/3/1");
         RDeEssnBrue_IF_IFDESCR_MAP.put(250, "GigabitEthernet2/3/1");
         RDeEssnBrue_IF_IFALIAS_MAP.put(250, "s-de-essn-brue-062 -");
@@ -1278,7 +1774,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(438, "Vl955");
         RDeEssnBrue_IF_IFDESCR_MAP.put(438, "Vlan955");
         RDeEssnBrue_IF_IFALIAS_MAP.put(438, "VoIP Segment 3 - wing B");
-        RDeEssnBrue_IF_NETMASK_MAP.put(438, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(438, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(219, "Gi2/2/18");
         RDeEssnBrue_IF_IFDESCR_MAP.put(219, "GigabitEthernet2/2/18");
         RDeEssnBrue_IF_IFALIAS_MAP.put(219, "s-de-essn-brue-005 -");
@@ -1322,11 +1818,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(439, "Vl956");
         RDeEssnBrue_IF_IFDESCR_MAP.put(439, "Vlan956");
         RDeEssnBrue_IF_IFALIAS_MAP.put(439, "VoIP Segment 1 - wing C");
-        RDeEssnBrue_IF_NETMASK_MAP.put(439, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(439, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(424, "Vl755");
         RDeEssnBrue_IF_IFDESCR_MAP.put(424, "Vlan755");
         RDeEssnBrue_IF_IFALIAS_MAP.put(424, "Printer Segment - wing F");
-        RDeEssnBrue_IF_NETMASK_MAP.put(424, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(424, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(375, "Po146");
         RDeEssnBrue_IF_IFDESCR_MAP.put(375, "Port-channel146");
         RDeEssnBrue_IF_IFALIAS_MAP.put(375, "s-de-essn-brue-146");
@@ -1367,7 +1863,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(423, "Vl754");
         RDeEssnBrue_IF_IFDESCR_MAP.put(423, "Vlan754");
         RDeEssnBrue_IF_IFALIAS_MAP.put(423, "Printer Segment - wing E");
-        RDeEssnBrue_IF_NETMASK_MAP.put(423, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(423, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(240, "Gi2/2/39");
         RDeEssnBrue_IF_IFDESCR_MAP.put(240, "GigabitEthernet2/2/39");
         RDeEssnBrue_IF_IFALIAS_MAP.put(240, "s-de-essn-brue-088 -");
@@ -1377,7 +1873,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(428, "Vl760");
         RDeEssnBrue_IF_IFDESCR_MAP.put(428, "Vlan760");
         RDeEssnBrue_IF_IFALIAS_MAP.put(428, "Printer_EGS-Dispatching");
-        RDeEssnBrue_IF_NETMASK_MAP.put(428, InetAddressUtils.addr("255.255.255.224"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(428, InetAddressUtils.addr("255.255.255.224"));
         RDeEssnBrue_IF_IFNAME_MAP.put(259, "Gi2/3/10");
         RDeEssnBrue_IF_IFDESCR_MAP.put(259, "GigabitEthernet2/3/10");
         RDeEssnBrue_IF_IFALIAS_MAP.put(259, "s-de-essn-brue-164 -");
@@ -1391,7 +1887,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(417, "Vl519");
         RDeEssnBrue_IF_IFDESCR_MAP.put(417, "Vlan519");
         RDeEssnBrue_IF_IFALIAS_MAP.put(417, "User Segment 2 - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(417, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(417, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(223, "Gi2/2/22");
         RDeEssnBrue_IF_IFDESCR_MAP.put(223, "GigabitEthernet2/2/22");
         RDeEssnBrue_IF_IFALIAS_MAP.put(223, "s-de-essn-brue-009 -");
@@ -1412,7 +1908,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(429, "Vl800");
         RDeEssnBrue_IF_IFDESCR_MAP.put(429, "Vlan800");
         RDeEssnBrue_IF_IFALIAS_MAP.put(429, "transfer_3rd-party_firewall");
-        RDeEssnBrue_IF_NETMASK_MAP.put(429, InetAddressUtils.addr("255.255.255.248"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(429, InetAddressUtils.addr("255.255.255.248"));
         RDeEssnBrue_IF_IFNAME_MAP.put(85, "Gi1/2/37");
         RDeEssnBrue_IF_IFDESCR_MAP.put(85, "GigabitEthernet1/2/37");
         RDeEssnBrue_IF_IFALIAS_MAP.put(85, "s-de-essn-brue-086 -");
@@ -1442,7 +1938,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(418, "Vl520");
         RDeEssnBrue_IF_IFDESCR_MAP.put(418, "Vlan520");
         RDeEssnBrue_IF_IFALIAS_MAP.put(418, "Clients_EGS-Dispatching");
-        RDeEssnBrue_IF_NETMASK_MAP.put(418, InetAddressUtils.addr("255.255.255.192"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(418, InetAddressUtils.addr("255.255.255.192"));
         RDeEssnBrue_IF_IFNAME_MAP.put(281, "Gi2/3/32");
         RDeEssnBrue_IF_IFDESCR_MAP.put(281, "GigabitEthernet2/3/32");
         RDeEssnBrue_IF_IFNAME_MAP.put(513, "VLAN-960");
@@ -1452,7 +1948,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(433, "Vl950");
         RDeEssnBrue_IF_IFDESCR_MAP.put(433, "Vlan950");
         RDeEssnBrue_IF_IFALIAS_MAP.put(433, "VoIP Segment 1 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(433, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(433, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(499, "VLAN-850");
         RDeEssnBrue_IF_IFDESCR_MAP.put(499, "unrouted VLAN 850");
         RDeEssnBrue_IF_IFNAME_MAP.put(104, "Gi1/3/8");
@@ -1468,16 +1964,16 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(399, "Vl501");
         RDeEssnBrue_IF_IFDESCR_MAP.put(399, "Vlan501");
         RDeEssnBrue_IF_IFALIAS_MAP.put(399, "User Segment 2 - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(399, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(399, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(518, "VLAN-965");
         RDeEssnBrue_IF_IFDESCR_MAP.put(518, "unrouted VLAN 965");
         RDeEssnBrue_IF_IFNAME_MAP.put(451, "Vl968");
         RDeEssnBrue_IF_IFDESCR_MAP.put(451, "Vlan968");
         RDeEssnBrue_IF_IFALIAS_MAP.put(451, "VoIP Segment 1 - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(451, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(451, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(397, "Vl453");
         RDeEssnBrue_IF_IFDESCR_MAP.put(397, "Vlan453");
-        RDeEssnBrue_IF_NETMASK_MAP.put(397, InetAddressUtils.addr("255.255.255.128"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(397, InetAddressUtils.addr("255.255.255.128"));
         RDeEssnBrue_IF_IFNAME_MAP.put(254, "Gi2/3/5");
         RDeEssnBrue_IF_IFDESCR_MAP.put(254, "GigabitEthernet2/3/5");
         RDeEssnBrue_IF_IFALIAS_MAP.put(254, "s-de-essn-brue-144 -");
@@ -1525,7 +2021,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(406, "Vl508");
         RDeEssnBrue_IF_IFDESCR_MAP.put(406, "Vlan508");
         RDeEssnBrue_IF_IFALIAS_MAP.put(406, "User Segment 1 - wing D");
-        RDeEssnBrue_IF_NETMASK_MAP.put(406, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(406, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(347, "Po44");
         RDeEssnBrue_IF_IFDESCR_MAP.put(347, "Port-channel44");
         RDeEssnBrue_IF_IFALIAS_MAP.put(347, "s-de-essn-brue-044");
@@ -1553,7 +2049,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(449, "Vl966");
         RDeEssnBrue_IF_IFDESCR_MAP.put(449, "Vlan966");
         RDeEssnBrue_IF_IFALIAS_MAP.put(449, "VoIP Segment 1 - wing H");
-        RDeEssnBrue_IF_NETMASK_MAP.put(449, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(449, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(484, "VLAN-518");
         RDeEssnBrue_IF_IFDESCR_MAP.put(484, "unrouted VLAN 518");
         RDeEssnBrue_IF_IFNAME_MAP.put(106, "Gi1/3/10");
@@ -1562,11 +2058,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(450, "Vl967");
         RDeEssnBrue_IF_IFDESCR_MAP.put(450, "Vlan967");
         RDeEssnBrue_IF_IFALIAS_MAP.put(450, "VoIP Segment 2 - wing H");
-        RDeEssnBrue_IF_NETMASK_MAP.put(450, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(450, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(441, "Vl958");
         RDeEssnBrue_IF_IFDESCR_MAP.put(441, "Vlan958");
         RDeEssnBrue_IF_IFALIAS_MAP.put(441, "VoIP Segment 1 - wing D");
-        RDeEssnBrue_IF_NETMASK_MAP.put(441, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(441, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(227, "Gi2/2/26");
         RDeEssnBrue_IF_IFDESCR_MAP.put(227, "GigabitEthernet2/2/26");
         RDeEssnBrue_IF_IFALIAS_MAP.put(227, "s-de-essn-brue-013 -");
@@ -1609,7 +2105,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(432, "Vl900");
         RDeEssnBrue_IF_IFDESCR_MAP.put(432, "Vlan900");
         RDeEssnBrue_IF_IFALIAS_MAP.put(432, "Management");
-        RDeEssnBrue_IF_NETMASK_MAP.put(432, InetAddressUtils.addr("255.255.254.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(432, InetAddressUtils.addr("255.255.254.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(497, "VLAN-800");
         RDeEssnBrue_IF_IFDESCR_MAP.put(497, "unrouted VLAN 800");
         RDeEssnBrue_IF_IFNAME_MAP.put(486, "VLAN-520");
@@ -1646,7 +2142,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(416, "Vl518");
         RDeEssnBrue_IF_IFDESCR_MAP.put(416, "Vlan518");
         RDeEssnBrue_IF_IFALIAS_MAP.put(416, "User Segment 1 - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(416, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(416, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(288, "Gi2/3/39");
         RDeEssnBrue_IF_IFDESCR_MAP.put(288, "GigabitEthernet2/3/39");
         RDeEssnBrue_IF_IFNAME_MAP.put(356, "Po87");
@@ -1655,7 +2151,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(411, "Vl513");
         RDeEssnBrue_IF_IFDESCR_MAP.put(411, "Vlan513");
         RDeEssnBrue_IF_IFALIAS_MAP.put(411, "User Segment 2 - wing F");
-        RDeEssnBrue_IF_NETMASK_MAP.put(411, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(411, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(10, "Gi1/1/10");
         RDeEssnBrue_IF_IFDESCR_MAP.put(10, "GigabitEthernet1/1/10");
         RDeEssnBrue_IF_IFNAME_MAP.put(162, "Gi2/1/9");
@@ -1683,7 +2179,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(419, "Vl750");
         RDeEssnBrue_IF_IFDESCR_MAP.put(419, "Vlan750");
         RDeEssnBrue_IF_IFALIAS_MAP.put(419, "Printer Segment - wing A");
-        RDeEssnBrue_IF_NETMASK_MAP.put(419, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(419, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(253, "Gi2/3/4");
         RDeEssnBrue_IF_IFDESCR_MAP.put(253, "GigabitEthernet2/3/4");
         RDeEssnBrue_IF_IFALIAS_MAP.put(253, "s-de-essn-brue-142 -");
@@ -1697,7 +2193,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(427, "Vl758");
         RDeEssnBrue_IF_IFDESCR_MAP.put(427, "Vlan758");
         RDeEssnBrue_IF_IFALIAS_MAP.put(427, "Printer Segment - wing I");
-        RDeEssnBrue_IF_NETMASK_MAP.put(427, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(427, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(107, "Gi1/3/11");
         RDeEssnBrue_IF_IFDESCR_MAP.put(107, "GigabitEthernet1/3/11");
         RDeEssnBrue_IF_IFALIAS_MAP.put(107, "s-de-essn-brue-165 -");
@@ -1713,7 +2209,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(454, "Vl979");
         RDeEssnBrue_IF_IFDESCR_MAP.put(454, "Vlan979");
         RDeEssnBrue_IF_IFALIAS_MAP.put(454, "VoIP Management Segment");
-        RDeEssnBrue_IF_NETMASK_MAP.put(454, InetAddressUtils.addr("255.255.255.192"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(454, InetAddressUtils.addr("255.255.255.192"));
         RDeEssnBrue_IF_IFNAME_MAP.put(313, "Tu8");
         RDeEssnBrue_IF_IFDESCR_MAP.put(313, "Tunnel8");
         RDeEssnBrue_IF_IFALIAS_MAP.put(313, "r-de-hann-tres-021");
@@ -1764,7 +2260,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(410, "Vl512");
         RDeEssnBrue_IF_IFDESCR_MAP.put(410, "Vlan512");
         RDeEssnBrue_IF_IFALIAS_MAP.put(410, "User Segment 1 - wing F");
-        RDeEssnBrue_IF_NETMASK_MAP.put(410, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(410, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(378, "Po160");
         RDeEssnBrue_IF_IFDESCR_MAP.put(378, "Port-channel160");
         RDeEssnBrue_IF_IFALIAS_MAP.put(378, "s-de-essn-brue-160 -");
@@ -1779,14 +2275,14 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFNAME_MAP.put(405, "Vl507");
         RDeEssnBrue_IF_IFDESCR_MAP.put(405, "Vlan507");
         RDeEssnBrue_IF_IFALIAS_MAP.put(405, "User Segment 2 - wing C");
-        RDeEssnBrue_IF_NETMASK_MAP.put(405, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(405, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(338, "Po35");
         RDeEssnBrue_IF_IFDESCR_MAP.put(338, "Port-channel35");
         RDeEssnBrue_IF_IFALIAS_MAP.put(338, "s-de-essn-brue-035");
         RDeEssnBrue_IF_IFNAME_MAP.put(426, "Vl757");
         RDeEssnBrue_IF_IFDESCR_MAP.put(426, "Vlan757");
         RDeEssnBrue_IF_IFALIAS_MAP.put(426, "Printer Segment - wing H");
-        RDeEssnBrue_IF_NETMASK_MAP.put(426, InetAddressUtils.addr("255.255.255.0"));
+        //RDeEssnBrue_IF_NETMASK_MAP.put(426, InetAddressUtils.addr("255.255.255.0"));
         RDeEssnBrue_IF_IFNAME_MAP.put(83, "Gi1/2/35");
         RDeEssnBrue_IF_IFDESCR_MAP.put(83, "GigabitEthernet1/2/35");
         RDeEssnBrue_IF_IFALIAS_MAP.put(83, "s-de-essn-brue-084 -");
@@ -1818,6 +2314,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RDeEssnBrue_IF_IFDESCR_MAP.put(291, "GigabitEthernet2/3/42");
 
         SDeEssnBrue165_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.175"), 13600001);
+        SDeEssnBrue165_IP_MK_MAP.put(InetAddressUtils.addr("10.165.62.175"), InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue165_IF_IFNAME_MAP.put(5012, "5/12");
         SDeEssnBrue165_IF_IFDESCR_MAP.put(5012, "Alcatel-Lucent 5/12");
         SDeEssnBrue165_IF_IFNAME_MAP.put(6022, "6/22");
@@ -1853,7 +2350,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue165_IF_IFDESCR_MAP.put(4021, "Alcatel-Lucent 4/21");
         SDeEssnBrue165_IF_IFNAME_MAP.put(13600001, "management");
         SDeEssnBrue165_IF_IFDESCR_MAP.put(13600001, "management");
-        SDeEssnBrue165_IF_NETMASK_MAP.put(13600001, InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue165_IF_IFNAME_MAP.put(4018, "4/18");
         SDeEssnBrue165_IF_IFDESCR_MAP.put(4018, "Alcatel-Lucent 4/18");
         SDeEssnBrue165_IF_IFNAME_MAP.put(2008, "2/8");
@@ -2169,6 +2665,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue165_IF_IFDESCR_MAP.put(1006, "Alcatel-Lucent 1/6");
         
         SDeEssnBrue081_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.91"), 13600001);
+        SDeEssnBrue081_IP_MK_MAP.put(InetAddressUtils.addr("10.165.62.91"), InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue081_IF_IFNAME_MAP.put(1024, "1/24");
         SDeEssnBrue081_IF_IFDESCR_MAP.put(1024, "Alcatel-Lucent 1/24");
         SDeEssnBrue081_IF_IFNAME_MAP.put(1018, "1/18");
@@ -2231,9 +2728,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue081_IF_IFALIAS_MAP.put(1025, "r-de-essn-brue-001 - HVT-I");
         SDeEssnBrue081_IF_IFNAME_MAP.put(13600001, "management");
         SDeEssnBrue081_IF_IFDESCR_MAP.put(13600001, "management");
-        SDeEssnBrue081_IF_NETMASK_MAP.put(13600001, InetAddressUtils.addr("255.255.254.0"));
-        
+
         SDeEssnBrue121_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.131"), 13600001);
+        SDeEssnBrue121_IP_MK_MAP.put(InetAddressUtils.addr("10.165.62.131"), InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue121_IF_IFNAME_MAP.put(1024, "1/24");
         SDeEssnBrue121_IF_IFDESCR_MAP.put(1024, "Alcatel-Lucent 1/24");
         SDeEssnBrue121_IF_IFNAME_MAP.put(40000010, "r-de-essn-brue-001");
@@ -2272,7 +2769,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue121_IF_IFDESCR_MAP.put(1001, "Alcatel-Lucent 1/1");
         SDeEssnBrue121_IF_IFNAME_MAP.put(13600001, "management");
         SDeEssnBrue121_IF_IFDESCR_MAP.put(13600001, "management");
-        SDeEssnBrue121_IF_NETMASK_MAP.put(13600001, InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue121_IF_IFNAME_MAP.put(1026, "1/26");
         SDeEssnBrue121_IF_IFDESCR_MAP.put(1026, "Alcatel-Lucent 1/26");
         SDeEssnBrue121_IF_IFNAME_MAP.put(1008, "1/8");
@@ -2299,6 +2795,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue121_IF_IFDESCR_MAP.put(1009, "Alcatel-Lucent 1/9");
         
         SDeEssnBrue142_IP_IF_MAP.put(InetAddressUtils.addr("10.165.62.152"), 13600001);
+        SDeEssnBrue142_IP_MK_MAP.put(InetAddressUtils.addr("10.165.62.152"), InetAddressUtils.addr("255.255.254.0"));
         SDeEssnBrue142_IF_IFNAME_MAP.put(1020, "1/20");
         SDeEssnBrue142_IF_IFDESCR_MAP.put(1020, "Alcatel-Lucent 1/20");
         SDeEssnBrue142_IF_IFNAME_MAP.put(1006, "1/6");
@@ -2418,8 +2915,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SDeEssnBrue142_IF_IFDESCR_MAP.put(2015, "Alcatel-Lucent 2/15");
         SDeEssnBrue142_IF_IFNAME_MAP.put(13600001, "management");
         SDeEssnBrue142_IF_IFDESCR_MAP.put(13600001, "management");
-        SDeEssnBrue142_IF_NETMASK_MAP.put(13600001, InetAddressUtils.addr("255.255.254.0"));
-        
+
+
+
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.178.2"), 452);
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.191.129"), 3);
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.190.1"), 950);
@@ -2477,6 +2975,65 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.106.90.1"), 600);
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.192.1"), 508);
         RSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("172.29.244.1"), 850);
+        
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.74.124.2"), InetAddressUtils.addr("255.255.255.252"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.105.136.1"), InetAddressUtils.addr("255.255.254.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.105.136.2"), InetAddressUtils.addr("255.255.254.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.0.1"), InetAddressUtils.addr("255.255.252.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.0.2"), InetAddressUtils.addr("255.255.252.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.61.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.61.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.62.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.62.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.90.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.106.90.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.32.1"), InetAddressUtils.addr("255.255.254.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.32.2"), InetAddressUtils.addr("255.255.254.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.34.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.34.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.92.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.107.92.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.136.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.136.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.176.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.176.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.178.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.178.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.184.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.184.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.185.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.185.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.186.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.186.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.187.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.187.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.190.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.190.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.191.129"), InetAddressUtils.addr("255.255.255.128"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.191.130"), InetAddressUtils.addr("255.255.255.128"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.192.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.192.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.24.17"), InetAddressUtils.addr("255.255.255.240"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.24.18"), InetAddressUtils.addr("255.255.255.240"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.27.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.27.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.28.33"), InetAddressUtils.addr("255.255.255.224"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.28.34"), InetAddressUtils.addr("255.255.255.224"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.35.1"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.35.2"), InetAddressUtils.addr("255.255.255.0"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.232.129"), InetAddressUtils.addr("255.255.255.192"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.232.130"), InetAddressUtils.addr("255.255.255.192"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.247.90"), InetAddressUtils.addr("255.255.255.252"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.251.98"), InetAddressUtils.addr("255.255.255.252"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.251.137"), InetAddressUtils.addr("255.255.255.252"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.111.253.9"), InetAddressUtils.addr("255.255.255.255"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("143.217.11.129"), InetAddressUtils.addr("255.255.255.224"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("143.217.11.130"), InetAddressUtils.addr("255.255.255.224"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("172.29.244.1"), InetAddressUtils.addr("255.255.255.240"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("172.29.244.2"), InetAddressUtils.addr("255.255.255.240"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("172.29.244.81"), InetAddressUtils.addr("255.255.255.240"));
+        RSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("172.29.244.82"), InetAddressUtils.addr("255.255.255.240"));
+
         RSeMalmNobe_IF_IFNAME_MAP.put(10605, "Gi2/0/5");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10605, "GigabitEthernet2/0/5");
         RSeMalmNobe_IF_MAC_MAP.put(10605, "a40cc34eb785");
@@ -2499,12 +3056,12 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(454, "Vlan454");
         RSeMalmNobe_IF_MAC_MAP.put(454, "a40cc34eacde");
         RSeMalmNobe_IF_IFALIAS_MAP.put(454, "ID32_OTHER_Tele_ID32_10.111.27.0_24 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(454, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(454, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(507, "Vl507");
         RSeMalmNobe_IF_IFDESCR_MAP.put(507, "Vlan507");
         RSeMalmNobe_IF_MAC_MAP.put(507, "a40cc34eacd0");
         RSeMalmNobe_IF_IFALIAS_MAP.put(507, "SSP_Nobel_10.206.16.0/24 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(507, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(507, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11104, "Gi3/0/4");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11104, "GigabitEthernet3/0/4");
         RSeMalmNobe_IF_MAC_MAP.put(11104, "a40cc34f0184");
@@ -2513,17 +3070,17 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(508, "Vlan508");
         RSeMalmNobe_IF_MAC_MAP.put(508, "a40cc34eacd1");
         RSeMalmNobe_IF_IFALIAS_MAP.put(508, "Generellt_Nobel_172.30.185.128/25 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(508, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(508, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(506, "Vl506");
         RSeMalmNobe_IF_IFDESCR_MAP.put(506, "Vlan506");
         RSeMalmNobe_IF_MAC_MAP.put(506, "a40cc34eaccf");
         RSeMalmNobe_IF_IFALIAS_MAP.put(506, "Sydkraft_Nobel_143.217.10.0 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(506, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(506, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(505, "Vl505");
         RSeMalmNobe_IF_IFDESCR_MAP.put(505, "Vlan505");
         RSeMalmNobe_IF_MAC_MAP.put(505, "a40cc34eacc7");
         RSeMalmNobe_IF_IFALIAS_MAP.put(505, "SKEN_Nobel_10.106.0.0 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(505, InetAddressUtils.addr("255.255.252.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(505, InetAddressUtils.addr("255.255.252.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10612, "Gi2/0/12");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10612, "GigabitEthernet2/0/12");
         RSeMalmNobe_IF_MAC_MAP.put(10612, "a40cc34eb78c");
@@ -2546,12 +3103,12 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(603, "Vlan603");
         RSeMalmNobe_IF_MAC_MAP.put(603, "a40cc34eacda");
         RSeMalmNobe_IF_IFALIAS_MAP.put(603, "ID32_Server_El-Nat");
-        RSeMalmNobe_IF_NETMASK_MAP.put(603, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(603, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(3, "Vl3");
         RSeMalmNobe_IF_IFDESCR_MAP.put(3, "Vlan3");
         RSeMalmNobe_IF_MAC_MAP.put(3, "a40cc34eacc6");
         RSeMalmNobe_IF_IFALIAS_MAP.put(3, "SE-MALM-NOBE Mgmt");
-        RSeMalmNobe_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.128"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.128"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11101, "Gi3/0/1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11101, "GigabitEthernet3/0/1");
         RSeMalmNobe_IF_MAC_MAP.put(11101, "a40cc34f0181");
@@ -2562,7 +3119,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(606, "Vlan606");
         RSeMalmNobe_IF_MAC_MAP.put(606, "a40cc34eacdd");
         RSeMalmNobe_IF_IFALIAS_MAP.put(606, "server-net_10.111.24.16/28");
-        RSeMalmNobe_IF_NETMASK_MAP.put(606, InetAddressUtils.addr("255.255.255.240"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(606, InetAddressUtils.addr("255.255.255.240"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10110, "Gi1/0/10");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10110, "GigabitEthernet1/0/10");
         RSeMalmNobe_IF_MAC_MAP.put(10110, "a40cc34eac8a");
@@ -2580,7 +3137,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(504, "Vlan504");
         RSeMalmNobe_IF_MAC_MAP.put(504, "a40cc34eacce");
         RSeMalmNobe_IF_IFALIAS_MAP.put(504, "10.107.34.0 ID32 EGSV CLIENT1 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(504, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(504, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10610, "Gi2/0/10");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10610, "GigabitEthernet2/0/10");
         RSeMalmNobe_IF_MAC_MAP.put(10610, "a40cc34eb78a");
@@ -2597,12 +3154,12 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(452, "Vlan452");
         RSeMalmNobe_IF_MAC_MAP.put(452, "a40cc34eacd7");
         RSeMalmNobe_IF_IFALIAS_MAP.put(452, "SSP_tele_Nobel_143.217.11.128/27 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(452, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(452, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(602, "Vl602");
         RSeMalmNobe_IF_IFDESCR_MAP.put(602, "Vlan602");
         RSeMalmNobe_IF_MAC_MAP.put(602, "a40cc34eacd6");
         RSeMalmNobe_IF_IFALIAS_MAP.put(602, "EON_Gas_Nobel_143.217.177.0");
-        RSeMalmNobe_IF_NETMASK_MAP.put(602, InetAddressUtils.addr("255.255.254.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(602, InetAddressUtils.addr("255.255.254.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11105, "Gi3/0/5");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11105, "GigabitEthernet3/0/5");
         RSeMalmNobe_IF_MAC_MAP.put(11105, "a40cc34f0185");
@@ -2623,7 +3180,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(950, "Vlan950");
         RSeMalmNobe_IF_MAC_MAP.put(950, "a40cc34eacd4");
         RSeMalmNobe_IF_IFALIAS_MAP.put(950, "SE-MALM-NOBE VOIP");
-        RSeMalmNobe_IF_NETMASK_MAP.put(950, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(950, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10601, "Gi2/0/1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10601, "GigabitEthernet2/0/1");
         RSeMalmNobe_IF_MAC_MAP.put(10601, "a40cc34eb781");
@@ -2636,7 +3193,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(800, "Vlan800");
         RSeMalmNobe_IF_MAC_MAP.put(800, "a40cc34eacc1");
         RSeMalmNobe_IF_IFALIAS_MAP.put(800, "to-WAN_Data-VRF-1");
-        RSeMalmNobe_IF_NETMASK_MAP.put(800, InetAddressUtils.addr("255.255.255.252"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(800, InetAddressUtils.addr("255.255.255.252"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11107, "Gi3/0/7");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11107, "GigabitEthernet3/0/7");
         RSeMalmNobe_IF_MAC_MAP.put(11107, "a40cc34f0187");
@@ -2647,7 +3204,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(605, "Vlan605");
         RSeMalmNobe_IF_MAC_MAP.put(605, "a40cc34eacdc");
         RSeMalmNobe_IF_IFALIAS_MAP.put(605, "EON_IS_Mon_Nobel_10.111.232.128");
-        RSeMalmNobe_IF_NETMASK_MAP.put(605, InetAddressUtils.addr("255.255.255.192"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(605, InetAddressUtils.addr("255.255.255.192"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10606, "Gi2/0/6");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10606, "GigabitEthernet2/0/6");
         RSeMalmNobe_IF_MAC_MAP.put(10606, "a40cc34eb786");
@@ -2668,11 +3225,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(502, "Vlan502");
         RSeMalmNobe_IF_MAC_MAP.put(502, "a40cc34eacca");
         RSeMalmNobe_IF_IFALIAS_MAP.put(502, "SE-MALM-NOBE Client-3");
-        RSeMalmNobe_IF_NETMASK_MAP.put(502, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(502, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(399, "Vl399");
         RSeMalmNobe_IF_IFDESCR_MAP.put(399, "Vlan399");
         RSeMalmNobe_IF_MAC_MAP.put(399, "a40cc34eacc5");
-        RSeMalmNobe_IF_NETMASK_MAP.put(399, InetAddressUtils.addr("255.255.255.252"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(399, InetAddressUtils.addr("255.255.255.252"));
         RSeMalmNobe_IF_IFNAME_MAP.put(5186, "StackSub-St3-1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(5186, "StackSub-St3-1");
         RSeMalmNobe_IF_IFNAME_MAP.put(5179, "StackPort1");
@@ -2681,23 +3238,23 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(851, "Vlan851");
         RSeMalmNobe_IF_MAC_MAP.put(851, "a40cc34eacd9");
         RSeMalmNobe_IF_IFALIAS_MAP.put(851, "VITS-FW transfer");
-        RSeMalmNobe_IF_NETMASK_MAP.put(851, InetAddressUtils.addr("255.255.255.240"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(851, InetAddressUtils.addr("255.255.255.240"));
         RSeMalmNobe_IF_IFNAME_MAP.put(503, "Vl503");
         RSeMalmNobe_IF_IFDESCR_MAP.put(503, "Vlan503");
         RSeMalmNobe_IF_MAC_MAP.put(503, "a40cc34eaccc");
         RSeMalmNobe_IF_IFALIAS_MAP.put(503, "SE-MALM-NOBE Client-4");
-        RSeMalmNobe_IF_NETMASK_MAP.put(503, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(503, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(600, "Vl600");
         RSeMalmNobe_IF_IFDESCR_MAP.put(600, "Vlan600");
         RSeMalmNobe_IF_MAC_MAP.put(600, "a40cc34eacd3");
         RSeMalmNobe_IF_IFALIAS_MAP.put(600, "SKFO_Nobel_10.106.90.0");
-        RSeMalmNobe_IF_NETMASK_MAP.put(600, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(600, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(1, "Vl1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(1, "Vlan1");
         RSeMalmNobe_IF_MAC_MAP.put(1, "a40cc34eacc0");
         RSeMalmNobe_IF_IFNAME_MAP.put(24567, "Lo0");
         RSeMalmNobe_IF_IFDESCR_MAP.put(24567, "Loopback0");
-        RSeMalmNobe_IF_NETMASK_MAP.put(24567, InetAddressUtils.addr("255.255.255.255"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(24567, InetAddressUtils.addr("255.255.255.255"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11106, "Gi3/0/6");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11106, "GigabitEthernet3/0/6");
         RSeMalmNobe_IF_MAC_MAP.put(11106, "a40cc34f0186");
@@ -2706,7 +3263,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(850, "Vlan850");
         RSeMalmNobe_IF_MAC_MAP.put(850, "a40cc34eacd8");
         RSeMalmNobe_IF_IFALIAS_MAP.put(850, "Eldorado_Nobel_172.29.244.0/28 ");
-        RSeMalmNobe_IF_NETMASK_MAP.put(850, InetAddressUtils.addr("255.255.255.240"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(850, InetAddressUtils.addr("255.255.255.240"));
         RSeMalmNobe_IF_IFNAME_MAP.put(5001, "Po1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(5001, "Port-channel1");
         RSeMalmNobe_IF_MAC_MAP.put(5001, "a40cc34eac82");
@@ -2715,22 +3272,22 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(604, "Vlan604");
         RSeMalmNobe_IF_MAC_MAP.put(604, "a40cc34eacdb");
         RSeMalmNobe_IF_IFALIAS_MAP.put(604, "SKEN-server-net-10.106.62.0/24");
-        RSeMalmNobe_IF_NETMASK_MAP.put(604, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(604, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(450, "Vl450");
         RSeMalmNobe_IF_IFDESCR_MAP.put(450, "Vlan450");
         RSeMalmNobe_IF_MAC_MAP.put(450, "a40cc34eaccb");
         RSeMalmNobe_IF_IFALIAS_MAP.put(450, "ID32_OTHER_1");
-        RSeMalmNobe_IF_NETMASK_MAP.put(450, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(450, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(501, "Vl501");
         RSeMalmNobe_IF_IFDESCR_MAP.put(501, "Vlan501");
         RSeMalmNobe_IF_MAC_MAP.put(501, "a40cc34eacc9");
         RSeMalmNobe_IF_IFALIAS_MAP.put(501, "SE-MALM-NOBE Client-2");
-        RSeMalmNobe_IF_NETMASK_MAP.put(501, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(501, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(835, "Vl835");
         RSeMalmNobe_IF_IFDESCR_MAP.put(835, "Vlan835");
         RSeMalmNobe_IF_MAC_MAP.put(835, "a40cc34eacc2");
         RSeMalmNobe_IF_IFALIAS_MAP.put(835, "to-WAN_Mgmt-VRF-2");
-        RSeMalmNobe_IF_NETMASK_MAP.put(835, InetAddressUtils.addr("255.255.255.252"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(835, InetAddressUtils.addr("255.255.255.252"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10604, "Gi2/0/4");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10604, "GigabitEthernet2/0/4");
         RSeMalmNobe_IF_MAC_MAP.put(10604, "a40cc34eb784");
@@ -2747,11 +3304,11 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(10112, "GigabitEthernet1/0/12");
         RSeMalmNobe_IF_MAC_MAP.put(10112, "a40cc34eacc3");
         RSeMalmNobe_IF_IFALIAS_MAP.put(10112, "r-se-malm-nobe-005 - LEGACY_CONNECTION");
-        RSeMalmNobe_IF_NETMASK_MAP.put(10112, InetAddressUtils.addr("255.255.255.252"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(10112, InetAddressUtils.addr("255.255.255.252"));
         RSeMalmNobe_IF_IFNAME_MAP.put(451, "Vl451");
         RSeMalmNobe_IF_IFDESCR_MAP.put(451, "Vlan451");
         RSeMalmNobe_IF_MAC_MAP.put(451, "a40cc34eacd2");
-        RSeMalmNobe_IF_NETMASK_MAP.put(451, InetAddressUtils.addr("255.255.255.224"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(451, InetAddressUtils.addr("255.255.255.224"));
         RSeMalmNobe_IF_IFNAME_MAP.put(11112, "Gi3/0/12");
         RSeMalmNobe_IF_IFDESCR_MAP.put(11112, "GigabitEthernet3/0/12");
         RSeMalmNobe_IF_MAC_MAP.put(11112, "a40cc34f018c");
@@ -2764,12 +3321,12 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(500, "Vlan500");
         RSeMalmNobe_IF_MAC_MAP.put(500, "a40cc34eacc8");
         RSeMalmNobe_IF_IFALIAS_MAP.put(500, "SE-MALM-NOBE Client-1");
-        RSeMalmNobe_IF_NETMASK_MAP.put(500, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(500, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(601, "Vl601");
         RSeMalmNobe_IF_IFDESCR_MAP.put(601, "Vlan601");
         RSeMalmNobe_IF_MAC_MAP.put(601, "a40cc34eacd5");
         RSeMalmNobe_IF_IFALIAS_MAP.put(601, "ES_Nobel_10.105.136.0/23");
-        RSeMalmNobe_IF_NETMASK_MAP.put(601, InetAddressUtils.addr("255.255.254.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(601, InetAddressUtils.addr("255.255.254.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10103, "Gi1/0/3");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10103, "GigabitEthernet1/0/3");
         RSeMalmNobe_IF_MAC_MAP.put(10103, "a40cc34eac83");
@@ -2778,7 +3335,7 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFDESCR_MAP.put(750, "Vlan750");
         RSeMalmNobe_IF_MAC_MAP.put(750, "a40cc34eaccd");
         RSeMalmNobe_IF_IFALIAS_MAP.put(750, "10.107.92.0 ID32_PRINTER_1");
-        RSeMalmNobe_IF_NETMASK_MAP.put(750, InetAddressUtils.addr("255.255.255.0"));
+        //RSeMalmNobe_IF_NETMASK_MAP.put(750, InetAddressUtils.addr("255.255.255.0"));
         RSeMalmNobe_IF_IFNAME_MAP.put(10609, "Gi2/0/9");
         RSeMalmNobe_IF_IFDESCR_MAP.put(10609, "GigabitEthernet2/0/9");
         RSeMalmNobe_IF_MAC_MAP.put(10609, "a40cc34eb789");
@@ -2792,7 +3349,9 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         RSeMalmNobe_IF_IFNAME_MAP.put(5183, "StackSub-St2-1");
         RSeMalmNobe_IF_IFDESCR_MAP.put(5183, "StackSub-St2-1");
         
+
         SSeMalmNobe_IP_IF_MAP.put(InetAddressUtils.addr("10.108.191.171"), 13600001);
+        SSeMalmNobe_IP_MK_MAP.put(InetAddressUtils.addr("10.108.191.171"), InetAddressUtils.addr("255.255.255.128"));
         SSeMalmNobe_IF_IFNAME_MAP.put(2013, "2/13");
         SSeMalmNobe_IF_IFDESCR_MAP.put(2013, "Alcatel-Lucent 2/13");
         SSeMalmNobe_IF_MAC_MAP.put(2013, "00e0b1ec6de5");
@@ -3141,7 +3700,6 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SSeMalmNobe_IF_IFNAME_MAP.put(13600001, "management");
         SSeMalmNobe_IF_IFDESCR_MAP.put(13600001, "management");
         SSeMalmNobe_IF_MAC_MAP.put(13600001, "00e0b1bfff5b");
-        SSeMalmNobe_IF_NETMASK_MAP.put(13600001, InetAddressUtils.addr("255.255.255.128"));
         SSeMalmNobe_IF_IFNAME_MAP.put(1021, "1/21");
         SSeMalmNobe_IF_IFDESCR_MAP.put(1021, "Alcatel-Lucent 1/21");
         SSeMalmNobe_IF_MAC_MAP.put(1021, "00e0b1bfff71");
@@ -3314,53 +3872,53 @@ public class Nms0002NetworkBuilder extends NmsNetworkBuilder {
         SSeMalmNobe_IF_IFDESCR_MAP.put(1002, "Alcatel-Lucent 1/2");
         SSeMalmNobe_IF_MAC_MAP.put(1002, "00e0b1bfff5e");
         SSeMalmNobe_IF_IFALIAS_MAP.put(1002, "EE0211C02");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         
     }
     }
     
     public OnmsNode getRluck001() {
-        return getNode(Rluck001_NAME,Rluck001_SYSOID,Rluck001_IP,Rluck001_IP_IF_MAP,Rluck001_IF_IFNAME_MAP,Rluck001_IF_MAC_MAP,Rluck001_IF_IFDESCR_MAP,Rluck001_IF_IFALIAS_MAP);
+        return getNode(Rluck001_NAME,Rluck001_SYSOID,Rluck001_IP,Rluck001_IP_IF_MAP,Rluck001_IF_IFNAME_MAP,Rluck001_IF_MAC_MAP,Rluck001_IF_IFDESCR_MAP,Rluck001_IF_IFALIAS_MAP, Rluck001_IP_MK_MAP);
     }    
 
     public OnmsNode getSluck001() {
-        return getNode(Sluck001_NAME,Sluck001_SYSOID,Sluck001_IP,Sluck001_IP_IF_MAP,Sluck001_IF_IFNAME_MAP,Sluck001_IF_MAC_MAP,Sluck001_IF_IFDESCR_MAP,Sluck001_IF_IFALIAS_MAP);
+        return getNode(Sluck001_NAME,Sluck001_SYSOID,Sluck001_IP,Sluck001_IP_IF_MAP,Sluck001_IF_IFNAME_MAP,Sluck001_IF_MAC_MAP,Sluck001_IF_IFDESCR_MAP,Sluck001_IF_IFALIAS_MAP, Sluck001_IP_MK_MAP);
     }    
 
     public OnmsNode getRPict001() {
-        return getNode(RPict001_NAME,RPict001_SYSOID,RPict001_IP,RPict001_IP_IF_MAP,RPict001_IF_IFNAME_MAP,RPict001_IF_MAC_MAP,RPict001_IF_IFDESCR_MAP,RPict001_IF_IFALIAS_MAP);
+        return getNode(RPict001_NAME,RPict001_SYSOID,RPict001_IP,RPict001_IP_IF_MAP,RPict001_IF_IFNAME_MAP,RPict001_IF_MAC_MAP,RPict001_IF_IFDESCR_MAP,RPict001_IF_IFALIAS_MAP, RPict001_IP_MK_MAP);
     }    
 
     public OnmsNode getRNewt103() {
-        return getNode(RNewt103_NAME,RNewt103_SYSOID,RNewt103_IP,RNewt103_IP_IF_MAP,RNewt103_IF_IFNAME_MAP,RNewt103_IF_MAC_MAP,RNewt103_IF_IFDESCR_MAP,RNewt103_IF_IFALIAS_MAP);
+        return getNode(RNewt103_NAME,RNewt103_SYSOID,RNewt103_IP,RNewt103_IP_IF_MAP,RNewt103_IF_IFNAME_MAP,RNewt103_IF_MAC_MAP,RNewt103_IF_IFDESCR_MAP,RNewt103_IF_IFALIAS_MAP, RNewt103_IP_MK_MAP);
     }    
 
     public OnmsNode getRDeEssnBrue() {
-        return getNode(RDeEssnBrue_NAME,RDeEssnBrue_SYSOID,RDeEssnBrue_IP,RDeEssnBrue_IP_IF_MAP,RDeEssnBrue_IF_IFNAME_MAP,RDeEssnBrue_IF_MAC_MAP,RDeEssnBrue_IF_IFDESCR_MAP,RDeEssnBrue_IF_IFALIAS_MAP);
+        return getNode(RDeEssnBrue_NAME,RDeEssnBrue_SYSOID,RDeEssnBrue_IP,RDeEssnBrue_IP_IF_MAP,RDeEssnBrue_IF_IFNAME_MAP,RDeEssnBrue_IF_MAC_MAP,RDeEssnBrue_IF_IFDESCR_MAP,RDeEssnBrue_IF_IFALIAS_MAP, RDeEssnBrue_IP_MK_MAP);
     }    
 
     public OnmsNode getSDeEssnBrue165() {
-        return getNode(SDeEssnBrue165_NAME,SDeEssnBrue165_SYSOID,SDeEssnBrue165_IP,SDeEssnBrue165_IP_IF_MAP,SDeEssnBrue165_IF_IFNAME_MAP,SDeEssnBrue165_IF_MAC_MAP,SDeEssnBrue165_IF_IFDESCR_MAP,SDeEssnBrue165_IF_IFALIAS_MAP);
+        return getNode(SDeEssnBrue165_NAME,SDeEssnBrue165_SYSOID,SDeEssnBrue165_IP,SDeEssnBrue165_IP_IF_MAP,SDeEssnBrue165_IF_IFNAME_MAP,SDeEssnBrue165_IF_MAC_MAP,SDeEssnBrue165_IF_IFDESCR_MAP,SDeEssnBrue165_IF_IFALIAS_MAP, SDeEssnBrue165_IP_MK_MAP);
     }    
 
     public OnmsNode getSDeEssnBrue081() {
-        return getNode(SDeEssnBrue081_NAME,SDeEssnBrue081_SYSOID,SDeEssnBrue081_IP,SDeEssnBrue081_IP_IF_MAP,SDeEssnBrue081_IF_IFNAME_MAP,SDeEssnBrue081_IF_MAC_MAP,SDeEssnBrue081_IF_IFDESCR_MAP,SDeEssnBrue081_IF_IFALIAS_MAP);
+        return getNode(SDeEssnBrue081_NAME,SDeEssnBrue081_SYSOID,SDeEssnBrue081_IP,SDeEssnBrue081_IP_IF_MAP,SDeEssnBrue081_IF_IFNAME_MAP,SDeEssnBrue081_IF_MAC_MAP,SDeEssnBrue081_IF_IFDESCR_MAP,SDeEssnBrue081_IF_IFALIAS_MAP, SDeEssnBrue081_IP_MK_MAP);
     }    
 
     public OnmsNode getSDeEssnBrue121() {
-        return getNode(SDeEssnBrue121_NAME,SDeEssnBrue121_SYSOID,SDeEssnBrue121_IP,SDeEssnBrue121_IP_IF_MAP,SDeEssnBrue121_IF_IFNAME_MAP,SDeEssnBrue121_IF_MAC_MAP,SDeEssnBrue121_IF_IFDESCR_MAP,SDeEssnBrue121_IF_IFALIAS_MAP);
+        return getNode(SDeEssnBrue121_NAME,SDeEssnBrue121_SYSOID,SDeEssnBrue121_IP,SDeEssnBrue121_IP_IF_MAP,SDeEssnBrue121_IF_IFNAME_MAP,SDeEssnBrue121_IF_MAC_MAP,SDeEssnBrue121_IF_IFDESCR_MAP,SDeEssnBrue121_IF_IFALIAS_MAP, SDeEssnBrue121_IP_MK_MAP);
     }    
 
     public OnmsNode getSDeEssnBrue142() {
-        return getNode(SDeEssnBrue142_NAME,SDeEssnBrue142_SYSOID,SDeEssnBrue142_IP,SDeEssnBrue142_IP_IF_MAP,SDeEssnBrue142_IF_IFNAME_MAP,SDeEssnBrue142_IF_MAC_MAP,SDeEssnBrue142_IF_IFDESCR_MAP,SDeEssnBrue142_IF_IFALIAS_MAP);
+        return getNode(SDeEssnBrue142_NAME,SDeEssnBrue142_SYSOID,SDeEssnBrue142_IP,SDeEssnBrue142_IP_IF_MAP,SDeEssnBrue142_IF_IFNAME_MAP,SDeEssnBrue142_IF_MAC_MAP,SDeEssnBrue142_IF_IFDESCR_MAP,SDeEssnBrue142_IF_IFALIAS_MAP, SDeEssnBrue142_IP_MK_MAP);
     }    
 
     public OnmsNode getRSeMalmNobe013() {
-        return getNode(RSeMalmNobe_NAME,RSeMalmNobe_SYSOID,RSeMalmNobe_IP,RSeMalmNobe_IP_IF_MAP,RSeMalmNobe_IF_IFNAME_MAP,RSeMalmNobe_IF_MAC_MAP,RSeMalmNobe_IF_IFDESCR_MAP,RSeMalmNobe_IF_IFALIAS_MAP);
+        return getNode(RSeMalmNobe_NAME,RSeMalmNobe_SYSOID,RSeMalmNobe_IP,RSeMalmNobe_IP_IF_MAP,RSeMalmNobe_IF_IFNAME_MAP,RSeMalmNobe_IF_MAC_MAP,RSeMalmNobe_IF_IFDESCR_MAP,RSeMalmNobe_IF_IFALIAS_MAP, RSeMalmNobe_IP_MK_MAP);
     }    
 
     public OnmsNode getSSeMalmNobe561() {
-        return getNode(SSeMalmNobe_NAME,SSeMalmNobe_SYSOID,SSeMalmNobe_IP,SSeMalmNobe_IP_IF_MAP,SSeMalmNobe_IF_IFNAME_MAP,SSeMalmNobe_IF_MAC_MAP,SSeMalmNobe_IF_IFDESCR_MAP,SSeMalmNobe_IF_IFALIAS_MAP);
+        return getNode(SSeMalmNobe_NAME,SSeMalmNobe_SYSOID,SSeMalmNobe_IP,SSeMalmNobe_IP_IF_MAP,SSeMalmNobe_IF_IFNAME_MAP,SSeMalmNobe_IF_MAC_MAP,SSeMalmNobe_IF_IFDESCR_MAP,SSeMalmNobe_IF_IFALIAS_MAP, SSeMalmNobe_IP_MK_MAP);
     }    
 
 }

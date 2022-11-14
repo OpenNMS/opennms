@@ -190,4 +190,23 @@ public abstract class ResourceTypeUtils {
         // since all of operations in the ResourceDao assume that the resources are stored in these paths
         return ResourcePath.get(ResourcePath.get(repository.getRrdBaseDir().getName()), resource);
     }
+
+    /**
+     * Returns the number of elements that correspond to the "node resource" for the given path.
+     * @param path resource path
+     * @return number of elements or -1 if the given path does not map to a node
+     */
+    public static int getNumPathElementsToNodeLevel(ResourcePath path) {
+        final String[] elements = path.elements();
+        if (elements.length >= 2
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && !ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 2;
+        } else if (elements.length >= 4
+                && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
+                && ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
+            return 4;
+        }
+        return -1;
+    }
 }

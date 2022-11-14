@@ -80,7 +80,7 @@ public abstract class CollectorTestUtils {
 
     public static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector,
                                                                String collectionName,
-                                                               ReadablePollOutagesDao pollOutagesDao) {
+                                                               ReadablePollOutagesDao pollOutagesDao, String className) {
         Objects.requireNonNull(pollOutagesDao);
         
         Package pkg = new Package();
@@ -96,7 +96,7 @@ public abstract class CollectorTestUtils {
         pkg.addService(service);
 
         CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation(),
-                createLocationAwareCollectorClient(), pollOutagesDao);
+                createLocationAwareCollectorClient(), pollOutagesDao, className);
         return spec;
     }
 

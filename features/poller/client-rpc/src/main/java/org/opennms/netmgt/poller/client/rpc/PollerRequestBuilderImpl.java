@@ -36,11 +36,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
-import org.opennms.core.rpc.utils.MetadataConstants;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.MapScope;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.MetadataConstants;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -95,7 +95,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     @Override
     public PollerRequestBuilder withMonitorClassName(String className) {
         this.className = className;
-        this.serviceMonitor = client.getRegistry().getMonitorByClassName(className);
+        this.serviceMonitor = client.getRegistry().getMonitorFutureByClassName(className).getNow(null);
         return this;
     }
 
@@ -130,6 +130,16 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
+    public Map<String, Object> getInterpolatedAttributes() {
+        return Interpolator.interpolateObjects(this.attributes, new FallbackScope(
+                this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
+                this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
+                this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
+                MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
+        ));
+    }
+
+    @Override
     public CompletableFuture<PollerResponse> execute() {
         if (serviceMonitor == null) {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
@@ -137,12 +147,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitored service is required.");
         }
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
-            this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
-            this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
-            this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
-            MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
-        ));
+        final Map<String, Object> interpolatedAttributes = this.getInterpolatedAttributes();
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())

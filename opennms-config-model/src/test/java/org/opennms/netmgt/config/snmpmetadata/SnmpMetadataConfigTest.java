@@ -49,7 +49,7 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
                 {
                         getConfig(),
                         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                                "<snmp-metadata-config>\n" +
+                                "<snmp-metadata-config resultsBehavior=\"replace\">\n" +
                                 "    <config name=\"rootLevel\" sysObjectId=\".4.3.2.1\" tree=\".1.2.3.4\">\n" +
                                 "        <entry tree=\".1\" name=\"entry1\" index=\"false\" exact=\"false\"/>\n" +
                                 "        <entry tree=\".2\" name=\"entry2\" index=\"false\" exact=\"false\">\n" +
@@ -68,6 +68,8 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
     private static SnmpMetadataConfig getConfig() {
         final SnmpMetadataConfig snmpMetadataConfig = new SnmpMetadataConfig();
         final Config config = new Config();
+
+        snmpMetadataConfig.setResultsBehavior("replace");
 
         config.setTree(".1.2.3.4");
         config.setSysObjectId(".4.3.2.1");

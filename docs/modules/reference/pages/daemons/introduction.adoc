@@ -5,7 +5,7 @@
 The {page-component-title} service is composed of several daemon "sub-services" that each perform a specific set of tasks.
 Enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.
 
-See the xref:operation:admin/daemon-config-files.adoc[system administration] section for details on sending daemon reload commands.
+See the xref:operation:deep-dive/admin/daemon-config-files.adoc[system administration] section for details on sending daemon reload commands.
 
 == List of daemons
 

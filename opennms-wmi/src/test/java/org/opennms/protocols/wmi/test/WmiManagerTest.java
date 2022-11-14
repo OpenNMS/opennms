@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,13 @@
 
 package org.opennms.protocols.wmi.test;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.reset;
-import static org.easymock.EasyMock.verify;
-import junit.framework.TestCase;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiException;
@@ -45,6 +45,8 @@ import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectSetBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropSetBiosStub;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
@@ -64,7 +66,7 @@ public class WmiManagerTest extends TestCase {
 		super.setUp();
 
 		// Create a mock client to use.
-		m_WmiMock = createMock(IWmiClient.class);
+		m_WmiMock = mock(IWmiClient.class);
 	}
 
 	/*
@@ -121,7 +123,7 @@ public class WmiManagerTest extends TestCase {
 	public final void testInit() throws WmiException {
 		// Set up WMI mock client.
 		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-		replay(m_WmiMock);
+		// replay(m_WmiMock);
 
 		// Create a manager.
 		WmiManager wmiManager = new WmiManager("127.0.0.1", "Administrator",
@@ -144,12 +146,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
 		// 2) Throw a new WmiException indictating a bad hostname.
-		m_WmiMock.connect("bad-hostname", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-		expectLastCall()
-				.andThrow(
-						new WmiException(
-								"Unknown host 'bad-hostname'. Failed to connect to WMI agent."));
-		replay(m_WmiMock);
+		doThrow(new WmiException("Unknown host 'bad-hostname'. Failed to connect to WMI agent.")).when(m_WmiMock).connect(eq("bad-hostname"), anyString(), anyString(), anyString());
 
 		try {
 			// Create a manager.
@@ -162,9 +159,7 @@ public class WmiManagerTest extends TestCase {
 			assertTrue("Exception missing message: Unknown host: " + e, e
 					.getMessage().contains("Unknown host"));
 		}
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("bad-hostname"), anyString(), anyString(), anyString());
 	}
 
 	/**
@@ -179,12 +174,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
 		// 2) Throw a new WmiException indictating a user or password.
-		m_WmiMock.connect("127.0.0.1", "Administrator", "wrongpassword", WmiParams.WMI_DEFAULT_NAMESPACE);
-		expectLastCall()
-				.andThrow(
-						new WmiException(
-								"Failed to connect to host '127.0.0.1': The attempted logon is invalid. This is either due to a bad username or authentication information. [0xC000006D]"));
-		replay(m_WmiMock);
+		doThrow(new WmiException("Failed to connect to host '127.0.0.1': The attempted logon is invalid. This is either due to a bad username or authentication information. [0xC000006D]")).when(m_WmiMock).connect(eq("127.0.0.1"), anyString(), anyString(), anyString());
 
 		try {
 			// Create a manager.
@@ -199,9 +189,7 @@ public class WmiManagerTest extends TestCase {
 							+ e, e.getMessage().contains(
 							"The attempted logon is invalid"));
 		}
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("127.0.0.1"), anyString(), anyString(), anyString());
 	}
 
 	/**
@@ -212,24 +200,14 @@ public class WmiManagerTest extends TestCase {
      * @throws WmiException if there is unexpected behavior.
 	 */
 	public final void testClose() throws WmiException {
-		// Set up WMI mock client.
-		// 1) Expect a call to connect()
-		// 2) Expect a call to disconnect()
-		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-		m_WmiMock.disconnect();
-		replay(m_WmiMock);
-
 		// Create a manager.
 		WmiManager wmiManager = new WmiManager("127.0.0.1", "Administrator",
 				"password");
-		// Initialize
 		wmiManager.init(m_WmiMock);
-		// Disconnect
 		wmiManager.close();
 
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("127.0.0.1"), eq("Administrator"), eq("password"), eq(WmiParams.WMI_DEFAULT_NAMESPACE));
+		verify(m_WmiMock).disconnect();
 	}
 
 	/**
@@ -242,9 +220,6 @@ public class WmiManagerTest extends TestCase {
      * @throws WmiException if there is a problem with the mock object.
 	 */
 	public final void testCloseWithInvalidSession() throws WmiException {
-		// Set up WMI mock client.
-		replay(m_WmiMock);
-
 		try {
 			// Create a manager.
 			WmiManager wmiManager = new WmiManager("127.0.0.1",
@@ -258,10 +233,6 @@ public class WmiManagerTest extends TestCase {
 							+ e, e.getMessage().contains(
 							"WmiClient was not initialized"));
 		}
-
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
 	}
 
 	/**
@@ -276,17 +247,8 @@ public class WmiManagerTest extends TestCase {
 		// Create parameter holder.
 		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "2/12/2004 00:00:00", "EQ",
 				"Win32_BISO", "ReleaseDate");
-		// Set up WMI mock client.
-		// 1) Expect a call to connect() with a bad hostname.
-		// 2) Throw a new WmiException indictating a bad hostname.
-		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-        m_WmiMock.performInstanceOf("Win32_BISO");
-        
-        expectLastCall()
-				.andThrow(
-						new WmiException(
-								"Failed to perform WMI operation: Exception occurred.  [0x80020009] ==> Message from Server: SWbemServicesEx Invalid class"));
-		replay(m_WmiMock);
+
+		doThrow(new WmiException("Failed to perform WMI operation: Exception occurred.  [0x80020009] ==> Message from Server: SWbemServicesEx Invalid class")).when(m_WmiMock).performInstanceOf("Win32_BISO");
 
 		try {
 			// Create a manager.
@@ -306,9 +268,8 @@ public class WmiManagerTest extends TestCase {
 							"SWbemServicesEx Invalid class"));
 		}
 
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("127.0.0.1"), anyString(), anyString(), anyString());
+        verify(m_WmiMock).performInstanceOf(eq("Win32_BISO"));
 	}
 
 	/**
@@ -320,14 +281,9 @@ public class WmiManagerTest extends TestCase {
      * @throws WmiException if there is a problem with the mock object.
 	 */
 	public final void testPerformOpInvalidObject() throws WmiException {
-
-		//
-		// Create parameter holder.
 		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF,"2/12/2004 00:00:00", "EQ",
 				"Win32_BIOS", "RelDate");
-		// Set up WMI mock client.
-		// 1) Expect a call to connect() with a bad hostname.
-		// 2) Throw a new WmiException indictating a bad hostname.
+
         OnmsWbemObjectSet wos = new OnmsWbemObjectSetBiosStub(
                 new OnmsWbemObjectBiosStub(
                         new OnmsWbemPropSetBiosStub(
@@ -335,10 +291,8 @@ public class WmiManagerTest extends TestCase {
                         )
                 )
         );
-        
-        m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-        expect(m_WmiMock.performInstanceOf("Win32_BIOS")).andReturn(wos);
-		replay(m_WmiMock);
+
+        when(m_WmiMock.performInstanceOf(eq("Win32_BIOS"))).thenReturn(wos);
 
 		try {
 			// Create a manager.
@@ -355,9 +309,8 @@ public class WmiManagerTest extends TestCase {
 					.getMessage().contains("Unknown name"));
 		}
 
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("127.0.0.1"), anyString(), anyString(), anyString());
+        verify(m_WmiMock).performInstanceOf(eq("Win32_BIOS"));
 	}
 
     	/**
@@ -369,14 +322,9 @@ public class WmiManagerTest extends TestCase {
      * @throws WmiException if there is a problem with the mock object.
 	 */
 	public final void testPerformOpValidObject() throws WmiException {
-
-		//
-		// Create parameter holder.
 		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "2/12/2004 00:00:00", "EQ",
 				"Win32_BIOS", "ReleaseDate");
-		// Set up WMI mock client.
-		// 1) Expect a call to connect() with a bad hostname.
-		// 2) Throw a new WmiException indictating a bad hostname.
+
         OnmsWbemObjectSet wos = new OnmsWbemObjectSetBiosStub(
                 new OnmsWbemObjectBiosStub(
                         new OnmsWbemPropSetBiosStub(
@@ -385,9 +333,7 @@ public class WmiManagerTest extends TestCase {
                 )
         );
 
-        m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
-        expect(m_WmiMock.performInstanceOf("Win32_BIOS")).andReturn(wos);
-		replay(m_WmiMock);
+        when(m_WmiMock.performInstanceOf(eq("Win32_BIOS"))).thenReturn(wos);
 
 		try {
 			// Create a manager.
@@ -406,9 +352,8 @@ public class WmiManagerTest extends TestCase {
 			//		.getMessage().contains("Unknown name"));
 		}
 
-		verify(m_WmiMock);
-
-		reset(m_WmiMock);
+		verify(m_WmiMock).connect(eq("127.0.0.1"), anyString(), anyString(), anyString());
+        verify(m_WmiMock).performInstanceOf(eq("Win32_BIOS"));
 	}
 
 }

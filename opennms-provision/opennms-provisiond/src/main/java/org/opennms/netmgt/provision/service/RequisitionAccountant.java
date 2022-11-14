@@ -70,7 +70,7 @@ public class RequisitionAccountant extends AbstractRequisitionVisitor {
     /** {@inheritDoc} */
     @Override
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
-        m_currentOp.foundInterface(ifaceReq.getIpAddr().trim(), ifaceReq.getDescr(), ifaceReq.getSnmpPrimary(), ifaceReq.getManaged(), ifaceReq.getStatus());
+        m_currentOp.foundInterface(ifaceReq.getIpAddr(), ifaceReq.getDescr(), ifaceReq.getSnmpPrimary(), ifaceReq.getManaged(), ifaceReq.getStatus());
         
     }
     

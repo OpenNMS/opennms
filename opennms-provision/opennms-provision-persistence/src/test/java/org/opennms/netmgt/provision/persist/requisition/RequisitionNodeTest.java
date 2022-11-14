@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.provision.persist.requisition;
 
+import javax.xml.bind.ValidationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.test.MockLogAppender;
-
-import javax.xml.bind.ValidationException;
 
 public class RequisitionNodeTest {
 
@@ -62,6 +62,12 @@ public class RequisitionNodeTest {
     @Test(expected = ValidationException.class)
     public void testRequisitionNodeForeignIdValidation() throws ValidationException {
         node.setForeignId(null);
+        node.validate();
+    }
+
+    @Test(expected = ValidationException.class)
+    public void testRequisitionNodeForeignIdCharacterValidation() throws ValidationException {
+        node.setForeignId("node:2");
         node.validate();
     }
 

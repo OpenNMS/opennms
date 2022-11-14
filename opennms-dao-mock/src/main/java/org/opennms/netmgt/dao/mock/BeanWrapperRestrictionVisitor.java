@@ -52,6 +52,7 @@ import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.criteria.restrictions.NotRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
+import org.opennms.core.criteria.restrictions.RegExpRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.slf4j.Logger;
@@ -317,6 +318,10 @@ final class BeanWrapperRestrictionVisitor extends BaseRestrictionVisitor {
         throw new UnsupportedOperationException("Not Yet Implemented!");
     }
     @Override public void visitIplikeComplete(final IplikeRestriction restriction) {}
+
+    @Override public void visitRegExp(final RegExpRestriction restriction) {
+        throw new UnsupportedOperationException("Not Yet Implemented!");
+    }
 
     public boolean matches() {
         return m_matched ;

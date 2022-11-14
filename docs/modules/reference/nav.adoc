@@ -1,6 +1,7 @@
 
 .Reference
 * Configuration
+** xref:configuration/file-editor.adoc[]
 ** xref:configuration/filters/filters.adoc[]
 *** xref:configuration/filters/components.adoc[]
 *** xref:configuration/filters/parameters.adoc[]
@@ -28,7 +29,6 @@
 ** xref:performance-data-collection/collectors/wmi.adoc[]
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
-** xref:performance-data-collection/collectors/xmp.adoc[]
 
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]
@@ -38,6 +38,7 @@
 ** xref:service-assurance/monitors/CiscoIpSlaMonitor.adoc[]
 ** xref:service-assurance/monitors/CiscoPingMibMonitor.adoc[]
 ** xref:service-assurance/monitors/CitrixMonitor.adoc[]
+** xref:service-assurance/monitors/DeviceConfigMonitor.adoc[]
 ** xref:service-assurance/monitors/DhcpMonitor.adoc[]
 ** xref:service-assurance/monitors/DiskUsageMonitor.adoc[]
 ** xref:service-assurance/monitors/DnsMonitor.adoc[]
@@ -85,7 +86,6 @@
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WmiMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
-** xref:service-assurance/monitors/XmpMonitor.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
@@ -119,8 +119,9 @@
 ** xref:provisioning/handlers/introduction.adoc[]
 *** xref:provisioning/handlers/dns.adoc[DNS]
 *** xref:provisioning/handlers/file.adoc[File]
-*** xref:provisioning/handlers/http.adoc[HTTP]
+*** xref:provisioning/handlers/http.adoc[HTTP(S)]
 *** xref:provisioning/handlers/vmware.adoc[VMware]
+*** xref:provisioning/handlers/requisition-plugin.adoc[Requisition Plugins]
 ** xref:provisioning/policies.adoc[]
 *** xref:provisioning/policies/ip-interface.adoc[]
 *** xref:provisioning/policies/metadata.adoc[]
@@ -173,5 +174,6 @@
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/ticketer.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
+** xref:operation:deep-dive/admin/logging/introduction.adoc[]
 
 * xref:glossary.adoc[]

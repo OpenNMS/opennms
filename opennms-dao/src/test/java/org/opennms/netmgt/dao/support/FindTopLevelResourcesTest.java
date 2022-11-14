@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.expect;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -59,11 +59,8 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.EasyMockUtils;
 
 public class FindTopLevelResourcesTest {
-    private EasyMockUtils m_easyMockUtils;
-
     private NodeDao m_nodeDao;
     private CollectdConfigFactory m_collectdConfig;
     private ResourceTypesDao m_resourceTypesDao;
@@ -80,14 +77,13 @@ public class FindTopLevelResourcesTest {
     public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
 
-        m_easyMockUtils = new EasyMockUtils();
-        m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
-        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
-        m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
+        m_nodeDao = mock(NodeDao.class);
+        m_resourceTypesDao = mock(ResourceTypesDao.class);
+        m_filterDao = mock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
 
-        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
+        when(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).thenReturn(new ArrayList<InetAddress>(0));
 
         RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
         m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
@@ -95,10 +91,8 @@ public class FindTopLevelResourcesTest {
         m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
         m_resourceStorageDao.setRrdStrategy(rrdStrategy);
 
-        m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
         m_collectdConfig = new CollectdConfigFactory(stream);
-        m_easyMockUtils.verifyAll();
 
         m_resourceDao = new DefaultResourceDao();
         m_resourceDao.setNodeDao(m_nodeDao);
@@ -109,6 +103,10 @@ public class FindTopLevelResourcesTest {
 
     @After
     public void tearDown() {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_resourceTypesDao);
+        verifyNoMoreInteractions(m_filterDao);
+
         m_fileAnticipator.tearDown();
         setStoreByForeignSource(false);
     }
@@ -142,9 +140,9 @@ public class FindTopLevelResourcesTest {
         OnmsNode n2 = createNode(2, "node2", null, null, "10.0.0.2"); // Node on the DB with No RRD Data
         nodes.add(n2);
 
-        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
-        expect(m_nodeDao.findAll()).andReturn(nodes);
+        when(m_resourceTypesDao.getLastUpdate()).thenReturn(new Date(System.currentTimeMillis()));
+        when(m_resourceTypesDao.getResourceTypes()).thenReturn(new HashMap<String, ResourceType>());
+        when(m_nodeDao.findAll()).thenReturn(nodes);
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -162,7 +160,6 @@ public class FindTopLevelResourcesTest {
         File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
-        m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
 
         // Verify node1
@@ -176,7 +173,9 @@ public class FindTopLevelResourcesTest {
         Assert.assertEquals("node[1].nodeSnmp[]", children.get(0).getId().toString());
         Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(1).getId().toString());
 
-        m_easyMockUtils.verifyAll();
+        verify(m_resourceTypesDao, atLeastOnce()).getLastUpdate();
+        verify(m_resourceTypesDao, atLeastOnce()).getResourceTypes();
+        verify(m_nodeDao, atLeastOnce()).findAll();
     }
 
     @Test
@@ -206,9 +205,9 @@ public class FindTopLevelResourcesTest {
         OnmsNode n3 = createNode(3, "node3", foreignSource, "node3", "10.0.0.3"); // Node on the DB with No RRD Data or Response Time
         nodes.add(n3);
 
-        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
-        expect(m_nodeDao.findAll()).andReturn(nodes);
+        when(m_resourceTypesDao.getLastUpdate()).thenReturn(new Date(System.currentTimeMillis()));
+        when(m_resourceTypesDao.getResourceTypes()).thenReturn(new HashMap<String, ResourceType>());
+        when(m_nodeDao.findAll()).thenReturn(nodes);
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -246,7 +245,6 @@ public class FindTopLevelResourcesTest {
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         walkin(m_fileAnticipator.getTempDir());
-        m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
 
         List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
@@ -267,7 +265,9 @@ public class FindTopLevelResourcesTest {
         Assert.assertEquals(1, children.size());
         Assert.assertEquals("node[Junit:node2].nodeSnmp[]", children.get(0).getId().toString());
 
-        m_easyMockUtils.verifyAll();
+        verify(m_nodeDao, times(1)).findAll();
+        verify(m_resourceTypesDao, times(1)).getResourceTypes();
+        verify(m_resourceTypesDao, times(6)).getLastUpdate();
     }
 
     @Test
@@ -302,9 +302,9 @@ public class FindTopLevelResourcesTest {
         OnmsNode n4 = createNode(4, "node4", foreignSource, "node4", "10.0.0.4"); // Requisitioned node on the DB with RRD Data
         nodes.add(n4);
 
-        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
-        expect(m_nodeDao.findAll()).andReturn(nodes);
+        when(m_resourceTypesDao.getLastUpdate()).thenReturn(new Date(System.currentTimeMillis()));
+        when(m_resourceTypesDao.getResourceTypes()).thenReturn(new HashMap<String, ResourceType>());
+        when(m_nodeDao.findAll()).thenReturn(nodes);
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -345,7 +345,6 @@ public class FindTopLevelResourcesTest {
         File ip2Dir = m_fileAnticipator.tempDir(responseDir, n2.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
         m_fileAnticipator.tempFile(ip2Dir, "icmp" + m_rrdFileExtension);
 
-        m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
 
         List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
@@ -368,7 +367,9 @@ public class FindTopLevelResourcesTest {
         Assert.assertEquals("node[Junit:node2].nodeSnmp[]", children1.get(0).getId().toString());
         Assert.assertEquals("node[Junit:node2].responseTime[10.0.0.2]", children1.get(1).getId().toString());
 
-        m_easyMockUtils.verifyAll();
+        verify(m_nodeDao, times(1)).findAll();
+        verify(m_resourceTypesDao, times(1)).getResourceTypes();
+        verify(m_resourceTypesDao, times(7)).getLastUpdate();
     }
 
     private OnmsNode createNode(int nodeId, String nodelabel, String foreignSource, String foreignId, String ipAddress) {

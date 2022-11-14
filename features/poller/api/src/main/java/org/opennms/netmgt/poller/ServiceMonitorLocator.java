@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.poller;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * <p>ServiceMonitorLocator interface.</p>
  *
@@ -55,6 +57,6 @@ public interface ServiceMonitorLocator {
      *
      * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
      */
-    ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry);
+    CompletableFuture<ServiceMonitor> getServiceMonitor(ServiceMonitorRegistry registry);
 
 }

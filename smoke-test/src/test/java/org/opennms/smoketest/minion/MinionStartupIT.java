@@ -47,7 +47,6 @@ public class MinionStartupIT {
 
     static {
         configuration.put("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
-        configuration.put("OPENNMS_HTTP_URL", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms");
         configuration.put("MINION_LOCATION", "Fulda");
         configuration.put("MINION_ID", "Minion-Fulda");
     }

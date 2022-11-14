@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Uses an external script, executed via JSR-223, to generate a
@@ -97,10 +98,12 @@ public class ScriptedCollectionSetBuilder {
      *            the agent associated with the collection set
      * @param message
      *            the messaged passed to script containing the metrics
+     * @param props
+     *            additional global properties to pass into the script
      * @return a collection set
      * @throws ScriptException
      */
-    public CollectionSet build(CollectionAgent agent, Object message, Long timestamp) throws ScriptException {
+    public CollectionSet build(CollectionAgent agent, Object message, Long timestamp, Map<String,Object> props) throws ScriptException {
         final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         if (timestamp != null && timestamp > 0) {
             builder.withTimestamp(new Date(timestamp));
@@ -109,8 +112,18 @@ public class ScriptedCollectionSetBuilder {
         globals.put("agent", agent);
         globals.put("builder", builder);
         globals.put("msg", message);
+
+        if (props != null && !props.isEmpty()) {
+            for (String key : props.keySet()) {
+                globals.put(key, props.get(key));
+            }
+        }
+
         compiledScript.eval(globals);
         return builder.build();
     }
 
+    public CollectionSet build(CollectionAgent agent, Object message, Long timestamp) throws ScriptException {
+        return build(agent, message, timestamp, null);
+    }
 }

@@ -140,4 +140,8 @@ public abstract class Restrictions {
     public static AttributeRestriction sql(final String sql, Object[] parameters, Type[] types) {
         return new SqlRestriction(sql, parameters, types);
     }
+
+    public static RegExpRestriction regExp(String attribute, String comparator) {
+        return new RegExpRestriction(attribute, comparator);
+    }
 }

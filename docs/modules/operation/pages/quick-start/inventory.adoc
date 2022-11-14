@@ -1,0 +1,110 @@
+
+[[provision-getting-started]]
+= Step 3: Provision Inventory
+
+{page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) that you want to monitor.
+
+{page-component-title} has three methods of provisioning:
+
+* xref:deep-dive/provisioning/auto-discovery.adoc[] (automatically add nodes).
+* xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes).
+* xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI.
+
+Auto discovery is useful if you do not have a "source of truth" for your network inventory.
+Directed discovery is effective if you know your inventory, particularly if you have a smaller network (for example, 100–200 nodes).
+
+Regardless of the method, provisioning is an iterative process.
+You will need to fine-tune your results to exclude or add to what you monitor.
+
+This Quick Start guide presents a very basic example of auto discovery of nodes, through SNMP.
+Beyond this guide, you can complete additional tasks to provision your system:
+
+* Use plugins to integrate with external systems.
+* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
+* Create policies to manage provisioning behavior.
+
+Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.
+
+[[provision-snmp-configuration]]
+== Configure SNMP for provisioning
+
+To collect data through SNMP or monitor the availability of SNMP services on a node, you need to configure SNMP for provisioning.
+This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
+
+Proper SNMP configuration lets {page-component-title} understand network and node topology and automatically enables performance data collection.
+{page-component-title} updates network topology as it provisions nodes.
+
+This procedure illustrates a very basic SNMP configuration using the default parameters.
+You can customize these values for your own network needs.
+
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Configure SNMP Community Names by IP Address*.
+. Under General Parameters, specify an IP range using the *First IP Address* and *Last IP Address* boxes, and accept the default values for the other fields.
+. Scroll to the bottom and click *Save Config*.
++
+This screen sets up SNMP within {page-component-title} for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`.
+
+.Configure SNMP community names
+image::provisioning/SNMP_Config.png[SNMP-configuration, 600]
+
+These settings are optimized into the `snmp-config.xml` file.
+
+For an example of the resulting XML configuration, see xref:operation:deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml[Configure SNMP community names] in the Deep Dive section.
+
+[[requisition-create]]
+== Create a requisition
+
+A requisition is a set of nodes (networked devices) to import into {page-component-title} for monitoring and management.
+
+Organizing nodes with a similar network monitoring profile into a requisition (for example, routers or switches) lets you assign the same services, detectors, and policies for network monitoring behavior.
+
+A requisition includes a default foreign source definition that serves as a template to define the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
+
+While you can perform discovery without a requisition and edit it later, we recommend that you create a requisition before discovery.
+You can iteratively build a requisition and import the requisition's nodes into {page-component-title} later.
+Doing this will process all additions, changes, and deletions at once.
+
+This procedure describes how to create an empty requisition using the default foreign source definition.
+See the links at the end of the procedure for additional information on customizing a requisition.
+
+To create a requisition, follow these steps:
+
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Manage Provisioning Requisitions*.
+. Click *Add Requisition*, type a name (for example, QuickStartRequisition), and click *OK*.
+
+NOTE: The requisition remains red until you synchronize it with the database.
+Synchronize after you configure discovery.
+
+image::provisioning/red_requisition.png[]
+
+Once created, you can add nodes to the requisition.
+
+IMPORTANT: The requisition editor in the OpenNMS web UI is designed for small-scale use.
+Do not attempt to use this interface to edit requisitions containing more than a few dozen nodes.
+It is not designed for that use case and will fail.
+
+Additional configuration options for requisitions:
+
+* xref:deep-dive/provisioning/directed-discovery.adoc#directed-discovery[Manually specify nodes to add to a requisition].
+* xref:deep-dive/provisioning/auto-discovery.adoc#auto-discovery[Automatically discover nodes to add to a requisition].
+* Customize a requisition with xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and xref:deep-dive/provisioning/policies.adoc#policies[policies].
+
+[[configure-discovery]]
+== Configure discovery
+
+For this Quick Start guide, we assume that you do not have a list of nodes to start from.
+The procedure uses the default general settings for parameters like timeouts and retries.
+You can customize these for your own needs.
+
+To configure discovery, follow these steps:
+
+. Click the *Gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Configure Discovery*.
+. In the *General Settings* area, select the requisition you just created from the *Requisition* list.
+** (Optional) Change the default values.
+. Click *Save and Restart Discovery* in the top-left of the screen.
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png[synchronize requisition symbol,20]).
+. Choose a scan option and click *Synchronize*.
+
+You can view imported nodes in the main menu under menu:Info[Nodes] at the top of the screen.

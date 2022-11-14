@@ -191,6 +191,8 @@
         <service-properties>
             <entry key="strategy" value="newts">
             </entry>
+            <entry key="registration.export" value="true">
+            </entry>
         </service-properties>
     </service>
 </blueprint>

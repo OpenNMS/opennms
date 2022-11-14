@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,18 @@
 
 package org.opennms.web.svclayer.support;
 
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.surveillanceViews.View;
@@ -43,11 +48,8 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.mock.EasyMockUtils;
 
 public class DefaultSurveillanceServiceTest {
-    
-    private EasyMockUtils m_mockUtils;
     
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
@@ -55,31 +57,33 @@ public class DefaultSurveillanceServiceTest {
     
     @Before
     public void setUp() throws Exception {
-        m_mockUtils = new EasyMockUtils();
-        
-        m_nodeDao = m_mockUtils.createMock(NodeDao.class);
-        m_categoryDao = m_mockUtils.createMock(CategoryDao.class);
-        m_surveillanceViewConfigDao = m_mockUtils.createMock(SurveillanceViewConfigDao.class);
+        m_nodeDao = mock(NodeDao.class);
+        m_categoryDao = mock(CategoryDao.class);
+        m_surveillanceViewConfigDao = mock(SurveillanceViewConfigDao.class);
     }
-    
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_nodeDao);
+        verifyNoMoreInteractions(m_categoryDao);
+        verifyNoMoreInteractions(m_surveillanceViewConfigDao);
+    }
+
     @Test
     public void testCreateSurveillanceTable() {
         
         View view = new View();
         
-        expect(m_surveillanceViewConfigDao.getView(eq("default"))).andReturn(view).atLeastOnce();
-        
-        m_mockUtils.replayAll();
-        
+        when(m_surveillanceViewConfigDao.getView(eq("default"))).thenReturn(view);
+
         DefaultSurveillanceService surveillanceSvc = new DefaultSurveillanceService();
         surveillanceSvc.setNodeDao(m_nodeDao);
         surveillanceSvc.setCategoryDao(m_categoryDao);
         surveillanceSvc.setSurveillanceConfigDao(m_surveillanceViewConfigDao);
 
         surveillanceSvc.createSurveillanceTable();
-        
-        m_mockUtils.verifyAll();
-        
+
+        verify(m_surveillanceViewConfigDao, atLeastOnce()).getView("default");
     }
 
     public Collection<OnmsCategory> createCategories(List<String> catNames) {

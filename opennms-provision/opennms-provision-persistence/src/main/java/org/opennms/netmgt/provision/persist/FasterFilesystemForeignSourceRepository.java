@@ -45,6 +45,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
+import javax.validation.Validation;
+import javax.xml.bind.ValidationException;
+
 /**
  * <p>FasterFilesystemForeignSourceRepository class.</p>
  * <p>The directory watcher should keep a cache of all requisitions on disk.</p>
@@ -190,10 +193,14 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             for(String baseName : getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
                     Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName + ".xml");
+                    contents.validate();
                     requisitions.add(contents);
                 } catch (FileNotFoundException e) {
                     LOG.info("Unable to load requisition {}: It must have been deleted by another thread", baseName, e);
+                } catch (ValidationException e) {
+                    LOG.info("Invalid requisition file {}: cannot parse", baseName, e);
                 }
+
             }
             return requisitions;
         } finally {
@@ -211,9 +218,14 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         m_readLock.lock();
         try {
-            return getRequisitionsDirectoryWatcher().getContents(foreignSourceName + ".xml");
+            Requisition req = getRequisitionsDirectoryWatcher().getContents(foreignSourceName + ".xml");
+            req.validate();
+            return req;
         } catch (FileNotFoundException e) {
             LOG.info("There is no requisition XML file for {} on {}", foreignSourceName, m_requisitionPath);
+            return null;
+        } catch (ValidationException e) {
+            LOG.info("Invalid requisition XML file for {} on {}", foreignSourceName, m_requisitionPath);
             return null;
         } finally {
             m_readLock.unlock();

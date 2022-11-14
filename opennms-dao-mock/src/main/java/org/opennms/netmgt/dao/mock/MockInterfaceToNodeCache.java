@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 
@@ -40,36 +41,32 @@ import com.google.common.collect.Maps;
 
 public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
 
-    private Map<Key, Integer> keyToNodeId = Maps.newHashMap();
+    private Map<Key, Entry> keyToEntry = Maps.newHashMap();
 
     @Override
     public boolean setNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return keyToNodeId.put(new Key(location, ipAddr), nodeId) != null;
+        return keyToEntry.put(new Key(location, ipAddr), new Entry(nodeId, 0)) != null;
     }
 
     @Override
     public boolean removeNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return keyToNodeId.remove(new Key(location, ipAddr)) != null;
+        return keyToEntry.remove(new Key(location, ipAddr)) != null;
     }
 
     @Override
-    public Iterable<Integer> getNodeId(String location, InetAddress ipAddr) {
-        final Integer nodeId = keyToNodeId.get(new Key(location, ipAddr));
-        if (nodeId != null) {
-            return Arrays.asList(nodeId);
-        }
-        return Collections.emptySet();
+    public Optional<Entry> getFirst(String location, InetAddress ipAddr) {
+        return Optional.ofNullable(keyToEntry.get(new Key(location, ipAddr)));
     }
 
     @Override
     public void dataSourceSync() {}
 
     @Override
-    public int size() { return keyToNodeId.size(); }
+    public int size() { return keyToEntry.size(); }
 
     @Override
     public void clear() {
-        keyToNodeId.clear();
+        keyToEntry.clear();
     }
 
     @Override

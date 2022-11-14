@@ -39,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+
+
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
@@ -48,6 +50,7 @@ import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -55,6 +58,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.poller.pollables.PollableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +87,12 @@ public class QueryManagerDaoImpl implements QueryManager {
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
     private TransactionOperations m_transcationOps;
+    
+
 
     /** {@inheritDoc} */
     @Override
@@ -333,11 +342,15 @@ public class QueryManagerDaoImpl implements QueryManager {
     }
 
     @Override
-    public void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status) {
+    public void updateLastGoodOrFail(PollableService pollableService, PollStatus status) {
+        final var nodeId = pollableService.getNodeId();
+        final var ipAddr = pollableService.getAddress();
+        final var serviceName = pollableService.getSvcName();
         try {
             m_transcationOps.execute((TransactionCallback<Object>) transactionStatus -> {
                 final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, ipAddr, serviceName);
                 if (service == null) {
+                    pollableService.delete();
                     // Throw so we can hit the exception block bellow and re-use the log message
                     throw new NoSuchElementException("Service no longer exists.");
                 }
@@ -356,5 +369,6 @@ public class QueryManagerDaoImpl implements QueryManager {
                     serviceName, nodeId,  ipAddr, status, e);
         }
     }
+
 
 }

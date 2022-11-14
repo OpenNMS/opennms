@@ -58,6 +58,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -84,6 +85,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -120,6 +122,9 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     @Autowired
     private AlarmLifecycleListenerManager m_alarmLifecycleListenerManager;
 
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
     private MockDatabase m_database;
 
     private List<List<OnmsAlarm>> m_snapshots = new ArrayList<>();
@@ -137,6 +142,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         // Async.
         m_eventMgr.setSynchronous(false);
 
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);
 

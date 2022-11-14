@@ -35,9 +35,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
-import org.opennms.core.rpc.utils.MetadataConstants;
-import org.opennms.core.rpc.utils.mate.FallbackScope;
-import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.mate.api.MetadataConstants;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -92,7 +92,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     @Override
     public CollectorRequestBuilder withCollectorClassName(String className) {
         this.className = className;
-        this.serviceCollector = client.getRegistry().getCollectorByClassName(className);
+        this.serviceCollector = client.getRegistry().getCollectorFutureByClassName(className).getNow(null);
         return this;
     }
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+  <bean name="textEncryptor" class="org.opennms.core.text.encryptor.TextEncryptorImpl">
+    <constructor-arg ref="jceksSecureCredentialsVault"/>
+  </bean>
+  <onmsgi:service interface="org.opennms.core.config.api.TextEncryptor" ref="textEncryptor"/>
+
+</beans>

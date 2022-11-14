@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,7 +87,7 @@ public class PersistRegexSelectorStrategyTest {
 
     @Before
     public void setUp() throws Exception {
-        ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
+        ipInterfaceDao = mock(IpInterfaceDao.class);
         String localhost = InetAddress.getLocalHost().getHostAddress();
 
         NetworkBuilder builder = new NetworkBuilder();
@@ -90,8 +96,7 @@ public class PersistRegexSelectorStrategyTest {
         OnmsNode node = builder.getCurrentNode();
         node.setId(1);
         OnmsIpInterface ipInterface = node.getIpInterfaces().iterator().next();
-        EasyMock.expect(ipInterfaceDao.load(1)).andReturn(ipInterface).anyTimes();
-        EasyMock.replay(ipInterfaceDao);
+        when(ipInterfaceDao.load(1)).thenReturn(ipInterface);
 
         Package pkg = new Package();
         pkg.setName("junitTestPackage");
@@ -161,7 +166,7 @@ public class PersistRegexSelectorStrategyTest {
 
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(ipInterfaceDao);
+        verifyNoMoreInteractions(ipInterfaceDao);
     }
 
     @Test
@@ -170,6 +175,8 @@ public class PersistRegexSelectorStrategyTest {
         Assert.assertFalse("resourceB doesn't matche parameter expression", resourceB.shouldPersist(serviceParams));
         Assert.assertTrue("resourceC matches instance expression", resourceC.shouldPersist(serviceParams));
         Assert.assertFalse("resourceD doesn't match instance expression", resourceD.shouldPersist(serviceParams));
+
+        verify(ipInterfaceDao, atLeastOnce()).load(anyInt());
     }
 
     @Test
@@ -180,5 +187,7 @@ public class PersistRegexSelectorStrategyTest {
         context.setVariable("name", "Alejandro Galue");
         boolean result = (Boolean)exp.getValue(context, Boolean.class);
         Assert.assertTrue(result);
+
+        verify(ipInterfaceDao, atLeastOnce()).load(anyInt());
     }
 }

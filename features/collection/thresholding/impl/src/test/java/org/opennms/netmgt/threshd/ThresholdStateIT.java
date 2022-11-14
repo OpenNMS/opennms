@@ -45,8 +45,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
-import org.opennms.core.rpc.utils.mate.ContextKey;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
@@ -64,6 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml"
 })
 @JUnitConfigurationEnvironment

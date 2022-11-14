@@ -29,6 +29,7 @@
 package org.opennms.netmgt.daemon;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.time.Instant;
 import java.util.concurrent.Callable;
 
 import org.opennms.core.fiber.Fiber;
@@ -56,10 +57,11 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
 
     private int m_status = Fiber.START_PENDING;
 
+    private long m_startTimeMilliseconds;
+
     /**
      * <p>Constructor for AbstractSpringContextJmxServiceDaemon.</p>
      *
-     * @param <T> a T object.
      */
     public AbstractSpringContextJmxServiceDaemon() {
         super();
@@ -126,6 +128,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
                 SpringServiceDaemon daemon = getDaemon();
                 try {
                     daemon.start();
+                    setStartTimeMilliseconds(Instant.now().toEpochMilli());
                 } catch (Throwable t) {
                     LOG.error("Could not start daemon: {}", t, t);
                     
@@ -229,4 +232,8 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
         return status();
     }
 
+    private void setStartTimeMilliseconds(long startTime){ m_startTimeMilliseconds = startTime; }
+
+    @Override
+    public long getStartTimeMilliseconds() { return m_startTimeMilliseconds; }
 }

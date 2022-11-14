@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet runOnChange="false" author="cgorantla" id="30.0.0-deviceconfignxtid">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+                WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'deviceconfignxtid'
+            </sqlCheck>
+        </preConditions>
+        <createSequence sequenceName="deviceconfignxtid"/>
+        <rollback>
+            <dropSequence sequenceName="deviceconfignxtid"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="cgorantla" id="30.0.0-device-config">
+        <createTable tableName="device_config">
+            <!-- Unique identifier -->
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- foreign key to ipinterface id -->
+            <column name="ipinterface_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+	    <column name="service_name" type="varchar(64)">
+                <constraints nullable="true"/>
+	    </column>
+            <column name="config" type="bytea"/>
+            <column name="encoding" type="varchar(16)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_time" type="timestamp"/>
+            <column name="config_type" type="varchar(64)"/>
+            <column name="filename" type="varchar(1024)"/>
+            <column name="failure_reason" type="varchar(1024)"/>
+            <column name="last_succeeded" type="timestamp"/>
+            <column name="last_failed" type="timestamp"/>
+            <column name="last_updated" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="stheleman" id="30.0.0-device-config-lastupdated-nullable">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="NO">
+                SELECT is_nullable FROM information_schema.columns
+                WHERE table_schema = 'public'
+                AND table_name = 'device_config'
+                AND column_name = 'last_updated'
+            </sqlCheck>
+        </preConditions>
+        <dropNotNullConstraint tableName="device_config" columnName="last_updated" columnDataType="timestamp"/>
+    </changeSet>
+
+    <changeSet author="stheleman" id="30.0.0-device-config-add-column-status">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.columns
+                WHERE table_schema = 'public'
+                AND table_name = 'device_config'
+                AND column_name = 'status'
+            </sqlCheck>
+        </preConditions>
+        <addColumn tableName="device_config">
+            <column name="status" type="varchar(20)" defaultValue="NONE">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

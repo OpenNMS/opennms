@@ -3,6 +3,8 @@
 
 * xref:build-from-source.adoc[]
 
+* xref:osgi/osgi-and-opennms.adoc[]
+
 * xref:minion/introduction.adoc[]
 ** xref:minion/container.adoc[]
 ** xref:minion/guidelines.adoc[]
@@ -26,12 +28,15 @@
 *** xref:rest/alarm_history.adoc[]
 *** xref:rest/events.adoc[]
 *** xref:rest/categories.adoc[]
+*** xref:rest/config_management.adoc[]
+*** xref:rest/device_config.adoc[]
 *** xref:rest/flows.adoc[]
 *** xref:rest/classifications.adoc[]
 *** xref:rest/foreign_sources.adoc[]
 *** xref:rest/graph.adoc[]
 *** xref:rest/groups.adoc[]
 *** xref:rest/heatmap.adoc[]
+*** xref:rest/health_rest.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
 *** xref:rest/ksc_reports.adoc[]
@@ -59,6 +64,8 @@
 *** xref:rest/syslognbi-config.adoc[]
 *** xref:bsm/bsm-development.adoc[]
 *** xref:rest/situation-feedback.adoc[]
+
+* xref:oia/introduction.adoc[]
 
 * xref:amqp/introduction.adoc[]
 ** xref:amqp/event_forwarder.adoc[]

@@ -484,24 +484,31 @@ public class Package implements Serializable {
     }
 
     public static class ServiceMatch {
+        public final Package pakkage;
         public final Service service;
+        public final String serviceName;
         public final Map<String, String> patternVariables;
 
-        public ServiceMatch(final Service service,
+        public ServiceMatch(final Package pakkage,
+                            final Service service,
+                            final String serviceName,
                             final Map<String, String> patternVariables) {
+            this.pakkage = Objects.requireNonNull(pakkage);
             this.service = Objects.requireNonNull(service);
+            this.serviceName = Objects.requireNonNull(serviceName);
             this.patternVariables = Objects.requireNonNull(patternVariables);
         }
 
-        public ServiceMatch(final Service service) {
-            this(service, Collections.emptyMap());
+        public ServiceMatch(final Package pakkage,
+                            final Service service) {
+            this(pakkage, service, service.getName(), Collections.emptyMap());
         }
     }
 
     public Optional<ServiceMatch> findService(final String svcName) {
         for (final Service service : this.getServices()) {
             if (service.getName().equalsIgnoreCase(svcName)) {
-                return Optional.of(new ServiceMatch(service));
+                return Optional.of(new ServiceMatch(this, service));
             }
         }
 
@@ -519,7 +526,7 @@ public class Package implements Serializable {
                         Maps.asMap(RegexUtils.getNamedCaptureGroupsFromPattern(service.getPattern()), matcher::group),
                         Objects::nonNull
                 );
-                return Optional.of(new ServiceMatch(service, patternVariables));
+                return Optional.of(new ServiceMatch(this, service, svcName, patternVariables));
             }
         }
 

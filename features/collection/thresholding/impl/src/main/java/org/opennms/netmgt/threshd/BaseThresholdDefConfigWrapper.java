@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
@@ -276,19 +276,13 @@ public abstract class BaseThresholdDefConfigWrapper {
     }
 
     private Optional<Double> interpolateDoubleValue(String value, Scope scope) {
-        if (Interpolator.containsMateData(value)) {
-            String interpolatedValue = Interpolator.interpolate(value, scope).output;
-            return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
-        }
-        return Optional.empty();
+        String interpolatedValue = Interpolator.interpolate(value, scope).output;
+        return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
     }
 
     private Optional<Integer> interpolateIntegerValue(String value, Scope scope) {
-        if (Interpolator.containsMateData(value)) {
-            String interpolatedValue = Interpolator.interpolate(value, scope).output;
-            return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
-        }
-        return Optional.empty();
+        String interpolatedValue = Interpolator.interpolate(value, scope).output;
+        return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
     }
 
 }

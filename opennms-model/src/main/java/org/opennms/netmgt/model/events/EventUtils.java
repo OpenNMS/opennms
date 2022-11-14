@@ -44,6 +44,7 @@ import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME
 import static org.opennms.netmgt.events.api.EventConstants.PARM_FOREIGN_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_FOREIGN_SOURCE;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_INTERFACE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_IPINTERFACE_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_LOCATION;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_CURRENT_LOCATION;
@@ -230,18 +231,22 @@ public abstract class EventUtils {
      *            the source of the event
      * @param nodeId
      *            the nodeId of the node the interface resides in
-     * @param ipAddr
+     * @param addr
      *            the ipAdddr of the event
+     * @param ipInterfaceId
+     *            the  id of IpInterface
      * @return an Event represent an interfaceDeleted event for the given
      *         interface
      */
-    public static Event createInterfaceDeletedEvent(String source, int nodeId, InetAddress addr) {
+    public static Event createInterfaceDeletedEvent(String source, int nodeId, InetAddress addr, Integer ipInterfaceId) {
         debug("createInterfaceDeletedEvent for nodeid/ipaddr:  %d/%s", nodeId, str(addr));
 
         EventBuilder bldr = new EventBuilder(INTERFACE_DELETED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.setInterface(addr);
-        
+        if(ipInterfaceId != null) {
+            bldr.addParam(PARM_IPINTERFACE_ID, ipInterfaceId);
+        }
         return bldr.getEvent();
     }
 
@@ -420,6 +425,15 @@ public abstract class EventUtils {
         }
         return bldr.getEvent();
     }
+    
+    public static Event createNodeRescanEvent(String source, Integer nodeId) {
+        debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.TRUE.toString());
+        return bldr.getEvent();
+    }
+
 
     /**
      * <p>createNodeLocationChangedEvent</p>

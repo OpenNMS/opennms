@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-bsmd]]
 = Bsmd
 
-Handles calculation of the operational status of the defined xref:operation:bsm/introduction.adoc[business services].
+Handles calculation of the operational status of the defined xref:operation:deep-dive/bsm/introduction.adoc[business services].
 The daemon tracks the operational status of all business services and sends events when there are operational status changes.
 
 Every time you change the configuration of a business service, you must reload the daemon's configuration.

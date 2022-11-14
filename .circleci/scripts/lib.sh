@@ -1,6 +1,7 @@
 #!/bin/bash
 
 OPENNMS_POM_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml || echo "0.0.0")"
+# shellcheck disable=SC2001
 OPENNMS_VERSION="$(echo "${OPENNMS_POM_VERSION}" | sed -e 's,^\([0-9\.][0-9\.]*\).*$,\1,g')"
 OPENNMS_SHORT_VERSION="$(echo "${OPENNMS_VERSION}" | cut -d. -f 1-2)"
 OPENNMS_MAJOR_VERSION="$(echo "${OPENNMS_VERSION}" | cut -d. -f1)"

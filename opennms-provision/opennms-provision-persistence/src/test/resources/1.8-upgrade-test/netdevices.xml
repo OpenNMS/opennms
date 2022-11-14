@@ -31,6 +31,7 @@
             <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
+        <interface status="1" snmp-primary="N" ip-addr="not.a.valid.host" descr=""/>
         <category name="Production"/>
         <category name="Routers"/>
     </node>
@@ -49,6 +50,7 @@
             <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
+        <interface status="1" snmp-primary="N" ip-addr="also not a valid host" descr=""/>
         <category name="Production"/>
         <category name="Routers"/>
     </node>

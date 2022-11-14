@@ -51,6 +51,20 @@ public interface EnhancedLinkdConfig {
     int getThreads();
 
     /**
+     * <p>getExecutorThreads</p>
+     *
+     * @return a int.
+     */
+    int getExecutorThreads();
+
+    /**
+     * <p>getExecutorQueueSize</p>
+     *
+     * @return a int.
+     */
+    int getExecutorQueueSize();
+
+    /**
      * <p>getMaxBft</p>
      *
      * @return a int.
@@ -72,21 +86,85 @@ public interface EnhancedLinkdConfig {
     long getInitialSleepTime();
 
     /**
-     * <p>getRescanInterval</p>
+     * <p>getCdpRescanInterval</p>
      *
      * @return a long.
      */
-    long getRescanInterval();
+    long getCdpRescanInterval();
+
+    /**
+     * <p>getCdpPriority</p>
+     *
+     * @return a int.
+     */
+    int getCdpPriority();
+
+    /**
+     * <p>getLldpRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getLldpRescanInterval();
+
+    /**
+     * <p>getLldpPriority</p>
+     *
+     * @return a int.
+     */
+    int getLldpPriority();
+
+    /**
+     * <p>getBridgeRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getBridgeRescanInterval();
+
+    /**
+     * <p>getBridgePriority</p>
+     *
+     * @return a int.
+     */
+    int getBridgePriority();
+
+    /**
+     * <p>getOspfRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getOspfRescanInterval();
+
+    /**
+     * <p>getOspfPriority</p>
+     *
+     * @return a int.
+     */
+    int getOspfPriority();
+
+    /**
+     * <p>getIsisRescanInterval</p>
+     *
+     * @return a long.
+     */
+    long getIsisRescanInterval();
+
+    /**
+     * <p>getIsisPriority</p>
+     *
+     * @return a int.
+     */
+    int getIsisPriority();
 
     /**
      * <p>getBridgeTopologyInterval</p>
      *
      * @return a long.
      */
+
     long getBridgeTopologyInterval();
 
     /**
-     * <p>getTopologyInterval</p>
+     * <p>getTopologyUpdaterInterval</p>
      *
      * @return a long.
      */
@@ -147,7 +225,7 @@ public interface EnhancedLinkdConfig {
     /**
      * <p>getConfiguration</p>
      *
-     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
      */
      EnlinkdConfiguration getConfiguration();    
         

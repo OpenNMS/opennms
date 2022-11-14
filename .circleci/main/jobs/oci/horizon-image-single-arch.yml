@@ -1,0 +1,15 @@
+jobs:
+  horizon-image-single-arch:
+    executor: base-executor
+    resource_class: medium
+    parameters:
+      architecture:
+        type: string
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - build-image-single-arch:
+          architecture: << parameters.architecture >>
+          container_name: horizon
+          tarball_match: -core
+          tarball_path: opennms-full-assembly/target/

@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opennms.core.xml.DoubleAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
@@ -57,7 +58,7 @@ public class DiscoveryConfiguration implements Serializable {
      *  will be executed.
      */
     @XmlAttribute(name = "location")
-    private String m_location;
+    private String location;
 
     /**
      * The total number of ping packets sent per second from
@@ -65,14 +66,14 @@ public class DiscoveryConfiguration implements Serializable {
      */
     @XmlAttribute(name = "packets-per-second", required = true)
     @XmlJavaTypeAdapter(DoubleAdapter.class)
-    private Double m_packetsPerSecond;
+    private Double packetsPerSecond;
 
     /**
      * The initial pause (in milliseconds) after discovery
      *  starts up before discovery is started.
      */
     @XmlAttribute(name = "initial-sleep-time", required = true)
-    private Long m_initialSleepTime;
+    private Long initialSleepTime;
 
     /**
      * The pause (in milliseconds) between discovery passes.
@@ -81,7 +82,7 @@ public class DiscoveryConfiguration implements Serializable {
      *  sweep.
      */
     @XmlAttribute(name = "restart-sleep-time", required = true)
-    private Long m_restartSleepTime;
+    private Long restartSleepTime;
 
     /**
      * The default number of times a ping is retried for an
@@ -91,7 +92,7 @@ public class DiscoveryConfiguration implements Serializable {
      *  sets of addresses that are configured in this file.
      */
     @XmlAttribute(name = "retries")
-    private Integer m_retries;
+    private Integer retries;
 
     /**
      * The default timeout on each poll. This timeout is a
@@ -99,10 +100,10 @@ public class DiscoveryConfiguration implements Serializable {
      *  addresses that are configured in this file.
      */
     @XmlAttribute(name = "timeout")
-    private Long m_timeout;
+    private Long timeout;
 
     @XmlAttribute(name = "foreign-source")
-    private String m_foreignSource;
+    private String foreignSource;
 
     /**
      * The default chunk size used to divide up ranges to be discovered by
@@ -110,261 +111,266 @@ public class DiscoveryConfiguration implements Serializable {
      * discovery job sent to a minion will encompass.
      */
     @XmlAttribute(name = "chunk-size")
-    private Integer m_chunkSize;
+    private Integer chunkSize;
 
     /**
      * the specific addresses to be polled
      */
     @XmlElement(name = "specific")
-    private List<Specific> m_specifics = new ArrayList<>();
+    @JsonProperty("specific")
+    private List<Specific> specifics = new ArrayList<>();
 
     /**
      * the range of addresses to be polled
      */
     @XmlElement(name = "include-range")
-    private List<IncludeRange> m_includeRanges = new ArrayList<>();
+    @JsonProperty("include-range")
+    private List<IncludeRange> includeRanges = new ArrayList<>();
 
     /**
      * the range of addresses to be excluded from the
      *  polling
      */
     @XmlElement(name = "exclude-range")
-    private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
+    @JsonProperty("exclude-range")
+    private List<ExcludeRange> excludeRanges = new ArrayList<>();
 
     /**
      * a file URL holding specific addresses to be
      *  polled
      */
     @XmlElement(name = "include-url")
-    private List<IncludeUrl> m_includeUrls = new ArrayList<>();
+    @JsonProperty("include-url")
+    private List<IncludeUrl> includeUrls = new ArrayList<>();
 
     /**
      * a file URL holding specific addresses to be excluded
      */
     @XmlElement(name = "exclude-url")
-    private List<ExcludeUrl> m_excludeUrls = new ArrayList<>();
+    private List<ExcludeUrl> excludeUrls = new ArrayList<>();
 
     @XmlElement(name = "definition")
-    private List<Definition> m_definitions = new ArrayList<>();
+    @JsonProperty("definition")
+    private List<Definition> definitions = new ArrayList<>();
 
     public DiscoveryConfiguration() {
     }
 
     public Optional<String> getLocation() {
-        return Optional.ofNullable(m_location);
+        return Optional.ofNullable(this.location);
     }
 
     public void setLocation(final String location) {
-        m_location = ConfigUtils.normalizeString(location);
+        this.location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Double> getPacketsPerSecond() {
-        return Optional.ofNullable(m_packetsPerSecond);
+        return Optional.ofNullable(this.packetsPerSecond);
     }
 
     public void setPacketsPerSecond(final Double packetsPerSecond) {
-        m_packetsPerSecond = packetsPerSecond;
+        this.packetsPerSecond = packetsPerSecond;
     }
 
     public Optional<Long> getInitialSleepTime() {
-        return Optional.ofNullable(m_initialSleepTime);
+        return Optional.ofNullable(this.initialSleepTime);
     }
 
     public void setInitialSleepTime(final Long initialSleepTime) {
-        m_initialSleepTime = initialSleepTime;
+        this.initialSleepTime = initialSleepTime;
     }
 
     public Optional<Long> getRestartSleepTime() {
-        return Optional.ofNullable(m_restartSleepTime);
+        return Optional.ofNullable(this.restartSleepTime);
     }
 
     public void setRestartSleepTime(final Long restartSleepTime) {
-        m_restartSleepTime = restartSleepTime;
+        this.restartSleepTime = restartSleepTime;
     }
 
     public Optional<Integer> getRetries() {
-        return Optional.ofNullable(m_retries);
+        return Optional.ofNullable(this.retries);
     }
 
     public void setRetries(final Integer retries) {
-        m_retries = retries;
+        this.retries = retries;
     }
 
     public Optional<Long> getTimeout() {
-        return Optional.ofNullable(m_timeout);
+        return Optional.ofNullable(this.timeout);
     }
 
     public void setTimeout(final Long timeout) {
         if (timeout != null && timeout == 0) {
             throw new IllegalArgumentException("Can't have a 0 timeout!");
         }
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     public Optional<String> getForeignSource() {
-        return Optional.ofNullable(m_foreignSource);
+        return Optional.ofNullable(this.foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
+        this.foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     public Optional<Integer> getChunkSize() {
-        return Optional.ofNullable(m_chunkSize);
+        return Optional.ofNullable(this.chunkSize);
     }
 
     public void setChunkSize(final Integer chunkSize) {
-        m_chunkSize = chunkSize;
+        this.chunkSize = chunkSize;
     }
 
     public List<Specific> getSpecifics() {
-        return m_specifics;
+        return this.specifics;
     }
 
     public void setSpecifics(final List<Specific> specifics) {
-        if (specifics != null && specifics.equals(m_specifics)) return;
-        m_specifics.clear();
-        if (specifics != null) m_specifics.addAll(specifics);
+        if (specifics != null && specifics.equals(this.specifics)) return;
+        this.specifics.clear();
+        if (specifics != null) this.specifics.addAll(specifics);
     }
 
     public void addSpecific(final Specific specific) {
-        m_specifics.add(specific);
+        this.specifics.add(specific);
     }
 
     public boolean removeSpecific(final Specific specific) {
-        return m_specifics.remove(specific);
+        return this.specifics.remove(specific);
     }
 
     /**
      */
     public void clearSpecifics() {
-        m_specifics.clear();
+        this.specifics.clear();
     }
 
     public List<IncludeRange> getIncludeRanges() {
-        return m_includeRanges;
+        return this.includeRanges;
     }
 
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
-        if (includeRanges != null && includeRanges.equals(m_includeRanges)) return;
-        m_includeRanges.clear();
-        if (includeRanges != null) m_includeRanges.addAll(includeRanges);
+        if (includeRanges != null && includeRanges.equals(this.includeRanges)) return;
+        this.includeRanges.clear();
+        if (includeRanges != null) this.includeRanges.addAll(includeRanges);
     }
 
     public void addIncludeRange(final IncludeRange includeRange) {
-        m_includeRanges.add(includeRange);
+        this.includeRanges.add(includeRange);
     }
 
     public boolean removeIncludeRange(final IncludeRange includeRange) {
-        return m_includeRanges.remove(includeRange);
+        return this.includeRanges.remove(includeRange);
     }
 
     /**
      */
     public void clearIncludeRanges() {
-        m_includeRanges.clear();
+        this.includeRanges.clear();
     }
 
     public List<ExcludeRange> getExcludeRanges() {
-        return m_excludeRanges;
+        return this.excludeRanges;
     }
 
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
-        if (excludeRanges != null && excludeRanges.equals(m_excludeRanges)) return;
-        m_excludeRanges.clear();
-        if (excludeRanges != null) m_excludeRanges.addAll(excludeRanges);
+        if (excludeRanges != null && excludeRanges.equals(this.excludeRanges)) return;
+        this.excludeRanges.clear();
+        if (excludeRanges != null) this.excludeRanges.addAll(excludeRanges);
     }
 
     public void addExcludeRange(final ExcludeRange excludeRange) {
-        m_excludeRanges.add(excludeRange);
+        this.excludeRanges.add(excludeRange);
     }
 
     public boolean removeExcludeRange(final ExcludeRange excludeRange) {
-        return m_excludeRanges.remove(excludeRange);
+        return this.excludeRanges.remove(excludeRange);
     }
 
     /**
      */
     public void clearExcludeRanges() {
-        m_excludeRanges.clear();
+        this.excludeRanges.clear();
     }
 
     public List<IncludeUrl> getIncludeUrls() {
-        return m_includeUrls;
+        return this.includeUrls;
     }
 
     public void setIncludeUrls(final List<IncludeUrl> includeUrls) {
-        if (includeUrls != null && includeUrls.equals(m_includeUrls)) return;
-        m_includeUrls.clear();
-        if (includeUrls != null) m_includeUrls.addAll(includeUrls);
+        if (includeUrls != null && includeUrls.equals(this.includeUrls)) return;
+        this.includeUrls.clear();
+        if (includeUrls != null) this.includeUrls.addAll(includeUrls);
     }
 
     public void addIncludeUrl(final IncludeUrl includeUrl) {
-        m_includeUrls.add(includeUrl);
+        this.includeUrls.add(includeUrl);
     }
 
     public boolean removeIncludeUrl(final IncludeUrl includeUrl) {
-        return m_includeUrls.remove(includeUrl);
+        return this.includeUrls.remove(includeUrl);
     }
 
     /**
      */
     public void clearIncludeUrls() {
-        m_includeUrls.clear();
+        this.includeUrls.clear();
     }
 
     public List<ExcludeUrl> getExcludeUrls() {
-        return m_excludeUrls;
+        return excludeUrls;
     }
 
     public void setExcludeUrls(final List<ExcludeUrl> excludeUrls) {
-        if (excludeUrls != null && excludeUrls.equals(m_excludeUrls)) return;
-        m_excludeUrls.clear();
-        if (excludeUrls != null) m_excludeUrls.addAll(excludeUrls);
+        if (excludeUrls != null && excludeUrls.equals(this.excludeUrls)) return;
+        this.excludeUrls.clear();
+        if (excludeUrls != null) this.excludeUrls.addAll(excludeUrls);
     }
 
     public void addExcludeUrl(final ExcludeUrl excludeUrl) {
-        m_excludeUrls.add(excludeUrl);
+        excludeUrls.add(excludeUrl);
     }
 
     public boolean removeExcludeUrl(final ExcludeUrl excludeUrl) {
-        return m_excludeUrls.remove(excludeUrl);
+        return excludeUrls.remove(excludeUrl);
     }
 
     /**
      */
     public void clearExcludeUrls() {
-        m_excludeUrls.clear();
+        excludeUrls.clear();
     }
 
     public List<Definition> getDefinitions() {
-        return m_definitions;
+        return this.definitions;
     }
 
     public void setDefinitions(List<Definition> definitions) {
-        m_definitions = definitions;
+        this.definitions = definitions;
     }
 
     public void addDefinition(Definition definition) {
-        m_definitions.add(definition);
+        this.definitions.add(definition);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_location, 
-                            m_packetsPerSecond, 
-                            m_initialSleepTime, 
-                            m_restartSleepTime, 
-                            m_retries, 
-                            m_timeout, 
-                            m_foreignSource, 
-                            m_chunkSize, 
-                            m_specifics, 
-                            m_includeRanges, 
-                            m_excludeRanges, 
-                            m_includeUrls,
-                            m_excludeUrls);
+                            this.location, 
+                            this.packetsPerSecond, 
+                            this.initialSleepTime, 
+                            this.restartSleepTime, 
+                            this.retries, 
+                            this.timeout, 
+                            this.foreignSource, 
+                            this.chunkSize, 
+                            this.specifics, 
+                            this.includeRanges, 
+                            this.excludeRanges, 
+                            this.includeUrls,
+                            this.excludeUrls);
     }
 
     @Override
@@ -375,36 +381,36 @@ public class DiscoveryConfiguration implements Serializable {
 
         if (obj instanceof DiscoveryConfiguration) {
             final DiscoveryConfiguration that = (DiscoveryConfiguration)obj;
-            return Objects.equals(this.m_location, that.m_location)
-                    && Objects.equals(this.m_packetsPerSecond, that.m_packetsPerSecond)
-                    && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
-                    && Objects.equals(this.m_restartSleepTime, that.m_restartSleepTime)
-                    && Objects.equals(this.m_retries, that.m_retries)
-                    && Objects.equals(this.m_timeout, that.m_timeout)
-                    && Objects.equals(this.m_foreignSource, that.m_foreignSource)
-                    && Objects.equals(this.m_chunkSize, that.m_chunkSize)
-                    && Objects.equals(this.m_specifics, that.m_specifics)
-                    && Objects.equals(this.m_includeRanges, that.m_includeRanges)
-                    && Objects.equals(this.m_excludeRanges, that.m_excludeRanges)
-                    && Objects.equals(this.m_includeUrls, that.m_includeUrls)
-                    && Objects.equals(this.m_excludeUrls, that.m_excludeUrls);
+            return Objects.equals(this.location, that.location)
+                    && Objects.equals(this.packetsPerSecond, that.packetsPerSecond)
+                    && Objects.equals(this.initialSleepTime, that.initialSleepTime)
+                    && Objects.equals(this.restartSleepTime, that.restartSleepTime)
+                    && Objects.equals(this.retries, that.retries)
+                    && Objects.equals(this.timeout, that.timeout)
+                    && Objects.equals(this.foreignSource, that.foreignSource)
+                    && Objects.equals(this.chunkSize, that.chunkSize)
+                    && Objects.equals(this.specifics, that.specifics)
+                    && Objects.equals(this.includeRanges, that.includeRanges)
+                    && Objects.equals(this.excludeRanges, that.excludeRanges)
+                    && Objects.equals(this.includeUrls, that.includeUrls)
+                    && Objects.equals(this.excludeUrls, that.excludeUrls);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "DiscoveryConfiguration [location=" + m_location
-                + ", packetsPerSecond=" + m_packetsPerSecond
-                + ", initialSleepTime=" + m_initialSleepTime
-                + ", restartSleepTime=" + m_restartSleepTime
-                + ", retries=" + m_retries + ", timeout=" + m_timeout
-                + ", foreignSource=" + m_foreignSource + ", chunkSize="
-                + m_chunkSize + ", specifics=" + m_specifics
-                + ", includeRanges=" + m_includeRanges
-                + ", excludeRanges=" + m_excludeRanges + ", includeUrls="
-                + m_includeUrls + ", excludeUrls="
-                + m_excludeUrls + "]";
+        return "DiscoveryConfiguration [location=" + this.location
+                + ", packetsPerSecond=" + this.packetsPerSecond
+                + ", initialSleepTime=" + this.initialSleepTime
+                + ", restartSleepTime=" + this.restartSleepTime
+                + ", retries=" + this.retries + ", timeout=" + this.timeout
+                + ", foreignSource=" + this.foreignSource + ", chunkSize="
+                + this.chunkSize + ", specifics=" + this.specifics
+                + ", includeRanges=" + this.includeRanges
+                + ", excludeRanges=" + this.excludeRanges + ", includeUrls="
+                + includeUrls + ", excludeUrls="
+                + excludeUrls + "]";
     }
 
 }

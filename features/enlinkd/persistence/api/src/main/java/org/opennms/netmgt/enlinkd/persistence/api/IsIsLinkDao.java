@@ -28,20 +28,16 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 
-public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
+public interface IsIsLinkDao extends LinkDao<IsIsLink, Integer> {
 
     IsIsLink get(OnmsNode node, Integer isisCircIndex, Integer isisISAdjIndex);
 
     IsIsLink get(Integer nodeId, Integer isisCircIndex, Integer isisISAdjIndex);
-    
-    List<IsIsLink> findByNodeId(Integer nodeId);
 
     /**
      * Returns all IsIsLinks related by the sysId of an intermediary IsIsElement and the
@@ -49,9 +45,5 @@ public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
      * Used to retrieve all IsIsLinks that need to be accessed when finding IsIsLinks of a node.
      */
     List<IsIsLink> findBySysIdAndAdjAndCircIndex(int nodeId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-    
-    public void deleteByNodeId(Integer nodeId);
 
 }

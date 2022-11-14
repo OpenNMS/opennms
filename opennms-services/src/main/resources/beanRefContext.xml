@@ -7,6 +7,7 @@
         <constructor-arg>
             <list>
                 <value>META-INF/opennms/applicationContext-pollerConfigDaos.xml</value>
+                <value>META-INF/opennms/applicationContext-deviceConfig-MonitorAdaptor.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg ref="daoContext" />

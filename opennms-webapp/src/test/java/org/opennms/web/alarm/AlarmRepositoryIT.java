@@ -46,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -73,6 +74,7 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
@@ -91,6 +93,9 @@ public class AlarmRepositoryIT implements InitializingBean {
     
     @Autowired
     AlarmDao m_alarmDao;
+
+    @Autowired
+    DistPollerDao m_distPollerDao;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -111,7 +116,7 @@ public class AlarmRepositoryIT implements InitializingBean {
         
         assertEquals(1, alarm.getId().intValue());
         assertEquals("uei.opennms.org/test", alarm.getUei());
-        assertEquals("00000000-0000-0000-0000-000000000000", alarm.getDistPoller().getId());
+        assertEquals(m_distPollerDao.whoami().getId(), alarm.getDistPoller().getId());
         assertEquals(1, alarm.getCounter().intValue());
         assertEquals(3, alarm.getSeverity().getId());
         

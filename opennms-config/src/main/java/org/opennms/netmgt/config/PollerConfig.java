@@ -33,10 +33,12 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.api.PathOutageConfig;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -292,7 +294,50 @@ public interface PollerConfig extends PathOutageConfig {
     public Enumeration<Package> enumeratePackage();
 
     public List<Package> getPackages();
-    
+
+    List<Monitor> getConfiguredMonitors();
+
+    /**
+     * Find the {@link Package} containing the service selected for the given IP.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found package or {@code null} if no package matches
+     */
+    default Package findPackageForService(final String ipAddr, final String serviceName) {
+        Package lastPkg = null;
+        for (final var pkg : this.getPackages()) {
+            if (pkg.getPerspectiveOnly()) {
+                continue;
+            }
+
+            if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) {
+                continue;
+            }
+
+            if (!this.isInterfaceInPackage(ipAddr, pkg)) {
+                continue;
+            }
+
+            lastPkg = pkg;
+        }
+        return lastPkg;
+    }
+
+    /**
+     * Find the service for the given IP by service name.
+     * @param ipAddr the address to select the package for
+     * @param serviceName the name of the service
+     * @return the found matching info
+     */
+    default Optional<Package.ServiceMatch> findService(final String ipAddr, final String serviceName) {
+        final var pkg = this.findPackageForService(ipAddr, serviceName);
+        if (pkg == null) {
+            return Optional.empty();
+        }
+
+        return pkg.findService(serviceName);
+    }
+
     /**
      * <p>getPackage</p>
      *
@@ -357,11 +402,20 @@ public interface PollerConfig extends PathOutageConfig {
     void addMonitor(String svcName, String className);
 
     /**
-     * <p>getConfiguration</p>
+     * <p>getLocalConfiguration</p>
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
-    PollerConfiguration getConfiguration();
+    PollerConfiguration getLocalConfiguration();
+
+    /**
+     * <p>getExtendedConfiguration</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
+     */
+    default PollerConfiguration getExtendedConfiguration() {
+        return getLocalConfiguration();
+    }
 
     /**
      * <p>getServiceMonitorLocators</p>
@@ -371,6 +425,8 @@ public interface PollerConfig extends PathOutageConfig {
     Collection<ServiceMonitorLocator> getServiceMonitorLocators();
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
+
+    default void setExternalData(List<Package> externalPackages, List<Monitor> externalMonitors) {};
 
     /**
      * <p>getReadLock</p>

@@ -31,7 +31,7 @@ package org.opennms.netmgt.search.providers.node;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;

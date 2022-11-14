@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphMLGraph;
@@ -78,18 +80,17 @@ public class GraphMLSearchProviderTest {
 
         DefaultTopologyService defaultTopologyService = new DefaultTopologyService();
         defaultTopologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
-        defaultTopologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+        defaultTopologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
         VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(defaultTopologyService);
         graphContainer.setMetaTopologyId(metaTopologyProvider.getId());
         graphContainer.setSelectedNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());
 
-        OperationContext operationContext = EasyMock.niceMock(OperationContext.class);
-        EasyMock.expect(operationContext.getGraphContainer()).andReturn(graphContainer).anyTimes();
+        OperationContext operationContext = mock(OperationContext.class);
+        when(operationContext.getGraphContainer()).thenReturn(graphContainer);
 
-        OnmsServiceManager onmsServiceManager = EasyMock.niceMock(OnmsServiceManager.class);
-        EasyMock.expect(onmsServiceManager.getServices(SearchProvider.class, null, new Hashtable<>())).andReturn(searchProviders).anyTimes();
-        EasyMock.replay(onmsServiceManager, operationContext);
+        OnmsServiceManager onmsServiceManager = mock(OnmsServiceManager.class);
+        when(onmsServiceManager.getServices(SearchProvider.class, null, new Hashtable<>())).thenReturn(searchProviders);
 
         SearchBox searchBox = new SearchBox(onmsServiceManager, operationContext);
         List<SearchSuggestion> results = searchBox.getQueryResults("North");

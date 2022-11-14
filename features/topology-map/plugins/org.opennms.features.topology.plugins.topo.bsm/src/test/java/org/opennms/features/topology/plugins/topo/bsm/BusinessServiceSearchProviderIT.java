@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -100,13 +104,12 @@ public class BusinessServiceSearchProviderIT {
         businessServiceDao.flush();
 
         // prepare mocks
-        TopologyServiceClient topologyServiceClientMock = EasyMock.createNiceMock(TopologyServiceClient.class);
-        EasyMock.expect(topologyServiceClientMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
-                .andReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
+        TopologyServiceClient topologyServiceClientMock = mock(TopologyServiceClient.class);
+        when(topologyServiceClientMock.getVertex(any(BusinessServiceVertex.class)))
+                .thenReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
 
-        GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
-        EasyMock.expect(graphContainerMock.getTopologyServiceClient()).andReturn(topologyServiceClientMock).anyTimes();
-        EasyMock.replay(graphContainerMock, topologyServiceClientMock);
+        GraphContainer graphContainerMock = mock(GraphContainer.class);
+        when(graphContainerMock.getTopologyServiceClient()).thenReturn(topologyServiceClientMock);
 
         // try searching
         final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
@@ -119,6 +122,5 @@ public class BusinessServiceSearchProviderIT {
         };
         final List<SearchResult> result = provider.query(query, graphContainerMock);
         Assert.assertEquals(1, result.size());
-        EasyMock.verify(graphContainerMock, topologyServiceClientMock);
     }
 }

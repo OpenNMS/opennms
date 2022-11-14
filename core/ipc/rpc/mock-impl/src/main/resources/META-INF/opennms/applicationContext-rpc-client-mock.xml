@@ -11,6 +11,8 @@
 
   <import resource="classpath:/META-INF/opennms/applicationContext-rpc-utils.xml" />
 
+  <import resource="classpath:/META-INF/opennms/applicationContext-jceks-scv.xml" />
+
   <bean id="mockRpcClientFactory" class="org.opennms.core.rpc.mock.MockRpcClientFactory" />
 
 </beans>

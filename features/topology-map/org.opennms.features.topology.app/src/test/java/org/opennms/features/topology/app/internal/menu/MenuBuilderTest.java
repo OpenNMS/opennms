@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,10 @@
 package org.opennms.features.topology.app.internal.menu;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.features.topology.app.internal.TestOperationContext;
 
@@ -130,7 +130,7 @@ public class MenuBuilderTest {
         builder.addMenuItem(createEmptyMenuItem("Test"), "Layout");
 
         MenuBar menubar = builder.build(Lists.newArrayList(), new TestOperationContext(null));
-        TopologyContextMenu contextMenu = new TopologyContextMenu(EasyMock.niceMock(UI.class), menubar);
+        TopologyContextMenu contextMenu = new TopologyContextMenu(mock(UI.class), menubar);
 
         final List<MenuBar.MenuItem> contextMenuItems = contextMenu.getItems();
         assertEquals(1, contextMenuItems.size());

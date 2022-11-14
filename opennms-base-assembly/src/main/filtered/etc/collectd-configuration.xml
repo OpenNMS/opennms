@@ -162,7 +162,23 @@
          <parameter key="collection" value="xml-elasticsearch-cluster-stats"/>
          <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
       </service>
+      <service name="Windows-Exporter" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="windows-exporter"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="url" value="http://INTERFACE_ADDRESS:9182/metrics"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="retry" value="2"/>
+      </service>
+      <service name="Node-Exporter" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="node-exporter"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="url" value="http://INTERFACE_ADDRESS:9100/metrics"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="retry" value="2"/>
+      </service>
    </package>
+   <collector service="Windows-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
+   <collector service="Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
    <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
    <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
    <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
@@ -177,4 +193,3 @@
    <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 </collectd-configuration>
-

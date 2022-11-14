@@ -6,6 +6,7 @@
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
@@ -26,7 +27,7 @@
     </feature>
 
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
-      <feature version="${guavaVersion}">guava</feature>
+      <feature version="${guavaOsgiVersion}">guava</feature>
       <feature>minion-core-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-ipc-sink-api</feature>
@@ -132,10 +133,13 @@
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
+      <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
       <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
@@ -184,16 +188,23 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
 
-  <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
-    <feature>opennms-health-rest</feature>
-    <feature version="${cxfVersion}">cxf-core</feature>
-    <feature version="${cxfVersion}">cxf-jaxrs</feature>
-    <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
-  </feature>
+    <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
+        <feature>commons-lang3</feature>
+        <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+    </feature>
 
-  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
-  </feature>
+    <feature name="minion-api-layer" version="${project.version}" description="Minion :: API Layer">
+        <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>minion-health-check</feature>
+        <feature>opennms-provisioning</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>scv-api</feature>
+        <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.minion/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+    </feature>
 
 </features>

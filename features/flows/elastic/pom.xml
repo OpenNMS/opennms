@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.flows</artifactId>
-    <version>29.0.6-SNAPSHOT</version>
+    <version>31.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
@@ -73,6 +73,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.processing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows.classification.engine</groupId>
       <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
       <version>${project.version}</version>
@@ -80,6 +85,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.tracing</groupId>
@@ -120,10 +129,6 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.swrve</groupId>
-      <artifactId>rate-limited-logger</artifactId>
     </dependency>
 
     <dependency>

@@ -86,6 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -96,7 +97,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerd.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
-        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger",

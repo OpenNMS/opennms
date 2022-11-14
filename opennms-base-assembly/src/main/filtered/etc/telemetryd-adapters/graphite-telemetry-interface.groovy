@@ -38,6 +38,17 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource
  *
  * You can send test data easily by doing something like:
  * <code>echo "eth0.my-metric 100 `date +%s`" | nc -u -w1 localhost 2003</code>
+ *
+ * Alternate version, using IPv4 and setting 'localhost' as the source:
+ * <code>echo "eth0.my-metric 100 `date +%s`" | nc -u -w1 -4 -s localhost localhost 2003</code>
+ *
+ * Note that log messages using 'log' will show up in etc/karaf.log. Depending on your Karaf log configuration
+ * settings, you may need to use 'log.error()' for them to show up.
+ *
+ * Scripts are cached but should automatically reload when updated and saved, however this may not occur if there
+ * are compilation errors. If you want to force reload, you can run the following karaf command:
+ *
+ * <code>opennms:reload-daemon telemetryd</code>
  */
 @Slf4j
 class CollectionSetGenerator {
@@ -49,9 +60,9 @@ class CollectionSetGenerator {
 
         if (graphiteMsg.path.startsWith("eth")) {
             // finding the mac address for the interface is left as an exercise to the reader ;)
-            String ifaceLabel = RrdLabelUtils.computeLabelForRRD(graphiteMsg.path.split(".")[0], null, null);
-            InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, interfaceLabel);
-            builder.withGauge(interfaceResource, "some-group", graphiteMsg.path.split(".")[1], graphitMsg.longValue());
+            String ifaceLabel = RrdLabelUtils.computeLabelForRRD(graphiteMsg.path.split("\\.")[0], null, null);
+            InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, ifaceLabel);
+            builder.withGauge(interfaceResource, "some-group", graphiteMsg.path.split("\\.")[1], graphiteMsg.longValue());
         } else {
             log.warn("I don't know how to handle this message from graphite. :(  {}", graphiteMsg);
         }

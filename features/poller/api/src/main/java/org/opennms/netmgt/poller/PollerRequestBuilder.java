@@ -53,5 +53,7 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withPatternVariables(Map<String, String> patterns);
 
+    Map<String, Object> getInterpolatedAttributes();
+
     CompletableFuture<PollerResponse> execute();
 }

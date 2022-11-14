@@ -32,11 +32,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -45,6 +49,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.IpInterfaceProvider;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This <Criteria> implementation supports the users selection of search results from an IPLIKE query
@@ -65,6 +71,10 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 
 	private IpInterfaceProvider ipInterfaceProvider;
 
+	private GraphContainer m_graphContainer;
+
+	private final Logger LOG = LoggerFactory.getLogger(IpLikeHopCriteria.class);
+
 	@Override
 	public String getSearchString() {
 		return m_ipQuery;
@@ -78,12 +88,14 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		}
     }
 
-	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider) {
+	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider, GraphContainer graphContainer) {
     	super(searchResult.getQuery());
     	m_collapsed = searchResult.isCollapsed();
         m_ipQuery = searchResult.getQuery();
         this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
         m_collapsedVertex = new IPVertex(m_ipQuery);
+	m_graphContainer = Objects.requireNonNull(graphContainer);
+	Objects.requireNonNull(graphContainer.getTopologyServiceClient());
         m_collapsedVertex.setChildren(getVertices());
         setId(searchResult.getId());
     }
@@ -122,15 +134,11 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
 
 		bldr.iplike("ipAddr", m_ipQuery);
-		List<OnmsIpInterface> ips = ipInterfaceProvider.findMatching(bldr.toCriteria());
-
-		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-		for (OnmsIpInterface ip : ips) {
-			OnmsNode node = ip.getNode();
-			vertices.add(new DefaultVertexRef("nodes", String.valueOf(node.getId()), node.getLabel()));
-		}
-		
-		return vertices;
+		final Set<Integer> nodeids = ipInterfaceProvider.findMatching(bldr.toCriteria()).stream().map(ip -> ip.getNode().getId()).collect(Collectors.toSet());
+		LOG.debug("getVertices: nodeids: {}", nodeids);
+		final GraphProvider graphProvider = m_graphContainer.getTopologyServiceClient().getGraphProviderBy(m_graphContainer.getTopologyServiceClient().getNamespace());
+		final BackendGraph currentGraph = graphProvider.getCurrentGraph();
+		return currentGraph.getVertices().stream().filter(v -> v.getNodeID() != null && nodeids.contains(v.getNodeID())).collect(Collectors.toSet());
 	}
 
 	@Override

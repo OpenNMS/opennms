@@ -35,18 +35,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.core.rpc.utils.mate.ContextKey;
-import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
+import org.opennms.netmgt.flows.processing.Pipeline;
+import org.opennms.netmgt.flows.processing.ProcessingOptions;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +61,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFlowAdapter.class);
 
-    private final FlowRepository flowRepository;
-
-    private final Converter<P> converter;
+    private final Pipeline pipeline;
 
     private String metaDataNodeLookup;
     private ContextKey contextKey;
@@ -83,21 +82,26 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     private final Meter entriesConverted;
 
+    private boolean applicationThresholding;
+    private boolean applicationDataCollection;
+
+    private final List<? extends PackageDefinition> packages;
+
     public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
-                               final FlowRepository flowRepository,
-                               final Converter<P> converter) {
+                               final Pipeline pipeline) {
         Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
 
-        this.flowRepository = Objects.requireNonNull(flowRepository);
-        this.converter = Objects.requireNonNull(converter);
+        this.pipeline = Objects.requireNonNull(pipeline);
 
         this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
         this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
         this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesReceived"));
         this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesParsed"));
         this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesConverted"));
+
+        this.packages = Objects.requireNonNull(adapterConfig.getPackages());
     }
 
     @Override
@@ -118,7 +122,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
                     flowPackets += 1;
 
-                    final List<Flow> converted = converter.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
+                    final List<Flow> converted = this.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
                     flows.addAll(converted);
 
                     this.entriesConverted.mark(converted.size());
@@ -132,7 +136,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             final FlowSource source = new FlowSource(messageLog.getLocation(),
                     messageLog.getSourceAddress(),
                     contextKey);
-            flowRepository.persist(flows, source);
+            this.pipeline.process(flows, source, ProcessingOptions.builder()
+                                                                  .setApplicationThresholding(this.applicationThresholding)
+                                                                  .setApplicationDataCollection(this.applicationDataCollection)
+                                                                  .setPackages(this.packages)
+                                                                  .build());
         } catch (DetailedFlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
             for (final String logMessage: ex.getDetailedLogMessages()) {
@@ -151,6 +159,8 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     protected abstract P parse(TelemetryMessageLogEntry message);
 
+    protected abstract List<Flow> convert(final P packet, final Instant receivedAt);
+
     public void destroy() {
         // not needed
     }
@@ -167,5 +177,21 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
         } else {
             this.contextKey = null;
         }
+    }
+
+    public boolean isApplicationThresholding() {
+        return this.applicationThresholding;
+    }
+
+    public void setApplicationThresholding(final boolean applicationThresholding) {
+        this.applicationThresholding = applicationThresholding;
+    }
+
+    public boolean isApplicationDataCollection() {
+        return this.applicationDataCollection;
+    }
+
+    public void setApplicationDataCollection(final boolean applicationDataCollection) {
+        this.applicationDataCollection = applicationDataCollection;
     }
 }

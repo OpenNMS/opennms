@@ -277,9 +277,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
     	String excludingCriteria = new String(" snmpifindex > 0 ");
         for (String pkgInterfaceName: getPollerConfig().getInterfaceOnPackage(pkgName)) {
             LOG.debug("found package interface with name: {}", pkgInterfaceName);
+            final String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName).orElse(null);
             if (getPollerConfig().getStatus(pkgName, pkgInterfaceName)){
 
-                final String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName).orElse(null);
                 if (getPollerConfig().getCriteria(pkgName, pkgInterfaceName).isPresent()) {
                     LOG.debug("package interface: criteria: {}", criteria);
                     excludingCriteria = excludingCriteria + " and not " + criteria;
@@ -312,8 +312,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
                 getNetwork().schedule(node,interval,getScheduler());
+
+                updatePollFlag(node.getParent().getNodeid(), criteria, "P");
             } else {
                 LOG.debug("package interface status: Off");
+                updatePollFlag(nodeGroup.getNodeid(), criteria, "I");
             }
         }
         if (!getPollerConfig().useCriteriaFilters()) {
@@ -322,11 +325,26 @@ public class SnmpPoller extends AbstractServiceDaemon {
                     excludingCriteria, false, -1, false, -1, false, -1, false, -1,
                     statusValuesFromString(getPollerConfig().getUpValues(), new int[]{1}),
                     statusValuesFromString(getPollerConfig().getDownValues(), new int[]{2}));
-
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
             getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
+
+            updatePollFlag(node.getParent().getNodeid(), excludingCriteria, "P");
         }
+        else {
+            // The nodes excluded by criteria will NOT be polled. We need to update the DB model
+            // to reflect this
+            updatePollFlag(nodeGroup.getNodeid(), excludingCriteria, "I");
+        }
+    }
+
+    private void updatePollFlag(int nodeId, String criteria, String pollFlag) {
+        getNetwork().getContext().get(nodeId, criteria).stream()
+                .filter(iface -> !iface.getPoll().equals(pollFlag))
+                .forEach(iface -> {
+                    iface.setPoll(pollFlag);
+                    getNetwork().getContext().update(iface);
+                });
     }
 
     private int[] statusValuesFromString(String str, int[] defValues) {

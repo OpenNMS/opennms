@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -48,13 +49,13 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ExporterState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.OptionState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ParserState;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 public class UdpSessionManager {
-    final Map<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
+    final ConcurrentMap<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
     private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newConcurrentMap();
     private final Duration timeout;
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
@@ -198,6 +199,11 @@ public class UdpSessionManager {
             this.template = Objects.requireNonNull(template);
             this.options = Maps.newConcurrentMap();
         }
+
+        public TemplateOptions(final Template template, Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>> options) {
+            this.template = Objects.requireNonNull(template);
+            this.options = Objects.requireNonNull(options);
+        }
     }
 
     private final class UdpSession implements Session {
@@ -210,7 +216,16 @@ public class UdpSessionManager {
         @Override
         public void addTemplate(final long observationDomainId, final Template template) {
             final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, template.id);
-            UdpSessionManager.this.templates.put(key, new TimeWrapper<>(new TemplateOptions(template)));
+            UdpSessionManager.this.templates.compute(key, (k, wrapper) -> {
+                TemplateOptions newTemplateOptions;
+                if (wrapper == null) {
+                    newTemplateOptions = new TemplateOptions(template);
+                } else {
+                    // preserve the old option values
+                    newTemplateOptions = new TemplateOptions(template, wrapper.wrapped.options);
+                }
+                return new TimeWrapper<>(newTemplateOptions);
+            });
         }
 
         @Override

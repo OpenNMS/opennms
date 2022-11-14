@@ -28,28 +28,20 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 
 
 /**
  * <p>BridgeMacLinkDao interface.</p>
  */
-public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
+public interface BridgeMacLinkDao extends LinkDao<BridgeMacLink, Integer> {
     
-    public List<BridgeMacLink> findByNodeId(Integer id);
+    BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port, String mac);
 
-    public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,String mac);
+    List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port);
 
-    public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port);
-
-    public List<BridgeMacLink> findByMacAddress(String mac);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
-    void deleteByNodeId(Integer nodeiId);
+    List<BridgeMacLink> findByMacAddress(String mac);
 
 }

@@ -45,6 +45,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.CompositeKey;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.TopologyConnection;
+import org.opennms.netmgt.enlinkd.service.api.TopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,14 +119,14 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     }
     
     private void saveOspfLink(final int nodeId, final OspfLink saveMe) {
-        new UpsertTemplate<OspfLink, OspfLinkDao>(m_transactionManager,
-                                                  m_ospfLinkDao) {
+        new UpsertTemplate<>(m_transactionManager,
+                m_ospfLinkDao) {
 
             @Override
             protected OspfLink query() {
                 return m_dao.get(nodeId, saveMe.getOspfRemRouterId(),
-                                 saveMe.getOspfRemIpAddr(),
-                                 saveMe.getOspfRemAddressLessIndex());
+                        saveMe.getOspfRemIpAddr(),
+                        saveMe.getOspfRemAddressLessIndex());
             }
 
             @Override
@@ -177,7 +178,7 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
     public List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match() {
         List<OspfLinkTopologyEntity> allLinks = getTopologyEntityCache().getOspfLinkTopologyEntities();
         List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> results = new ArrayList<>();
-        Set<Integer> parsed = new HashSet<Integer>();
+        Set<Integer> parsed = new HashSet<>();
 
         // build mapping:
         Map<CompositeKey, OspfLinkTopologyEntity> targetLinks = new HashMap<>();
@@ -205,9 +206,18 @@ public class OspfTopologyServiceImpl extends TopologyServiceImpl implements Ospf
 
             LOG.debug("getOspfLinks: target: {}", targetLink);
             parsed.add(targetLink.getId());
-            results.add(TopologyConnection.of(sourceLink, targetLink));
+            results.add(TopologyService.of(sourceLink, targetLink));
         }
         return results;
 
+    }
+
+    @Override
+    public void deletePersistedData() {
+        m_ospfElementDao.deleteAll();
+        m_ospfElementDao.flush();
+
+        m_ospfLinkDao.deleteAll();
+        m_ospfLinkDao.flush();
     }
 }

@@ -27,6 +27,21 @@
         <!-- This options should always match the number of writer threads. See NMS-8439. -->
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
+  <bean id="timeseries.backend" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.backend:ringbuffer}" />
+  </bean>
+
+  <bean id="timeseries.offheap.batchSize" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
+  </bean>
+
+  <bean id="timeseries.offheap.path" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
+  </bean>
+
+  <bean id="timeseries.offheap.maxFileSize" class="java.lang.Long">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />
+  </bean>
 
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
@@ -48,15 +63,13 @@
 
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
 
-  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
-
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl"/>
 
   <bean id="timeseriesStorageImpl" class="org.opennms.integration.api.v1.timeseries.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
-  <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>
-  <onmsgi:service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider" />
+  <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl"/>
+  <onmsgi:service interface="org.opennms.core.mate.api.EntityScopeProvider" ref="entityScopeProvider" />
 
   <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 

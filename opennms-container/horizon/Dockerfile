@@ -1,33 +1,51 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
+FROM ${BASE_IMAGE} as horizon-base
 
-ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq diffutils hostname"
+ADD --chown=10001:0 ./tarball-root/ /usr/share/opennms/
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
-ARG CONFD_VERSION="0.16.0"
-ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64"
+ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
-# Collect generic steps in a layer for caching
-RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
-    chmod +x /usr/bin/confd
+# Prevent setup prompt
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN dnf -y install dnf-plugins-core && \
-    dnf config-manager --set-enabled powertools && \
-    rpm --import "${REPO_KEY_URL}" && \
-    dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/yum
+# import keys
+RUN apt-get update && \
+    apt-get \
+        --no-install-recommends \
+        -yq \
+        install \
+            gnupg \
+            ca-certificates && \
+    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
+    apt-get update && \
+    apt-get \
+        --no-install-recommends \
+        -yq \
+        install \
+            ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# Preserve a pristine copy of the Java binaries before we apply setcap
+# Symlink to the other resources vs copying to keep the container image smaller
+RUN mkdir "${JAVA_HOME}-nocap" && \
+    cp -R "${JAVA_HOME}/bin" "${JAVA_HOME}-nocap/" && \
+    ln -s "${JAVA_HOME}/conf" "${JAVA_HOME}-nocap/conf" && \
+    ln -s "${JAVA_HOME}/docs" "${JAVA_HOME}-nocap/docs" && \
+    ln -s "${JAVA_HOME}/legal" "${JAVA_HOME}-nocap/legal" && \
+    ln -s "${JAVA_HOME}/lib" "${JAVA_HOME}-nocap/lib" && \
+    ln -s "${JAVA_HOME}/man" "${JAVA_HOME}-nocap/man" && \
+    ln -s "${JAVA_HOME}/release" "${JAVA_HOME}-nocap/release"
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
@@ -35,21 +53,24 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
     ldconfig
 
 # Create OpenNMS user with a specific group ID
-RUN groupadd -g 10001 opennms && \
-    adduser -u 10001 -g 10001 -d /opt/opennms -s /usr/bin/bash opennms
+RUN groupadd \
+        -g 10001 \
+        opennms && \
+    adduser \
+        --uid 10001 \
+        --gid 10001 \
+        --home /opt/opennms \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        opennms
+
 ##
 # Install and setup OpenNMS RPMS
 ##
 FROM horizon-base
 
-# A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
-
 # Allow to install optional packages via YUM
-ARG ADD_YUM_PACKAGES
-
-COPY ./rpms /tmp/rpms
-COPY ./tarball /tmp/tarball
+ARG ADD_DEB_PACKAGES
 
 SHELL ["/bin/bash", "-c"]
 
@@ -57,81 +78,42 @@ SHELL ["/bin/bash", "-c"]
 # we're not copying RPMs into /tmp/rpms by default
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
+ARG ADD_DEB_PACKAGES
 
-# Install repositories, system and OpenNMS packages and do some cleanup
-# 1. Try to install from tarball
-# 2. Try to install from local RPMS
-# 3. Try to install from public yum repository
-#
-# To avoid different behavior, between a RPM or tarball installation,
-# the directory structure is unified, the links for /opt/opennms/share
-# and /opt/opennms/logs introduced by RPM installs are removed.
-
-RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
-    if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
-        mkdir -p /opt/opennms && \
-        tar -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
-        chown -R 10001:0 /opt/opennms && \
-        cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
-    elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
-        echo "installing local RPMs from filesystem" && \
-        dnf -y install /tmp/rpms/*.rpm && \
-        rm -rf /opt/opennms/logs \
-               /opt/opennms/share && \
-        mv /var/opennms /opt/opennms/share && \
-        mv /var/log/opennms /opt/opennms/logs; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${ONMS_PACKAGES} && \
-        rm -rf /opt/opennms/logs \
-               /opt/opennms/share && \
-        mv /var/opennms /opt/opennms/share && \
-        mv /var/log/opennms /opt/opennms/logs; \
-    else \
-        echo "installing remote RPMs from stable" && \
-        dnf -y install ${ONMS_PACKAGES} && \
-        rm -rf /opt/opennms/logs \
-               /opt/opennms/share && \
-        mv /var/opennms /opt/opennms/share && \
-        mv /var/log/opennms /opt/opennms/logs; \
+# Install any spare packages and create some compatibility links
+RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
+        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
     fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms /tmp/tarball && \
-    dnf clean all && \
-    rm -rf /var/cache/yum && \
-    rm -rf /opt/opennms/share/rrd \
-           /opt/opennms/share/reports \
-           /opt/opennms/share/mibs && \
-    mkdir -p /opt/opennms-etc-overlay \
-             /opt/opennms-jetty-webinf-overlay \
-             /opt/opennms-overlay && \
-    mkdir -p /opennms-data/rrd \
-             /opennms-data/reports \
-             /opennms-data/mibs && \
-    ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
-    ln -s /opennms-data/reports /opt/opennms/share/reports && \
-    ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
-    chown 10001:10001 -R /opt/opennms \
-                         /opennms-data \
-                         /opt/opennms-overlay \
-                         /opt/opennms-etc-overlay \
-                         /opt/opennms-jetty-webinf-overlay && \
-    chgrp -R 0 /opt/opennms \
-               /opennms-data \
-               /opt/opennms-overlay \
-               /opt/opennms-etc-overlay \
-               /opt/opennms-jetty-webinf-overlay && \
-    chmod -R g=u /opt/opennms \
-                 /opennms-data \
-                 /opt/opennms-overlay \
-                 /opt/opennms-etc-overlay \
-                 /opt/opennms-jetty-webinf-overlay
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /usr/share/opennms/share/rrd \
+           /usr/share/opennms/share/reports \
+           /usr/share/opennms/share/mibs \
+           /var/cache/apt && \
+    install -d -m 775 -g 0 -o 10001 \
+            /opt/opennms-etc-overlay \
+            /opt/opennms-jetty-webinf-overlay \
+            /opt/opennms-overlay \
+            /opennms-data && \
+    install -d -m 775 -g 0 -o 10001 \
+            /opennms-data/rrd \
+            /opennms-data/reports \
+            /opennms-data/mibs && \
+    ln -s /opennms-data/rrd /usr/share/opennms/share/rrd && \
+    ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
+    ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
+# Align with old opennms path
+    ln -s /usr/share/opennms /opt/opennms && \
+# Create etc-pristine
+    rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
+
+# Allow users in the root group to access them with the same authorization as the directory and file owner
+RUN chmod -R g=u /usr/share/opennms
+RUN chmod -R g=u /opennms-data
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
@@ -149,7 +131,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
-      org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
+      org.opennms.image.base="${BASE_IMAGE}" \
       org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \

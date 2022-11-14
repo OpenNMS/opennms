@@ -34,6 +34,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -182,6 +184,18 @@ public class Service implements Serializable {
         } else {
             return Collections.unmodifiableList(m_parameters);
         }
+    }
+
+    public Map<String,Object> getParameterMap() {
+        final Map<String,Object> m = new ConcurrentSkipListMap<>();
+        for (final Parameter p : this.getParameters()) {
+            Object val = p.getValue();
+            if (val == null) {
+                val = (p.getAnyObject() == null ? "" : p.getAnyObject());
+            }
+            m.put(p.getKey(), val);
+        }
+        return m;
     }
 
     public void setParameters(final List<Parameter> parameters) {

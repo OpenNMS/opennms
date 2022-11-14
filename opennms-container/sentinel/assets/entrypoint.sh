@@ -13,6 +13,7 @@
 set -e
 
 umask 002
+SENTINEL_HOME="/opt/sentinel"
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 
@@ -89,7 +90,6 @@ initConfig() {
         echo "location = ${SENTINEL_LOCATION}" > ${SENTINEL_CONFIG}
         echo "id = ${SENTINEL_ID:=$(uuidgen)}" >> ${SENTINEL_CONFIG}
         echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${SENTINEL_CONFIG}
-        echo "http-url = ${OPENNMS_HTTP_URL}" >> ${SENTINEL_CONFIG}
 
         # Configure datasource
         DB_CONFIG=${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg

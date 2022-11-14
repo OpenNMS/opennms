@@ -33,11 +33,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
 import org.opennms.core.criteria.restrictions.LeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -228,12 +232,21 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
             .eq("node.id", nodeId);
 
         if (serviceNames != null && serviceNames.size() > 0) {
-            builder.alias("serviceType", "serviceType")
-            .in("serviceType.name", serviceNames);
+            builder.alias("serviceType", "serviceType").or(getServiceNameRestrictions(serviceNames));
         }
 
         // Retrieve the services and group them by node id
         return m_monitoredServiceDao.countMatching(builder.toCriteria());
+    }
+
+    private Restriction[] getServiceNameRestrictions(final List<String> serviceNames) {
+        return serviceNames.stream().map(e -> {
+            if (e.startsWith("~")) {
+                return Restrictions.regExp("serviceType.name", e.substring(1));
+            } else {
+                return Restrictions.eq("serviceType.name", e);
+            }
+        }).toArray(Restriction[]::new);
     }
 
     private Map<Integer, List<OnmsOutage>> getOutages(List<Integer> nodeIds, List<String> serviceNames, Date start, Date end) {
@@ -259,8 +272,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         // Only select outages affecting services with the given names, if set
         if (serviceNames != null && serviceNames.size() > 0) {
-            builder.alias("monitoredService.serviceType", "serviceType")
-            .in("serviceType.name", serviceNames);
+            builder.alias("monitoredService.serviceType", "serviceType").or(getServiceNameRestrictions(serviceNames));
         }
 
         // Retrieve the outages and group them by node id

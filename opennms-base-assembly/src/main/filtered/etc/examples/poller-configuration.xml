@@ -589,11 +589,6 @@
       user-defined="false" status="on">
       <parameter key="service-name" value="MSExchangeTransport" />
     </service>
-    <service name="XMP" interval="300000" user-defined="false" status="off">
-      <parameter key="retry" value="1" />
-      <parameter key="timeout" value="3000" />
-    </service>
-    <!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
     <service name="WMI" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
@@ -712,6 +707,5 @@
   <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="RadiusAuth" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
-  <monitor service="XMP" class-name="org.opennms.protocols.xmp.monitor.XmpMonitor" />
 
 </poller-configuration>

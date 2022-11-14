@@ -369,5 +369,138 @@ iframe.vaadin-fullscreen {
 }
 
 .opennms-bg-chromatic-black {
-     background-color: $opennms-chromatic-black;
+     background-color: $opennms-dark-blue;
+}
+
+.navbar-brand {
+  display:flex;
+}
+
+@font-face {
+  font-family: "OpenSans";
+  font-weight: 400;
+  font-style: normal;
+  src: url("/opennms/assets/fonts/OpenSans-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OpenSans";
+  font-weight: 500;
+  font-style: normal;
+  src: url("/opennms/assets/fonts/OpenSans-SemiBold.ttf") format("truetype");
+  font-display: swap;
+}
+
+#header {
+  height:60px;
+  font-family: 'OpenSans'
+}
+
+.navbar-dark,.navbar-light {
+  span.navbar-formatted-time {
+    font-size:14px;
+    color:rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.12px;
+    margin-right:1rem;
+    padding-top:13px;
+  }
+  .navbar-bell {
+    margin-right:60px;
+    padding-top:13px;
+  }
+  .form-control {
+      border-radius:0px;
+      background-color:transparent;
+  }
+  .input-group {
+    .form-control:not(:last-child) {
+      border-radius:4px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .form-control input {
+      height:38px;
+      width:200px;
+      font-size:14px;
+      line-height:1.2rem;
+      color:rgba(10, 12, 27, 0.7);
+      background-color:white;
+    }
+  }
+  .search-bar .input-group-text { 
+    border-radius:4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    height:38px;
+    padding-left:17px;
+    padding-right:17px;
+    padding-top:4px;
+  }
+  .input-group.search-bar {
+    width:250px;
+    height:40px;
+    border-radius:0px;
+    border:2px inset transparent;
+    margin-top:-2px;
+    &:focus {
+      border:2px inset #0402a9;
+    }
+    .text-muted.mr-4 {
+      display:none;
+    }
+  }
+  .navbar-nav {
+    margin-top:-3px;
+  }
+  .navbar-nav a.nav-link {
+    color:rgba(255,255,255,0.8);
+    letter-spacing:0.25px;
+  }
+  .dropdown-item {
+    padding:10px;
+  }
+  .dropdown-menu-right {
+    right:-5px;
+  }
+  .badge.badge-pill {
+    width:20px;
+    height:20px;
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin-left:4px;
+    margin-right:2px;
+    font-weight:400;
+    font-size: 14px;
+    line-height:32px;
+  }
+  .badge-wrapper {
+    display:flex;
+    &:after {
+      position:relative;
+      top:10px;
+    }
+  }
+  .fa.fa-cogs {
+    width:23px;
+    height:23px;
+    color: #FFF;
+  }
+
+  /* admin "cogs" icon on dropdown menu entries */
+  .fa.fa-solid.fa-cogs {
+    width:23px;
+    height:23px;
+    color: #000;
+  }
+ 
+.nav-item.dropdown a.dropdown-toggle:after {
+  vertical-align: 2px;
+  margin-left: 6px;
+}
+
+}
+#ui-preview-btn {
+  display:none;
 }

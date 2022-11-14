@@ -1,0 +1,10 @@
+await: >
+send: configure
+await: #
+send: save config to running-config.xml${filenameSuffix}
+await: #
+send: exit
+await: >
+send: tftp export configuration to ${tftpServerIp} from running-config.xml${filenameSuffix}
+await: >
+send: exit

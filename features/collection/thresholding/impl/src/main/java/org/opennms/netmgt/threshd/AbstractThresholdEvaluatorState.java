@@ -113,7 +113,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     private String instance;
 
 
-    private static final Map<Class<? extends AbstractThresholdEvaluatorState.AbstractState>,
+    static final Map<Class<? extends AbstractThresholdEvaluatorState.AbstractState>,
             SerializingBlobStore<? extends AbstractThresholdEvaluatorState.AbstractState>> serdesMap
             = new ConcurrentHashMap<>();
 
@@ -176,9 +176,9 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         this.thresholdingSession = thresholdingSession;
         kvStore = getKvStoreForType(stateType, thresholdingSession.getBlobStore());
-        key = String.format("%d-%s-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
+        key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
-                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType(),
+                threshold.getDatasourceExpression(), threshold.getType(),
                 generateHashForThresholdValues(threshold));
 
         initializeState();
@@ -396,7 +396,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
      */
     protected Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource, Map<String,String> additionalParams) {
         if (resource == null) { // Still works, mimic old code when instance value is null.
-            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null, null, null, null);
+            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null, null);
         }
         String dsLabelValue = resource.getFieldValue(resource.getDsLabel());
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;

@@ -28,6 +28,77 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RPict001_IP;
+import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RPict001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_IP;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_IP;
+import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_NAME;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_IP;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_GB05_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER2_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER3_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST3_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST4_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_HOST5_LLDP_ID;
+
+
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,63 +110,52 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortEnable;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortState;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-
+import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
-
+import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
-
-import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-
-import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-
-import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
-
-import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpLocalTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
-
-import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
+import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
-
-import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -106,24 +166,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -723,6 +765,102 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         }
 
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-13923.
+     *
+     * @see <a href="https://issues.opennms.org/browse/NMS-13923">NMS-13923</a>
+     *
+     * (NMS-13923 TIMETETRA LLDP supported device does not persist all remote links)
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=srv005_IP, port=161, resource=srv005_RESOURCE)
+    })
+    public void testTimeTetraLldpsrv005Walk() throws Exception {
+
+        SnmpAgentConfig  config05 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(srv005_IP));
+        LldpLocalGroupTracker lldpLocalGroup05 = new LldpLocalGroupTracker();
+        final Map<Integer, List<LldpLink>> links05 = new HashMap<>();
+
+        try {
+            m_client.walk(config05,lldpLocalGroup05)
+                    .withDescription("lldpLocalGroup05")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement lldpElement05 = lldpLocalGroup05.getLldpElement();
+        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
+        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
+
+        assertEquals(srv005_LLDP_ID, lldpElement05.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement05.getLldpChassisIdSubType());
+        assertEquals(srv005_NAME, lldpElement05.getLldpSysname());
+        assertEquals(srv005_LLDP_ID, lldpElement05.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement05.getLldpChassisIdSubType());
+        assertEquals(srv005_NAME, lldpElement05.getLldpSysname());
+
+        final TimeTetraLldpLocPortGetter ttlldpLocPort05 = new TimeTetraLldpLocPortGetter(config05,
+                m_client,null);
+
+        TimeTetraLldpRemTableTracker timetetralldpRemTable05
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final TimeTetraLldpRemRow row) {
+                assertEquals(6, row.getColumnCount());
+                assertNotNull(row.getTmnxLldpRemLocalDestMACAddress());
+                assertNotNull(row.getLldpRemLocalPortNum());
+                assertNotNull(row.getIfindex());
+                assertNotNull(row.getLldpLocalPortNum());
+                LldpLink link = row.getLldpLink();
+                assertNotNull(link);
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                if (!links05.containsKey(link.getLldpLocalPortNum())) {
+                    links05.put(link.getLldpLocalPortNum(),new ArrayList<>());
+                }
+                LldpLink updated = ttlldpLocPort05.getLldpLink(row);
+                links05.get(link.getLldpLocalPortNum()).add(updated);
+            }
+        };
+        try {
+            m_client.walk(config05,
+                            timetetralldpRemTable05)
+                    .withDescription("timetetralldpRemTable05")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+        LOG.warn("{}", links05.keySet());
+        assertEquals(49, links05.size());
+        for (Integer portnumber: links05.keySet()) {
+            LOG.warn("LocalPortNum {}", portnumber);
+            assertEquals(1, links05.get(portnumber).size());
+            for (LldpLink updated: links05.get(portnumber)) {
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, updated.getLldpRemChassisIdSubType());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpRemPortIdSubType());
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, updated.getLldpRemChassisIdSubType());
+
+                LOG.warn("ifindex {} portdescr {}", updated.getLldpPortIfindex(), updated.getLldpPortDescr());
+                LOG.warn("rem chassisId {}, rem sysname {}", updated.getLldpRemChassisId(),updated.getLldpRemSysname());
+                LOG.warn("rem portid {}, rem portdescr {}", updated.getLldpRemPortId(), updated.getLldpRemPortDescr());
+            }
+        }
 
     }
 
@@ -1055,8 +1193,6 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             }
         });
 
-
-
     }
 
     /**
@@ -1162,7 +1298,6 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, element.getLldpChassisIdSubType());
 
     }
-
 
     @Test
     @JUnitSnmpAgents(value={

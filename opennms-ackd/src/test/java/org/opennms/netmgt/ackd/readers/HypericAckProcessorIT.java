@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.ackd.readers;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -206,14 +204,6 @@ public class HypericAckProcessorIT implements InitializingBean {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setLastEvent(event);
 
-        /*
-        OnmsAlarm alarm = createMock(OnmsAlarm.class);
-        expect(alarm.getEventParms()).andReturn(
-                "platform.id=10001(string,text);platform.commentText=(string,text);platform.platformType.os=null(string,text);platform.platformType.osVersion=null(string,text);platform.platformType.arch=null(string,text);platform.agent.address=192.0.2.143(string,text);platform.agent.port=2144(string,text);platform.fqdn=192.0.2.143(string,text);platform.name=delta(string,text);platform.description=Fedora 12(string,text);platform.location=(string,text);alert.id=11757(string,text);alert.fixed=false(string,text);alert.ctime=1267219500000(string,text);alert.timestamp=1267219500000(string,text);alert.ackedBy=null(string,text);alert.stateId=null(string,text);alert.url=http://192.168.0.5:7080/alerts/Alerts.do?mode%61viewAlert&eid%611:10001&a%6111757(string,text);alert.baseURL=http://192.168.0.5:7080(string,text);alert.source=HQ(string,text);alertDef.id=10002(string,text);alertDef.name=Load Above 2(string,text);alertDef.description=(string,text);alertDef.priority=2(string,text);alertDef.appdefType=1(string,text);alertDef.appdefId=10001(string,text);alertDef.notifyFiltered=false(string,text);action.shortReason=Load Above 2 delta Load Average 5 Minutes (1.4)(string,text);action.longReason=If Load Average 5 Minutes > 0.5 (actual value %61 1.4)(string,text);resource.instanceId=10001(string,text);resource.name=delta(string,text);resource.url=http://192.168.0.5:7080/Resource.do?eid%611:10001(string,text);resource.resourceType.name=covalentEAMPlatform(string,text)"
-        ).times(2);
-        replay(alarm);
-         */
-
         assertEquals("Alert source not parsed properly", "HQ", HypericAckProcessor.getAlertSourceParmValue(alarm));
         assertEquals("Alert ID not parsed properly", "11757", HypericAckProcessor.getAlertIdParmValue(alarm));
     }
@@ -223,18 +213,22 @@ public class HypericAckProcessorIT implements InitializingBean {
     public void testStartAckd() throws Exception {
         AckdConfigurationDao realDao = createAckdConfigDao();
 
-        AckdConfigurationDao mockDao = createMock(AckdConfigurationDao.class);
-        expect(mockDao.getEnabledReaderCount()).andDelegateTo(realDao);
-        expect(mockDao.isReaderEnabled("JavaMailReader")).andDelegateTo(realDao).times(2);
-        expect(mockDao.isReaderEnabled("HypericReader")).andDelegateTo(realDao).times(2);
-        expect(mockDao.getReaderSchedule("HypericReader")).andDelegateTo(realDao).times(2);
-        replay(mockDao);
+        AckdConfigurationDao mockDao = mock(AckdConfigurationDao.class);
+        when(mockDao.getEnabledReaderCount()).thenReturn(realDao.getEnabledReaderCount());
+        when(mockDao.isReaderEnabled("JavaMailReader")).thenReturn(realDao.isReaderEnabled("JavaMailReader"));
+        when(mockDao.isReaderEnabled("HypericReader")).thenReturn(realDao.isReaderEnabled("HypericReader"));
+        when(mockDao.getReaderSchedule("HypericReader")).thenReturn(realDao.getReaderSchedule("HypericReader"));
 
         m_daemon.setConfigDao(mockDao);
         m_daemon.start();
         try { Thread.sleep(5000); } catch (InterruptedException e) {}
         m_daemon.destroy();
-        verify(mockDao);
+
+        verify(mockDao, atLeastOnce()).getEnabledReaderCount();
+        verify(mockDao, atLeastOnce()).isReaderEnabled("JavaMailReader");
+        verify(mockDao, atLeastOnce()).isReaderEnabled("HypericReader");
+        verify(mockDao, atLeastOnce()).getReaderSchedule("HypericReader");
+        verifyNoMoreInteractions(mockDao);
     }
 
     @Test

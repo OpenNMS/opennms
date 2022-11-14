@@ -60,9 +60,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
@@ -105,7 +105,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=integration"
@@ -188,6 +190,7 @@ public class TimeseriesRoundtripIT {
                 .withNumericAttribute(nodeLevelResource, "metrics", "m1", 900, AttributeType.GAUGE)
                 .withIdentifiedNumericAttribute(nodeLevelResource, "metrics", "m2", 1000, AttributeType.COUNTER, "idx-m2")
                 .withStringAttribute(nodeLevelResource, "metrics", "sysname", "host1")
+                .withStringAttribute(nodeLevelResource, "metrics2", "stringAttributeFromAnotherGroup", "123")
                 // Interface level
                 .withNumericAttribute(ifLevelResource, "if-metrics", "m3", 44, AttributeType.GAUGE)
                 .withIdentifiedNumericAttribute(ifLevelResource, "if-metrics", "m4", 55, AttributeType.COUNTER, "idx-m4")
@@ -208,21 +211,22 @@ public class TimeseriesRoundtripIT {
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/metrics", "m1", 900d);
         testForNumericAttribute("snmp/1/metrics", "m2", 1000d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/metrics", "m2", "idx-m2", "m2"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1", "sysname", "host1");
+        testForStringAttributeAtResourceLevel("snmp/1","stringAttributeFromAnotherGroup", "123");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/1/if-metrics", "m3", 44d);
         testForNumericAttribute("snmp/1/1/if-metrics", "m4", 55d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/1/if-metrics", "m4", "idx-m4", "m4"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1/1", "ifname", "eth0");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m6", 77d);
-        // String attributes are stored in the OpenNMS Database:
+        // String attributes:
         testForStringAttributeAtMetricLevel("snmp/1/gen-metrics/gen-metrics", "m6", "idx-m6", "m6"); // Identified
         testForStringAttributeAtResourceLevel("snmp/1/gen-metrics", "genname", "bgp");
 
@@ -236,20 +240,20 @@ public class TimeseriesRoundtripIT {
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
-        List<Sample> sample = retrieveSamples(resourceId, name);
-        assertEquals(1, sample.size());
-        assertEquals(expectedValue, sample.get(0).getValue());
+        TimeSeriesData data = retrieveSamples(resourceId, name);
+        assertEquals(1, data.getDataPoints().size());
+        assertEquals(expectedValue, data.getDataPoints().get(0).getValue());
 
     }
 
     private void testForMetaTag(String resourceId, String name, String tagKey, String tagValue) throws StorageException {
-        List<Sample> sample = retrieveSamples(resourceId, name) ;
-        assertEquals(1, sample.size());
+        TimeSeriesData data = retrieveSamples(resourceId, name) ;
+        assertEquals(1, data.getDataPoints().size());
         Tag tag = new ImmutableTag(tagKey, tagValue);
-        assertEquals(tag, sample.get(0).getMetric().getFirstTagByKey(tagKey));
+        assertEquals(tag, data.getMetric().getFirstTagByKey(tagKey));
     }
 
-    private List<Sample> retrieveSamples(final String resourceId, final String name) throws StorageException {
+    private TimeSeriesData retrieveSamples(final String resourceId, final String name) throws StorageException {
         List<Metric> metrics = timeseriesStorageManager.get().findMetrics(Arrays.asList(
                 ImmutableTagMatcher.builder().key(IntrinsicTagNames.resourceId).value(resourceId).build(),
                 ImmutableTagMatcher.builder().key(IntrinsicTagNames.name).value(name).build()));
@@ -262,7 +266,7 @@ public class TimeseriesRoundtripIT {
                 .step(Duration.ofSeconds(1))
                 .metric(metrics.get(0)).build();
 
-        return timeseriesStorageManager.get().getTimeseries(request);
+        return timeseriesStorageManager.get().getTimeSeriesData(request);
     }
 
     private void testForStringAttributeAtResourceLevel(String resourcePath, String attributeName, String expectedValue) throws StorageException {

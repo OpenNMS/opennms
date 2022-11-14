@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,149 +28,170 @@
 
 package org.opennms.netmgt.vacuumd;
 
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.test.mock.EasyMockUtils;
-
-import junit.framework.TestCase;
 
 /**
  * Tests transactional capabilities of Vacuumd
  * 
  * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
- *
  */
-public class TransactionTest extends TestCase {
-	
-	EasyMockUtils m_ezMock = new EasyMockUtils();
+public class TransactionTest {
+
     Connection m_conn;
+
     Connection m_conn2;
+
     DataSource m_ds;
+
     DataSource m_ds2;
 
-        @Override
-	protected void setUp() throws Exception {
-		super.setUp();
-        
-        m_ds = m_ezMock.createMock(DataSource.class);
-        m_ds2 = m_ezMock.createMock(DataSource.class);
-		
-        m_conn = m_ezMock.createMock(Connection.class);
-        m_conn2 = m_ezMock.createMock(Connection.class);
-        
+    @Before
+    public void setUp() throws Exception {
+
+        m_ds = mock(DataSource.class);
+        m_ds2 = mock(DataSource.class);
+
+        m_conn = mock(Connection.class);
+        m_conn2 = mock(Connection.class);
+
         DataSourceFactory.setInstance("ds", m_ds);
         DataSourceFactory.setInstance("ds2", m_ds2);
 
-		
-	}
+    }
 
-        @Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
-	public void testCommit() throws Exception {
-        
-        EasyMock.expect(m_ds.getConnection()).andReturn(m_conn);
-        EasyMock.expect(m_ds2.getConnection()).andReturn(m_conn2);
-		
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(m_ds);
+        verifyNoMoreInteractions(m_ds2);
+        verifyNoMoreInteractions(m_conn);
+        verifyNoMoreInteractions(m_conn2);
+    }
+
+    @Test
+    public void testCommit() throws Exception {
+
+        when(m_ds.getConnection()).thenReturn(m_conn);
+        when(m_ds2.getConnection()).thenReturn(m_conn2);
+
         m_conn.setAutoCommit(false);
-		m_conn.commit();
-		m_conn.close();
-        
+        m_conn.commit();
+        m_conn.close();
+
         m_conn2.setAutoCommit(false);
         m_conn2.commit();
         m_conn2.close();
-		
-		m_ezMock.replayAll();
-		
-		Transaction.begin();
+
+        Transaction.begin();
         Transaction.getConnection("ds");
         Transaction.getConnection("ds2");
-		Transaction.end();
-		
-		m_ezMock.verifyAll();
-		
-	}
-    
+        Transaction.end();
+
+        verify(m_ds, atLeastOnce()).getConnection();
+        verify(m_ds2, atLeastOnce()).getConnection();
+        verify(m_conn, atLeastOnce()).close();
+        verify(m_conn, atLeastOnce()).commit();
+        verify(m_conn, atLeastOnce()).setAutoCommit(eq(false));
+        verify(m_conn2, atLeastOnce()).close();
+        verify(m_conn2, atLeastOnce()).commit();
+        verify(m_conn2, atLeastOnce()).setAutoCommit(eq(false));
+    }
+
+    @Test
     public void testRollback() throws Exception {
-        
-        EasyMock.expect(m_ds.getConnection()).andReturn(m_conn);
-        EasyMock.expect(m_ds2.getConnection()).andReturn(m_conn2);
+
+        when(m_ds.getConnection()).thenReturn(m_conn);
+        when(m_ds2.getConnection()).thenReturn(m_conn2);
 
         m_conn.setAutoCommit(false);
         m_conn.rollback();
         m_conn.close();
-        
+
         m_conn2.setAutoCommit(false);
         m_conn2.rollback();
         m_conn2.close();
-        
-        m_ezMock.replayAll();
-        
+
         Transaction.begin();
         Transaction.getConnection("ds");
         Transaction.getConnection("ds2");
         Transaction.rollbackOnly();
         Transaction.end();
-        
-        m_ezMock.verifyAll();
-        
+
+        verify(m_ds, atLeastOnce()).getConnection();
+        verify(m_ds2, atLeastOnce()).getConnection();
+        verify(m_conn, atLeastOnce()).close();
+        verify(m_conn, atLeastOnce()).rollback();
+        verify(m_conn, atLeastOnce()).setAutoCommit(eq(false));
+        verify(m_conn2, atLeastOnce()).close();
+        verify(m_conn2, atLeastOnce()).rollback();
+        verify(m_conn2, atLeastOnce()).setAutoCommit(eq(false));
     }
-    
+
+    @Test
     public void testReturnSameConnection() throws Exception {
-        
-        EasyMock.expect(m_ds.getConnection()).andReturn(m_conn);
+
+        when(m_ds.getConnection()).thenReturn(m_conn);
         m_conn.setAutoCommit(false);
-        
+
         m_conn.commit();
         m_conn.close();
-        
-        m_ezMock.replayAll();
-        
+
         Transaction.begin();
-        
+
         Connection c1 = Transaction.getConnection("ds");
         Connection c2 = Transaction.getConnection("ds");
-        assertSame("Expected to get the same connection for both calls to getConnection", c1, c2);
-        
+        assertSame("Expected to get the same connection for both calls to getConnection",
+                   c1, c2);
+
         Transaction.end();
-        
-        m_ezMock.verifyAll();
+
+        verify(m_ds, atLeastOnce()).getConnection();
+        verify(m_conn, atLeastOnce()).close();
+        verify(m_conn, atLeastOnce()).commit();
+        verify(m_conn, atLeastOnce()).setAutoCommit(eq(false));
     }
-    
+
+    @Test
     public void testCloseResources() throws Exception {
 
-        EasyMock.expect(m_ds.getConnection()).andReturn(m_conn);
+        when(m_ds.getConnection()).thenReturn(m_conn);
         m_conn.setAutoCommit(false);
 
-        Statement stmt = m_ezMock.createMock(Statement.class);
-        ResultSet rs = m_ezMock.createMock(ResultSet.class);
-        
-        
+        Statement stmt = mock(Statement.class);
+        ResultSet rs = mock(ResultSet.class);
+
         rs.close();
         stmt.close();
         m_conn.close();
         m_conn.commit();
 
-        m_ezMock.replayAll();
-        
         Transaction.begin();
         Transaction.getConnection("ds");
         Transaction.register(stmt);
         Transaction.register(rs);
         Transaction.end();
-        
-        m_ezMock.verifyAll();
 
+        verify(m_ds, atLeastOnce()).getConnection();
+        verify(m_conn, atLeastOnce()).close();
+        verify(m_conn, atLeastOnce()).commit();
+        verify(m_conn, atLeastOnce()).setAutoCommit(eq(false));
     }
-
 
 }

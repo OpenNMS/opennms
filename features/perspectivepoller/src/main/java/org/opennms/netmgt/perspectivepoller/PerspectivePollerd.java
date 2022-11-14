@@ -232,18 +232,16 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         });
 
         // Create the thresholding session for this poller
-        final Optional<ThresholdingSession> thresholdingSession = rrdRepository.flatMap(repository -> {
-            try {
-                return Optional.of(this.thresholdingService.createSession(service.getNodeId(),
-                        InetAddressUtils.str(service.getIpAddress()),
-                        service.getServiceName(),
-                        repository,
-                        new ServiceParameters(Collections.emptyMap())));
-            } catch (final ThresholdInitializationException ex) {
-                LOG.error("Failed to create thresholding session", ex);
-                return Optional.empty();
-            }
-        });
+        final ThresholdingSession thresholdingSession;
+        try {
+            thresholdingSession = this.thresholdingService.createSession(service.getNodeId(),
+                                                                         InetAddressUtils.str(service.getIpAddress()),
+                                                                         service.getServiceName(),
+                                                                         new ServiceParameters(Collections.emptyMap()));
+        } catch (final ThresholdInitializationException ex) {
+            LOG.error("Failed to create thresholding session", ex);
+            return;
+        }
 
         // Build perspective polled services
         final PerspectivePolledService perspectivePolledService = new PerspectivePolledService(service.getNodeId(),
@@ -258,7 +256,7 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
                                                                                                servicePerspective.getPerspectiveLocation(),
                                                                                                node.getLocation().getLocationName(),
                                                                                                rrdRepository.orElse(null),
-                                                                                               thresholdingSession.orElse(null));
+                                                                                               thresholdingSession);
 
         // Build job for scheduler
         final JobDetail job = JobBuilder

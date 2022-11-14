@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.core.health.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,7 +114,7 @@ public class DefaultHealthCheckServiceTest {
         final SimpleHealthCheck successHealthCheck = new SimpleHealthCheck(() -> "Always green :)");
         successHealthCheck.markSucess();
 
-        final DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(EasyMock.createNiceMock(BundleContext.class)) {
+        final DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(mock(BundleContext.class)) {
             @Override
             protected List<HealthCheck> getHealthChecks() {
                 return Lists.newArrayList(blockingHealthCheck, successHealthCheck);
@@ -147,7 +147,7 @@ public class DefaultHealthCheckServiceTest {
 
     @Test
     public void filterChecksWithTagsTest(){
-        DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(EasyMock.createNiceMock(BundleContext.class));
+        DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(mock(BundleContext.class));
 
         //both checks and tags are null
         List<HealthCheck> checks = null;

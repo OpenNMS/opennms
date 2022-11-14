@@ -1,3 +1,121 @@
+opennms-sentinel (31.0.0-1) stable; urgency=low
+
+  * New major release. It contains several new features, including the Cloud
+    Services Connector with Time Series DB support and a new quick-start
+    guide. Notable enhancements include integration of the Horizon 30 UI Preview
+    items into the main UI and performance improvements to network topology
+    discovery. It also includes an important bug fix correcting a regression that
+    rendered Horizon 30 unable to run in OpenShift environments, besides many
+    other important bug and security fixes.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Nov 2022 14:27:00 -0400
+
+opennms-sentinel (30.0.4-1) stable; urgency=low
+
+  * New minor release. It contains quite a few bug and security fixes and 
+    a number of enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Oct 2022 11:46:00 -0400
+
+opennms-sentinel (30.0.3-1) stable; urgency=low
+
+  * New minor release. It contains quite a few bug fixes as well as number of 
+    small features and security fixes.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 09 Sep 2022 15:22:00 -0400
+
+opennms-sentinel (30.0.2-1) stable; urgency=low
+
+  * New minor release. contains quite a few bug fixes as well as number of small features.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Aug 2022 11:13:00 -0400
+
+opennms-sentinel (30.0.1-1) stable; urgency=low
+
+  * New minor release. a number of bug fixes as well as a number of new features 
+    including support for encrypting credentials.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Jul 2022 11:55:00 -0400
+
+opennms-sentinel (30.0.0-1) stable; urgency=low
+
+  * New major release. It contains a number of new features, most notably a
+    preview of a new web UI, and the ability to back up infrastructure device
+    configs.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/30.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jun 2022 14:12:00 -0400
+ 
+opennms-sentinel (29.0.10-1) stable; urgency=medium
+
+  * New minor release. It contains a number of security dependency
+    updates, plus a bunch of other bug fixes and documentation improvements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.10/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 May 2022 16:53:00 -0400
+ 
+opennms-sentinel (29.0.9-1) stable; urgency=medium
+
+  * New minor release. It contains a bunch of bug fixes and enhancements,
+    including improvements for running in containers, code cleanups, and
+    improved documentation.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.9/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Apr 2022 11:25:00 -0400
+ 
+opennms-sentinel (29.0.8-1) stable; urgency=medium
+
+  * New minor release. It contains a few small bug fixes mostly relating
+    to upgrades, as well as a bug in graphing, and an improvement to
+    support pre-auth HTTP headers.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.8/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 24 Mar 2022 11:42:00 -0400
+ 
+opennms-sentinel (29.0.7-1) stable; urgency=medium
+
+  * New minor release. It contains a bunch of bug and security fixes,
+    plus a few small enhancements and documentation improvements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.7/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 16 Mar 2022 13:40:00 -0400
+ 
+opennms-sentinel (29.0.6-1) stable; urgency=medium
+
+  * New minor release. It contains a number of bug fixes, including
+    security fixes related to Grafana PDF reports and Protobuf, as well
+    as a few enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/29.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Feb 2022 13:40:00 -0400
+ 
 opennms-sentinel (29.0.5-1) stable; urgency=low
 
   * New minor release. It contains a number of bug and security fixes,
@@ -6,7 +124,7 @@ opennms-sentinel (29.0.5-1) stable; urgency=low
     For details on what has changed, see:
     https://docs.opennms.com/horizon/29.0.5/index.html
 
- -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Jan 2021 12:07:00 -0400
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Jan 2022 12:07:00 -0400
  
 opennms-sentinel (29.0.4-1) stable; urgency=high
 

@@ -18,18 +18,11 @@
 # Description:       ${install.package.description} daemon for network monitoring
 ### END INIT INFO
 #
-#  $Id$
-#
 #  For info on the "chkconfig:" section, see:
 #     http://www.sensi.org/~alec/unix/redhat/sysvinit.html
 #
 #  For info on the "BEGIN INIT INFO" section, see:
 #     http://www.suse.de/~mmj/Package-Conventions/
-#
-# Modifications:
-#
-# 2005 Oct 01: Removed `date` from a few echo commands and redirected
-#              a few error messages to stderr. -- DJ Gregor
 #
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -93,6 +86,9 @@ RUNJAVA_OPTIONS=""
 # JMX URL that this script uses to communicate with a running OpenNMS daemon
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
+
+# Whether to enable the Pyroscope agent
+[ -z "$PYROSCOPE_AGENT_ENABLED" ] && PYROSCOPE_AGENT_ENABLED=0
 
 # JaCoCo Code Coverage agent, used in smoke tests
 [ -z "$JACOCO_AGENT_ENABLED" ] && JACOCO_AGENT_ENABLED=0
@@ -806,6 +802,14 @@ if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 fi
 
+# https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
+if [ -n "$PYROSCOPE_AGENT_ENABLED" ] && [ "$PYROSCOPE_AGENT_ENABLED" -gt 0 ]; then
+	export PYROSCOPE_APPLICATION_NAME="${PYROSCOPE_APPLICATION_NAME:=OpenNMS}"
+	export PYROSCOPE_SERVER_ADDRESS="${PYROSCOPE_SERVER_ADDRESS:=http://localhost:4040}" # so we don't get a warning
+
+	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/pyroscope-agent.jar")
+fi
+
 # https://www.jacoco.org/jacoco/trunk/doc/agent.html
 if [ -n "$JACOCO_AGENT_ENABLED" ] && [ "$JACOCO_AGENT_ENABLED" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*")
@@ -938,6 +942,8 @@ NOEXECUTE=0
 VERBOSE=0
 BACKGROUND=1
 SYSTEMD=0
+SMALLTFLAG=0
+BIGTFLAG=0
 
 NAME="opennms"
 
@@ -960,10 +966,12 @@ while getopts c:fsntTvpoQ c; do
 			;;
 		t)
 			TEST=1
+			SMALLTFLAG=1
 			;;
 		T)
 			TEST=1
 			JPDA_SUSPEND=y
+			BIGTFLAG=1
 			;;
 		p)
 			TPROFILE=1
@@ -1105,6 +1113,12 @@ case "$COMMAND" in
 		## Stop the service and regardless of whether it was
 		## running or not, start it again.
 		__opennms_cmd=("$OPENNMS_HOME/bin/opennms");
+		if [ "$BIGTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-T")
+		fi
+		if [ "$SMALLTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-t")
+		fi
 		if [ "$NOEXECUTE" -eq 1 ]; then
 			__opennms_cmd+=("-n")
 		fi

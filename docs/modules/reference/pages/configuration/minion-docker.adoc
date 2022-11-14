@@ -26,7 +26,6 @@
 [options="header, autowidth"]
 |===
 | Environment variable  | Description                              | Required | Default value
-| `OPENNMS_HTTP_URL`    | Web user interface base URL for REST | required | –
 | `OPENNMS_HTTP_USER`   | User name for the REST API             | optional | `admin`
 | `OPENNMS_HTTP_PASS`   | Password for the REST API              | optional | `admin`
 | `OPENNMS_BROKER_URL`  | ActiveMQ broker URL                    | required | –

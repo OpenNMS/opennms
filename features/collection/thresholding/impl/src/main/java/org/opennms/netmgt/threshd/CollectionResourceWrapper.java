@@ -43,11 +43,8 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.dao.api.IfLabel;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourceId;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +69,8 @@ public class CollectionResourceWrapper {
     private String m_dsLabel;
     private final String m_iflabel;
     private final String m_ifindex;
-    private final RrdRepository m_repository;
     private final CollectionResource m_resource;
     private final Map<String, CollectionAttribute> m_attributes;
-    private final ResourceStorageDao m_resourceStorageDao;
     private final Long m_sequenceNumber;
 
     /**
@@ -134,20 +129,9 @@ public class CollectionResourceWrapper {
      */
     private boolean m_counterReset = false;
 
-    /**
-     * <p>Constructor for CollectionResourceWrapper.</p>
-     *
-     * @param interval a long.
-     * @param nodeId a int.
-     * @param hostAddress a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
-     * @param attributes a {@link java.util.Map} object.
-     */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName,
-            RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes,
-            ResourceStorageDao resourceStorageDao, IfLabel ifLabelDao, Long sequenceNumber) {
+            CollectionResource resource, Map<String, CollectionAttribute> attributes,
+            IfLabel ifLabelDao, Long sequenceNumber) {
 
         if (collectionTimestamp == null) {
             throw new IllegalArgumentException(String.format("%s: Null collection timestamp when thresholding service %s on node %d (%s)", this.getClass().getSimpleName(), serviceName, nodeId, hostAddress));
@@ -157,10 +141,8 @@ public class CollectionResourceWrapper {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
-        m_repository = repository;
         m_resource = resource;
         m_attributes = attributes;
-        m_resourceStorageDao = resourceStorageDao;
         m_sequenceNumber = sequenceNumber;
 
         if (isAnInterfaceResource()) {
@@ -505,10 +487,9 @@ public class CollectionResourceWrapper {
             }
 
             // Find values saved in string attributes
-            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath());
-            retval = m_resourceStorageDao.getStringAttribute(path, ds);
-            if (retval != null) {
-                return retval;
+            final var attr = m_attributes.get(ds);
+            if (attr != null && attr.getType() == AttributeType.STRING) {
+                return attr.getStringValue();
             }
         } catch (Throwable e) {
             LOG.info("getFieldValue: Can't get value for attribute {} for resource {}.", ds, m_resource, e);

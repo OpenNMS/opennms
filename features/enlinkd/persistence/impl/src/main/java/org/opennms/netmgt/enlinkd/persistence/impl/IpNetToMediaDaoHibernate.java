@@ -83,4 +83,9 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 	public List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId) {
 		return find("from IpNetToMedia m where m.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",  nodeId);
 	}
+
+	@Override
+	public void deleteAll() {
+		getHibernateTemplate().bulkUpdate("delete from IpNetToMedia");
+	}
 }

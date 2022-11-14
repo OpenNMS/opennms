@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,17 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
@@ -63,7 +68,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
-import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
 public abstract class SnmpCollectorITCase extends OpenNMSITCase {
@@ -103,7 +107,6 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     
     protected MockSnmpAgent m_mockAgent;
     protected IpInterfaceDao m_ifaceDao;
-    protected EasyMockUtils m_easyMockUtils;
 
     protected LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
@@ -131,8 +134,7 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
         m_invalid = SnmpObjId.get(".1.5.6.1.2.1.1.5");
         m_ifDescr = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
         
-        m_easyMockUtils = new EasyMockUtils();
-        m_ifaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
+        m_ifaceDao = mock(IpInterfaceDao.class);
 
         createAgent(1, PrimaryType.PRIMARY);
         
@@ -145,6 +147,9 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
 
         SnmpUtils.unsetStrategyResolver();
         System.getProperties().remove("org.opennms.snmp.strategyClass");
+
+        verify(m_ifaceDao, atLeastOnce()).load(anyInt());
+        verifyNoMoreInteractions(m_ifaceDao);
 
         super.tearDown();
     }
@@ -298,10 +303,8 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     	m_node.addIpInterface(m_iface);
         
 
-    	EasyMock.expect(m_ifaceDao.load(m_iface.getId())).andReturn(m_iface).anyTimes();
-        
-        m_easyMockUtils.replayAll();
-        
+    	when(m_ifaceDao.load(m_iface.getId())).thenReturn(m_iface);
+
         m_agent = DefaultSnmpCollectionAgent.create(m_iface.getId(), m_ifaceDao, new MockPlatformTransactionManager());
         
     }

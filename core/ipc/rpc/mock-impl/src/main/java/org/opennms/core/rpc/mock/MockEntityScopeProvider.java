@@ -30,9 +30,9 @@ package org.opennms.core.rpc.mock;
 
 import java.net.InetAddress;
 
-import org.opennms.core.rpc.utils.mate.EmptyScope;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Scope;
 
 public final class MockEntityScopeProvider implements EntityScopeProvider {
     @Override

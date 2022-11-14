@@ -29,35 +29,45 @@
 package org.opennms.netmgt.enlinkd.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+import org.opennms.netmgt.enlinkd.service.api.SubNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.PrimaryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NodeTopologyServiceImpl extends TopologyServiceImpl implements NodeTopologyService {
+    private final static Logger LOG = LoggerFactory.getLogger(TopologyServiceImpl.class);
 
     private NodeDao m_nodeDao;
     @Override
     public List<Node> findAllSnmpNode() {
-        final List<Node> nodes = new ArrayList<Node>();
+        final List<Node> nodes = new ArrayList<>();
         
         final Criteria criteria = new Criteria(OnmsNode.class);
-        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
-                                                                  "ipInterfaces",
-                                                                  "iface",
-                                                                  JoinType.LEFT_JOIN) }));
+        criteria.setAliases(List.of(new Alias(
+                "ipInterfaces",
+                "iface",
+                JoinType.LEFT_JOIN)));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
                                                   PrimaryType.PRIMARY.getCharCode()));
@@ -71,12 +81,156 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
     }
 
     @Override
+    public Set<SubNetwork> findAllLegalSubNetwork() {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().size() > 1 && !s.hasDuplicatedAddress()).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> findAllPointToPointSubNetwork() {
+        return findAllSubNetwork()
+                .stream()
+                .filter(s -> InetAddressUtils.isPointToPointMask(s.getNetmask()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> findAllLegalPointToPointSubNetwork() {
+        return findAllLegalSubNetwork()
+                .stream()
+                .filter(s -> InetAddressUtils.isPointToPointMask(s.getNetmask()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> findAllLoopbacks() {
+        return findAllSubNetwork()
+                .stream()
+                .filter(s -> InetAddressUtils.isLoopbackMask(s.getNetmask()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> findAllLegalLoopbacks() {
+        return findAllSubNetwork()
+                .stream()
+                .filter(s -> InetAddressUtils.isLoopbackMask(s.getNetmask()) && s.getNodeIds().size() == 1)
+                .collect(Collectors.toSet());
+    }
+
+    private SubNetwork getNextSubnetwork(final Set<SubNetwork> subNetworks) {
+        SubNetwork starting = null;
+        for (SubNetwork subnet : subNetworks) {
+            if (starting == null) {
+                starting=subnet;
+                continue;
+            }
+            if (starting.getNodeIds().size() < subnet.getNodeIds().size()) {
+                starting = subnet;
+                continue;
+            }
+            if (starting.getNodeIds().size() == subnet.getNodeIds().size()
+                    &&
+                    InetAddressUtils.difference(starting.getNetwork(), subnet.getNetwork()).signum() > 0) {
+                starting = subnet;
+            }
+        }
+        return starting;
+    }
+
+    private int getConnected(final SubNetwork starting, final Set<SubNetwork> subnetworks, final Map<Integer, Integer> priorityMap,  int priority) {
+        Set<SubNetwork> downlevels = new HashSet<>();
+        for (SubNetwork subnet: subnetworks) {
+            Set<Integer> intersection = new HashSet<>(subnet.getNodeIds());
+            intersection.retainAll(starting.getNodeIds());
+            if (intersection.size() > 0) {
+                LOG.info("getConnected: match: {}, {} {}",intersection, subnet, starting);
+                downlevels.add(subnet);
+            }
+        }
+        downlevels.forEach(subnetworks::remove);
+        LOG.info("getConnected subnetworks.size: {}",  subnetworks.size());
+        for (SubNetwork subnetowrk: downlevels) {
+            LOG.info("getConnected: parsing: {}",  subnetowrk);
+            LOG.info("getConnected: priority: {}",  priority);
+            Set<Integer> addingNodes = new HashSet<>(subnetowrk.getNodeIds());
+            addingNodes.removeAll(priorityMap.keySet());
+            LOG.info("getConnected: adding: {}",  addingNodes);
+            if (addingNodes.isEmpty()) {
+                continue;
+            }
+            for (Integer nodeid: addingNodes) {
+                priorityMap.put(nodeid,priority);
+            }
+            LOG.info("getConnected: priorityMap: {}",  priorityMap);
+            priority++;
+        }
+
+        if (!downlevels.isEmpty() && subnetworks.size() > 0) {
+            for (SubNetwork level : downlevels) {
+                LOG.info("getConnected: iterating on: " + level);
+                priority = getConnected(level, subnetworks, priorityMap, priority);
+            }
+        }
+        return priority;
+    }
+
+    @Override
+    public Map<Integer, Integer> getNodeidPriorityMap(ProtocolSupported protocol) {
+        final Map<Integer, Integer> priorityMap = new HashMap<>();
+        Set<SubNetwork> allLegalSubnets = findAllLegalSubNetwork();
+        LOG.info("getNodeidPriorityMap: subnetworks.size: {}",  allLegalSubnets.size());
+        int priority = 0;
+        int loop = 0;
+        while (allLegalSubnets.size() > 0) {
+            loop++;
+            SubNetwork start = getNextSubnetwork(allLegalSubnets);
+            allLegalSubnets.remove(start);
+            LOG.info("getNodeidPriorityMap: loop-{}: start: {}", loop,  start);
+            LOG.info("getNodeidPriorityMap: loop-{}: priority: {}", loop,  priority);
+            LOG.info("getNodeidPriorityMap: loop-{}: subnetworks.size: {}",  loop, allLegalSubnets.size());
+            final int p = priority;
+            start.getNodeIds().forEach(n-> priorityMap.put(n, p));
+            LOG.info("getNodeidPriorityMap: loop-{}: priorityMap: {}", loop, priorityMap);
+            priority = getConnected(start,allLegalSubnets, priorityMap, ++priority);
+        }
+        return priorityMap;
+    }
+
+    @Override
+    public Set<SubNetwork> findAllSubNetwork() {
+        final Set<SubNetwork> subnets = new HashSet<>();
+        final List<IpInterfaceTopologyEntity> ips = findAllIp();
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() != null ).forEach(ip -> {
+            boolean found = false;
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress()) && s.getNetmask().equals(ip.getNetMask())) {
+                    found=true;
+                    s.add(ip.getNodeId(),ip.getIpAddress());
+                    break;
+                }
+            }
+            if (!found) {
+                subnets.add(SubNetwork.createSubNetwork(ip));
+            }
+        });
+        ips.stream().filter(ip -> ip.isManaged() && ip.getNetMask() == null).forEach(ip -> {
+            for (SubNetwork s: subnets) {
+                if (s.isInRange(ip.getIpAddress())) {
+                    s.add(ip.getNodeId(),ip.getIpAddress());
+                }
+            }
+        });
+        return subnets;
+    }
+
+
+    @Override
     public Node getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
-        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
-                                                                  "ipInterfaces",
-                                                                  "iface",
-                                                                  JoinType.LEFT_JOIN) }));
+        criteria.setAliases(List.of(new Alias(
+                "ipInterfaces",
+                "iface",
+                JoinType.LEFT_JOIN)));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
                                                   PrimaryType.PRIMARY.getCharCode()));
@@ -92,7 +246,17 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
             return null;
         }
     }
-    
+
+    @Override
+    public Set<SubNetwork> getLegalSubNetworks(int nodeid) {
+        return findAllLegalSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<SubNetwork> getSubNetworks(int nodeid) {
+        return findAllSubNetwork().stream().filter(s -> s.getNodeIds().contains(nodeid)).collect(Collectors.toSet());
+    }
+
     @Override
     public List<NodeTopologyEntity> findAllNode() {
         return getTopologyEntityCache().getNodeTopologyEntities();

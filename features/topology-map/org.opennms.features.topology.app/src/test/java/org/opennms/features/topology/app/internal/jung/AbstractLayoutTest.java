@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,8 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import org.easymock.EasyMock;
+import static org.mockito.Mockito.mock;
+
 import org.junit.Before;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
@@ -80,7 +81,7 @@ public abstract class AbstractLayoutTest {
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         final MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(getGraphProvider());
         topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
-        topologyService.setTopologyEntityCache(EasyMock.niceMock(TopologyEntityCache.class));
+        topologyService.setTopologyEntityCache(mock(TopologyEntityCache.class));
 
         final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(topologyService);

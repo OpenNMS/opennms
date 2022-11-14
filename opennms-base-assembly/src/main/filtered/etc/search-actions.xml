@@ -107,6 +107,13 @@
         </roles>
     </action>
     <action>
+        <label>Configure External Requisitions</label>
+        <url>ui/index.html/#/configuration</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
         <label>Configure Geocoder Service</label>
         <url>admin/geoservice/index.jsp#!/geocoding/config</url>
         <roles>

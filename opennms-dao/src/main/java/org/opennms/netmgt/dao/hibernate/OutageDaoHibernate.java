@@ -34,9 +34,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.HibernateException;
@@ -47,7 +49,6 @@ import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.HeatMapElement;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -92,6 +93,28 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     @Override
     public Collection<OnmsOutage> currentOutages() {
         return find("from OnmsOutage as o where o.perspective is null and o.ifRegainedService is null");
+    }
+
+    @Override
+    public Map<Integer, Set<OnmsOutage>> currentOutagesByServiceId() {
+        // Retrieve open outages and the associated service id
+        final List<Object[]> serviceOutageTuples = getHibernateTemplate().execute((HibernateCallback<List<Object[]>>) session ->
+                session.createQuery("select o.monitoredService.id, o from OnmsOutage as o where o.perspective is null and o.ifRegainedService is null")
+                        .list());
+        // Group the results
+        Map<Integer, Set<OnmsOutage>> outagesByServiceId = new HashMap<>();
+        for (Object[] tuple : serviceOutageTuples) {
+            Integer serviceId = (Integer)tuple[0];
+            OnmsOutage outage = (OnmsOutage)tuple[1];
+            outagesByServiceId.compute(serviceId, (k, v) -> {
+                if (v == null) {
+                    v = new HashSet<>();
+                }
+                v.add(outage);
+                return v;
+            });
+        }
+        return outagesByServiceId;
     }
 
     @Override

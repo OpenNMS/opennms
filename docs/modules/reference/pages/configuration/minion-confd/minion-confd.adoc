@@ -20,7 +20,6 @@ The following sections describe the keys in `minion-config.yaml` that configure 
 [source, yaml]
 ----
 broker-url: "<broker url>"
-http-url: "<http url>"
 id: "<id>"
 location: "<location>"
 ----

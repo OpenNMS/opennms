@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-
-import org.easymock.EasyMock;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -55,11 +57,10 @@ public class SiblingColumnStorageStrategyTest {
     @Before
     public void setUp() throws Exception {
         // Create Mocks
-        service = EasyMock.createMock(StorageStrategyService.class);
+        service = mock(StorageStrategyService.class);
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddressUtils.addr("127.0.0.1"));
         agentConfig.setPort(1161);
-        EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
-        EasyMock.replay(service);
+        when(service.getAgentConfig()).thenReturn(agentConfig);
 
         // Create Strategy and set for hrStorageTable
         strategy = new SiblingColumnStorageStrategy();
@@ -68,7 +69,7 @@ public class SiblingColumnStorageStrategyTest {
 
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(service);
+        verifyNoMoreInteractions(service);
     }
 
     @Test

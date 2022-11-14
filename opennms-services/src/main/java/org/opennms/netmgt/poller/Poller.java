@@ -31,9 +31,10 @@ package org.opennms.netmgt.poller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -67,6 +68,7 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -122,6 +124,10 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
 
+    @Autowired()
+    @Qualifier("deviceConfigMonitorAdaptor")
+    private ServiceMonitorAdaptor serviceMonitorAdaptor;
+
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
     }
@@ -141,7 +147,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventMgr = eventIpcManager;
@@ -150,7 +156,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventMgr;
@@ -278,6 +284,10 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
         m_locationAwarePollerClient = locationAwarePollerClient;
+    }
+
+    public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
+        this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 
     /**
@@ -447,7 +457,7 @@ public class Poller extends AbstractServiceDaemon {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                             final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-                            if (scheduleService(service)) {
+                            if (scheduleService(service, service.getCurrentOutages())) {
                                 svcNode.recalculateStatus();
                                 svcNode.processStatusChange(new Date());
                             } else {
@@ -472,17 +482,17 @@ public class Poller extends AbstractServiceDaemon {
             @Override
             public Integer doInTransaction(TransactionStatus arg0) {
                 final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+                final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
                 for (OnmsMonitoredService service : services) {
-                    scheduleService(service);
+                    scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
                 }
                 return services.size();
             }
         });
     }
 
-    private boolean scheduleService(OnmsMonitoredService service) {
+    private boolean scheduleService(OnmsMonitoredService service, Set<OnmsOutage> outages) {
         final OnmsIpInterface iface = service.getIpInterface();
-        final Set<OnmsOutage> outages = service.getCurrentOutages();
         final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
         final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
         final String ipAddr = InetAddressUtils.str(iface.getIpAddress());
@@ -516,7 +526,7 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {
@@ -547,33 +557,11 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = this.m_pollerConfig.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = en.nextElement();
-            if (this.pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
+        if (m_initialized) {
+            // Only rebuild the map when services are scheduled after the initial initialization
+            m_pollerConfig.rebuildPackageIpListMap();
         }
-        return lastPkg;
-    }
-
-    public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-        if (pkg.getPerspectiveOnly()) {
-            return false;
-        }
-
-        if (!this.m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        if (inPkg) return true;
-
-        if (this.m_initialized) {
-            this.m_pollerConfig.rebuildPackageIpListMap();
-            return this.m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
-        } else {
-            return false;
-        }
+        return this.m_pollerConfig.findPackageForService(ipAddr, serviceName);
     }
 
     private void updateServiceStatus(OnmsMonitoredService service, String status) {

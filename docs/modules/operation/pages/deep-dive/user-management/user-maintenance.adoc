@@ -1,0 +1,40 @@
+
+[[ga-user-maintenance]]
+= User Maintenance
+
+Users are entities with login accounts in the {page-component-title} system.
+Ideally, each user account corresponds to only one person.
+
+This page describes additional tasks and information related to user accounts.
+
+== Passwords
+
+=== Set a new password for any user
+
+. Log in as a user with admin permissions.
+. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
+. Click the *Modify* icon next to an existing user and select *Reset Password*.
+. Type a new password, confirm it, and click *OK*.
+. Click *Finish* to apply the changes.
+
+=== Change your password
+
+. Log in with user name and current password.
+. Choose *Change Password* from the list below your username.
+. Specify your current password, then set and confirm your new password.
+. Click *Submit*.
+. Log out and log in with your new password.
+
+== Delete users and groups
+
+. Log in as a user with admin permissions.
+. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users] or *Configure Groups*.
+. Click the *Delete* symbol beside the user or group that you want to delete.
+. Click *OK* to confirm deletion.
+
+IMPORTANT: If you delete a group, no one receives a notification that it has been deleted.
+If the group is associated with a schedule, that schedule will also be deleted, and users previously included in the group will no longer receive notifications that were set up in the schedule.
+
+== Advanced configuration
+
+{page-component-title} persists the user, password, and other detail descriptions in the `users.xml` file.

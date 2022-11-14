@@ -1,0 +1,90 @@
+
+[[provisiond-integration]]
+= Integrating with Provisiond
+
+If you have another inventory system to keep track of nodes on your network, you can define a requisition to group nodes within {page-component-title}.
+There are multiple ways you can add nodes to a requisition.
+One way is to use the REST API to automate syncing nodes from your inventory system.
+The ReST API provides an endpoint for defining foreign sources and requisitions.
+
+== Provisioning a group of nodes
+
+Just as with the web UI, groups of nodes can be managed via the ReST API from an external system.
+The steps are:
+
+* Update the default foreign source definition (if not using the default) for the group.
+* Update the SNMP configuration for each node in the group as needed.
+* Create/update the group of nodes.
+
+== Example provisioning via REST API
+
+=== Step 1 - Create a foreign source
+
+To define the policies for this group of nodes, you need to create a foreign source for the group.
+Use the xref:development:rest/foreign_sources.adoc[foreign sources] REST API to do so:
+
+NOTE: You can embed the XML in the curl command with option `-d` or reference it from a file if you use `@` prefix with the file name, as in this case.
+
+Sample XML file `customer-a.foreign-source.xml`:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2009-10-12T17:26:11.616-04:00" name="customer-a" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+    <scan-interval>1d</scan-interval>
+    <detectors>
+        <detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/>
+        <detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/>
+    </detectors>
+    <policies>
+        <policy class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy" name="no-192-168">
+            <parameter value="UNMANAGE" key="action"/>
+            <parameter value="ALL_PARAMETERS" key="matchBehavior"/>
+            <parameter value="~^192\.168\..*" key="ipAddress"/>
+        </policy>
+    </policies>
+</foreign-source>
+----
+
+Here is an example curl command to create the foreign source with the above foreign source specification:
+
+[source, console]
+----
+curl -v -u admin:admin -X POST -H 'Content-type: application/xml' -d '@customer-a.foreign-source.xml' http://localhost:8980/opennms/rest/foreignSources
+----
+
+=== Step 2 - Update the SNMP configuration
+
+The xref:development:rest/snmp_configuration.adoc[snmpConfig endpoint] only supports a PUT request because it is an implied "update" of the configuration since it requires an IP address, and all IPs have a default configuration.
+This request is is passed to the SNMP configuration factory in {page-component-title} for optimization of the configuration store `snmp-config.xml`.
+This example changes the community string for the IP address 10.1.1.1 to `yRuSonoZ`.
+
+NOTE: Community string is the only required element.
+
+[source, console]
+----
+curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" -H "Accept: application/xml" -d "<snmp-info><community>yRuSonoZ</community><port>161</port><retries>1</retries><timeout>2000</timeout><version>v2c</version></snmp-info>" http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+=== Step 3 - Create/Update the Requisition
+
+This example adds 2 nodes to the requisition `customer-a`.
+The foreign source must match the name of the requisition.
+In the following example, the xref:development:rest/requisitions.adoc[requisitions] REST API automatically creates a requisition based on the value of the foreign-source attribute specified in the XML requisition.
+
+[source, console]
+----
+curl -v -u admin:admin -X POST -H "Content-Type: application/xml" -d '<?xml version="1.0" encoding="UTF-8"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2009-03-07T17:56:53.123-05:00" last-import="2009-03-07T17:56:53.117-05:00" foreign-source="customer-a"><node node-label="p-brane" foreign-id="1" ><interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node><node node-label="m-brane" foreign-id="2" ><interface ip-addr="10.0.1.4" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node></model-import>' http://localhost:8980/opennms/rest/requisitions
+----
+
+A requisition file called `etc/imports/customer-a.xml` will be found on the {page-component-title} system following the successful completion of this curl command and will also be visible via the Web UI.
+
+Before the requisition's nodes are populated into the database, Provisiond needs to perform an import (also referred to as synchronization).
+Here is an example using the curl command to import the requisition:
+
+[source, console]
+----
+curl -v -u admin:admin -X PUT http://localhost:8980/opennms/rest/requisitions/customer-a/import
+----
+
+NOTE: The REST API handles Add, Update, and Delete operations in the same manner as described in the xref:development:rest/rest-api.adoc[REST API documentation].

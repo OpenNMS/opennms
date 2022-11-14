@@ -24,5 +24,4 @@
   <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">
     <constructor-arg ref="trapdConfig" />
   </bean>
-
 </beans>

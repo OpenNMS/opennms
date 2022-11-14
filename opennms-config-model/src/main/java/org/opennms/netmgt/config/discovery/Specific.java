@@ -55,14 +55,14 @@ public class Specific implements Serializable {
      * inner value
      */
     @XmlValue
-    private String m_address;
+    private String address;
 
     /**
      * The monitoring location where this specific address
      *  will be executed.
      */
     @XmlAttribute(name = "location")
-    private String m_location;
+    private String location;
 
     /**
      * The number of times a ping is retried for this
@@ -71,75 +71,75 @@ public class Specific implements Serializable {
      *  retries. This retry count overrides the default.
      */
     @XmlAttribute(name = "retries")
-    private Integer m_retries;
+    private Integer retries;
 
     /**
      * The timeout on each poll for this specific
      *  address. This timeout overrides the default.
      */
     @XmlAttribute(name = "timeout")
-    private Long m_timeout;
+    private Long timeout;
 
     @XmlAttribute(name = "foreign-source")
-    private String m_foreignSource;
+    private String foreignSource;
 
     public Specific() {
     }
 
     public String getAddress() {
-        return m_address;
+        return address;
     }
 
     public void setAddress(final String address) {
         if (address == null) {
             throw new IllegalArgumentException("Address cannot be null!");
         }
-        m_address = address;
+        this.address = address;
     }
 
     public Optional<String> getLocation() {
-        return Optional.ofNullable(m_location);
+        return Optional.ofNullable(location);
     }
 
     public void setLocation(final String location) {
-        m_location = ConfigUtils.normalizeString(location);
+        this.location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
-        return Optional.ofNullable(m_retries);
+        return Optional.ofNullable(retries);
     }
 
     public void setRetries(final Integer retries) {
-        m_retries = retries;
+        this.retries = retries;
     }
 
     public Optional<Long> getTimeout() {
-        return Optional.ofNullable(m_timeout);
+        return Optional.ofNullable(timeout);
     }
 
     public void setTimeout(final Long timeout) {
         if (timeout != null && timeout == 0) {
             throw new IllegalArgumentException("Can't have a 0 timeout!");
         }
-        m_timeout = timeout;
+        this.timeout = timeout;
     }
 
     public Optional<String> getForeignSource() {
-        return Optional.ofNullable(m_foreignSource);
+        return Optional.ofNullable(foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
+        this.foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_address, 
-                            m_location, 
-                            m_retries, 
-                            m_timeout, 
-                            m_foreignSource);
+                            address, 
+                            location, 
+                            retries, 
+                            timeout, 
+                            foreignSource);
     }
 
     @Override
@@ -150,20 +150,20 @@ public class Specific implements Serializable {
 
         if (obj instanceof Specific) {
             final Specific temp = (Specific)obj;
-            return Objects.equals(temp.m_address, m_address)
-                    && Objects.equals(temp.m_location, m_location)
-                    && Objects.equals(temp.m_retries, m_retries)
-                    && Objects.equals(temp.m_timeout, m_timeout)
-                    && Objects.equals(temp.m_foreignSource, m_foreignSource);
+            return Objects.equals(temp.address, address)
+                    && Objects.equals(temp.location, location)
+                    && Objects.equals(temp.retries, retries)
+                    && Objects.equals(temp.timeout, timeout)
+                    && Objects.equals(temp.foreignSource, foreignSource);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "Specific [value=" + m_address + ", location="
-                + m_location + ", retries=" + m_retries + ", timeout="
-                + m_timeout + ", foreignSource=" + m_foreignSource + "]";
+        return "Specific [value=" + address + ", location="
+                + location + ", retries=" + retries + ", timeout="
+                + timeout + ", foreignSource=" + foreignSource + "]";
     }
 
 }

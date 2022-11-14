@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +60,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class BSMAdminIT extends OpenNMSSeleniumIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
@@ -784,7 +785,7 @@ public class BSMAdminIT extends OpenNMSSeleniumIT {
      * @param by
      */
     private static void verifyElementNotPresent(AbstractOpenNMSSeleniumHelper testCase, final By by) {
-        new WebDriverWait(testCase.getDriver(), 5 /* seconds */).until(
+        new WebDriverWait(testCase.getDriver(), Duration.ofSeconds(5)).until(
                                                                        ExpectedConditions.not(new ExpectedCondition<Boolean>() {
                                                                            @Nullable
                                                                            @Override

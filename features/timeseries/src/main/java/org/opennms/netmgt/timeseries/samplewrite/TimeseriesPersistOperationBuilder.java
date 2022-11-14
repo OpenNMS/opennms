@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,8 +35,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.opennms.integration.api.v1.timeseries.DataPoint;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.MetaTagNames;
+import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -44,6 +46,7 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.PersistOperationBuilder;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
@@ -62,10 +65,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * Used to collect attribute values and meta-data for a given resource
- * and persist these via the {@link TimeseriesWriter} on {@link #commit()}.
- *
- * @author jwhite
+ * Used to collect attribute values and meta-data for a given resource group
+ * and persist these via the {@link RingBufferTimeseriesWriter} on {@link #commit()}.
  */
 public class TimeseriesPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesPersistOperationBuilder.class);
@@ -77,20 +78,23 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
     private final Set<Tag> configuredAdditionalMetaTags;
-    private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
+    private final Map<ResourcePath, Map<String, String>> stringAttributesByPath;
     private final Map<Set<Tag>, Map<String, String>> stringAttributesByResourceIdAndName = Maps.newLinkedHashMap();
     private final Timer commitTimer;
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
     public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
-                                             ResourceIdentifier resource, String groupName, Set<Tag> configuredAdditionalMetaTags,
+                                             ResourceIdentifier resource, String groupName,
+                                             Set<Tag> configuredAdditionalMetaTags,
+                                             final Map<ResourcePath, Map<String, String>> stringAttributesByPath,
                                              MetricRegistry metricRegistry) {
         this.writer = writer;
         rrepository = repository;
         this.resource = resource;
         this.groupName = groupName;
         this.configuredAdditionalMetaTags = configuredAdditionalMetaTags;
+        this.stringAttributesByPath = stringAttributesByPath;
         this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
@@ -106,6 +110,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     /**
      * Persists a String attribute that is associated to a ResourcePath (resourceId)
+     * => Resource level attributes.
      */
     public void persistStringAttribute(ResourcePath path, String key, String value) {
         Map<String, String> stringAttributesForPath = stringAttributesByPath.computeIfAbsent(path, k -> Maps.newLinkedHashMap());
@@ -114,6 +119,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     /**
      * Persists a String attribute that is associated to a Metric (resourceId & name)
+     * => Group level attributes
      */
     public void persistStringAttributeForMetricLevel(ResourcePath path, String metricName, String key, String value) {
         Set<Tag> intrinsicTags = Sets.newHashSet(new ImmutableTag(IntrinsicTagNames.resourceId, TimeseriesUtils.toResourceId(path)), new ImmutableTag(IntrinsicTagNames.name, metricName));
@@ -130,7 +136,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     @Override
-    public void commit() {
+    public void commit() throws PersistException {
         try(final Timer.Context context = commitTimer.time()) {
             writer.insert(getSamplesToInsert());
         }
@@ -177,7 +183,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
                     .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                     .intrinsicTag(IntrinsicTagNames.name, attrType.getName())
-                    .externalTag(type);
+                    .metaTag(type);
 
             // add resource level string attributes
             this.configuredAdditionalMetaTags.forEach(builder::metaTag);
@@ -190,7 +196,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     builder.externalTag(entry2.getKey(), entry2.getValue());
                 }
             }
-
             final ImmutableMetric metric = builder.build();
             final Double sampleValue = value.doubleValue();
             samples.add(ImmutableSample.builder().metric(metric).time(time).value(sampleValue).build());
@@ -198,8 +203,12 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         return samples;
     }
 
-    private Tag typeToTag (final AttributeType type) {
-
+    /**
+     * @see org.opennms.netmgt.timeseries.sampleread.aggregation.NewtsConverterUtils#toNewtsValue
+     * @param type
+     * @return
+     */
+    private Tag typeToTag(final AttributeType type) {
         ImmutableMetric.Mtype mtype;
 
         if(type == AttributeType.COUNTER) {
@@ -211,6 +220,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         } else {
             mtype = ImmutableMetric.Mtype.gauge;
         }
+        // types handling is in NewtsConverterUtils.toNewtsValue
         return new ImmutableTag(MetaTagNames.mtype, mtype.name());
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,7 +64,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	private boolean m_initialized = false;
 	
 	
-	private class EngineAdapter implements EventListener {
+	class EngineAdapter implements EventListener {
 		
 		private final String m_name;
 		private final CorrelationEngine m_engine;

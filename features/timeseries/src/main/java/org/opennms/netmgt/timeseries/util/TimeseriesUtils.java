@@ -47,10 +47,6 @@ import org.opennms.netmgt.model.ResourcePath;
  */
 public final class TimeseriesUtils {
 
-    public static final String PREFIX_EXTERNAL_TAG =  "_ext_";
-
-    public static final int WILDCARD_INDEX_NO = 2; // => node level
-
     /**
      * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a String.
      * The elements are separated by a slash ('/').

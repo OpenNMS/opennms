@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -122,11 +123,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
-        clickMenuItem(mapsMenuName, "Geographical", "node-maps");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
-
-        frontPage();
         findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
         findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
@@ -199,7 +195,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
         assertThat(contextSearchResult.hasMore(), is(true));
         contextSearchResult.loadMore();
-        assertThat(contextSearchResult.size(), is(13L));
+        assertThat(contextSearchResult.size(), is(14L));
 
         // Select last element from the now loaded elements
         contextSearchResult.getItem("Configure Users").click();
@@ -216,7 +212,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Repeat the process altering the offset slightly each time
         final AtomicInteger offset = new AtomicInteger(10);
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {

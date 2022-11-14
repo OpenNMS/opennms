@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -129,7 +130,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
                 request.setAttribute("scheduledUser", role.getDefaultUser().getName());
-                Date date = new SimpleDateFormat("MM-dd-yyyy").parse(request.getParameter("date"));
+                Date date = new SimpleDateFormat("MM-dd-yyyy", Locale.ROOT).parse(request.getParameter("date"));
                 request.setAttribute("start", date);
                 request.setAttribute("end", date);
                 request.setAttribute("schedIndex", "-1");
@@ -237,7 +238,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
             buf.append(request.getParameter(prefix+"Minute"));
             buf.append(' ');
             buf.append(request.getParameter(prefix+"AmOrPm"));
-            return new SimpleDateFormat("M-d-yyyy h:m a").parse(buf.toString());
+            return new SimpleDateFormat("M-d-yyyy h:m a", Locale.ROOT).parse(buf.toString());
         }
         
         public int getIntParameter(String name, HttpServletRequest request) {
@@ -274,18 +275,18 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             if (request.getParameter("save") != null) {
-                String roleName = request.getParameter("role");
+                String roleName = WebSecurityUtils.sanitizeString(request.getParameter("role"));
                 WebRole role = getRoleManager().getRole(roleName);
                 if (role == null) {
                     // this is a new role so create a new on and add it to the roleManager
                     role = getRoleManager().createRole();
                 }
-                role.setName(request.getParameter("roleName"));
+                role.setName(WebSecurityUtils.sanitizeString(request.getParameter("roleName")));
                 role.setDefaultUser(getUserManager().getUser(request.getParameter("roleUser")));
                 role.setMembershipGroup(getGroupManager().getGroup(request.getParameter("roleGroup")));
                 role.setDescription(request.getParameter("roleDescr"));
                 getRoleManager().saveRole(role);
-                request.setAttribute("role", getRoleManager().getRole(request.getParameter("roleName")));
+                request.setAttribute("role", getRoleManager().getRole(WebSecurityUtils.sanitizeString(request.getParameter("roleName"))));
                 return new ViewAction().execute(request, response);
             } else {
                 return new ListAction().execute(request, response);
