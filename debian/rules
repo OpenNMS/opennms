@@ -48,6 +48,7 @@ $(STAMP_BUILD):
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
 	find debian/temp -type d -name .git -exec rm -rf {} \;
 	touch $(STAMP_BUILD)
+	echo "cloudplugin=0.0.1"> substvars
 
 clean:
 	dh_testdir
