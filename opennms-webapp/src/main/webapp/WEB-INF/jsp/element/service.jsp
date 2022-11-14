@@ -58,6 +58,7 @@
 <%@ page import="org.opennms.core.mate.api.Scope" %>
 <%@ page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@ page import="org.opennms.core.mate.api.MapScope" %>
+<%@ page import="org.opennms.netmgt.poller.ServiceMonitorLocator" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -95,8 +96,8 @@
             pageContext.setAttribute("pollerPattern", serviceMatch.service.getPattern());
             pageContext.setAttribute("patternVariables", serviceMatch.patternVariables);
 
-            ServiceMonitor monitor = pollerCfgFactory.getServiceMonitor(serviceMatch.service.getName());
-            pageContext.setAttribute("monitorClass", monitor == null ? "N/A" : monitor.getClass().getName());
+            Optional<ServiceMonitorLocator> monitor = pollerCfgFactory.getServiceMonitorLocator(serviceMatch.service.getName());
+            pageContext.setAttribute("monitorClass", monitor.isEmpty() ? "N/A" : monitor.get().getServiceLocatorKey());
 
             pageContext.setAttribute("interval", serviceMatch.service.getInterval());
 

@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
@@ -42,13 +41,13 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -70,7 +69,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
-    private ServiceMonitor m_serviceMonitor;
 
     private Map<String, String> m_patternVariables = Collections.emptyMap();
 
@@ -112,8 +110,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
         m_configService = service.service;
         m_patternVariables = service.patternVariables;
-
-        m_serviceMonitor = m_pollerConfig.getServiceMonitor(m_configService.getName());
     }
 
     /**
@@ -132,7 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
             CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
                 .withService(m_service)
-                .withMonitor(m_pollerConfig.getServiceMonitor(m_configService.getName()))
+                .withMonitorLocator(m_pollerConfig.getServiceMonitorLocator(m_configService.getName()).orElseThrow())
                 .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)

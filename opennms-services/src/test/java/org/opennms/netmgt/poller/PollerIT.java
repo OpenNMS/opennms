@@ -120,6 +120,8 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
+        "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
+
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
@@ -133,10 +135,12 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private Poller m_poller;
 
+    @Autowired
     private MockNetwork m_network;
 
     private MockDatabase m_db;
 
+    @Autowired
     private MockPollerConfig m_pollerConfig;
 
     private boolean m_daemonsStarted = false;
@@ -176,7 +180,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         MockUtil.println("------------ Begin Test  --------------------------");
         MockLogAppender.setupLogging();
 
-        m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
         m_network.addNode(1, "Router");
         m_network.addInterface("192.168.1.1");
@@ -212,7 +215,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
 
-        m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");

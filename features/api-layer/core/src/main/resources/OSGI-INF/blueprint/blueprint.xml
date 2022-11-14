@@ -142,10 +142,6 @@
     <argument ref="dataCollectionConfigDao"/>
   </bean>
 
-  <bean id="pollerConfExtensionManager" class="org.opennms.features.apilayer.config.PollerConfExtensionManager">
-    <argument ref="pollerConfig"/>
-  </bean>
-
   <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="snmpCollectionExtensionManager" />
   </reference-list>
@@ -170,6 +166,21 @@
     </service-properties>
   </service>
 
+  <!-- Poller Config Extension -->
+  <bean id="pollerConfExtensionManager" class="org.opennms.features.apilayer.config.PollerConfExtensionManager">
+    <argument ref="pollerConfig"/>
+    <argument ref="eventForwarder"/>
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.poller.PollerConfigurationExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="pollerConfExtensionManager" />
+  </reference-list>
+
+  <service ref="pollerConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
 
   <!-- Resource Graph Properties Extension -->
   <bean id="graphPropertiesExtensionManager" class="org.opennms.features.apilayer.config.GraphPropertiesExtensionManager">

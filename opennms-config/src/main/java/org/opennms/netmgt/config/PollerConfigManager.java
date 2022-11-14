@@ -45,6 +45,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -53,6 +55,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
@@ -342,11 +345,6 @@ abstract public class PollerConfigManager implements PollerConfig  {
      * rules, so as to avoid repetitive database access.
      */
     private AtomicReference<Map<Package, Set<InetAddress>>> m_pkgIpMap = new AtomicReference<>();
-    /**
-     * A mapp of service names to service monitors. Constructed based on data in
-     * the configuration file.
-     */
-    private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<>();
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -426,23 +424,6 @@ abstract public class PollerConfigManager implements PollerConfig  {
         }
         return null;
     }
-    
-    /** {@inheritDoc} */
-    @Override
-    public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
-        try {
-            getReadLock().lock();
-            final List<String> svcNames = new LinkedList<>();
-            for(Service svc : services(pkg)) {
-                svcNames.add(svc.getName());
-            }
-            
-            final String filter = pkg.getFilter().getContent();
-            return new ServiceSelector(filter, svcNames);
-        } finally {
-            getReadLock().unlock();
-        }
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -450,20 +431,6 @@ abstract public class PollerConfigManager implements PollerConfig  {
         try {
             getWriteLock().lock();
             m_config.addPackage(pkg);
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void addMonitor(final String svcName, final String className) {
-        try {
-            getWriteLock().lock();
-            final Monitor monitor = new Monitor();
-            monitor.setService(svcName);
-            monitor.setClassName(className);
-            m_config.addMonitor(monitor);
         } finally {
             getWriteLock().unlock();
         }
@@ -1136,7 +1103,7 @@ abstract public class PollerConfigManager implements PollerConfig  {
      *
      * @return a {@link java.lang.Iterable} object.
      */
-    private Iterable<Monitor> monitors() {
+    private Collection<Monitor> monitors() {
         try {
             getReadLock().lock();
             return mergedMonitors;
@@ -1171,27 +1138,10 @@ abstract public class PollerConfigManager implements PollerConfig  {
         final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators();
         
         for (final ServiceMonitorLocator locator : locators) {
-            CompletableFuture<ServiceMonitor> monitorFuture = locator.getServiceMonitor(s_serviceMonitorRegistry);
-            monitorFuture.whenComplete((monitor, ex) -> {
-                m_svcMonitors.put(locator.getServiceName(), monitor);
-            });
-            if(!monitorFuture.isDone()) {
+            final var monitor = locator.getServiceMonitor(s_serviceMonitorRegistry);
+            if(monitor == null) {
                 LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available later.", locator.getServiceName());
             }
-        }
-    }
-
-    /**
-     * <p>getServiceMonitors</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public Map<String, ServiceMonitor> getServiceMonitors() {
-        try {
-            getReadLock().lock();
-            return Collections.unmodifiableMap(m_svcMonitors);
-        } finally {
-            getReadLock().unlock();
         }
     }
 
@@ -1199,21 +1149,29 @@ abstract public class PollerConfigManager implements PollerConfig  {
     public Set<String> getServiceMonitorNames() {
         try {
             getReadLock().lock();
-            return Collections.unmodifiableSet(m_svcMonitors.keySet());
+            return monitors().stream()
+                    .map(Monitor::getService)
+                    .collect(Collectors.toSet());
         } finally {
             getReadLock().unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public ServiceMonitor getServiceMonitor(final String svcName) {
+    public Optional<ServiceMonitorLocator> getServiceMonitorLocator(final String svcName) {
         try {
             getReadLock().lock();
-            return getServiceMonitors().get(svcName);
+
+            for(final Monitor monitor : monitors()) {
+                if (Objects.equals(monitor.getService(), svcName)) {
+                    return Optional.of(new DefaultServiceMonitorLocator(monitor.getService(), monitor.getClassName()));
+                }
+            }
         } finally {
             getReadLock().unlock();
         }
+
+        return Optional.empty();
     }
     
     /** {@inheritDoc} */
@@ -1258,10 +1216,5 @@ abstract public class PollerConfigManager implements PollerConfig  {
         } finally {
             getReadLock().unlock();
         }
-    }
-
-    @Override
-    public List<Monitor> getConfiguredMonitors() {
-        return mergedMonitors;
     }
 }
