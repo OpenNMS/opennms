@@ -57,7 +57,7 @@ Must be a power of two.
 | -1 (override by `org.opennms.timeseries.config.ring_buffer_size`)
 
 | org.opennms.timeseries.config.writer_threads
-| Number of threads used to pull samples from the buffer and insert them into the time-series database.
+| Number of threads used to pull samples from the buffer and insert them into the time series database.
 | 16
 
 | org.opennms.timeseries.config.buffer_type
@@ -154,11 +154,12 @@ You can tune the cache settings to suit your needs, using the parameters above.
 |===
 
 The samples the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
-Increase the value of the buffer_size if you expect large peaks of collectors returning at once or latency in persisting these.
+Increase the value of the `buffer_size` if you expect large peaks of collectors returning at once or latency in persisting these.
 However, note that the memory the buffer uses is reserved, and larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
+
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
 This might not be sufficient if you also use the data outside of {page-component-title}.
 Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
@@ -166,12 +167,12 @@ Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}
 The configuration of the tags has the following form:
 `prefix.tagKey=${query expression}`
 
-* The prefix is: `org.opennms.timeseries.tin.metatags.tag`
-* The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
+* The prefix is `org.opennms.timeseries.tin.metatags.tag`.
+* The `tagKey` can be an arbitrary string, as long as it does not break the https://en.wikipedia.org/wiki/.properties[Java properties file syntax].
 * The query expression lets you query the value.
-Supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
+It supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
 
-Examples:
+The following examples demonstrate proper tag definition syntax:
 
 * `org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`
 * `org.opennms.timeseries.tin.metatags.tag.sysObjectID=${node:sys-object-id}`
@@ -179,10 +180,7 @@ Examples:
 === Expose categories as meta tags
 
 You can expose node categories as meta tags by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
-
-* `org.opennms.timeseries.tin.metatags.exposeCategories=true` +
-
-Will lead to:
+This results in the following tags:
 
 * `Tag("cat_myFirstCategory", "myFirstCategory")`
 * `Tag("cat_mySecondCategory", "mySecondCategory")`
