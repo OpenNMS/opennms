@@ -1,0 +1,38 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="OpenNMS Appliances">
+   <systemDef name="OpenNMS Appliances (common)">
+      <sysoidMask>.1.3.6.1.4.1.5813.42.5.</sysoidMask>
+      <collect>
+         <includeGroup>mib2-host-resources-system</includeGroup>
+         <includeGroup>mib2-host-resources-memory</includeGroup>
+         <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+         <includeGroup>net-snmp-disk</includeGroup>
+         <includeGroup>net-snmp-disk-more</includeGroup>
+         <includeGroup>net-snmp-disk-highlow</includeGroup>
+         <includeGroup>ucd-loadavg</includeGroup>
+         <includeGroup>ucd-memory</includeGroup>
+         <includeGroup>ucd-sysstat</includeGroup>
+         <includeGroup>ucd-sysstat-raw</includeGroup>
+         <includeGroup>ucd-sysstat-raw-more</includeGroup>
+         <includeGroup>ucd-sysstat-more</includeGroup>
+         <includeGroup>ucd-diskio</includeGroup>
+         <includeGroup>ucd-diskio-64bit</includeGroup>
+         <includeGroup>ucd-diskio-load</includeGroup>
+      </collect>
+   </systemDef>
+   <systemDef name="OpenNMS Appliance Mini">
+      <sysoid>.1.3.6.1.4.1.5813.42.5.2</sysoid>
+      <collect>
+         <includeGroup>lmsensors-temp</includeGroup>
+         <includeGroup>lmsensors-fan</includeGroup>
+         <includeGroup>lmsensors-volt</includeGroup>
+      </collect>
+   </systemDef>
+   <systemDef name="OpenNMS Appliance 1U">
+      <sysoid>.1.3.6.1.4.1.5813.42.5.3</sysoid>
+      <collect>
+         <includeGroup>lmsensors-temp</includeGroup>
+         <includeGroup>lmsensors-fan</includeGroup>
+         <includeGroup>lmsensors-volt</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

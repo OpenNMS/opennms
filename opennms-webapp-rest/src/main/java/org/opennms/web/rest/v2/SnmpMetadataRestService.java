@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.snmpmetadata.SnmpMetadataBase;
@@ -55,6 +56,7 @@ public class SnmpMetadataRestService {
     @GET
     @Path("{nodeCriteria}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(summary = "Get snmpmetadata by nodeId", description = "Get snmpmetadata by nodeId", operationId = "SnmpMetadataRestServiceGETSNMPMetaDataByNodId")
     public Response getSnmpMetadata(@PathParam("nodeCriteria") String nodeCriteria) {
         final OnmsNode node = nodeDao.get(nodeCriteria);
         if (node == null) {

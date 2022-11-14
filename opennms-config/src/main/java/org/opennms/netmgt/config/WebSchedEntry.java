@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -61,7 +62,7 @@ public class WebSchedEntry {
      * @param endDate a java$util$Date object.
      */
     public WebSchedEntry(int schedIndex, int timeIndex, String user, Date startDate, Date endDate) {
-        this(schedIndex, timeIndex, user, new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(startDate), new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(endDate));
+        this(schedIndex, timeIndex, user, new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ROOT).format(startDate), new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ROOT).format(endDate));
     }
     
     /**

@@ -137,7 +137,7 @@ public class StackModel {
         /**
          * Enable a Minion using the given configuration.
          *
-         * @param minion configuration to use
+         * @param configuration minion configuration to use
          * @return this builder
          */
 
@@ -149,7 +149,7 @@ public class StackModel {
         /**
          * Enable many Minions using the given configurations.
          *
-         * @param minions configurations to use
+         * @param configurations minions configurations to use
          * @return this builder
          */
 

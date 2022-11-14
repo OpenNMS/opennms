@@ -42,6 +42,7 @@
   <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory"/>
   <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
   <reference id="secureCredentialsVaultInternal" interface="org.opennms.features.scv.api.SecureCredentialsVault" /><!-- Reference to internal (opennms) SCV-->
+  <reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig" />
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -139,6 +140,10 @@
 
   <bean id="snmpCollectionExtensionManager" class="org.opennms.features.apilayer.config.SnmpCollectionExtensionManager">
     <argument ref="dataCollectionConfigDao"/>
+  </bean>
+
+  <bean id="pollerConfExtensionManager" class="org.opennms.features.apilayer.config.PollerConfExtensionManager">
+    <argument ref="pollerConfig"/>
   </bean>
 
   <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension" availability="optional">
