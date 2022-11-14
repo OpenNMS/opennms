@@ -154,7 +154,7 @@ You can tune the cache settings to suit your needs, using the parameters above.
 |===
 
 The samples the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
-Increase the value of the `buffer_size` if you expect large peaks of collectors returning at once or latency in persisting these.
+You should increase the value of the `buffer_size` if you expect large peaks of collectors returning at once or latency in persisting these.
 However, note that the memory the buffer uses is reserved, and larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]

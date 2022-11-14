@@ -52,6 +52,7 @@ NOTE: The plugin may be updated separately from {page-component-title} releases.
 The above steps can be used on Horizon 31 and later to ensure you have the latest version of the plugin.
 
 To ensure that the feature is installed on service restarts, add the feature to a file in `featuresBoot.d`:
+
 [source, console]
 ----
 echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/plugin-cloud.boot
@@ -106,7 +107,7 @@ To obtain the activation key, follow these steps:
 
 === Enable cloud services connectivity
 
-To install the activation key on your {page-component-title} instance:
+To install the activation key on your {page-component-title} instance, follow these steps:
 
 . Log in to the OpenNMS {page-component-title} web UI for your instance.
 . Click menu:Plugins[Cloud Services] in the top menu bar.
