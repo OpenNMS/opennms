@@ -123,7 +123,7 @@ Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
 Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
-Provides: opennms-plugin-api (= OPA_VERSION)
+Provides: opennms-plugin-api (= ${opennmsApiVersion})
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
