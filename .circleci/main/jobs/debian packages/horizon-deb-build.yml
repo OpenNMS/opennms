@@ -18,8 +18,8 @@ jobs:
             free -m -c 500 -s 30
       - download-download-artifacts
       - run:
-          name: download tarball dependency to << parameters.tarball_path >>
-          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+          name: download tarball dependency to opennms-full-assembly/target/
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="-core" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/opennms-full-assembly/target/"
       - run:
           name: Build Debian Packages
           command: |
