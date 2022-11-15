@@ -150,12 +150,12 @@ You can tune the cache settings to suit your needs, using the parameters above.
 | Name                             | Description
 | TimeseriesMetaDataCache          | Caches metadata that uses {page-component-title} internally.
 | TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
-| TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
+| TimeseriesPersisterMetaTagCache  | Caches all additional configured and resolved meta-tag values by resource.
 |===
 
-The samples the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
-You should increase the value of the `buffer_size` if you expect large peaks of collectors returning at once or latency in persisting these.
-However, note that the memory the buffer uses is reserved, and larger values may require an increased heap size.
+The samples that the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
+You should increase the value of the `buffer_size` if you expect large peaks of collectors returning at once, or if you experience latency in persisting them.
+Note, however, that the memory used by the buffer is reserved, and assigning larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
@@ -164,13 +164,12 @@ Metrics that are stored via the time series plugin contain the minimal set of ta
 This might not be sufficient if you also use the data outside of {page-component-title}.
 Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
-The configuration of the tags has the following form:
-`prefix.tagKey=${query expression}`
+The configuration of the tags has the following form: `prefix.tagKey=${query expression}`.
 
 * The prefix is `org.opennms.timeseries.tin.metatags.tag`.
 * The `tagKey` can be an arbitrary string, as long as it does not break the https://en.wikipedia.org/wiki/.properties[Java properties file syntax].
 * The query expression lets you query the value.
-It supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
+It supports the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
 
 The following examples demonstrate proper tag definition syntax:
 

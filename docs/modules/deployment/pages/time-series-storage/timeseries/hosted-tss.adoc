@@ -8,24 +8,24 @@ The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable ti
 You must have the following to use the Time Series DB:
 
 * Horizon 30+ (Meridian availability with the 2023 release).
-* Time Series DB subscription, which provides access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your activation key and view Time Series DB metrics.
+* A Time Series DB subscription, which provides access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your activation key and view Time Series DB metrics.
 Contact sales@opennms.com to sign up for the Time Series DB.
 
 == Deployment
 
 There are four steps to set up the Time Series DB for your system:
 
-* Update OpenNMS Cloud Services Connector files.
-* Configure plugin settings.
-* Obtain an activation key for the Cloud Services Connector.
-* Enable cloud services connectivity.
+. Update OpenNMS Cloud Services Connector files.
+. Configure plugin settings.
+. Obtain an activation key for the Cloud Services Connector.
+. Enable cloud services connectivity.
 
 === Update OpenNMS Cloud Services Connector files
 
 The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
 The packages for this extension are installed by default in Horizon 31 and later, but do need to be configured and activated.
 
-For Horizon 30, the plugin can be installed from our package repositories.
+For Horizon 30, the plugin can be installed from our package repositories:
 
 [{tabs}]
 ====
@@ -62,13 +62,15 @@ echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${
 
 You will need to add settings to tell your {page-component-title} instance to load the plugin on service start and to direct storage to the cloud service.
 
-.Horizon 31 and later
+If you are running Horizon 31 or later, copy the example `timeseries.properties` file to your working directory:
+
 [source, console]
 ----
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 ----
 
-.On Horizon 30, create `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`
+If you are running Horizon 30, create `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties` and populate it with the following settings:
+
 [source, properties]
 ----
 org.opennms.timeseries.strategy=integration
@@ -80,7 +82,7 @@ org.opennms.timeseries.config.offheap.path=/tmp
 org.opennms.timeseries.config.offheap.max_file_size=-1
 ----
 
-After the plugin is installed and configured, restart the {page-component-title} service.
+After the plugin is installed and configured, restart the {page-component-title} service:
 
 [source, console]
 ----
@@ -91,25 +93,26 @@ systemctl restart opennms
 
 The activation key lets {page-component-title} connect with the Time Series DB cloud service.
 You must log in to the OpenNMS Portal to get this activation key, copy it, and then paste it into the appropriate screen in {page-component-title}.
+
 When you signed up for the Time Series DB, you received an activation email from OpenNMS with a login for the OpenNMS Portal.
 If you did not receive an activation email, contact your account manager.
 
-IMPORTANT: The key is valid for one hour.
-If you do not use it within that time, you must log back into the OpenNMS Portal, delete the instance, create a new one, and generate a new key.
+IMPORTANT: The activation key is valid for one hour.
+If you do not use it within that time, you must log in to the OpenNMS Portal again, delete the instance, create a new instance, and generate a new key.
 
 To obtain the activation key, follow these steps:
 
 . If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
 . Sign in to the OpenNMS Portal with your username and password.
 . Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
-. Type in the name of your instance and click *Generate Activation Key*.
+. Type the name of your instance and click *Generate Activation Key*.
 . Copy the activation key and click *Save & Close*.
 
 === Enable cloud services connectivity
 
 To install the activation key on your {page-component-title} instance, follow these steps:
 
-. Log in to the OpenNMS {page-component-title} web UI for your instance.
+. Log in to {page-component-title}.
 . Click menu:Plugins[Cloud Services] in the top menu bar.
 . Turn the *Cloud Services Deactivate* toggle to on.
 . Paste the key in the *Enter Activation Key* box and click *Activate*.
@@ -136,10 +139,10 @@ Connecting to ElasticSearch ReST API (Flows)   [ Success  ] => Not configured
 => Everything is awesome
 ----
 
-Check Karaf logs if the registration fails or the health check does not say `SERVING`.
+Check the Karaf logs if the registration fails or the health check does not say `SERVING`.
 If this is the case, you will need to open a support ticket.
 
-You can also check that `$\{OPENNMS_HOME}/share/rrd` files are still being updated.
+You can also check if the `$\{OPENNMS_HOME}/share/rrd` files are still being updated.
 If they are not, this indicates that the Time Series DB is not working.
 
 [[view-time-series-data]]
