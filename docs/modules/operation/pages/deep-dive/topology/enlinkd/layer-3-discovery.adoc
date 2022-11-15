@@ -10,4 +10,4 @@ You can use the following routing daemons to provide links-based Layer 3 informa
 
 SNMP agents that support the appropriate MIBs provide information on Layer 2 network links.
 For this reason, you must have a working SNMP configuration.
-The link data that is discovered by enlinkd is detailed in the topology user interface, and on a node's Details page.
+The link data that enlinkd discovers is detailed in the topology user interface, and on a node's details page.
