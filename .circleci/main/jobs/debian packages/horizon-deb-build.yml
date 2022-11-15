@@ -16,6 +16,7 @@ jobs:
           background: true
           command: |
             free -m -c 500 -s 30
+      - download-download-artifacts
       - run:
           name: Build Debian Packages
           command: |
