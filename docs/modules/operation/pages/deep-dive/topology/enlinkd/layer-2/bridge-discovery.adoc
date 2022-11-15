@@ -1,7 +1,7 @@
 
 = Transparent Bridge Discovery
 
-Discovering xref:operation:topology/enlinkd/layer-2-discovery.adoc[layer 2 network links] using the bridge forwarding table (BFT) requires a special algorithm which is based on https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.383.8579&rep=rep1&type=pdf[_Topology Discovery for Large Ethernet Networks_].
+Discovering xref:operation:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table (BFT) requires a special algorithm which is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
 The gathered information is used to classify links as macLinks and bridgeLinks.
 
 == Definitions
@@ -27,8 +27,8 @@ NOTE: BridgeDomainDiscovery does not support multi-VLAN; the bridge network mode
 Each VLAN has its own BFT and spanning tree.
 Although discovery is run only against the main VLAN, the algorithm has to be run against all bridges and VLANs to discover a bridge topology.
 
-Bridge domains provide no information about xref:operation:topology/enlinkd/layer-3-discovery.adoc[layer 3 links]; they produce only a layer 2 map of the broadcast domains.
-You can determine which layer 3 interfaces map to layer 2 nodes if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
+Bridge domains provide no information about xref:operation:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 links]; they produce only a Layer 2 map of the broadcast domains.
+You can determine which Layer 3 interfaces map to Layer 2 nodes if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
 You can associate a MAC address with its corresponding IP address and the associated node using this table.
 
 == Bridge Topology Updater
@@ -53,14 +53,14 @@ image::enlinkd/bridge-database.png[Network diagram depicting database tables use
 To define links, {page-component-title} must perform some calculations, and the SNMP agent must support the following MIBs to allow this:
 
 .Supported MIBs from the Cisco-VTP MIB
-[options="header, autowidth" cols="1,3,1"]
+[options="header" cols="1,3,1"]
 |===
 | Name
 | Description
 | OID
 
 | vtpVersion
-| The local version of VIP. +
+| The local version of VIP.
 A device reports its version capability, but not the particular version that it uses.
 If the device does not support VTP, the version is `none(3)`.
 | .1.3.6.1.4.1.9.9.46.1.1.1.0
@@ -68,7 +68,7 @@ If the device does not support VTP, the version is `none(3)`.
 
 == Supported OIDs
 
-The following OIDs are supported by the bridge discovery process:
+The bridge discovery process supports the following OIDs:
 
 .Supported OIDs from the IP-MIB module
 [options="header" cols="1,3,1"]
@@ -78,8 +78,8 @@ The following OIDs are supported by the bridge discovery process:
 | OID
 
 | ipNetToMediaIfIndex
-| Interface on which the entry's equivalent is effective. +
-The layer 2 interface identified by a particular value of this index is the same as identified by the value of `ifIndex`.
+| Interface on which the entry's equivalent is effective.
+The Layer 2 interface identified by a particular value of this index is the same as identified by the value of `ifIndex`.
 | .1.3.6.1.2.1.4.22.1.1
 
 | ipNetToMediaPhysAddress
@@ -91,7 +91,7 @@ The layer 2 interface identified by a particular value of this index is the same
 | .1.3.6.1.2.1.4.22.1.3
 
 | ipNetToMediaType
-| Mapping type. +
+| Mapping type.
 Setting this object to `invalid(2)` invalidates its corresponding entry in the `ipNetToMediaTable`.
 This effectively disassociates the entry's identified interface from its mapping.
 Accordingly, management stations must be prepared to receive tabular information from agents that correspond to entries that are not currently in use.
@@ -108,7 +108,7 @@ Proper interpretation of such entries requires the relevant `ipNetToMediaType` o
 
 | dot1dBaseBridgeAddress
 | MAC address used by the bridge as a unique identifier.
-We recommend that this be the numerically smallest MAC address of all ports that belong to this bridge; however, it is only required to be unique. +
+We recommend that this be the numerically smallest MAC address of all ports that belong to this bridge; however, it is only required to be unique.
 When concatenated with `dot1dStpPriority`, they form a unique `BridgeIdentifier` which is used in the spanning tree protocol.
 | .1.3.6.1.2.1.17.1.1.0
 
@@ -117,7 +117,7 @@ When concatenated with `dot1dStpPriority`, they form a unique `BridgeIdentifier`
 | .1.3.6.1.2.1.17.1.2.0
 
 | dot1dBaseType
-| Type of bridging that this bridge can perform. +
+| Type of bridging that this bridge can perform.
 If a bridge is actually performing a certain type of bridging, entries in the appropriate port table will reflect this.
 | .1.3.6.1.2.1.17.1.3.0
 
@@ -137,13 +137,13 @@ If future versions of the IEE protocol are released that are not compatible with
 | .1.3.6.1.2.1.17.2.1.0
 
 | dot1dStpPriority
-| Value of the writeable portion of the bridge ID (for example, for first two octets of the eight-octet bridge ID). +
+| Value of the writeable portion of the bridge ID (for example, for first two octets of the eight-octet bridge ID).
 `dot1dBaseBridgeAddressOther` provides the final six octets of the bridge ID.
 | .1.3.6.1.2.1.17.2.2
 
 | dot1dStpDesignatedRoot
-| Bridge identifier for the root of the spanning tree, as determined by the node's spanning tree protocol. +
-This value is used as the root identifier parameter in all configuration bridge protocol data units (PDUs) originated by this node.
+| Bridge identifier for the root of the spanning tree, as determined by the node's spanning tree protocol.
+This value is used as the root identifier parameter in all configuration bridge protocol data units (BPDUs) originated by this node.
 | .1.3.6.1.2.1.17.2.5
 
 | dot1dStpRootCost
@@ -159,12 +159,12 @@ This value is used as the root identifier parameter in all configuration bridge 
 | .1.3.6.1.2.1.17.2.15.1.1
 
 | dot1dStpPortPriority
-| Value of the property field contained in the first octet (in network byte order) of the two-octet port ID. +
+| Value of the property field contained in the first octet (in network byte order) of the two-octet port ID.
 `dot1dStpPort` provides the second octet of the port ID.
 | .1.3.6.1.2.1.17.2.15.1.2
 
 | dot1dStpPortState
-| Current state of the port, as defined by the spanning tree protocol. +
+| Current state of the port, as defined by the spanning tree protocol.
 This state controls what action a port takes upon reception of a frame.
 If the bridge detects a malfunctioning port, it places that port into the `broken(6)` state.
 For ports that are disabled (see `dot1dStpPortEnable`), this object has a value of `disabled(1)`.
@@ -175,17 +175,17 @@ For ports that are disabled (see `dot1dStpPortEnable`), this object has a value 
 | .1.3.6.1.2.1.17.2.15.1.4
 
 | dot1dStpPortPathCost
-| Current path's contribution to the cost of paths toward the root. +
+| Current path's contribution to the cost of paths toward the root.
 https://standards.ieee.org/ieee/802.1D/1028/[802.1D-1990] recommends that this parameter's default value be in inverse proportion to the speed of the attached LAN.
 | .1.3.6.1.2.1.17.2.15.1.5
 
 | dot1dStpPortDesignatedRoot
-| Unique bridge identifier of the bridge that is recorded as the root in the configuration bridge protocol data units (BPDUs) that the designated bridge transmitted for the segment to which the port is attached.
+| Unique bridge identifier of the bridge that is recorded as the root in the configuration BPDUs that the designated bridge transmitted for the segment to which the port is attached.
 | .1.3.6.1.2.1.17.2.15.1.6
 
 | dot1dStpPortDesignatedCost
-| Path cost of the segment connected to the designated port. +
-This value is compared to the root path cost field in received bridge PDUs.
+| Path cost of the segment connected to the designated port.
+This value is compared to the root path cost field in received BPDUs.
 | .1.3.6.1.2.1.17.2.15.1.7
 
 | dot1dStpPortDesignatedBridge
@@ -201,7 +201,7 @@ This value is compared to the root path cost field in received bridge PDUs.
 | .1.3.6.1.2.1.17.4.3.1.1
 
 | dot1dTpFdbPort
-| Either `0` or the port number of the port on which a frame whose source address is equal to the value of `dot1dTpFdbAddress` has been seen. +
+| Either `0` or the port number of the port on which a frame whose source address is equal to the value of `dot1dTpFdbAddress` has been seen.
 A value of `0` indicates that the port number has not been discovered, but that the bridge does have some forwarding or filtering information about this address (for example, stored in `dot1dStaticTable`). +
 You are encouraged to assign the port value to this object when it is discovered, even for addresses for which the value of `dot1dTpFdbStatus` is `not learned(3)`.
 | .1.3.6.1.2.1.17.4.3.1.2
@@ -226,7 +226,7 @@ This may include the case in which another MIB object (which is not `dot1dTpFdbP
 | OID
 
 | dot1qTpFdbPort
-| Either `0` or the port number of the port on which a frame whose source address is equal to the value of `dot1qTpFdbAddress` has been seen. +
+| Either `0` or the port number of the port on which a frame whose source address is equal to the value of `dot1qTpFdbAddress` has been seen.
 A value of `0` indicates that the port number has not been discovered, but that the device does have some forwarding or filtering information about this address (for example, in the `dot1qStaticUnicastTable`). +
 You are encouraged to assign the port value to this object whenever it is discovered, even for addresses for which `dot1qTpFdbStatus` is `not learned(3)`.
 | .1.3.6.1.2.1.17.7.1.2.2.1.2

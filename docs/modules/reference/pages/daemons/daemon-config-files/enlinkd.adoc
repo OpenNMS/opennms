@@ -7,13 +7,12 @@ The daemon essentially asks each device the following question: "What is the net
 
 The enlinkd discovery process tries to discover bridge domain links using the data coming from all collected bridge forwarding tables.
 
-The enlinkd updaters correlate all collected topology data, and use it to generate a global topology map of your network.
+The enlinkd updaters correlate all collected topology data and use it to generate a global topology map of your network.
 
 == How it works
 
 .Enlinkd configuration file overview
-[options="header"]
-[cols="2,3,1,1"]
+[options="header" cols="2,3,1,1"]
 |===
 | File
 | Description
@@ -27,8 +26,7 @@ The enlinkd updaters correlate all collected topology data, and use it to genera
 |===
 
 .Enlinkd log file overview
-[options="header"]
-[cols="2,3"]
+[options="header" cols="2,2"]
 |===
 | File
 | Description
@@ -40,14 +38,13 @@ The enlinkd updaters correlate all collected topology data, and use it to genera
 === Configuration
 
 If multiple link discovery protocols are enabled, links will be discovered for each enabled protocol.
-The xref:operation:deep-dive/topology/topology.adoc[topology web UI] visualizes links for each discovery protocol.
+The xref:operation:deep-dive/topology/topology.adoc[topology map] visualizes links for each discovery protocol.
 For example, if you start both the CDP and LLDP discovery protocols, the web UI visualizes a CDP link and an LLDP link.
 
 Restart enlinkd or {page-component-title} to apply configuration changes.
 
 .enlinkd-configuration.xml parameters
-[options="header"]
-[cols="1,3,1"]
+[options="header" cols="1,3,1"]
 |===
 | Attribute
 | Description

@@ -12,9 +12,9 @@ This is what the bridge domain discovery process considers a connection.
 It is not very useful on its own, so the process also performs domain calculations to assign each MAC address to the port where the device that holds it is effectively connected (the nearest known bridge port).
 
 Connections that the collectors and the bridge domain discovery process find are called "links."
-These links are discovered based on information that is provided by an agent's understanding of connections at the OSI layer 2, layer 3, or other OSI layers.
+These links are discovered based on information that is provided by an agent's understanding of connections at the OSI Layer 2, Layer 3, or other OSI layers.
 
-NOTE: In this context, a "link" refers to more than the network OSI layer 2 connection.
+NOTE: In this context, a "link" refers to more than the network OSI Layer 2 connection.
 
 The topologies are made of vertices and edges, and are used to generate a topology map.
 They also allow the Kafka Producer to send TopologyMessage data.
@@ -25,29 +25,29 @@ You can view detailed information about a node's connections and supporting link
 [[ga-enlinkd-layers]]
 == Topology Layers
 
-The Enhanced Linkd topology map supports layered protocol maps.
+The enlinkd topology map supports layered protocol maps.
 
-Choose menu:Maps[Topology] to display the topology map, and click the Layers icon on the right panel of the map to access available layers:
+Click menu:Maps[Topology] in the top menu bar to display the topology map, and click the *layers* symbol in the panel to the right of the map to view layers.
+The following layers are available:
 
+All (default):: Displays the topology that enlinkd discovers, for all supported protocols (OSPF, IS-IS, Bridge, LLDP, and CDP).
+This layer also includes xref:development:rest/user-defined-links.adoc[user-defined topologies].
 
-All:: (default) Displays the topology that Enhanced Linkd discovers, for all supported protocols (OSPF, ISIS, Bridge, LLDP, and CDP).
-It also includes xref:development:rest/user-defined-links.adoc[User-Defined] topology.
+CDP:: Displays the Cisco Discovery Protocol (CDP) topology that enlinkd discovers.
 
-CDP:: Displays the Cisco Discovery Protocol (CDP) topology that Enhanced Linkd discovers.
+LLDP:: Displays the Link Layer Discovery Protocol (LLDP) topology that enlinkd discovers.
 
-LLDP:: Displays the Link Layer Discovery Protocol (LLDP) topology that Enhanced Linkd discovers.
-
-Layer2:: Displays combined CDP and LLDP topology that Enhanced Linkd discovers.
+Layer2:: Displays the combined CDP and LLDP topology that enlinkd discovers.
 
 Bridge:: Displays only Bridge links.
 
-OSPF:: Displays the Open Shortest Path First (OSPF) topology that Enhanced Linkd discovers.
+OSPF:: Displays the Open Shortest Path First (OSPF) topology that enlinkd discovers.
 
-ISIS:: Displays the Intermediate System to Intermediate System (IS-IS) topology that Enhanced Linkd discovers.
+ISIS:: Displays the Intermediate System to Intermediate System (IS-IS) topology that enlinkd discovers.
 
-Layer3:: Displays combined OSPF and IS-IS topology that Enhanced Linkd discovers.
+Layer3:: Displays the combined OSPF and IS-IS topology that enlinkd discovers.
 
-UserDefined:: Displays xref:development:rest/user-defined-links.adoc[user-defined] topology.
+UserDefined:: Displays xref:development:rest/user-defined-links.adoc[user-defined topologies].
 
 [[ga-enlinkd-daemon]]
 For more information, see xref:reference:daemons/daemon-config-files/enlinkd.adoc[Enlinkd] in the Reference section.

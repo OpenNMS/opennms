@@ -40,7 +40,7 @@ The ISIS Discovery Collector collects them:
 
 | isisSysID
 | ID for this `Intermediate-System`.
-This value is appended to each of the area addresses to form the Network Entity Titles. +
+This value is appended to each of the area addresses to form the Network Entity Titles.
 The derivation of a value for this object is implementation-specific.
 Some implementations may automatically assign values and not permit an SNMP write, while others may require the value to be set manually. +
 Configured values must survive an agent reboot.
@@ -57,7 +57,7 @@ Configured values must survive an agent reboot.
 | .1.3.6.1.2.1.138.1.1.1
 
 | isisCircIfIndex
-| Value of `ifIndex` for the interface to which this circuit corresponds. +
+| Value of `ifIndex` for the interface to which this circuit corresponds.
 You cannot modify this object after creation.
 | .1.3.6.1.2.1.138.1.3.2.1.2
 
