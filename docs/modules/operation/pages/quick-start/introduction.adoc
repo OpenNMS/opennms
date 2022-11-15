@@ -33,6 +33,6 @@ This guide covers the following tasks:
 * xref:operation:quick-start/baseline.adoc[Establish a baseline].
 * xref:operation:quick-start/service-assurance.adoc[Determine service availability].
 * xref:operation:quick-start/notification-config.adoc[Configure notifications].
-* Visualize your data.
+* xref:operation:quick-start/visualize-data.adoc[Visualize your data].
 
 NOTE: Unless otherwise stated, the procedures in this guide require you to be logged in to the OpenNMS web UI as a user with admin privileges.
