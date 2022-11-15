@@ -3,9 +3,30 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
 
+FROM ${BASE_IMAGE} as horizon-tarball
+
+ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
+RUN chmod -R g-w /opt/usr-share/opennms && \
+    chmod -R g=u \
+        /opt/usr-share/opennms/etc \
+        /opt/usr-share/opennms/data \
+        /opt/usr-share/opennms/jetty-webapps/*/WEB-INF \
+        /opt/usr-share/opennms/logs \
+        /opt/usr-share/opennms/share \
+        && \
+    chmod g=u /opt/usr-share/opennms && \
+    find \
+        /opt/usr-share/opennms/data \
+        /opt/usr-share/opennms/deploy \
+        /opt/usr-share/opennms/logs \
+        /opt/usr-share/opennms/system \
+        -type d -print0 | xargs -0 chmod 2775
+
 FROM ${BASE_IMAGE} as horizon-base
 
-ADD --chown=10001:0 ./tarball-root/ /usr/share/opennms/
+# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+COPY --chown=10001:0 --from=horizon-tarball /opt/usr-share /usr/share
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
@@ -59,7 +80,7 @@ RUN groupadd \
     adduser \
         --uid 10001 \
         --gid 10001 \
-        --home /opt/opennms \
+        --home /usr/share/opennms \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
@@ -69,41 +90,35 @@ RUN groupadd \
 ##
 FROM horizon-base
 
-# Allow to install optional packages via YUM
-ARG ADD_DEB_PACKAGES
-
 SHELL ["/bin/bash", "-c"]
 
 # we want these to break the caching so yum will re-install now that
 # we're not copying RPMs into /tmp/rpms by default
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
-ARG ADD_DEB_PACKAGES
 
 # Install any spare packages and create some compatibility links
-RUN if [[ -n "${ADD_DEB_PACKAGES}" ]]; then \
-        apt-get --no-install-recommends install -yq ${ADD_DEB_PACKAGES}; \
-    fi && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /usr/share/opennms/share/rrd \
+RUN rm -rf /usr/share/opennms/share/rrd \
            /usr/share/opennms/share/reports \
            /usr/share/opennms/share/mibs \
            /var/cache/apt && \
-    install -d -m 775 -g 0 -o 10001 \
+    install -d -m 775 -o 10001 -g 0 \
             /opt/opennms-etc-overlay \
             /opt/opennms-jetty-webinf-overlay \
             /opt/opennms-overlay \
-            /opennms-data && \
-    install -d -m 775 -g 0 -o 10001 \
+            /opennms-data \
+            /var/log && \
+    install -d -m 775 -o 10001 -g 0 \
             /opennms-data/rrd \
             /opennms-data/reports \
             /opennms-data/mibs && \
     ln -s /opennms-data/rrd /usr/share/opennms/share/rrd && \
     ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
     ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
-# Align with old opennms path
+# Compatibility with other OpenNMS paths
     ln -s /usr/share/opennms /opt/opennms && \
+    ln -s /usr/share/opennms/etc /etc/opennms && \
+    ln -s /usr/share/opennms/logs /var/log/opennms && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
@@ -112,8 +127,8 @@ COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
-RUN chmod -R g=u /usr/share/opennms
-RUN chmod -R g=u /opennms-data
+RUN chmod -R g=u /usr/share/opennms/etc
+RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
@@ -137,7 +152,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
-WORKDIR /opt/opennms
+WORKDIR /usr/share/opennms
 
 ### Containers should NOT run as root as a good practice
 USER 10001

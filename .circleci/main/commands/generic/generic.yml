@@ -24,7 +24,7 @@ commands:
               do_sudo chmod a+x /usr/local/bin/download-artifacts.pl
             fi
 
-            do_sudo apt-get -y update && \
+            do_sudo apt-get -y --allow-releaseinfo-change update && \
               do_sudo apt-get -y -q --no-install-recommends install \
                 libdatetime-format-iso8601-perl \
                 libjson-pp-perl \
