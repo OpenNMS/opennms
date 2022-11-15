@@ -9,7 +9,7 @@
 set -e
 
 umask 002
-MINION_HOME="/opt/minion"
+export MINION_HOME="/opt/minion"
 MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"

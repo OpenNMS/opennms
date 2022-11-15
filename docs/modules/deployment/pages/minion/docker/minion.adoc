@@ -19,7 +19,7 @@ version: '3'
 
 services:  
   minion:
-    image: opennms/minion:{docker-version-tag}
+    image: opennms/minion:{full-display-version}
     container_name: minion<1>
     environment:
       TZ: 'America/New_York'<2>
