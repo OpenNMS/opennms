@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-enlinkd]]
 = Enlinkd
 
-The enhanced link daemon collects xref:operation:topology/enlinkd/introduction.adoc[topology information] via SNMP to determine connections between nodes.
+The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/introduction.adoc[topology information] via SNMP to determine connections between nodes.
 The daemon essentially asks each device the following question: "What is the network topology, from your point of view?"
 
 The enlinkd discovery process tries to discover bridge domain links using the data coming from all collected bridge forwarding tables.
@@ -40,7 +40,7 @@ The enlinkd updaters correlate all collected topology data, and use it to genera
 === Configuration
 
 If multiple link discovery protocols are enabled, links will be discovered for each enabled protocol.
-The xref:operation:topology/topology.adoc[topology web UI] visualizes links for each discovery protocol.
+The xref:operation:deep-dive/topology/topology.adoc[topology web UI] visualizes links for each discovery protocol.
 For example, if you start both the CDP and LLDP discovery protocols, the web UI visualizes a CDP link and an LLDP link.
 
 Restart enlinkd or {page-component-title} to apply configuration changes.

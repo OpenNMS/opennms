@@ -4,7 +4,7 @@
 The Link Layer Discovery Protocol (LLDP) is a vendor-neutral link layer protocol.
 Network devices use it to advertise their identity, capabilities, and neighbors.
 
-LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol (LLDP)].
+LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol (EDP), Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol (LLDP)].
 
 NOTE: Only nodes with a running LLDP process can be part of the link discovery.
 The data is similar to running the `show lldp neighbor` command on a device's command line.
@@ -26,7 +26,7 @@ image::enlinkd/lldp-database.png[Network diagram depicting database tables used 
 == Supported OIDs
 
 The following OIDs are supported for the discovery and construction of the LLDP network topology.
-They are collected by the LLDP Discovery Collector:
+The LLDP Discovery Collector collects them:
 
 .Supported OIDs from the LLDP-MIB module
 [options="header" cols="1,3,1"]

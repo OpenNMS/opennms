@@ -29,7 +29,7 @@ image::enlinkd/is-is-database.png[Network diagram depicting database tables used
 == Supported OIDs
 
 The following OIDs are supported for the discovery and construction of the ISIS network topology.
-They are collected by the ISIS Discovery Collector:
+The ISIS Discovery Collector collects them:
 
 .Supported OIDs from the ISIS-MIB module
 [options="header" cols="1,3,1"]

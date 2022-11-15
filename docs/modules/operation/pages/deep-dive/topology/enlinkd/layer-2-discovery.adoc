@@ -2,7 +2,7 @@
 [[ga-enlinkd-layer-2-link-discovery]]
 = Layer 2 Link Discovery
 
-Enlinkd is able to discover layer 2 network links based on the following protocols:
+Enlinkd is able to discover Layer 2 network links based on the following protocols:
 
 * link:https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol] (LLDP)
 * link:https://en.wikipedia.org/wiki/Cisco_Discovery_Protocol[Cisco Discovery Protocol] (CDP)
