@@ -32,7 +32,7 @@ endif::[]
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service.
 +
-Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387/1[H29+ won't start with permission error to open ICMP socket] on Discourse).
+Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see <<selinux-icmp,SELinux and ICMP permissions>>).
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
@@ -41,6 +41,78 @@ See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
 endif::[]
 
 include::../time-sync.adoc[]
+
+[[selinux-icmp]]
+=== SELinux and ICMP permissions
+
+As noted in the requirements above, you must have SELinux to run {page-component-title}, as servers that have a SELinux policy configured will deny permission for {page-component-title} to bind to the ICMP service.
+
+To verify that you have SELinux running and enabled, use the `sestatus` command.
+You should see the following:
+
+[source, console]
+----
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+----
+
+Use `audit2allow -a` to verify if {page-component-title} violates SELinux policies
+If the command is missing, run the `dnf install policycoreutils-devel` package.
+
+Look for entries preventing bind ICMP sockets to bind:
+
+[source, console]
+----
+#============= unconfined_service_t ==============
+allow unconfined_service_t node_t:icmp_socket node_bind;
+
+============= unconfined_service_t ==============
+allow unconfined_service_t port_t:icmp_socket name_bind;
+----
+
+Create a type enforcement file like this: `JniPing.te`.
+
+[source, console]
+----
+module JniPing 1.0;
+
+require {
+        type unconfined_service_t;
+        type node_t;
+        type port_t;
+        class icmp_socket { name_bind node_bind };
+}
+
+#============= unconfined_service_t ==============
+allow unconfined_service_t node_t:icmp_socket node_bind;
+allow unconfined_service_t port_t:icmp_socket name_bind;
+----
+
+Create a SElinux module and compile it:
+
+[source, console]
+----
+checkmodule -M -m -o JniPing.mod JniPing.te
+semodule_package -o JniPing.pp -m JniPing.mod
+----
+
+Install the SELinux package and enforce it:
+
+[source, console]
+----
+semodule -i JniPing.pp
+getenforce
+----
+
+You can verify the package with `semodule --list-modules | grep JniPing`.
 
 [[setup-postgresql]]
 == Set up PostgreSQL
