@@ -33,73 +33,91 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class LegacyGraphContainer implements ImmutableGraphContainer<ImmutableGraph<?,?>> {
+public class LegacyGraphContainer implements ImmutableGraphContainer<LegacyGraph> {
     private final MetaTopologyProvider delegate;
+    private final String id;
+    private final String label;
+    private final String description;
 
-    public LegacyGraphContainer(MetaTopologyProvider delegate) {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyGraphContainer.class);
+
+    public LegacyGraphContainer(MetaTopologyProvider delegate, String id, String label, String description) {
         this.delegate = delegate;
+        this.id = id;
+        this.label = label;
+        this.description = description;
     }
 
     @Override
-    public List<ImmutableGraph<?, ?>> getGraphs() {
-        return delegate.getGraphProviders().stream().map(LegacyGraph::getImmutableGraphFromTopoGraphProvider).collect(Collectors.toList());
+    public List<LegacyGraph> getGraphs() {
+        LOG.info("getGraphs: id: {}, size:{}", id, delegate.getGraphProviders().size());
+        return delegate.getGraphProviders().stream().map(LegacyGraph::getLegacyGraphFromTopoGraphProvider).collect(Collectors.toList());
     }
 
     @Override
-    public ImmutableGraph<?, ?> getGraph(String namespace) {
-        return LegacyGraph.getImmutableGraphFromTopoGraphProvider(delegate.getGraphProviderBy(namespace));
+    public LegacyGraph getGraph(String namespace) {
+        LOG.info("getGraph: id: {}, namespace:{}", id, namespace);
+        return LegacyGraph.getLegacyGraphFromTopoGraphProvider(delegate.getGraphProviderBy(namespace));
     }
 
     @Override
     public GenericGraphContainer asGenericGraphContainer() {
+        LOG.info("asGenericGraphContainer: id: {}, start", id);
         GenericGraphContainer.GenericGraphContainerBuilder builder = GenericGraphContainer.builder()
-            .id(delegate.getId())
-            .label(delegate.getClass().getSimpleName())
-            .description(delegate.getClass().getCanonicalName());
-        for (ImmutableGraph<?,?> graph: getGraphs()) {
+            .id(id)
+            .label(label)
+            .description(description);
+        for (LegacyGraph graph: getGraphs()) {
+            LOG.info("asGenericGraphContainer: LegacyGraph id: {}, vertices:{}, edges:{}", graph.getNamespace(), graph.getVertexIds(),graph.getEdgeIds());
             builder.addGraph(graph.asGenericGraph());
         }
-        builder.applyContainerInfo(this);
+        LOG.info("asGenericGraphContainer: id: {}, start", id);
         return builder.build();
     }
 
     @Override
     public String getId() {
-        return delegate.getId();
+        return id;
     }
 
     @Override
     public List<String> getNamespaces() {
+        LOG.info("getNamespaces: id: {}", id);
         return delegate.getGraphProviders().stream().map(GraphProvider::getNamespace).collect(Collectors.toList());
     }
 
     @Override
     public String getDescription() {
-        return delegate.getId();
+        return description;
     }
 
     @Override
     public String getLabel() {
-        return delegate.getId();
+        return label;
     }
 
     @Override
     public GraphInfo getGraphInfo(String namespace) {
+        LOG.info("getGraphInfo: id: {}, namespace: {}", id, namespace);
         return LegacyGraph.getGraphInfo(delegate.getGraphProviderBy(namespace));
     }
 
     @Override
     public GraphInfo getPrimaryGraphInfo() {
+        LOG.info("getPrimaryGraphInfo: id: {}", id);
         return LegacyGraph.getGraphInfo(delegate.getDefaultGraphProvider());
     }
 
     @Override
     public List<GraphInfo> getGraphInfos() {
+        LOG.info("getGraphInfos: id: {}", id);
         return delegate.getGraphProviders().stream().map(LegacyGraph::getGraphInfo).collect(Collectors.toList());
     }
 }
