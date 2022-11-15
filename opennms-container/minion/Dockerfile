@@ -50,15 +50,17 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     apt clean && \
     rm -rf /var/cache/apt /etc/apt/security.sources.list
 
-RUN groupadd --gid 10001 minion && \
+RUN groupadd \
+        --gid 10001 \
+        minion && \
     useradd \
-    --system \
-    --uid 10001 \
-    --gid 10001 \
-    --home-dir /opt/minion \
-    --no-create-home \
-    --shell /usr/bin/bash \
-    minion
+        --system \
+        --uid 10001 \
+        --gid 10001 \
+        --home-dir /opt/minion \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        minion
 
 # https://issues.opennms.org/browse/NMS-12635
 # It is possible to set sysctls: net.ipv4.ping_group_range=0 10001 which allows the container using sockets. If we run on

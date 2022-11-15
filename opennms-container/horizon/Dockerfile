@@ -75,7 +75,7 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 
 # Create OpenNMS user with a specific group ID
 RUN groupadd \
-        -g 10001 \
+        --gid 10001 \
         opennms && \
     adduser \
         --uid 10001 \

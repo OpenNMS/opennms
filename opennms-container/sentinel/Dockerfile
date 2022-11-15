@@ -60,15 +60,17 @@ COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 SHELL ["/bin/bash", "-c"]
 
 # Create Sentinel user with a specific group ID
-RUN groupadd -g 10001 sentinel && \
+RUN groupadd \
+        --gid 10001 \
+        sentinel && \
     useradd \
-      --system \
-      --uid 10001 \
-      --gid 0 \
-      --home-dir /usr/share/sentinel \
-      --no-create-home \
-      --shell /usr/bin/bash \
-      sentinel
+        --system \
+        --uid 10001 \
+        --gid 10001 \
+        --home-dir /usr/share/sentinel \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        sentinel
 
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
