@@ -15,7 +15,7 @@
     <failsafeVersion>2.22.2</failsafeVersion>
     <groovyVersion>2.5.16</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.12.3</jackson2Version>
+    <jackson2Version>2.12.7.1</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>4.6.0</selenium.version>
