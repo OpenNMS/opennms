@@ -32,8 +32,7 @@ endif::[]
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service.
 +
-Note that failure to do so may generate an ICMP permission issue when starting OpenNMS.
-(See https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387/1[H29+ won't start with permission error to open ICMP socket] on Discourse.)
+Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387/1[H29+ won't start with permission error to open ICMP socket] on Discourse).
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
