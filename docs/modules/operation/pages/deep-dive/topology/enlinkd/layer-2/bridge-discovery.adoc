@@ -60,7 +60,7 @@ To define links, {page-component-title} must perform some calculations, and the 
 | OID
 
 | vtpVersion
-| The local version of VIP.
+| The local version of VTP.
 A device reports its version capability, but not the particular version that it uses.
 If the device does not support VTP, the version is `none(3)`.
 | .1.3.6.1.4.1.9.9.46.1.1.1.0

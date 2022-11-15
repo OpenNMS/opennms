@@ -9,7 +9,7 @@ They define the relevant objects used to find OSPF links--specifically, the rout
 In OSPF, the router ID has the same format as an IP address, but identifies the router independently of its IP address.
 All interfaces are identified by their IP addresses.
 
-You can find generic information about the OSPF link discovery process in the OSPF information box on any device's node detail page.
+You can find generic information about the OSPF link discovery process in the OSPF Information box on any device's Node Detail page.
 
 == OSPF Topology Updater
 
