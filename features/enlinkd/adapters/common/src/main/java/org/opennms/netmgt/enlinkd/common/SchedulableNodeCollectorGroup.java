@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.common;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -85,10 +86,17 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
 
     public abstract NodeCollector getNodeCollector(final Node node, final int priority);
 
+    private int getMaxPriority(Collection<Integer> priorities) {
+        if (priorities.size() == 0) {
+            return 0;
+        }
+        return Collections.max(priorities);
+    }
+
     @Override
     public void runSchedulable() {
-        final Map<Integer,Integer> priorityMap = getPriorityMap();
-        final Integer maxPriority = Collections.max(priorityMap.values());
+        final Map<Integer, Integer> priorityMap = getPriorityMap();
+        final Integer maxPriority = getMaxPriority(priorityMap.values());
         m_nodeTopologyService.findAllSnmpNode()
                 .stream()
                 .filter(node -> !m_suspended.contains(node.getNodeId()))

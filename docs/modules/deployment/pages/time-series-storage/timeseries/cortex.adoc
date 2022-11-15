@@ -28,7 +28,7 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 
 . Download the plugin's `.kar` file from GitHub (https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases).
 . Copy the file into `$\{OPENNMS_HOME}/deploy`.
-. Enable and configure time series storage plugins in {page-component-title}.
+. Enable and configure time series database plugins in {page-component-title}.
 +
 .Create or modify the `$\{OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties` file
 [source, properties]
@@ -91,7 +91,7 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 .Create or modify the `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` file
 [source, text]
 ----
-opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-plugin
+opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
 ----
 . Restart the {page-component-title} service.
 

@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 
 const child_process = require('child_process');
-const fs    = require('fs');
-const path  = require('path');
+const fs = require('fs');
+const path = require('path');
 
 var doUpdate = false;
 
 const touchfile = path.join(__dirname, 'target', 'ci.done');
+const node_modules = path.join(__dirname, 'node_modules');
 
-if (fs.existsSync(touchfile)) {
+// spot-check some expected locations
+if (!fs.existsSync(touchfile)
+  || !fs.existsSync(path.join(node_modules, '.bin', 'eslint'))
+  || !fs.existsSync(path.join(node_modules, 'uuid', 'index.js'))
+) {
+  doUpdate = true;
+} else {
   const touchstats = fs.statSync(touchfile);
   const packagestats = fs.statSync(path.join(__dirname, 'package-lock.json'));
 
@@ -20,13 +27,12 @@ if (fs.existsSync(touchfile)) {
   } else {
     doUpdate = true;
   }
-} else {
-  doUpdate = true;
 }
 
 if (doUpdate) {
-  console.info('node_modules is out of date compared to package-lock.json');
-  const child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), [ '--prefer-offline', '--no-progress', 'ci' ]);
+  console.info('node_modules is potentially out of date compared to package-lock.json');
+
+  const child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), [ '--prefer-offline', 'ci' ]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
   child.on('error', (err) => {

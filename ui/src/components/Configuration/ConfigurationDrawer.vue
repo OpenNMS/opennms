@@ -315,7 +315,7 @@ const toggleHelp = () => {
   border-left: 1px solid #b2b2b2;
 }
 .sidepanel {
-  transform: translateX(0vw);
+  right: 0;
   transition: all ease-in-out 0.3s;
 }
 .sidepanelclosed {
@@ -323,7 +323,7 @@ const toggleHelp = () => {
   transition: all ease-in-out 0.3s;
 }
 .help-open {
-  transform: translateX(-20vw);
+  right: 20vw;
   transition: all ease-in-out 0.3s;
 }
 </style>

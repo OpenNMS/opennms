@@ -39,6 +39,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -66,6 +67,7 @@ public class ApplicationStatusRestService {
     @GET
     @Path("{applicationId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a Status of a specified application", description = "Get a Status of a specified application", operationId = "ApplicationStatusRestServiceGetStatusByApplicationId")
     public Response applicationStatus(@PathParam("applicationId") final Integer applicationId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
         if (end == null) {
             end = new Date().getTime();
@@ -87,6 +89,7 @@ public class ApplicationStatusRestService {
     @GET
     @Path("{applicationId}/{monitoredServiceId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a Status of a specified application by monitoringServiceId", description = "Get a Status of a specified application by monitoringServiceId", operationId = "ApplicationStatusRestServiceGetStatusByMonitoringServiceId")
     public Response applicationServiceStatus(@PathParam("applicationId") final Integer applicationId, @PathParam("monitoredServiceId") final Integer monitoredServiceId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
         if (end == null) {
             end = new Date().getTime();

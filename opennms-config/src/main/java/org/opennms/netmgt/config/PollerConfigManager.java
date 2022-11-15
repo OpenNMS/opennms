@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import static java.util.Objects.requireNonNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
@@ -53,6 +54,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
@@ -61,6 +63,7 @@ import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.NodeOutage;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -83,11 +86,184 @@ import com.google.common.base.Throwables;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class PollerConfigManager implements PollerConfig {
+abstract public class PollerConfigManager implements PollerConfig  {
+
+    /**
+     * This class is used to redirect getters for packages and monitors to their "merged" versions in
+     * PollerConfigManager. Other methods are redirected to "local" configuration
+     */
+    public static class ReadOnlyProxyPollerConfiguration extends PollerConfiguration {
+
+        private static final String MESSAGE = "Modifying is not allowed in ReadOnlyProxyPollerConfiguration";
+        private final PollerConfigManager pollerConfigManager;
+
+        ReadOnlyProxyPollerConfiguration(PollerConfigManager pollerConfigManager) {
+            this.pollerConfigManager = requireNonNull(pollerConfigManager);
+        }
+
+        @Override
+        public List<Package> getPackages() {
+            return pollerConfigManager.mergedPackages;
+        }
+
+        @Override
+        public void setPackages(List<Package> packages) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addPackage(Package pack) throws IndexOutOfBoundsException {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public boolean removePackage(Package pack) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Package getPackage(String packageName) {
+            return super.getPackage(packageName);
+        }
+
+        @Override
+        public List<Monitor> getMonitors() {
+            return pollerConfigManager.mergedMonitors;
+        }
+
+        @Override
+        public void setMonitors(List<Monitor> monitors) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addMonitor(Monitor monitor) throws IndexOutOfBoundsException {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public void addMonitor(String service, String className) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public boolean removeMonitor(Monitor monitor) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Integer getThreads() {
+            return pollerConfigManager.m_config.getThreads();
+        }
+
+        @Override
+        public void setThreads(Integer threads) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getNextOutageId() {
+            return pollerConfigManager.m_config.getNextOutageId();
+        }
+
+        @Override
+        public void setNextOutageId(String nextOutageId) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getServiceUnresponsiveEnabled() {
+            return pollerConfigManager.m_config.getServiceUnresponsiveEnabled();
+        }
+
+        @Override
+        public void setServiceUnresponsiveEnabled(String serviceUnresponsiveEnabled) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public String getPathOutageEnabled() {
+            return pollerConfigManager.m_config.getPathOutageEnabled();
+        }
+
+        @Override
+        public void setPathOutageEnabled(String pathOutageEnabled) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public NodeOutage getNodeOutage() {
+            return pollerConfigManager.m_config.getNodeOutage();
+        }
+
+        @Override
+        public void setNodeOutage(NodeOutage nodeOutage) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public PollerConfiguration getPollerConfigurationForPackages(List<String> pollingPackageNames) {
+            return pollerConfigManager.m_config.getPollerConfigurationForPackages(pollingPackageNames);
+        }
+
+        @Override
+        public InetAddress getDefaultCriticalPathIp() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathIp();
+        }
+
+        @Override
+        public void setDefaultCriticalPathIp(InetAddress ip) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public Integer getDefaultCriticalPathTimeout() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathTimeout();
+        }
+
+        @Override
+        public void setDefaultCriticalPathTimeout(Integer timeout) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+
+        @Override
+        public int getDefaultCriticalPathRetries() {
+            return pollerConfigManager.m_config.getDefaultCriticalPathRetries();
+        }
+
+        @Override
+        public void setDefaultCriticalPathRetries(Integer retries) {
+            throw new UnsupportedOperationException(MESSAGE);
+        }
+    }
+
+
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
+
+    private List<Package> localPackages = new ArrayList<>();
+    private List<Package> externalPackages = new ArrayList<>();
+    private List<Package> mergedPackages = new ArrayList<>();
+    //private boolean packagesUpdated = false;
+
+    private List<Monitor> localMonitors = new ArrayList<>();
+    private List<Monitor> externalMonitors = new ArrayList<>();
+    private List<Monitor> mergedMonitors = new ArrayList<>();
+    //private boolean monitorsUpdated = false;
+
+    @Override
+    public void setExternalData(List<Package> externalPackages,  List<Monitor> externalMonitors) {
+        try {
+            getWriteLock().lock();
+            this.externalPackages = externalPackages;
+            this.externalMonitors = externalMonitors;
+            this.setUpInternalData();
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
 
     private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
@@ -123,6 +299,8 @@ abstract public class PollerConfigManager implements PollerConfig {
     protected void setUpInternalData() {
         getReadLock().lock();
         try {
+            mergedMonitors = ListUtils.union(m_config.getMonitors(), externalMonitors);
+            mergedPackages = ListUtils.union(m_config.getPackages(), externalPackages);
             createUrlIpMap();
             createPackageIpListMap();
             initializeServiceMonitors();
@@ -153,6 +331,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * The config class loaded from the config file
      */
     protected PollerConfiguration m_config;
+
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
@@ -208,18 +387,28 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
-     * Return the poller configuration object.
+     * Return the local poller configuration object.
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
     @Override
-    public PollerConfiguration getConfiguration() {
+    public PollerConfiguration getLocalConfiguration() {
         try {
             getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    /**
+     * Return the local poller configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
+     */
+    @Override
+    public PollerConfiguration getExtendedConfiguration() {
+        return new ReadOnlyProxyPollerConfiguration(this);
     }
 
     /** {@inheritDoc} */
@@ -866,7 +1055,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Enumeration<Package> enumeratePackage() {
         try {
             getReadLock().lock();
-            return Collections.enumeration(getConfiguration().getPackages());
+            return Collections.enumeration(mergedPackages);
         } finally {
             getReadLock().unlock();
         }
@@ -876,7 +1065,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<Package> getPackages() {
         try {
             getReadLock().lock();
-            return getConfiguration().getPackages();
+            return mergedPackages;
         } finally {
             getReadLock().unlock();
         }
@@ -936,7 +1125,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Package> packages() {
         try {
             getReadLock().lock();
-            return getConfiguration().getPackages();
+            return mergedPackages;
         } finally {
             getReadLock().unlock();
         }
@@ -950,7 +1139,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Monitor> monitors() {
         try {
             getReadLock().lock();
-            return getConfiguration().getMonitors();
+            return mergedMonitors;
         } finally {
             getReadLock().unlock();
         }
@@ -965,7 +1154,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public int getThreads() {
         try {
             getReadLock().lock();
-            return getConfiguration().getThreads();
+            return m_config.getThreads();
         } finally {
             getReadLock().unlock();
         }
@@ -1073,6 +1262,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     @Override
     public List<Monitor> getConfiguredMonitors() {
-        return m_config.getMonitors();
+        return mergedMonitors;
     }
 }

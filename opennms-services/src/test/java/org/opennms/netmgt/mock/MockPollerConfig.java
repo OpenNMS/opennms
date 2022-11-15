@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -512,7 +511,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public PollerConfiguration getConfiguration() {
+    public PollerConfiguration getLocalConfiguration() {
         // FIXME: need to actually implement this
         return null;
     }

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>31.0.0-SNAPSHOT</version>
+    <version>31.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -98,7 +98,6 @@
 
     <!-- Topology Map -->
     <module>topology-map</module>
-    <module>vaadin-node-maps</module>
 
     <!-- webapps -->
     <module>root-webapp</module>

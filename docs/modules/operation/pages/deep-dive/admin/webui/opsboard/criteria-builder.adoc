@@ -3,10 +3,11 @@
 = Criteria Builder
 
 The Criteria Builder is a generic component to filter dashlet information.
-Some dashlets use this component to filter the shown information on a dashlet for certain use cases.
-It is possible to combine multiple criteria to display just a subset of information in a given dashlet.
+Some dashlets use this component in certain use cases to filter the displayed information.
+It is possible to combine multiple criteria to display a subset of information in a given dashlet.
 
-.Generic Criteria Builder configuration options
+== Configuration options
+
 [options="header, %autowidth" cols="1,2,1,1,1"]
 |===
 | Restriction
@@ -17,130 +18,129 @@ It is possible to combine multiple criteria to display just a subset of informat
 
 
 | Asc
-| ascending order
+| Ascending order
 | -
 | -
 | -
 
 | Desc
-| descending order
+| Descending order
 | -
 | -
 | -
 
 | Between
-| Subset of data between value 1 and value 2
-| database attribute
+| Subset of data between value 1 and value 2.
+| Database attribute
 | String
 | String
 
 | Contains
-| Select all data that contains a given text string in a given database attribute.
-| database attribute
+| A text string to compare against a database attribute.
+Any data containing the defined text string is selected.
+| Database attribute
 | String
 | -
 
 | Distinct
 | Select a single instance.
-| database attribute
+| Database attribute
 | -
 | -
 
 | Eq
-| database attribute
-| Select data where attribute equals (`==`) a given text string.
+| Select data where the defined attribute equals (`==`) a given text string.
+| Database attribute
 | String
 | -
 
 | Ge
-| Select data where attribute is greater or equal to (`>=`) a given text value.
-| database attribute
+| Select data where the defined attribute is greater or equal to (`>=`) a given text value.
+| Database attribute
 | String
 | -
 
 | Gt
-| Select data where attribute is greater than (`>`) a given text value.
-| database attribute
+| Select data where the defined attribute is greater than (`>`) a given text value.
+| Database attribute
 | String
 | -
 
 | Ilike
-| unknown
-| database attribute
+| Select data where the defined attribute is like a given text value.
+This option is similar to the SQL `ilike` function and is not case sensitive.
+| Database attribute
 | String
-| -
+| String
 
 | In
-| unknown
-| database attribute
+| Select data where the defined attribute matches any value in a list.
+Text value must be a comma-separated list of options.
+| Database attribute
 | String
-| -
+| Comma-separated list of strings
 
 | Iplike
-| Select data where attribute matches a given IPLIKE expression.
-| database attribute
+| Select data where the defined attribute matches a given `IPLIKE` expression.
+| Database attribute
 | String
 | -
 
 | IsNull
-| Select data where attribute is null.
-| database attribute
+| Select data where the defined attribute is `null`.
+| Database attribute
 | -
 | -
 
 | IsNotNull
-| Select data where attribute is not null.
-| database attribute
+| Select data where the defined attribute is not `null`.
+| Database attribute
 | -
 | -
 
 | Le
-| Select data where attribute is less than or equal to (`\<=`) a given text value.
-| database attribute
+| Select data where the defined attribute is less than or equal to (`\<=`) a given text value.
+| Database attribute
 | String
 | -
 
 | Lt
-| Select data where attribute is less than (`<`) a given text value.
-| database attribute
+| Select data where the defined attribute is less than (`<`) a given text value.
+| Database attribute
 | String
 | -
 
 | Like
-| Select data where attribute is like a given text value (similar to SQL `like`).
-| database attribute
+| Select data where the defined attribute is like a given text value.
+This option is similar to the SQL `like` function and is case-sensitive.
+| Database attribute
 | String
 | -
 
 | Limit
-| Limit the result set by a given number.
+| Limit the result set to a given number.
 | -
 | Integer
 | -
 
 | Ne
-| Select data where attribute does not equal (`!=`) a given text value.
-| database attribute
+| Select data where the defined attribute does not equal (`!=`) a given text value.
+| Database attribute
 | String
 | -
 
 | Not
 | Unknown difference between `Ne`.
-| database attribute
-| String
+| -
+| -
 | -
 
 | OrderBy
-| Order the result set by a given attribute.
-| database attribute
+| Order the result set using the defined attribute.
+| Database attribute
 | -
 | -
-
-| MultiAnd
-| Constraint that supports multiple parameters in criteria builder.
-| database attribute
-| String
-| String
 |===
 
-TIP: For date values, you can specify absolute value in ISO format (2019-06-20T20:45:15.123-05:00). Specify relative times by +seconds and -seconds.
+TIP: For date values, you can specify absolute value in ISO format (`2019-06-20T20:45:15.123-05:00`).
+Specify relative times by `+seconds` and `-seconds`.

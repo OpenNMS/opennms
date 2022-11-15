@@ -61,6 +61,7 @@
       <include-collection dataCollectionGroup="Network Appliance"/>
       <include-collection dataCollectionGroup="Nortel"/>
       <include-collection dataCollectionGroup="Novell"/>
+      <include-collection dataCollectionGroup="OpenNMS Appliances"/>
       <include-collection dataCollectionGroup="PaloAlto"/>
       <include-collection dataCollectionGroup="pfSense"/>
       <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>

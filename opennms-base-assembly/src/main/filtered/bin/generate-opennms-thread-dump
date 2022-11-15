@@ -25,11 +25,12 @@
 # put an '@' here so we don't break maven substition
 
 # shellcheck disable=SC2016
-opennms_home='${install.dir}'
-if [ ! -d "${opennms_home}" ]; then
+opennms_home="${OPENNMS_HOME}"
+if [ -d '${install.dir}' ]; then
     # shellcheck disable=SC2153
-    opennms_home="${OPENNMS_HOME}"
+    opennms_home='${install.dir}'
 fi
+OPENNMS_HOME="${opennms_home}"
 
 default_date_pattern="%Y%m%d_%H%M%S"
 default_oldest_survivor="120"
@@ -171,7 +172,7 @@ myuser="$(id -u -n)"
 if [ "$myuser" = "$RUNAS" ]; then
     true # all is well
 else
-    echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+    echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
     echo "       Create or edit ${opennms_home}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
     echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
     exit 4 # According to LSB: 4 - user had insufficient privileges

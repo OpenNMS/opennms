@@ -20,13 +20,59 @@ import 'vue-diff/dist/index.css'
 
 import dateFormatDirective from './directives/v-date'
 import { externalComponent, getJSPath } from './components/Plugin/utils'
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+// font-awesome
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// import specific icons and add to library
+// TODO: Move to separate fil
+// See: https://fontawesome.com/docs/web/use-with/vue/ and following
+import {
+  faBell,
+  faBellSlash,
+  faCalendar,
+  faCircle,
+  faCogs,
+  faInfoCircle,
+  faSearch,
+  faKey,
+  faLifeRing,
+  faMinusCircle,
+  faPlus,
+  faPlusCircle,
+  faQuestionCircle,
+  faSignOut,
+  faUser,
+  faUsers
+} from '@fortawesome/free-solid-svg-icons'
+const icons = [
+  faBell,
+  faBellSlash,
+  faCalendar,
+  faCircle,
+  faCogs,
+  faPlusCircle,
+  faPlus,
+  faInfoCircle,
+  faKey,
+  faLifeRing,
+  faMinusCircle,
+  faQuestionCircle,
+  faSearch,
+  faSignOut,
+  faUser,
+  faUsers
+]
+library.add(...icons);
+
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
 (window as any).Pinia = Pinia;
 (window as any).Vuex = Vuex;
 (window as any).VueRouter = VueRouter;
-(window as any)['VRouter'] = router;
+(window as any)['VRouter'] = router
 
 // plugin scripts must be loaded before app to use their routes
 const baseUrl = import.meta.env.VITE_BASE_REST_URL
@@ -44,5 +90,6 @@ createApp({
   .use(router)
   .use(store)
   .use(createPinia())
+  .component('font-awesome-icon', FontAwesomeIcon)
   .directive('date', dateFormatDirective)
   .mount('#app')

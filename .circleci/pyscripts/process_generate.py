@@ -111,7 +111,7 @@ for change in changed_files:
     elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
     elif "docs/" in change:
-        add_to_build_list("doc")
+        add_to_build_list("docs")
     elif "ui" in change:
         add_to_build_list("ui")
     else:
@@ -167,7 +167,7 @@ else:
     build_mappings = {
         "build-deploy": False,
         "coverage": False,
-        "doc": False,
+        "docs": False,
         "ui": False,
         "integration": False,
         "smoke": False,
@@ -222,6 +222,16 @@ if "trigger-build" in mappings:
         mappings.clear()
         What_to_build.clear()
         build_mappings["merge-foundation"] = True
+    elif branch_name in "master" and not build_trigger_override_found:
+        print("Execute workflow: master-branch")
+        print()
+        for item in build_mappings:
+            build_mappings[item] = False
+
+        # Clear the mappings
+        mappings.clear()
+        What_to_build.clear()
+        build_mappings["master-branch"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
         print("Executing workflow: build-deploy")
         print()
@@ -235,6 +245,9 @@ if "trigger-ui" in mappings:
 
 if "trigger-coverage" in mappings:
     build_mappings["coverage"] = mappings["trigger-coverage"]
+    mappings.clear()
+    What_to_build.clear()
+    git_keywords.clear()
 
 if "trigger-flaky-smoke" in mappings:
     if not build_mappings["smoke-flaky"]:
@@ -274,7 +287,7 @@ if (
 
 for keyword in git_keywords:
     if keyword in workflow_keywords:
-        if "doc" in keyword or "doc" in What_to_build:
+        if "docs" in keyword or "docs" in What_to_build:
             build_mappings["docs"] = True
         if "ui" in keyword or "ui" in What_to_build:
             build_mappings["ui"] = True
@@ -315,8 +328,13 @@ if "integration" in git_keywords or "Integration_tests" in What_to_build:
 if "build" in What_to_build and not build_mappings["experimental"]:
     build_mappings["build-deploy"] = True
 
-if "doc" in git_keywords or "docs" in git_keywords or "doc" in What_to_build:
-    build_mappings["doc"] = True
+if (
+    "doc" in git_keywords
+    or "docs" in git_keywords
+    or "doc" in What_to_build
+    or "docs" in What_to_build
+):
+    build_mappings["docs"] = True
 
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True

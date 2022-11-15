@@ -64,6 +64,8 @@ import org.slf4j.LoggerFactory;
  */
 public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
+
+    private String distPoller = "00000000-0000-0000-0000-000000000000";
 	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);
@@ -141,8 +143,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public Integer writeSnmpInterface(MockInterface iface) {
         Integer nextId = getNextSnmpInterfaceId();
         LOG.info("Inserting into snmpInterface {} {} {} {}", nextId, Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
-        Object[] values = { nextId, Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfAlias(), iface.getIfIndex() };
-        update("insert into snmpInterface (id, nodeID, snmpifAlias, snmpifDescr, snmpIfIndex) values (?, ?, ?, ?, ?);", values);
+        Object[] values = { nextId, Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfAlias(), iface.getIfIndex(), iface.getIfType(), "P" };
+        update("insert into snmpInterface (id, nodeID, snmpifAlias, snmpifDescr, snmpIfIndex, snmpiftype, snmppoll) values (?, ?, ?, ?, ?, ?, ?);", values);
         return nextId;
     }
 
@@ -283,7 +285,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
                 getServiceID(e.getService()),
-                e.getDistPoller() == null ? "00000000-0000-0000-0000-000000000000" : e.getDistPoller(),
+                e.getDistPoller() == null ? distPoller : e.getDistPoller(),
                 "Y",
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
@@ -488,5 +490,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
     protected Integer getNextId(String nxtIdStmt) {
         return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
+    }
+
+    public void setDistPoller(String distPoller) {
+        this.distPoller = distPoller;
     }
 }

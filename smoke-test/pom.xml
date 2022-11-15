@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>31.0.0-SNAPSHOT</version>
+  <version>31.0.1-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
@@ -13,13 +13,20 @@
     <camelVersion>2.19.1</camelVersion>
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
+    <groovyVersion>2.5.16</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.12.3</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.6</karafVersion>
-    <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.15.3</testcontainers.version>
+    <selenium.version>4.6.0</selenium.version>
+    <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
+         for the same version of selenium specified in selenium.version above.
+         https://github.com/seleniumhq-community/docker-seleniarm/releases -->
+    <seleniarm.version>4.6.0-20221104</seleniarm.version>
+    <testcontainers.version>1.17.5</testcontainers.version>
+    <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
+    <okhttpVersion>3.10.0</okhttpVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -68,6 +75,7 @@
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
             <skipTests>${skip.surefire.tests}</skipTests>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
@@ -76,7 +84,9 @@
           <version>${failsafeVersion}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
-            <systemPropertyVariables/>
+            <systemPropertyVariables>
+              <seleniarm.version>${seleniarm.version}</seleniarm.version>
+            </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
               Bamboo and Sonar tally the test results properly.
@@ -89,6 +99,7 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
+            <trimStackTrace>false</trimStackTrace>
 
             <argLine>${argLine}</argLine>
           </configuration>
@@ -332,6 +343,28 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty4Version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-xml</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-json</artifactId>
+        <version>${groovyVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -735,6 +768,13 @@
       <artifactId>jna</artifactId>
       <version>${jna.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- for FileEditorIT -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttpVersion}</version>
     </dependency>
 
   </dependencies>

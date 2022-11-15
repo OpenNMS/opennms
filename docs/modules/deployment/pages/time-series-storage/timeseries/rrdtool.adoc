@@ -20,7 +20,7 @@ sudo dnf config-manager --enable opennms-repo-stable-*
 sudo dnf -y install rrdtool jrrd2
 ----
 
-.Create a configuration file with the time series storage settings
+.Create a configuration file with the time series database settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/timeseries.properties
@@ -76,7 +76,7 @@ sudo yum-config-manager --enable opennms-repo-stable-*
 sudo yum -y install rrdtool jrrd2
 ----
 
-.Create a configuration file with the time series storage settings
+.Create a configuration file with the time series database settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/timeseries.properties
@@ -131,7 +131,7 @@ Debian/Ubuntu::
 apt -y install rrdtool jrrd2
 ----
 
-.Create a configuration file with the time series storage settings
+.Create a configuration file with the time series database settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/timeseries.properties
