@@ -1690,7 +1690,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
-    <jackson2Version>2.10.5</jackson2Version>
+    <jackson2Version>2.12.7</jackson2Version>
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
