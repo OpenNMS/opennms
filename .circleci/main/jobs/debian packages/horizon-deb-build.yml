@@ -21,6 +21,9 @@ jobs:
           name: download tarball dependency to opennms-full-assembly/target/
           command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="-core" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/opennms-full-assembly/target/"
       - run:
+          name: find tar file 
+          command: ls $(pwd)/opennms-full-assembly/target/
+      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
