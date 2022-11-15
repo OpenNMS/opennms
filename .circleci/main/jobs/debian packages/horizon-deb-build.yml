@@ -18,6 +18,9 @@ jobs:
             free -m -c 500 -s 30
       - download-download-artifacts
       - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
