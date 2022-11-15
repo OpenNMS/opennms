@@ -103,11 +103,10 @@ uninstall:
 
 clean:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker buildx rm $(DOCKERX_INSTANCE)
+	@docker buildx rm $(DOCKERX_INSTANCE) || :
+	@docker context rm "$(DOCKERX_INSTANCE)-context" || :
 
-clean-all:
-	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker buildx rm $(DOCKERX_INSTANCE) >/dev/null 2>&1 || :
+clean-all: clean
 	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.oci
 	@rm -rf tarball-root
