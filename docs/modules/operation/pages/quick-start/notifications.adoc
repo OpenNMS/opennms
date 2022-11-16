@@ -16,7 +16,7 @@ image::notifications/red-bell-notifications.png[red bell notifications,300]
 Follow these steps to enable notifications:
 
 . Log out of the `admin` account and log in as the user you created in <<quick-start/users.adoc, Step 1: First-Time Login>>.
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, click *On* beside Notification Status, and click *Update*.
 The red bell symbol in the top menu bar turns green, indicating that notifications are enabled globally.
 
