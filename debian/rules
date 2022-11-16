@@ -54,7 +54,7 @@ $(STAMP_BUILD):
 clean:
 	dh_testdir
 	dh_testroot
-	./compile.pl $(OPTS_PROFILES) $(OPTS_ASSEMBLIES) -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	#./compile.pl $(OPTS_PROFILES) $(OPTS_ASSEMBLIES) -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	dh_clean
 	rm -f $(STAMP_BUILD)
 
