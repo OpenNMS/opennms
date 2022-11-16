@@ -26,7 +26,7 @@ An event notification defines a destination path and message template for a spec
 It is possible to define multiple notifications for the same UEI to use different filters, destination paths, and message templates.
 Follow these steps to configure event notifications:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, click menu:Configure Notifications[Configure Event Notifications].
 A list of events that are configured for notifications is displayed.
 . Click *Add New Event Notification*, choose the UEI that will trigger a notification, and click *Next*.
