@@ -22,7 +22,7 @@ jobs:
           command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="-core" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/opennms-full-assembly/target/"
       - run:
           name: find tar file 
-          command: ls $(pwd)/opennms-full-assembly/target/
+          command: echo $(pwd) && tar -xvf $(pwd)/opennms-full-assembly/target/*.tar.gz
       - run:
           name: Build Debian Packages
           command: |
