@@ -16,7 +16,7 @@ This helps to keep track of who has performed tasks such as clearing alarms or c
 
 For the purpose of this Quick Start guide, create one new user account for yourself, assign it the Admin role, and configure your email address and any other relevant contact information:
 
-. Click the *Gear* symbol at the top-right of the screen.
+. Click the *gear* symbol at the top-right of the screen.
 . Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
 . On the Users and Groups screen, click *Configure Users*.
 . Click *Add New User*, specify a user ID and password, confirm the password, and click *OK*.
