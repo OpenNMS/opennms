@@ -174,7 +174,7 @@ To achieve this, use the `scvcli` command line utility to add the credentials, a
 [[ga-data-choices]]
 == First-time login and data choices
 
-After you start the {page-component-title} core services, access the web application at `\http://core-instance-ip:8980/opennms`.
+After you start the {page-component-title} core services, you can access the web application at `\http://core-instance-ip:8980/opennms`.
 The default user login is `admin` with the password `admin`.
 
 IMPORTANT: After you log in for the first time, immediately change the `admin` account's password to a secure one.
