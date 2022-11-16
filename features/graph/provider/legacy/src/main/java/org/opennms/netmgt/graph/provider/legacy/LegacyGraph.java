@@ -45,14 +45,10 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyGraph.class);
 
     public static GraphInfo getGraphInfo(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
         final TopologyProviderInfo delegateInfo = topoGraphProvider.getTopologyProviderInfo();
@@ -63,12 +59,11 @@ public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
     }
 
     public static LegacyGraph getLegacyGraphFromTopoGraphProvider(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
-        LegacyGraph graph = new LegacyGraph(getImmutableGraphFromTopoGraphProvider(topoGraphProvider).asGenericGraph());
-        LOG.info("getLegacyGraphFromTopoGraphProvider: GenericGraph id: {}, vertices:{}, edges:{}", graph.getNamespace(), graph.getVertexIds(),graph.getEdgeIds());
-        return graph;
+        return new LegacyGraph(getImmutableGraphFromTopoGraphProvider(topoGraphProvider).asGenericGraph());
     }
 
     public static ImmutableGraph<?,?> getImmutableGraphFromTopoGraphProvider(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
+        topoGraphProvider.refresh();
         final BackendGraph currentGraph = topoGraphProvider.getCurrentGraph();
         final GenericGraph.GenericGraphBuilder builder = GenericGraph.builder();
         builder.graphInfo(getGraphInfo(topoGraphProvider))
@@ -95,9 +90,7 @@ public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
                 .map(v -> new org.opennms.netmgt.graph.api.VertexRef(v.getNamespace(), v.getId()))
                 .collect(Collectors.toSet());
         builder.focus(new Focus(FocusStrategy.SELECTION, Lists.newArrayList(focus)));
-        GenericGraph graph = builder.build();
-        LOG.info("getImmutableGraphFromTopoGraphProvider: GenericGraph id: {}, vertices:{}, edges:{}", graph.getNamespace(), graph.getVertexIds(),graph.getEdgeIds());
-        return graph;
+        return builder.build();
     }
 
     public LegacyGraph(GenericGraph genericGraph) {

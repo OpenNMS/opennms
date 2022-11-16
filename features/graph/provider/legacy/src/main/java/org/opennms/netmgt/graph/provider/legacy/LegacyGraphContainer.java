@@ -36,18 +36,13 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LegacyGraphContainer implements ImmutableGraphContainer<LegacyGraph> {
     private final MetaTopologyProvider delegate;
     private final String id;
     private final String label;
     private final String description;
-
-
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyGraphContainer.class);
-
+    
     public LegacyGraphContainer(MetaTopologyProvider delegate, String id, String label, String description) {
         this.delegate = delegate;
         this.id = id;
@@ -57,28 +52,23 @@ public class LegacyGraphContainer implements ImmutableGraphContainer<LegacyGraph
 
     @Override
     public List<LegacyGraph> getGraphs() {
-        LOG.info("getGraphs: id: {}, size:{}", id, delegate.getGraphProviders().size());
         return delegate.getGraphProviders().stream().map(LegacyGraph::getLegacyGraphFromTopoGraphProvider).collect(Collectors.toList());
     }
 
     @Override
     public LegacyGraph getGraph(String namespace) {
-        LOG.info("getGraph: id: {}, namespace:{}", id, namespace);
         return LegacyGraph.getLegacyGraphFromTopoGraphProvider(delegate.getGraphProviderBy(namespace));
     }
 
     @Override
     public GenericGraphContainer asGenericGraphContainer() {
-        LOG.info("asGenericGraphContainer: id: {}, start", id);
         GenericGraphContainer.GenericGraphContainerBuilder builder = GenericGraphContainer.builder()
             .id(id)
             .label(label)
             .description(description);
         for (LegacyGraph graph: getGraphs()) {
-            LOG.info("asGenericGraphContainer: LegacyGraph id: {}, vertices:{}, edges:{}", graph.getNamespace(), graph.getVertexIds(),graph.getEdgeIds());
             builder.addGraph(graph.asGenericGraph());
         }
-        LOG.info("asGenericGraphContainer: id: {}, start", id);
         return builder.build();
     }
 
@@ -89,7 +79,6 @@ public class LegacyGraphContainer implements ImmutableGraphContainer<LegacyGraph
 
     @Override
     public List<String> getNamespaces() {
-        LOG.info("getNamespaces: id: {}", id);
         return delegate.getGraphProviders().stream().map(GraphProvider::getNamespace).collect(Collectors.toList());
     }
 
@@ -105,19 +94,16 @@ public class LegacyGraphContainer implements ImmutableGraphContainer<LegacyGraph
 
     @Override
     public GraphInfo getGraphInfo(String namespace) {
-        LOG.info("getGraphInfo: id: {}, namespace: {}", id, namespace);
         return LegacyGraph.getGraphInfo(delegate.getGraphProviderBy(namespace));
     }
 
     @Override
     public GraphInfo getPrimaryGraphInfo() {
-        LOG.info("getPrimaryGraphInfo: id: {}", id);
         return LegacyGraph.getGraphInfo(delegate.getDefaultGraphProvider());
     }
 
     @Override
     public List<GraphInfo> getGraphInfos() {
-        LOG.info("getGraphInfos: id: {}", id);
         return delegate.getGraphProviders().stream().map(LegacyGraph::getGraphInfo).collect(Collectors.toList());
     }
 }
