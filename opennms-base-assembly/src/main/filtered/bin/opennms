@@ -1027,7 +1027,8 @@ if [ "$myuser" != "$RUNAS" ]; then
 		exec "${_cmd[@]}"
 	fi
 	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
-    echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
+	# shellcheck disable=SC2145
+	echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
 	echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
 	echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
 	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2

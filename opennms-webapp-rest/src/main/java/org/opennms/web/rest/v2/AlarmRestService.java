@@ -257,6 +257,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
         if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
+        if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.updateStickyMemo(alarmId, body, user);
         return Response.noContent().build();
     }
@@ -269,6 +270,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         SecurityHelper.assertUserEditCredentials(securityContext, user);
         final String body = params.getFirst("body");
         if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
+        if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.updateReductionKeyMemo(alarmId, body, user);
         return Response.noContent().build();
     }
@@ -278,6 +280,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.removeStickyMemo(alarmId);
         return Response.noContent().build();
     }
@@ -287,6 +290,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
         SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        if (m_repository.getAlarm(alarmId) == null) throw getException(Status.NOT_FOUND, "Alarm not found.");
         m_repository.removeReductionKeyMemo(alarmId);
         return Response.noContent().build();
     }

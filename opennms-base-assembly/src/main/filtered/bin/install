@@ -2,9 +2,17 @@
 
 INCOMING_ARGS=("$@")
 
-# shellcheck disable=SC2154
-OPENNMS_HOME="${install.dir}"
-OPENNMS_BINDIR="${install.bin.dir}"
+# shellcheck disable=SC2016
+if [ -d '${install.dir}' ]; then
+    # shellcheck disable=SC2153
+    OPENNMS_HOME='${install.dir}'
+fi
+
+OPENNMS_BINDIR="${OPENNMS_HOME}/bin"
+if [ -d '${install.bin.dir}' ]; then
+    # shellcheck disable=SC2153
+    OPENNMS_BINDIR='${install.bin.dir}'
+fi
 
 [ -z "$RUNAS" ] && RUNAS=opennms
 

@@ -32,7 +32,7 @@ if (!fs.existsSync(touchfile)
 if (doUpdate) {
   console.info('node_modules is potentially out of date compared to package-lock.json');
 
-  const child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), [ '--prefer-offline', '--no-progress', 'ci' ]);
+  const child = child_process.execFile(path.join(__dirname, 'target', 'node', 'npm'), [ '--prefer-offline', 'ci' ]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
   child.on('error', (err) => {
