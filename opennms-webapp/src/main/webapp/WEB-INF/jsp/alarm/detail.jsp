@@ -221,7 +221,7 @@
         <th class="col-md-1">Reduction&nbsp;Key</th>
         <td class="col-md-11" colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
-            <%=alarm.getReductionKey()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getReductionKey())%>
             <% } else {%>
             &nbsp;
             <% }%>
