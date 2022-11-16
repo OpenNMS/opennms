@@ -74,8 +74,11 @@ If a user changes their email address, for example, you will need to update it i
 One-off email addresses are meant for situations where a vendor or other external party is assisting with troubleshooting in the short-term.
 
 When a step targets one or more groups, you may specify a delay for each group.
-The default delay is zero seconds; this means all group members are notified at the same time.
+The default delay is zero seconds; this means that all group members are notified at the same time.
 If you set a longer delay, group members will be notified in alphabetical order, based on their usernames.
+
+For example, defining a five minute delay will mean that when a notification is generated, the first member of the group is notified immediately.
+Subsequent members are then notified in five-minute increments, from the top of the list of group members to the bottom.
 
 IMPORTANT: Avoid using the same name for a group and a user.
 Destination path configuration settings do not distinguish between users and groups at the step level.

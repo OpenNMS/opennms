@@ -3,6 +3,44 @@
 
 = Changelog
 
+[[releasenotes-changelog-31.0.1]]
+
+== Release 31.0.1
+
+Release 31.0.1 is a small out-of-band release to address some issues found during 31.0.0 testing.
+
+It contains a few small changes including a fix for unusually large docker images and some other small bug fixes,
+as well as some updates to the new Quick Start Guide and a fix to the installation instructions for the Cortex plugin.
+
+Please note there is a known issue that only one plugin entry shows up in the navavigation bar's "Plugins" menu, even if multiple plugins are installed.
+Only ALEC users who install the cloud connector are impacted.
+ALEC users therefore should avoid the Cloud Services Connector plugin until a new release fixes the underlying bug.
+
+The codename for Horizon 31.0.1 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
+
+===== Bug
+
+* OpenAPI Validation Errors (Issue http://issues.opennms.org/browse/NMS-14408[NMS-14408])
+* Snmp Polling Status shows Polled even though it's actually not (Issue http://issues.opennms.org/browse/NMS-14653[NMS-14653])
+* Duplicated message when alarm is not found (Issue http://issues.opennms.org/browse/NMS-14686[NMS-14686])
+* Errors while installing opennms-timeseries-api from karaf shell (Issue http://issues.opennms.org/browse/NMS-14874[NMS-14874])
+* When you delete/put memo or journal it always returns 204 even if alarm not exists (Issue http://issues.opennms.org/browse/NMS-14901[NMS-14901])
+* NoSuchElementException errors thrown by EnhancedLinkd  (Issue http://issues.opennms.org/browse/NMS-14912[NMS-14912])
+* Docs for Cortex plugin are incorrect (Issue http://issues.opennms.org/browse/NMS-14945[NMS-14945])
+* Horizon/Sentinel docker image size ballooned (Issue http://issues.opennms.org/browse/NMS-15006[NMS-15006])
+* HZN 31: Ubuntu installation issues (Issue http://issues.opennms.org/browse/NMS-15007[NMS-15007])
+
+===== Story
+
+* Quick Start: Review entire quick start section when complete. (Issue http://issues.opennms.org/browse/NMS-14721[NMS-14721])
+* New UI Preview: Ensure ALEC UI works (Issue http://issues.opennms.org/browse/NMS-14891[NMS-14891])
+
+===== Task
+
+* Update Quick Start login chapter (Issue http://issues.opennms.org/browse/NMS-14984[NMS-14984])
+* Update notifications.adoc in Quick Start section (Issue http://issues.opennms.org/browse/NMS-14985[NMS-14985])
+* Update Quick Start notifications configuration chapter (Issue http://issues.opennms.org/browse/NMS-14999[NMS-14999])
+
 [[releasenotes-changelog-31.0.0]]
 
 == Release 31.0.0
