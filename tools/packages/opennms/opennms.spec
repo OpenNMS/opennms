@@ -728,7 +728,7 @@ find %{buildroot}%{jettydir} ! -type d | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	sort >> %{_tmppath}/files.jetty
+	sort > %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/hawtio' | \
