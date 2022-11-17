@@ -249,7 +249,7 @@
         <th class="col-2">Reduction&nbsp;Key</th>
         <td class="col-10" colspan="3">
             <% if (alarm.getReductionKey() != null) {%>
-            <%=alarm.getReductionKey()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getReductionKey())%>
             <% } else {%>
             &nbsp;
             <% }%>
