@@ -7,7 +7,7 @@ Directed discovery is the process of manually adding nodes to {page-component-ti
 NOTE: Two other methods of manually adding nodes (quick adding a node and manually adding an interface) are in the process of being deprecated.
 We do not recommend using these features.
 
-Make sure you complete the tasks in xref:operation:quick-start/provisioning/inventory.adoc[Step 3: Provision Inventory] before adding nodes.
+Make sure you complete the tasks in xref:operation:quick-start/inventory.adoc[Step 3: Provision Inventory] before adding nodes.
 
 [[requisition-add-nodes]]
 == Add nodes through the requisition UI
