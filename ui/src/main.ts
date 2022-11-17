@@ -1,7 +1,7 @@
 import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
 import App from './App.vue'
-import router from './router'
+import router, { isLegacyPlugin } from './router'
 import store from './store'
 import VueDiff from 'vue-diff'
 import { createPinia } from 'pinia'
@@ -80,26 +80,31 @@ const baseUrl = import.meta.env.VITE_BASE_REST_URL
 const plugins = await API.getPlugins()
 
 for (const plugin of plugins) {
+  if (!isLegacyPlugin(plugin)) {
+    // add this plugin to routes
+    // - route 'name' is 'Plugin-extensionId'. Plugins should add their routes as children of this named route
+    // - route 'path' has the Plugin extensionId as part of the segment rather than as a parameter,
+    //   so it will only match the uniquely-named plugin
+    // Legacy plugins will add their routes to the 'Plugin' route, but only one legacy plugin
+    // will work at a time
+    const routeRecord : RouteRecordRaw =
+      {
+        path: `/plugins/${plugin.extensionId}/:resourceRootPath/:moduleFileName`,
+        name: `Plugin-${plugin.extensionId}`,
+        props: route => ({
+          extensionId: plugin.extensionId,
+          resourceRootPath: route.params.resourceRootPath,
+          moduleFileName: route.params.moduleFileName
+        }),
+        component: () => import('@/containers/Plugin.vue')
+      }
+
+    router.addRoute(routeRecord)
+  } else {
+    console.warn(`Warning: plugin '${plugin.menuEntry}' is a legacy plugin. Plugin will not work if any other legacy UI plugins are installed.`)
+  }
+
   const js = getJSPath(baseUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
-
-  // add this plugin to routes
-  // - route 'name' is 'Plugin-pluginName'. Plugins must add their routes as children of this named route
-  // - route 'path' has the Plugin extensionId as part of the segment rather than as a parameter,
-  //   so it will only match the uniquely-named plugin
-  const routeRecord : RouteRecordRaw =
-    {
-      path: `/plugins/${plugin.extensionId}/:resourceRootPath/:moduleFileName`,
-      name: `Plugin-${plugin.extensionId}`,
-      props: route => ({
-        extensionId: plugin.extensionId,
-        resourceRootPath: route.params.resourceRootPath,
-        moduleFileName: route.params.moduleFileName
-      }),
-      component: () => import('@/containers/Plugin.vue')
-    }
-
-  router.addRoute(routeRecord)
-
   await externalComponent(js)
 }
 

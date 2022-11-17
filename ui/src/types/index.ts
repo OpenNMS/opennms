@@ -461,6 +461,7 @@ export interface Expression {
 }
 
 export interface Plugin {
+  extensionClass?: string
   extensionId: string
   menuEntry: string
   moduleFileName: string
