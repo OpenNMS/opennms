@@ -19,7 +19,7 @@ jobs:
       - download-download-artifacts
       - run:
           name: download tarball dependency to opennms-full-assembly/target/
-          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/opennms-full-assembly/target/"
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="opennms-32.0.0-SNAPSHOT.tar.gz" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/opennms-full-assembly/target/"
       - run:
           name: find tar file 
           command: mkdir $(pwd)/debian/temp && tar -xvf $(pwd)/opennms-full-assembly/target/*.tar.gz -C $(pwd)/debian/temp && ls $(pwd)/debian/temp
