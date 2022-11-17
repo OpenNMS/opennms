@@ -22,9 +22,9 @@ This provides great flexibility for determining service levels on a given device
 ----
 <1> Unique name of the polling package.
 <2> Base filter on IP address, categories, or asset attributes of nodes based on xref:reference:configuration/filters/rule-formats.adoc[filter rules].
-    The filter is evaluated first and is required.
-    This package is used for all IP interfaces that do not have 0.0.0.0 as an assigned IP address and is required.
-<3> Allow to specify if the configuration of services is applied on a range of IP interfaces (IPv4 or IPv6).
+The filter is evaluated first and is required.
+This package is used for all IP interfaces that do not have `0.0.0.0` as an assigned IP address and is required.
+<3> Allows you to specify if the configuration of services is applied on a range of IP interfaces (IPv4 or IPv6).
 
 Instead of using `include-range`, you can add one or more specific IP interfaces:
 
@@ -49,7 +49,7 @@ The definition of polling packages lets you configure similar services with diff
 All the response time measurements are persisted in RRD files and require a definition.
 Each polling package contains an RRD definition.
 
-.RRD configuration for polling package, example 1
+.RRD configuration for polling package
 [source, xml]
 ----
 <package name="example1">
@@ -65,7 +65,7 @@ Each polling package contains an RRD definition.
 </rrd>
 ----
 <1> Polling interval for all services in this polling package is reflected in the step size of 300 seconds.
-    All services in this package must be polled on a five-minute interval, otherwise response time measurements are not persisted correctly.
+All services in this package must be polled on a five-minute interval, otherwise response time measurements are not persisted correctly.
 <2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
 <3> 12 steps average persistence 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
 <4> 288 steps average persistence 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
@@ -73,7 +73,7 @@ Each polling package contains an RRD definition.
 <6> 288 steps minimum from 24 h persisted for 366 d.
 
 WARNING: The RRD configuration and the service polling interval must be aligned.
-         In other cases, the persisted response time data is not correctly displayed in the response time graph.
+In other cases, the persisted response time data is not correctly displayed in the response time graph.
 
 IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
 
@@ -102,7 +102,6 @@ The order that polling packages are defined in `poller-configuration.xml` is imp
 
 The following shows which configuration is applied for a specific service:
 
-.Overwriting
 [source, xml]
 ----
 <package name="less-specific">
@@ -169,7 +168,7 @@ image::service-assurance/03_polling-package.png[]
 [[ga-pollerd-packages-patterns]]
 == Service patterns
 
-Usually, the poller that monitors a service is found by matching the poller's name with the service name.
+Usually, the poller that monitors a service is found by matching its with the service name.
 There is an option for you to match a poller if you specify an additional `pattern` element.
 If so, the poller is used for all services matching the regex pattern.
 
@@ -179,7 +178,7 @@ Note that the regex must be escaped or wrapped in a CDATA tag inside the configu
 
 If a poller is matched using its pattern, the parts of the service name that match the capture groups of the pattern are available as parameters to the <<deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Metadata DSL>> using the context `pattern` and the capture group name as key.
 
-Examples:
+=== Examples
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
 Matches all services with names starting with `HTTP-` followed by a host name.
@@ -194,9 +193,10 @@ You can make services identifiable by specifying a distinct service name for eac
 Common use cases for such services are HTTP virtual hosts where multiple web applications run on the same web server, or BGP session monitoring where each router has multiple neighbors.
 
 [[ga-pollerd-packages-test-service-manually]]
-== Test services manually
+== Manually test services
 
 To troubleshoot, you can run a test via the Karaf shell:
+
 [source, console]
 ----
 ssh -p 8101 admin@localhost
@@ -242,7 +242,7 @@ OPTIONS
 
 ----
 
-The following example runs the ICMP monitor on a specific IP interface.
+The following example runs the ICMP monitor on a specific IP interface:
 
 .Run ICMP monitor configuration defined in specific polling package
 [source, console]
@@ -251,7 +251,7 @@ opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
 
 The output is verbose, which lets you debug monitor configurations.
-Important output lines are shown as the following:
+Important output lines are shown as follows:
 
 .Important output testing a service on the CLI
 [source, console]
@@ -278,8 +278,8 @@ Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMon
 
 == Test filters on Karaf Shell
 
-Filters are ubiquitous in {page-component-title} configurations with <filter> syntax.
-Use this Karaf shell to verify filters.
+Filters are ubiquitous in {page-component-title} configurations with `<filter>` syntax.
+Use the Karaf shell to verify filters.
 For more information, see xref:reference:configuration/filters/filters.adoc[Filters].
 
 [source, console]
@@ -301,24 +301,32 @@ ARGUMENTS
         filterRule
                 A filter rule
 ----
+
 For example, run a filter rule that matches a location:
+
 [source, console]
 ----
 opennms:filter  "location='MINION'"
 ----
+
 Output displays as follows:
+
 [source, console]
 ----
 nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
 	IpAddresses:
 		127.0.0.1
 ----
+
 Another example: Run a filter that matches a node location and for a given IP address range.
+
 [source, console]
 ----
 opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 ----
+
 Output displays as follows:
+
 [source, console]
 ----
 nodeId=3 nodeLabel=label1 location=Default
@@ -344,5 +352,5 @@ NOTE: Displayed node information includes nodeId, nodeLabel, location, and optio
 
 == Monitor Microsoft AD services
 
-To monitor Microsoft AD services you must edit your `$\{OPENNMS_HOME}/etc/poller-configuration.xml` file.
+To monitor Microsoft AD services you must edit `$\{OPENNMS_HOME}/etc/poller-configuration.xml`.
 See the https://opennms.discourse.group/t/monitor-microsoft-ad-services/1051[Monitor Microsoft AD Services] article on Discourse for details.

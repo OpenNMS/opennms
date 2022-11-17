@@ -1,7 +1,7 @@
 
-= Threshold Creation
+= Thresholding Tasks
 
-For information on how to create a basic or expression-based threshold, see <<quick-start/thresholding.adoc#setup-threshold, Set up a threshold>> in the Quick Start section.
+For information on how to create a basic or expression-based threshold, see <<quick-start/thresholding.adoc#setup-threshold, Set up a Threshold>> in the Quick Start section.
 This section describes related thresholding tasks.
 
 [[ga-threshold-metadata]]
@@ -9,7 +9,7 @@ This section describes related thresholding tasks.
 
 Metadata in expression-based thresholds can streamline threshold creation.
 The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
-A single expression can behave differently based on the node it is tested against.
+A single expression can behave differently based on the node that it is tested against.
 
 During evaluation of an expression, the following scopes are available:
 
@@ -17,18 +17,17 @@ During evaluation of an expression, the following scopes are available:
 * Interface metadata
 * Service metadata
 
-Metadata is also supported in value, re-arm, and trigger fields for Single-DS and expression-based thresholds.
+Metadata is also supported in the value, re-arm, and trigger fields for Single-DS and expression-based thresholds.
 For more information on metadata and how to define it, see <<deep-dive/meta-data.adoc#metadata-overview, Metadata>>.
 
 === Example
 
 This procedure uses metadata to trigger an event when the number of logged-in users exceeds one.
-
 The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
 
-Before using metadata in a threshold, you need to add the metadata context pair—in this case, a requisition key called `userLimit` (see <<deep-dive/meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
+Before using metadata in a threshold, you need to add the metadata context pair—-in this case, a requisition key called `userLimit` (see <<deep-dive/meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Performance Measurement, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Expression-based Threshold*.
@@ -52,14 +51,14 @@ image::metadata/meta-expression2.png[]
 [[metric-collect]]
 == Confirm that you are collecting metrics
 
-Before creating a threshold, you should make sure you are collecting the metric against which you want to threshold:
+Before creating a threshold, you should make sure that you are collecting the metric against which you want to threshold:
 
 . Choose menu:Reports[Resource Graphs].
 . Select one of the listed resources.
 . Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll to find the graph for the metric you want to threshold.
 +
-You can click the *Binoculars* symbol to display only that graph.
+You can click the *binoculars* symbol to display only that graph.
 
 [[datasource-determine]]
 == Determine the data source
@@ -79,4 +78,3 @@ image::thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
 . Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
-

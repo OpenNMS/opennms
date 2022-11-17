@@ -28,7 +28,7 @@ To create a new user account, follow these steps:
 WARNING: You cannot use angle brackets (`<>`), single (`'`) and double quotation marks (`"`), or the ampersand symbol (`&`) in a username.
 
 . (Optional) Add user information in the appropriate fields.
-. (Optional) Assign <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
+. (Optional) <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign user permissions>>.
 +
 NOTE: By default, a new user has permissions to acknowledge and work with alarms and notifications.
 They cannot access the *Configure OpenNMS* administration menu.
