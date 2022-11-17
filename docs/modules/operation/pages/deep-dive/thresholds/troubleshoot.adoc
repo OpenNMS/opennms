@@ -2,7 +2,7 @@
 [[troubleshoot-thresholds]]
 = Troubleshoot and Manage Thresholds
 
-This section includes shell commands which can help to debug and manage thresholding.
+This section includes shell commands that can help to debug and manage thresholding.
 
 == Enumerate persisted threshold states
 

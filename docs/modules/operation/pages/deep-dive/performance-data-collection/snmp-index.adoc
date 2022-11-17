@@ -3,16 +3,16 @@
 = Create a Custom Resource Type
 
 This section describes how to create a custom resource type to collect SNMP data from tables with arbitrary indexes.
-Whether it is a MIB-2 `host-resources` storage table, a Brocade fibre channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
+Whether it is a MIB-2 `host-resources` storage table, a Brocade Fibre Channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
 
 [[resourcetype-def]]
 == Create a resourceType definition
 
-The process for creating a custom resourceType definition is the same as configuring your data collection settings, with only a few small differences.
+The process to create a custom resourceType definition is the same as configuring your data collection settings, with only a few small differences.
 First, you must make sure that a resourceType element exists in `datacollection-config.xml` to specify the custom resource type.
 This element needs to be placed before the "groups" element.
 
-For the MIB-2 host resources storage table, OpenNMS uses the following definition:
+For the MIB-2 host resources storage table, {page-component-title} uses the following definition:
 
 .resourceType definition for the MIB-2 host resources storage table
 [source, xml]
@@ -31,7 +31,7 @@ The name attribute ("hrStorageIndex" in the example above) is not magical in any
 To ensure that all resource type data stays separate, all RRD data goes into a directory based on this attribute.
 For example, for node 1, all data for the example resource type goes into `$\{OPENNMS_HOME}/share/rrd/snmp/1/hrStorageIndex`.
 
-The length of the index does not matter; this facility should work to collect from multiply-indexed tables such as `tcpConnTable`.
+The length of the index does not matter; this facility should work to collect from multiply indexed tables such as `tcpConnTable`.
 
 === Label attribute
 
@@ -47,7 +47,7 @@ The classes in the example above are the usual ones, but, for more flexibility, 
 
 You can create the `group` and `mibObj` elements as you normally would, but with two key differences:
 
-* Set the `ifType` attribute for the group element to "all."
+* Set the `ifType` attribute for the group element to "all".
 Without this, the data will be incorrectly assumed to be node-level data (not indexed).
 * Set the `instance` attribute on the `mibObj` elements to be the resource type's name.
 In the example above, this would be `hrStorageIndex`.

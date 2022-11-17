@@ -2,7 +2,7 @@
 [[resource-types]]
 = Resource Types
 
-Resource types are used to group sets of performance data measurements for persisting, indexing, and display in the web UI.
+{page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and display in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 
 There are two labels for a resource type.
@@ -13,7 +13,7 @@ There are two types of strategy definitions for resource types: the persistence 
 The persistence selector strategy filters the group indexes down to a subset for storage on disk.
 The storage strategy converts an index into a resource path label for persistence.
 
-There are two special resource types that do not have a `resource-type` definition: `node` and `ifIndex`.
+There are two resource types that do not have a `resource-type` definition: `node` and `ifIndex`.
 
 You can define resource types by placing files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`.
 The latter file path is specific to SNMP.
@@ -36,7 +36,7 @@ The latter file path is specific to SNMP.
 
 == Persistence selector strategies
 
-The following persistence selector strategies can be configured to determine how performance metrics will be archived:
+You can configure the following persistence selector strategies to specify how to archive performance metrics:
 
 [options="header", cols="2,2"]
 |===
@@ -54,7 +54,7 @@ On evaluation, this expression should return either `true` (persist index to sto
 
 == Storage strategies
 
-The following storage strategies can be configured to determine how performance metrics will be stored in the long-term:
+You can configure the following storage strategies to specify how to store performance metrics in the long-term:
 
 [options="header", cols="2,2"]
 |===
@@ -149,7 +149,7 @@ For example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_l
 === HostFileSystemStorageStrategy
 
 The `HostFileSystemStorageStrategy` class takes no parameters and is marked as deprecated.
-It should be replaced with the following definition:
+You should replace it with the following definition:
 
 .SiblingColumnStorageStrategy class definition
 [source, xml]

@@ -2,15 +2,6 @@
 = Beyond the Quick Start Guide
 
 After you have finished following the steps in the Quick Start guide, your {page-component-title} instance should be set up and monitoring your network.
-You should now be able to do the following:
-
-* Create and configure new user accounts.
-* Provision your network inventory.
-* Customize performance data collection settings.
-* Create and manage thresholds.
-* Explore service availability stats.
-* Configure and manage notifications.
-* Visualize your data.
 
 Of course, there is still much more that you can do to customize {page-component-title} to suit your needs.
 You can explore the Deep Dive section to learn more.
@@ -20,8 +11,8 @@ The following sections include suggested topics that supplement the Quick Start 
 == User management
 
 We covered creating and setting up an admin user account in xref:operation:quick-start/users.adoc[Step 1: First-Time Login].
-You may need to create and set up additional user accounts with different permissions, though, as your monitored network grows.
-These topics expand on those discussed in the Quick Start guide:
+You may want to create and set up additional user accounts with different permissions.
+These topics expand on those covered in the Quick Start guide:
 
 * xref:operation:deep-dive/user-management/user-config.adoc[Create users] and xref:operation:deep-dive/user-management/security-roles.adoc[assign permissions].
 * xref:operation:deep-dive/user-management/user-groups.adoc[Create and maintain user groups].
@@ -30,7 +21,7 @@ These topics expand on those discussed in the Quick Start guide:
 == Provision inventory
 
 We covered initial inventory provisioning in xref:operation:quick-start/inventory.adoc[Step 3: Provision Inventory].
-As your monitored network grows, you may need to provision new nodes and iterate on the work done in the Quick Start guide.
+You may want to provision new nodes and iterate on the work that you did in the Quick Start guide.
 These topics serve as starting points for more information:
 
 * xref:operation:deep-dive/provisioning/auto-discovery.adoc[Set up auto discovery].
@@ -40,7 +31,7 @@ These topics serve as starting points for more information:
 == Performance management
 
 In xref:operation:quick-start/performance-data.adoc[Step 4: Set Up Performance Data Collection], we covered how to set up your {page-component-title} environment for basic performance data collection.
-As you use OpenNMS more, though, you may want to collect more data--this will let you better understand what is happening in your network and create more representative visualizations.
+You may want to collect more data to help you better understand what is happening in your network and create more representative visualizations.
 You can look through these topics to learn more:
 
 * xref:operation:deep-dive/performance-data-collection/data-types.adoc[Learn about data types].

@@ -25,7 +25,7 @@ To create a new user account, follow these steps:
 . Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 . Click *Add New User* and specify a username and password, confirm the password, and click *OK*.
 +
-WARNING: You cannot use angle brackets (`<>`), single (`'`) and double quotation marks (`"`), or the ampersand symbol (`&`) in a username.
+NOTE: You cannot use angle brackets (`<>`), single (`'`) and double quotation marks (`"`), or the ampersand symbol (`&`) in a username.
 
 . (Optional) Add user information in the appropriate fields.
 . (Optional) <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign user permissions>>.

@@ -19,7 +19,7 @@ To configure discovery for a requisition, follow these steps:
 +
 NOTE: To configure a discovery scan to run only once, click *Run Single Discovery Scan* instead, and configure it as appropriate.
 
-. Under General Settings, you can either set your own scheduling options (sleep time, retries, timeout, and so on), or you can choose to continue with the default settings.
+. Under General Settings, you can either set your own scheduling options (sleep time, retries, timeout, and so on), or continue with the default settings.
 . Under Specific Addresses, click *Add New* to add an IP address for discovery.
 ** Type the target IP address, the timeout, and the maximum number of retries in the appropriate boxes.
 ** Choose a requisition from the *Foreign Source* list.
@@ -140,12 +140,12 @@ This delay allows {page-component-title} to fully start before generating new ev
 
 | location
 | Default
-| Monitoring location where the discovery batch will be run.
-This is only used at least one Minion has been deployed.
+| Monitoring location where the discovery batch will run.
+This is used only when at least one Minion has been deployed.
 
 | chunk-size
 | 100
-| Defines the number of IP addresses to be delegated to each Minion for scanning, when using a monitoring location.
+| Defines the number of IP addresses to delegate to each Minion for scanning, when using a monitoring location.
 |===
 
 .Discovery range configuration parameters
@@ -174,7 +174,7 @@ May be repeated multiple times. +
 ----
 
 | exclude-range
-| Specify a range of IP address to exclude from discovery. +
+| Specify a range of IP addresses to exclude from discovery. +
 [source, xml]
 ----
 <exclude-range>
@@ -186,7 +186,7 @@ May be repeated multiple times. +
 NOTE: The `exclude-range` tag will override addresses only in an `include-range`.
 It will not override specific IP addresses or addresses included in a file.
 There is no "specific" version of the exclude tag.
-To exclude a specific IP address, use an `exclude-range` where the beginning and ending IP addresses are the same.
+To exclude a specific IP address, use an `exclude-range` where the beginning and ending IP address is the same.
 
 | include-url
 | Specify the full path to a text file containing one IP address per line to include in discovery.

@@ -5,7 +5,7 @@
 Groups in {page-component-title} are collections of users.
 They may be used to organize users, such as in the case of an instance with many users or permissions sets.
 
-Groups can be configured to receive notifications.
+You can configure groups to receive notifications.
 This is often a more convenient way to maintain notification schedules, rather than configuring them to be sent to individual users.
 Sending notifications to groups lets you build more complex notification workflows, and makes it easier to manage recipients.
 
@@ -19,7 +19,7 @@ To create a group of users, follow these steps:
 . Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Groups].
 . Click *Add New Group* and specify the its name and description.
 +
-WARNING: You cannot use angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, or the ampersand symbol (`&`) in a group name.
+NOTE: You cannot use angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, or the ampersand symbol (`&`) in a group name.
 
 . Add a user to the group by selecting them from the Available Users list and clicking *>>* to move them to the Currently in Group list.
 . (Optional) Assign responsibility categories (Routers, Switches, Servers, and so on).
@@ -31,7 +31,7 @@ Notifications are sent to users in order from the top of the group membership li
 
 === Modify group membership
 
-Users may need to be added or removed from groups as team membership changes.
+You may need to add or remove users from groups as team membership changes.
 To modify the users in a group, follow these steps:
 
 . Log in as a user with admin permissions.

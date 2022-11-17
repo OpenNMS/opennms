@@ -168,7 +168,7 @@ image::service-assurance/03_polling-package.png[]
 [[ga-pollerd-packages-patterns]]
 == Service patterns
 
-Usually, the poller that monitors a service is found by matching its with the service name.
+Usually, the poller that monitors a service is found by matching its name with the service name.
 There is an option for you to match a poller if you specify an additional `pattern` element.
 If so, the poller is used for all services matching the regex pattern.
 
@@ -251,7 +251,7 @@ opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
 
 The output is verbose, which lets you debug monitor configurations.
-Important output lines are shown as follows:
+Important output lines:
 
 .Important output testing a service on the CLI
 [source, console]
