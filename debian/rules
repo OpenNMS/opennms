@@ -81,8 +81,9 @@ install: build
 	install -d -m 755 debian/opennms-plugin-northbounder-jms/etc/opennms
 	install -d -m 755 debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine
 	find . -name "opennms-alarm-northbounder-jms-*.jar"
-	mv debian/temp/lib/opennms-alarm-northbounder-jms-*.jar                                    debian/opennms-plugin-northbounder-jms/usr/share/java/opennms/
-	mv debian/temp/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
+	find . -name "jms-northbounder-configuration.xml"
+	mv opennms-alarms/jms-northbounder/target/opennms-alarm-northbounder-jms-*.jar debian/opennms-plugin-northbounder-jms/usr/share/java/opennms/
+	mv debian/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jms-northbounder-configuration.xml   debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine/
 	sed -e 's,@PACKAGE@,opennms-plugin-northbounder-jms,g' debian/package-permissions.sh > debian/opennms-plugin-northbounder-jms.postinst
 	
