@@ -1,4 +1,5 @@
 import { createApp, h } from 'vue'
+import { RouteRecordRaw } from 'vue-router'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -80,6 +81,25 @@ const plugins = await API.getPlugins()
 
 for (const plugin of plugins) {
   const js = getJSPath(baseUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
+
+  // add this plugin to routes
+  // - route 'name' is 'Plugin-pluginName'. Plugins must add their routes as children of this named route
+  // - route 'path' has the Plugin extensionId as part of the segment rather than as a parameter,
+  //   so it will only match the uniquely-named plugin
+  const routeRecord : RouteRecordRaw =
+    {
+      path: `/plugins/${plugin.extensionId}/:resourceRootPath/:moduleFileName`,
+      name: `Plugin-${plugin.extensionId}`,
+      props: route => ({
+        extensionId: plugin.extensionId,
+        resourceRootPath: route.params.resourceRootPath,
+        moduleFileName: route.params.moduleFileName
+      }),
+      component: () => import('@/containers/Plugin.vue')
+    }
+
+  router.addRoute(routeRecord)
+
   await externalComponent(js)
 }
 

@@ -1,10 +1,11 @@
 const externalComponent = (url: string) => {
   try {
+    // this is the extensionId part of the url
     const name = (
       url
         .split('/')
-        .reverse()[0]
-        .match(/^(.*?)\.es/) as any[]
+        .reverse()[1]
+        .match(/^([^?]+)/) as any[]
     )[1]
 
     if (window[name]) {

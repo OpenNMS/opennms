@@ -21,12 +21,6 @@ const router = createRouter({
       component: Home
     },
     {
-      path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
-      name: 'Plugin',
-      props: true,
-      component: () => import('@/containers/Plugin.vue')
-    },
-    {
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor,
