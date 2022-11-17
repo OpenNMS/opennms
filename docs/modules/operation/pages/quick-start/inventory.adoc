@@ -3,27 +3,14 @@
 = Step 3: Provision Inventory
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) that you want to monitor.
+The default configuration also enables self-monitoring of the OpenNMS service, and discovers a single node with the interface `127.0.0.0` (see xref:deployment:core/getting-started.adoc#first-monitored-node[First monitored node]).
 
-{page-component-title} has three methods of provisioning:
-
-* xref:deep-dive/provisioning/auto-discovery.adoc[] (automatically add nodes).
-* xref:deep-dive/provisioning/directed-discovery.adoc[] (manually add nodes).
-* xref:development:rest/rest-api.adoc#rest-api[Asset import] through the RestAPI.
-
-Auto discovery is useful if you do not have a "source of truth" for your network inventory.
-Directed discovery is effective if you know your inventory, particularly if you have a smaller network (for example, 100–200 nodes).
+{page-component-title} has three methods of provisioning your network's inventory: xref:deep-dive/provisioning/auto-discovery.adoc[automatic discovery], xref:deep-dive/provisioning/directed-discovery.adoc[directed discovery], and xref:development:rest/rest-api.adoc[through the REST API].
 
 Regardless of the method, provisioning is an iterative process.
 You will need to fine-tune your results to exclude or add to what you monitor.
 
-This Quick Start guide presents a very basic example of auto discovery of nodes, through SNMP.
-Beyond this guide, you can complete additional tasks to provision your system:
-
-* Use plugins to integrate with external systems.
-* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
-* Create policies to manage provisioning behavior.
-
-Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.
+This Quick Start guide presents a very basic example using automatic discovery to provision nodes through SNMP.
 
 [[provision-snmp-configuration]]
 == Configure SNMP for provisioning
@@ -35,21 +22,24 @@ Proper SNMP configuration lets {page-component-title} understand network and nod
 {page-component-title} updates network topology as it provisions nodes.
 
 This procedure illustrates a very basic SNMP configuration using the default parameters.
-You can customize these values for your own network needs.
+You can customize these values for your own network needs, although the default settings are sufficient for a basic {page-component-title} setup:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Configure SNMP Community Names by IP Address*.
-. Under General Parameters, specify an IP range using the *First IP Address* and *Last IP Address* boxes, and accept the default values for the other fields.
-. Scroll to the bottom and click *Save Config*.
+. Configure the community names as appropriate for your environment:
+** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
+** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
+** (Optional) Define a range of IP addresses by typing the first and last addresses of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
+** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
+. Click *Save Config*.
 +
-This screen sets up SNMP within {page-component-title} for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`.
+This screen sets up SNMP within {page-component-title} for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`:
 
-.Configure SNMP community names
-image::provisioning/SNMP_Config.png[SNMP-configuration, 600]
+image::provisioning/SNMP_Config.png[SNMP community name configuration screen, 600]
 
-These settings are optimized into the `snmp-config.xml` file.
+These settings are optimized into `snmp-config.xml`.
 
-For an example of the resulting XML configuration, see xref:operation:deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml[Configure SNMP community names] in the Deep Dive section.
+For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
 
 [[requisition-create]]
 == Create a requisition
@@ -69,14 +59,14 @@ See the links at the end of the procedure for additional information on customiz
 
 To create a requisition, follow these steps:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Provisioning Requisitions*.
 . Click *Add Requisition*, type a name (for example, QuickStartRequisition), and click *OK*.
 
 NOTE: The requisition remains red until you synchronize it with the database.
 Synchronize after you configure discovery.
 
-image::provisioning/red_requisition.png[]
+image::provisioning/red_requisition.png[Requisition list displaying an unsynchronized, red requisition]
 
 Once created, you can add nodes to the requisition.
 
@@ -99,7 +89,7 @@ You can customize these for your own needs.
 
 To configure discovery, follow these steps:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Configure Discovery*.
 . In the *General Settings* area, select the requisition you just created from the *Requisition* list.
 ** (Optional) Change the default values.
@@ -108,3 +98,13 @@ To configure discovery, follow these steps:
 . Choose a scan option and click *Synchronize*.
 
 You can view imported nodes in the main menu under menu:Info[Nodes] at the top of the screen.
+
+== Beyond Quick Start
+
+Beyond this guide, you can complete additional tasks to provision your system:
+
+* Use plugins to integrate with external systems.
+* Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
+* Create policies to manage provisioning behavior.
+
+Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.

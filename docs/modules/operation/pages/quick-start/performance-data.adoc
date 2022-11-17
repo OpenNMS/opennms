@@ -10,7 +10,7 @@ NOTE: In the {page-component-title} docs, any reference to collectd refers to th
 
 Data collection for SNMP and OpenNMS-JVM is enabled by default, allowing {page-component-title} to monitor itself through JMX.
 
-For additional information, including collector configuration, see xref:operation:deep-dive/performance-data-collection/introduction.adoc[Performance Management] in the Deep Dive section.
+For additional information, including collector configuration, see xref:deep-dive/performance-data-collection/introduction.adoc[Performance Management] in the Deep Dive section.
 
 == Before you begin
 
@@ -22,19 +22,10 @@ We recommend that you do not use the default community string in production.
 NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
 {page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
 
-To change the community string, follow these steps:
-
-. Click the *Gear* symbol at the top-right of the screen.
-. Under Provisioning, click *Configure SNMP Community Names by IP Address*.
-. Set up the configuration as appropriate for your environment:
-** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
-** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
-** (Optional) Define a range of IP addresses by typing the first and last addresses of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
-** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
-. Click *Save Config*.
+See xref:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP for provisioning] for steps to change the community string.
 
 Performance data collection on other protocols (HTTPS, JMX, and so on) requires additional configuration.
-You may also want to change how collectd works—when, how, and what data it collects.
+You may also want to change how collectd works--when, how, and what data it collects.
 For more information, see xref:reference:performance-data-collection/introduction.adoc[Collectors].
 
 == Default performance data collection
@@ -45,10 +36,6 @@ SNMP data collection definitions are also included for devices from a range of p
 The metrics included in these collections vary by vendor.
 
 == SNMP collections and data collection groups
-
-SNMP collections collect, store, and persist performance data.
-By default, {page-component-title} defines two collections: `default` and `ejn`.
-Because the `ejn` collection is highly specialized, we recommend that you do not modify it.
 
 Data collection groups collect sets of performance data measurements for persisting, indexing, and visualizing the data in the UI.
 Individual data collection groups are stored in unique `.xml` files, which define associated resource types, MIB groups, and system definitions.
