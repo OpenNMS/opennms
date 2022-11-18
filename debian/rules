@@ -64,14 +64,14 @@ install: build
 	dh_installdirs
 	dh_testroot
 
-	rsync -avr --exclude=examples debian/temp/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
+	rsync -avr --exclude=examples debian/etc/ debian/opennms-common/var/lib/opennms/etc-pristine/
 	chmod -R go-w debian/opennms-common/var/lib/opennms/etc-pristine/
 
 	mkdir -p debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
-	rsync -avr --exclude=examples debian/temp/jetty-webapps/opennms/WEB-INF/spring-security.d/ debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
-	cp debian/temp/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/applicationContext-spring-security.xml
-	cp debian/temp/jetty-webapps/opennms/WEB-INF/web.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/web.xml
-	cp debian/temp/etc/examples/jetty.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/jetty.xml
+	rsync -avr --exclude=examples debian/jetty-webapps/opennms/WEB-INF/spring-security.d/ debian/opennms-common/var/lib/opennms/web-inf-pristine/spring-security.d/
+	cp debian/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/applicationContext-spring-security.xml
+	cp debian/jetty-webapps/opennms/WEB-INF/web.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/web.xml
+	cp debian/etc/examples/jetty.xml debian/opennms-common/var/lib/opennms/web-inf-pristine/jetty.xml
 	chmod -R go-w debian/opennms-common/var/lib/opennms/web-inf-pristine/
 	
 	##
@@ -83,8 +83,8 @@ install: build
 	find . -name "opennms-alarm-northbounder-jms-*.jar"
 	find . -name "jms-northbounder-configuration.xml"
 	mv opennms-alarms/jms-northbounder/target/opennms-alarm-northbounder-jms-*.jar debian/opennms-plugin-northbounder-jms/usr/share/java/opennms/
-	mv debian/temp/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
-	mv debian/temp/opennms-common/var/lib/opennms/etc-pristine/jms-northbounder-configuration.xml   debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine/
+	mv debian/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/jms-northbounder-configuration.xml   debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine/
 	sed -e 's,@PACKAGE@,opennms-plugin-northbounder-jms,g' debian/package-permissions.sh > debian/opennms-plugin-northbounder-jms.postinst
 	
 	##
@@ -93,15 +93,15 @@ install: build
 	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,reverse-dns,snmp-asset,snmp-hardware-inventory,wsman-asset}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory,wsman-asset}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory,wsman-asset}/var/lib/opennms/etc-pristine
-	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-wsman-asset-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-wsman-asset/usr/share/java/opennms/
-	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
-	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
-	mv debian/temp/etc/wsman-asset-adapter-configuration.xml                 debian/opennms-plugin-provisioning-wsman-asset/etc/opennms/
+	mv debian/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
+	mv debian/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
+	mv debian/lib/opennms-wsman-asset-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-wsman-asset/usr/share/java/opennms/
+	mv debian/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
+	mv debian/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
+	mv debian/etc/wsman-asset-adapter-configuration.xml                 debian/opennms-plugin-provisioning-wsman-asset/etc/opennms/
 	#find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-dns.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-link,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-link.postinst
