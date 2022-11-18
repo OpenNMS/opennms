@@ -1,10 +1,8 @@
 
 [[release-31-changelog]]
-
 = Changelog
 
 [[releasenotes-changelog-31.0.1]]
-
 == Release 31.0.1
 
 Release 31.0.1 is a small out-of-band release to address some issues found during 31.0.0 testing.
@@ -18,7 +16,7 @@ ALEC users therefore should avoid the Cloud Services Connector plugin until a ne
 
 The codename for Horizon 31.0.1 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
 
-===== Bug
+=== Bug
 
 * OpenAPI Validation Errors (Issue http://issues.opennms.org/browse/NMS-14408[NMS-14408])
 * Snmp Polling Status shows Polled even though it's actually not (Issue http://issues.opennms.org/browse/NMS-14653[NMS-14653])
@@ -30,12 +28,12 @@ The codename for Horizon 31.0.1 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
 * Horizon/Sentinel docker image size ballooned (Issue http://issues.opennms.org/browse/NMS-15006[NMS-15006])
 * HZN 31: Ubuntu installation issues (Issue http://issues.opennms.org/browse/NMS-15007[NMS-15007])
 
-===== Story
+=== Story
 
 * Quick Start: Review entire quick start section when complete. (Issue http://issues.opennms.org/browse/NMS-14721[NMS-14721])
 * New UI Preview: Ensure ALEC UI works (Issue http://issues.opennms.org/browse/NMS-14891[NMS-14891])
 
-===== Task
+=== Task
 
 * Update Quick Start login chapter (Issue http://issues.opennms.org/browse/NMS-14984[NMS-14984])
 * Update notifications.adoc in Quick Start section (Issue http://issues.opennms.org/browse/NMS-14985[NMS-14985])
