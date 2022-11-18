@@ -68,7 +68,7 @@ This code snippet shows what data is collected for the `hrStorageIndex` resource
 == Add the group to a system definition
 
 {page-component-title} needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups in `datacollection-config.xml`.
-This ensures that {page-component-title} knows what should be gathered for different types of SNMP agents.
+This ensures that {page-component-title} knows what it should gather for different types of SNMP agents.
 
 You must add any newly created collection groups to one or more system definitions in `datacollection-config.xml`.
 Otherwise, {page-component-title} will not collect data for that collection group.

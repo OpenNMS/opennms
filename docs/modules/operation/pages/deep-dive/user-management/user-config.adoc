@@ -13,7 +13,7 @@ In addition to local users, you can configure external authentication services i
 Specific configuration instructions for these services are outside the scope of this documentation.
 
 WARNING: Do not delete the default `admin` and `rtc` user profiles.
-The `rtc` user profile is used for the communication of the Real-Time Console to calculate the node and service availability.
+The start page uses the `rtc` profile to communicate with the xref:development:rest/rtc.adoc[Real-Time Console] to calculate node and service availability.
 
 [[ga-user-create]]
 == Create a user

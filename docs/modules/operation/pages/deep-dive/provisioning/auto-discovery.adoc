@@ -119,7 +119,7 @@ In addition to the configuration above, there are some optional settings you can
 
 | initial-sleep-time
 | 30000 ms (30 seconds)
-| The time, in milliseconds, before the discovery process begins when OpenNMS has started.
+| The time, in milliseconds, before the discovery process begins after {page-component-title} has started.
 This delay allows {page-component-title} to fully start before generating new events.
 
 | restart-sleep-time

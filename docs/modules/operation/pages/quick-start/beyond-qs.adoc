@@ -69,5 +69,10 @@ For more information, see xref:operation:deep-dive/admin/webui/grafana-dashboard
 
 == Explore the Deep Dive section
 
-To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding docs in the Deep Dive section.
+To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding documentation in the xref:deep-dive/introduction.adoc[Deep Dive] section.
 Deep Dive topics are referenced in each of the Quick Start pages; they can provide a starting point.
+
+== Explore the Reference section
+
+The Reference section provides information on {page-component-title} collectors, service monitors, and daemons.
+This includes details on configuration settings and files, as well as parameters associated with the components.
