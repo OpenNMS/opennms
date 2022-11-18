@@ -582,11 +582,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.1</version>
         <configuration>
           <maxmemory>3g</maxmemory>
-          <additionalparam>-Xdoclint:none</additionalparam>
-          <failOnError>false</failOnError>
+          <failOnError>true</failOnError>
+          <sourcepath>${project.basedir}/src;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath>
           <tags>
             <tag>
               <name>hibernate.class</name>
