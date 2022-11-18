@@ -26,7 +26,7 @@ See xref:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP 
 
 Performance data collection on other protocols (HTTPS, JMX, and so on) requires additional configuration.
 You may also want to change how collectd works--when, how, and what data it collects.
-For more information, see xref:reference:performance-data-collection/introduction.adoc[Collectors].
+For more information, see xref:reference:performance-data-collection/introduction.adoc[Collectors] in the Reference section.
 
 == Default performance data collection
 

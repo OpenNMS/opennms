@@ -12,14 +12,21 @@ You will need to fine-tune your results to exclude or add to what you monitor.
 
 This Quick Start guide presents a very basic example using automatic discovery to provision nodes through SNMP.
 
+== SNMP in {page-component-title}
+
+SNMP is used in {page-component-title} to understand network and node topology, collect performance data, and enable SNMP service monitoring of nodes.
+SNMP service monitoring in particular ensures that SNMP is available on a given node; it checks a configurable OID value to understand the status of a particular part, function, or other aspect of the monitored device.
+Tracking the state of this value can be used to trigger a notification if it represents an error or another condition that may need attention.
+
+The service also gathers basic information about a monitored device, including the device type, its name, its location, and so on.
+For more information, see xref:reference:daemons/daemon-config-files/enlinkd.adoc[Enlinkd] in the Reference section.
+
 [[provision-snmp-configuration]]
 == Configure SNMP for provisioning
 
 To collect data through SNMP or monitor the availability of SNMP services on a node, you need to configure SNMP for provisioning.
 This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
-
-Proper SNMP configuration lets {page-component-title} understand network and node topology and automatically enables performance data collection.
-{page-component-title} updates network topology as it provisions nodes.
+{page-component-title} updates the network topology--the visual representation of the monitored network and its components--as it provisions nodes.
 
 This procedure illustrates a very basic SNMP configuration using the default parameters.
 You can customize these values for your own network needs, although the default settings are sufficient for a basic {page-component-title} setup:
@@ -66,7 +73,7 @@ To create a requisition, follow these steps:
 NOTE: The requisition remains red until you synchronize it with the database.
 Synchronize after you configure discovery.
 
-image::provisioning/red_requisition.png[Requisition list displaying an unsynchronized, red requisition]
+image::provisioning/red_requisition.png[Requisitions list displaying two requisitions; one is red, indicating that it has not been synchronized with the database]
 
 Once created, you can add nodes to the requisition.
 
