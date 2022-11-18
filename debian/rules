@@ -102,7 +102,7 @@ install: build
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
 	mv debian/temp/etc/wsman-asset-adapter-configuration.xml                 debian/opennms-plugin-provisioning-wsman-asset/etc/opennms/
-	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
+	#find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-dns.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-link,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-link.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-map,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-map.postinst
