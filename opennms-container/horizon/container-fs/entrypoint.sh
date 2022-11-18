@@ -200,6 +200,7 @@ while getopts "fhist" flag; do
       exit
       ;;
     t)
+      shift $((OPTIND - 1))
       configTester "${@}"
       exit
       ;;

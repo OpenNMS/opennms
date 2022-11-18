@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,7 +51,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -93,6 +94,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private final String id;
     private final String location;
     private final GenericContainer container;
+    private Exception waitUntilReadyException = null;
 
     private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
         super("minion");
@@ -262,6 +264,34 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         return new InetSocketAddress(getContainerIpAddress(), mappedPort);
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     public static class WaitForMinion extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final MinionContainer container;
 
@@ -271,17 +301,25 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Minion health check...");
+            LOG.info("Waiting for Sentinel health check...");
             try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
-                throw new RuntimeException(e);
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
             }
+        }
+
+        protected void waitUntilReadyWrapped() {
+            LOG.info("Waiting for Minion health check...");
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
         }
     }

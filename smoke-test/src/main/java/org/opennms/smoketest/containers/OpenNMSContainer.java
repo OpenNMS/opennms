@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,9 +55,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.awaitility.core.ConditionTimeoutException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -81,6 +81,7 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -136,6 +137,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final Path overlay;
     private int generatedUserId = -1;
     private boolean afterTestCalled = false;
+    private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
@@ -412,6 +414,34 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         return model;
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause with OpenNMS startup errors further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     private static class WaitForOpenNMS extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final OpenNMSContainer container;
 
@@ -421,9 +451,22 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         @Override
         protected void waitUntilReady() {
+            try {
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
+            }
+        }
+
+        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
-            await().atMost(3, MINUTES).ignoreExceptions()
+            await("waiting for startup to begin")
+                    .atMost(3, MINUTES)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreException(NotFoundException.class)
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
             LOG.info("OpenNMS has begun starting up.");
@@ -431,24 +474,24 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             LOG.info("Waiting for OpenNMS REST API...");
             final long timeoutMins = 5;
             final RestClient restClient = container.getRestClient();
-            final AtomicReference<String> lastOutput = new AtomicReference<>();
-            try {
-                await().atMost(timeoutMins, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(restClient::getDisplayVersion, notNullValue());
-            } catch(ConditionTimeoutException e) {
-                LOG.error("OpenNMS did not finish starting after {} minutes. Last output: {}", timeoutMins, lastOutput);
-                throw new RuntimeException(e);
-            }
+
+            await("waiting for OpenNMS REST API")
+                    .atMost(timeoutMins, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(restClient::getDisplayVersion, notNullValue());
             LOG.info("OpenNMS REST API is online.");
 
             // Wait until all daemons have finished starting up
             // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
             // have been given a chance to bind
             LOG.info("Waiting for startup to complete.");
-            await().atMost(5, MINUTES).until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
-                    containsString("Starter: Startup complete"));
+            await("waiting for startup to complete")
+                    .atMost(5, MINUTES)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
+                            containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
             // Defer the health-check (if we do run it) until the system has completely started
@@ -457,8 +500,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             // currently required to pass.
             if (container.getModel().isElasticsearchEnabled()) {
                 LOG.info("Waiting for OpenNMS health check...");
-                final InetSocketAddress karafSsh = container.getSshAddress();
-                awaitHealthCheckSucceeded(karafSsh, 3, "OpenNMS");
+                awaitHealthCheckSucceeded(container);
                 LOG.info("Health check passed.");
             }
         }
