@@ -34,6 +34,7 @@ The following defines the visual status indicators:
 
 The Surveillance View also serves as the foundation of the xref:operation:deep-dive/admin/webui/dashboard.adoc[Dashboard].
 
+[[surveillance-view-default-config]]
 == Default configuration
 
 Surveillance Views are defined in `$\{OPENNMS_HOME}/etc/surveillance-views.xml`.
