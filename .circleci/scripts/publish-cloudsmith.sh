@@ -20,7 +20,7 @@ case "${CIRCLE_BRANCH}" in
   release-*)
     REPO="testing"
     ;;
-  master-*|master)
+  master-*)
     REPO="stable"
     ;;
   *)
