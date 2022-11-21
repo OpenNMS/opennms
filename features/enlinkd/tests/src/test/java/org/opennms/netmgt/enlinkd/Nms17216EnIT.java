@@ -230,7 +230,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 case SWITCH1_NAME:
                     assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
                     assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 4:
                             assertEquals(10109,link.getLldpPortIfindex().intValue());
                             assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpPortId());
@@ -265,7 +265,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     }
                     break;
                 case SWITCH2_NAME:
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 4:
                             assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
                             assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
@@ -328,7 +328,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 case SWITCH3_NAME:
                     assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
                     assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 1:
                             assertEquals(10019,link.getLldpPortIfindex().intValue());
                             assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpPortId());

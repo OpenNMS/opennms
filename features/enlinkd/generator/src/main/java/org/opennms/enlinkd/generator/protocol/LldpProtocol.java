@@ -129,7 +129,8 @@ public class LldpProtocol extends Protocol<LldpElement> {
 
         // static attributes:
         link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
-        link.setLldpLocalPortNum(123);
+        link.setLldpRemIndex(123);
+        link.setLldpRemLocalPortNum(456);
         link.setLldpLinkLastPollTime(new Date());
         link.setLldpPortDescr("lldpportdescr");
         link.setLldpRemSysname("lldpRemSysname");
