@@ -14,7 +14,7 @@ This Quick Start guide presents a very basic example using automatic discovery t
 
 == SNMP in {page-component-title}
 
-SNMP is used in {page-component-title} to understand network and node topology, collect performance data, and enable SNMP service monitoring of nodes.
+{page-component-title} uses SNMP to understand network and node topology, collect performance data, and enable SNMP service monitoring of nodes.
 SNMP service monitoring in particular ensures that SNMP is available on a given node; it checks a configurable OID value to understand the status of a particular part, function, or other aspect of the monitored device.
 Tracking the state of this value can be used to trigger a notification if it represents an error or another condition that may need attention.
 
