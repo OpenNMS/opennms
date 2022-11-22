@@ -19,9 +19,6 @@ For additional information, including collector configuration, see xref:deep-div
 The default value for the community string is `public`.
 We recommend that you do not use the default community string in production.
 
-NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
-{page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
-
 See xref:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP for provisioning] for steps to change the community string.
 
 Performance data collection on other protocols (HTTPS, JMX, and so on) requires additional configuration.

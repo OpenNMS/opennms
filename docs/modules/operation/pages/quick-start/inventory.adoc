@@ -36,6 +36,10 @@ You can customize these values for your own network needs, although the default 
 . Configure the community names as appropriate for your environment:
 ** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
 ** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
++
+NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
+{page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
+
 ** (Optional) Define a range of IP addresses by typing the first and last addresses of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
 ** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
 . Click *Save Config*.
@@ -101,7 +105,7 @@ To configure discovery, follow these steps:
 . In the *General Settings* area, select the requisition you just created from the *Requisition* list.
 ** (Optional) Change the default values.
 . Click *Save and Restart Discovery* in the top-left of the screen.
-. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png[synchronize requisition symbol,20]).
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png[Synchronize requisition symbol,20]).
 . Choose a scan option and click *Synchronize*.
 
 You can view imported nodes in the main menu under menu:Info[Nodes] at the top of the screen.
@@ -114,4 +118,4 @@ Beyond this guide, you can complete additional tasks to provision your system:
 * Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
 * Create policies to manage provisioning behavior.
 
-Refer to xref:operation:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.
+Refer to xref:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.
