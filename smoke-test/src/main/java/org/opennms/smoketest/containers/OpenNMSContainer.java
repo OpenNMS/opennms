@@ -120,6 +120,8 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
 
+    private static final boolean COLLECT_COVERAGE = true;
+
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
             .put(NetworkProtocol.HTTP, OPENNMS_WEB_PORT)
@@ -169,9 +171,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
+        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom";
+        if (COLLECT_COVERAGE) {
+            javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
+        }
+
         if (profile.isJvmDebuggingEnabled()) {
-            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
+            javaOpts += String.format(" -agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
 
         // Use a Java binary without any capabilities set (i.e. cap_net_raw for ping) when simulating an OpenShift env.
@@ -535,7 +541,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             return;
         }
         afterTestCalled = true;
-        KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
+        if (COLLECT_COVERAGE) {
+            KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
+        }
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
