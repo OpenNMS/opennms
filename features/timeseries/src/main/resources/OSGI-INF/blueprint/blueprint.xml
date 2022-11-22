@@ -120,6 +120,7 @@
 
     <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" destroy-method="destroy">
         <argument ref="timeseriesStorageManager"/>
+        <argument ref="statisticsCollector"/>
         <argument ref="metaTagDataLoader"/>
         <argument ref="timeseriesPersisterMetaTagCache"/>
         <argument ref="metricRegistry"/>
