@@ -31,6 +31,7 @@ package org.opennms.features.apilayer.config;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 public class PollerConfExtensionManager extends ConfigExtensionManager<PollerConfigurationExtension, PollerConfExtensionManager.PollerConfigurationPart> {
 
@@ -62,9 +66,13 @@ public class PollerConfExtensionManager extends ConfigExtensionManager<PollerCon
 
     private final PollerConfig pollerConfig;
 
-    public PollerConfExtensionManager(PollerConfig pollerConfig) {
+    private final EventForwarder eventForwarder;
+
+    public PollerConfExtensionManager(final PollerConfig pollerConfig,
+                                      final EventForwarder eventForwarder) {
         super(PollerConfigurationPart.class, new PollerConfigurationPart());
-        this.pollerConfig = pollerConfig;
+        this.pollerConfig = Objects.requireNonNull(pollerConfig);
+        this.eventForwarder = Objects.requireNonNull(eventForwarder);
     }
 
     @Override
@@ -77,10 +85,12 @@ public class PollerConfExtensionManager extends ConfigExtensionManager<PollerCon
 
     @Override
     protected void triggerReload() {
-        if (pollerConfig != null) {
-            final PollerConfigurationPart object = getObject();
-            pollerConfig.setExternalData(object.packages, object.monitors);
-        }
+        final PollerConfigurationPart object = getObject();
+        this.pollerConfig.setExternalData(object.packages, object.monitors);
+
+        this.eventForwarder.sendNow(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "oia-plugins")
+                                            .addParam(EventConstants.PARM_DAEMON_NAME, "pollerd")
+                                            .getEvent());
     }
 
     public static Monitor map(org.opennms.integration.api.v1.config.poller.Monitor apiMonitor) {

@@ -424,7 +424,7 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig.setPollInterval("HTTP", 750L);
         m_pollerConfig.setPollerThreads(5);
         m_pollerConfig.setCriticalService("YAHOO");
-        PollerConfig pollerConfig = m_pollerConfig;
+        MockPollerConfig pollerConfig = m_pollerConfig;
 
         // test the nodeOutageProcessing setting works
         assertTrue(pollerConfig.isNodeOutageProcessingEnabled());

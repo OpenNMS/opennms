@@ -38,6 +38,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 
@@ -57,7 +58,7 @@ public class PerspectivePolledService {
 
     private final Package.ServiceMatch serviceMatch;
 
-    private final ServiceMonitor serviceMonitor;
+    private final ServiceMonitorLocator serviceMonitorLocator;
 
     private final String perspectiveLocation;
     private final String residentLocation;
@@ -78,7 +79,7 @@ public class PerspectivePolledService {
                                     final String nodeLabel,
                                     final Package pkg,
                                     final Package.ServiceMatch serviceMatch,
-                                    final ServiceMonitor serviceMonitor,
+                                    final ServiceMonitorLocator serviceMonitorLocator,
                                     final String perspectiveLocation,
                                     final String residentLocation,
                                     final RrdRepository rrdRepository,
@@ -91,7 +92,7 @@ public class PerspectivePolledService {
         this.nodeLabel = Objects.requireNonNull(nodeLabel);
         this.pkg = Objects.requireNonNull(pkg);
         this.serviceMatch = Objects.requireNonNull(serviceMatch);
-        this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
+        this.serviceMonitorLocator = Objects.requireNonNull(serviceMonitorLocator);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
         this.residentLocation = Objects.requireNonNull(residentLocation);
         this.rrdRepository = rrdRepository;
@@ -177,8 +178,8 @@ public class PerspectivePolledService {
         return this.serviceMatch.patternVariables;
     }
 
-    public ServiceMonitor getServiceMonitor() {
-        return serviceMonitor;
+    public ServiceMonitorLocator getServiceMonitorLocator() {
+        return serviceMonitorLocator;
     }
 
     public MonitoredService getMonitoredService() {
@@ -209,7 +210,7 @@ public class PerspectivePolledService {
                           .add("serviceName", this.serviceName)
                           .add("pkg", this.pkg)
                           .add("serviceMatch", this.serviceMatch)
-                          .add("serviceMonitor", this.serviceMonitor)
+                          .add("serviceMonitorLocator", this.serviceMonitorLocator)
                           .add("monitoredService", this.monitoredService)
                           .add("perspectiveLocation", this.perspectiveLocation)
                           .toString();
@@ -229,13 +230,13 @@ public class PerspectivePolledService {
                Objects.equals(this.serviceName, that.serviceName) &&
                Objects.equals(this.pkg, that.pkg) &&
                Objects.equals(this.serviceMatch, that.serviceMatch) &&
-               Objects.equals(this.serviceMonitor, that.serviceMonitor) &&
+               Objects.equals(this.serviceMonitorLocator, that.serviceMonitorLocator) &&
                Objects.equals(this.monitoredService, that.monitoredService) &&
                Objects.equals(this.perspectiveLocation, that.perspectiveLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.nodeId, this.ipAddress, this.serviceName, this.pkg, this.serviceMatch, this.serviceMonitor, this.monitoredService, this.perspectiveLocation);
+        return Objects.hash(this.nodeId, this.ipAddress, this.serviceName, this.pkg, this.serviceMatch, this.serviceMonitorLocator, this.monitoredService, this.perspectiveLocation);
     }
 }
