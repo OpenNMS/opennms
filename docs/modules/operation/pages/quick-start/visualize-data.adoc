@@ -50,31 +50,36 @@ Follow these steps to create a new surveillance category:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Surveillance Categories*.
-. Enter a name for the new category in the *Category Name* box, and click *Add New Category*.
+. Enter a name for the new category in the *Category Name* box.
+For this example, we use "localhost-category".
+. Click *Add New Category*.
 . Click the *edit* symbol beside the new category.
-. Add nodes to the category as desired.
-** Choose nodes from the *Available Nodes* list and click *Add*.
+. Add the `localhost` node to the category by selecting it in the *Available Nodes* list and clicking *Add*.
 
 Your changes are automatically saved.
 
-Once you have created a custom surveillance category, you can create a new Surveillance View to update the data that is visualized:
+You can now create a Surveillance View to visualize `localhost` in your production environment:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Additional Tools, click *Surveillance Views Configuration*.
 +
 A list of configured Surveillance Views is displayed.
 
-. Click *Add*, and define the view's title and the refresh timing, in seconds.
-. Add rows and columns to the view as desired:
-** To add rows, click *Add* beside the *Rows* list, type a name for the new row, and select its category from the *Category* list.
-Click *Save*.
-** To add columns, click *Add* beside the *Columns* list, type a name for the new column, and select its category from the *Category* list.
-Click *Save*.
-. Click *Save* to create the new Surveillance View.
-. Click *Preview* to see the Surveillance View that you just created.
-. (Optional) Select *Default* beside the new Surveillance View to make it the one that appears by default.
+. Click *Add*, and define the view's title.
+For this example, we use "localhost-view".
+. Define the view's refresh timing, in seconds.
+. Click *Add* beside the *Rows* list and type a name for the new row.
+For this example, we use "localhost".
+. Select `localhost-category` from the *Categories* list and click *Save*.
+. Click *Add* beside the *Columns* list and type a name for the new row.
+For this example, we use "Production".
+. Select `Production` from the *Categories* list and click *Save*.
+. Click *Save* to create the Surveillance View.
+. (Optional) Click *Preview* beside the view's name to display it.
+. (Optional) Select *Default* beside the view's name to make it the one that is displayed by default.
 
-NOTE: The Surveillance View dashboard component also includes a menu where you can select the view to be displayed.
+NOTE: The Surveillance View dashboard component includes a menu where you can select the view to be displayed.
+Its default visualization is defined separately from the Surveillance View itself.
 
 == Heatmap
 
