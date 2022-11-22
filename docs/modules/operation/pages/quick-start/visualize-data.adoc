@@ -51,6 +51,7 @@ Follow these steps to create a new surveillance category:
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Surveillance Categories*.
 . Enter a name for the new category in the *Category Name* box, and click *Add New Category*.
+. Click the *edit* symbol beside the new category.
 . Add nodes to the category as desired.
 ** Choose nodes from the *Available Nodes* list and click *Add*.
 
@@ -70,6 +71,10 @@ Click *Save*.
 ** To add columns, click *Add* beside the *Columns* list, type a name for the new column, and select its category from the *Category* list.
 Click *Save*.
 . Click *Save* to create the new Surveillance View.
+. Click *Preview* to see the Surveillance View that you just created.
+. (Optional) Select *Default* beside the new Surveillance View to make it the one that appears by default.
+
+NOTE: The Surveillance View dashboard component also includes a menu where you can select the view to be displayed.
 
 == Heatmap
 
