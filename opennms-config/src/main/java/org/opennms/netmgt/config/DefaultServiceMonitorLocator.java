@@ -105,7 +105,7 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                          .add("serviceName", this.m_serviceClass)
+                          .add("serviceName", this.m_serviceName)
                           .add("serviceClass", this.m_serviceClass)
                           .toString();
     }
