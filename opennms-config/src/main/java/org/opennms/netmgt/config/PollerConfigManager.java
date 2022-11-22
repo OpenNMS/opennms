@@ -1139,7 +1139,7 @@ abstract public class PollerConfigManager implements PollerConfig  {
         
         for (final ServiceMonitorLocator locator : locators) {
             final var monitor = locator.getServiceMonitor(s_serviceMonitorRegistry);
-            if(monitor == null) {
+            if (monitor == null) {
                 LOG.warn("The monitor with class {} not available yet, if the feature is installed correctly it will be available later.", locator.getServiceName());
             }
         }
