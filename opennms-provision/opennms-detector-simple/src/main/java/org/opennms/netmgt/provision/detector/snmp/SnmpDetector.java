@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -143,6 +144,8 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
      */
     private ExecutorService snmpDetectorExecutor;
 
+    private SecureCredentialsVault m_scv;
+
     private String useSnmpProfiles;
     private String ttl;
 
@@ -155,6 +158,10 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     private static final int DEFAULT_PORT = -1;
     private static final int DEFAULT_TIMEOUT = -1;
     private static final int DEFAULT_RETRIES = -1;
+
+    private final String APPLIANCE_SNMP_COMMUNITY_ALIAS = "appliance.snmp";
+
+    private final String SNMP_COMMUNITY = "community";
 
     private String m_oid = DEFAULT_OID;
     private boolean m_isTable = false;
@@ -202,11 +209,22 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         return m_hex;
     }
 
+    private void updateCommunityStrings(SnmpAgentConfig config) {
+        if (config.getAddress().isLoopbackAddress()) {
+            final var creds = m_scv.getCredentials(APPLIANCE_SNMP_COMMUNITY_ALIAS);
+            config.setReadCommunity(creds.getAttribute(SNMP_COMMUNITY));
+        }
+    }
+
     @Override
     public SnmpAgentConfig getAgentConfig(DetectRequest request) {
         if (request.getRuntimeAttributes() != null) {
             // All of the keys in the runtime attribute map are used to store the agent configuration
-            return SnmpAgentConfig.fromMap(request.getRuntimeAttributes());
+            final var config = SnmpAgentConfig.fromMap(request.getRuntimeAttributes());
+            if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+                updateCommunityStrings(config);
+            }
+            return config;
         } else {
             return new SnmpAgentConfig();
         }
@@ -248,14 +266,22 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
             //Retrieve agent configs from runtime attributes.
             runTimeAttributes.forEach((label, configAsString) -> {
                 if (label.contains(AGENT_CONFIG_PREFIX)) {
-                    agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+                    final var config = SnmpAgentConfig.parseProtocolConfigurationString(configAsString);
+                    if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+                        updateCommunityStrings(config);
+                    }
+                    agentConfigList.add(config);
                 }
             });
         } else if (hasMultipleAgentConfigs(runTimeAttributes)) {
             //Retrieve agent configs from runtime attributes just for default profile.
             runTimeAttributes.forEach((label, configAsString) -> {
                 if (label.contains(AGENT_CONFIG_PREFIX) && label.contains(PROFILE_LABEL_FOR_DEFAULT_CONFIG)) {
-                    agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+                    final var config = SnmpAgentConfig.parseProtocolConfigurationString(configAsString);
+                    if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+                        updateCommunityStrings(config);
+                    }
+                    agentConfigList.add(config);
                 }
             });
         }
@@ -471,5 +497,9 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
 
     public String getUseSnmpProfiles() {
         return this.useSnmpProfiles;
+    }
+
+    public void setSecureCredentialsVault(SecureCredentialsVault scv) {
+        m_scv = scv;
     }
 }

@@ -32,7 +32,9 @@
 
 	<!-- SnmpDetectorFactory needs destroy method -->
 	<bean id="snmpDetectorFactory" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory"
-		  destroy-method="destroy"/>
+		  destroy-method="destroy">
+		<argument name="secureCredentialsFactory" ref="dominionGrpcSecureCredentialsVault"/>
+	</bean>
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory" ref="snmpDetectorFactory"/>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">

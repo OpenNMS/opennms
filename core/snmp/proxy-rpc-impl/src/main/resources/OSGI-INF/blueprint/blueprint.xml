@@ -12,6 +12,8 @@
 ">
 
     <service interface="org.opennms.core.rpc.api.RpcModule" >
-        <bean class="org.opennms.netmgt.snmp.proxy.common.SnmpProxyRpcModule" />
+        <bean class="org.opennms.netmgt.snmp.proxy.common.SnmpProxyRpcModule">
+            <property name="secureCredentialsVault" ref="dominionGrpcSecureCredentialsVault" />
+        </bean>
     </service>
 </blueprint>
