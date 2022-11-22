@@ -46,7 +46,7 @@ For more information, see xref:deep-dive/admin/webui/surveillance-view.adoc[Surv
 
 The Surveillance View and its corresponding dashboard component visualize all routers, switches, and servers in your production, test, and development environments by default (see <<deep-dive/admin/webui/surveillance-view.adoc#surveillance-view-default-config, Default configuration>>).
 You can create custom surveillance categories to define specific data that you want to visualize in the Surveillance View.
-Follow these steps to create a new surveillance category:
+Follow these steps to create a surveillance category that monitors the `localhost` node:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Surveillance Categories*.
