@@ -33,7 +33,6 @@ Consult a xref:write-the-docs:overview.adoc#ga-opennms-docs-dictionaries[diction
 | orderable
 | doable +
 scalable
-
 |===
 
 [[glossary-abort]] abort:: Avoid.
@@ -44,6 +43,8 @@ Instead, use "preceding" and "following" (or "previous" and "next") if you canno
 
 [[glossary-active-inactive]] active, inactive:: Do not use to describe options, functions, or items that users can select.
 Use <<glossary-available-unavailable, available and unavailable>> instead.
+
+admin:: Unless referring to a permissions role (for example, "the Admin role"), do not use initial capitalization.
 
 affect, effect:: Use "affect" (verb) to mean "influence."
 Use "effect" (noun) to mean "result."
@@ -229,12 +230,12 @@ Refer to the arrow using its hovertext name.
 
 en dash (–):: Use an en dash to indicate an inclusive range.
 
-em dash (—):: Use an em dash to set apart a phrase, similar to the use of parentheses.
+em dash (--):: Use an em dash to set apart a phrase, similar to the use of parentheses.
 Do not put a space between the em dash and adjacent words.
 +
 .Use of em dashes in a sentence
 ====
-Everything you see—from the UI to the Minion appliance—is Horizon.
+Everything you see--from the UI to the Minion appliance--is Horizon.
 ====
 
 email:: Use "email" (lowercase _e_, not hyphenated).
