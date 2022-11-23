@@ -36,9 +36,9 @@ Follow these steps to create a new operator board:
 ** *Priority:* how often the dashlet displays in the rotation.
 Priority 1 is the highest, meaning it appears the most often.
 ** *Duration:* how long the dashlet displays in the rotation, in seconds.
-** *Boost-Priority:* change the dashlet's priority if it is in the alert state.
+** *Boost-Priority:* change the dashlet's priority if it is in an alert state.
 This setting is optional, and is not available for all dashlets.
-** *Boost-Duration:* change the display duration if the dashlet is in the alert state.
+** *Boost-Duration:* change the display duration if the dashlet is in an alert state.
 This setting is optional, and is not available for all dashlets.
 ** (Optional) Click *Properties* to configure additional settings (alarm severity, chart type, and so on).
 . Click the *up arrow* and *down arrow* symbols to change the dashlet's order.
