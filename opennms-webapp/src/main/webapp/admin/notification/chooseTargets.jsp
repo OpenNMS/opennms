@@ -338,7 +338,7 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
         Map<String, String> emails = new TreeMap<String, String>();
 
         try {
-            for(Target target : targets) {
+            for (Target target : targets) {
                 if (target.getCommands().size() == 1 && "email".equals(target.getCommands().get(0))) {
                     emails.put(target.getName(), target.getName());
                 }
