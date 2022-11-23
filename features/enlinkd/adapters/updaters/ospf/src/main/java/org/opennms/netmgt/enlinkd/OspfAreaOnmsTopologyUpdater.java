@@ -33,10 +33,14 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
@@ -56,7 +60,7 @@ import com.google.common.collect.Table;
 
 public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
 
-    public static OspfAreaOnmsTopologyUpdater clone (OspfAreaOnmsTopologyUpdater bpu) {
+    public static OspfAreaOnmsTopologyUpdater clone(OspfAreaOnmsTopologyUpdater bpu) {
         OspfAreaOnmsTopologyUpdater update = new OspfAreaOnmsTopologyUpdater(bpu.getTopologyDao(), bpu.getOspfTopologyService(), bpu.getNodeTopologyService());
         update.setRunned(bpu.isRunned());
         update.setTopology(bpu.getTopology());
@@ -64,27 +68,36 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
 
     }
 
-    public static OnmsTopologyPort create(OnmsTopologyVertex source,
-                                          OspfLinkTopologyEntity sourcelink,
-                                          OspfLinkTopologyEntity targetlink,
-                                          SnmpInterfaceTopologyEntity snmpiface) {
-        OnmsTopologyPort port = OnmsTopologyPort.create(str(sourcelink.getOspfIfAreaId()),source, sourcelink.getOspfIfIndex());
-        port.setIfindex(sourcelink.getOspfIfIndex());
-        if (snmpiface != null) {
-            port.setIfname(snmpiface.getIfName());
-        }
-        port.setAddr(str(targetlink.getOspfIfAreaId()));
+    public static OnmsTopologyPort createNodePort(OnmsTopologyVertex source,
+                                          OspfElement sourceElement,
+                                          OspfAreaTopologyEntity targetArea) {
+        OnmsTopologyPort port = OnmsTopologyPort.create(str(targetArea.getOspfAreaId()), source, null);
+
+        port.setAddr(str(targetArea.getOspfAreaId()));
         port.setToolTipText("");
         return port;
     }
 
-    public static OnmsTopologyVertex createAreaVertex(InetAddress ospfAreaAddress) {
+    public static OnmsTopologyPort createAreaPort(OnmsTopologyVertex source,
+                                                  OspfAreaTopologyEntity sourceArea,
+                                                  OspfElement targetElement){
+        OnmsTopologyPort port = OnmsTopologyPort.create(str(sourceArea.getOspfAreaId()), source, null);
+//        port.setIfindex(sourcelink.getOspfIfIndex());
+
+        port.setAddr(str(sourceArea.getOspfAreaId()));
+        port.setToolTipText("");
+        return port;
+    }
+
+    public static OnmsTopologyVertex createAreaVertex(OspfAreaTopologyEntity area) {
+        Objects.requireNonNull(area);
+
         OnmsTopologyVertex ospfVertex = OnmsTopologyVertex.create(
-                "o:"+ospfAreaAddress.toString(),
-                "Ospf Area: ",
-                str(ospfAreaAddress),
+                area.getOspfAreaId().getHostAddress(),
+                "Ospf Area: " + area.getOspfAreaId().getHostAddress(),
+                str(area.getOspfAreaId()),
                 Topology.getCloudIconKey());
-        ospfVertex.setToolTipText("");
+        ospfVertex.setToolTipText("TBD");
         return ospfVertex;
     }
 
@@ -95,16 +108,17 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
                 str(ospfElement.getOspfRouterId()),
                 Topology.getIconKey(node)
         );
-        ospfNodeVertex.setToolTipText( node.getLabel() + "/" + node.getId() + "ospf stat: " + ospfElement.getOspfAdminStat());
+        ospfNodeVertex.setToolTipText(node.getLabel() + "/" + node.getId() + "ospf stat: " + ospfElement.getOspfAdminStat());
         return ospfNodeVertex;
     }
+
     private final OspfTopologyService m_ospfTopologyService;
 
     public OspfAreaOnmsTopologyUpdater(
             OnmsTopologyDao topologyDao, OspfTopologyService ospfTopologyService, NodeTopologyService nodeTopologyService) {
         super(ospfTopologyService, topologyDao, nodeTopologyService);
         m_ospfTopologyService = ospfTopologyService;
-    }            
+    }
 
     @Override
     public String getName() {
@@ -113,58 +127,33 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
 
     @Override
     public OnmsTopology buildTopology() {
-        Map<Integer, NodeTopologyEntity> nodeMap=getNodeMap();
-        Map<Integer, IpInterfaceTopologyEntity> ipMap= getIpPrimaryMap();
+        Map<Integer, NodeTopologyEntity> nodeMap = getNodeMap();
+        Map<Integer, IpInterfaceTopologyEntity> ipMap = getIpPrimaryMap();
         Table<Integer, Integer, SnmpInterfaceTopologyEntity> nodeToOnmsSnmpTable = getSnmpInterfaceTable();
         OnmsTopology topology = new OnmsTopology();
-        final Map<Integer, OnmsTopologyVertex> ospfElementMap = new HashMap<>();
+        final Map<Integer, OspfElement> ospfElementMap =
         m_ospfTopologyService.
-                findAllOspfElements().
-                forEach(e-> ospfElementMap.put(e.getNode().getId(),createOspfNodeVertex(nodeMap.get(e.getNode().getId()),e)));
+                findAllOspfElements().stream().collect(Collectors.toMap(OspfElement::getId, Function.identity() ));
 
-        final Map<InetAddress, OnmsTopologyVertex> areaMap = new HashMap<>();
 
-// Use ospfAreas to associate more Area info to the map
-//        final List<OspfAreaTopologyEntity> ospfAreas = m_ospfTopologyService.findAllOspfAreas();
-//        ospfAreas
-//                .stream()
-//                .map(a -> a.getOspfAreaId())
-//                .collect(Collectors.toSet())
-//                .forEach(ip -> areaMap.put(ip, createAreaVertex(ip)));
 
-//        areaMap.values().forEach(v -> topology.getVertices().add(v));
-//        ospfAreas
-//                .forEach(a -> {
-//                    topology.getEdges().add(
-//                        createAreaEdge(ospfElementMap.get(a.getNodeId()),areaMap.get(a.getOspfAreaId())));
-//                });
+        for (OspfAreaTopologyEntity area : getOspfTopologyService().findAllOspfAreas()) {
 
-        for(TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity> pair : m_ospfTopologyService.match()) {
-            OspfLinkTopologyEntity left = pair.getLeft();
-            if (topology.getVertex(left.getNodeIdAsString()) == null) {
-                topology.getVertices().add(createAreaVertex(left.getOspfIfAreaId()));
+            if (topology.getVertex(area.getNodeIdAsString()) == null) {
+                topology.getVertices().add(createOspfNodeVertex(nodeMap.get(area.getNodeId()), ospfElementMap.get(area.getNodeId())));
             }
-            OspfLinkTopologyEntity right = pair.getRight();
-            if (topology.getVertex(right.getNodeIdAsString()) == null) {
-                topology.getVertices().add(createAreaVertex(right.getOspfIfAreaId()));
+            if (topology.getVertex(area.getOspfAreaId().getHostAddress()) == null) {
+                topology.getVertices().add(createAreaVertex(area));
             }
 
+            OnmsTopologyVertex nodeVertex = topology.getVertex(area.getNodeIdAsString());
+            OnmsTopologyVertex areaVertex = topology.getVertex(area.getOspfAreaId().getHostAddress());
             topology.getEdges().add(OnmsTopologyEdge.create(
-                            Topology.getDefaultEdgeId(left.getId(), right.getId()),
-                    create(
-                                    topology.getVertex(left.getNodeIdAsString()),
-                                    left,
-                                    right,
-                                    nodeToOnmsSnmpTable.get(left.getNodeId(), left.getOspfIfIndex())
-                            ),
-                            create(
-                                    topology.getVertex(right.getNodeIdAsString()),
-                                    right,
-                                    left,
-                                    nodeToOnmsSnmpTable.get(right.getNodeId(), right.getOspfIfIndex())
+                            Topology.getDefaultEdgeId(nodeVertex.getId(), areaVertex.getId()),
+                            createNodePort(nodeVertex, ospfElementMap.get(area.getNodeId()), area),
+                            createAreaPort(areaVertex, area, ospfElementMap.get(area.getNodeId()))
                             )
-                    )
-            );
+                    );
         }
 
         return topology;
@@ -178,6 +167,6 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
     public OspfTopologyService getOspfTopologyService() {
         return m_ospfTopologyService;
     }
-            
+
 }
 
