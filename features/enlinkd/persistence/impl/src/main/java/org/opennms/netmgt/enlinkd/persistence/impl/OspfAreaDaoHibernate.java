@@ -69,7 +69,8 @@ public class OspfAreaDaoHibernate extends AbstractDaoHibernate<OspfArea, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        deleteByNodeId(nodeId);
+        getHibernateTemplate().bulkUpdate("delete from OspfArea ospfArea where ospfArea.node.id = ? and ospfArea.ospfAreaLastPollTime < ?",
+                nodeId, now);
     }    
     
     @Override

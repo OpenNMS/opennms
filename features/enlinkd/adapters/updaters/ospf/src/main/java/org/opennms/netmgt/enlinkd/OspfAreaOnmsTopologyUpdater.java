@@ -71,7 +71,9 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
     public static OnmsTopologyPort createNodePort(OnmsTopologyVertex source,
                                           OspfElement sourceElement,
                                           OspfAreaTopologyEntity targetArea) {
-        OnmsTopologyPort port = OnmsTopologyPort.create(str(targetArea.getOspfAreaId()), source, null);
+        if(Objects.isNull(sourceElement))
+            throw new IllegalArgumentException("No OspfElement associated to area : " + targetArea.getOspfAreaId());
+        OnmsTopologyPort port = OnmsTopologyPort.create(targetArea.getNodeIdAsString(), source, null);
 
         port.setAddr(str(targetArea.getOspfAreaId()));
         port.setToolTipText("");
@@ -82,7 +84,6 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
                                                   OspfAreaTopologyEntity sourceArea,
                                                   OspfElement targetElement){
         OnmsTopologyPort port = OnmsTopologyPort.create(str(sourceArea.getOspfAreaId()), source, null);
-//        port.setIfindex(sourcelink.getOspfIfIndex());
 
         port.setAddr(str(sourceArea.getOspfAreaId()));
         port.setToolTipText("");
@@ -133,7 +134,7 @@ public class OspfAreaOnmsTopologyUpdater extends TopologyUpdater {
         OnmsTopology topology = new OnmsTopology();
         final Map<Integer, OspfElement> ospfElementMap =
         m_ospfTopologyService.
-                findAllOspfElements().stream().collect(Collectors.toMap(OspfElement::getId, Function.identity() ));
+                findAllOspfElements().stream().collect(Collectors.toMap(e->e.getNode().getId(), Function.identity()));
 
 
 
