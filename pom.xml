@@ -1814,9 +1814,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.11.0</frontendPluginVersion>
-    <nodeVersion>v10.24.1</nodeVersion>
-    <npmVersion>6.14.5</npmVersion>
+    <frontendPluginVersion>1.12.1</frontendPluginVersion>
+    <nodeVersion>v16.18.1</nodeVersion>
+    <npmVersion>8.19.3</npmVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
