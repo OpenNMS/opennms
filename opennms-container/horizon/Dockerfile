@@ -119,6 +119,7 @@ RUN rm -rf /usr/share/opennms/share/rrd \
     ln -s /usr/share/opennms /opt/opennms && \
     ln -s /usr/share/opennms/etc /etc/opennms && \
     ln -s /usr/share/opennms/logs /var/log/opennms && \
+    ln -s /usr/share/opennms/share /var/lib/opennms && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
