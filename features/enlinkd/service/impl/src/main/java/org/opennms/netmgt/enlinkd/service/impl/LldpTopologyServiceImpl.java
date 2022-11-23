@@ -107,7 +107,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
 
             @Override
             protected LldpLink query() {
-                return m_dao.get(nodeId, saveMe.getLldpLocalPortNum());
+                return m_dao.get(nodeId, saveMe.getLldpRemLocalPortNum(), saveMe.getLldpRemIndex());
             }
 
             @Override

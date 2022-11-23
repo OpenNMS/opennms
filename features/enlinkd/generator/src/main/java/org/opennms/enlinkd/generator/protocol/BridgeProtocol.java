@@ -37,7 +37,6 @@ import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilder;
 import org.opennms.enlinkd.generator.protocol.bridge.BridgeBuilderContext;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
 import org.opennms.enlinkd.generator.util.MacAddressGenerator;
-import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -61,7 +60,7 @@ import org.opennms.netmgt.model.OnmsNode;
  *
  * If more than 10 nodes are requested then the tree repeats itself with bridge5 as the root node of the new subtree.
  */
-public class BridgeProtocol extends Protocol<BridgeBridgeLink> {
+public class BridgeProtocol extends Protocol {
 
     /* this is the vlan id for all the bridgebridgelinks and bridgemaclinks */
     private final static int VLAN_ID = 1;

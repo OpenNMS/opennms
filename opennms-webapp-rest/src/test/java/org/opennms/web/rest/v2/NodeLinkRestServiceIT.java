@@ -373,7 +373,8 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LldpLink link = new LldpLink();
         link.setId(11);
         link.setNode(node);
-        link.setLldpLocalPortNum(123);
+        link.setLldpRemIndex(123);
+        link.setLldpRemLocalPortNum(1234);
         link.setLldpPortId("1234");
         link.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         link.setLldpPortDescr("portDescr");
