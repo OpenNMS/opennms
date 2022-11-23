@@ -1,12 +1,12 @@
 import ReportDetails from './ReportDetails';
 import ErrorResponse from '../../lib/onms-http/ErrorResponse';
 import Types from '../../lib/onms-schedule-editor/scripts/Types';
-import moment from 'moment';
 import { $q } from 'angular-ui-router';
-require('moment-timezone');
 
 const hash = require('hash.js');
 const angular = require('vendor/angular-js');
+const moment = require('vendor/moment-js');
+
 require('../../lib/onms-http');
 require('../../lib/onms-pagination');
 require('../../lib/onms-datetimepicker');
