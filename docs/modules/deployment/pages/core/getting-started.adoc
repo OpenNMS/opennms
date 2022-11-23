@@ -30,8 +30,7 @@ endif::[]
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
-* A SELinux policy that permits binding to the ICMP service.
-(If you are using an operating system that includes SELinux.)
+* A SELinux policy that permits binding to the ICMP service (if you are using an operating system that includes SELinux).
 +
 Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see <<selinux-icmp,SELinux and ICMP permissions>>).
 ifeval::["{page-component-title}" == "Horizon"]
@@ -80,7 +79,7 @@ allow unconfined_service_t node_t:icmp_socket node_bind;
 allow unconfined_service_t port_t:icmp_socket name_bind;
 ----
 
-Create a type enforcement file like this: `JniPing.te`.
+Create a type enforcement file (for example, `JniPing.te`):
 
 [source, console]
 ----
@@ -114,7 +113,7 @@ semodule -i JniPing.pp
 getenforce
 ----
 
-You can verify the package with `semodule --list-modules | grep JniPing`.
+You can verify the package with the following command: `semodule --list-modules | grep JniPing`.
 
 [[setup-postgresql]]
 == Set up PostgreSQL
