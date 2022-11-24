@@ -50,7 +50,7 @@
         <createIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx">
             <column name="nodeid"/>
         </createIndex>
-        <addUniqueConstraint tableName="ospfarea" columnNames="nodeid,ospfareadid" constraintName="ospfarea_pk_idx"/>
+        <addUniqueConstraint tableName="ospfarea" columnNames="nodeid,ospfareaid" constraintName="ospfarea_pk_idx"/>
 
         <rollback>
             <dropIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx" />
