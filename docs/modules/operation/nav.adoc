@@ -11,6 +11,7 @@
 ** xref:quick-start/service-assurance.adoc[]
 ** xref:quick-start/notification-config.adoc[]
 ** xref:quick-start/visualize-data.adoc[]
+** xref:quick-start/beyond-qs.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 

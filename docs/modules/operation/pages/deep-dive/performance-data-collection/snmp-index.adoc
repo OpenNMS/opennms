@@ -3,16 +3,18 @@
 = Create a Custom Resource Type
 
 This section describes how to create a custom resource type to collect SNMP data from tables with arbitrary indexes.
-Whether it is an MIB-2 host-resources storage table, a Brocade fibre channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
+Whether it is a MIB-2 `host-resources` storage table, a Brocade Fibre Channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
 
 [[resourcetype-def]]
 == Create a resourceType definition
 
-Configure data collection as normal, but with a few small differences.
-First, make sure a resourceType element exists in `datacollection-config.xml` to specify the custom resource type.
-This element needs to be before the "groups" element.
-For the MIB-2 host resources storage table, we have an entry like this:
+The process to create a custom resourceType definition is the same as configuring your data collection settings, with only a few small differences.
+First, you must make sure that a resourceType element exists in `datacollection-config.xml` to specify the custom resource type.
+This element needs to be placed before the "groups" element.
 
+For the MIB-2 host resources storage table, {page-component-title} uses the following definition:
+
+.resourceType definition for the MIB-2 host resources storage table
 [source, xml]
 ----
 <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)">
@@ -21,36 +23,36 @@ For the MIB-2 host resources storage table, we have an entry like this:
 </resourceType>
 ----
 
-*Name attribute*
+=== Name attribute
 
-The name attribute ("hrStorageIndex" above) is not magical in any way; it does not need to correlate to an MIB that OpenNMS has knowledge of.
-The `datacollection-config.xml` file and the `snmp-graph.properties` file use this attribute to refer to this custom resource type.
+The name attribute ("hrStorageIndex" in the example above) is not magical in any way; it does not need to correlate to a MIB that OpenNMS has knowledge of.
+`datacollection-config.xml` and `snmp-graph.properties` use this attribute to refer to the custom resource type.
 
-To ensure all resource type data stays separate, all RRD data goes into a directory based on this name.
+To ensure that all resource type data stays separate, all RRD data goes into a directory based on this attribute.
 For example, for node 1, all data for the example resource type goes into `$\{OPENNMS_HOME}/share/rrd/snmp/1/hrStorageIndex`.
 
-The length of the index does not matter; this facility should work to collect from multiply indexed tables such as tcpConnTable.
+The length of the index does not matter; this facility should work to collect from multiply indexed tables such as `tcpConnTable`.
 
-*Label attribute*
+=== Label attribute
 
-The label attribute ("Storage (MIB-2 Host Resources)" above) provides a user-friendly label in the webUI when listing this resource type.
+The label attribute ("Storage (MIB-2 Host Resources)" in the example above) provides a user-friendly label in the web UI when listing this resource type.
 
-*Storage strategy classes*
+=== Storage strategy classes
 
-The persistenceSelectorStrategy and storageStrategy define the classes used to decide whether data for this resource type should be persisted (written to disk), and how the data is written to disk.
-The classes in the example above are the usual ones, but for more flexibility, you can use  xref:deep-dive/performance-data-collection/resource-types.adoc#siblingcolumnstoragestrategy[SiblingColumnStorageStrategy] or xref:deep-dive/performance-data-collection/resource-types.adoc#persistregexselectorstrategy[PersistRegexSelectorStrategy].
+The `persistenceSelectorStrategy` and `storageStrategy` attributes define the classes used to decide whether data for this resource type should be persisted (written to the disk), and, if so, how the data is written to the disk.
+The classes in the example above are the usual ones, but, for more flexibility, you can use the  xref:deep-dive/performance-data-collection/resource-types.adoc#siblingcolumnstoragestrategy[SiblingColumnStorageStrategy] or the xref:deep-dive/performance-data-collection/resource-types.adoc#persistregexselectorstrategy[PersistRegexSelectorStrategy].
 
 [[group-def]]
-== Create "group" and "mibObj" definitions
+== Create group and mibObj definitions
 
-Create the "group" and its children "mibObj" elements as you normally would, but with two differences:
+You can create the `group` and `mibObj` elements as you normally would, but with two key differences:
 
-* Set the ifType attribute for the group element to be "all". Without this, the data will be incorrectly assumed to be node-level data (not indexed).
+* Set the `ifType` attribute for the group element to "all".
+Without this, the data will be incorrectly assumed to be node-level data (not indexed).
+* Set the `instance` attribute on the `mibObj` elements to be the resource type's name.
+In the example above, this would be `hrStorageIndex`.
 
-* Set the instance attribute on the mibObj elements to be the name of your resource type.
-This would be "hrStorageIndex" for the example above.
-
-Here is the data to collect for the hrStorageIndex resource type:
+This code snippet shows what data is collected for the `hrStorageIndex` resource type:
 
 [source, xml]
 ----
@@ -65,11 +67,13 @@ Here is the data to collect for the hrStorageIndex resource type:
 [[system-def]]
 == Add the group to a system definition
 
-In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups so it knows what it should gather for different types of SNMP agents.
+{page-component-title} needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups in `datacollection-config.xml`.
+This ensures that {page-component-title} knows what it should gather for different types of SNMP agents.
 
-You must add the newly created collection group to one or more system definitions (systemDef) in datacollection-config.xml so that OpenNMS will try to collect data for that collection group.
+You must add any newly created collection groups to one or more system definitions in `datacollection-config.xml`.
+Otherwise, {page-component-title} will not collect data for that collection group.
 
-The following shows that the group for "mib2-host-resources-storage" was added to the definition for Net-SNMP which matches any agent that has a system object ID that begins with `.1.3.6.1.4.8072.3.`:
+This code snippet shows that the group for `mib2-host-resources-storage` was added to the `Net-SNMP` definition, which matches any agent that has a system object ID that begins with `.1.3.6.1.4.8072.3.`:
 
 [source, xml]
 ----
@@ -90,9 +94,9 @@ The following shows that the group for "mib2-host-resources-storage" was added t
 [[report-snmp-graph]]
 == Create a report in snmp-graph.properties
 
-Finally, you create a report in snmp-graph.properties like you normally would, with the exception that you set the type to match the name of the resource type.
+Finally, you can create a report in `snmp-graph.properties` like you normally would, with the exception that you must set the type to match the resource type's name.
 
-Here is an example for hrStorageIndex disk utilization data:
+This code snippet creates a report for `hrStorageIndex` disk utilization data:
 
 [source, xml]
 ----
@@ -116,9 +120,10 @@ report.mib2.storage.usage.command=--title="Storage Utilization" \
    GPRINT:usedBytes:MAX:"Max  \\: %8.2lf %s\\n"
 ----
 
-Make sure that you add your new report to the reports parameter in the same file, otherwise the graphing system will not add it as an available report.
-For the above example, the report name is "mib2.storage.usage".
+You must make sure that you add your new report to the `reports` parameter in the same file; otherwise, the graphing system will not add it as an available report.
+In the example above, the report name is `mib2.storage.usage`.
 
+.Example of `reports` parameter, which configures available reports
 [source, xml]
 ----
 reports=mib2.bits, mib2.percentdiscards, mib2.percenterrors, \
