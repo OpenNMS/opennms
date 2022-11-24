@@ -40,54 +40,54 @@ import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
 import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RPict001_IP;
 import static org.opennms.netmgt.nb.Nms0002NetworkBuilder.RPict001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_IP;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_IP;
+import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_GB05_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST3_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST4_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST5_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER1_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER2_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER3_MAC;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_IP;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_NAME;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_RESOURCE;
+import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH2_IP;
 import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_IP;
 import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK1_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_IP;
 import static org.opennms.netmgt.nb.Nms4930NetworkBuilder.DLINK2_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_IP;
-import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_IP;
-import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH2_IP;
-import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_IP;
-import static org.opennms.netmgt.nb.Nms102NetworkBuilder.MIKROTIK_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_IP;
 import static org.opennms.netmgt.nb.Nms7467NetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_NAME;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_IP;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_NAME;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_IP;
-import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_NAME;
-import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_IP;
-import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_GB05_MAC;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER1_ETHER1_MAC;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER1_MAC;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER2_MAC;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER3_ETHER3_MAC;
-import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_IP;
-import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST3_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST4_LLDP_ID;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.HOST5_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_IP;
+import static org.opennms.netmgt.nb.Nms7777DWNetworkBuilder.DW_SNMP_RESOURCE;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -129,6 +129,7 @@ import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.model.OspfIf;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
@@ -158,10 +159,8 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -446,12 +445,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testOspfIfTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config, m_client, null);
         String trackerName = "ospfIfTable";
-        final List<OspfLink> links = new ArrayList<>();
+        final List<OspfIf> ports = new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
 
         	public void processOspfIfRow(final OspfIfRow row) {
-        		links.add(row.getOspfLink());
+        		ports.add(ipAddrTableGetter.get(row.getOspfIf()));
          	}
         };
 
@@ -466,29 +466,34 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             return;
         }
         
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config, m_client, null);
-        for (OspfLink link: links) {
-                link = ipAddrTableGetter.get(link);
-			assertEquals(0, link.getOspfAddressLessIndex().intValue());
-			if (link.getOspfIpAddr().equals(InetAddress.getByName("192.168.100.246"))) {
-				assertEquals(10101, link.getOspfIfIndex().intValue());
-				assertEquals(InetAddress.getByName("255.255.255.252"), link.getOspfIpMask());
-			} else if (link.getOspfIpAddr().equals(InetAddress.getByName("172.16.10.1"))){
-				assertEquals(10, link.getOspfIfIndex().intValue());
-				assertEquals(InetAddress.getByName("255.255.255.0"), link.getOspfIpMask());
-			} else if (link.getOspfIpAddr().equals(InetAddress.getByName("172.16.20.1"))){
-				assertEquals(20, link.getOspfIfIndex().intValue());
-				assertEquals(InetAddress.getByName("255.255.255.0"), link.getOspfIpMask());
-			} else if (link.getOspfIpAddr().equals(InetAddress.getByName("172.16.30.1"))){
-				assertEquals(30, link.getOspfIfIndex().intValue());
-				assertEquals(InetAddress.getByName("255.255.255.0"), link.getOspfIpMask());
-			} else if (link.getOspfIpAddr().equals(InetAddress.getByName("172.16.40.1"))){
-				assertEquals(40, link.getOspfIfIndex().intValue());
-				assertEquals(InetAddress.getByName("255.255.255.0"), link.getOspfIpMask());
-			} else {
-                fail();
-			}
+        for (OspfIf port: ports) {
+			assertEquals(0, port.getOspfIfAddressLessIf().intValue());
+            assertEquals(InetAddress.getByName("0.0.0.0"), port.getOspfIfAreaId());
+            switch (port.getOspfIfIpaddress().getHostAddress()) {
+                case "192.168.100.246":
+                    assertEquals(10101, port.getOspfIfIfindex().intValue());
+                    assertEquals(InetAddress.getByName("255.255.255.252"), port.getOspfIfNetmask());
+                    break;
+                case "172.16.10.1":
+                    assertEquals(10, port.getOspfIfIfindex().intValue());
+                    assertEquals(InetAddress.getByName("255.255.255.0"), port.getOspfIfNetmask());
+                    break;
+                case "172.16.20.1":
+                    assertEquals(20, port.getOspfIfIfindex().intValue());
+                    assertEquals(InetAddress.getByName("255.255.255.0"), port.getOspfIfNetmask());
+                    break;
+                case "172.16.30.1":
+                    assertEquals(30, port.getOspfIfIfindex().intValue());
+                    assertEquals(InetAddress.getByName("255.255.255.0"), port.getOspfIfNetmask());
+                    break;
+                case "172.16.40.1":
+                    assertEquals(40, port.getOspfIfIfindex().intValue());
+                    assertEquals(InetAddress.getByName("255.255.255.0"), port.getOspfIfNetmask());
+                    break;
+                default:
+                    fail();
 
+            }
         }
     }
 
