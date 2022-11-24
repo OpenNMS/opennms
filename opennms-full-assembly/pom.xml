@@ -459,7 +459,6 @@
                 <feature>vaadin</feature>
                 <feature>vaadin-dashboard</feature>
                 <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-node-maps</feature>
                 <feature>vaadin-snmp-events-and-metrics</feature>
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
@@ -520,6 +519,7 @@
                 <feature>opennms-deviceconfig-sink-consumer</feature>
                 <feature>opennms-deviceconfig-service</feature>
                 <feature>opennms-deviceconfig-monitor</feature>
+                <feature>opennms-timeseries-api</feature>
 
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
@@ -1077,6 +1077,23 @@
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.shell</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- timeseries api -->
+    <dependency>
+        <groupId>net.agkn</groupId>
+        <artifactId>hll</artifactId>
+        <version>${hllVersion}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.timeseries</artifactId>
+        <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

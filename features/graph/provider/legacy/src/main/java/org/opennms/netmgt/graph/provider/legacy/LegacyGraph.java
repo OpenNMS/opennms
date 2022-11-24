@@ -28,13 +28,70 @@
 
 package org.opennms.netmgt.graph.provider.legacy;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.focus.Focus;
+import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
 
+import com.google.common.collect.Lists;
+
 public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
+
+    public static GraphInfo getGraphInfo(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
+        final TopologyProviderInfo delegateInfo = topoGraphProvider.getTopologyProviderInfo();
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(topoGraphProvider.getNamespace());
+        graphInfo.setDescription(delegateInfo.getDescription());
+        graphInfo.setLabel(delegateInfo.getName());
+        return graphInfo;
+    }
+
+    public static LegacyGraph getLegacyGraphFromTopoGraphProvider(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
+        return new LegacyGraph(getImmutableGraphFromTopoGraphProvider(topoGraphProvider).asGenericGraph());
+    }
+
+    public static ImmutableGraph<?,?> getImmutableGraphFromTopoGraphProvider(org.opennms.features.topology.api.topo.GraphProvider topoGraphProvider) {
+        topoGraphProvider.refresh();
+        final BackendGraph currentGraph = topoGraphProvider.getCurrentGraph();
+        final GenericGraph.GenericGraphBuilder builder = GenericGraph.builder();
+        builder.graphInfo(getGraphInfo(topoGraphProvider))
+                .id(currentGraph.getNamespace())
+                .property(GenericProperties.Enrichment.RESOLVE_NODES, true)
+                .property(GenericProperties.Enrichment.DEFAULT_STATUS, true);
+
+        currentGraph.getVertices().forEach(legacyVertex -> {
+            final LegacyVertex domainVertex = new LegacyVertex(legacyVertex);
+            final GenericVertex genericVertex = domainVertex.asGenericVertex();
+            builder.addVertex(genericVertex);
+        });
+
+        currentGraph.getEdges().forEach(legacyEdge -> {
+            final LegacyEdge domainEdge = new LegacyEdge(legacyEdge);
+            final GenericEdge genericEdge = domainEdge.asGenericEdge();
+            builder.addEdge(genericEdge);
+        });
+
+        final Set<VertexRef> focus = topoGraphProvider.getDefaults().getCriteria().stream()
+                .filter(c -> VertexHopCriteria.class.isAssignableFrom(c.getClass()))
+                .map(c -> (VertexHopCriteria) c)
+                .flatMap(c -> c.getVertices().stream())
+                .map(v -> new org.opennms.netmgt.graph.api.VertexRef(v.getNamespace(), v.getId()))
+                .collect(Collectors.toSet());
+        builder.focus(new Focus(FocusStrategy.SELECTION, Lists.newArrayList(focus)));
+        return builder.build();
+    }
 
     public LegacyGraph(GenericGraph genericGraph) {
         super(genericGraph);

@@ -18,6 +18,7 @@ import graphModule from './graph'
 import pluginModule from './plugin'
 import deviceModule from './device'
 import scvModule from './scv'
+import menuModule from './menu'
 
 export default createStore({
   modules: {
@@ -37,6 +38,7 @@ export default createStore({
     graphModule,
     pluginModule,
     deviceModule,
-    scvModule
+    scvModule,
+    menuModule
   }
 })

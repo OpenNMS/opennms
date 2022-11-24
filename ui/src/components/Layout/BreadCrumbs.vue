@@ -1,9 +1,10 @@
 <template>
   <div class="breadcrumbs subtitle2">
-    <template v-for="item of items" :key="item.label">
+    <template v-for="item,index of items" :key="item.label">
       <div class="link">
-        <router-link :to="item.to">{{ item.label }}</router-link>
-        <FeatherIcon :icon="ChevronRight" :class="'link-icon' + ` ${item.position}`" />
+        <a v-if="item.isAbsoluteLink" :href="item.to">{{ item.label }}</a>
+        <router-link v-else :to="item.to">{{ item.label }}</router-link>
+        <span v-if="index !== items.length - 1" class="slash">&sol;</span>
       </div>
     </template>
   </div>
@@ -24,26 +25,44 @@ defineProps({
   
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
+
 .breadcrumbs {
-  @include elevation(1);
   width: 100%;
   display: flex;
-  height: 47px;
-  margin-top: 15px;
   margin-bottom: 15px;
+  background: #e9ecef;
+
   .link {
-    color: var($secondary-variant) !important;
-    line-height: 3.5;
+    color: #265A87;
+    a {
+      font-weight:400;
+      color: #265A87;
+    }
+    a:visited {
+      color: #265A87;
+    }
+
+    padding:8px 0;
   }
+
   .link:first-child {
-    margin-left: 15px;
+    margin-left: 8px;
   }
+
   .link-icon {
     margin: 0px 10px -3px 10px;
     font-size: 20px;
   }
+
   .last {
     display: none;
+  }
+
+  .slash {
+    color: #6c757d;
+    padding: 0 8px;
+    font-weight:400;
   }
 }
 </style>

@@ -147,6 +147,15 @@ public class ModelMappers {
         if (event.getSeverity() != null) {
             builder.setSeverity(OnmsSeverity.get(event.getSeverity().getId()).getLabel());
         }
+        if (event.getInterface() != null) {
+            builder.setInterface(event.getInterface());
+        }
+        if (event.getService() != null) {
+            builder.setService(event.getService());
+        }
+        if (event.getTime() != null) {
+            builder.setTime(event.getTime());
+        }
         for (EventParameter p : event.getParameters()) {
             builder.setParam(p.getName(), p.getValue());
         }

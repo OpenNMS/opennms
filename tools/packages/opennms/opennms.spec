@@ -65,10 +65,12 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
+Requires: %{name}-plugin-cloud >= 1.0.0
 Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
+
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -100,6 +102,7 @@ Requires:	jicmp6 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
+Provides:	%{name}-plugin-api = %{opa_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
@@ -210,6 +213,7 @@ Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
+Requires: %{name}-plugin-cloud
 
 %description plugins
 This installs all optional plugins.
@@ -722,7 +726,7 @@ find %{buildroot}%{jettydir} ! -type d | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	sort >> %{_tmppath}/files.jetty
+	sort > %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/hawtio' | \

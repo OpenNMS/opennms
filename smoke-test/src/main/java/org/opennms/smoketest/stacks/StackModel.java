@@ -51,6 +51,7 @@ public class StackModel {
     private final List<SentinelProfile> sentinels;
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
+    private final boolean simulateRestricedOpenShiftEnvironment;
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
@@ -67,6 +68,7 @@ public class StackModel {
         // Flags
         elasticsearchEnabled = builder.elasticsearchEnabled;
         telemetryProcessingEnabled = builder.telemetryProcessingEnabled;
+        simulateRestricedOpenShiftEnvironment = builder.simulateRestricedOpenShiftEnvironment;
 
         // Enums
         ipcStrategy = builder.ipcStrategy;
@@ -87,6 +89,7 @@ public class StackModel {
         private List<SentinelProfile> sentinels = new LinkedList<>();
         private boolean elasticsearchEnabled = false;
         private boolean telemetryProcessingEnabled = false;
+        private boolean simulateRestricedOpenShiftEnvironment = false;
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
@@ -134,7 +137,7 @@ public class StackModel {
         /**
          * Enable a Minion using the given configuration.
          *
-         * @param minion configuration to use
+         * @param configuration minion configuration to use
          * @return this builder
          */
 
@@ -146,7 +149,7 @@ public class StackModel {
         /**
          * Enable many Minions using the given configurations.
          *
-         * @param minions configurations to use
+         * @param configurations minions configurations to use
          * @return this builder
          */
 
@@ -232,6 +235,17 @@ public class StackModel {
         }
 
         /**
+         * Simulate a restricted OpenShift environment by using a random UID when
+         * starting the container, and using a JDK w/o capabilities set
+         *
+         * @return this builder
+         */
+        public Builder withSimulateRestricedOpenShiftEnvironment() {
+            simulateRestricedOpenShiftEnvironment = true;
+            return this;
+        }
+
+        /**
          * Choose the key value store to use for blobs.
          *
          * @return this builder
@@ -292,6 +306,10 @@ public class StackModel {
 
     public boolean isTelemetryProcessingEnabled() {
         return telemetryProcessingEnabled;
+    }
+
+    public boolean isSimulateRestricedOpenShiftEnvironment() {
+        return simulateRestricedOpenShiftEnvironment;
     }
 
     public IpcStrategy getIpcStrategy() {

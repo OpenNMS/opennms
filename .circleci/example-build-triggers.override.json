@@ -1,7 +1,7 @@
 {
     "build-deploy": false,
     "coverage": false,
-    "doc": false,
+    "docs": false,
     "ui": false,
     "integration": false,
     "smoke": false,

@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,9 +54,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ThreadLocalRandom;
 
-import org.awaitility.core.ConditionTimeoutException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -80,6 +81,7 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -133,11 +135,21 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final StackModel model;
     private final OpenNMSProfile profile;
     private final Path overlay;
+    private int generatedUserId = -1;
+    private boolean afterTestCalled = false;
+    private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super("horizon");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
+
+        // Generate a random UID if simulating an OpenShift environment
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            generatedUserId = ThreadLocalRandom.current().nextInt(
+                    TestContainerUtils.OPENSHIFT_CONTAINER_UID_RANGE_MIN, TestContainerUtils.OPENSHIFT_CONTAINER_UID_RANGE_MAX + 1);
+        }
+
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
@@ -145,8 +157,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
-        final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
-                .toArray(new Integer[0]);
+        final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
+                .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
+                .map(Map.Entry::getValue)
+                .toArray(Integer[]::new);
         final int[] exposedUdpPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
                 .mapToInt(Map.Entry::getValue)
@@ -157,12 +171,22 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
 
+        // Use a Java binary without any capabilities set (i.e. cap_net_raw for ping) when simulating an OpenShift env.
+        // This helps make sure that the JVM in question is setup correctly
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            this.withEnv("JAVA_HOME", "/usr/lib/jvm/java-nocap");
+        }
+
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
+                    // Use the generated UID and known GID when simulating OpenShift
+                    if (model.isSimulateRestricedOpenShiftEnvironment()) {
+                        createCmd.withUser(generatedUserId + ":" + TestContainerUtils.OPENSHIFT_CONTAINER_GID);
+                    }
                 })
                 .withEnv("POSTGRES_HOST", DB_ALIAS)
                 .withEnv("POSTGRES_PORT", Integer.toString(PostgreSQLContainer.POSTGRESQL_PORT))
@@ -224,6 +248,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             sysProps.store(fos, "Generated");
         }
 
+        // Set RUNAS to the generated UID to make our startup scripts happy
+        // This is not necessary in an OpenShift environment, since /etc/passwd is automatically populated with the entry
+        if (model.isSimulateRestricedOpenShiftEnvironment()) {
+            writeProps(etc.resolve("opennms.conf"),
+                    ImmutableMap.<String,String>builder()
+                            .put("RUNAS", Integer.toString(generatedUserId))
+                            .build());
+        }
+
         // Karaf feature configuration
 
         Path bootD = etc.resolve("featuresBoot.d");
@@ -272,7 +305,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     /**
      * @return the URL in a form consumable by containers networked with this one using the alias and internal port
      */
-    public static URL getBaseUrlInternal() {
+    public URL getBaseUrlInternal() {
         try {
             return new URL(String.format("http://%s:%d/", ALIAS, OPENNMS_WEB_PORT));
         } catch (MalformedURLException e) {
@@ -381,6 +414,34 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         return model;
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause with OpenNMS startup errors further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     private static class WaitForOpenNMS extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final OpenNMSContainer container;
 
@@ -390,9 +451,22 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         @Override
         protected void waitUntilReady() {
+            try {
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
+            }
+        }
+
+        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
-            await().atMost(3, MINUTES).ignoreExceptions()
+            await("waiting for startup to begin")
+                    .atMost(3, MINUTES)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreException(NotFoundException.class)
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
             LOG.info("OpenNMS has begun starting up.");
@@ -400,24 +474,24 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             LOG.info("Waiting for OpenNMS REST API...");
             final long timeoutMins = 5;
             final RestClient restClient = container.getRestClient();
-            final AtomicReference<String> lastOutput = new AtomicReference<>();
-            try {
-                await().atMost(timeoutMins, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(restClient::getDisplayVersion, notNullValue());
-            } catch(ConditionTimeoutException e) {
-                LOG.error("OpenNMS did not finish starting after {} minutes. Last output: {}", timeoutMins, lastOutput);
-                throw new RuntimeException(e);
-            }
+
+            await("waiting for OpenNMS REST API")
+                    .atMost(timeoutMins, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(restClient::getDisplayVersion, notNullValue());
             LOG.info("OpenNMS REST API is online.");
 
             // Wait until all daemons have finished starting up
             // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
             // have been given a chance to bind
             LOG.info("Waiting for startup to complete.");
-            await().atMost(5, MINUTES).until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
-                    containsString("Starter: Startup complete"));
+            await("waiting for startup to complete")
+                    .atMost(5, MINUTES)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
+                            containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
             // Defer the health-check (if we do run it) until the system has completely started
@@ -426,15 +500,23 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             // currently required to pass.
             if (container.getModel().isElasticsearchEnabled()) {
                 LOG.info("Waiting for OpenNMS health check...");
-                final InetSocketAddress karafSsh = container.getSshAddress();
-                awaitHealthCheckSucceeded(karafSsh, 3, "OpenNMS");
+                awaitHealthCheckSucceeded(container);
                 LOG.info("Health check passed.");
             }
         }
     }
 
+    public int getGeneratedUserId() {
+        return generatedUserId;
+    }
+
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
+        if (afterTestCalled) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls");
+            return;
+        }
+        afterTestCalled = true;
         KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
@@ -443,10 +525,12 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         LOG.info("Triggering thread dump...");
         DevDebugUtils.triggerThreadDump(this);
         LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
+        var logs = copyLogs(this, prefix);
+        LOG.info("Logs: {}", logs.toUri());
+        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
     }
 
-    private static void copyLogs(OpenNMSContainer container, String prefix) {
+    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("alarmd.log",
                 "collectd.log",
@@ -458,13 +542,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "provisiond.log",
                 "trapd.log",
                 "web.log");
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.copyLogs(container,
                 // dest
-                Paths.get("target", "logs", prefix, ALIAS),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", ALIAS, "logs"),
                 // log files
                 logFiles);
+        return targetLogFolder;
     }
 
 }

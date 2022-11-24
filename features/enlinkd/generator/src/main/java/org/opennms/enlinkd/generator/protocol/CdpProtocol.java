@@ -42,12 +42,9 @@ import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class CdpProtocol extends Protocol<CdpElement> {
-    private final static Logger LOG = LoggerFactory.getLogger(CdpProtocol.class);
-    private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.cdp;
+public class CdpProtocol extends Protocol {
+    private final TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.cdp;
 
     public CdpProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);

@@ -32,6 +32,7 @@ import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 
 import org.junit.After;
@@ -114,7 +115,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
 
-        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
         final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
 
         try {
@@ -143,7 +144,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
             getDriver().switchTo().alert().accept();
 
-            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
             final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
 
             try {
@@ -162,7 +163,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         } finally {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
 
-            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+            final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
             final String deleteLink = "//a[@id='" + name + ".delete']";
 
             try {
@@ -205,7 +206,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and confirm the alert box.
         getDriver().switchTo().alert().accept();
 
-        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), 10);
+        final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
         final String outageTypeSelectorXPath = "//select[@id='outageTypeSelector']";
 
         try {

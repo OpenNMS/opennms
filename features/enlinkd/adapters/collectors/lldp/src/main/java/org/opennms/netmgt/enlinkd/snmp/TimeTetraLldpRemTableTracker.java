@@ -104,7 +104,7 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 		}
 
 		public Integer getLldpLocalPortNum() {return getInstance().toString().hashCode();}
-	    public Integer getLldpRemLocalPortNum() {
+	    public Integer getLldpRemIndex() {
 	    	return getInstance().getSubIdAt(3);
 	    }
         public Integer getTmnxLldpRemLocalDestMACAddress() {
@@ -144,7 +144,8 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpLocalPortNum());
+            lldpLink.setLldpRemLocalPortNum(getIfindex()*31+getTmnxLldpRemLocalDestMACAddress());
+            lldpLink.setLldpRemIndex(getLldpRemIndex());
             lldpLink.setLldpPortIfindex(getIfindex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
@@ -153,8 +154,8 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
 
-            LOG.debug( "getLldpLink: local port num: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
-                       lldpLink.getLldpLocalPortNum(),
+            LOG.debug( "getLldpLink: Rem Index: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
+                       lldpLink.getLldpRemIndex(),
                        lldpLink.getLldpPortIfindex(),
                         getTmnxLldpRemLocalDestMACAddress(),
                        lldpLink.getLldpRemChassisId(),

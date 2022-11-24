@@ -39,10 +39,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollerConfig;
@@ -58,18 +60,16 @@ import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Time;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
-import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.springframework.core.io.ByteArrayResource;
 
 import com.google.common.collect.Maps;
 
 public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements PollerConfig {
 
-    private final ServiceMonitorRegistry m_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
+    private final MockServiceMonitorRegistry m_serviceMonitorRegistry = new MockServiceMonitorRegistry();
 
     private String m_criticalSvcName;
 
@@ -79,7 +79,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
 
     private Vector<Package> m_pkgs = new Vector<>();
 
-    private Map<String, ServiceMonitor> m_svcMonitors = new TreeMap<String, ServiceMonitor>();
+    private Map<String, ServiceMonitorLocator> m_svcMonitorLocators = new TreeMap<>();
 
     private int m_threads = 1;
 
@@ -233,11 +233,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         addScheduledOutage(m_currentPkg, outageName, dayOfWeek, beginTime, endTime, ipAddr);
     }
 
-
-    public void addService(String name, ServiceMonitor monitor) {
-        addService(name, m_defaultPollInterval, monitor);
-    }
-
     public void addService(String name, long interval, ServiceMonitor monitor) {
         Service service = findService(m_currentPkg, name);
         if (service == null) {
@@ -251,8 +246,30 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     private void addServiceMonitor(String name, ServiceMonitor monitor) {
-        if (!hasServiceMonitor(name))
-            m_svcMonitors.put(name, monitor);
+        if (m_svcMonitorLocators.containsKey(name)) {
+            return;
+        }
+
+        final var key = String.format("%s:%s", monitor.getClass().getCanonicalName(), name);
+
+        m_serviceMonitorRegistry.monitors.put(key, monitor);
+
+        m_svcMonitorLocators.put(name, new ServiceMonitorLocator() {
+            @Override
+            public String getServiceName() {
+                return name;
+            }
+
+            @Override
+            public String getServiceLocatorKey() {
+                return key;
+            }
+
+            @Override
+            public ServiceMonitor getServiceMonitor(final ServiceMonitorRegistry registry) {
+                return registry.getMonitorByClassName(this.getServiceLocatorKey());
+            }
+        });
     }
 
     public void addService(MockService svc) {
@@ -273,12 +290,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public void addMonitor(String svcName, String className) {
-        addServiceMonitor(svcName, new MockMonitor(m_network, svcName));
-
-    }
-
-    @Override
     public Enumeration<Package> enumeratePackage() {
         return m_pkgs.elements();
     }
@@ -286,11 +297,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public List<Package> getPackages() {
         return m_pkgs;
-    }
-
-    @Override
-    public List<Monitor> getConfiguredMonitors() {
-        return Collections.emptyList();
     }
 
     private Service findService(Package pkg, String svcName) {
@@ -331,9 +337,13 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return m_rraLists.get(pkg);
     }
 
-    @Override
     public ServiceMonitor getServiceMonitor(String svcName) {
-        return m_svcMonitors.get(svcName);
+        return Objects.requireNonNull(m_svcMonitorLocators.get(svcName).getServiceMonitor(m_serviceMonitorRegistry));
+    }
+
+    @Override
+    public Optional<ServiceMonitorLocator> getServiceMonitorLocator(final String svcName) {
+        return Optional.ofNullable(m_svcMonitorLocators.get(svcName));
     }
 
     @Override
@@ -506,13 +516,17 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         m_currentSvc.addParameter(param);
     }
 
+    public void reset() {
+        this.m_pkgs.clear();
+    }
+
     @Override
     public void addPackage(final Package pkg) {
         m_pkgs.add(pkg);
     }
 
     @Override
-    public PollerConfiguration getConfiguration() {
+    public PollerConfiguration getLocalConfiguration() {
         // FIXME: need to actually implement this
         return null;
     }
@@ -551,11 +565,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return Collections.emptyList();
     }
 
-    @Override
-    public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
-        return null;
-    }
-
     public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
         throw new UnsupportedOperationException("not yet implemented");
 
@@ -584,5 +593,31 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public ServiceMonitorRegistry getServiceMonitorRegistry() {
         return m_serviceMonitorRegistry;
+    }
+
+    @Override
+    public void setExternalData(final List<Package> externalPackages, final List<Monitor> externalMonitors) {
+        throw new UnsupportedOperationException("MockPollerConfig.setExternalData is not yet implemented");
+    }
+
+    private  static class MockServiceMonitorRegistry implements ServiceMonitorRegistry {
+
+        public final Map<String, ServiceMonitor> monitors = Maps.newHashMap();
+
+        @Override
+        public ServiceMonitor getMonitorByClassName(final String className) {
+            return this.monitors.get(className);
+        }
+
+        @Override
+        public Set<String> getMonitorClassNames() {
+            return this.monitors.keySet();
+        }
+
+        @SuppressWarnings({ "rawtypes" })
+        public synchronized void onBind(ServiceMonitor serviceMonitor, Map properties) { }
+
+        @SuppressWarnings({ "rawtypes" })
+        public synchronized void onUnbind(ServiceMonitor serviceMonitor, Map properties) { }
     }
 }

@@ -168,7 +168,7 @@ public class ServiceTest {
         createLldpElement(35,nodes.get(5), "match2.2", "host35"));
 
         lldpLinks = Arrays.asList(
-           createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
+            createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
             createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2","host1"),
             createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6","host2"),
             createLldpLink(3, nodes.get(3), "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,  "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, "match1.1","host3"),
@@ -202,8 +202,6 @@ public class ServiceTest {
         List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> matchedLinks = isisTopologyService.match();
         assertMatching(isisLinks, matchedLinks);
 
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getIsIsElementTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getIsIsLinkTopologyEntities();
     }
@@ -227,9 +225,6 @@ public class ServiceTest {
         // 4 and 5 will match
         List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> matchedLinks = ospfTopologyService.match();
         assertMatching(ospfLinks, matchedLinks);
-
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getOspfLinkTopologyEntities();
     }
 
@@ -247,9 +242,6 @@ public class ServiceTest {
         // 4 and 5 will match
         List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchedLinks = lldpTopologyService.match();
         assertMatching(lldpLinks, matchedLinks);
-
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getLldpElementTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getLldpLinkTopologyEntities();
     }
@@ -271,7 +263,7 @@ public class ServiceTest {
 
     private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
             , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId, String remoteSysname) {
-        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", -1);
+        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", 100);
     }
 
     private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {

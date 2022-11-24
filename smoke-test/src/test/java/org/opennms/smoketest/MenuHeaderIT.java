@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -119,11 +120,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         final String mapsMenuName = "name=nav-Maps-top";
         clickMenuItem(mapsMenuName, "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
-
-        frontPage();
-        clickMenuItem(mapsMenuName, "Geographical", "node-maps");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
@@ -216,7 +212,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Repeat the process altering the offset slightly each time
         final AtomicInteger offset = new AtomicInteger(10);
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {

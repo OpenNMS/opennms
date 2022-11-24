@@ -13,7 +13,7 @@
 set -e
 
 umask 002
-OPENNMS_HOME="/opt/opennms"
+export OPENNMS_HOME="/usr/share/opennms"
 
 OPENNMS_OVERLAY="/opt/opennms-overlay"
 OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"
@@ -200,6 +200,7 @@ while getopts "fhist" flag; do
       exit
       ;;
     t)
+      shift $((OPTIND - 1))
       configTester "${@}"
       exit
       ;;

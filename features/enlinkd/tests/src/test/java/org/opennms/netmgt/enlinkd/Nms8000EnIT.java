@@ -272,7 +272,8 @@ public class Nms8000EnIT extends EnLinkdBuilderITCase {
         reverseLink.setId(-link.getId());
         reverseLink.setNode(sourcenode);
         
-        reverseLink.setLldpLocalPortNum(0);
+        reverseLink.setLldpRemLocalPortNum(0);
+        reverseLink.setLldpRemIndex(0);
         reverseLink.setLldpPortId(link.getLldpRemPortId());
         reverseLink.setLldpPortIdSubType(link.getLldpRemPortIdSubType());
         reverseLink.setLldpPortDescr(link.getLldpRemPortDescr());
