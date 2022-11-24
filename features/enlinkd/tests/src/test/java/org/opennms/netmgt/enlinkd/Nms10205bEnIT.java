@@ -486,7 +486,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(mumbaiospfelem);
         printOspfElement(mumbaiospfelem);
         final List<OspfArea> mumbaiospfAreas = m_ospfAreaDao.findByNodeId(mumbai.getId());
-        mumbaiospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        mumbaiospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> mumbaiospflinks = m_ospfLinkDao.findByNodeId(mumbai.getId());
         printOspfTopology(mumbaiospflinks);
         assertEquals(4,mumbaiospflinks.size());
@@ -497,7 +497,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(delhiospfelem);
         printOspfElement(delhiospfelem);
         final List<OspfArea> deliospfAreas = m_ospfAreaDao.findByNodeId(delhi.getId());
-        deliospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        deliospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> delhiospflinks = m_ospfLinkDao.findByNodeId(delhi.getId());
         printOspfTopology(delhiospflinks);
         assertEquals(3,delhiospflinks.size());
@@ -508,7 +508,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(bangaloreospfelem);
         printOspfElement(bangaloreospfelem);
         final List<OspfArea> bangaloreospfAreas = m_ospfAreaDao.findByNodeId(bangalore.getId());
-        bangaloreospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        bangaloreospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> bangaloreospflinks = m_ospfLinkDao.findByNodeId(bangalore.getId());
         printOspfTopology(bangaloreospflinks);
         assertEquals(4,bangaloreospflinks.size());
@@ -519,7 +519,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(bagmaneospfelem);
         printOspfElement(bagmaneospfelem);
         final List<OspfArea> bagmaneospfAreas = m_ospfAreaDao.findByNodeId(bagmane.getId());
-        bagmaneospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        bagmaneospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> bagmaneospflinks = m_ospfLinkDao.findByNodeId(bagmane.getId());
         printOspfTopology(bagmaneospflinks);
         assertEquals(4,bagmaneospflinks.size());
@@ -530,7 +530,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(mysoreospfelem);
         printOspfElement(mysoreospfelem);
         final List<OspfArea> mysoreospfAreas = m_ospfAreaDao.findByNodeId(mysore.getId());
-        mysoreospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        mysoreospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> mysoreosplinks = m_ospfLinkDao.findByNodeId(mysore.getId());
         printOspfTopology(mysoreosplinks);
         assertEquals(2,mysoreosplinks.size());
@@ -541,7 +541,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(spaceexsw1ospfelem);
         printOspfElement(spaceexsw1ospfelem);
         final List<OspfArea> spaceexsw1ospfAreas = m_ospfAreaDao.findByNodeId(spaceexsw1.getId());
-        spaceexsw1ospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        spaceexsw1ospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> spaceexsw1ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw1.getId());
         printOspfTopology(spaceexsw1ospflinks);
         assertEquals(2,spaceexsw1ospflinks.size());
@@ -552,7 +552,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(spaceexsw2ospfelem);
         printOspfElement(spaceexsw2ospfelem);
         final List<OspfArea> spaceexsw2ospfAreas = m_ospfAreaDao.findByNodeId(spaceexsw2.getId());
-        spaceexsw2ospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        spaceexsw2ospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> spaceexsw2ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw2.getId());
         printOspfTopology(spaceexsw2ospflinks);
         assertEquals(2,spaceexsw2ospflinks.size());
@@ -563,7 +563,7 @@ Address          Interface              State     ID               Pri  Dead
         assertNotNull(j635042ospfelem);
         printOspfElement(j635042ospfelem);
         final List<OspfArea> j635042ospfAreas = m_ospfAreaDao.findByNodeId(j635042.getId());
-        j635042ospfAreas.stream().forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
+        j635042ospfAreas.forEach(area -> System.err.println((area.getOspfAreaId().getHostAddress())));
         final List<OspfLink> j635042ospflinks = m_ospfLinkDao.findByNodeId(j635042.getId());
         printOspfTopology(j635042ospflinks);
         assertEquals(1,j635042ospflinks.size());
@@ -709,6 +709,8 @@ Address          Interface              State     ID               Pri  Dead
         OspfAreaOnmsTopologyUpdater areatopologyUpdater = m_linkd.getOspfAreaTopologyUpdater();
         OnmsTopology areaTopology = areatopologyUpdater.getTopology();
         printOnmsTopology(areaTopology);
+        assertEquals(9, areaTopology.getVertices().size());
+        assertEquals(8, areaTopology.getEdges().size());
 
 
 
