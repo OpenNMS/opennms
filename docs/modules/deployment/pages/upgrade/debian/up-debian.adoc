@@ -19,7 +19,7 @@ sudo apt-mark unhold libopennms-java \
 +
 [source, console]
 ----
-apt-get clean
+apt clean
 ----
 
 . Make a backup copy of your config:
@@ -30,11 +30,18 @@ rsync -Ppav ${OPENNMS_HOME}/etc /tmp/etc.orig
 rsync -Ppav ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 
+. Update the apt packages index:
++
+[source, console]
+----
+apt update -y
+----
+
 . Upgrade {page-component-title} packages to the newest version:
 +
 [source, console]
 ----
-apt-get upgrade opennms
+apt upgrade opennms
 ----
 
 . Disable auto updates:
@@ -51,7 +58,7 @@ sudo apt-mark hold libopennms-java \
 +
 [source, console]
 ----
-apt-get install openjdk-11-jdk-headless openjdk-11-jre-headless
+apt install openjdk-11-jdk-headless openjdk-11-jre-headless
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:
