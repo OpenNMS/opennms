@@ -143,7 +143,7 @@ Check the Karaf logs if the registration fails or the health check does not say 
 If this is the case, you will need to open a support ticket.
 
 You can also check if the `$\{OPENNMS_HOME}/share/rrd` files are still being updated.
-If they are not, this indicates that the Time Series DB is not working.
+If they are not, this indicates that the Time Series DB is working.
 
 [[view-time-series-data]]
 == View time series summary data
