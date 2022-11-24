@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.enlinkd.model.OspfIf;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -96,18 +97,18 @@ public class OspfIfTableTracker extends TableTracker {
         }
 
 
-        public OspfLink getOspfLink() {
+        public OspfIf getOspfIf() {
 
-            LOG.debug("getOspfLink: ospf ip address: {}, address less ifindex {}, area id {}",
+            LOG.debug("getOspfIf: ospf ip address: {}, address less ifindex {}, area id {}",
                     str(getOspfIpAddress()),
                     getOspfAddressLessIf(),
                     str(getOspfIfAreaId()));
 
-            OspfLink link = new OspfLink();
-            link.setOspfIpAddr(getOspfIpAddress());
-            link.setOspfAddressLessIndex(getOspfAddressLessIf());
-            link.setOspfIfAreaId(getOspfIfAreaId());
-            return link;
+            OspfIf ospfIf = new OspfIf();
+            ospfIf.setOspfIfIpaddress(getOspfIpAddress());
+            ospfIf.setOspfIfAddressLessIf(getOspfAddressLessIf());
+            ospfIf.setOspfIfAreaId(getOspfIfAreaId());
+            return ospfIf;
 
         }
 
