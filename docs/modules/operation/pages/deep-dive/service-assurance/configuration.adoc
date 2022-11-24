@@ -16,7 +16,7 @@ The configuration file has the following parts:
 ** Configure pollerd behavior to run tests if an outage is detected.
 * Monitor service association
 ** Implement application or network management protocol assignments.
-Configures settings for individual services, based on their names.
+This configures settings for individual services, based on their names.
 
 .Global configuration parameters for pollerd
 [source, xml]
@@ -26,7 +26,8 @@ Configures settings for individual services, based on their names.
                       serviceUnresponsiveEnabled="false"> <3>
 ----
 
-<1> Size of the thread pool to run service monitors in parallel.
+<1> Size of the thread pool.
+This lets service monitors run in parallel.
 <2> Enable or disable path outage functionality based on a critical node in a network path.
 <3> In case of an unresponsive service, generate a `serviceUnresponsive` event instead of an outage.
 This stops the xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] retesting the service after 30 seconds, and prevents false alarms.
@@ -42,12 +43,12 @@ cd $OPENNMS_HOME/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
 ----
 
-.Send configuration-reload event with the web UI
+.Send `configuration-reload` event with the web UI
 image::service-assurance/04_send-event-WebUI.png[]
 
 [[ga-pollerd-configuration-meta-data]]
 == Metadata DSL
-The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>>(domain specific language) lets you use dynamic configuration in parameter values to interpolate metadata into the parameter.
+The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use dynamic configuration in parameter values to interpolate metadata into the parameter.
 
 The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 

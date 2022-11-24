@@ -11,19 +11,25 @@ This section describes how to edit the default foreign source definition.
 
 == Edit detectors and set scan interval
 
-. In the web UI, click the *Gear* symbol in the top-right of the screen.
-. Choose menu:Provisioning[Manage Provisioning Requisitions > Edit Default FS].
+To edit service detectors and set an automatic scan interval, follow these steps:
+
+. Log in to the {page-component-title} web UI.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 +
 image::provisioning/FS_def.png[]
 +
-NOTE: The screen displays the list of service detectors and a tab to view and define policies.
+NOTE: The screen displays a list of service detectors and a tab to view and define policies.
 Provisiond scans the services in the order in which the detectors appear in the list.
 
-** Click the *Edit* symbol to edit a service detector's parameters.
+** Click *Edit* beside a service detector's name to edit its parameters.
 To add more parameters (retries, timeout, port, and so on), click *Add Parameter* and define its name and value.
-** Click the *Move* symbol to move a service detector.
-** Click the *Delete* symbol to delete a service detector.
+** Click *Move* to move a service detector.
+** Click *Delete* to delete a service detector.
 ** To undo a change, click *Reset to Default* at the top-right of the screen.
++
+NOTE: This will undo all changes and revert the service detector to its default state.
+
 . Click *Save*.
 . (Optional) Update the scan interval using one of the following:
 +
@@ -41,13 +47,19 @@ Type `0` to disable automatic scanning.
 
 == Create policies
 
-. In the web UI, click the *Gear* symbol in the top-right of the screen.
-. Choose menu:Provisioning[Manage Provisioning Requisitions > Edit Default FS] and click the Policies tab.
-. Click *Add Policy*, type a name, select the class from the *Class* list, and enter the required information.
-** Type a space in any of the lists to see their options.
-. (Optional) Click *Add Parameter* to add more parameters to the class (retries, timeout, port, and so on).
+To create a policy for a foreign source definition, follow these steps:
+
+. Log in to the {page-component-title} web UI.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
+. Navigate to the Policies tab.
+. Click *Add Policy*, type a name for the new policy, select its class from the *Class* list, and enter any required information.
++
+You can type a space in any of the boxes to display a list of their options.
+
+** (Optional) Click *Add Parameter* to add more parameters to the class definition (retries, timeout, port, and so on).
 . Click *Save*.
-. Repeat for any additional policies you want to add.
+. Repeat these steps for any additional policies that you want to add.
 . Click *Save* to save the foreign source definition.
 
 NOTE: To return to the default foreign source definition, click *Reset to Default*.
