@@ -209,7 +209,9 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     private void updateCommunityStrings(SnmpAgentConfig config) {
         if (config.getAddress().isLoopbackAddress()) {
             final var creds = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            config.setReadCommunity(creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
+            if (creds != null) {
+                config.setReadCommunity(creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
+            }
         }
     }
 
@@ -275,7 +277,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
             runTimeAttributes.forEach((label, configAsString) -> {
                 if (label.contains(AGENT_CONFIG_PREFIX) && label.contains(PROFILE_LABEL_FOR_DEFAULT_CONFIG)) {
                     final var config = SnmpAgentConfig.parseProtocolConfigurationString(configAsString);
-                    if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+                    if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getRuntimeAttributes().get("location"))) {
                         updateCommunityStrings(config);
                     }
                     agentConfigList.add(config);

@@ -87,7 +87,9 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
         if (request.getAgent().getAddress().isLoopbackAddress() && !LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getLocation())) {
             final var credentials = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            request.getAgent().setReadCommunity(credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
+            if (credentials != null) {
+                request.getAgent().setReadCommunity(credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
+            }
         }
         CompletableFuture<SnmpMultiResponseDTO> combinedFuture = CompletableFuture
                 .completedFuture(new SnmpMultiResponseDTO());
