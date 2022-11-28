@@ -20,10 +20,10 @@ const severityIcons = {
     'Critical': 'ion ion-nuclear'
 };
 const severityImages = severities.map((severity) => {
-    return require('./images/' + severity + '.png');
+    return require('./images/' + severity + '.png').default;
 });
 const severityImagesRetina = severities.map((severity) => {
-    return require('./images/' + severity + '@2x.png');
+    return require('./images/' + severity + '@2x.png').default;
 });
 
 let retryCount = 0;
