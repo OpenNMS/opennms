@@ -12,7 +12,10 @@ function getBaseHref() {
     return window.getBaseHref();
 }
 
-var app = angular.module('forecast', ['onms.http', 'onms.default.apps']);
+var app = angular.module('forecast', ['onms.http', 'onms.default.apps'])
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }]);
 
 app.directive('integer', function() {
   return {
