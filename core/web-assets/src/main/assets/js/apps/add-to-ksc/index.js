@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2016-2017 The OpenNMS Group, Inc.
+* @copyright 2016-2022 The OpenNMS Group, Inc.
 */
 
 'use strict';
@@ -17,6 +17,9 @@ angular.module('onms-ksc', [
   'angular-growl'
 ])
 
+.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}])
 .config(['growlProvider', function(growlProvider) {
   growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
@@ -87,7 +90,8 @@ angular.module('onms-ksc', [
 
   $scope.updateReport = function(report, resourceId, resourceLabel, graphName, graphTitle, timespan) {
     var url = 'rest/ksc/' + report.id;
-    $http.get(url).success(function (data) {
+    $http.get(url).then(function (response) {
+      const data = response.data;
       var found = false;
       angular.forEach(data.kscGraph, function(r) {
         if (r.resourceId === resourceId && r.graphtype === graphName) {
@@ -106,10 +110,10 @@ angular.module('onms-ksc', [
             resourceId: resourceId,
             timespan: timespan
           }
-        }).success(function() {
+        }).then(function() {
           growl.success('The graph "' + graphTitle + '" has been added to "' + report.label + '"');
-        }).error(function(msg) {
-          growl.error(msg);
+        }, function(response) {
+          growl.error(response.data);
         });
       }
     }).error(function(msg) {
@@ -130,8 +134,8 @@ angular.module('onms-ksc', [
                   start : start,
                   end : end,
                   limit: 0 }
-      }).success(function(data) {
-        deferred.resolve(data);
+      }).then(function(response) {
+        deferred.resolve(response.data);
       });
       return deferred.promise;
   };

@@ -4,7 +4,7 @@ const RequisitionService = require('../model/RequisitionService');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -12,6 +12,10 @@ const RequisitionService = require('../model/RequisitionService');
   'use strict';
 
   angular.module('onms-requisitions')
+
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }])
 
   /**
   * @ngdoc controller

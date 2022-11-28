@@ -241,6 +241,7 @@ angular.module('onmsListFilters', [])
 angular.module(MODULE_NAME, [])
 
 .config(/* @ngInject */ function($locationProvider) {
+	$locationProvider.hashPrefix('');
 	$locationProvider.html5Mode({
 		// Use HTML5 
 		enabled: true,
