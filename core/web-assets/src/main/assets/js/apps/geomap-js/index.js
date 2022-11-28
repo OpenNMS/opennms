@@ -20,10 +20,10 @@ const severityIcons = {
     'Critical': 'ion ion-nuclear'
 };
 const severityImages = severities.map((severity) => {
-    return require('./images/' + severity + '.png');
+    return require('./images/' + severity + '.png').default;
 });
 const severityImagesRetina = severities.map((severity) => {
-    return require('./images/' + severity + '@2x.png');
+    return require('./images/' + severity + '@2x.png').default;
 });
 
 let retryCount = 0;
@@ -76,8 +76,8 @@ const render = function(options) {
         let icons = {};
         for (let i = 0; i < severities.length; i++) {
             icons[severities[i]] = L.icon({
-                iconUrl: baseHref + '/assets/' + severityImages[i].default,
-                iconRetinaUrl: baseHref + '/assets/' + severityImagesRetina[i].default,
+                iconUrl: baseHref + '/assets/' + severityImages[i],
+                iconRetinaUrl: baseHref + '/assets/' + severityImagesRetina[i],
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
