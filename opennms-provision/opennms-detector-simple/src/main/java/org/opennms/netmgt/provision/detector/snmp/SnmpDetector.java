@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
@@ -159,10 +160,6 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     private static final int DEFAULT_TIMEOUT = -1;
     private static final int DEFAULT_RETRIES = -1;
 
-    private final String APPLIANCE_SNMP_COMMUNITY_ALIAS = "appliance.snmp";
-
-    private final String SNMP_COMMUNITY = "community";
-
     private String m_oid = DEFAULT_OID;
     private boolean m_isTable = false;
     private boolean m_hex = false;
@@ -211,8 +208,8 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
 
     private void updateCommunityStrings(SnmpAgentConfig config) {
         if (config.getAddress().isLoopbackAddress()) {
-            final var creds = m_scv.getCredentials(APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            config.setReadCommunity(creds.getAttribute(SNMP_COMMUNITY));
+            final var creds = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
+            config.setReadCommunity(creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
         }
     }
 
@@ -221,7 +218,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         if (request.getRuntimeAttributes() != null) {
             // All of the keys in the runtime attribute map are used to store the agent configuration
             final var config = SnmpAgentConfig.fromMap(request.getRuntimeAttributes());
-            if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+            if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getRuntimeAttributes().get("location"))) {
                 updateCommunityStrings(config);
             }
             return config;
@@ -267,7 +264,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
             runTimeAttributes.forEach((label, configAsString) -> {
                 if (label.contains(AGENT_CONFIG_PREFIX)) {
                     final var config = SnmpAgentConfig.parseProtocolConfigurationString(configAsString);
-                    if (!"Default".equals(request.getRuntimeAttributes().get("location"))) {
+                    if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getRuntimeAttributes().get("location"))) {
                         updateCommunityStrings(config);
                     }
                     agentConfigList.add(config);

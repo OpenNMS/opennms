@@ -40,6 +40,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
@@ -67,9 +68,6 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     public static final SnmpProxyRpcModule INSTANCE = new SnmpProxyRpcModule();
 
-    final String APPLIANCE_SNMP_COMMUNITY_ALIAS = "appliance.snmp";
-    final String SNMP_COMMUNITY = "community";
-
     public SecureCredentialsVault m_scv;
 
     public static final String RPC_MODULE_ID = "SNMP";
@@ -87,9 +85,9 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     @Override
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
-        if (request.getAgent().getAddress().isLoopbackAddress() && "Default".equals(request.getLocation())) {
-            final var credentials = m_scv.getCredentials(APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            request.getAgent().setReadCommunity(credentials.getAttribute(SNMP_COMMUNITY));
+        if (request.getAgent().getAddress().isLoopbackAddress() && !LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getLocation())) {
+            final var credentials = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
+            request.getAgent().setReadCommunity(credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
         }
         CompletableFuture<SnmpMultiResponseDTO> combinedFuture = CompletableFuture
                 .completedFuture(new SnmpMultiResponseDTO());

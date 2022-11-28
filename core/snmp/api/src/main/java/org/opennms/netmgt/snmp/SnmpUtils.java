@@ -48,6 +48,8 @@ public abstract class SnmpUtils {
 
     private static final ClassBasedStrategyResolver s_classBasedStrategyResolver = new ClassBasedStrategyResolver();
 
+    public static final String APPLIANCE_SNMP_COMMUNITY_ALIAS = "appliance.snmp";
+    public static final String SNMP_COMMUNITY_ATTRIBUTE = "community";
     private static Properties sm_config;
     private static StrategyResolver s_strategyResolver;
     private static final boolean canUseClassBasedStrategy = checkIfClassBasedStrategyIsInstantiable();
