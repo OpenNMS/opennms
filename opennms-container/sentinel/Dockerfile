@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required DEBS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
