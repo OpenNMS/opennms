@@ -24,6 +24,9 @@ angular.module('onms.http', ['ui.bootstrap'])
             }
         }
     }])
+    .config(['$locationProvider', function($locationProvider) {
+        $locationProvider.hashPrefix('');
+    }])
     .config(['$httpProvider',
         function ($httpProvider) {
             $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
