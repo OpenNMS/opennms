@@ -31,10 +31,14 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Command(scope = "opennms", name = "scv-set", description="Sets and securely store the credentials for the given alias.")
 @Service
@@ -53,9 +57,25 @@ public class ScvSetCommand implements Action {
     @Argument(index = 2, name = "password", description = "Password to store.", required = true, multiValued = false)
     public String password = null;
 
+    @Option(name="-a", description="Attributes to store with the credentials.", multiValued = true)
+    public String[] attributes;
+
     @Override
     public Object execute() throws Exception {
-        final Credentials credentials = new Credentials(username, password);
+        Map<String, String> properties = new HashMap<>();
+        if (attributes != null) {
+            for (String attributeKVPair : attributes) {
+                try {
+                    String[] tok = attributeKVPair.split("=");
+                    properties.put(tok[0], tok[1]);
+                }
+                catch (Exception e) {
+                    System.err.println("Invalid attribute specification: " + attributeKVPair);
+                    e.printStackTrace();
+                }
+            }
+        }
+        final Credentials credentials = new Credentials(username, password, properties);
         secureCredentialsVault.setCredentials(alias, credentials);
         return null;
     }
