@@ -31,6 +31,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_IP;
+import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_IP;
 import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_NAME;
 import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_SYSOID;
@@ -42,6 +44,7 @@ import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_SYSOID;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,7 +53,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -59,22 +65,35 @@ import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.Node;
+import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.nb.Nms007NetworkBuilder;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnLinkdIT extends EnLinkdBuilderITCase {
+
+    @Autowired
+    LocationAwareSnmpClient m_client;
+
+    @Autowired
+    OspfTopologyService m_topologyService;
 
 	Nms10205bNetworkBuilder builder10205a = new Nms10205bNetworkBuilder();
 	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
@@ -1149,7 +1168,45 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(asw01.getId(), nodelinks.iterator().next());
         
     }
-    
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = FireFly170_IP, port = 161, resource = FireFly170_SNMP_RESOURCE)
+    })
+    public void testOspfTableTracker() throws Exception {
+
+        Nms007NetworkBuilder builder = new Nms007NetworkBuilder();
+        m_nodeDao.save(builder.getFireFly170());
+        OnmsNode node = m_nodeDao.findByForeignId("linkd", Nms007NetworkBuilder.FireFly170_NAME);
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(FireFly170_IP));
+        String trackerName = "ospfAreaTableTracker";
+
+        //List<OspfArea> areas =  new ArrayList<>();
+        final OspfAreaTableTracker tracker = new OspfAreaTableTracker() {
+
+            public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
+                System.err.println(row.getOspfArea());
+//                areas.add(row.getOspfArea());
+                m_topologyService.store(node.getId(), row.getOspfArea());
+            }
+        };
+
+        try {
+            m_client.walk(config,tracker)
+                    .withDescription(trackerName)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            //LOG.error("run: Ospf Area Table collection interrupted, exiting",e);
+            return;
+        }
+//        assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
+//        assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
+//        assertEquals(areas.get(0).getOspfImportAsExtern().intValue(), 1);
+//        assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
+//        assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
+//        assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);
+    }
 
 }

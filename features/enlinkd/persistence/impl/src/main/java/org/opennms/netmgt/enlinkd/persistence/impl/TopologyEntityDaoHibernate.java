@@ -38,6 +38,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao;
@@ -74,7 +75,13 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities() {
         return (List<OspfLinkTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex) from org.opennms.netmgt.enlinkd.model.OspfLink l");
+                "select new org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity(l.id, l.node.id, l.ospfIpAddr, l.ospfIpMask, l.ospfRemIpAddr, l.ospfIfIndex, l.ospfIfAreaId) from org.opennms.netmgt.enlinkd.model.OspfLink l");
+    }
+
+    @Override
+    public List<OspfAreaTopologyEntity> getOspfAreaTopologyEntities() {
+        return (List<OspfAreaTopologyEntity>)getHibernateTemplate().find(
+                "select new org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity(a.id, a.node.id, a.ospfAreaId, a.ospfAuthType, a.ospfImportAsExtern, a.ospfAreaBdrRtrCount, a.ospfAsBdrRtrCount, a.ospfAreaLsaCount ) from org.opennms.netmgt.enlinkd.model.OspfArea a");
     }
 
 

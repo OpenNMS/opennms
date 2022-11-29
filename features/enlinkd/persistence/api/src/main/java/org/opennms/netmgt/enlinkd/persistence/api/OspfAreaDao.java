@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.service.api;
+package org.opennms.netmgt.enlinkd.persistence.api;
 
-public enum ProtocolSupported {
-    NODES,
-    CDP,
-    LLDP,
-    BRIDGE,
-    OSPF,
-    OSPFAREA,
-    ISIS,
-    USERDEFINED,
-    NETWORKROUTER
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.List;
+
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.model.OnmsNode;
+
+
+public interface OspfAreaDao extends OnmsDao<OspfArea, Integer> {
+
+
+    OspfArea get(Integer node, InetAddress areaId);
+    List<OspfArea> findByNodeId(Integer nodeId);
+
+    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+    void deleteByNodeId(Integer nodeId);
+
 }

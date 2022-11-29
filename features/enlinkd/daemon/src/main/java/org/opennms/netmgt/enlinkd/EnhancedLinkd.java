@@ -116,7 +116,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
     @Autowired
     private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
-    @Autowired    
+    @Autowired
+    private OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
+    @Autowired
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
@@ -206,6 +208,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupOspf.schedule();
             m_groups.add(nodeCollectionGroupOspf);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+            scheduleAndRegisterOnmsTopologyUpdater(m_ospfAreaTopologyUpdater);
         } else {
             m_ospfTopologyService.deletePersistedData();
         }
@@ -338,7 +341,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 m_isisTopologyUpdater.forceRun();
             }
             break;
-        
+
+        case OSPFAREA:
+            if (m_linkdConfig.useOspfDiscovery()) {
+                m_ospfAreaTopologyUpdater.forceRun();
+            }
+            break;
+
         case OSPF:
             if (m_linkdConfig.useOspfDiscovery()) {
                 m_ospfTopologyUpdater.forceRun();
@@ -395,7 +404,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     m_ospfTopologyUpdater.runSchedulable();
                 }
                 break;
-            
+
+            case OSPFAREA:
+                if (m_linkdConfig.useOspfDiscovery()) {
+                    m_ospfAreaTopologyUpdater.runSchedulable();
+                }
+                break;
+
             case BRIDGE:
                 if (m_linkdConfig.useBridgeDiscovery()) {
                     m_bridgeTopologyUpdater.runSchedulable();
@@ -535,6 +550,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public OspfOnmsTopologyUpdater getOspfTopologyUpdater() {
         return m_ospfTopologyUpdater;
     }
+    public OspfAreaOnmsTopologyUpdater getOspfAreaTopologyUpdater() {
+        return m_ospfAreaTopologyUpdater;
+    }
 
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
@@ -546,6 +564,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_ospfTopologyUpdater.unschedule();
             m_ospfTopologyUpdater.unregister();
             m_ospfTopologyUpdater = OspfOnmsTopologyUpdater.clone(m_ospfTopologyUpdater);
+        }
+
+        if (m_ospfAreaTopologyUpdater.isRegistered()) {
+                m_ospfAreaTopologyUpdater.unschedule();
+                m_ospfAreaTopologyUpdater.unregister();
+                m_ospfAreaTopologyUpdater = OspfAreaOnmsTopologyUpdater.clone(m_ospfAreaTopologyUpdater);
         }
 
         if (m_lldpTopologyUpdater.isRegistered()) {
