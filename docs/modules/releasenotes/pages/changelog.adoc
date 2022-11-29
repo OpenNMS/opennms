@@ -2,7 +2,21 @@
 [[release-31-changelog]]
 = Changelog
 
+[[releasenotes-changelog-31.0.2]]
+
+== Release 31.0.2
+
+Release 31.0.2 is a blah blah blah...
+
+It contains something something someting...
+
+NOTE: The documentation for enabling JAAS encryption for Minion and Sentinel has changed.
+If you have enabled encryption previously and wish to enable stronger Jasypt-based encryption, you need to reset any existing user passwords.
+
+The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
+
 [[releasenotes-changelog-31.0.1]]
+
 == Release 31.0.1
 
 Release 31.0.1 is a small out-of-band release to address some issues found during 31.0.0 testing.
