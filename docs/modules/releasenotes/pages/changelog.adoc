@@ -11,7 +11,7 @@ Release 31.0.2 is a blah blah blah...
 It contains something something someting...
 
 NOTE: The documentation for enabling JAAS encryption for Minion and Sentinel has changed.
-If you have enabled encryption previously and wish to enable stronger Jasypt-based encryption, you will need to re-set any existing user passwords.
+If you have enabled encryption previously and wish to enable stronger Jasypt-based encryption, you need to reset any existing user passwords.
 
 The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
 
