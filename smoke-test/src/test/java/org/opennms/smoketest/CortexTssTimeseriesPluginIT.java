@@ -31,7 +31,9 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -41,9 +43,9 @@ import org.opennms.smoketest.utils.KarafShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TimeseriesAPIIT {
+public class CortexTssTimeseriesPluginIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesAPIIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CortexTssTimeseriesPluginIT.class);
 
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
@@ -52,12 +54,17 @@ public class TimeseriesAPIIT {
 
     @Before
     public void setUp() throws IOException, InterruptedException {
+        if (!CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile().exists()) {
+            FileUtils.copyURLToFile(new URL(CortexTssPluginIT.CORTEX_PLUGIN_RELEASE), CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile());
+        }
+
         // Make sure the Karaf shell is healthy before we start
         KarafShellUtils.awaitHealthCheckSucceeded(stack.opennms());
     }
 
     @Test
-    public void canLoadTimeseriesFeature() throws Exception {
+    public void canLoadTimeseriesFeatureWithCortex() throws Exception {
+        stack.opennms().installFeature("opennms-plugins-cortex-tss", CortexTssPluginIT.CORTEX_PLUGIN_KAR);
         assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
 
         KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());

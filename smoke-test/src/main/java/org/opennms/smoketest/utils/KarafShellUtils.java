@@ -111,7 +111,10 @@ public class KarafShellUtils {
      */
     public static void testHealthCheckSucceeded(InetSocketAddress sshAddr) throws Exception {
         final var healthCheckResult = executeHealthCheck(sshAddr);
-        assertThat("health check result: " + healthCheckResult, healthCheckResult.isSuccess());
+        assertThat("health check result: " + healthCheckResult
+                        + "\nMost recent exception from karaf:\n"
+                        + new KarafShell(sshAddr).run("log:exception-display").getLeft(),
+                healthCheckResult.isSuccess());
     }
 
     /**

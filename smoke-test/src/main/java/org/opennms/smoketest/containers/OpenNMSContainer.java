@@ -33,6 +33,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -64,6 +65,7 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -79,6 +81,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
+import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.NotFoundException;
@@ -116,6 +119,8 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_GRPC_PORT = 8990;
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
+
+    private static final boolean COLLECT_COVERAGE = true;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
@@ -166,9 +171,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
+        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom";
+        if (COLLECT_COVERAGE) {
+            javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
+        }
+
         if (profile.isJvmDebuggingEnabled()) {
-            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
+            javaOpts += String.format(" -agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
 
         // Use a Java binary without any capabilities set (i.e. cap_net_raw for ping) when simulating an OpenShift env.
@@ -213,6 +222,21 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
+    }
+
+    public void installFeature(String feature, Path kar) {
+        if (kar != null) {
+            copyFileToContainer(MountableFile.forHostPath(kar),
+                    "/usr/share/opennms/deploy/" + kar.getFileName().toString());
+        }
+
+        var karafShell = new KarafShell(getSshAddress());
+        karafShell.runCommand("feature:list | grep " + feature,
+                output -> output.contains(feature),false);
+
+        // Note that the feature name doesn't always match the KAR name
+        assertTrue(karafShell.runCommandOnce("feature:install " + feature,
+                output -> !output.toLowerCase().contains("error"), false));
     }
 
     @SuppressWarnings("java:S5443")
@@ -517,7 +541,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             return;
         }
         afterTestCalled = true;
-        KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
+        if (COLLECT_COVERAGE) {
+            KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
+        }
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
