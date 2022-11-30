@@ -112,6 +112,33 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.8</version>
+          <executions>
+          <execution>
+            <id>copy-jar-with-dependencies</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.plugins.cloud</groupId>
+                  <artifactId>it-test</artifactId>
+                  <version>1.0.0</version>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <destFileName>org.opennms.plugins.cloud-mock-with-dependencies.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/cloud-mock-with-dependencies</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+            </configuration>
+          </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -744,6 +771,13 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins.cloud.assembly</groupId>
+      <artifactId>org.opennms.plugins.cloud.assembly.kar</artifactId>
+      <version>1.1.0-SNAPSHOT</version>
+      <scope>test</scope>
+      <type>kar</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.device-config</groupId>

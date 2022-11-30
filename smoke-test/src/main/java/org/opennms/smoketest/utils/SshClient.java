@@ -83,6 +83,10 @@ public class SshClient implements AutoCloseable {
         this.password = password;
     }
 
+    public Channel getChannel() {
+        return this.channel;
+    }
+
     public PrintStream openShell() throws Exception {
         // We only support one shell at a time
         close();
