@@ -209,13 +209,6 @@
         </roles>
     </action>
     <action>
-        <label>Manage Remote Pollers</label>
-        <url>distributed/locationMonitorList.htm</url>
-        <roles>
-            <role>ROLE_ADMIN</role>
-        </roles>
-    </action>
-    <action>
         <label>Manage Minions</label>
         <url>minion/index.jsp</url>
         <roles>
