@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
+import static org.opennms.smoketest.utils.RestClientUtil.checkUriAvailability;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -41,6 +42,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+
+import java.net.URL;
+import java.util.Optional;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.protocol.HTTP;
+
+import com.ibm.wsdl.extensions.http.HTTPConstants;
 
 /**
  * Rest Health client used to verify HealCheck implementations statuses
@@ -56,6 +66,8 @@ public class RestHealthClient {
     private final static String PROBE = "/rest/health/probe";
     private final static String SUCCESS_PROBE = "Everything is awesome";
     private final static String HEALTH_KEY = "Health";
+
+    private final static String SERVER_NOT_AVAILABLE = "URI not available yet";
 
     /**
      * HealthRestclient constructor
@@ -74,8 +86,11 @@ public class RestHealthClient {
     }
 
     public String getProbeHealthResponse(){
+        WebTarget webTarget = getTargetFor(PROBE);
+        boolean isAvailable = checkUriAvailability(webTarget.getUri());
+        if (isAvailable) {
         Response response
-                = getTargetFor(PROBE).request(MediaType.TEXT_PLAIN).get();
+                = webTarget.request(MediaType.TEXT_PLAIN).get();
         /*
         return response.getStatus() == 200 && response.getHeaders().containsKey(HEALTH_KEY + "foo") ?
                 response.getHeaders().get(HEALTH_KEY +"foo").toString() : { throw new RuntimeException("Health key not found in: " + response.toString()); return ""; };
@@ -90,6 +105,8 @@ public class RestHealthClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        }
+        return SERVER_NOT_AVAILABLE;
     }
 
     public String getProbeSuccessMessage(){return SUCCESS_PROBE;}
