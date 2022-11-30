@@ -73,6 +73,8 @@
                     <bootFeatures>
                         <!-- Karaf "standard" features to include in the core -->
                         <feature>standard</feature>
+                        <feature>jaas</feature>
+                        <feature>jasypt-encryption</feature>
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
                         <feature>war</feature>
