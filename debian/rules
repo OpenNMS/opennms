@@ -21,7 +21,7 @@ export BUILDDEFINES=\
 	-Dinstall.servlet.dir=/usr/share/opennms/webapps \
 	-Dinstall.webapps.dir=/usr/share/opennms/webapps \
 	-Dinstall.logs.dir=/var/log/opennms \
-	-Dinstall.pid.file=/run/opennms/opennms.pid \
+	-Dinstall.pid.file=/var/run/opennms/opennms.pid \
 	-Dmaven.test.skip.exec=true \
 	-DskipTests=true \
 	-DskipITs=true \
@@ -313,7 +313,6 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_systemd_enable --name=opennms --no-enable
-	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
 	dh_systemd_start --name=opennms --no-restart-after-upgrade
 	dh_installman
 	dh_installdebconf
