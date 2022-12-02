@@ -161,15 +161,6 @@
 
 ** xref:deep-dive/telemetryd/introduction.adoc[]
 
-** xref:deep-dive/elasticsearch/introduction.adoc[]
-*** xref:deep-dive/elasticsearch/features/introduction.adoc[]
-*** xref:deep-dive/elasticsearch/features/event-forwarder.adoc[]
-**** xref:deep-dive/elasticsearch/features/event-forwarder-mapping.adoc[]
-**** xref:deep-dive/elasticsearch/features/event-forwarder-mapping-table.adoc[]
-*** xref:deep-dive/elasticsearch/features/flows.adoc[]
-*** xref:deep-dive/elasticsearch/features/situation-feedback.adoc[]
-*** xref:deep-dive/elasticsearch/features/alarm-history.adoc[]
-
 ** xref:deep-dive/flows/introduction.adoc[]
 *** xref:deep-dive/flows/basic.adoc[]
 *** xref:deep-dive/flows/distributed.adoc[]
@@ -188,7 +179,6 @@
 *** xref:deep-dive/kafka-producer/configure-kafka.adoc[]
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
-** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]
 ** xref:deep-dive/snmp-poller/concepts.adoc[]
 
@@ -227,13 +217,25 @@
 *** xref:deep-dive/admin/rmi.adoc[]
 *** xref:deep-dive/admin/external-auth.adoc[]
 *** xref:deep-dive/admin/geocoder.adoc[]
-*** xref:deep-dive/admin/http-ssl.adoc[]
-**** xref:deep-dive/admin/https/https-server.adoc[]
-**** xref:deep-dive/admin/https/https-client.adoc[]
+
 *** xref:deep-dive/admin/request-logging.adoc[]
 *** xref:deep-dive/admin/restart.adoc[]
 *** xref:deep-dive/admin/daemon-config-files.adoc[]
 *** xref:deep-dive/admin/logging/introduction.adoc[]
 *** xref:deep-dive/admin/logging/log-file-viewer.adoc[]
-*** xref:deep-dive/admin/housekeeping/introduction.adoc[]
 *** xref:deep-dive/admin/scv-configuration.adoc[]
+
+* xref:how-to/introduction.adoc[]
+** xref:how-to/alarm-correlation/situation-feedback.adoc[]
+** xref:how-to/elasticsearch/introduction.adoc[]
+*** xref:how-to/elasticsearch/features/introduction.adoc[]
+*** xref:how-to/elasticsearch/features/event-forwarder.adoc[]
+**** xref:how-to/elasticsearch/features/event-forwarder-mapping.adoc[]
+**** xref:how-to/elasticsearch/features/event-forwarder-mapping-table.adoc[]
+*** xref:how-to/elasticsearch/features/flows.adoc[]
+*** xref:how-to/elasticsearch/features/situation-feedback.adoc[]
+*** xref:how-to/elasticsearch/features/alarm-history.adoc[]
+** xref:how-to/admin/housekeeping/introduction.adoc[]
+** xref:how-to/admin/https/http-ssl.adoc[]
+*** xref:how-to/admin/https/https-server.adoc[]
+*** xref:how-to/admin/https/https-client.adoc[]
