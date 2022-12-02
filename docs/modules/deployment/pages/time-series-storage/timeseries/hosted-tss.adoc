@@ -30,7 +30,7 @@ However, you need to move the configuration files into the correct location and 
 
 [source, console]
 ----
-cp /opt/opennms/etc/examples/opennms.properties.d/timeseries.properties /opt/opennms/etc/opennms.properties.d/timeseries.properties
+cp /opt/opennms/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties /opt/opennms/etc/opennms.properties.d/timeseries.properties
 
 systemctl restart openmns
 ----
