@@ -1,0 +1,4 @@
+
+= How-To
+
+This section contains goal oriented configurations to solve specific problems.
