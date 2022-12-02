@@ -11,7 +11,11 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory" />
+
     <service interface="org.opennms.core.rpc.api.RpcModule" >
-        <bean class="org.opennms.netmgt.snmp.proxy.common.SnmpProxyRpcModule" />
+        <bean class="org.opennms.netmgt.snmp.proxy.common.SnmpProxyRpcModule">
+            <property name="secureCredentialsVault" ref="secureCredentialsVault" />
+        </bean>
     </service>
 </blueprint>
