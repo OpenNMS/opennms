@@ -92,9 +92,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
      */
     private static final String MINION_INTERFACE = "127.0.0.1";
 
-    private static String DEFAULT_SNMP_POLICY = "snmp-policy";
+    private static String DEFAULT_SNMP_POLICY = "Minion-SNMP-Policy";
 
-    private static String DEFAULT_SNMP_DETECTOR = "snmp-detector";
+    private static String DEFAULT_SNMP_DETECTOR = "Minion-SNMP-Detector";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
