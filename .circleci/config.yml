@@ -62,6 +62,7 @@ docker_container_config: &docker_container_config
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
   sign-packages: opennms/sign-packages@2.1.3
+  jira: circleci/jira@1.3.1
 
 commands:
   extract-pom-version:
@@ -495,15 +496,21 @@ workflows:
       - integration-test-with-coverage:
           requires:
             - build
+          post-steps:
+            - jira/notify
       - code-coverage:
           requires:
             - integration-test-with-coverage
+          post-steps:
+            - jira/notify
   build-minimal:
     <<: *defaults
     when:
       equal: [ true, << parameters.minimal >> ]
     jobs:
-      - build
+      - build:
+          post-steps:
+            - jira/notify
       - create-merge-foundation-branch:
           requires:
             - build
@@ -541,9 +548,13 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+          post-steps:
+            - jira/notify
       - tarball-assembly:
           requires:
             - build
+          post-steps:
+            - jira/notify
       - horizon-rpm-build:
           requires:
             - build
@@ -554,6 +565,8 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
+          post-steps:
+            - jira/notify
       - minion-rpm-build:
           requires:
             - build
@@ -564,6 +577,8 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
+          post-steps:
+            - jira/notify
       - sentinel-rpm-build:
           requires:
             - build
@@ -574,6 +589,8 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
+          post-steps:
+            - jira/notify
       - integration-test:
           requires:
             - build
@@ -581,6 +598,8 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+          post-steps:
+            - jira/notify
       - smoke-test-core:
           requires:
             - tarball-assembly
@@ -597,6 +616,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+          post-steps:
+            - jira/notify
       - smoke-test-flaky:
           requires:
             - tarball-assembly
@@ -613,6 +634,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+          post-steps:
+            - jira/notify
       - smoke-test-minion:
           requires:
             - tarball-assembly
@@ -629,6 +652,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+          post-steps:
+            - jira/notify
       - smoke-test-sentinel:
           requires:
             - tarball-assembly
@@ -645,6 +670,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+          post-steps:
+            - jira/notify
       #- smoke-test-minimal:
       #    requires:
       #      - tarball-assembly
@@ -662,6 +689,8 @@ workflows:
       #          - /^features.*/
       #          - /.*smoke.*/
       #          - /^dependabot.*/
+      #    post-steps:
+      #      - jira/notify
       - horizon-publish-oci:
           requires:
             - horizon-deb-build
@@ -678,6 +707,8 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+          post-steps:
+            - jira/notify
       - sentinel-publish-oci:
           requires:
             - horizon-deb-build
@@ -694,6 +725,8 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+          post-steps:
+            - jira/notify
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -709,6 +742,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
+          post-steps:
+            - jira/notify
       - minion-deb-build:
           requires:
             - integration-test
@@ -722,6 +757,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
+          post-steps:
+            - jira/notify
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -735,6 +772,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
+          post-steps:
+            - jira/notify
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -787,6 +826,8 @@ workflows:
             branches:
               only:
                 - /^foundation.*/
+          post-steps:
+            - jira/notify
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -806,6 +847,8 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
+          post-steps:
+            - jira/notify
 
 jobs:
   build:
