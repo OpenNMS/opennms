@@ -369,11 +369,6 @@
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Endpoints"/>
-                                <property name="url" value="ui/index.html#/open-api"/>
-                                <property name="locationMatch" value="configurationManagement"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
                                 <property name="name" value="Secure Credentials Vault"/>
                                 <property name="url" value="ui/index.html#/scv"/>

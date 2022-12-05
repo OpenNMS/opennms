@@ -102,6 +102,9 @@
                       <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
                           <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
                       </a>
+                      <a class="dropdown-item" name="nav-admin-api-documentation" href="${baseHref}ui/index.html#/open-api">
+                          <i class="fa fa-fw fa-info-circle"></i>&nbsp; API Documentation
+                      </a>
                       <#if isAdmin >
                           <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp" title="Support">
                               <i class="fa fa-solid fa-cogs"></i>&nbsp;Support
