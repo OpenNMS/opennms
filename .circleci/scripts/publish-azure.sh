@@ -32,7 +32,7 @@ for TYPE in minion; do
   # in Azure, only push the "branchname-arch" version of the individual ones
   find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
-    _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
+    _internal_tag="opennms/$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _arch_tag="$(printf '%s' "${_internal_tag}" | sed -e "s,^${TYPE}-,,")"
 
     _push_tag="${DOCKER_BRANCH_TAG}-${_arch_tag}"

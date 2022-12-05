@@ -88,7 +88,7 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
     ln -s /usr/share/sentinel /opt/sentinel
 
-COPY ./assets/* /
+COPY ./container-fs/* /
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \

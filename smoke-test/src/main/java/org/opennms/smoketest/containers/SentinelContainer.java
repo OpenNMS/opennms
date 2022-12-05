@@ -83,6 +83,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
     private static final int SENTINEL_JETTY_PORT = 8181;
+    static final String IMAGE = "opennms/sentinel";
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
@@ -91,7 +92,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private Exception waitUntilReadyException = null;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
-        super(ALIAS);
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
