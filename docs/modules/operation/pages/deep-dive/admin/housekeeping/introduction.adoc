@@ -77,10 +77,10 @@ Usage statistics include the following data points:
 * RDBMS version
 * Pollerd tasks completed
 * Event logs processed count
-* Core Flows persisted count
-* Core Newts samples inserted count
-* Core Queued updates completed
-* Number of Virtual Appliance, Appliance Mini, and Appliance 1U connected to the system
+* Number of core flows persisted.
+* Number of Newts samples inserted.
+* Number of queued updates completed.
+* Number of virtual appliances, Mini appliances, and 1U appliances that are connected to the system.
 
 [[disable-data-collection]]
 === Enable or disable usage statistics collection
