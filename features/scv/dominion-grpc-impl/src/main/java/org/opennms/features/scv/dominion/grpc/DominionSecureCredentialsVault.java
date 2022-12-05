@@ -70,6 +70,6 @@ public class DominionSecureCredentialsVault implements SecureCredentialsVault {
     @Override
     public void deleteCredentials(final String alias) {
         Objects.requireNonNull(alias);
-        throw new IllegalStateException();
+        throw new IllegalStateException("Not implemented yet");
     }
 }
