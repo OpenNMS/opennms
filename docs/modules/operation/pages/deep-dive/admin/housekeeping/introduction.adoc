@@ -80,6 +80,7 @@ Usage statistics include the following data points:
 * Core Flows persisted count
 * Core Newts samples inserted count
 * Core Queued updates completed
+* Number of Virtual Appliance, Appliance Mini, and Appliance 1U connected to the system
 
 [[disable-data-collection]]
 === Enable or disable usage statistics collection
