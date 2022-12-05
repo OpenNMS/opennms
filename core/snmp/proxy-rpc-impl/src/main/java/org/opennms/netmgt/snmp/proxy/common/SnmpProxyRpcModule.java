@@ -90,7 +90,7 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 !LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getLocation()) &&
                 m_scv != null) {
             final var credentials = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            if (credentials != null) {
+            if (credentials != null && credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE) != null) {
                 request.getAgent().setReadCommunity(credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
             }
         }

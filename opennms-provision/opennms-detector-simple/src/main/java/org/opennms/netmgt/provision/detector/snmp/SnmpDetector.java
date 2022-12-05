@@ -209,7 +209,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     private void updateCommunityStrings(SnmpAgentConfig config) {
         if (config.getAddress().isLoopbackAddress()) {
             final var creds = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
-            if (creds != null) {
+            if (creds != null && creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE) != null) {
                 config.setReadCommunity(creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
             }
         }
