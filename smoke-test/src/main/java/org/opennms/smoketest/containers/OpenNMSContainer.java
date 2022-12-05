@@ -145,7 +145,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
-        super("horizon");
+        super("opennms/horizon");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 
