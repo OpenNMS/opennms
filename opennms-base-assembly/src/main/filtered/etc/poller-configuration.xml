@@ -306,7 +306,7 @@
          <parameter key="ds-name" value="jmx-minion"/>
          <parameter key="use-foreign-id-as-system-id" value="true"/>
       </service>
-      <service name="Minion-SNMP-Detector" interval="300000" user-defined="false" status="on">
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
          <parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
       </service>
       <!-- Query every 30secs always -->
@@ -405,5 +405,4 @@
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
    <monitor service="DeviceConfig" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
-   <monitor service="Minion-SNMP-Detector" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
 </poller-configuration>
