@@ -289,6 +289,13 @@ public class MenuProvider {
         aboutEntry.icon = "fa-info-circle";
         helpMenu.addItem(aboutEntry);
 
+        MenuEntry apiDocumentationEntry = new MenuEntry();
+        apiDocumentationEntry.name = "API Documentation";
+        apiDocumentationEntry.url = "ui/index.html#/open-api";
+        apiDocumentationEntry.iconType = "fa";
+        apiDocumentationEntry.icon = "fa-info-circle";
+        helpMenu.addItem(apiDocumentationEntry);
+
         // only admin gets Support menu
         if (isAdmin) {
             MenuEntry supportEntry = new MenuEntry();
