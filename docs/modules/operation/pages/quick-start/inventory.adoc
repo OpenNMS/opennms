@@ -40,7 +40,7 @@ You can customize these values for your own network needs, although the default 
 NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
 {page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
 
-** (Optional) Define a range of IP addresses by typing the first and last addresses of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
+** (Optional) Define a range of IP addresses by typing the first and last address of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
 ** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
 . Click *Save Config*.
 +
