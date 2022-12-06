@@ -211,14 +211,15 @@ class workflow:
 
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
-            tmp_output.append(
-                self._common_library.create_space(leading_space + 4)
-                + "post-steps:"
-            )
-            tmp_output.append(
-                self._common_library.create_space(leading_space + 6)
-                + "- jira/notify"
-            )
+            if ! re.match("^.*merge.*$", job):
+                tmp_output.append(
+                    self._common_library.create_space(leading_space + 4)
+                    + "post-steps:"
+                )
+                tmp_output.append(
+                    self._common_library.create_space(leading_space + 6)
+                    + "- jira/notify"
+                )
 
         return tmp_output
 
