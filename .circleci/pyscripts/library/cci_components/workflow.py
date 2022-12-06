@@ -211,7 +211,7 @@ class workflow:
 
                 else:
                     print("Problem!!! Not sure how to handle element: ", element)
-            if ! re.match("^.*merge.*$", job):
+            if not re.match("^.*merge.*$", job):
                 tmp_output.append(
                     self._common_library.create_space(leading_space + 4)
                     + "post-steps:"
