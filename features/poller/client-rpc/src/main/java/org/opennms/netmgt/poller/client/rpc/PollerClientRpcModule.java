@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,6 +74,7 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
                 PollStatus pollStatus;
                 try {
                     final Map<String, Object> parameters = request.getMonitorParameters();
+                    parameters.put("location", request.getLocation());
                     pollStatus = monitor.poll(request, parameters);
                 } catch (RuntimeException e) {
                     pollStatus = PollStatus.unknown(e.getMessage());
