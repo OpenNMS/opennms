@@ -14,6 +14,7 @@
   <cm:property-placeholder id="kafkaForwarderProperties" persistent-id="org.opennms.features.flows.persistence.kafka" update-strategy="reload">
     <cm:default-properties>
       <cm:property name="topic" value="flowDocuments" />
+      <cm:property name="useJson" value="false" />
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -55,6 +56,7 @@
     <argument ref="configurationAdmin"/>
     <argument ref="metricRegistry"/>
     <property name="topicName" value="${topic}"/>
+    <property name="useJson" value="${useJson}"/>
   </bean>
 
   <bean id="switchedKafkaFlowForwarder" class="org.opennms.netmgt.flows.processing.persisting.SwitchedFlowRepository">
