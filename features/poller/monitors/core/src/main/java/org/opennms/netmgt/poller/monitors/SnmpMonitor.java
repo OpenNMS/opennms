@@ -111,9 +111,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String reasonTemplate = ParameterMap.getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
         String hexstr = ParameterMap.getKeyedString(parameters, "hex", "false");
 
-        String location = ParameterMap.getKeyedString(parameters, "location", LocationUtils.DEFAULT_LOCATION_NAME);
-
-        if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(location) && agentConfig.getAddress().isLoopbackAddress()) {
+        if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(svc.getNodeLocation()) && agentConfig.getAddress().isLoopbackAddress()) {
             LOG.info("Replacing appliance SNMP community string with stored SCV entry");
             if (null != scv) {
                 final var creds = scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
