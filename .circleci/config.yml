@@ -1015,8 +1015,6 @@ workflows:
           filters:
             branches:
               only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
-          post-steps:
-            - jira/notify
       - create-merge-meridian-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1033,8 +1031,6 @@ workflows:
           filters:
             branches:
               only: /^foundation.*/
-          post-steps:
-            - jira/notify
       - merge-poweredby-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1050,8 +1046,6 @@ workflows:
             branches:
               only:
                 - /^foundation.*/
-          post-steps:
-            - jira/notify
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
