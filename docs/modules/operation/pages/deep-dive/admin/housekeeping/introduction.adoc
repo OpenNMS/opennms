@@ -57,26 +57,26 @@ Usage statistics include the following data points:
 * OS version.
 * Number of available processors (CPU).
 * Amount of free physical memory.
-* Amount of total physical memory.
-* Number of alarms in the `alarms` table.
-* Number of situations in the `alarms` table.
-* Number of events in the `events` table.
-* Number of IP interfaces in the `ipinterface` table.
-* Number of nodes in the `node` table.
-* Number of nodes, grouped by System OID.
+* Total amount of physical memory.
+* Number of alarms in the alarms table.
+* Number of situations in the alarms table.
+* Number of events in the events table.
+* Number of IP interfaces in the ipinterface table.
+* Number of nodes in the node table.
+* Number of nodes, grouped by system OID.
 * Number of locations.
 * Number of Minions.
-* Number of provisiond requisitions by scheme.
+* Number of provisiond requisitions, by scheme.
 * Provisiond thread pool sizes.
-* List of enabled/disabled services.
+* List of enabled and disabled services.
 * List of installed features in Karaf.
 * Global notification enablement status.
-* Destination path count.
-* On-call role count.
+* Number of destination paths.
+* Number of on-call roles.
 * Relational Database Management System (RDBMS) name.
 * RDBMS version.
-* Pollerd tasks completed.
-* Event logs processed count.
+* Number of pollerd tasks completed.
+* Number of event logs processed.
 * Number of core flows persisted.
 * Number of Newts samples inserted.
 * Number of queued updates completed.
