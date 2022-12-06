@@ -826,8 +826,6 @@ workflows:
             branches:
               only:
                 - /^foundation.*/
-          post-steps:
-            - jira/notify
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
