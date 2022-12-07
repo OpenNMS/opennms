@@ -99,6 +99,8 @@ public class UsageStatisticsReportDTO {
     private int notifications;
     private long m_onmsStartupTimeSeconds;
 
+    private Map<String, Long> m_applianceCounts = Collections.emptyMap();
+
     public int getNotifications() {return notifications;}
 
     public void setNotifications(int notifications) {this.notifications = notifications;}
@@ -515,6 +517,14 @@ public class UsageStatisticsReportDTO {
     public long getOnmsStartupTimeSeconds() { return m_onmsStartupTimeSeconds; }
 
     public void setOnmsStartupTimeSeconds(long onmsStartupTimeSeconds) { this.m_onmsStartupTimeSeconds = onmsStartupTimeSeconds; }
+
+    public Map<String, Long> getApplianceCounts() {
+        return m_applianceCounts;
+    }
+
+    public void setApplianceCounts(Map<String, Long> applianceCounts) {
+        m_applianceCounts = applianceCounts;
+    }
 
     public String toJson() {
         return toJson(false);
