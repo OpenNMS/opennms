@@ -146,7 +146,7 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("alarms"), is(0L));
         assertThat((long) usageReport.get("minions"), is(0L));
 
-        final Map<String, Long> appliances = (Map<String, Long>)usageReport.get("applianceCounts");
+        final Map<String, Integer> appliances = (Map<String, Integer>)usageReport.get("applianceCounts");
         assertThat((long) appliances.get("virtualAppliance"), is(2L));
         assertThat((long) appliances.get("applianceMini"), is(1L));
         assertThat((long) appliances.get("appliance1U"), is(0L));
