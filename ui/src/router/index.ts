@@ -68,7 +68,18 @@ const router = createRouter({
     {
       path: '/configuration',
       name: 'Configuration',
-      component: () => import('@/containers/ProvisionDConfig.vue')
+      component: () => import('@/containers/ProvisionDConfig.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'No role access to external requisitions.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
     },
     {
       path: '/logs',
