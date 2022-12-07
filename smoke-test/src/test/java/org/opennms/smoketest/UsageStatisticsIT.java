@@ -141,7 +141,7 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("monitoredServices"), is(0L));
         assertThat((long) usageReport.get("ipInterfaces"), is(0L));
         assertThat((long) usageReport.get("snmpInterfaces"), is(0L));
-        assertThat((long) usageReport.get("nodes"), is(4L));
+        assertThat((long) usageReport.get("nodes"), is(7L));
         assertThat((long) usageReport.get("events"), greaterThan(1L));
         assertThat((long) usageReport.get("alarms"), is(0L));
         assertThat((long) usageReport.get("minions"), is(0L));
