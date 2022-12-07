@@ -81,7 +81,6 @@ override_dh_auto_install:
 	
 	# install the startup scripts
 	dh_systemd_enable --name=$(CONTAINER_TYPE) --no-enable debian/$(CONTAINER_TYPE).service
-	dh_installinit --package=$(PACKAGE_NAME) --name=$(CONTAINER_TYPE) --no-start -u"defaults 21 19"
 	dh_systemd_start --name=$(CONTAINER_TYPE) --no-restart-after-upgrade
 	
 	# set the default location
