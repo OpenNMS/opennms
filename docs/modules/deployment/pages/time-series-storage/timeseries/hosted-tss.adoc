@@ -24,6 +24,7 @@ There are four steps to set up the Time Series DB for your system:
 
 The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
 The packages for this extension are installed by default in Horizon 31 and later, but do need to be configured and activated.
+You can use `yum` or `apt` to make sure the `opennms-cloud-plugin` package is up to date with the most current version of the plugin.
 
 To ensure that the feature is activated on service restarts, add the feature to a file in `featuresBoot.d`:
 
