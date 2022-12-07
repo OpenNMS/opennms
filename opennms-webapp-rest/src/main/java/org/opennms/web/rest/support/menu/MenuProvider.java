@@ -29,6 +29,7 @@
 package org.opennms.web.rest.support.menu;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -63,9 +65,14 @@ import org.opennms.web.rest.support.menu.xml.MenuXml;
  */
 public class MenuProvider {
     /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
-    final private String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
+    private final String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
 
-    final private String ADMIN_ROLE_ICON = "fa-cogs";
+    private final String ADMIN_ROLE_ICON = "fa-cogs";
+
+    private static final ImmutableSet<String> ADMIN_ROLES = ImmutableSet.of(
+        Authentication.ROLE_ADMIN,
+        Authentication.ROLE_FILESYSTEM_EDITOR
+    );
 
     /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
     private String dispatcherServletPath;
@@ -200,7 +207,7 @@ public class MenuProvider {
 
                     if (!evaluateRoleBasedMenuEntry(entry, context)) {
                         topEntry.items.remove(i);
-                    } else if (isInRole(Authentication.ROLE_ADMIN, entry)) {
+                    } else if (isInAnyRole(ADMIN_ROLES, entry)) {
                         entry.iconType = "fa";
                         entry.icon = ADMIN_ROLE_ICON;
                     }
@@ -452,7 +459,15 @@ public class MenuProvider {
         return new ArrayList<String>(Arrays.asList(roles.split(",")));
     }
 
+    /** Do any roles in 'entry' match 'role'? */
     private boolean isInRole(String role, MenuEntry entry) {
         return rolesAsList(entry.roles).stream().anyMatch(s -> s.equals(role));
+    }
+
+    /** Do any roles in 'entry' match any role in 'requiredRoles'? */
+    private boolean isInAnyRole(Set<String> requiredRoles, MenuEntry entry) {
+        List<String> entryRoles = rolesAsList(entry.roles);
+
+        return entryRoles.stream().anyMatch(requiredRoles::contains);
     }
 }

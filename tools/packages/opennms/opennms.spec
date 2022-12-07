@@ -547,6 +547,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" \
 	-Dinstall.bin.dir="%{bindir}" \
+	-Dinstall.pid.file=/var/run/opennms/opennms.pid \
 	-Dbuild=all \
 	-Dbuild.profile=full \
 	-Prun-expensive-tasks \
@@ -951,12 +952,6 @@ else
 fi
 
 rm -f $ROOT_INST/etc/configured
-for dir in /etc /etc/rc.d; do
-	if [ -d "${dir}/init.d" ]; then
-		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
-		break
-	fi
-done
 
 for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then

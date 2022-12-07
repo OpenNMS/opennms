@@ -35,7 +35,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -106,6 +108,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final int MAX_DEP_RECURSION_DEPTH = 2;
     private static final String OIA_FEATURE_NAME = "opennms-integration-api";
     private static final String API_LAYER_FEATURE_NAME = "opennms-api-layer";
+
+    public static final String APPLIANCE_VIRTUAL_OID = ".1.3.6.1.4.1.5813.42.5.1";
+    public static final String APPLIANCE_MINI_OID = ".1.3.6.1.4.1.5813.42.5.2";
+    public static final String APPLIANCE_1U_OID = ".1.3.6.1.4.1.5813.42.5.3";
 
     private String m_url;
 
@@ -293,6 +299,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
         usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
+        usageStatisticsReport.setApplianceCounts(this.getApplianceCountByModel());
 
         setDatasourceInfo(usageStatisticsReport);
 
@@ -486,6 +493,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         }
         // This feature is not dependent on OIA
         return oiaDependentFeatures;
+    }
+
+    private Map<String, Long> getApplianceCountByModel() {
+        Map<String, Long> appliances = new HashMap();
+        var oidMap = m_nodeDao.getNumberOfNodesBySysOid();
+        appliances.put("virtualAppliance",  oidMap.containsKey(APPLIANCE_VIRTUAL_OID) ? oidMap.get(APPLIANCE_VIRTUAL_OID) : 0L);
+        appliances.put("applianceMini",     oidMap.containsKey(APPLIANCE_MINI_OID)    ? oidMap.get(APPLIANCE_MINI_OID)    : 0L);
+        appliances.put("appliance1U",       oidMap.containsKey(APPLIANCE_1U_OID)      ? oidMap.get(APPLIANCE_1U_OID)      : 0L);
+        return appliances;
     }
 
     public void setUrl(String url) {
