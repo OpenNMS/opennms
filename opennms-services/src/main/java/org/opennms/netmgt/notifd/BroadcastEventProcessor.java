@@ -393,7 +393,24 @@ public final class BroadcastEventProcessor implements EventListener {
                 LOG.debug("Conditional autoNotify for notifId {}", notifId);
             }
             final boolean wasAcked = wa;
-            final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
+
+            final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
+
+            final Map<String, String> parmMap = new HashMap(Interpolator.interpolateStrings(
+                    rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix),
+                    new FallbackScope(
+                            m_entityScopeProvider.getScopeForNode(nodeId),
+                            m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
+                            m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
+                            MapScope.singleContext(Scope.ScopeName.SERVICE, "notification",
+                                    new ImmutableMap.Builder<String, String>()
+                                            .put("eventID", String.valueOf(event.getDbid()))
+                                            .put("eventUEI", event.getUei())
+                                            .put("noticeid", String.valueOf(notifId))
+                                            .build()
+                            )
+                    )
+            ));
 
             m_eventUtil.expandMapValues(parmMap,
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
