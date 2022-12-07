@@ -30,9 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -120,7 +118,7 @@ public class InfoRestService extends OnmsRestService {
         try {
             return s_statusGetter.retrieveStatus();
         } catch (final IllegalStateException e) {
-            LOG.warn("Failed to retrieve statuses.  Info will be incomplete.");
+            LOG.warn("Failed to retrieve statuses.  Info will be incomplete.", e);
         }
 
         return Collections.emptyMap();

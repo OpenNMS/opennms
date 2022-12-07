@@ -10,7 +10,8 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -euo pipefail
+trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 umask 002
 export OPENNMS_HOME="/usr/share/opennms"
@@ -24,11 +25,11 @@ E_ILLEGAL_ARGS=126
 E_INIT_CONFIG=127
 
 MYID="$(id -u)"
-MYUSER="$(getent passwd "${MYID}" | cut -d: -f1)"
+MYUSER="$(getent passwd "${MYID}" | cut -d: -f1 || true)"
 
 export RUNAS="${MYUSER}"
 
-if [ "$MYID" -eq 0 ]; then
+if [ "$MYID" -eq 0 ] && [ -n "${MYUSER}" ]; then
   if ! grep -Fxq "RUNAS=${MYUSER}" "${OPENNMS_HOME}/etc/opennms.conf"; then
       echo "RUNAS=${MYUSER}" >> "${OPENNMS_HOME}/etc/opennms.conf"
   fi
@@ -49,6 +50,7 @@ usage() {
   echo "-h: Show this help."
   echo "-i: Initialize or update database and configuration files and do *NOT* start."
   echo "-s: Initialize or update database and configuration files and start OpenNMS."
+  echo "-S: Same as -s, with quiet initialization on success and OpenNMS progress bar."
   echo "-t: Run the config-tester, e.g -t -h to show help and available options."
   echo ""
 }
@@ -58,23 +60,25 @@ initOrUpdate() {
     echo "System is already configured. Enforce init or update by delete the ${OPENNMS_HOME}/etc/configured file."
   else
     echo "Find and set Java environment for running OpenNMS in ${OPENNMS_HOME}/etc/java.conf."
-    "${OPENNMS_HOME}"/bin/runjava -s
+    "${OPENNMS_HOME}"/bin/runjava -s || return ${E_INIT_CONFIG}
 
     echo "Run OpenNMS install command to initialize or upgrade the database schema and configurations."
-    ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
+    ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || return ${E_INIT_CONFIG}
 
     # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
-    if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
-      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
+    if [[ ! -v OPENNMS_TIMESERIES_STRATEGY ]]; then
+      echo "The time series strategy OPENNMS_TIMESERIES_STRATEGY is not set, so skip Newts keyspace initialisation. When unset, defaults to 'rrd' to use RRDTool."
+    elif  [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
+      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || return ${E_INIT_CONFIG}
     else
-      echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation. If unset defaults to rrd to use RRDTool."
+      echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, so skip Newts keyspace initialisation."
     fi
   fi
 }
 
 configTester() {
   echo "Run config tester to validate existing configuration files."
-  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
+  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || return ${E_INIT_CONFIG}
 }
 
 processConfdTemplates() {
@@ -86,31 +90,31 @@ processConfdTemplates() {
 initConfigWhenEmpty() {
   if [ ! -d ${OPENNMS_HOME} ]; then
     echo "OpenNMS home directory doesn't exist in ${OPENNMS_HOME}."
-    exit ${E_ILLEGAL_ARGS}
+    return ${E_ILLEGAL_ARGS}
   fi
 
   if [ ! "$(ls --ignore .git --ignore .gitignore -A ${OPENNMS_HOME}/etc)"  ]; then
     echo "No existing configuration in ${OPENNMS_HOME}/etc found. Initialize from etc-pristine."
-    cp -r ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/ || exit ${E_INIT_CONFIG}
+    cp -r ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/ || return ${E_INIT_CONFIG}
   fi
 
   if [[ ! -d /opennms-data/mibs ]]; then
     echo "Mibs data directory does not exist, create directory in /opennms-data/mibs"
-    mkdir /opennms-data/mibs || exit ${E_INIT_CONFIG}
+    mkdir /opennms-data/mibs || return ${E_INIT_CONFIG}
   else
     echo "Use existing Mibs data directory."
   fi
 
   if [[ ! -d /opennms-data/reports ]]; then
     echo "Reports data directory does not exist, create directory in /opennms-data/reports"
-    mkdir /opennms-data/reports || exit ${E_INIT_CONFIG}
+    mkdir /opennms-data/reports || return ${E_INIT_CONFIG}
   else
     echo "Use existing Reports data directory."
   fi
 
   if [[ ! -d /opennms-data/rrd ]]; then
     echo "RRD data directory does not exist, create directory in /opennms-data/rrd"
-    mkdir /opennms-data/rrd || exit ${E_INIT_CONFIG}
+    mkdir /opennms-data/rrd || return ${E_INIT_CONFIG}
   else
     echo "Use existing RRD data directory."
   fi
@@ -121,7 +125,7 @@ applyOverlayConfig() {
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
     # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -rl ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
+    rsync -K -rl ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || return ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi
@@ -129,7 +133,7 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${OPENNMS_OVERLAY_ETC}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${OPENNMS_OVERLAY_ETC}."
-    cp -r ${OPENNMS_OVERLAY_ETC}/* ${OPENNMS_HOME}/etc || exit ${E_INIT_CONFIG}
+    cp -r ${OPENNMS_OVERLAY_ETC}/* ${OPENNMS_HOME}/etc || return ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY_ETC}. Use default configuration."
   fi
@@ -137,7 +141,7 @@ applyOverlayConfig() {
   # Overlay jetty specific config
   if [ -d "${OPENNMS_OVERLAY_JETTY_WEBINF}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_JETTY_WEBINF})" ]; then
     echo "Apply custom Jetty WEB-INF configuration from ${OPENNMS_OVERLAY_JETTY_WEBINF}."
-    cp -r ${OPENNMS_OVERLAY_JETTY_WEBINF}/* ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF || exit ${E_INIT_CONFIG}
+    cp -r ${OPENNMS_OVERLAY_JETTY_WEBINF}/* ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF || return ${E_INIT_CONFIG}
   else
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi
@@ -162,6 +166,28 @@ start() {
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar start
 }
 
+quietlyRun() {
+  local description="$1"; shift
+
+  local log="logs/$1.log"
+
+  echo "Initialization: ${description}: starting"
+
+  if "$@" &>"${log}"; then
+    ret=0
+  else
+    ret=$?
+  fi
+
+  if [ $ret -eq 0 ]; then
+    echo "Initialization: ${description}: done (log: ${log})"
+  else
+    echo "Initialization: ${description}: ERROR: see output below (see log in ${log})" >&2
+    cat "${log}" >&2
+    exit $ret
+  fi
+}
+
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
   usage
@@ -169,7 +195,7 @@ if [[ "${#}" == 0 ]]; then
 fi
 
 # Evaluate arguments for build script.
-while getopts "fhist" flag; do
+while getopts "fhisSt" flag; do
   case ${flag} in
     f)
       processConfdTemplates
@@ -197,6 +223,16 @@ while getopts "fhist" flag; do
       configTester -a
       initOrUpdate -dis
       start
+      exit
+      ;;
+    S)
+      quietlyRun "initialize config" initConfigWhenEmpty
+      quietlyRun "process confd templates" processConfdTemplates
+      quietlyRun "apply overlay config" applyOverlayConfig
+      quietlyRun "test configuration" configTester -a
+      quietlyRun "run installer" initOrUpdate -dis
+      tail -F logs/progressbar.log &
+      start &> logs/output.log
       exit
       ;;
     t)

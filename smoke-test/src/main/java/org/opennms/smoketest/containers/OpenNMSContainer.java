@@ -29,11 +29,11 @@
 package org.opennms.smoketest.containers;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.Assert.assertNotNull;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -43,11 +43,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +79,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
@@ -96,6 +97,7 @@ import com.google.common.collect.ImmutableMap;
  */
 @SuppressWarnings("java:S2068")
 public class OpenNMSContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+    public static final String IMAGE = "opennms/horizon";
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
     public static final String KAFKA_ALIAS = "kafka";
@@ -104,6 +106,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public static final String ADMIN_USER = "admin";
     public static final String ADMIN_PASSWORD = "admin";
+    public static final Path CONTAINER_LOG_DIR = Paths.get("/opt", ALIAS, "logs");
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
@@ -145,7 +148,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
-        super("opennms/horizon");
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 
@@ -157,7 +160,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         this.overlay = writeOverlay();
 
-        String containerCommand = "-s";
+        String containerCommand = "-S";
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
             this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
@@ -397,8 +400,6 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
         }
 
-        // output Karaf logs to the console to help in debugging intermittent container startup failures
-        props.put("karaf.log.console", "INFO");
         return props;
     }
 
@@ -478,45 +479,55 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
-                container.waitUntilReadyException = e;
+                var logs =
+                        "\n\t\t----------------------------------------------------------\n"
+                                + container.getLogs()
+                                .replaceFirst(
+                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^Stopping OpenNMS.*",
+                                        "$1\n")
+                                .replaceAll("(?m)^", "\t\t")
+                                + "\t\t----------------------------------------------------------";
+
+                container.waitUntilReadyException = new IllegalStateException("Failed to start container. OpenNMS exception (if any)/container logs:" + logs, e);
 
                 throw e;
             }
         }
 
         protected void waitUntilReadyWrapped() {
-            LOG.info("Waiting for startup to begin.");
-            final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
+            // If we're not running CI, follow output from the OpenNMS container since it starts up slow
+            if (System.getenv("CI") == null) {
+                Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOG);
+                container.followOutput(logConsumer);
+            }
+
+            final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
                     .atMost(3, MINUTES)
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .ignoreException(NotFoundException.class)
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
-            LOG.info("OpenNMS has begun starting up.");
 
-            LOG.info("Waiting for OpenNMS REST API...");
-            final long timeoutMins = 5;
-            final RestClient restClient = container.getRestClient();
-
-            await("waiting for OpenNMS REST API")
-                    .atMost(timeoutMins, MINUTES)
-                    .pollInterval(10, SECONDS)
-                    .failFast("container is no longer running", () -> !container.isRunning())
-                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                    .until(restClient::getDisplayVersion, notNullValue());
-            LOG.info("OpenNMS REST API is online.");
-
-            // Wait until all daemons have finished starting up
-            // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
-            // have been given a chance to bind
-            LOG.info("Waiting for startup to complete.");
+            final Path progressBarLog = CONTAINER_LOG_DIR.resolve("progressbar.log");
             await("waiting for startup to complete")
-                    .atMost(5, MINUTES)
+                    .atMost(10, MINUTES)
+                    .pollInterval(Duration.ofSeconds(2))
                     .failFast("container is no longer running", () -> !container.isRunning())
-                    .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
-                            containsString("Starter: Startup complete"));
-            LOG.info("OpenNMS has started.");
+                    .ignoreException(NotFoundException.class)
+                    .until(() -> { return TestContainerUtils.getFileFromContainerAsString(container, progressBarLog); },
+                            /*
+                             * matchesRegex needs to match *the entire log file*, so this gets a little interesting.
+                             * We want to match "Starting OpenNMS: .* All Passes Complete" on a single line but
+                             * *not* spanning multiple lines. We don't want to accidentally match a case where OpenNMS
+                             * begins to startup, gets an error, and then shuts down successfully where you'd have
+                             * "Starting OpenNMS:" on one line and then "Stopping OpenNMS: .* All Passes Complete"
+                             * on another. Since the 's' flag changes '.' to match anything, including newlines, we
+                             * can't use '.*' in the middle of our regex.
+                             */
+                            matchesRegex("(?ms).*?^Starting OpenNMS: [^\r\n]* All Passes Complete\\s*$.*"));
+
+            assertNotNull("REST display version non-null", container.getRestClient().getDisplayVersion());
 
             // Defer the health-check (if we do run it) until the system has completely started
             // in order to give all the health checks a chance to load.
@@ -548,35 +559,49 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        var logs = copyLogs(this, prefix);
-        LOG.info("Logs: {}", logs.toUri());
-        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-    }
-
-    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("alarmd.log",
+        final List<String> logFiles = Arrays.asList(
+                "alarmd.log",
                 "collectd.log",
                 "eventd.log",
                 "jetty-server.log",
                 "karaf.log",
                 "manager.log",
                 "poller.log",
+                "progressbar.log",
                 "provisiond.log",
                 "trapd.log",
-                "web.log");
+                "web.log",
+                // These are from entrypoint.sh when -S is used
+                "output.log",
+                "initConfigWhenEmpty.log",
+                "processConfdTemplates.log",
+                "applyOverlayConfig.log",
+                "configTester.log",
+                "initOrUpdate.log"
+        );
+
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.clearLogs(targetLogFolder);
+
+        LOG.info("Gathering thread dump...");
+        final var threadDump = DevDebugUtils.gatherThreadDump(this,
+                targetLogFolder, CONTAINER_LOG_DIR.resolve("output.log"));
+
+        LOG.info("Gathering logs...");
+        DevDebugUtils.copyLogs(this,
                 // dest
                 targetLogFolder,
                 // source folder
-                Paths.get("/opt", ALIAS, "logs"),
+                CONTAINER_LOG_DIR,
                 // log files
                 logFiles);
-        return targetLogFolder;
-    }
 
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
+    }
 }
