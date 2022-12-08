@@ -4,10 +4,10 @@
 
 A threshold defines limits against the network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an xref:deep-dive/events/introduction.adoc[event] (record) when a data source value goes above or below the specified limit:
 
-* High - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount).
-* Low - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value).
-* Absolute change - changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is).
-* Relative change - changes by percent (for example, available disk space changes more than 5% from the last poll).
+* *High:* Equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (for example, bandwidth use exceeds the specified amount).
+* *Low:* Equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (for example, available disk space falls under the specified value).
+* *Absolute change:* Changes by the specified amount (for example, on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is).
+* *Relative change:* Changes by a specified percentage (for example, available disk space changes by more than 5% from the last poll).
 
 These thresholds can be basic (tested against a single value) or expression-based (evaluated against multiple values in an expression).
 This Quick Start guide shows how to create both kinds of threshold.
@@ -18,11 +18,10 @@ This Quick Start guide shows how to create both kinds of threshold.
 This procedure describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users.
 This threshold tells {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Performance Measurement, click *Configure Thresholds*.
 +
 A screen with a list of preconfigured threshold groups appears.
-We will work with `netsnmp`.
 +
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[Create a Threshold Group] in the Deep Dive section.
 
@@ -30,8 +29,7 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 . Click *Create New Threshold* at the bottom of the Basic Thresholds area.
 . Set the following information and click *Save*:
 +
-[options="header"]
-[cols="1,3,2"]
+[options="header", cols="1,3,2"]
 |===
 | Field
 | Description
@@ -44,7 +42,7 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 | Datasource
 | Name of the data source you want to threshold against.
 For this tutorial, we have provided the data source for logged-in users.
-For information on how to determine a metric's data source, see xref:operation:deep-dive/thresholds/datasource.adoc#datasource-determine[Determine the data source] in the Deep Dive section.
+For information on how to determine a metric's data source, see <<deep-dive/thresholds/datasource.adoc#datasource-determine, Determine the data source>> in the Deep Dive section.
 | hrSystemNumUsers
 
 | Datasource label
@@ -63,8 +61,8 @@ In this case, once the number of logged-in users falls below two.
 | 2
 
 | Trigger
-| The number of consecutive times the threshold value can occur before the system triggers an event.
-Since our default polling period is five minutes, a value of three means {page-component-title} would create a threshold event if there are more than two users logged in for 15 minutes.
+| The number of consecutive times that the threshold value can occur before the system triggers an event.
+Since our default polling period is five minutes, a value of three means {page-component-title} will create a threshold event if there are more than two users logged in for 15 minutes.
 | 3
 
 | Description
@@ -85,17 +83,14 @@ If left blank, it defaults to the standard thresholds UEIs.
 [[threshold-test]]
 == Test the threshold
 
-To test the threshold you just created, follow these steps:
+To test the threshold that you just created, follow these steps:
 
 . SSH to the monitored node and log in to it using two different user accounts.
 . In the main menu, choose menu:Status[Events].
 . Under Event Queries, click *All Events*.
-+
-You should see an event that indicates your threshold triggered when more than one user logged in.
-
+You should see an event that indicates that your threshold triggered when more than one user logged in.
 . Log one user out of the node.
-+
-The Events list page should indicate that the system has re-armed.
+The Events List page should indicate that the system has re-armed.
 
 [[thresh-cpu]]
 == Expression-based thresholds
@@ -109,15 +104,14 @@ NOTE: Expression-based thresholds work only if the data sources in question are 
 
 To view the expression-based threshold for CPU use, follow these steps:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Performance Measurement, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
 . In the Expression-Based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 +
 The following table describes the fields:
 +
-[options="header"]
-[cols="1,3,3"]
+[options="header", cols="1,3,3"]
 |===
 | Field
 | Description
@@ -129,8 +123,7 @@ The following table describes the fields:
 
 | Expression
 | Divides the five-minute CPU load average by 100 (to obtain the effective load average^1^), which is then divided by the number of CPUs.
-This value is then multiplied by 100 to provide a percentage.
-+
+This value is then multiplied by 100 to provide a percentage. +
 (^1^SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.)
 | ((loadavg5 / 100) / CpuNumCpus) * 100
 
@@ -173,7 +166,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 == Beyond Quick Start
 
-Refer to xref:operation:deep-dive/thresholds/thresholding.adoc[Thresholding] in the Deep Dive section for more information on thresholding, including the following:
+Refer to xref:deep-dive/thresholds/thresholding.adoc[Thresholding] in the Deep Dive section for more information on thresholding, including the following:
 
 * <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Using metadata in a threshold>>.
 * <<deep-dive/thresholds/thresh-group.adoc#threshold-group, Creating a threshold group>>.
