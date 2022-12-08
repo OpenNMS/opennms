@@ -478,7 +478,14 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
-                container.waitUntilReadyException = e;
+                var logs =
+                        "\n\t\t----------------------------------------------------------\n"
+                                + container.getLogs()
+                                .replaceFirst("(?ms)(.*?)(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*", "$2\n")
+                                .replaceAll("(?m)^", "\t\t")
+                                + "\t\t----------------------------------------------------------";
+
+                container.waitUntilReadyException = new IllegalStateException("Failed to start container. OpenNMS exception (if any)/container logs:" + logs, e);
 
                 throw e;
             }
