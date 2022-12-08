@@ -299,7 +299,10 @@ public abstract class JaxbUtils {
 
         LOG.trace("namespace filter for class {}: {}", clazz, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         filter.setParent(xmlReader);
         return filter;
@@ -310,7 +313,10 @@ public abstract class JaxbUtils {
 
         LOG.trace("namespace filter for namespace {}: {}", namespace, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         filter.setParent(xmlReader);
         return filter;
