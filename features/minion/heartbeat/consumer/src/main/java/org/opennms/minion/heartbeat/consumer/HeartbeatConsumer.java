@@ -55,6 +55,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -92,9 +93,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
      */
     private static final String MINION_INTERFACE = "127.0.0.1";
 
-    private static String DEFAULT_SNMP_POLICY = "snmp-policy";
+    private static String DEFAULT_SNMP_POLICY = "Minion-SNMP-Policy";
 
-    private static String DEFAULT_SNMP_DETECTOR = "snmp-detector";
+    private static String DEFAULT_SNMP_DETECTOR = "SNMP";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -296,6 +297,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         if (requisitionNode == null) {
             final RequisitionInterface requisitionInterface = new RequisitionInterface();
             requisitionInterface.setIpAddr(MINION_INTERFACE);
+            requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
             ensureServicesAreOnInterface(requisitionInterface);
 
             requisitionNode = new RequisitionNode();

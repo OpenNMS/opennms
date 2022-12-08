@@ -539,9 +539,11 @@ const handleErrorResponse = function(response, $scope) {
                         data: reader.result,
                         params: {'hasHeader': $scope.containsHeader, 'deleteExistingRules' : $scope.deleteExistingRules},
                         headers: {'Content-Type': 'text/comma-separated-values'}
-                    }).success(function (response) {
+                    }).then(function () {
                         $uibModalInstance.close();
-                    }).error(function (response, status) {
+                    }, function (r) {
+                        const response = r.data;
+                        const status = r.status;
                         if (status === 500) {
                             $scope.error = 'An unexpected error occurred.';
                         }

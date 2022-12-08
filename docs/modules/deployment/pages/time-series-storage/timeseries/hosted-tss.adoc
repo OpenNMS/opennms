@@ -41,7 +41,7 @@ If you are running Horizon 31 or later, copy the example `timeseries.properties`
 
 [source, console]
 ----
-cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
+cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 ----
 
 After the plugin is installed and configured, restart the {page-component-title} service:

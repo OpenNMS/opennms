@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>31.0.1-SNAPSHOT</version>
+  <version>31.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -588,11 +588,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.1</version>
         <configuration>
           <maxmemory>3g</maxmemory>
-          <additionalparam>-Xdoclint:none</additionalparam>
-          <failOnError>false</failOnError>
+          <failOnError>true</failOnError>
+          <sourcepath>${project.basedir}/src;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath>
           <tags>
             <tag>
               <name>hibernate.class</name>
@@ -1541,7 +1541,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>31.0.1.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>31.0.2.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1743,7 +1743,7 @@
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.4.1</postgresqlVersion>
+    <postgresqlVersion>42.4.3</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
@@ -1821,8 +1821,8 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.1</frontendPluginVersion>
-    <nodeVersion>v16.15.1</nodeVersion>
-    <npmVersion>8.11.0</npmVersion>
+    <nodeVersion>v16.18.1</nodeVersion>
+    <npmVersion>8.19.3</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->

@@ -2,7 +2,7 @@
 [[resource-types]]
 = Resource Types
 
-Resource types group sets of performance data measurements for persisting, indexing, and display in the web UI.
+{page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and display in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 
 There are two labels for a resource type.
@@ -12,12 +12,13 @@ The second, `resourceLabel`, defines the template used when displaying each uniq
 There are two types of strategy definitions for resource types: the persistence selector strategy, and the storage strategy.
 The persistence selector strategy filters the group indexes down to a subset for storage on disk.
 The storage strategy converts an index into a resource path label for persistence.
-There are two special resource types that do not have a resource-type definition: `node` and `ifIndex`.
 
-Define resource types inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific to SNMP.
+There are two resource types that do not have a `resource-type` definition: `node` and `ifIndex`.
 
-Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
+You can define resource types by placing files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`.
+The latter file path is specific to SNMP.
 
+.Example diskIOIndex resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`
 [source, xml]
 ----
 <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
@@ -35,8 +36,9 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 
 == Persistence selector strategies
 
-.Persistence selector strategies
-[options="header" "autowidth", cols="1,2"]
+You can configure the following persistence selector strategies to specify how to archive performance metrics:
+
+[options="header", cols="2,2"]
 |===
 | Class
 | Description
@@ -45,18 +47,16 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 | Persist all indexes.
 
 | `org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy`
-| Persist indexes based on JEXL evaluation.
+| Persist indexes based on JEXL evaluation. +
+This class takes a single parameter, `match-expression`, which defines a JEXL expression.
+On evaluation, this expression should return either `true` (persist index to storage) or `false` (discard data).
 |===
-
-=== PersistRegexSelectorStrategy
-
-The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expression.
-On evaluation, this expression should return either true (persist index to storage) or false (discard data).
 
 == Storage strategies
 
-.Storage strategies
-[options="header" "autowidth", cols="1,2"]
+You can configure the following storage strategies to specify how to store performance metrics in the long-term:
+
+[options="header", cols="2,2"]
 |===
 | Class
 | Storage Path Value
@@ -74,24 +74,20 @@ On evaluation, this expression should return either true (persist index to stora
 | interface label + '.' + DLCI
 
 | `org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy`
-| Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned to make a valid directory name on supported file systems.
+| Uses the value from the `hrStorageDescr` column in the `hrStorageTable`, cleaned to make a valid directory name on supported file systems.
 
 | `org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy`
-| Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned to make a valid directory name on supported file systems.
+| Uses the value from an SNMP lookup of OID in the `sibling-column-name` parameter, cleaned to make a valid directory name on supported file systems.
 
 | `org.opennms.protocols.xml.collector.XmlStorageStrategy`
 | Index, cleaned to make a valid directory name on supported file systems.
 |===
 
-=== IndexStorageStrategy
-
-The IndexStorageStrategy takes no parameters.
-
 === JexlIndexStorageStrategy
 
-The JexlIndexStorageStrategy takes two parameters, `index-format` which is required, and `clean-output` which is optional.
+The `JexlIndexStorageStrategy` class takes two parameters: `index-format`, which is required, and `clean-output`, which is optional.
 
-[options="header" "autowidth", cols="1,2"]
+[options="header", cols="2,2"]
 |===
 | Parameter
 | Description
@@ -100,14 +96,15 @@ The JexlIndexStorageStrategy takes two parameters, `index-format` which is requi
 | The JexlExpression to evaluate.
 
 | clean-output
-| Boolean to indicate whether the index value is cleaned up.
+| Boolean which indicates whether the index value is cleaned up.
 |===
 
-If the index value will be cleaned up, then it will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.
-All equal signs are removed.
+If the `index` value is set to be cleaned up, it will have all whitespace, colons (`:`), forward and back slashes (`/`, `\`), and vertical bars (`|`) replaced with underscores (`_`).
+All equal signs (`=`) will be removed.
 
-To extend this class to create custom storage strategies, override the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
+To extend this class and create custom storage strategies, you can override the `updateContext` method and set additional key/value pairs to use in your `index-format` template.
 
+.Example custom storage strategy definition
 [source, java]
 ----
 public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
@@ -126,15 +123,18 @@ public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
 
 === ObjectNameStorageStrategy
 
-The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext, which can then be used in the `index-format` template.
-The original index string is converted to an ObjectName and can be referenced as `$\{objectname}`.
-The domain from the ObjectName can be referenced as `$\{domain}`.
-All key properties from the ObjectName can also be referenced by `$\{key}`.
+The `ObjectNameStorageStrategy` extends the `JexlIndexStorageStrategy`, and as such, its requirements are the same.
 
-Use this storage strategy with JMX MBean datacollections where multiple MBeans can return the same set of attributes.
-As of OpenNMS Horizon 20, this is only supported using an HTTP to JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
+Extra key/value pairs are added to the JexlContext, which can then be used in the `index-format` template.
 
-Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a storage strategy like this:
+The original `index` string is converted to an `ObjectName` and can be referenced as `$\{objectname}`.
+The domain from the `ObjectName` can be referenced as `$\{domain}`.
+All key properties from the `ObjectName` can also be referenced by using `$\{key}`.
+
+You can use this storage strategy with JMX MBean data collections where multiple MBeans can return the same set of attributes.
+As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
+
+.Example storage storage strategy used with JMX MBean
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
@@ -142,18 +142,16 @@ Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a stora
   <parameter key="clean-output" value="true" />
 </storageStrategy>
 ----
-Then the index value would be `java_lang_MemoryPool_Survivor_Space`.
 
-=== FrameRelayStorageStrategy
-
-The FrameRelayStorageStrategy takes no parameters.
+In this example, passing an MBean through this storage strategy will produce a clean `index` value.
+For example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`.
 
 === HostFileSystemStorageStrategy
 
-The HostFileSystemStorageStrategy takes no parameters.
-This class is marked as deprecated.
-Replace with the following:
+The `HostFileSystemStorageStrategy` class takes no parameters and is marked as deprecated.
+You should replace it with the following definition:
 
+.SiblingColumnStorageStrategy class definition
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
@@ -167,13 +165,16 @@ Replace with the following:
 
 === SiblingColumnStorageStrategy
 
-[options="header" "autowidth", cols="1,2"]
+The `SiblingColumnStorageStrategy` class replaces `HostFileSystemStorageStrategy`, which is deprecated.
+It takes the following parameters:
+
+[options="header", cols="2,2"]
 |===
 | Parameter
 | Description
 
 | sibling-column-name
-| The name of another `mibObj` in the same group.
+| Name of another `mibObj` in the same group.
 This string value forms the starting point for the index.
 
 | replace-first
@@ -185,10 +186,11 @@ Only the first match in the input is replaced.
 Every match in the input is replaced.
 |===
 
-Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
+Values for `replace-first` and `replace-all` must match the following pattern: `s/regex/replacement/`.
+If they do not, an error will be thrown.
 
 === XmlStorageStrategy
 
-This XmlStorageStrategy takes no parameters.
-The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.
-All equal signs are removed.
+The `XmlStorageStrategy` class takes no parameters.
+Its `index` value will have all whitespace, colons (`:`), forward and back slashes (`/`, `\`), and vertical bars (`|`) replaced with underscores (`_`).
+All equal signs (`=`) will be removed.

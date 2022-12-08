@@ -11,8 +11,8 @@ import ContextError from './ContextError';
 import Intervals from './Intervals';
 
 import CronParser from 'cron-parser';
-import moment from 'moment';
-require('moment-timezone');
+
+const moment = require('vendor/moment-js');
 
 export default class ScheduleOptions {
 

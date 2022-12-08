@@ -103,7 +103,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         clickElement(By.cssSelector(moreActionsButton));
 
         // Edit the foreign source
-        waitUntil(elementToBeClickable(By.id("editForeignSource-"+REQUISITION_NAME))).click();
+        clickElement(By.id("editForeignSource-"+REQUISITION_NAME));
         waitUntil(visibilityOfElementLocated(By.cssSelector("ul.nav-tabs > li > a.nav-link")));
         waitUntil(visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -75,6 +77,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
     private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
 
+    private SecureCredentialsVault scv;
+
     /**
      * {@inheritDoc}
      *
@@ -106,6 +110,28 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
         String reasonTemplate = ParameterMap.getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
         String hexstr = ParameterMap.getKeyedString(parameters, "hex", "false");
+
+        if (!LocationUtils.DEFAULT_LOCATION_NAME.equals(svc.getNodeLocation()) && agentConfig.getAddress().isLoopbackAddress()) {
+            LOG.info("Replacing appliance SNMP community string with stored SCV entry");
+            if (null != scv) {
+                final var creds = scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
+                if (creds != null) {
+                    String communityStr = creds.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE);
+                    if (communityStr != null) {
+                        agentConfig.setReadCommunity(communityStr);
+                    }
+                    else {
+                        LOG.warn("Unable to replace SNMP community string: credentials did not contain community attribute");
+                    }
+                }
+                else {
+                    LOG.warn("Unable to replace SNMP community string: no credentials found");
+                }
+            }
+            else {
+                LOG.warn("Unable to replace SNMP community string: scv is null");
+            }
+        }
 
         hex = "true".equalsIgnoreCase(hexstr);
         // set timeout and retries on SNMP peer object
@@ -233,6 +259,10 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         }
 
         return status;
+    }
+
+    public void setSecureCredentialsVault(SecureCredentialsVault scv) {
+        this.scv = scv;
     }
 
 }

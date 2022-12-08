@@ -3,7 +3,7 @@
 = Step 7: Determine Service Availability
 
 By default, {page-component-title} monitors a number of services including ICMP, DNS, Elasticsearch, SMTP, FTP, SNMP, HTTP(S), SSH, Postgres, IMAP, and POP3.
-Using a service monitor framework with pollerd as the main component, {page-component-title} detects if a service is available, then monitors it for its availability and response time.
+Using a service monitor framework with pollerd as the main component, provisioning detectors detect the existence of a service, and pollerd runs the monitors to test service availability and measures response time.
 You can view a summary of this availability information, calculated over the last 24 hours, on the main dashboard.
 You can also view a summary of availability information on a per-node basis.
 

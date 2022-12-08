@@ -61,7 +61,7 @@ do_sudo() {
   dpkg --listfiles "$PACKAGE";
 elif [ -e /etc/redhat-release ]; then
   rpm -ql "$PACKAGE";
-fi) | grep /opennms | do_sudo xargs -d '\n' chown "${RUNAS_UID}:${RUNAS_GID}"
+fi) | grep /opennms | do_sudo xargs --no-run-if-empty -d '\n' chown "${RUNAS_UID}:${RUNAS_GID}"
 
 if [ ! -e /etc/debian_version ] && [ ! -e /etc/redhat-release ]; then
   echo "WARNING: not a Debian/Ubuntu or RedHat system -- check the contents of $OPENNMS_HOME is owned by $RUNAS."

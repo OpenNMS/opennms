@@ -7,7 +7,7 @@
 
 SHELL                := /bin/bash -o nounset -o pipefail -o errexit
 WORKING_DIRECTORY    := $(shell pwd)
-DOCKER_ANTORA_IMAGE  := opennms/antora:2.3.4-b6293
+DOCKER_ANTORA_IMAGE  := opennms/antora:3.1.1-b8850
 SITE_FILE            := antora-playbook-local.yml
 
 help:

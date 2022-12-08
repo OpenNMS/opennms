@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.persistence;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -48,6 +49,7 @@ import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.protobuf.util.JsonFormat;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
@@ -61,6 +63,9 @@ public class KafkaFlowForwarder implements FlowRepository {
     private final ConfigurationAdmin configAdmin;
     private KafkaProducer<String, byte[]> producer;
     private String topicName;
+    private boolean useJson = false;
+    private final JsonFormat.Printer jsonPrinter = JsonFormat.printer()
+            .omittingInsignificantWhitespace();
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(1).every(Duration.ofSeconds(60))
@@ -95,7 +100,14 @@ public class KafkaFlowForwarder implements FlowRepository {
 
             try {
                 FlowDocument flowDocument = FlowDocumentBuilder.buildFlowDocument(enrichedFlow);
-                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(this.topicName, flowDocument.toByteArray());
+                final byte[] payload;
+                if (useJson) {
+                    payload = jsonPrinter.print(flowDocument).getBytes(StandardCharsets.UTF_8);
+                } else {
+                    payload = flowDocument.toByteArray();
+                }
+
+                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(this.topicName, payload);
                 this.producer.send(record, (recordMetadata, e) -> {
                     if (e != null) {
                         this.failed.inc();
@@ -142,7 +154,6 @@ public class KafkaFlowForwarder implements FlowRepository {
         }
     }
 
-
     private static <T> T runWithGivenClassLoader(final Supplier<T> supplier, ClassLoader classLoader) {
         Objects.requireNonNull(supplier);
         final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -156,5 +167,9 @@ public class KafkaFlowForwarder implements FlowRepository {
 
     public void setTopicName(String topicName) {
         this.topicName = topicName;
+    }
+
+    public void setUseJson(boolean useJson) {
+        this.useJson = useJson;
     }
 }

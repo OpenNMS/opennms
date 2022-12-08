@@ -1,11 +1,32 @@
+const isLegacyPluginUrl = (extensionId: string, moduleFileName: string) => {
+  if (moduleFileName == 'uiextension' &&
+     (extensionId === 'cloudUiExtension' || extensionId === 'uiextension' || extensionId === 'uiExtension')) {
+    return true
+  }
+
+  return false
+}
+
 const externalComponent = (url: string) => {
   try {
-    const name = (
+    // this is the extensionId part of the url
+    // should be used in the future when all plugins have unique extensionIds
+    const extensionId = (
+      url
+        .split('/')
+        .reverse()[1]
+        .match(/^([^?]+)/) as any[]
+    )[1]
+
+    // for compatibility with legacy plugins
+    const moduleFileName = (
       url
         .split('/')
         .reverse()[0]
         .match(/^(.*?)\.es/) as any[]
     )[1]
+
+    const name = isLegacyPluginUrl(extensionId, moduleFileName) ? moduleFileName : extensionId
 
     if (window[name]) {
       return new Promise((resolve) => {

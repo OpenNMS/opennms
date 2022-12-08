@@ -352,10 +352,11 @@
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
                                 <property name="name" value="External Requisitions"/>
                                 <property name="url" value="ui/index.html#/configuration"/>
                                 <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
                                 <property name="name" value="File Editor"/>
@@ -368,11 +369,6 @@
                                 <property name="url" value="ui/index.html#/logs"/>
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Endpoints"/>
-                                <property name="url" value="ui/index.html#/open-api"/>
-                                <property name="locationMatch" value="configurationManagement"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
                                 <property name="name" value="Secure Credentials Vault"/>

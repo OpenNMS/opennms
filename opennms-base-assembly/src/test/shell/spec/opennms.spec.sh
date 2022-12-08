@@ -132,7 +132,7 @@ testRunasRelaunch() {
 	#echo RUNAS=raccoonfink >> "$INSTPREFIX/etc/opennms.conf"
 	#export RUNAS=raccoonfink
 	output="$(RUNAS=raccoonfink runOpennms -f start 2>&1 || :)"
-	assertContains "$output" "ERROR: you must run this script as raccoonfink"
+	assertContains "$output" "ERROR: you should run this script as raccoonfink"
 }
 
 testJavaHeapSize() {

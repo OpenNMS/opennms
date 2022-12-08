@@ -122,6 +122,8 @@ public class PollablesIT {
 
     private PollableNetwork m_network;
     private MockPollContext m_pollContext;
+
+    @Autowired
     private MockNetwork m_mockNetwork;
     private MockDatabase m_db;
     private MockEventIpcManager m_eventMgr;
@@ -155,6 +157,8 @@ public class PollablesIT {
     private PollableService pDot4Smtp;
     private PollableService pDot4Http;
     private OutageAnticipator m_outageAnticipator;
+
+    @Autowired
     private MockPollerConfig m_pollerConfig;
 
     private MockScheduler m_scheduler;
@@ -176,7 +180,6 @@ public class PollablesIT {
 
         MockLogAppender.setupLogging();
 
-        m_mockNetwork = new MockNetwork();
         m_mockNetwork.addNode(1, "Router");
         m_mockNetwork.addInterface("192.168.1.1");
         m_mockNetwork.addService("ICMP");
@@ -214,7 +217,7 @@ public class PollablesIT {
         m_pollContext.setEventMgr(m_eventMgr);
         m_pollContext.setMockNetwork(m_mockNetwork);
 
-        m_pollerConfig = new MockPollerConfig(m_mockNetwork);
+        m_pollerConfig.reset();
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");

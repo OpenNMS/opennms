@@ -4,13 +4,25 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
 FROM ${BASE_IMAGE} as minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
-RUN chmod -R g-w /opt/minion
+RUN chmod -R g-w /opt/minion && \
+    chmod -R g=u \
+        /opt/minion/etc \
+        /opt/minion/data \
+        && \
+    chmod -R a+x /opt/minion/bin && \
+    chmod g=u /opt/minion && \
+    find \
+        /opt/minion/data \
+        /opt/minion/deploy \
+        /opt/minion/system \
+        /opt/minion/repositories \
+        -type d -print0 | xargs -0 chmod 2775
 
 ##
 # Prod image with minimal image size
@@ -38,15 +50,17 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     apt clean && \
     rm -rf /var/cache/apt /etc/apt/security.sources.list
 
-RUN groupadd --gid 10001 minion && \
+RUN groupadd \
+        --gid 10001 \
+        minion && \
     useradd \
-    --system \
-    --uid 10001 \
-    --gid 10001 \
-    --home-dir /opt/minion \
-    --no-create-home \
-    --shell /usr/bin/bash \
-    minion
+        --system \
+        --uid 10001 \
+        --gid 10001 \
+        --home-dir /opt/minion \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        minion
 
 # https://issues.opennms.org/browse/NMS-12635
 # It is possible to set sysctls: net.ipv4.ping_group_range=0 10001 which allows the container using sockets. If we run on
@@ -61,10 +75,6 @@ COPY container-fs/health.sh /
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
-
-# Copy Prometheus JMX Exporter
-# BMR: this is redundant, isn't it? we just copied all of /opt
-# COPY --chown=10001:0 --from=minion-base /opt/prom-jmx-exporter /opt/prom-jmx-exporter
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/

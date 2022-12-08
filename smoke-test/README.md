@@ -24,9 +24,9 @@ docker pull opennms/sentinel:$VERSION
 And then tag them for the tests:
 ```
 export VERSION=XX.X.X
-docker tag opennms/horizon:XX.X.X horizon
-docker tag opennms/minion:XX.X.X minion
-docker tag opennms/sentinel:XX.X.X sentinel
+docker tag opennms/horizon:XX.X.X opennms/horizon
+docker tag opennms/minion:XX.X.X opennms/minion
+docker tag opennms/sentinel:XX.X.X opennms/sentinel
 ```
 
 ### b) Pull images from build artifacts
@@ -65,11 +65,13 @@ To fix this issue you have change the tmpdir path for Java with:
 mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
 ```
 
-### Run tests from local tarball
+### Run tests from local Docker image
 
 If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
-Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
-Smoke tests will run the image named `horizon` in your local Docker image repo.
+In `opennms-container/horizon` run `make` to create `opennms/horizon:latest` in your local Docker image repo.
+Smoke tests will run against this image in your local Docker image repo.
+When you want to use the latest **published** Horizon docker image, make sure to remove the local image with `docker image rm opennms/horizon:latest`.
+You can do the same for the Minion and Sentinel.
 
 ## Writing system tests
 

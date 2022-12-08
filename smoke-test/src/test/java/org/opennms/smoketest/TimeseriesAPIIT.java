@@ -28,17 +28,16 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
+import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.utils.SshClient;
+import org.opennms.smoketest.utils.KarafShell;
+import org.opennms.smoketest.utils.KarafShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +48,18 @@ public class TimeseriesAPIIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
+    private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+
+    @Before
+    public void setUp() throws IOException, InterruptedException {
+        // Make sure the Karaf shell is healthy before we start
+        KarafShellUtils.awaitHealthCheckSucceeded(stack.opennms());
+    }
+
     @Test
     public void canLoadTimeseriesFeature() throws Exception {
-        final InetSocketAddress opennmsSsh = stack.opennms().getSshAddress();
-        try (final SshClient sshClient = new SshClient(opennmsSsh, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-            pipe.println("feature:install opennms-timeseries-api");
-            pipe.println("logout");
-            await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
-            assertEquals(Boolean.FALSE, sshClient.getStderr().toLowerCase().contains("error"));
-        }
+        assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
+
+        KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
     }
 }
