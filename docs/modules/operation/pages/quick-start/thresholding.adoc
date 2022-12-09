@@ -40,7 +40,7 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 | high
 
 | Datasource
-| Name of the datassource that you want to threshold against. +
+| Name of the datasource that you want to threshold against. +
 For this tutorial, we have provided the datasource for logged-in users.
 For information on how to determine a metric's datasource, see <<deep-dive/thresholds/datasource.adoc#datasource-determine, Determine the datasource>> in the Deep Dive section.
 | hrSystemNumUsers
@@ -61,7 +61,7 @@ In this case, we want to re-arm the system when the number of logged-in users fa
 
 | Trigger
 | The number of consecutive times that the threshold value can occur before the system triggers an event.
-Since our default polling period is five minutes, a value of three means {page-component-title} will create a threshold event if there are more than two users logged in for fifteen minutes.
+Since our default polling period is 5 minutes, a value of 3 means {page-component-title} will create a threshold event if there are more than two users logged in for 15 minutes.
 | 3
 
 | Description

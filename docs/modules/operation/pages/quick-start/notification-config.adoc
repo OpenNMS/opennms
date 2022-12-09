@@ -43,7 +43,7 @@ Filter rules let you define which notifications to send or save.
 They work alongside your event notification configuration to enable better, more fine-tuned control over the notifications that you receive.
 
 By default, the filter rule configured in `$\{OPENNMS_HOME}/etc/notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) does not have the `strict` flag enabled.
-This means if there is an event that is not associated with a node or interface (and therefore no `IPADDR` value), it will bypass validation and the notification would be processed.
+This means that if there is an event that is not associated with a node or interface (and therefore no `IPADDR` value), it will bypass validation and the notification would be processed.
 A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated, and if there is no node or interface associated with the event, the notification will not be saved.
 
 == Beyond Quick Start
