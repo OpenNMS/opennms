@@ -397,6 +397,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
         }
 
+        if (model.isJaegerEnabled()) {
+            props.put("org.opennms.core.tracer", "jaeger");
+            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+        }
+
         // output Karaf logs to the console to help in debugging intermittent container startup failures
         props.put("karaf.log.console", "INFO");
         return props;
@@ -414,6 +419,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
         if (profile.isKafkaProducerEnabled()) {
             featuresOnBoot.add("opennms-kafka-producer");
+        }
+        if (model.isJaegerEnabled()) {
+            featuresOnBoot.add("opennms-core-tracing-jaeger");
         }
         return featuresOnBoot;
     }
