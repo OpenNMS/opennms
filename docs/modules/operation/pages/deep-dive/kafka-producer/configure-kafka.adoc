@@ -97,7 +97,7 @@ admin@opennms()> config:update
 ----
 
 In the example above, the filter is configured such that only events with the given UEI are forwarded.
-Consult the source code of the `org.opennms.netmgt.xml.event.OnmsEvent` class in your distribution for a complete list of available properties.
+Consult the source code of the `org.opennms.netmgt.xml.event.Event` class in your distribution for a complete list of available properties.
 
 === Enable Alarm Filtering
 
