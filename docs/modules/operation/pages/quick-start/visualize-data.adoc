@@ -10,19 +10,19 @@ By default, it displays pending situations and problems, ongoing outages, 24-hou
 
 By default, the visualizations on the home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
-
 For more information, see xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
 
 [[qs-visualize-dashboard]]
 == Dashboard
 
 You can view the default dashboard by clicking menu:Dashboards[Dashboard] in the top menu bar.
-The dashboard compiles network environment data to generate an overview of monitored components; this information can often be a useful starting point for more detailed analysis of issues.
+The dashboard compiles network environment data to generate an overview of monitored components.
+This information can often be a useful starting point for more detailed analysis of issues.
 
 The dashboard includes the following components:
 
 * *Surveillance view:* Lets you model a monitoring context on the dashboard.
-You can reduce visible information by selecting rows, columns, and cells to focus on, quickly limiting the data you have to sift through.
+You can reduce visible information by selecting rows, columns, and cells to focus on, quickly limiting the data that you have to sift through.
 The rest of the dashboard updates dynamically.
 * *Alarms:* Shows unacknowledged alarms which should be escalated.
 * *Notifications:* Shows outstanding and unacknowledged notifications.
@@ -44,6 +44,7 @@ For more information, see xref:deep-dive/admin/webui/surveillance-view.adoc[Surv
 
 The Surveillance View and its corresponding dashboard component visualize all routers, switches, and servers in your production, test, and development environments by default (see <<deep-dive/admin/webui/surveillance-view.adoc#surveillance-view-default-config, Default configuration>>).
 You can create custom surveillance categories to define specific data that you want to visualize in the Surveillance View.
+
 Follow these steps to create a surveillance category that monitors the `localhost` node:
 
 . Click the *gear* symbol in the top-right of the screen.

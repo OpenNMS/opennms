@@ -8,7 +8,7 @@ For more in-depth information on any topic, see the xref:deep-dive/introduction.
 
 == Introduction
 
-Now that you have installed and started {page-component-title}, you should consider your monitoring goals.
+After you have installed and started {page-component-title}, you should consider your monitoring goals.
 Knowing what kind of information you want to collect will help focus your setup process.
 
 {page-component-title} provides robust functionality out of the box, including (but not limited to) the following:

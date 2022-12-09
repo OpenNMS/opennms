@@ -1,11 +1,11 @@
 
 = Beyond the Quick Start Guide
 
-After you finish following the steps in the Quick Start guide, your {page-component-title} instance should be set up and monitoring your network.
+After you finish following the steps in this Quick Start guide, your {page-component-title} instance should be set up and monitoring your network.
 Of course, there is still much more that you can do to customize {page-component-title} to suit your needs.
 You can explore the Deep Dive section to learn more.
 
-This section includes suggested topics that supplement the Quick Start guide.
+This section includes suggested topics that supplement the guide.
 
 == User management
 
