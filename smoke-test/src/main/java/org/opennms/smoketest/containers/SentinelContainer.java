@@ -293,7 +293,6 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
@@ -304,7 +303,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         }
 
         protected void waitUntilReadyWrapped() {
-            LOG.info("Waiting for Minion health check...");
+            LOG.info("Waiting for Sentinel health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
                     .atMost(5, MINUTES)

@@ -302,7 +302,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
