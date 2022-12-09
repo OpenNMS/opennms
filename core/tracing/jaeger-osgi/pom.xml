@@ -41,8 +41,6 @@
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
                   <exclude>commons-codec:commons-codec</exclude>
-                  <exclude>com.squareup.okhttp3:okhttp</exclude>
-                  <exclude>com.squareup.okio:okio</exclude>
                 </excludes>
               </artifactSet>
               <filters>
@@ -65,7 +63,9 @@
               io.opentracing.util,
               io.opentracing,
               io.opentracing.propagation,
-              io.opentracing.tag
+              io.opentracing.tag,
+              javax.net,
+              javax.net.ssl
             </Import-Package>
             <Export-Package>
               io.jaegertracing,
