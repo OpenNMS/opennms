@@ -28,8 +28,6 @@
 
 package org.opennms.smoketest.utils;
 
-import static org.opennms.smoketest.utils.RestClientUtil.checkUriAvailability;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -68,6 +66,7 @@ import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.containers.OpenNMSContainer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,18 +121,14 @@ public class RestClient {
 
     public String getDisplayVersion() {
         final WebTarget target = getTarget().path("info");
-        boolean isReachable = checkUriAvailability(target.getUri());
+        final String json = getBuilder(target).get(String.class);
 
-        if (isReachable) {
-            final String json = getBuilder(target).get(String.class);
-
-            final ObjectMapper mapper = new ObjectMapper();
-            try {
-                JsonNode actualObj = mapper.readTree(json);
-                return actualObj.get("displayVersion").asText();
-            } catch (IOException e) {
-                LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
-            }
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode actualObj = mapper.readTree(json);
+            return actualObj.get("displayVersion").asText();
+        } catch (IOException e) {
+            LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
         }
         return null;
     }
@@ -177,13 +172,13 @@ public class RestClient {
         final Response response = getBuilder(getTarget().path("datachoices")).get();
         final String jsonContent = response.readEntity(String.class);
         final Map<String, Object> hashMap = new ObjectMapper().readValue(jsonContent, HashMap.class);
-        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
-            if (e.getValue() instanceof Integer) {
-                return Long.valueOf((Integer) e.getValue());
-            } else {
-                return e.getValue();
-            }
-        }));
+        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e-> {
+                    if (e.getValue() instanceof Integer) {
+                        return Long.valueOf( (Integer) e.getValue());
+                    } else {
+                        return e.getValue();
+                    }
+                }));
     }
 
     public Response getResponseForNode(String nodeCriteria) {

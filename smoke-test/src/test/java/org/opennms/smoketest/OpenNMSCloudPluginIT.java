@@ -28,23 +28,21 @@
 
 package org.opennms.smoketest;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.stream.Collectors;
 
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.stacks.StackModel;
-import org.opennms.smoketest.utils.KarafShell;
+import org.opennms.smoketest.utils.KarafShellUtils;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -59,17 +57,8 @@ public class OpenNMSCloudPluginIT {
     private static final String CLOUD_MOCK_MAIN = "org.opennms.plugins.cloud.ittest.MockCloudMain";
     private static final String KAR_FILE_NAME = "org.opennms.plugins.cloud-assembly.kar";
 
-    private KarafShell opennmsShell;
-    private KarafShell sentinelShell;
-
     @ClassRule
-    public static Network network = Network.newNetwork();
-
-    @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack
-            .withModel(StackModel.newBuilder()
-                    .withSentinel()
-                    .build());
+    public static OpenNMSStack stack = OpenNMSStack.SENTINEL;
 
     @ClassRule
     public static GenericContainer mockCloudContainer = new GenericContainer(DockerImageName.parse("opennms/deploy-base:jre-2.0.6.b165"))
@@ -82,44 +71,57 @@ public class OpenNMSCloudPluginIT {
             .withNetwork(stack.opennms().getNetwork())
             .withNetworkAliases("cloudMock");
 
-    @Before
-    public void setUp() {
-        this.opennmsShell = new KarafShell(stack.opennms().getSshAddress());
-        this.sentinelShell = new KarafShell(stack.sentinel().getSshAddress());
-        mockCloudContainer.start();
-    }
-
     @Test
     public void installCloudPlugin() throws Exception {
-        install_cloud_plugin_in_opennms_must_be_successful();
-        install_cloud_plugin_in_sentinel_must_be_successful();
+        /* The sentinel plugin requires a successful installation of the core plugin first.
+           Reason: The core plugin does the configuration and puts the certificates into the database via KV Store.
+           The Sentinel Plugin needs those certificates. The reason it was implemented that way:
+           The user needs to configure only one plugin.
+        */
+        installCloudPluginInOpennmsMustBeSuccessful();
+        installCloudPluginInSentinelMustBeSuccessful();
     }
 
-    public void install_cloud_plugin_in_opennms_must_be_successful() throws Exception {
+    public void installCloudPluginInOpennmsMustBeSuccessful() throws Exception {
         // Given
         stack.opennms().copyFileToContainer(MountableFile.forHostPath(PATH_TO_FILE), format("%s%s", CONTAINER_PATH, KAR_FILE_NAME));
         String config = createConfig();
 
         // When
-        opennmsShell.runCommand(String.format("kar:install file:%s%s", CONTAINER_PATH, KAR_FILE_NAME));
-        opennmsShell.runCommand("feature:install opennms-plugin-cloud-core");
-        opennmsShell.runCommand("feature:list | grep opennms-plugin-cloud-core", output -> output.contains("Started"));
-        opennmsShell.runCommand(config);
-        opennmsShell.runCommand("opennms-cloud:init key", output -> output.contains("Initialization of cloud plugin in OPENNMS was successful."));
+        KarafShellUtils.withKarafShell(stack.opennms().getSshAddress(), Duration.ofMinutes(3), streams -> {
+            streams.stdin.println(config);
+            streams.stdin.println("feature:install opennms-plugin-cloud-core");
+            streams.stdin.println("feature:list | grep opennms-plugin-cloud-core");
+            await().atMost(com.jayway.awaitility.Duration.ONE_MINUTE).until(() -> streams.stdout.getLines().stream().anyMatch(line -> line.contains("Started")));
+            streams.stdin.println("opennms-cloud:init key");
+            await().atMost(com.jayway.awaitility.Duration.ONE_MINUTE).until(() ->
+                    String.join("\n", streams.stdout.getLines()).contains("Initialization of cloud plugin in OPENNMS was successful"));
+            return true;
+        });
     }
 
 
-    public void install_cloud_plugin_in_sentinel_must_be_successful() throws Exception {
+    public void installCloudPluginInSentinelMustBeSuccessful() throws Exception {
         // Given
         stack.sentinel().copyFileToContainer(MountableFile.forHostPath(PATH_TO_FILE), format("%s%s", CONTAINER_PATH, KAR_FILE_NAME));
         String config = createConfig();
 
         // When
-        sentinelShell.runCommand(String.format("kar:install file:%s%s", CONTAINER_PATH, KAR_FILE_NAME));
-        sentinelShell.runCommand("feature:install opennms-plugin-cloud-sentinel");
-        sentinelShell.runCommand("feature:list | grep opennms-plugin-cloud-sentinel", output -> output.contains("Started"));
-        sentinelShell.runCommand(config);
-        sentinelShell.runCommand("opennms-cloud:init key", output -> output.contains("Initialization of cloud plugin in SENTINEL was successful."));
+        KarafShellUtils.withKarafShell(stack.sentinel().getSshAddress(), Duration.ofMinutes(3), streams -> {
+            streams.stdin.println(config);
+            streams.stdin.printf("kar:install file:%s%s%n", CONTAINER_PATH, KAR_FILE_NAME);
+            streams.stdin.println("feature:install opennms-plugin-cloud-sentinel");
+            streams.stdin.println("feature:list | grep opennms-plugin-cloud-sentinel");
+            await().atMost(com.jayway.awaitility.Duration.ONE_MINUTE).until(() -> streams.stdout.getLines().stream().anyMatch(line -> line.contains("Started")));
+            await().atMost(com.jayway.awaitility.Duration.ONE_MINUTE).until(() ->
+            {
+                streams.stdin.println("opennms-cloud:init key");
+                return streams.stdout.getLines().stream().anyMatch(line -> line.contains("Initialization of cloud plugin in SENTINEL was successful."));
+            });
+            await().atMost(com.jayway.awaitility.Duration.ONE_MINUTE).until(() ->
+                    String.join("\n", streams.stdout.getLines()).contains("Initialization of cloud plugin in SENTINEL was successful."));
+            return true;
+        });
     }
 
     private String createConfig() throws IOException {
@@ -144,21 +146,6 @@ public class OpenNMSCloudPluginIT {
         URL url = new URL(format("jar:file:%s!%s", PATH_TO_CLOUD_MOCK, fileInClasspath));
         try (InputStream inputStream = url.openStream()) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    @AfterClass
-    public static void afterAll() {
-        if (nonNull(stack)) {
-            if (nonNull(stack.opennms())) {
-                stack.opennms().stop();
-            }
-            if (nonNull(stack.sentinel())) {
-                stack.sentinel().stop();
-            }
-            if (nonNull(mockCloudContainer)) {
-                mockCloudContainer.stop();
-            }
         }
     }
 
