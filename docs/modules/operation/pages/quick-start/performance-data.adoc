@@ -1,12 +1,12 @@
 
 = Step 4: Set Up Performance Data Collection
 
-This section describes how to set up performance data collection in {page-component-title}.
+This section describes performance data collection in {page-component-title}.
 
 {page-component-title} collects performance data using xref:reference:daemons/daemon-config-files/collectd.adoc[collectd], which is enabled by default.
-Collectd schedules data collection on network entities using management agents and protocol-specific collectors.
+Collectd schedules data collection processes on network entities using management agents and protocol-specific collectors.
 
-NOTE: In the {page-component-title} docs, any reference to collectd refers to the {page-component-title} collect daemon, not the independent open source project of the same name.
+NOTE: In this documentation, any reference to collectd refers to the {page-component-title} collect daemon, not the independent open source project of the same name.
 
 Data collection for SNMP and OpenNMS-JVM is enabled by default, allowing {page-component-title} to monitor itself through JMX.
 
@@ -18,8 +18,7 @@ For additional information, including collector configuration, see xref:deep-div
 
 The default value for the community string is `public`.
 We recommend that you do not use the default community string in production.
-
-See xref:quick-start/inventory.adoc#provision-snmp-configuration[Configure SNMP for provisioning] for steps to change the community string.
+See <<quick-start/inventory.adoc#provision-snmp-configuration, Configure SNMP for provisioning>> for steps to change the community string.
 
 Performance data collection on other protocols (HTTPS, JMX, and so on) requires additional configuration.
 You may also want to change how collectd works--when, how, and what data it collects.
@@ -28,7 +27,7 @@ For more information, see xref:reference:performance-data-collection/introductio
 == Default performance data collection
 
 By default, {page-component-title} collects a variety of information from monitored nodes that support SNMP.
-This information includes widely implemented metrics that are standard for MIB-2 sources (for example, TCP group data, network interface counters).
+This information includes widely implemented metrics that are standard for MIB-2 sources (for example, TCP group data and network interface counters).
 SNMP data collection definitions are also included for devices from a range of popular vendors (for example, if you add a Cisco router to your instance, {page-component-title} will automatically collect Cisco-specific metrics).
 The metrics included in these collections vary by vendor.
 
