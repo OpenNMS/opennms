@@ -61,6 +61,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
     @Override
     public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
+        builder.setDirection(Direction.UNKNOWN);
 
         InetAddress ipv4DstAddress = null;
         InetAddress ipv6DstAddress = null;
@@ -78,7 +79,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long dstVlan = null;
         Long flowActiveTimeout = this.flowActiveTimeoutFallback;
         Long flowInActiveTimeout = this.flowInactiveTimeoutFallback;
-        Long sysUpTime = null;
+        Long sysUpTime = 0L;
         Long unixSecs = null;
         Long firstSwitched = null;
         Long lastSwitched = null;

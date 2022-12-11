@@ -64,6 +64,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
     @Override
     public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
+        builder.setDirection(Direction.UNKNOWN);
 
         Long exportTime = null;
         Long octetDeltaCount = null;
