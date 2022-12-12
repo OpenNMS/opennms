@@ -36,4 +36,5 @@ public interface ReloadableTopologyDaemon {
      * Triggers a reload of the topology in case the topology has been updated
      */
     void reloadTopology();
+    boolean runSingleSnmpCollection(final int nodeId);
 }

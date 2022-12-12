@@ -307,6 +307,17 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return true;
     }
 
+    public boolean runSingleSnmpCollection(final int nodeId, ProtocolSupported proto) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        if (node == null) {
+            return false;
+        }
+        for (SchedulableNodeCollectorGroup group: m_groups) {
+            group.getNodeCollector(node, 0).collect();
+        }
+        return true;
+    }
+
     public boolean runSingleSnmpCollection(final int nodeId) {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
         if (node == null) {
