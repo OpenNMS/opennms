@@ -29,8 +29,8 @@
 package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -99,7 +99,7 @@ public class WebappIT {
   public void verifyNoCachingOfRequestWithSessionCookie() {
     given().get("login.jsp").then().assertThat()
         .statusCode(200)
-        .header("Set-Cookie", containsString("JSESSIONID"))
+        .header("Set-Cookie", matchesPattern("^JSESSIONID=.*SameSite=Strict$"))
         .header("Cache-Control", is("no-cache"));
   }
 
