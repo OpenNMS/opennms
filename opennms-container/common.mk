@@ -91,7 +91,7 @@ help:
 # doesn't exist and make wants to build it, so tell the user we couldn't
 # find the tarball and they need to run the assembly.
 $(TARBALL):
-	$(warning Couldn't find opennms-full-assembly tarball at $(TARBALL))
+	$(warning Couldn't find assembly tarball at $(TARBALL))
 	$(error Go to the top-level and run this: $(ASSEMBLE_COMMAND))
 
 test: $(TARBALL)
