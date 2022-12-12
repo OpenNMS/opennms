@@ -212,6 +212,17 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpc, Map.class));
         }
+
+        if (model.isJaegerEnabled()) {
+            String jaeger = "{\n" +
+                    "\t\"system\": {\n" +
+                    "\t\t\"properties\": {\n" +
+                    "\t\t\t\"JAEGER_ENDPOINT\": \"http://jaeger:14268/api/traces\"\n" +
+                    "\t\t}\n" +
+                    "\t}\n" +
+                    "}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(jaeger, Map.class));
+        }
     }
 
     public InetSocketAddress getSyslogAddress() {
@@ -302,7 +313,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {

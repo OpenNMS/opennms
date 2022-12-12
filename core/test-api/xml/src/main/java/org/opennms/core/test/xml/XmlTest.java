@@ -243,7 +243,7 @@ abstract public class XmlTest<T> {
         });
         try {
             final InputSource inputSource = new InputSource(getSampleXmlInputStream());
-            final XMLFilter filter = JaxbUtils.getXMLFilterForClass(getSampleClass());
+            final XMLFilter filter = JaxbUtils.getXMLFilterForClass(getSampleClass(), false);
             final SAXSource source = new SAXSource(filter, inputSource);
             @SuppressWarnings("unchecked")
             T obj = (T) unmarshaller.unmarshal(source);

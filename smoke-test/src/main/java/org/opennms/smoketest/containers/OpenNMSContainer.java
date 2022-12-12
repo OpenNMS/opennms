@@ -397,6 +397,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.rrd.storeByForeignSource", Boolean.TRUE.toString());
         }
 
+        if (model.isJaegerEnabled()) {
+            props.put("org.opennms.core.tracer", "jaeger");
+            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+        }
+
         // output Karaf logs to the console to help in debugging intermittent container startup failures
         props.put("karaf.log.console", "INFO");
         return props;
@@ -414,6 +419,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
         if (profile.isKafkaProducerEnabled()) {
             featuresOnBoot.add("opennms-kafka-producer");
+        }
+        if (model.isJaegerEnabled()) {
+            featuresOnBoot.add("opennms-core-tracing-jaeger");
         }
         return featuresOnBoot;
     }
@@ -478,7 +486,14 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
-                container.waitUntilReadyException = e;
+                var logs =
+                        "\n\t\t----------------------------------------------------------\n"
+                                + container.getLogs()
+                                .replaceFirst("(?ms)(.*?)(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*", "$2\n")
+                                .replaceAll("(?m)^", "\t\t")
+                                + "\t\t----------------------------------------------------------";
+
+                container.waitUntilReadyException = new IllegalStateException("Failed to start container. OpenNMS exception (if any)/container logs:" + logs, e);
 
                 throw e;
             }
