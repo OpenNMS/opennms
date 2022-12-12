@@ -1331,7 +1331,7 @@
         <bundle>mvn:com.vaadin.external.gwt/gwt-elemental/2.8.2.vaadin2</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
-        <bundle>mvn:org.jsoup/jsoup/1.14.3</bundle>
+        <bundle>mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
         <!-- Vaadin -->
         <bundle start-level="70">mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>

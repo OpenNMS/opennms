@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,14 +29,17 @@
 package org.opennms.protocols.http.collector;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.MalformedURLException;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.SimpleHtmlSerializer;
+import org.htmlcleaner.SimpleXmlSerializer;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -62,8 +65,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
-
-    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollectionHandler.class);
 
     @Override
@@ -82,8 +83,9 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
                 Elements el = elements.select(object.getXpath());
                 if (el == null) {
                     LOG.info("No value found for object named '{}'. Skipping.", object.getName());
+                } else {
+                    builder.withAttribute(collectionResource, group.getName(), object.getName(), el.html(), object.getDataType());
                 }
-                builder.withAttribute(collectionResource, group.getName(), object.getName(), el.html(), object.getDataType());
             }
             processXmlResource(builder, collectionResource, resourceName, group.getName());
         }
@@ -160,19 +162,44 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      * @throws Exception the exception
      */
     protected Document getJsoupDocument(String urlString, Request request) throws Exception {
-        InputStream is = null;
-        URLConnection c = null;
+        String contents = null;
+
         try {
-            URL url = UrlFactory.getUrl(urlString, request);
-            c = url.openConnection();
-            is = c.getInputStream();
-            final Document doc = Jsoup.parse(is, "ISO-8859-9", "/");
-            doc.outputSettings().escapeMode(EscapeMode.xhtml);
-            return doc;
-        } finally {
-            IOUtils.closeQuietly(is);
-            UrlFactory.disconnect(c);
+            final URLConnection connection = UrlFactory.getUrl(urlString, request).openConnection();
+            try (
+                final InputStream is = connection.getInputStream();
+            ) {
+                contents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        } catch (final MalformedURLException e) {
+            LOG.warn("failed to read from URL {}", urlString, e);
+            throw e;
         }
+
+        return parseHtml(contents);
     }
 
+    protected static Document parseHtml(final String contents) throws Exception {
+        Document doc = null;
+        try {
+            doc = Jsoup.parse(contents);
+        } catch (final Exception e) {
+            LOG.warn("contents malformed; attempting to sanitize", e);
+            final var serializer = new SimpleXmlSerializer(new CleanerProperties());
+            final var sanitized = serializer.getAsString(contents);
+            try {
+                doc = Jsoup.parse(sanitized);
+            } catch (final Exception se) {
+                LOG.warn("failed to parse contents even after sanitizing; giving up", se);
+                throw se;
+            }
+        }
+
+        if (doc == null) {
+            throw new IllegalStateException("this _should_ be unreachable...");
+        }
+
+        doc.outputSettings().escapeMode(EscapeMode.xhtml);
+        return doc;
+    }
 }

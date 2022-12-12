@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,6 +61,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.SimpleXmlSerializer;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -80,6 +82,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.protocols.http.collector.HttpCollectionHandler;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Header;
 import org.opennms.protocols.xml.config.Parameter;
@@ -545,13 +548,19 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (request == null || is == null || !Boolean.parseBoolean(request.getParameter("pre-parse-html"))) {
             return is;
         }
+
+        final String contents = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+
         try {
-            org.jsoup.nodes.Document doc = Jsoup.parse(is, "ISO-8859-9", "/");
-            doc.outputSettings().escapeMode(EscapeMode.xhtml);
-            return new ByteArrayInputStream(doc.outerHtml().getBytes());
+            final var serializer = new SimpleXmlSerializer(new CleanerProperties());
+            final var sanitized = serializer.getAsString(contents);
+            LOG.debug("after: {}", sanitized);
+            return new ByteArrayInputStream(sanitized.getBytes());
+        } catch (final Exception e) {
+            LOG.warn("failed to pre-process HTML; passing through un-modified and hoping for the best", e);
+            return new ByteArrayInputStream(contents.getBytes());
         } finally {
             IOUtils.closeQuietly(is);
         }
     }
-
 }
