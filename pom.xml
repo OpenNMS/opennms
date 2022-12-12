@@ -1640,7 +1640,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
     <commonsMath3Version>3.5</commonsMath3Version>
-    <commonsNetVersion>3.8.0</commonsNetVersion>
+    <commonsNetVersion>3.9.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
