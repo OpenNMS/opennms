@@ -240,6 +240,13 @@
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.version !== null">
+							{{item.version}}
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'version',operator:'EQ',value:item.version})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'version',operator:'NE',value:item.version})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+						</span>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.date !== null">
 							{{item.date | onmsDate}}
 							<a href style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"></i></a>

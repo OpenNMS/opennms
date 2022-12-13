@@ -5,7 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet author="aramos" id="minion_version">
-
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="monitoringsystems"/>
+            <not>
+                <columnExists tableName="monitoringsystems" columnName="version"/>
+            </not>
+        </preConditions>
         <addColumn tableName="monitoringsystems">
             <column name="version" type="varchar(64)">
                 <constraints nullable="true"/>
