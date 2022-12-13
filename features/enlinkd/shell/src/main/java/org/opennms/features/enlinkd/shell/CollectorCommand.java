@@ -55,6 +55,7 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -110,6 +111,8 @@ public class CollectorCommand implements Action, Completer {
                 };
             case CDP_CACHE_TABLE:
                 return new CdpCacheTableTracker();
+            case IP_NET_TO_MEDIA_TABLE:
+                return new IpNetToMediaTableTracker();
 
             default:
                 break;
@@ -127,6 +130,8 @@ public class CollectorCommand implements Action, Completer {
 
     private final static String CDP_GLOBAL_GROUP = "CdpGlobalGroup";
     private final static String CDP_CACHE_TABLE = "CdpCacheTable";
+
+    private final static String IP_NET_TO_MEDIA_TABLE = "IpNetToMediaTable";
     private static final String[] trackerClassNames = {
             CISCO_VTP,
             CISCO_VTP_VLAN_TABLE,
@@ -137,7 +142,7 @@ public class CollectorCommand implements Action, Completer {
             DOT1Q_TP_FDB_TABLE,
             CDP_GLOBAL_GROUP,
             CDP_CACHE_TABLE,
-            "IpNetToMediaTable",
+            IP_NET_TO_MEDIA_TABLE,
             "IsisSysObjectGroup",
             "IsisCircTable",
             "IsisISAdjTable",
