@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.opennms.features.jest.client.ClientWithCircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +52,14 @@ public class BulkRequest<T> {
     private final int retryCount;
     private int retries = 0;
     private BulkWrapper bulkAction;
+    private final ClientWithCircuitBreaker clientWithCircuitBreaker;
 
     public BulkRequest(final JestClient client, final List<T> documents, final Function<List<T>, BulkWrapper> documentToBulkTransformer, int retryCount) {
         this.client = Objects.requireNonNull(client);
         this.transformer = Objects.requireNonNull(documentToBulkTransformer);
         this.documents = new ArrayList<>(Objects.requireNonNull(documents));
         this.retryCount = retryCount;
+        this.clientWithCircuitBreaker = client instanceof ClientWithCircuitBreaker? (ClientWithCircuitBreaker) client : null;
     }
 
     public BulkResultWrapper execute() throws IOException {
@@ -100,7 +103,7 @@ public class BulkRequest<T> {
     }
 
     private boolean canRetry() {
-        return retries < retryCount -1;
+        return retries < retryCount -1 && (clientWithCircuitBreaker == null || clientWithCircuitBreaker.canRetry());
     }
 
 
