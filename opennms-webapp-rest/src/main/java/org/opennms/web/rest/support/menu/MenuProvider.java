@@ -332,6 +332,7 @@ public class MenuProvider {
         selfServiceMenu.addItem(changePasswordMenu);
 
         MenuEntry logoutMenu = new MenuEntry();
+        logoutMenu.id = "logout";
         logoutMenu.name = "Log Out";
         logoutMenu.iconType = "fa";
         logoutMenu.icon = "fa-sign-out";
