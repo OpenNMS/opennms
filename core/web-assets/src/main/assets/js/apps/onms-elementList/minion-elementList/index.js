@@ -33,6 +33,8 @@ angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 			return 'Status';
 		case 'lastUpdated':
 			return 'Last updated';
+		case 'version':
+        	return 'Version';
 		default:
 			// If no match, return the input
 			return input;
