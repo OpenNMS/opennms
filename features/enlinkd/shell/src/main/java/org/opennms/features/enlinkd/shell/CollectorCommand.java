@@ -46,16 +46,21 @@ import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
-@Command(scope = "opennms", name = "topology-collect", description = "Collect linkd topology data")
+@Command(scope = "opennms", name = "enlinkd-collect", description = "Collect enlinkd snmp data")
 @Service
 public class CollectorCommand implements Action, Completer {
 
@@ -89,6 +94,22 @@ public class CollectorCommand implements Action, Completer {
                 };
             case DOT1D_BASE_PORT_TABLE:
                 return  new Dot1dBasePortTableTracker();
+            case DOT1D_STP_PORT_TABLE:
+                return  new Dot1dStpPortTableTracker();
+            case DOT1D_TP_FDB_TABLE:
+                return new Dot1dTpFdbTableTracker();
+            case DOT1Q_TP_FDB_TABLE:
+                return new Dot1qTpFdbTableTracker();
+            case CDP_GLOBAL_GROUP:
+                return  new CdpGlobalGroupTracker() {
+                    @Override
+                    protected void storeResult(SnmpResult res) {
+                        super.storeResult(res);
+                        printSnmpData();
+                    }
+                };
+            case CDP_CACHE_TABLE:
+                return new CdpCacheTableTracker();
 
             default:
                 break;
@@ -100,17 +121,22 @@ public class CollectorCommand implements Action, Completer {
     private final static String CISCO_VTP_VLAN_TABLE = "CiscoVtpVlanTable";
     private final static String DOT1D_BASE = "Dot1dBase";
     private final static String DOT1D_BASE_PORT_TABLE = "Dot1dBasePortTable";
+    private final static String DOT1D_STP_PORT_TABLE = "Dot1dStpPortTable";
+    private final static String DOT1D_TP_FDB_TABLE = "Dot1dTpFdbTable";
+    private final static String DOT1Q_TP_FDB_TABLE = "Dot1qTpFdbTable";
 
+    private final static String CDP_GLOBAL_GROUP = "CdpGlobalGroup";
+    private final static String CDP_CACHE_TABLE = "CdpCacheTable";
     private static final String[] trackerClassNames = {
-         CISCO_VTP,
-         CISCO_VTP_VLAN_TABLE,
-         DOT1D_BASE,
-         DOT1D_BASE_PORT_TABLE,
-            "Dot1dStpPort",
-            "Dot1dTpFdbTable",
-            "Dot1qTpFdbTable",
-            "CdpGlobalGroup",
-            "CdpCacheTable",
+            CISCO_VTP,
+            CISCO_VTP_VLAN_TABLE,
+            DOT1D_BASE,
+            DOT1D_BASE_PORT_TABLE,
+            DOT1D_STP_PORT_TABLE,
+            DOT1D_TP_FDB_TABLE,
+            DOT1Q_TP_FDB_TABLE,
+            CDP_GLOBAL_GROUP,
+            CDP_CACHE_TABLE,
             "IpNetToMediaTable",
             "IsisSysObjectGroup",
             "IsisCircTable",
