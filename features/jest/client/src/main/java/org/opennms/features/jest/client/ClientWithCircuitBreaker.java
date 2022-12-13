@@ -86,6 +86,8 @@ public class ClientWithCircuitBreaker implements JestClient {
     }
 
     public boolean canRetry() {
-        return circuitBreaker.getState().allowPublish;
+        return circuitBreaker.getState().equals(CircuitBreaker.State.CLOSED) ||
+                circuitBreaker.getState().equals(CircuitBreaker.State.HALF_OPEN) ||
+                circuitBreaker.getState().equals(CircuitBreaker.State.DISABLED);
     }
 }
