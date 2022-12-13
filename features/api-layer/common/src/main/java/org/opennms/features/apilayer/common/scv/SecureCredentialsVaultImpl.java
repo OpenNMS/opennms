@@ -76,4 +76,10 @@ public class SecureCredentialsVaultImpl implements SecureCredentialsVault {
                 credentials.getAttributes())
         );
     }
+
+    @Override
+    public void deleteCredentials(String alias) {
+        Objects.requireNonNull(alias);
+        this.delegate.deleteCredentials(OIA_PREFIX + alias.toLowerCase());
+    }
 }
