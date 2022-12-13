@@ -48,6 +48,8 @@ import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpTracker;
 import org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -70,31 +72,40 @@ public class CollectorCommand implements Action, Completer {
                 return new CiscoVtpTracker() {
                     @Override
                     protected void storeResult(SnmpResult res) {
-                        System.out.printf("\t\t%s = %s\n", res.getInstance(), res.getValue().toInt());
-                    }
+                        super.storeResult(res);
+                        printSnmpData();
+                     }
                 };
             case CISCO_VTP_VLAN_TABLE:
-                return  new CiscoVtpVlanTableTracker() {
-                @Override
-                public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
-                    System.out.printf("\t\t%s = %s\n", CiscoVtpVlanTableTracker.CISCO_VTP_VLAN_STATE+"."+row.getVlanIndex(), row.getVlanStatus());
-                    System.out.printf("\t\t%s = %s\n", CiscoVtpVlanTableTracker.CISCO_VTP_VLAN_TYPE+"."+row.getVlanIndex(), row.getVlanType());
-                    System.out.printf("\t\t%s = %s\n", CiscoVtpVlanTableTracker.CISCO_VTP_VLAN_NAME+"."+row.getVlanIndex(), row.getVlanName());
-                }
-            };
+                return  new CiscoVtpVlanTableTracker();
+            case DOT1D_BASE:
+                return  new Dot1dBaseTracker() {
+
+                    @Override
+                    protected void storeResult(SnmpResult res) {
+                        super.storeResult(res);
+                        printSnmpData();
+                    }
+                };
+            case DOT1D_BASE_PORT_TABLE:
+                return  new Dot1dBasePortTableTracker();
 
             default:
                 break;
+
         }
         return null;
     }
     private final static String CISCO_VTP = "CiscoVtp";
     private final static String CISCO_VTP_VLAN_TABLE = "CiscoVtpVlanTable";
+    private final static String DOT1D_BASE = "Dot1dBase";
+    private final static String DOT1D_BASE_PORT_TABLE = "Dot1dBasePortTable";
+
     private static final String[] trackerClassNames = {
          CISCO_VTP,
          CISCO_VTP_VLAN_TABLE,
-            "Dot1dBase",
-            "Dot1dBasePortTable",
+         DOT1D_BASE,
+         DOT1D_BASE_PORT_TABLE,
             "Dot1dStpPort",
             "Dot1dTpFdbTable",
             "Dot1qTpFdbTable",

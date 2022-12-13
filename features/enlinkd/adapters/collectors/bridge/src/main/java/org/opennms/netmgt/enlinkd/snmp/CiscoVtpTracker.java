@@ -36,7 +36,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CiscoVtpTracker extends AggregateTracker
+public class CiscoVtpTracker extends AggregateTracker
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CiscoVtpTracker.class);
     /**
@@ -45,8 +45,32 @@ public final class CiscoVtpTracker extends AggregateTracker
 	//
 	// Lookup strings for specific table entries
 	//
-	public final static	String	VTP_VERSION	= "vtpVersion";
-	
+	public final static	String CISCO_VTP_VERSION	= "vtpVersion";
+    public final static	String CISCO_VTP_VERSION_OID	= ".1.3.6.1.4.1.9.9.46.1.1.1";
+
+    public enum VtpVersion {
+        one(1), two(2), none(3), three(4);
+
+        private final Integer value;
+
+        VtpVersion(Integer value) {
+            this.value =value;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public static VtpVersion getByValue(Integer vtpVersion) {
+            for (VtpVersion version: values()) {
+                if (version.getValue() == vtpVersion) {
+                    return version;
+                }
+            }
+            return null;
+        }
+    }
+
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/*
 		 * vtpVersion OBJECT-TYPE
@@ -64,7 +88,7 @@ public final class CiscoVtpTracker extends AggregateTracker
          *	version in use on the device. If the device does not support
          *	vtp, the version is none(3)."
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,VTP_VERSION,".1.3.6.1.4.1.9.9.46.1.1.1")
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,CISCO_VTP_VERSION,CISCO_VTP_VERSION_OID)
 	};
 
     private final SnmpStore m_store;
@@ -108,7 +132,14 @@ public final class CiscoVtpTracker extends AggregateTracker
      * @return a {@link Integer} object.
      */
     public Integer getVtpVersion() {
-        return m_store.getInt32(VTP_VERSION);
+        return m_store.getInt32(CISCO_VTP_VERSION);
     }
-            
+
+    public VtpVersion decodeVtpVersion() {
+        return VtpVersion.getByValue(m_store.getInt32(CISCO_VTP_VERSION));
+    }
+
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VERSION_OID, CISCO_VTP_VERSION, getVtpVersion(), decodeVtpVersion());
+    }
 }
