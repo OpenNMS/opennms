@@ -204,8 +204,9 @@ Set to `false` to disable statistic recording.
 
 Enriched flows (with OpenNMS node data) can also be forwarded to Kafka.
 
-Enriched flows are stored in `flowDocuments` topic and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+Enriched flows are stored in `flowDocuments` topic and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers] (GPB) by default.
 See `flowdocument.proto` in the corresponding source distribution for the model definitions.
+To enable JSON support, set the `useJson` property to `true`.
 
 Enable Kafka forwarding:
 [source, console]

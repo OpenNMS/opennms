@@ -15,6 +15,7 @@
 							<option value="label">Label</option>
 							<option value="location">Location</option>
 							<option value="status">Status</option>
+							<option value="version">Version</option>
 							<option value="lastUpdated">Last Updated</option>
 						</select>
 						<select class="form-control custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
@@ -186,6 +187,11 @@
 						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
+						<a href ng-click="changeOrderBy('version')">Version</a>
+						<i ng-show="query.orderBy === 'version' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'version' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+					</th>
+					<th>
 						<a href ng-click="changeOrderBy('date')">Last Updated</a>
 						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
 						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
@@ -231,6 +237,13 @@
 							{{item.status}}
 							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o fa-lg"></i></a>
 							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o fa-lg"></i></a>
+						</span>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.version !== null">
+							{{item.version}}
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'version',operator:'EQ',value:item.version})"><i class="fa fa-plus-square-o fa-lg"></i></a>
+							<a href style="text-decoration: none;" ng-click="addSearchClause({property:'version',operator:'NE',value:item.version})"><i class="fa fa-minus-square-o fa-lg"></i></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">

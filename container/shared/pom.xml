@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>31.0.1</version>
+        <version>31.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -73,6 +73,8 @@
                     <bootFeatures>
                         <!-- Karaf "standard" features to include in the core -->
                         <feature>standard</feature>
+                        <feature>jaas</feature>
+                        <feature>jasypt-encryption</feature>
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
                         <feature>war</feature>

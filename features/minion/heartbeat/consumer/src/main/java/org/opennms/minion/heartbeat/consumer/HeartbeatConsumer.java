@@ -29,7 +29,6 @@
 package org.opennms.minion.heartbeat.consumer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +54,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -92,9 +92,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
      */
     private static final String MINION_INTERFACE = "127.0.0.1";
 
-    private static String DEFAULT_SNMP_POLICY = "snmp-policy";
+    private static String DEFAULT_SNMP_POLICY = "Minion-SNMP-Policy";
 
-    private static String DEFAULT_SNMP_DETECTOR = "snmp-detector";
+    private static String DEFAULT_SNMP_DETECTOR = "SNMP";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -132,7 +132,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
-                 minionHandle.getId(), minionHandle.getLocation());
+                minionHandle.getId(), minionHandle.getLocation());
 
         OnmsMinion minion = minionDao.findById(minionHandle.getId());
         if (minion == null) {
@@ -142,6 +142,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             // The real location is filled in below, but we set this to null
             // for now to detect requisition changes
             minion.setLocation(null);
+        }
+
+        if (!Objects.isNull(minionHandle.getVersion()) &&
+                (Objects.isNull(minion.getVersion()) || !minion.getVersion().equals(minionHandle.getVersion()))) {
+            minion.setVersion(minionHandle.getVersion());
         }
 
         final String prevLocation = minion.getLocation();
@@ -238,7 +243,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         if (!nodes.isEmpty()) {
             //check for existing requisitions the policy and detectors are in place
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(prevForeignSource);
-            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
                 foreignSource.addPolicy(policy);
                 foreignSource.addDetector(detector);
                 deployedForeignSourceRepository.save(foreignSource);
@@ -266,7 +271,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         // check that existing foreignId requisition have detectors and policies in place
         if (nextRequisition != null) {
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            if(foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
                 foreignSource.addPolicy(policy);
                 foreignSource.addDetector(detector);
                 deployedForeignSourceRepository.save(foreignSource);
@@ -296,6 +301,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         if (requisitionNode == null) {
             final RequisitionInterface requisitionInterface = new RequisitionInterface();
             requisitionInterface.setIpAddr(MINION_INTERFACE);
+            requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
             ensureServicesAreOnInterface(requisitionInterface);
 
             requisitionNode = new RequisitionNode();

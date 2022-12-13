@@ -44,6 +44,7 @@ import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -101,6 +102,8 @@ public final class OpenNMSStack implements TestRule {
 
     private final PostgreSQLContainer postgreSQLContainer;
 
+    private final GenericContainer jaegerContainer;
+
     private final OpenNMSContainer opennmsContainer;
 
     private final KafkaContainer kafkaContainer;
@@ -118,6 +121,7 @@ public final class OpenNMSStack implements TestRule {
      */
     private OpenNMSStack() {
         postgreSQLContainer = null;
+        jaegerContainer = null;
         elasticsearchContainer = null;
         kafkaContainer = null;
         cassandraContainer = null;
@@ -132,6 +136,16 @@ public final class OpenNMSStack implements TestRule {
     private OpenNMSStack(StackModel model) {
         postgreSQLContainer = new PostgreSQLContainer();
         RuleChain chain = RuleChain.outerRule(postgreSQLContainer);
+
+        if (model.isJaegerEnabled()) {
+            jaegerContainer = new GenericContainer("jaegertracing/all-in-one:1.39")
+                    .withNetwork(Network.SHARED)
+                    .withNetworkAliases("jaeger")
+                    .withExposedPorts(16686);
+            chain = chain.around(jaegerContainer);
+        } else {
+            jaegerContainer = null;
+        }
 
         if (model.isElasticsearchEnabled()) {
             elasticsearchContainer = new ElasticsearchContainer();
@@ -217,6 +231,12 @@ public final class OpenNMSStack implements TestRule {
         return sentinelContainers.get(index);
     }
 
+    public GenericContainer jaeger() {
+        if (jaegerContainer == null) {
+            throw new IllegalStateException("Jaeger container is not enabled in this stack.");
+        }
+        return jaegerContainer;
+    }
     public ElasticsearchContainer elastic() {
         if (elasticsearchContainer == null) {
             throw new IllegalStateException("Elasticsearch container is not enabled in this stack.");

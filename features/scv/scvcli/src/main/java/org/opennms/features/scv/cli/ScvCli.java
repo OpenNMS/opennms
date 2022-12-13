@@ -43,6 +43,7 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.cli.commands.GetCommand;
 import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
+import org.opennms.features.scv.cli.commands.DeleteCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 public class ScvCli {
@@ -55,7 +56,8 @@ public class ScvCli {
             handler = SubCommandHandler.class)
     @SubCommands({@SubCommand(name = "list", impl = ListCommand.class),
             @SubCommand(name = "set", impl = SetCommand.class),
-            @SubCommand(name = "get", impl = GetCommand.class)})
+            @SubCommand(name = "get", impl = GetCommand.class),
+            @SubCommand(name = "delete", impl = DeleteCommand.class)})
     private Function<ScvCli, Integer> command;
 
     @Option(name = "--keystore",
@@ -119,6 +121,7 @@ public class ScvCli {
             System.err.println("Usage: scvcli [--keystore KEYSTORE] [--password PASSWORD] set ALIAS USERNAME PASSWORD [--attribute key=value]...");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get ALIAS");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] list");
+            System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] delete ALIAS");
 
             System.exit(1);
         }

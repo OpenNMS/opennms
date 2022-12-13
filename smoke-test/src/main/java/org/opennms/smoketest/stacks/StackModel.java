@@ -49,6 +49,7 @@ public class StackModel {
     private final List<MinionProfile> minions;
     private final List<Map<String,String>> legacyMinions;
     private final List<SentinelProfile> sentinels;
+    private final boolean jaegerEnabled;
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
     private final boolean simulateRestricedOpenShiftEnvironment;
@@ -66,6 +67,7 @@ public class StackModel {
         sentinels = builder.sentinels;
 
         // Flags
+        jaegerEnabled = builder.jaegerEnabled;
         elasticsearchEnabled = builder.elasticsearchEnabled;
         telemetryProcessingEnabled = builder.telemetryProcessingEnabled;
         simulateRestricedOpenShiftEnvironment = builder.simulateRestricedOpenShiftEnvironment;
@@ -87,6 +89,7 @@ public class StackModel {
         private List<MinionProfile> minions = new LinkedList<>();
         private List<Map<String, String>> legacyMinions = new LinkedList<>();
         private List<SentinelProfile> sentinels = new LinkedList<>();
+        public boolean jaegerEnabled = false;
         private boolean elasticsearchEnabled = false;
         private boolean telemetryProcessingEnabled = false;
         private boolean simulateRestricedOpenShiftEnvironment = false;
@@ -176,6 +179,16 @@ public class StackModel {
          */
         public Builder withSentinels(SentinelProfile... sentinels) {
             this.sentinels = Arrays.asList(sentinels);
+            return this;
+        }
+
+        /**
+         * Enable Jaeger for tracing.
+         *
+         * @return this builder
+         */
+        public Builder withJaeger() {
+            jaegerEnabled = true;
             return this;
         }
 
@@ -298,6 +311,10 @@ public class StackModel {
 
     public List<SentinelProfile> getSentinels() {
         return sentinels;
+    }
+
+    public boolean isJaegerEnabled() {
+        return jaegerEnabled;
     }
 
     public boolean isElasticsearchEnabled() {

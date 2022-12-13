@@ -51,6 +51,9 @@ public class OnmsMinion extends OnmsMonitoringSystem {
     @XmlAttribute(name="status")
     private String m_status;
 
+    @XmlAttribute(name="version")
+    private String m_version;
+
     public OnmsMinion() {
     }
 
@@ -69,8 +72,17 @@ public class OnmsMinion extends OnmsMonitoringSystem {
         m_status = status;
     }
 
+    @Column(name="version")
+    public String getVersion() {
+        return m_version;
+    }
+
+    public void setVersion(final String version) {
+        m_version = version;
+    }
+
     @Override
     public String toString() {
-        return "OnmsMinion [id=" + getId() + ", location=" + getLocation() + ", status=" + m_status + ", lastUpdated=" + getLastUpdated() + ", properties=" + getProperties() + "]";
+        return "OnmsMinion [id=" + getId() + ", location=" + getLocation() + ", status=" + m_status + ", version=" + getVersion() + ", lastUpdated=" + getLastUpdated() + ", properties=" + getProperties() + "]";
     }
 }

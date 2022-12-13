@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.0.6.b165"
+ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
 FROM ${BASE_IMAGE} as horizon-tarball
 
@@ -119,6 +119,7 @@ RUN rm -rf /usr/share/opennms/share/rrd \
     ln -s /usr/share/opennms /opt/opennms && \
     ln -s /usr/share/opennms/etc /etc/opennms && \
     ln -s /usr/share/opennms/logs /var/log/opennms && \
+    ln -s /usr/share/opennms/share /var/lib/opennms && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 

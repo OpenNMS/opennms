@@ -226,6 +226,10 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     private void adjustReaderState(AckReader reader, 
             AckReaderState requestedState, List<AckReaderState> allowedCurrentStates, boolean reloadConfig) {
     
+        if (requestedState != null && requestedState.equals(reader.getState())) {
+             LOG.warn("adjustReaderState: attempting to adjust reader state to {} but it is already {}.", requestedState, requestedState);
+        }
+
         synchronized (m_lock) {
     
             if (!getConfigDao().isReaderEnabled(reader.getName())) {

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>31.0.1</version>
+        <version>31.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -63,6 +63,7 @@
                         <feature>shell-compat</feature>
                         <feature>feature</feature>
                         <feature>jaas</feature>
+                        <feature>jasypt-encryption</feature>
                         <feature>ssh</feature>
                         <feature>management</feature>
                         <feature>bundle</feature>

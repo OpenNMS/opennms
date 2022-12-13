@@ -133,6 +133,7 @@
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>

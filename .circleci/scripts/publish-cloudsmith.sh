@@ -20,7 +20,7 @@ case "${CIRCLE_BRANCH}" in
   release-*)
     REPO="testing"
     ;;
-  master-*|master)
+  master-*)
     REPO="stable"
     ;;
   *)
@@ -63,8 +63,9 @@ for TYPE in horizon minion sentinel; do
 
   find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
-    _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
-    _arch_tag="$(basename "${_file}" | sed -e "s,^${TYPE}-,," -e 's,\.oci$,,')"
+    _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
+    _internal_tag="opennms/${_file_tag}"
+    _arch_tag="$(printf '%s' "${_file_tag}" | sed -e "s,^${TYPE}-,,")"
     echo "${TYPE}: tag=${_internal_tag}, arch_tag=${_arch_tag}, file=${_file}"
     for _publish_tag in "${DOCKER_TAGS[@]}"; do
       _tagname="${DOCKER_REPO}:${_publish_tag}-${_arch_tag}"

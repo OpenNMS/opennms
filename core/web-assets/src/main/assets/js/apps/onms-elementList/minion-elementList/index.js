@@ -33,6 +33,8 @@ angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 			return 'Status';
 		case 'lastUpdated':
 			return 'Last updated';
+		case 'version':
+        	return 'Version';
 		default:
 			// If no match, return the input
 			return input;
@@ -53,6 +55,10 @@ angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 
 // Minion list module
 angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters', 'onmsDateFormatter' ])
+
+.config(['$locationProvider', function($locationProvider) {
+	$locationProvider.hashPrefix('');
+}])
 
 /**
  * Minion list controller

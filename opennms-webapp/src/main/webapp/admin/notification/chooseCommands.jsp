@@ -142,7 +142,7 @@
         {
             buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
             // don't let user pick commands for email addresses
-            if (targets[i].getName().indexOf("@")==-1)
+            if (!(targets[i].getCommands().size() == 1 && "email".equals(targets[i].getCommands().get(0))))
             {
                 buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
             }

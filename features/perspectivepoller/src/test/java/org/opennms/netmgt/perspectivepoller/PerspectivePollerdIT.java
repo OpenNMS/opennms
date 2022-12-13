@@ -261,7 +261,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
         final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
         final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
         final int nodeId = this.node1icmp.getNodeId();
         final InetAddress ipAddress = this.node1icmp.getIpAddress();
@@ -309,14 +308,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     @Test
     public void testCloseOutageOnUnschedule() throws Exception {
         this.perspectivePollerd.start();
-
-        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
-        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
-
-        final int nodeId = this.node1icmp.getNodeId();
-        final InetAddress ipAddress = this.node1icmp.getIpAddress();
-        final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
         final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
         await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
@@ -601,10 +592,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         // load the thresholds.xml and thresd-configuration.xml configuration
         this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
         this.threshdDao.overrideConfig(getClass().getResourceAsStream("/threshd-configuration.xml"));
-
-        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
-        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
         final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
 

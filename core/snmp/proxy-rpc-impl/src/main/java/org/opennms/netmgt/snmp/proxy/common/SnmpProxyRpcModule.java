@@ -40,6 +40,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -66,6 +68,8 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     public static final SnmpProxyRpcModule INSTANCE = new SnmpProxyRpcModule();
 
+    public SecureCredentialsVault m_scv;
+
     public static final String RPC_MODULE_ID = "SNMP";
 
     private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -81,6 +85,15 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     @Override
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
+        if (request.getAgent() != null &&
+                request.getAgent().getAddress().isLoopbackAddress() &&
+                !LocationUtils.DEFAULT_LOCATION_NAME.equals(request.getLocation()) &&
+                m_scv != null) {
+            final var credentials = m_scv.getCredentials(SnmpUtils.APPLIANCE_SNMP_COMMUNITY_ALIAS);
+            if (credentials != null && credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE) != null) {
+                request.getAgent().setReadCommunity(credentials.getAttribute(SnmpUtils.SNMP_COMMUNITY_ATTRIBUTE));
+            }
+        }
         CompletableFuture<SnmpMultiResponseDTO> combinedFuture = CompletableFuture
                 .completedFuture(new SnmpMultiResponseDTO());
         for (SnmpGetRequestDTO getRequest : request.getGetRequests()) {
@@ -206,5 +219,9 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
     @Override
     public String getId() {
         return RPC_MODULE_ID;
+    }
+
+    public void setSecureCredentialsVault(SecureCredentialsVault scv) {
+        this.m_scv = scv;
     }
 }

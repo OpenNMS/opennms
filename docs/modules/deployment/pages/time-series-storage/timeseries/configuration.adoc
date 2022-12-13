@@ -57,7 +57,7 @@ Must be a power of two.
 | -1 (override by `org.opennms.timeseries.config.ring_buffer_size`)
 
 | org.opennms.timeseries.config.writer_threads
-| Number of threads used to pull samples from the ring buffer and insert them into the time-series database.
+| Number of threads used to pull samples from the buffer and insert them into the time series database.
 | 16
 
 | org.opennms.timeseries.config.buffer_type
@@ -150,37 +150,36 @@ You can tune the cache settings to suit your needs, using the parameters above.
 | Name                             | Description
 | TimeseriesMetaDataCache          | Caches metadata that uses {page-component-title} internally.
 | TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
-| TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
+| TimeseriesPersisterMetaTagCache  | Caches all additional configured and resolved meta-tag values by resource.
 |===
 
-The samples the collectors gather are temporarily stored in a ring buffer before they are persisted to the Time Series Integration Layer.
-Increase the value of the ring_buffer_size if you expect large peaks of collectors returning at once or latency in persisting these.
-However, note that the memory the ring buffer uses is reserved, and larger values may require an increased heap size.
+The samples that the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
+You should increase the value of the `buffer_size` if you expect large peaks of collectors returning at once, or if you experience latency in persisting them.
+Note, however, that the memory used by the buffer is reserved, and assigning larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
+
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
 This might not be sufficient if you also use the data outside of {page-component-title}.
 Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
-The configuration of the tags has the following form:
-`prefix.tagKey=${query expression}`
+The configuration of the tags has the following form: `prefix.tagKey=${query expression}`.
 
-* The prefix is: `org.opennms.timeseries.tin.metatags.tag`
-* The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
+* The prefix is `org.opennms.timeseries.tin.metatags.tag`.
+* The `tagKey` can be an arbitrary string, as long as it does not break the https://en.wikipedia.org/wiki/.properties[Java properties file syntax].
 * The query expression lets you query the value.
-Supports use of the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
+It supports the xref:operation:deep-dive/meta-data.adoc#ga-meta-data-dsl[Metadata DSL] within the node, asset, and requisition contexts.
 
-Examples:
+The following examples demonstrate proper tag definition syntax:
 
 * `org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`
 * `org.opennms.timeseries.tin.metatags.tag.sysObjectID=${node:sys-object-id}`
 
-Expose categories by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
+=== Expose categories as meta tags
 
-* `org.opennms.timeseries.tin.metatags.exposeCategories=true` +
+You can expose node categories as meta tags by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
+This results in the following tags:
 
-Will lead to:
-
-** `Tag("cat_myFirstCategory", "myFirstCategory")`
-** `Tag("cat_mySecondCategory", "mySecondCategory")`
+* `Tag("cat_myFirstCategory", "myFirstCategory")`
+* `Tag("cat_mySecondCategory", "mySecondCategory")`

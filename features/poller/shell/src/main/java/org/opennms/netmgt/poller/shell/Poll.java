@@ -70,6 +70,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 @Command(scope = "opennms", name = "poll", description = "Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package.")
@@ -252,13 +253,13 @@ public class Poll implements Action {
             return null;
         }
 
-        final ServiceMonitor monitor = pollerConfig.getServiceMonitor(service.get().service.getName());
-        if (monitor == null) {
+        final Optional<ServiceMonitorLocator> serviceMonitorLocator = pollerConfig.getServiceMonitorLocator(service.get().service.getName());
+        if (!serviceMonitorLocator.isPresent()) {
             System.err.printf("Error: Service %s doesn't have a monitor class defined%n", serviceName);
             return null;
         }
 
-        return monitor.getClass().getName();
+        return serviceMonitorLocator.get().getServiceLocatorKey();
     }
 
     private Map<String, Object> retrieveParameters(final InetAddress ipAddress, final String packageName, final String serviceName) throws Exception {

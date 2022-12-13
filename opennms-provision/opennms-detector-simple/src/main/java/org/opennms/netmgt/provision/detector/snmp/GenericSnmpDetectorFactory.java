@@ -63,7 +63,10 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }
-        return m_agentConfigFactory.getAgentConfig(address, location).toMap();
+        final var map = m_agentConfigFactory.getAgentConfig(address, location).toMap();
+        // Need to embed location into request so minion knows
+        map.put("location", location);
+        return map;
     }
 
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
