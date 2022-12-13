@@ -4,16 +4,70 @@
 
 [[releasenotes-changelog-31.0.2]]
 
-== Release 31.0.2
+==== Release 31.0.2
 
-Release 31.0.2 is a blah blah blah...
-
-It contains something something someting...
+Release 31.0.2 is a minor release which fixes a great many bugs and security vulnerabilities, updates the versions of many library dependencies, and introduces some enhancements related to Minion Appliances.
+The official documentation has also received significant improvements.
 
 NOTE: The documentation for enabling JAAS encryption for Minion and Sentinel has changed.
 If you have enabled encryption previously and wish to enable stronger Jasypt-based encryption, you need to reset any existing user passwords.
 
-The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
+The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_Stroopwafel_].
+
+===== Bug
+
+* Failures when jaeger tracing is enabled on Core server and Minion (Issue https://issues.opennms.org/browse/NMS-14550[NMS-14550])
+* Missing /run/opennms on Ubuntu (Issue https://issues.opennms.org/browse/NMS-14650[NMS-14650])
+* javadoc not being generated in H31 (Issue https://issues.opennms.org/browse/NMS-14750[NMS-14750])
+* OpenNMS opennms start fails on Ubuntu (Issue https://issues.opennms.org/browse/NMS-14838[NMS-14838])
+* Regression: install script fails if an OpenNMS directory contains root-owned lost+found directory (Issue https://issues.opennms.org/browse/NMS-14919[NMS-14919])
+* No /var/lib/opennms on 30.0.4 Docker image (Issue https://issues.opennms.org/browse/NMS-14976[NMS-14976])
+* XML Entity Expansion Injection in geolocation API (Issue https://issues.opennms.org/browse/NMS-14988[NMS-14988])
+* UI Preview: UI Plugins do not work if multiple are installed (Issue https://issues.opennms.org/browse/NMS-14996[NMS-14996])
+* OIA Pollers non-functional (Issue https://issues.opennms.org/browse/NMS-15001[NMS-15001])
+* Web UI menu item "Endpoints" not in best location (Issue https://issues.opennms.org/browse/NMS-15004[NMS-15004])
+* Icon for admin menu items missing from some items (Issue https://issues.opennms.org/browse/NMS-15005[NMS-15005])
+* Remove reference to remote pollers (Issue https://issues.opennms.org/browse/NMS-15017[NMS-15017])
+* Lock contention in SnmpPeerFactory (Issue https://issues.opennms.org/browse/NMS-15042[NMS-15042])
+* opennms rpm could get wrong jetty files (Issue https://issues.opennms.org/browse/NMS-15043[NMS-15043])
+* Horizon Karaf container not healthy after installing opennms-timeseries-api with opennms-plugins-cortex-tss (Issue https://issues.opennms.org/browse/NMS-15078[NMS-15078])
+* RHEL9/CentOS9/Rocky 9 need chkconfig package to enable service properly (Issue https://issues.opennms.org/browse/NMS-15093[NMS-15093])
+* Default limit of 10 is not working for event queries (Issue https://issues.opennms.org/browse/NMS-15123[NMS-15123])
+
+===== Enhancement
+
+* Dependabot: leaflet from 1.7.1 to 1.8.0 (Issue https://issues.opennms.org/browse/NMS-14584[NMS-14584])
+* Error compiling Cisco MIB (Issue https://issues.opennms.org/browse/NMS-14640[NMS-14640])
+* Doc update: Enable salted hash passwords within Karaf for core/Minion/Sentinel (Issue https://issues.opennms.org/browse/NMS-14736[NMS-14736])
+* Add "admin" disambiguation to Glossary (Issue https://issues.opennms.org/browse/NMS-14914[NMS-14914])
+* simplify docker tags in H31+ (Issue https://issues.opennms.org/browse/NMS-14989[NMS-14989])
+* Update Debian/Ubuntu Upgrade Instructions (Issue https://issues.opennms.org/browse/NMS-15087[NMS-15087])
+* dependabot: Upgrade PostgreSQL dependency to 42.4.3 (or higher) (Issue https://issues.opennms.org/browse/NMS-15095[NMS-15095])
+* Update style elements in Quick Start guide (Issue https://issues.opennms.org/browse/NMS-15106[NMS-15106])
+
+===== Unexpected Behavior
+
+* RPM packages fail to install when FIPS Enabled (Issue https://issues.opennms.org/browse/NMS-14628[NMS-14628])
+
+===== Story
+
+* Upgrade AngularJS to latest 1.x (Issue https://issues.opennms.org/browse/NMS-14715[NMS-14715])
+*  Apache Log4j 1.x Multiple Vulnerabilities (PB-2022, Sep 2022) (Issue https://issues.opennms.org/browse/NMS-14818[NMS-14818])
+* Modify foreign source in HeartbeatConsumer to ignore docker interfaces and detect SNMP agent (Issue https://issues.opennms.org/browse/NMS-14855[NMS-14855])
+* OpenShift test coverage (Issue https://issues.opennms.org/browse/NMS-14882[NMS-14882])
+* SNMP Community retrieval through SCV on Minion (Issue https://issues.opennms.org/browse/NMS-15008[NMS-15008])
+* Add JSON support (in additional to GBP) to the Kafka producer for flows (Issue https://issues.opennms.org/browse/NMS-15027[NMS-15027])
+* Backport deploy-base update from develop to release-31.x (upgrades JRE minor version, adds vim-tiny, less) (Issue https://issues.opennms.org/browse/NMS-15046[NMS-15046])
+* Add KPI for Appliance count by model (Issue https://issues.opennms.org/browse/NMS-15051[NMS-15051])
+
+===== Task
+
+* Quick Start: "Beyond Quick Start" chapter (Issue https://issues.opennms.org/browse/NMS-14735[NMS-14735])
+* H31 Release testing  (Issue https://issues.opennms.org/browse/NMS-14797[NMS-14797])
+* Review enlinkd documentation (Issue https://issues.opennms.org/browse/NMS-14850[NMS-14850])
+* Update Visualization topic in Quick Start guide (Issue https://issues.opennms.org/browse/NMS-15029[NMS-15029])
+* Fix Antora version differences (Issue https://issues.opennms.org/browse/NMS-15088[NMS-15088])
+* Update opennms-plugin-cloud to 1.0.4  (Issue https://issues.opennms.org/browse/NMS-15122[NMS-15122])
 
 [[releasenotes-changelog-31.0.1]]
 
