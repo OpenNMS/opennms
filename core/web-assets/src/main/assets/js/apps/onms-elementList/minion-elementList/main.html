@@ -15,6 +15,7 @@
 							<option value="label">Label</option>
 							<option value="location">Location</option>
 							<option value="status">Status</option>
+							<option value="version">Version</option>
 							<option value="lastUpdated">Last Updated</option>
 						</select>
 						<select class="form-control custom-select" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
@@ -184,6 +185,11 @@
 						<a href ng-click="changeOrderBy('status')">Status</a>
 						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
 						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+					</th>
+					<th>
+						<a href ng-click="changeOrderBy('version')">Version</a>
+						<i ng-show="query.orderBy === 'version' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
+						<i ng-show="query.orderBy === 'version' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
 					</th>
 					<th>
 						<a href ng-click="changeOrderBy('date')">Last Updated</a>
