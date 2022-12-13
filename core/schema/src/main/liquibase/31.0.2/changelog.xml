@@ -12,7 +12,7 @@
             </not>
         </preConditions>
         <addColumn tableName="monitoringsystems">
-            <column name="version" type="varchar(64)">
+            <column name="version" type="text">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
