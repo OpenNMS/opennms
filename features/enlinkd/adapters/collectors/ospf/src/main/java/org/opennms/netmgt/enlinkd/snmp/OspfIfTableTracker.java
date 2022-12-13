@@ -45,20 +45,24 @@ public class OspfIfTableTracker extends TableTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
 
-    public static final SnmpObjId OSPF_IF_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
+    //public static final SnmpObjId OSPF_IF_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
 
-    public final static SnmpObjId OSPF_IF_IPADDRESS = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
-    public final static SnmpObjId OSPF_ADDRESS_LESS_IF = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
-    public final static SnmpObjId OSPF_IF_AREA_ID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.3");
+    public final static SnmpObjId OSPF_IF_IPADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
+    public final static SnmpObjId OSPF_ADDRESS_LESS_IF_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
+    public final static SnmpObjId OSPF_IF_AREA_ID_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.3");
+
+    public final static String OSPF_IF_IPADDRESS = "ospfIfIpAddress";
+    public final static String OSPF_ADDRESS_LESS_IF = "ospfAddressLessIf";
+    public final static String OSPF_IF_AREA_ID = "ospfIfAreaId";
 
     public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[]{
 
-            /**
+            /*
              *  "The IP address of this OSPF interface."
             */
-            OSPF_IF_IPADDRESS,
+            OSPF_IF_IPADDRESS_OID,
 
-            /**
+            /*
              * "For the purpose of easing  the  instancing  of
              * addressed   and  addressless  interfaces;  This
              * variable takes the value 0 on  interfaces  with
@@ -66,13 +70,13 @@ public class OspfIfTableTracker extends TableTracker {
              * ifIndex for interfaces having no IP Address."
              *
             */
-            OSPF_ADDRESS_LESS_IF,
-            /**
+            OSPF_ADDRESS_LESS_IF_OID,
+            /*
              * A 32-bit integer uniquely identifying the area
              * to which the interface connects.  Area ID
              * 0.0.0.0 is used for the OSPF backbone.
             */
-            OSPF_IF_AREA_ID
+            OSPF_IF_AREA_ID_OID
 
     };
 
@@ -84,15 +88,15 @@ public class OspfIfTableTracker extends TableTracker {
         }
 
         public InetAddress getOspfIpAddress() {
-            return getValue(OSPF_IF_IPADDRESS).toInetAddress();
+            return getValue(OSPF_IF_IPADDRESS_OID).toInetAddress();
         }
 
         public Integer getOspfAddressLessIf() {
-            return getValue(OSPF_ADDRESS_LESS_IF).toInt();
+            return getValue(OSPF_ADDRESS_LESS_IF_OID).toInt();
         }
 
         public InetAddress getOspfIfAreaId() {
-            return getValue(OSPF_IF_AREA_ID).toInetAddress();
+            return getValue(OSPF_IF_AREA_ID_OID).toInetAddress();
         }
 
 
@@ -144,6 +148,9 @@ public class OspfIfTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker.OspfIfRow} object.
      */
     public void processOspfIfRow(final OspfIfRow row) {
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_IPADDRESS_OID+"."+row.getInstance().toString(), OSPF_IF_IPADDRESS, str(row.getOspfIpAddress()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_ADDRESS_LESS_IF_OID+"."+row.getInstance().toString(), OSPF_ADDRESS_LESS_IF, row.getOspfAddressLessIf());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_AREA_ID_OID+"."+row.getInstance().toString(), OSPF_IF_AREA_ID, str(row.getOspfIfAreaId()));
     }
 
 

@@ -59,6 +59,10 @@ import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -128,6 +132,20 @@ public class CollectorCommand implements Action, Completer {
                 return new IsisCircTableTracker();
             case ISIS_IS_ADJ_TABLE:
                 return new IsisISAdjTableTracker();
+            case OSPF_GENERAL_GROUP:
+                return new OspfGeneralGroupTracker() {
+                    @Override
+                    protected void storeResult(SnmpResult res) {
+                        super.storeResult(res);
+                        printSnmpData();
+                    }
+                };
+            case OSPF_AREA_TABLE:
+                return new OspfAreaTableTracker();
+            case OSPF_IF_TABLE:
+                return new OspfIfTableTracker();
+            case OSPF_NBR_TABLE:
+                return new OspfNbrTableTracker();
             default:
                 break;
 
@@ -150,6 +168,11 @@ public class CollectorCommand implements Action, Completer {
     private final static String ISIS_SYS_OBJECT_GROUP = "IsisSysObjectGroup";
     private final static String ISIS_CIRC_TABLE = "IsisCircTable";
     private final static String ISIS_IS_ADJ_TABLE = "IsisISAdjTable";
+
+    private final static String OSPF_GENERAL_GROUP = "OspfGeneralGroup";
+    private final static String OSPF_AREA_TABLE = "OspfAreaTable";
+    private final static String OSPF_IF_TABLE = "OspfIfTable";
+    private final static String OSPF_NBR_TABLE = "OspfNbrTable";
 
     private static final String[] trackerClassNames = {
             CISCO_VTP,
@@ -174,11 +197,10 @@ public class CollectorCommand implements Action, Completer {
             "MtxrLldpLocaTable",
             "MtxrLldpRemTable",
             "MtxrNeighborTable",
-            "OspfGeneralGroup",
-            "OspfAreaTable",
-            "OspfIfTable",
-            "OspfIpAddrTable",
-            "OspfNbrTable"
+            OSPF_GENERAL_GROUP,
+            OSPF_AREA_TABLE,
+            OSPF_IF_TABLE,
+            OSPF_NBR_TABLE
     };
 
     @Argument(name = "trackerClass", description = "Tracker Collector class", required = true)
