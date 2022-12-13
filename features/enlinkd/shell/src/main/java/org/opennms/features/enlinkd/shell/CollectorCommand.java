@@ -56,6 +56,9 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -113,7 +116,18 @@ public class CollectorCommand implements Action, Completer {
                 return new CdpCacheTableTracker();
             case IP_NET_TO_MEDIA_TABLE:
                 return new IpNetToMediaTableTracker();
-
+            case ISIS_SYS_OBJECT_GROUP:
+                return new IsisSysObjectGroupTracker() {
+                    @Override
+                    protected void storeResult(SnmpResult res) {
+                        super.storeResult(res);
+                        printSnmpData();
+                    }
+                };
+            case ISIS_CIRC_TABLE:
+                return new IsisCircTableTracker();
+            case ISIS_IS_ADJ_TABLE:
+                return new IsisISAdjTableTracker();
             default:
                 break;
 
@@ -132,6 +146,11 @@ public class CollectorCommand implements Action, Completer {
     private final static String CDP_CACHE_TABLE = "CdpCacheTable";
 
     private final static String IP_NET_TO_MEDIA_TABLE = "IpNetToMediaTable";
+
+    private final static String ISIS_SYS_OBJECT_GROUP = "IsisSysObjectGroup";
+    private final static String ISIS_CIRC_TABLE = "IsisCircTable";
+    private final static String ISIS_IS_ADJ_TABLE = "IsisISAdjTable";
+
     private static final String[] trackerClassNames = {
             CISCO_VTP,
             CISCO_VTP_VLAN_TABLE,
@@ -143,9 +162,9 @@ public class CollectorCommand implements Action, Completer {
             CDP_GLOBAL_GROUP,
             CDP_CACHE_TABLE,
             IP_NET_TO_MEDIA_TABLE,
-            "IsisSysObjectGroup",
-            "IsisCircTable",
-            "IsisISAdjTable",
+            ISIS_SYS_OBJECT_GROUP,
+            ISIS_CIRC_TABLE,
+            ISIS_IS_ADJ_TABLE,
             "LldpLocalGroup",
             "LldpRemTable",
             "MtxrLldpLocaTable",
