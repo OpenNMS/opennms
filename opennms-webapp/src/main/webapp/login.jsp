@@ -145,8 +145,8 @@
 %>
 <script>
   window.onload = function() {
-    var username = document.getElementById("loginForm:input_j_username");
-    var password = document.getElementById("loginForm:input_j_password");
+    var username = document.getElementById("loginForm:input_j_username") || document.getElementById("input_j_username");
+    var password = document.getElementById("loginForm:input_j_password") || document.getElementById("input_j_password");
 
     username.value = '';
     password.value = '';
