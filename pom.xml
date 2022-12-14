@@ -1686,7 +1686,7 @@
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13-atlassian-6</jacksonVersion>
     <jackson2Version>2.12.6</jackson2Version>
-    <snakeyamlVersion>1.31</snakeyamlVersion>
+    <snakeyamlVersion>1.32</snakeyamlVersion>
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
@@ -4225,7 +4225,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.31</version>
+        <version>1.32</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
