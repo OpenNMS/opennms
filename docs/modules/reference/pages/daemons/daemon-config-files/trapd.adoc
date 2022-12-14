@@ -61,12 +61,11 @@ Note that for V3, you must specify the SNMPv3 credentials used to authenticate a
 
 [source, xml]
 ----
-<pre>
 <trapd-configuration snmp-trap-port="162" new-suspect-on-trap="true">
   <snmpv3-user security-name="opennms" auth-passphrase="0p3nNMSv3" auth-protocol="MD5"
       privacy-passphrase="0p3nNMSv3" privacy-protocol="DES"/>
   <snmpv3-user security-name="sample-name" auth-passphrase="secret" auth-protocol="MD5"
       privacy-passphrase="super-secret" privacy-protocol="DES"/>
 </trapd-configuration>
-</pre>
 ----
+
