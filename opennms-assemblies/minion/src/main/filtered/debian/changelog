@@ -1,4 +1,4 @@
-opennms (31.0.2-1) stable; urgency=medium
+opennms-minion (31.0.2-1) stable; urgency=medium
 
   * New minor release. It fixes a great many bugs and security
     vulnerabilities, updates the versions of many library dependencies, and
