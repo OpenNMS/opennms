@@ -4,7 +4,7 @@
 
 [[releasenotes-changelog-31.0.2]]
 
-==== Release 31.0.2
+== Release 31.0.2
 
 Release 31.0.2 is a minor release which fixes a great many bugs and security vulnerabilities, updates the versions of many library dependencies, and introduces some enhancements related to Minion Appliances.
 The official documentation has also received significant improvements.
@@ -14,7 +14,7 @@ If you have enabled encryption previously and wish to enable stronger Jasypt-bas
 
 The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_Stroopwafel_].
 
-===== Bug
+=== Bug
 
 * Failures when jaeger tracing is enabled on Core server and Minion (Issue https://issues.opennms.org/browse/NMS-14550[NMS-14550])
 * Missing /run/opennms on Ubuntu (Issue https://issues.opennms.org/browse/NMS-14650[NMS-14650])
@@ -34,7 +34,7 @@ The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_S
 * RHEL9/CentOS9/Rocky 9 need chkconfig package to enable service properly (Issue https://issues.opennms.org/browse/NMS-15093[NMS-15093])
 * Default limit of 10 is not working for event queries (Issue https://issues.opennms.org/browse/NMS-15123[NMS-15123])
 
-===== Enhancement
+=== Enhancement
 
 * Dependabot: leaflet from 1.7.1 to 1.8.0 (Issue https://issues.opennms.org/browse/NMS-14584[NMS-14584])
 * Error compiling Cisco MIB (Issue https://issues.opennms.org/browse/NMS-14640[NMS-14640])
@@ -45,11 +45,12 @@ The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_S
 * dependabot: Upgrade PostgreSQL dependency to 42.4.3 (or higher) (Issue https://issues.opennms.org/browse/NMS-15095[NMS-15095])
 * Update style elements in Quick Start guide (Issue https://issues.opennms.org/browse/NMS-15106[NMS-15106])
 
-===== Unexpected Behavior
+=== Unexpected Behavior
 
 * RPM packages fail to install when FIPS Enabled (Issue https://issues.opennms.org/browse/NMS-14628[NMS-14628])
 
-===== Story
+=== Story
+
 
 * Upgrade AngularJS to latest 1.x (Issue https://issues.opennms.org/browse/NMS-14715[NMS-14715])
 *  Apache Log4j 1.x Multiple Vulnerabilities (PB-2022, Sep 2022) (Issue https://issues.opennms.org/browse/NMS-14818[NMS-14818])
@@ -60,7 +61,7 @@ The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_S
 * Backport deploy-base update from develop to release-31.x (upgrades JRE minor version, adds vim-tiny, less) (Issue https://issues.opennms.org/browse/NMS-15046[NMS-15046])
 * Add KPI for Appliance count by model (Issue https://issues.opennms.org/browse/NMS-15051[NMS-15051])
 
-===== Task
+=== Task
 
 * Quick Start: "Beyond Quick Start" chapter (Issue https://issues.opennms.org/browse/NMS-14735[NMS-14735])
 * H31 Release testing  (Issue https://issues.opennms.org/browse/NMS-14797[NMS-14797])
