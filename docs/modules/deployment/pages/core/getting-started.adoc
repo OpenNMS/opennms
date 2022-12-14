@@ -149,9 +149,10 @@ To achieve this, use the `scvcli` command line utility to add the credentials, a
 .Create encrypted credentials for the PostgreSQL database connections:
 [source, console]
 ----
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms opennms
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres opennms
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password<1>
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 ----
+<1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
 
 .Reference the encrypted credentials stored in the secure credentials vault:
 [source, xml]
