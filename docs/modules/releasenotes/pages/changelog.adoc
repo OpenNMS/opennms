@@ -78,7 +78,7 @@ Release 31.0.1 is a small out-of-band release to address some issues found durin
 It contains a few small changes including a fix for unusually large docker images and some other small bug fixes,
 as well as some updates to the new Quick Start Guide and a fix to the installation instructions for the Cortex plugin.
 
-Please note there is a known issue that only one plugin entry shows up in the navavigation bar's "Plugins" menu, even if multiple plugins are installed.
+Please note there is a known issue that only one plugin entry shows up in the navigation bar's "Plugins" menu, even if multiple plugins are installed.
 Only ALEC users who install the cloud connector are impacted.
 ALEC users therefore should avoid the Cloud Services Connector plugin until a new release fixes the underlying bug.
 
