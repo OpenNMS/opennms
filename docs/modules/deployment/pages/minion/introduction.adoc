@@ -1,19 +1,27 @@
 
 = Minion
 
-A Minion is an instance of the Karaf OSGi service that enables {page-component-title} to monitor devices and services in locations that  {page-component-title} cannot reach.
+A Minion is an instance of the Karaf OSGi service that enables {page-component-title} to monitor devices and services in locations that {page-component-title} cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
 Minions can operate behind a firewall and network address translation (NAT) as long as they can communicate with  {page-component-title} via an ActiveMQ or Apache Kafka message broker.
 
-`CAP_NET_RAW` and `CAP_NET_BIND_SERVICE` capabilities are assigned out of the box, allowing you to bind Minions to privileged ports (less than `1024`).
-
-Use Minions to monitor devices and services in hard-to-reach, remote network locations.
 Minions provide the following benefits:
 
 * No need to set up and maintain a large set of firewall rules for multiple management protocols.
 * Avoid the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols.
 * Simplify network communication to the message broker.
+
+By default, `CAP_NET_RAW` and `CAP_NET_BIND_SERVICE` capabilities are assigned out of the box, allowing you to bind Minions to privileged ports (less than `1024`).
+In addition, SNMP also works by default, which provides visibility in the UI for the host on which the Minion is running.
+
+== Minion Appliance
+
+You can install Minions on your own devices or purchase a Minion Appliance from The OpenNMS Group.
+A Minion Appliance is a preconfigured virtual or hardware device that runs the Minion software.
+For more information, see the https://portal.opennms.com/docs/opennms-cloud/index.html[Minion Appliance documentation].
+
+
 
 == How it works
 
@@ -30,7 +38,7 @@ To enable the Minion to handle all the nodes and services in a remote location, 
 
 The Minion registers itself to the {page-component-title} instance on start-up.
 
-{page-component-title}'s' xref:operation:deep-dive/provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
+{page-component-title}'s xref:operation:deep-dive/provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
 {page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
 
 The following provides a more detailed overview of the communication between a {page-component-title} instance and a Minion:
@@ -49,3 +57,6 @@ A Minion proxy scenario supports the following management protocols:
 * Receive Syslog messages and SNMP traps and forward them through the message broker to a central {page-component-title} instance.
 * Act as a proxy for SNMP performance data collection.
 * Act as a proxy for service monitors to test availability and measure response times from applications.
+
+
+`CAP_NET_RAW` and `CAP_NET_BIND_SERVICE` capabilities are assigned out of the box, allowing you to bind Minions to privileged ports (less than `1024`).
