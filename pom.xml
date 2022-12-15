@@ -1795,7 +1795,7 @@
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.8.6</aspectjVersion>
+    <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
