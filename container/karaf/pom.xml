@@ -81,6 +81,12 @@
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
                         <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
+                    <installedBundles>
+                        <!-- override for security (see etc/overrides.properties) -->
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+                    </installedBundles>
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${karaf.servicemix.specs.version};type:=endorsed;export:=true</library>
