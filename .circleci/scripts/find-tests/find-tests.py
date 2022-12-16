@@ -32,7 +32,7 @@ def find_changes(maven_project_root):
 def is_test(file):
     return bool(re.search("\\bsrc/test/", file))
 
-def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=None, integration_test_output=None):
+def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=None, integration_test_output=None, unit_test_file_output=None, integration_test_file_output=None):
     project = load_maven_project(maven_project_root)
     print("Maven project contains %d modules." % len(project.modules))
 
@@ -85,6 +85,14 @@ def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=
     if integration_test_output is not None:
         itest_file = open(integration_test_output, 'w')
 
+    unit_file_file = None
+    if unit_test_file_output is not None:
+        unit_file_file = open(unit_test_file_output, 'w')
+
+    itest_file_file = None
+    if integration_test_file_output is not None:
+        itest_file_file = open(integration_test_file_output, 'w')
+
     print("Modules with tests:")
     for m in modules_to_consider:
         if m.has_tests():
@@ -95,9 +103,13 @@ def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=
                 if not test.is_integration_test:
                     if unit_file:
                         unit_file.write("%s\n" % test.classname)
+                    if unit_file_file:
+                        unit_file_file.write("%s\n" % os.path.relpath(test.file))
                 else:
                     if itest_file:
                         itest_file.write("%s\n" % test.classname)
+                    if itest_file_file:
+                        itest_file_file.write("%s\n" % os.path.relpath(test.file))
 
 
 def generate_test_modules(maven_project_root, test_class_names, output_file):
@@ -105,6 +117,16 @@ def generate_test_modules(maven_project_root, test_class_names, output_file):
     print("Maven project contains %d modules." % len(project.modules))
 
     modules_for_tests = project.get_modules_for_classnames(test_class_names)
+    print("Modules for tests:")
+    for module_for_tests in modules_for_tests:
+        print(module_for_tests)
+        output_file.write("%s:%s\n" % (module_for_tests.group_id, module_for_tests.artifact_id))
+
+def generate_test_modules_from_files(maven_project_root, test_file_names, output_file):
+    project = load_maven_project(maven_project_root)
+    print("Maven project contains %d modules." % len(project.modules))
+
+    modules_for_tests = project.get_modules_related_to(test_file_names)
     print("Modules for tests:")
     for module_for_tests in modules_for_tests:
         print(module_for_tests)
@@ -120,12 +142,23 @@ parser_a.add_argument("--changes-only", dest="changes_only", default="true", typ
                     help="only consider changed files")
 parser_a.add_argument("--output-unit-test-classes", type=str, dest="unit_test_output",
                     help="target file in which to output the list of unit test classes")
+parser_a.add_argument("--output-unit-test-files", type=str, dest="unit_test_file_output",
+                    help="target file in which to output the list of unit test files")
 parser_a.add_argument("--output-integration-test-classes", type=str, dest="integration_test_output",
                     help="target file in which to output the list of integration test classes")
+parser_a.add_argument("--output-integration-test-files", type=str, dest="integration_test_file_output",
+                    help="target file in which to output the list of integration test files")
 parser_a.add_argument("maven_project_root", type=str, help="path to Maven project root")
 
 # create the parser for the "generate-test-modules" command
 parser_b = subparsers.add_parser('generate-test-modules', help='generate-test-modules help')
+parser_b.add_argument("maven_project_root", type=str, help="path to Maven project root")
+parser_b.add_argument('infile', default=sys.stdin, type=argparse.FileType('r'), nargs='?')
+parser_b.add_argument('--output', type=str, dest="output", required=True,
+                      help="target file in which to output the list of modules")
+
+# create the parser for the "generate-test-modules-from-files" command
+parser_b = subparsers.add_parser('generate-test-modules-from-files', help='generate-test-modules-from-files help')
 parser_b.add_argument("maven_project_root", type=str, help="path to Maven project root")
 parser_b.add_argument('infile', default=sys.stdin, type=argparse.FileType('r'), nargs='?')
 parser_b.add_argument('--output', type=str, dest="output", required=True,
@@ -139,11 +172,17 @@ args = parser.parse_args()
 if args.cmd == 'generate-test-lists':
     generate_test_lists(args.maven_project_root, changes_only=args.changes_only,
                         unit_test_output=args.unit_test_output,
-                        integration_test_output=args.integration_test_output)
+                        integration_test_output=args.integration_test_output,
+                        unit_test_file_output=args.unit_test_file_output,
+                        integration_test_file_output=args.integration_test_file_output)
 elif args.cmd == 'generate-test-modules':
     test_names = args.infile.read()
     with open(args.output, 'w') as target_file:
         generate_test_modules(args.maven_project_root, test_names, target_file)
+elif args.cmd == 'generate-test-modules-from-files':
+    file_names = args.infile.readlines()
+    with open(args.output, 'w') as target_file:
+        generate_test_modules_from_files(args.maven_project_root, file_names, target_file)
 elif args.cmd == 'find-changes':
     find_changes(args.maven_project_root)
 

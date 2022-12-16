@@ -22,16 +22,21 @@ find_tests()
     # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
     python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
       --changes-only="${CCI_CHANGES_ONLY:-true}" \
+      --output-unit-test-files="${FIND_TESTS_DIR}/surefire_filenames" \
       --output-unit-test-classes="${FIND_TESTS_DIR}/surefire_classnames" \
+      --output-integration-test-files="${FIND_TESTS_DIR}/failsafe_filenames" \
       --output-integration-test-classes="${FIND_TESTS_DIR}/failsafe_classnames" \
       .
 
     # Now determine the tests for this particular container based on the parallelism level and the test timings
-    < "${FIND_TESTS_DIR}/surefire_classnames" circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-    < "${FIND_TESTS_DIR}/failsafe_classnames" circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
+    < "${FIND_TESTS_DIR}/surefire_filenames" circleci tests split --split-by=timings > /tmp/this_node_test_files
+    < "${FIND_TESTS_DIR}/failsafe_filenames" circleci tests split --split-by=timings > /tmp/this_node_it_test_files
+
+    < /tmp/this_node_test_files    sed -e 's,^.*src/test/java/,,' -e 's,\.java$,,' -e 's,/,.,g' > /tmp/this_node_tests
+    < /tmp/this_node_it_test_files sed -e 's,^.*src/test/java/,,' -e 's,\.java$,,' -e 's,/,.,g' > /tmp/this_node_it_tests
 
     # Now determine the Maven modules related to the tests we need to run
-    cat /tmp/this_node* | python3 .circleci/scripts/find-tests/find-tests.py generate-test-modules \
+    cat /tmp/this_node*_test_files | python3 .circleci/scripts/find-tests/find-tests.py generate-test-modules-from-files \
       --output=/tmp/this_node_projects \
       .
 }
