@@ -173,7 +173,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom";
         if (COLLECT_COVERAGE) {
-            javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true";
+            javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*";
         }
 
         if (profile.isJvmDebuggingEnabled()) {
