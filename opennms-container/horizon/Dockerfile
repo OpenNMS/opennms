@@ -45,8 +45,8 @@ RUN apt-get update && \
         install \
             gnupg \
             ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
-    echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
+    curl -fsSL ${REPO_KEY_URL} | gpg --dearmor -o /usr/share/keyrings/opennms.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/opennms.gpg] https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
     apt-get update && \
     apt-get \
         --no-install-recommends \

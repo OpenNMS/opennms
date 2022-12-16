@@ -35,7 +35,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # import keys & install required debs
 RUN apt-get update && \
     apt-get --no-install-recommends install -yq gnupg ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    curl -fsSL ${REPO_KEY_URL} | gpg --dearmor -o /usr/share/keyrings/opennms.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/opennms.gpg] https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
     apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
     apt-get -y autoclean && \
     apt-get -y clean && \
@@ -76,8 +77,8 @@ ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
 RUN id sentinel
-RUN  getent group sentinel
-RUN  getent passwd sentinel
+RUN getent group sentinel
+RUN getent passwd sentinel
 
 # Install any spare packages and create some compatibility links
 RUN install -d -o 10001 -g 0 -m 775 \
