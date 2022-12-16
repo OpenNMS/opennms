@@ -1,8 +1,8 @@
 
 If you have SELinux enabled on your {page-component-title} server, there must be a policy configured to allow {page-component-title} to bind to the ICMP service.
 
-To verify that you have SELinux running and enabled, use the `sestatus` command.
-If enabled, you should see the following:
+To verify that you have SELinux running and enabled, use the `sestatus` console command.
+If it is enabled, you should see the following:
 
 [source, console]
 ----
@@ -18,9 +18,9 @@ Memory protection checking:     actual (secure)
 Max kernel policy version:      33
 ----
 
-Use `audit2allow -a` to verify if {page-component-title} violates SELinux policies.
+Use `audit2allow -a` to check if {page-component-title} violates SELinux policies.
 
-NOTE: If the `audit2allow` command is missing, run `dnf install policycoreutils-devel` to install package.
+NOTE: If the `audit2allow` command is missing, run `dnf install policycoreutils-devel` to install the package.
 
 Look for entries preventing bind ICMP sockets to bind:
 
