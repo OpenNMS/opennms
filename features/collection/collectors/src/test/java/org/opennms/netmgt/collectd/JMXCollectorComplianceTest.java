@@ -84,3 +84,4 @@ public class JMXCollectorComplianceTest extends CollectorComplianceTest {
                 .build();
     }
 }
+

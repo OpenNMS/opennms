@@ -185,3 +185,4 @@ public class TransactionAwareEventForwarderIT implements InitializingBean {
     }
 
 }
+

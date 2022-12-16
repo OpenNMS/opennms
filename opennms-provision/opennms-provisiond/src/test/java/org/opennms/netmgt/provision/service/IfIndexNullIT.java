@@ -142,3 +142,4 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
         return m_ipInterfaceDao;
     }
 }
+

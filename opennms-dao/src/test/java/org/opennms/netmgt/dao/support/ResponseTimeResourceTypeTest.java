@@ -150,3 +150,4 @@ public class ResponseTimeResourceTypeTest {
         assertEquals(parent, resource.getParent());
     }
 }
+

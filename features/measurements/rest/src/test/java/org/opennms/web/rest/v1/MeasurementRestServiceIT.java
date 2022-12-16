@@ -212,3 +212,4 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertThat(filtersXml, containsString("Chomp"));
     }
 }
+

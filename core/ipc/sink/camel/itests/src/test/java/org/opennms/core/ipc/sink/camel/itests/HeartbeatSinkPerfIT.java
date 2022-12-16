@@ -283,3 +283,4 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
     }
 
 }
+

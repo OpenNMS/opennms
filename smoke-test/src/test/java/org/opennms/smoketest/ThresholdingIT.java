@@ -286,3 +286,4 @@ public class ThresholdingIT {
         return restClient.getNode(TEST_NODE_CRITERIA);
     }
 }
+

@@ -123,3 +123,4 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         m_mocks.verifyAll();
     }
 }
+

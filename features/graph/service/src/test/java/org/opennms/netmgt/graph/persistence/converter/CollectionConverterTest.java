@@ -87,3 +87,4 @@ public class CollectionConverterTest {
         assertEquals(originalCollection, convertedBackList);
     }
 }
+

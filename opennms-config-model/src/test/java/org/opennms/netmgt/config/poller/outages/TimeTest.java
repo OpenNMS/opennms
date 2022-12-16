@@ -58,3 +58,4 @@ public class TimeTest extends XmlTestNoCastor<Time> {
     }
 
 }
+

@@ -137,3 +137,4 @@ public class StatsdValuesIT implements InitializingBean {
         Assert.assertEquals(statistic, result.getResults().first().getStatistic(), 0.5);
     }
 }
+

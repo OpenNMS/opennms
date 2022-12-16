@@ -153,3 +153,4 @@ public class DefaultClassificationEngineIT {
         assertThat(classificationEngine.classify(classificationRequest), is(nullValue()));
     }
 }
+

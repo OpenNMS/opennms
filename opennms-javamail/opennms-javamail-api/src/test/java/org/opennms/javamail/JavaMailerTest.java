@@ -134,3 +134,4 @@ public class JavaMailerTest {
         assertEquals("test@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
     }
 }
+

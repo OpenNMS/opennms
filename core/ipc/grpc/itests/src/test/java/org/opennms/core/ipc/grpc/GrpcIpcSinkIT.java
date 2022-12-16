@@ -121,3 +121,5 @@ public class GrpcIpcSinkIT {
         server.shutdown();
     }
 }
+
+

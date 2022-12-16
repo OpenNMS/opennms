@@ -201,3 +201,4 @@ public class MinionHeartbeatOutageIT {
         return IpcStrategy.JMS;
     }
 }
+

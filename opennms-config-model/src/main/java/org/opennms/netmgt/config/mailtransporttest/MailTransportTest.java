@@ -95,3 +95,4 @@ public class MailTransportTest implements Serializable {
     }
 
 }
+

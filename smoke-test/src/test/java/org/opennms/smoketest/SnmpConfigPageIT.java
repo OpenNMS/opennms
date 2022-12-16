@@ -99,3 +99,4 @@ public class SnmpConfigPageIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure SNMP Community Names by IP Address").click();
     }
 }
+

@@ -92,3 +92,4 @@ public class EchoRpcBlueprintIT extends org.opennms.core.rpc.camel.EchoRpcBluepr
     }
 
 }
+

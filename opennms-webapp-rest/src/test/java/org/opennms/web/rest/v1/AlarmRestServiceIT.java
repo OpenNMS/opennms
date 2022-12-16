@@ -341,3 +341,4 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         return m_databasePopulator.getDistPollerDao();
     }
 }
+

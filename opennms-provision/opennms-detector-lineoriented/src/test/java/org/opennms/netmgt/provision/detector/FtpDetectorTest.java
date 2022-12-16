@@ -138,3 +138,4 @@ public class FtpDetectorTest {
         return future.isServiceDetected();
     }
 }
+
