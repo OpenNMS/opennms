@@ -13,7 +13,7 @@
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.10.0</jackson2Version>
+    <jackson2Version>2.14.1</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.2</karafVersion>
     <selenium.version>3.141.59</selenium.version>
@@ -297,6 +297,11 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-csv</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-smile</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
@@ -308,6 +313,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-guava</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
@@ -323,6 +333,16 @@
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-paranamer</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.12</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
     </dependencies>
