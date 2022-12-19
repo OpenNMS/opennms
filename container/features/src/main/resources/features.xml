@@ -307,6 +307,8 @@
     </feature>
     <feature name="quartz" version="${quartzVersion}" description="quartz">
         <feature>c3p0</feature>
+        <!-- Quartz needs HikariCP [2,3) - so we use the latest 2.x here -->
+        <bundle>mvn:com.zaxxer/HikariCP/2.7.9</bundle>
         <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
