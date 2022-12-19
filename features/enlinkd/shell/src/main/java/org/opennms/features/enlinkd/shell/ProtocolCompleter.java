@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,17 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.api;
+package org.opennms.features.enlinkd.shell;
 
-/**
- * Provides an interface to reload a topology daemon.
- */
-public interface ReloadableTopologyDaemon {
-    /**
-     * Triggers a reload of the topology in case the topology has been updated
-     */
-    void reload();
-    void reloadTopology();
-    boolean runSingleSnmpCollection(final String nodeCriteria, String protocol);
-    void runDiscoveryBridgeDomains();
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
+
+public class ProtocolCompleter implements Completer {
+
+    @Override
+    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
+        StringsCompleter serviceNames = new StringsCompleter();
+        serviceNames.getStrings().addAll(Arrays.asList(ProtocolSupported.getCliProtocols()));
+        return serviceNames.complete(session, commandLine, candidates);
+    }
 }

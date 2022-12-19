@@ -307,15 +307,19 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return true;
     }
 
-    public boolean runSingleSnmpCollection(final int nodeId, ProtocolSupported proto) {
+    public boolean runSingleSnmpCollection(final String nodeId, String proto) {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
         if (node == null) {
             return false;
         }
+        boolean runned = false;
         for (SchedulableNodeCollectorGroup group: m_groups) {
-            group.getNodeCollector(node, 0).collect();
+            if ( group.getProtocolSupported().name().equalsIgnoreCase(proto)) {
+                group.getNodeCollector(node, 0).collect();
+                runned = true;
+            }
         }
-        return true;
+        return runned;
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
@@ -565,6 +569,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return m_ospfAreaTopologyUpdater;
     }
 
+    @Override
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
 

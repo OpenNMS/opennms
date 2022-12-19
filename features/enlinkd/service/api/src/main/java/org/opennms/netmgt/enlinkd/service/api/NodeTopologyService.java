@@ -49,6 +49,7 @@ public interface NodeTopologyService extends TopologyService {
 
     Map<Integer, Integer> getNodeidPriorityMap(ProtocolSupported protocol);
 
+    Node getSnmpNode(String nodeCriteria);
     Node getSnmpNode(int nodeid);
     Set<SubNetwork> getSubNetworks(int nodeid);
     Set<SubNetwork> getLegalSubNetworks(int nodeid);

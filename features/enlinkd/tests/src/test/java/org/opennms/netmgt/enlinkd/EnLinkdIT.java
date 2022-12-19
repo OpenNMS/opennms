@@ -27,10 +27,12 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_IP;
 import static org.opennms.netmgt.nb.Nms007NetworkBuilder.FireFly170_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.DELHI_IP;
@@ -42,7 +44,6 @@ import static org.opennms.netmgt.nb.Nms10205aNetworkBuilder.MUMBAI_SYSOID;
 import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_IP;
 import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.Nms17216NetworkBuilder.SWITCH1_SYSOID;
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -62,21 +63,21 @@ import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
+import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
-import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -135,7 +136,20 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 		assertEquals(delhi, delhilinkablenode.getNodeId());
 		assertEquals(InetAddressUtils.addr(DELHI_IP), delhilinkablenode.getSnmpPrimaryIpAddr());
 		assertEquals(DELHI_SYSOID,delhilinkablenode.getSysoid());
-        
+
+        Node switch1node = m_linkd.getQueryManager().getSnmpNode("linkd:"+SWITCH1_NAME);
+        assertNotNull(switch1node);
+        assertEquals(switch1, switch1node.getNodeId());
+        assertEquals(InetAddressUtils.addr(SWITCH1_IP), switch1node.getSnmpPrimaryIpAddr());
+        assertEquals(SWITCH1_SYSOID,switch1node.getSysoid());
+
+        Node switch1nodea = m_linkd.getQueryManager().getSnmpNode(String.valueOf(switch1));
+        assertNotNull(switch1nodea);
+        assertEquals(switch1, switch1nodea.getNodeId());
+        assertEquals(InetAddressUtils.addr(SWITCH1_IP), switch1nodea.getSnmpPrimaryIpAddr());
+        assertEquals(SWITCH1_SYSOID,switch1nodea.getSysoid());
+
+
     }
     
     @Test
@@ -1181,12 +1195,12 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(FireFly170_IP));
         String trackerName = "ospfAreaTableTracker";
 
-        //List<OspfArea> areas =  new ArrayList<>();
+        final List<OspfArea> areas =  new ArrayList<>();
         final OspfAreaTableTracker tracker = new OspfAreaTableTracker() {
 
             public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
-                System.err.println(row.getOspfArea());
-//                areas.add(row.getOspfArea());
+                super.processOspfAreaRow(row);
+                areas.add(row.getOspfArea());
                 m_topologyService.store(node.getId(), row.getOspfArea());
             }
         };
@@ -1198,15 +1212,15 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            //LOG.error("run: Ospf Area Table collection interrupted, exiting",e);
-            return;
+            fail();
         }
-//        assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
-//        assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
-//        assertEquals(areas.get(0).getOspfImportAsExtern().intValue(), 1);
-//        assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
-//        assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
-//        assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);
+        assertEquals(1, areas.size());
+        assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
+        assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
+        assertEquals(areas.get(0).getOspfImportAsExtern().intValue(), 1);
+        assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
+        assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
+        assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);
     }
 
 }

@@ -60,10 +60,10 @@ public class OspfAreaTableTracker extends TableTracker {
 
     public final static String OSPF_AREA_ID = "ospfAreaId";
     public final static String OSPF_AUTH_TYPE = "ospfAuthType";
-    public final static String OSPF_IMPORT_AS_EXTERN = "";
-    public final static String OSPF_AREA_BDR_RTR_COUNT = "";
-    public final static String OSPF_AS_BDR_RTR_COUNT = "";
-    public final static String OSPF_AREA_LSA_COUNT = "";
+    public final static String OSPF_IMPORT_AS_EXTERN = "ospfImportAsExtern";
+    public final static String OSPF_AREA_BDR_RTR_COUNT = "ospfAreaBdrRtrCount";
+    public final static String OSPF_AS_BDR_RTR_COUNT = "ospfAsBdrRtrCount";
+    public final static String OSPF_AREA_LSA_COUNT = "ospfAreaLsaCount";
 
     public static final SnmpObjId[] s_ospfAreatable_elemList = new SnmpObjId[]{
             /*

@@ -74,13 +74,18 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
+/**
+ * Force enlinkd to runDiscovery via karaf command.
+ * Log into console via: ssh -p 8101 admin@localhost
+ * Install: feature:install opennms-enlinkd-shell
+ * Usage: type 'opennms:enlinkd-collect -l {location} CiscoVtp {ipAddress | hostname}' in karaf console
+ */
 @Command(scope = "opennms", name = "enlinkd-collect", description = "Collect enlinkd snmp data")
 @Service
 public class CollectorCommand implements Action, Completer {
 
     @Reference
     private LocationAwareSnmpClient m_client;
-
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location;
