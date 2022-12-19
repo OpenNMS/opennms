@@ -1640,7 +1640,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
     <commonsMath3Version>3.5</commonsMath3Version>
-    <commonsNetVersion>3.8.0</commonsNetVersion>
+    <commonsNetVersion>3.9.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
@@ -1726,6 +1726,7 @@
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.2.0_1</kafkaBundleVersion>
     <kafkaVersion>3.2.0</kafkaVersion>
+    <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4j2Version>2.18.0</log4j2Version>
@@ -1745,8 +1746,8 @@
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.4.3</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
-    <okhttpVersion>3.10.0</okhttpVersion>
-    <okioVersion>1.14.0</okioVersion>
+    <okhttpVersion>4.9.3</okhttpVersion>
+    <okioVersion>2.8.0</okioVersion>
     <opennmsApiVersion>1.2.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.2.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
@@ -1757,8 +1758,8 @@
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
-    <opentracingVersion>0.31.0</opentracingVersion>
-    <jeagertracingVersion>0.34.0</jeagertracingVersion>
+    <opentracingVersion>0.32.0</opentracingVersion>
+    <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.10.2</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>

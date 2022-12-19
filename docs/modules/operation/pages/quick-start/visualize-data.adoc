@@ -6,30 +6,28 @@ This section describes how to visualize your environment's data (using the dashb
 == {page-component-title} home page
 
 The {page-component-title} home page presents an overview of important network status metrics, as soon as you log in.
-By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map displaying real-time regional status data.
+By default, it displays pending situations and problems, ongoing outages, 24-hour availability statistics, and a map showing real-time regional status data.
 
 By default, the visualizations on the home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
-
 For more information, see xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
 
 [[qs-visualize-dashboard]]
 == Dashboard
 
 You can view the default dashboard by clicking menu:Dashboards[Dashboard] in the top menu bar.
-The dashboard compiles network environment data to generate an overview of monitored components; this information can often be a useful starting point for more detailed analysis of issues.
+The dashboard compiles network environment data to generate an overview of monitored components.
+This information can often be a useful starting point for more detailed analysis of issues.
 
 The dashboard includes the following components:
 
-* *Surveillance view:* lets you model a monitoring context on the dashboard.
-+
-You can reduce visible information by selecting rows, columns, and cells to focus on, quickly limiting the data you have to sift through.
+* *Surveillance view:* Lets you model a monitoring context on the dashboard.
+You can reduce visible information by selecting rows, columns, and cells to focus on, quickly limiting the data that you have to sift through.
 The rest of the dashboard updates dynamically.
-
-* *Alarms:* shows unacknowledged alarms which should be escalated.
-* *Notifications:* shows outstanding and unacknowledged notifications.
-* *Outages:* shows all ongoing network outages.
-* *Resource graphs:* shows time series reports for performance diagnosis.
+* *Alarms:* Shows unacknowledged alarms which should be escalated.
+* *Notifications:* Shows outstanding and unacknowledged notifications.
+* *Outages:* Shows all ongoing network outages.
+* *Resource graphs:* Shows time series reports for performance diagnosis.
 
 For more information on each of the components, see xref:deep-dive/admin/webui/dashboard.adoc[Dashboard] in the Deep Dive section.
 
@@ -46,25 +44,23 @@ For more information, see xref:deep-dive/admin/webui/surveillance-view.adoc[Surv
 
 The Surveillance View and its corresponding dashboard component visualize all routers, switches, and servers in your production, test, and development environments by default (see <<deep-dive/admin/webui/surveillance-view.adoc#surveillance-view-default-config, Default configuration>>).
 You can create custom surveillance categories to define specific data that you want to visualize in the Surveillance View.
+
 Follow these steps to create a surveillance category that monitors the `localhost` node:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Surveillance Categories*.
-. Enter a name for the new category in the *Category Name* box.
+. Type a name for the new category in the *Category Name* box.
 For this example, we use "localhost-category".
 . Click *Add New Category*.
 . Click the *edit* symbol beside the new category.
 . Add the `localhost` node to the category by selecting it in the *Available Nodes* list and clicking *Add*.
-
 Your changes are automatically saved.
 
 You can now create a Surveillance View to visualize `localhost` in your production environment:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Additional Tools, click *Surveillance Views Configuration*.
-+
 A list of configured Surveillance Views is displayed.
-
 . Click *Add*, and define the view's title.
 For this example, we use "localhost-view".
 . Define the view's refresh timing, in seconds.
@@ -75,8 +71,8 @@ For this example, we use "localhost".
 For this example, we use "Production".
 . Select `Production` from the *Categories* list and click *Save*.
 . Click *Save* to create the Surveillance View.
-. (Optional) Click *Preview* beside the view's name to display it.
-. (Optional) Select *Default* beside the view's name to make it the one that is displayed by default.
+** (Optional) Click *Preview* beside the view's name to display it.
+** (Optional) Select *Default* beside the view's name to make it the one that is displayed by default.
 
 NOTE: The Surveillance View dashboard component includes a menu where you can select the view to be displayed.
 Its default visualization is defined separately from the Surveillance View itself.
@@ -85,7 +81,6 @@ Its default visualization is defined separately from the Surveillance View itsel
 
 You can use the heatmap to display either unacknowledged alarms or ongoing node outages.
 Each visualization can be applied to categories, foreign sources, or node services.
-
 Click menu:Status[Heatmap] in the top menu bar to view the heatmap.
 
 For more information, see xref:deep-dive/admin/webui/heatmap.adoc[Heatmap] in the Deep Dive section.

@@ -36,6 +36,7 @@ import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -49,6 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -166,6 +168,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         // Copy over the fixed configuration from the class-path
         FileUtils.copyDirectory(new File(MountableFile.forClasspathResource("sentinel-overlay").getFilesystemPath()), home.toFile());
 
+        final Properties sysProps = getSystemProperties();
+        File propsFile = etc.resolve("custom.system.properties").toFile();
+        try (@SuppressWarnings("java:S6300") FileOutputStream fos = new FileOutputStream(propsFile)) {
+            sysProps.store(fos, "Generated");
+        }
+
         Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
         writeFeaturesBoot(bootD.resolve("stest.boot"), getFeaturesOnBoot());
@@ -232,7 +240,21 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             featuresOnBoot.add("sentinel-jsonstore-postgres");
         }
 
+        if (model.isJaegerEnabled()) {
+            featuresOnBoot.add("opennms-core-tracing-jaeger");
+        }
+
         return featuresOnBoot;
+    }
+
+    public Properties getSystemProperties() {
+        final Properties props = new Properties();
+
+        if (model.isJaegerEnabled()) {
+            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+        }
+
+        return props;
     }
 
     public InetSocketAddress getSshAddress() {
@@ -293,7 +315,6 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
@@ -304,7 +325,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         }
 
         protected void waitUntilReadyWrapped() {
-            LOG.info("Waiting for Minion health check...");
+            LOG.info("Waiting for Sentinel health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
                     .atMost(5, MINUTES)
