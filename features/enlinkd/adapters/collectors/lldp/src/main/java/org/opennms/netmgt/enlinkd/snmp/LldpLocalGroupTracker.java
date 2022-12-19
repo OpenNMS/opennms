@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import java.util.Locale;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
@@ -43,9 +45,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
-
-public final class LldpLocalGroupTracker extends AggregateTracker {
+public class LldpLocalGroupTracker extends AggregateTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocalGroupTracker.class);
 	
@@ -304,6 +304,12 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
 		lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.get(getLldpLocChassisidSubType()));
 		lldpElement.setLldpSysname(getLldpLocSysname());
 		return lldpElement;
+    }
+
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_LOC_CHASSISID_SUBTYPE_OID, LLDP_LOC_CHASSISID_SUBTYPE_ALIAS, getLldpLocChassisidSubType(), LldpChassisIdSubType.get(getLldpLocChassisidSubType()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_CHASSISID_OID, LLDP_LOC_CHASSISID_ALIAS , decodeLldpChassisId(getLldpLocChassisid(),getLldpLocChassisidSubType()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_SYSNAME_OID, LLDP_LOC_SYSNAME_ALIAS, getLldpLocSysname());
     }
 	
 }

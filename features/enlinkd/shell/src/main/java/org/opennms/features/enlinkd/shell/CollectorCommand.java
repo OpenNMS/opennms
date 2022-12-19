@@ -59,10 +59,16 @@ import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -132,6 +138,22 @@ public class CollectorCommand implements Action, Completer {
                 return new IsisCircTableTracker();
             case ISIS_IS_ADJ_TABLE:
                 return new IsisISAdjTableTracker();
+            case LLDP_LOCAL_GROUP:
+                return new LldpLocalGroupTracker() {
+                    @Override
+                    protected void storeResult(SnmpResult res) {
+                        super.storeResult(res);
+                        printSnmpData();
+                    }
+                };
+            case LLDP_LOCAL_TABLE:
+                return  new LldpLocalTableTracker();
+            case LLDP_REM_TABLE:
+                return new LldpRemTableTracker();
+            case MTXR_NEIGHBOR_TABLE:
+                return new MtxrNeighborTableTracker();
+            case TIME_TETRA_LLDP_REM_TABLE:
+                return new TimeTetraLldpRemTableTracker();
             case OSPF_GENERAL_GROUP:
                 return new OspfGeneralGroupTracker() {
                     @Override
@@ -174,6 +196,13 @@ public class CollectorCommand implements Action, Completer {
     private final static String OSPF_IF_TABLE = "OspfIfTable";
     private final static String OSPF_NBR_TABLE = "OspfNbrTable";
 
+    private final static String LLDP_LOCAL_GROUP = "LldpLocalGroup";
+    private final static String LLDP_LOCAL_TABLE = "LldpLocalTable";
+    private final static String LLDP_REM_TABLE = "LldpRemTable";
+
+    private final static String MTXR_NEIGHBOR_TABLE = "MtxrNeighborTable";
+
+    private final static String TIME_TETRA_LLDP_REM_TABLE = "TimeTetraLldpRemTable";
     private static final String[] trackerClassNames = {
             CISCO_VTP,
             CISCO_VTP_VLAN_TABLE,
@@ -188,15 +217,11 @@ public class CollectorCommand implements Action, Completer {
             ISIS_SYS_OBJECT_GROUP,
             ISIS_CIRC_TABLE,
             ISIS_IS_ADJ_TABLE,
-            "LldpLocalGroup",
-            "LldpRemTable",
-            "MtxrLldpLocaTable",
-            "MtxrLldpRemTable",
-            "MtxrNeighborTable",
-            "TimeTetraLldpRemTable",
-            "MtxrLldpLocaTable",
-            "MtxrLldpRemTable",
-            "MtxrNeighborTable",
+            LLDP_LOCAL_GROUP,
+            LLDP_LOCAL_TABLE,
+            LLDP_REM_TABLE,
+            MTXR_NEIGHBOR_TABLE,
+            TIME_TETRA_LLDP_REM_TABLE,
             OSPF_GENERAL_GROUP,
             OSPF_AREA_TABLE,
             OSPF_IF_TABLE,

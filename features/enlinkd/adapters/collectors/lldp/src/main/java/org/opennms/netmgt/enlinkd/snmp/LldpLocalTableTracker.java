@@ -40,11 +40,11 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 
-public class MtxrLldpLocalTableTracker extends TableTracker {
-    private final static Logger LOG = LoggerFactory.getLogger(MtxrLldpLocalTableTracker.class);
+public class LldpLocalTableTracker extends TableTracker {
+    private final static Logger LOG = LoggerFactory.getLogger(LldpLocalTableTracker.class);
 
 
     public static final SnmpObjId[] s_lldploctable_elemList = new SnmpObjId[] {
@@ -52,12 +52,12 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
             /*
                "The type of port identifier encoding used in the associated 'lldpLocPortId' object."
              */
-        LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE,
+        LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE_OID,
 
             /*
               "The string value used to identify the port component associated with a given port in the local system."
              */
-        LldpLocPortGetter.LLDP_LOC_PORTID,
+        LldpLocPortGetter.LLDP_LOC_PORTID_OID,
 
             /*
               "The string value used to identify the 802
@@ -65,7 +65,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
               If the local agent supports IETF RFC 2863,
               lldpLocPortDesc object should have the same value of ifDescr object."
              */
-        LldpLocPortGetter.LLDP_LOC_DESCR
+        LldpLocPortGetter.LLDP_LOC_DESCR_OID
     };
 
     public static class LldpLocalPortRow extends SnmpRowResult {
@@ -80,28 +80,22 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
 	    }
 
 	    public LldpUtils.LldpPortIdSubType getLldpLocalPortIdSubtype() {
-	    	return LldpUtils.LldpPortIdSubType.get(getValue(LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE).toInt());
+	    	return LldpUtils.LldpPortIdSubType.get(getValue(LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE_OID).toInt());
 	    }
 
 	    public String getLldpLocPortId() {
-	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype().getValue(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID));
+	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype().getValue(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID_OID));
 	    }
 
 	    public String getLldpLocPortDesc() {
-	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR) != null) {
-                return getValue(LldpLocPortGetter.LLDP_LOC_DESCR).toDisplayString();
+	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR_OID) != null) {
+                return getValue(LldpLocPortGetter.LLDP_LOC_DESCR_OID).toDisplayString();
             }	
 	    	return "";
 	    }
     }
 
-    public Map<Integer, LldpLocalPortRow> getMtxrLldpLocalPortMap() {
-        return mtxrLldpLocalPortMap;
-    }
-
-    private final Map<Integer, LldpLocalPortRow> mtxrLldpLocalPortMap = new HashMap<>();
-
-    public MtxrLldpLocalTableTracker() {
+    public LldpLocalTableTracker() {
         super(s_lldploctable_elemList);
     }
 
@@ -118,19 +112,20 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
     }
 
     /**
-     * <p>processLldpRemRow</p>
+     * <p>processLldpLocPortRow</p>
      *
-     * @param row a {@link MtxrLldpLocalTableTracker.LldpLocalPortRow} object.
+     * @param row a {@link LldpLocalTableTracker.LldpLocalPortRow} object.
      */
     public void processLldpLocPortRow(final LldpLocalPortRow row) {
-        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {} {} {}", row.getMtxrIndex(), row.getLldpLocalPortIdSubtype(), row.getLldpLocPortId(), row.getLldpLocPortDesc());
-        mtxrLldpLocalPortMap.put(row.getMtxrIndex(),row);
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE, row.getLldpLocalPortIdSubtype(), LldpUtils.LldpPortIdSubType.getTypeString(row.getLldpLocalPortIdSubtype().getValue()));
+        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_PORTID_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID, row.getLldpLocPortId());
+        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_DESCR_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_DESCR, row.getLldpLocPortDesc());
     }
 
-    public LldpElement getLldpElement(String sysname) {
+    public static LldpElement getLldpElement(String sysname, Collection<LldpLocalPortRow> rows) {
         LldpElement element = new LldpElement();
         element.setLldpSysname(sysname);
-        for (LldpLocalPortRow row: mtxrLldpLocalPortMap.values()) {
+        for (LldpLocalPortRow row: rows) {
             if (row.getLldpLocalPortIdSubtype().equals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS)) {
                 LOG.debug("getLldpElement: parsing lldp_chassis_id {}", row.getLldpLocPortId());
                 if (element.getLldpChassisId() == null || element.getLldpChassisId().compareTo(row.getLldpLocPortId()) > 0 ) {
@@ -148,7 +143,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
         return element;
     }
 
-    public LldpLink getLldpLink(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow, Integer mtxrIndex) {
+    public static  LldpLink getLldpLink(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow, Integer mtxrIndex, Map<Integer, LldpLocalPortRow> mtxrLldpLocalPortMap) {
         LldpLink lldpLink = mtxrlldprow.getLldpLink();
         if (mtxrIndex != null && mtxrLldpLocalPortMap.containsKey(mtxrIndex)) {
             lldpLink.setLldpPortIfindex(mtxrIndex);
