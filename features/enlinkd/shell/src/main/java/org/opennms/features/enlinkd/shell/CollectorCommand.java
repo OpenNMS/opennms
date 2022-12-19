@@ -150,7 +150,9 @@ public class CollectorCommand implements Action, Completer {
                 return  new LldpLocalTableTracker();
             case LLDP_REM_TABLE:
                 return new LldpRemTableTracker();
-            case MTXR_NEIGHBOR_TABLE:
+            case MTXR_LLDP_REM_TABLE:
+                return new MtxrLldpRemTableTracker();
+           case MTXR_NEIGHBOR_TABLE:
                 return new MtxrNeighborTableTracker();
             case TIME_TETRA_LLDP_REM_TABLE:
                 return new TimeTetraLldpRemTableTracker();
@@ -200,6 +202,7 @@ public class CollectorCommand implements Action, Completer {
     private final static String LLDP_LOCAL_TABLE = "LldpLocalTable";
     private final static String LLDP_REM_TABLE = "LldpRemTable";
 
+    private final static String MTXR_LLDP_REM_TABLE = "MtxrLldpRemTable";
     private final static String MTXR_NEIGHBOR_TABLE = "MtxrNeighborTable";
 
     private final static String TIME_TETRA_LLDP_REM_TABLE = "TimeTetraLldpRemTable";
@@ -220,6 +223,7 @@ public class CollectorCommand implements Action, Completer {
             LLDP_LOCAL_GROUP,
             LLDP_LOCAL_TABLE,
             LLDP_REM_TABLE,
+            MTXR_LLDP_REM_TABLE,
             MTXR_NEIGHBOR_TABLE,
             TIME_TETRA_LLDP_REM_TABLE,
             OSPF_GENERAL_GROUP,

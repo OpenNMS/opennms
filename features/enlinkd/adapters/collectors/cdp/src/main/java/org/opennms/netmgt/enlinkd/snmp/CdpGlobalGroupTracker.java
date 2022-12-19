@@ -65,7 +65,7 @@ public class CdpGlobalGroupTracker extends AggregateTracker
 
     public final static	String	CDP_GLOBAL_RUN_OID	= ".1.3.6.1.4.1.9.9.23.1.3.1";
     public final static	String	CDP_GLOBAL_DEVICEID_OID	= ".1.3.6.1.4.1.9.9.23.1.3.4";
-    public final static String  CDP_GLOBAL_DEVICEID_FORMAT_OID = ".1.3.6.1.4.1.9.9.23.1.3.4";
+    public final static String  CDP_GLOBAL_DEVICEID_FORMAT_OID = ".1.3.6.1.4.1.9.9.23.1.3.7";
 
     public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/*
@@ -200,10 +200,10 @@ public class CdpGlobalGroupTracker extends AggregateTracker
     public void printSnmpData() {
         System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_RUN_OID, CDP_GLOBAL_RUN, getCdpGlobalRun(),(TruthValue.get(getCdpGlobalRun())));
         System.out.printf("\t\t%s (%s)= %s\n", CDP_GLOBAL_DEVICEID_OID, CDP_GLOBAL_DEVICEID, getCdpDeviceId());
-        try {
-            System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT_OID, getCdpGlobalDeviceFormat(),(CdpGlobalDeviceIdFormat.get(getCdpGlobalDeviceFormat())));
-        } catch (IllegalArgumentException e) {
-            System.out.printf("\t\t%s (%s)= %s (not valid)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT_OID, getCdpGlobalDeviceFormat());
+        if (getCdpGlobalDeviceFormat() == null) {
+            System.out.printf("\t\t%s (%s)= (no value found)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT);
+        } else {
+            System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT, getCdpGlobalDeviceFormat(),(CdpGlobalDeviceIdFormat.getTypeString(getCdpGlobalDeviceFormat())));
         }
     }
 }

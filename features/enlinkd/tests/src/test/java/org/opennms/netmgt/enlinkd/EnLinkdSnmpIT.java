@@ -296,6 +296,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
         assertNull(cdpGlobalGroup.getCdpGlobalDeviceFormat());
 
+        cdpGlobalGroup.printSnmpData();
+
     }
 
     @Test
@@ -324,6 +326,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
         assertEquals(3,cdpGlobalGroup.getCdpGlobalDeviceFormat().intValue());
 
+        cdpGlobalGroup.printSnmpData();
     }
 
     @Test
@@ -1024,6 +1027,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         MtxrLldpRemTableTracker lldpRemTable01 = new MtxrLldpRemTableTracker() {
             @Override
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
+                super.processMtxrLldpRemRow(row);
                 links01.add(row);
             }
         };
