@@ -27,7 +27,7 @@
     "@featherds/input": "0.10.17",
     "@featherds/list": "0.10.17",
     "@featherds/megamenu": "0.10.17",
-    "@featherds/menu": "0.10.17",
+    "@featherds/menu": "0.12.14",
     "@featherds/navigation-rail": "0.10.17",
     "@featherds/pagination": "0.10.17",
     "@featherds/progress": "0.10.17",
