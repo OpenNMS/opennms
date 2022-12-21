@@ -29,12 +29,15 @@
 package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.awaitility.Awaitility.await;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -42,7 +45,9 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 
 public class JaegerTracingIT {
     @ClassRule
@@ -52,13 +57,9 @@ public class JaegerTracingIT {
             .build());
 
     @Before
-    public void before() {
-        String host = stack.jaeger().getHost();
-        Integer port = stack.jaeger().getMappedPort(16686);
-
+    public void before() throws MalformedURLException {
         RestAssured.reset();
-        RestAssured.baseURI = "http://" + host + ":" + port.toString();
-        RestAssured.port = port;
+        RestAssured.baseURI = stack.jaeger().getURL("").toString();
         RestAssured.basePath = "/api";
     }
 
@@ -67,45 +68,70 @@ public class JaegerTracingIT {
         /*
          * I'm just checking for a random trace that Horizon generates.
          * This one seems consistent on startup and usually has two spans.
+         * It might take a short while for the traces to show up, so we
+         * poll for a little while.
          */
-        var json = given().accept(ContentType.JSON)
-                .param("service", "OpenNMS")
-                .param("operation", "trapd.listener.config")
-                .get("/traces")
-                .then().log().ifValidationFails()
-                .assertThat()
-                .statusCode(200)
-                .extract().jsonPath();
+        await("Wait for a 'trapd.listener.config' trace with two spans")
+                .atMost(20, TimeUnit.SECONDS)
+                .pollInterval(1, TimeUnit.SECONDS)
+                .pollDelay(0, TimeUnit.SECONDS)
+                .ignoreException(AssertionError.class)
+                .until(
+                        () -> {
+                            given().accept(ContentType.JSON)
+                                    .param("service", "OpenNMS")
+                                    .param("operation", "trapd.listener.config")
+                                    .param("limit", 1)
+                                    .get("/traces")
+                                    .then().log().ifValidationFails()
+                                    .assertThat()
+                                    .statusCode(200)
+                                    .body("data[0].spans.size()", Matchers.is(2));
+                            return true;
+                        });
 
-        // Make sure we have at least one trace
-        var traces = json.getList("data.spans", List.class);
-        assertThat("trace count; traces " + traces, traces.size(), greaterThanOrEqualTo(1));
-
-        // Make sure each trace has two spans
-        for (var spans : traces) {
-            assertThat("spans in trace; spans: " + spans, spans.size(), equalTo(2));
-        }
     }
 
     @Test
     public void minionEcho() throws Exception {
-        var json = given().accept(ContentType.JSON)
-                .param("service", "OpenNMS")
-                .param("operation", "Echo")
-                .get("/traces")
-                .then().log().ifValidationFails()
-                .assertThat()
-                .statusCode(200)
-                .extract().jsonPath();
+        await("Wait for a 'Echo' trace with two spans")
+                .atMost(20, TimeUnit.SECONDS)
+                .pollInterval(1, TimeUnit.SECONDS)
+                .pollDelay(0, TimeUnit.SECONDS)
+                .ignoreException(AssertionError.class)
+                .untilAsserted(() ->
+                        givenWithFailureDetails((spec) -> {
+                            spec
+                                    .accept(ContentType.JSON)
+                                    .param("service", "OpenNMS")
+                                    .param("operation", "Echo")
+                                    .param("limit", 1)
+                                    .get("/traces")
+                                    .then()
+                                    .assertThat()
+                                    .statusCode(200)
+                                    .body("data[0].spans.size()", Matchers.is(2)); }
+                        ));
+    }
 
-        // Make sure we have at least one trace
-        var traces = json.getList("data.spans", List.class);
-        assertThat("trace count; traces " + traces, traces.size(), greaterThanOrEqualTo(1));
+    /**
+     * Wrap REST Assured calls to include additional failure details when there is an AssertionError.
+     *
+     * @param consumer Consumer callback that will be passed the output of given() with our filter() applied to capture
+     *                 the response.
+     *
+     * If the callback throws an AssertionError, a new AssertionError will be generated that includes the response
+     * details along with the original AssertionError as its cause.
+     */
+    public static void givenWithFailureDetails(final Consumer<? super RequestSpecification> consumer) {
+        var responseDetails = new ByteArrayOutputStream();
 
-        // Make sure each trace has two items
-        for (var spans : traces) {
-            // If we wanted extra credit, we could make sure one is from OpenNMS and another is from the Minion
-            assertThat("spans in trace; spans: " + spans, spans.size(), equalTo(2));
+        try {
+            consumer.accept(given().filter(ResponseLoggingFilter.logResponseTo(new PrintStream(responseDetails))));
+        } catch (AssertionError e) {
+            throw new AssertionError("REST Assured assertion failed, response body (if any) shown below: "
+                    + e.getMessage()
+                    + "\n" + responseDetails.toString(), e);
         }
     }
 }
