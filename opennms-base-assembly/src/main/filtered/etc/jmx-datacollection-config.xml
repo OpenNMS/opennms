@@ -53,6 +53,17 @@
             <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
          </mbean>
+         <mbean name="OpenNMS Provisiond" objectname="OpenNMS:Name=Provisiond">
+            <attrib name="ActiveThreads" alias="ONMSProvisionThrdAct" type="gauge"/>
+            <attrib name="NumPoolThreads" alias="ONMSProvisionPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSProvisionPoolCore" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSProvisionPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSProvisionPoolPeak" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSProvisionTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSProvisionTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSProvisionTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSProvisionTskQRCap" type="gauge"/>
+         </mbean>
          <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
             <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
             <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>

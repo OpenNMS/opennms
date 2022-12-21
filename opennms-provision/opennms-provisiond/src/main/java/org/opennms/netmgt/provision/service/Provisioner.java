@@ -160,6 +160,10 @@ public class Provisioner implements SpringServiceDaemon {
 	    m_scheduledExecutor = scheduledExecutor;
 	}
 
+    public ExecutorService getScheduledExecutor(){
+        return m_scheduledExecutor;
+    }
+
     /**
      * <p>setLifeCycleRepository</p>
      *
