@@ -116,7 +116,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
 
-    private static final boolean COLLECT_COVERAGE = true;
+    private static final boolean COLLECT_COVERAGE = "true".equals(System.getProperty("coverage", "false"));
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)

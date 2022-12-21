@@ -75,4 +75,5 @@ fi
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \
+  -Pcoverage \
   install verify
