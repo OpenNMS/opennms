@@ -60,7 +60,7 @@ setCredentials() {
   ${SENTINEL_HOME}/bin/scvcli set opennms.http ${OPENNMS_HTTP_USER} ${OPENNMS_HTTP_PASS}
   ${SENTINEL_HOME}/bin/scvcli set opennms.broker ${OPENNMS_BROKER_USER} ${OPENNMS_BROKER_PASS}
 
-  cp ${SENTINEL_HOME}/etc/scv.jce /keystore
+  rsync --out-format="%n %C" ${SENTINEL_HOME}/etc/scv.jce /keystore
 }
 
 initConfig() {
@@ -109,14 +109,14 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${SENTINEL_OVERLAY_ETC}" ] && [ -n "$(ls -A ${SENTINEL_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${SENTINEL_OVERLAY_ETC}."
-    cp -r ${SENTINEL_OVERLAY_ETC}/* ${SENTINEL_HOME}/etc || exit ${E_INIT_CONFIG}
+    rsync -r --out-format="%n %C" ${SENTINEL_OVERLAY_ETC}/* ${SENTINEL_HOME}/etc || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${SENTINEL_OVERLAY_ETC}. Use default configuration."
   fi
   # Overlay for all of the sentinel dir
   if [ -d "$SENTINEL_OVERLAY" ] && [ -n "$(ls -A ${SENTINEL_OVERLAY})" ]; then
     echo "Apply custom configuration from ${SENTINEL_OVERLAY}."
-    cp -r ${SENTINEL_OVERLAY}/* ${SENTINEL_HOME}/ || exit ${E_INIT_CONFIG}
+    rsync -r --out-format="%n %C" ${SENTINEL_OVERLAY}/* ${SENTINEL_HOME}/ || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${SENTINEL_OVERLAY}. Use default configuration."
   fi 
