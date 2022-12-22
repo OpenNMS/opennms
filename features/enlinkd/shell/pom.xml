@@ -84,37 +84,31 @@
           <groupId>org.opennms.features.enlinkd</groupId>
           <artifactId>org.opennms.features.enlinkd.adapters.collectors.bridge</artifactId>
           <version>32.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
       </dependency>
       <dependency>
           <groupId>org.opennms.features.enlinkd</groupId>
           <artifactId>org.opennms.features.enlinkd.adapters.collectors.cdp</artifactId>
           <version>32.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
       </dependency>
       <dependency>
           <groupId>org.opennms.features.enlinkd</groupId>
           <artifactId>org.opennms.features.enlinkd.adapters.collectors.ipnettomedia</artifactId>
           <version>32.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
       </dependency>
       <dependency>
           <groupId>org.opennms.features.enlinkd</groupId>
           <artifactId>org.opennms.features.enlinkd.adapters.collectors.isis</artifactId>
           <version>32.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
       </dependency>
     <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.adapters.collectors.ospf</artifactId>
       <version>32.0.0-SNAPSHOT</version>
-      <scope>compile</scope>
     </dependency>
       <dependency>
           <groupId>org.opennms.features.enlinkd</groupId>
           <artifactId>org.opennms.features.enlinkd.adapters.collectors.lldp</artifactId>
           <version>32.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
       </dependency>
 
   </dependencies>
