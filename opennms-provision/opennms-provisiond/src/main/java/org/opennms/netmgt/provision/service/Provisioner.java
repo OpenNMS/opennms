@@ -50,6 +50,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -160,7 +161,7 @@ public class Provisioner implements SpringServiceDaemon {
 	    m_scheduledExecutor = scheduledExecutor;
 	}
 
-    public ExecutorService getScheduledExecutor(){
+    public ExecutorService getScheduledExecutor() {
         return m_scheduledExecutor;
     }
 
@@ -201,6 +202,9 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
 
+    public ExecutorService getTaskCoordinatorExecutorService(final String name) {
+        return (ScheduledExecutorService)((DefaultTaskCoordinator)m_taskCoordinator).getExecutor(name);
+    }
 
     /**
      * <p>setAgentConfigFactory</p>
