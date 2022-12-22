@@ -4,13 +4,9 @@
 Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 
 [source, properties]
-----
 org.opennms.timeseries.strategy=integration
-----
 
-After activating the Time Series Integration Layer, you need to start an actual implementation.
-Do this via Karaf.
-Here is an example of how to activate the `in memory time series` plugin:
+After activating the Time Series Integration Layer, you must implement it; this is done via the Karaf shell:
 
 [source, console]
 ----
@@ -28,27 +24,22 @@ We also highly recommend that you reference resources stored in the Time Series 
 To this end, set the following property in the same file:
 
 [source, properties]
-----
 org.opennms.rrd.storeByForeignSource=true
-----
 
-With these set, upon restart, {page-component-title} begins persisting metrics using the Time Series Integration Layer.
+With these set, {page-component-title} begins persisting metrics using the Time Series Integration Layer upon restart.
 
 == Additional configuration options
 
-Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure and tune the Time Series Integration Layer.
+Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure the Time Series Integration Layer:
 
-[options="header"]
-[cols="2,3,1"]
+[cols="3,3,1"]
 |===
-| Name
-| Description
-| Default
+| Name  | Description   | Default
 
 | org.opennms.timeseries.config.ring_buffer_size (Deprecated)
 | Maximum number of records that can be held in the ring buffer.
 Must be a power of two.
-This will be overridden by `org.opennms.timeseries.config.buffer_size`, unless it is -1.
+This is overridden by `org.opennms.timeseries.config.buffer_size`, unless it is `-1`.
 | 8192
 
 | org.opennms.timeseries.config.buffer_size
@@ -61,29 +52,29 @@ Must be a power of two.
 | 16
 
 | org.opennms.timeseries.config.buffer_type
-| Type of buffer (RINGBUFFER or OFFHEAP). +
-RINGBUFFER is a high-performance queue.
+| Type of buffer (`RINGBUFFER` or `OFFHEAP`). +
+`RINGBUFFER` is a high-performance queue.
 It will only keep data in memory.
 If the queue overflows, it will drop data. +
-OFFHEAP is a queue that will store data in memory.
+`OFFHEAP` is a queue that will store data in memory.
 When the queue overflows, it will persist extra data onto the disk.
 | RINGBUFFER
 
 | org.opennms.timeseries.config.offheap.batch_size
-| Data block size for offheap queue.
+| Data block size for off-heap queue.
 | 8192
 
 | org.opennms.timeseries.config.offheap.path
-| Location for storing offheap data.
+| Location for storing off-heap data.
 This location should be a high performance disk that will accommodate a high-load system.
 | /tmp
 
 | org.opennms.timeseries.config.offheap.max_file_size
-| Maximum file size of offheap storage.
+| Maximum file size of off-heap storage.
 | -1 (-1: unlimited)
 
 | org.opennms.timeseries.query.minimum_step
-| Minimum step size in milliseconds.
+| Minimum step size, in milliseconds.
 Used to prevent large queries.
 | 300000
 
@@ -92,7 +83,7 @@ Used to prevent large queries.
 | 2
 
 | org.opennms.timeseries.query.heartbeat
-| Duration in milliseconds.
+| Duration, in milliseconds.
 Used when no heartbeat is specified.
 Should generally be 1.5x your largest collection interval.
 | 450000
@@ -100,57 +91,65 @@ Should generally be 1.5x your largest collection interval.
 | org.opennms.timeseries.query.parallelism
 | Maximum number of threads that can be used to compute aggregates.
 Defaults to the number of available cores.
-| Number of cores
+| _Number of cores_
 
 | cache.timeseriesPersisterMetaTagCache.expireAfterRead
-| Expiry time in seconds for MetaTagCache
+| Expiry time for `MetaTagCache`, in seconds.
 | 300
 
 | cache.timeseriesPersisterMetaTagCache.maximumSize
-| Maximum size for MetaTagCache
+| Maximum size for `MetaTagCache`.
 | 8192
 
 | cache.timeseriesPersisterMetaTagCache.recordStats
-| Should cache statistics be exposed via JMX for MetaTagCache?
+| Expose cache statistics for `MetaTagCache` via JMX.
 | true
 
 | cache.timeseriesSearcherCache.expireAfterRead
-| Expiry time in seconds for TimeseriesSearcherCache
+| Expiry time for `TimeseriesSearcherCache`, in seconds.
 | 300
 
 | cache.timeseriesSearcherCache.maximumSize
-| Maximum size for TimeseriesSearcherCache
+| Maximum size for `TimeseriesSearcherCache`.
 | 8192
 
 | cache.timeseriesSearcherCache.recordStats
-| Should cache statistics be exposed via JMX for TimeseriesSearcherCache?
+| Expose cache statistics for `TimeseriesSearcherCache` via JMX.
 | true
 
 | cache.timeseriesMetaDataCache.expireAfterRead
-| Expiry time in seconds for TimeseriesMetaDataCache
+| Expiry time for `TimeseriesMetaDataCache`, in seconds.
 | 300
 
 | cache.timeseriesMetaDataCache.maximumSize
-| Maximum size for TimeseriesMetaDataCache
+| Maximum size for `TimeseriesMetaDataCache`.
 | 8192
 
 | cache.timeseriesMetaDataCache.recordStats
-| Should cache statistics be exposed via JMX for TimeseriesMetaDataCache?
+| Expose cache statistics for `TimeseriesMetaDataCache` via JMX.
 | true
 |===
 
 [[ga-opennms-operation-timeseries-properties-recommendations]]
 == Recommendations
-The Time Series Integration Layer includes several caches to improve performance.
-You can tune the cache settings to suit your needs, using the parameters above.
 
-[options="header"]
-[cols="2,3"]
+The Time Series Integration Layer includes several caches to improve performance.
+You can configure the cache settings using the parameters above.
+
+[caption=]
+.Time series cache collectors
+[options="autowidth"]
 |===
-| Name                             | Description
-| TimeseriesMetaDataCache          | Caches metadata that uses {page-component-title} internally.
-| TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
-| TimeseriesPersisterMetaTagCache  | Caches all additional configured and resolved meta-tag values by resource.
+| Name  | Description
+
+| TimeseriesMetaDataCache
+| Caches metadata that uses {page-component-title} internally.
+
+| TimeseriesSearcherCache
+| Caches metrics by tag to improve the resource lookup.
+
+| TimeseriesPersisterMetaTagCache
+| Caches all additional configured and resolved meta tag values by resource.
 |===
 
 The samples that the collectors gather are temporarily stored in a buffer before they are persisted to the Time Series Integration Layer.
@@ -162,7 +161,7 @@ Note, however, that the memory used by the buffer is reserved, and assigning lar
 
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
 This might not be sufficient if you also use the data outside of {page-component-title}.
-Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+Configure additional meta tags using a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
 The configuration of the tags has the following form: `prefix.tagKey=${query expression}`.
 

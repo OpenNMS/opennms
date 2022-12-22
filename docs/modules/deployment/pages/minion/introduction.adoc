@@ -19,7 +19,7 @@ A Minion monitors all managed nodes and IP services in the same location (for ex
 The Minion communicates with the message broker, which in turn communicates with the core {page-component-title} instance.
 
 .Example {page-component-title} instance with three Minions in different locations
-image::deployment/minion/location.png[Network diagram displaying an example {page-component-title} instance with three Minions in different locations, 850]
+image::deployment/minion/location.png["Network diagram displaying an example {page-component-title} instance with three Minions, each in a different location", 850]
 
 By default, every node provisioned in {page-component-title} is created in the default location.
 The {page-component-title} core instance handles all nodes and services in the default location.
@@ -30,7 +30,7 @@ The Minion registers itself to the {page-component-title} instance on start-up.
 {page-component-title} delegates monitoring requests for nodes in a specified location to the Minions that are configured for that location, using the Minion as a proxy.
 
 .Minion communication with {page-component-title}
-image::deployment/minion/communication.png[Network diagram displaying the communication channels between {page-component-title} and a Minion, 850]
+image::deployment/minion/communication.png["Network diagram displaying the communication channels between {page-component-title} and a Minion", 850]
 
 By default, the {page-component-title} instance automatically provisions the Minion as a node and monitors it with the Minion-Heartbeat service.
 The Minion sends heartbeat messages to show that it is running and functioning properly in the defined location.

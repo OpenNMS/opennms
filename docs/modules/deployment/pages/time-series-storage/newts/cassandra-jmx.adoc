@@ -3,7 +3,7 @@
 = Cassandra Monitoring
 
 This section describes some of the metrics that {page-component-title} collects from a Cassandra cluster.
-JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} in order to collect these metrics (see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication and authorization]).
+JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} in order to collect these metrics (see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX Authentication and Authorization] in the Cassandra documentation).
 
 The data collection process is bound to the agent IP interface whose service name is `JMX-Cassandra`.
 The JMXCollector retrieves MBean entities from the Cassandra node.
@@ -23,9 +23,9 @@ Cassandra collects the number of active client connections from `org.apache.cass
 | Metrics for connected thrift clients.
 |===
 
-== Compaction bytes
+== Compacted bytes
 
-Cassandra collects the following compaction manager metrics from `org.apache.cassandra.metrics.Compaction`:
+Cassandra collects the following compaction manager metric from `org.apache.cassandra.metrics.Compaction`:
 
 [options="autowidth"]
 |===
@@ -52,7 +52,7 @@ Cassandra collects the following compaction manager metrics from `org.apache.cas
 
 == Storage load
 
-Cassandra collects the following storage load metrics from `org.apache.cassandra.metrics.Storage`:
+Cassandra collects the following storage load metric from `org.apache.cassandra.metrics.Storage`:
 
 [options="autowidth"]
 |===
@@ -64,7 +64,7 @@ Cassandra collects the following storage load metrics from `org.apache.cassandra
 
 == Storage exceptions
 
-Cassandra collects the following storage exception metrics from `org.apache.cassandra.metrics.Storage`:
+Cassandra collects the following storage exception metric from `org.apache.cassandra.metrics.Storage`:
 
 [options="autowidth"]
 |===
@@ -79,9 +79,9 @@ Cassandra collects the following storage exception metrics from `org.apache.cass
 Any messages run after a given timeout (set per message type) are discarded.
 The number of dropped metrics across different message queues is a good indication of whether a given cluster can handle its load.
 
-Cassandra measures this metric by gathering data from `org.apache.cassandra.metrics.DroppedMessage`:
+Cassandra measures this by gathering metrics data from `org.apache.cassandra.metrics.DroppedMessage`:
 
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Name  | Description | Stage
 
@@ -121,7 +121,7 @@ Each stage is loosely coupled using a messaging service, and each uses queues an
 The documentation for Cassandra thread pool monitoring originated from the https://blog.pythian.com/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
 
 [caption=]
-.Collected metrics for thread pools
+.Collected thread pool metrics
 [options="autowidth"]
 |===
 | Name  | Description

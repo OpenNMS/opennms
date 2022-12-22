@@ -5,14 +5,16 @@
 This section describes the metrics that {page-component-title} collects for monitoring the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on a Cassandra node.
 
 JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} to collect these metrics (
-see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication and authorization]).
+see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX Authentication and Authorization] in the Cassandra documentation).
 
 The data collection process is bound to the agent IP interface whose service name is `JMX-Cassandra-Newts`.
 The JMXCollector retrieves MBean entities from the Cassandra node.
 
-== Memtable data size
+== All memtables data size
 
-[options="autowidth"]
+[caption=]
+.Collected data size metrics for all memtables
+[cols="1,2"]
 |===
 | Name  | Description
 
@@ -28,6 +30,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Memtable switch count
 
+[caption=]
+.Collected memtable switch count metric
 [options="autowidth"]
 |===
 | Name  | Description
@@ -38,6 +42,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Memtable columns count
 
+[caption=]
+.Collected metric for number of memtable columns
 [options="autowidth"]
 |===
 | Name  | Description
@@ -46,9 +52,11 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Total number of columns present in the memtable.
 |===
 
-== Memory table data size
+== Memtable data size
 
-[options="autowidth"]
+[caption=]
+.Collected memtable data size metrics
+[cols="1,2"]
 |===
 | Name  | Description
 
@@ -64,6 +72,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Read and write latency
 
+[caption=]
+.Collected read and write latency metrics
 [options="autowidth"]
 |===
 | Name  | Description
@@ -77,6 +87,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Range latency
 
+[caption=]
+.Collected rage latency metric
 [options="autowidth"]
 |===
 | Name  | Description
@@ -85,8 +97,10 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Local range slice metrics 99th percentile
 |===
 
-=== Latency
+== Latency
 
+[caption=]
+.Collected latency metrics
 [options="autowidth"]
 |===
 | Name  | Description
@@ -103,6 +117,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Bloom filter disk space
 
+[caption=]
+.Collected bloom filter disk space metric
 [options="autowidth"]
 |===
 | Name  | Description
@@ -113,6 +129,8 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 
 == Bloom filter off-heap memory
 
+[caption=]
+.Collected bloom filter off-heap memory metric
 [options="autowidth"]
 |===
 | Name  | Description
@@ -121,8 +139,10 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Off-heap memory that the bloom filter uses.
 |===
 
-== Newts memory used
+== Newts memory usage
 
+[caption=]
+.Collected Newts memory usage metrics
 [options="autowidth"]
 |===
 | Name  | Description
@@ -134,8 +154,10 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Off-heap memory that the index summary uses.
 |===
 
-== Pending
+== Pending operations
 
+[caption=]
+.Collected metrics for pending operations
 [options="autowidth"]
 |===
 | Name  | Description
@@ -147,8 +169,10 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Estimated number of pending flushes for this column family.
 |===
 
-== Disk space
+== Disk space usage
 
+[caption=]
+.Collected disk space usage metrics
 [options="autowidth"]
 |===
 | Name  | Description

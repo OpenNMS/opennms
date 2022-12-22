@@ -2,15 +2,15 @@
 = Cortex Time Series Plugin
 
 The Cortex Time Series plugin enables {page-component-title} to persist time series performance and latency data to Cortex.
-The plugin uses the xref:deployment:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
-The plugin also lets users visualize graphs from the Cortex instance in https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
+The plugin also lets you visualize graphs from the Cortex instance in https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
 
-.Cortex Time Series plugin
-image::time-series-storage/cortex-plugin.png[Cortex plugin architecture,500]
+.Cortex Time Series plugin architecture
+image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Cortex Time Series plugin and how it integrates with {page-component-title}", 600]
 
 == Requirements
 
-Make sure you have the following before you start to use the Cortex plugin:
+You must have the following before you start to use the Cortex plugin:
 
 * Horizon 30.0.0+ (Meridian availability with the 2023 release)
 * Cortex version 1.10.0+
@@ -20,7 +20,7 @@ The minimum supported Mimir version is 2.0.0.
 
 == Deployment
 
-To use the Cortex Time Series plugin, do the following:
+To use the Cortex Time Series plugin, follow these steps:
 
 . Start Cortex.
 See the https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions.
@@ -28,9 +28,8 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 
 . Download the plugin's `.kar` file from GitHub (https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases).
 . Copy the file into `$\{OPENNMS_HOME}/deploy`.
-. Enable and configure time series database plugins in {page-component-title}.
+. Enable and configure time series database plugins in {page-component-title}:
 +
-.Create or modify the `$\{OPENNMS_HOME}/etc/opennms.properties.d/cortex.properties` file
 [source, properties]
 ----
 org.opennms.timeseries.strategy=integration
@@ -47,15 +46,16 @@ NOTE: Make sure that the `org.opennms.timeseries.strategy` property is not set i
 +
 The `writeUrl` and `readUrl` properties are required.
 All other properties shown here are example values to overwrite the defaults.
-Keep an eye on your Cortex cluster performance and adjust as necessary.
+Keep an eye on your Cortex cluster's performance and adjust as necessary.
 Substitute the correct host and port for your Cortex cluster.
 +
-You can configure the plugin via the Karaf shell or by creating a cfg file.
+You can configure the plugin via the Karaf shell or by creating a `.cfg` file:
 +
 [{tabs}]
 ====
 Karaf Shell::
 +
+.Configure the plugin's properties:
 [source, karaf]
 ----
 config:edit org.opennms.plugins.tss.cortex
@@ -72,7 +72,7 @@ config:update
 
 CFG File::
 +
-.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file
+.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file:
 [source, properties]
 ----
 writeUrl=http://cortex-service-host:9009/api/prom/push
@@ -86,22 +86,17 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 ----
 ====
 
-. Configure the plugin to remain installed after a restart of {page-component-title}.
+. Configure the plugin to remain installed after a restart of {page-component-title}:
 +
-.Create or modify the `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` file
-[source, text]
-----
+[source]
 opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
-----
+
 . Restart the {page-component-title} service.
 
 == Cortex tips
 
-You can view information on your Cortex server with the following URLs:
+You can view information on your Cortex server by navigating to the following URLs:
 
-* View server status
-** \http://cortex-service-host:9009
-* View the ring
-** \http://cortex-service-host:9009/ring
-* View internal metrics
-** \http://cortex-service-host:9009/metrics
+* View server status: \http://cortex-service-host:9009
+* View the ring: \http://cortex-service-host:9009/ring
+* View internal metrics: \http://cortex-service-host:9009/metrics
