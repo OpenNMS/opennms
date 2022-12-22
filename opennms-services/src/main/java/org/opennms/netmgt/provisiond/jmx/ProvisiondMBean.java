@@ -31,7 +31,7 @@ package org.opennms.netmgt.provisiond.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * <p>CollectdMBean interface.</p>
+ * <p>ProvisiondMBean interface.</p>
  */
 public interface ProvisiondMBean extends BaseOnmsMBean {
     /*

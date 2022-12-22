@@ -71,7 +71,7 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         return "provisiondContext";
     }
 
-
+    /***** Scheduled *****/
     @Override
     public long getScheduledActiveThreads() {
         return getExecutor(Rescan).getActiveCount();
@@ -173,7 +173,7 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         return getExecutor(Scan).getQueue().remainingCapacity();
     }
 
-    /*    Import     */
+    /****** Import *****/
 
     @Override
     public long getImportActiveThreads() {
@@ -225,7 +225,7 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         return getExecutor(Import).getQueue().remainingCapacity();
     }
 
-    /*    Write     */
+    /****** Write *****/
 
     @Override
     public long getWriteActiveThreads() {

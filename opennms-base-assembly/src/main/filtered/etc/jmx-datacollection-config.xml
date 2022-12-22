@@ -74,25 +74,25 @@
             <attrib name="ScanTaskQueuePendingCount" alias="ONMSProvScnTskQPCnt" type="gauge"/>
             <attrib name="ScanTaskQueueRemainingCapacity" alias="ONMSProvScnTskQRCap" type="gauge"/>
 
-            <attrib name="ImportActiveThreads" alias="ONMSProvScnThrdAct" type="gauge"/>
-            <attrib name="ImportNumPoolThreads" alias="ONMSProvScnPoolThrd" type="gauge"/>
-            <attrib name="ImportCorePoolThreads" alias="ONMSProvScnPoolCore" type="gauge"/>
-            <attrib name="ImportMaxPoolThreads" alias="ONMSProvScnPoolMax" type="gauge"/>
-            <attrib name="ImportPeakPoolThreads" alias="ONMSProvScnPoolPeak" type="gauge"/>
-            <attrib name="ImportTasksTotal" alias="ONMSProvScnTasksTot" type="counter"/>
-            <attrib name="ImportTasksCompleted" alias="ONMSProvScnTasksCpt" type="counter"/>
-            <attrib name="ImportTaskQueuePendingCount" alias="ONMSProvScnTskQPCnt" type="gauge"/>
-            <attrib name="ImportTaskQueueRemainingCapacity" alias="ONMSProvScnTskQRCap" type="gauge"/>
+            <attrib name="ImportActiveThreads" alias="ONMSProvImpThrdAct" type="gauge"/>
+            <attrib name="ImportNumPoolThreads" alias="ONMSProvImpPoolThrd" type="gauge"/>
+            <attrib name="ImportCorePoolThreads" alias="ONMSProvImpPoolCore" type="gauge"/>
+            <attrib name="ImportMaxPoolThreads" alias="ONMSProvImpPoolMax" type="gauge"/>
+            <attrib name="ImportPeakPoolThreads" alias="ONMSProvImpPoolPeak" type="gauge"/>
+            <attrib name="ImportTasksTotal" alias="ONMSProvImpTasksTot" type="counter"/>
+            <attrib name="ImportTasksCompleted" alias="ONMSProvImpTasksCpt" type="counter"/>
+            <attrib name="ImportTaskQueuePendingCount" alias="ONMSProvImpTskQPCnt" type="gauge"/>
+            <attrib name="ImportTaskQueueRemainingCapacity" alias="ONMSProvImpTskQRCap" type="gauge"/>
 
-            <attrib name="WriteActiveThreads" alias="ONMSProvScnThrdAct" type="gauge"/>
-            <attrib name="WriteNumPoolThreads" alias="ONMSProvScnPoolThrd" type="gauge"/>
-            <attrib name="WriteCorePoolThreads" alias="ONMSProvScnPoolCore" type="gauge"/>
-            <attrib name="WriteMaxPoolThreads" alias="ONMSProvScnPoolMax" type="gauge"/>
-            <attrib name="WritePeakPoolThreads" alias="ONMSProvScnPoolPeak" type="gauge"/>
-            <attrib name="WriteTasksTotal" alias="ONMSProvScnTasksTot" type="counter"/>
-            <attrib name="WriteTasksCompleted" alias="ONMSProvScnTasksCpt" type="counter"/>
-            <attrib name="WriteTaskQueuePendingCount" alias="ONMSProvScnTskQPCnt" type="gauge"/>
-            <attrib name="WriteTaskQueueRemainingCapacity" alias="ONMSProvScnTskQRCap" type="gauge"/>
+            <attrib name="WriteActiveThreads" alias="ONMSProvWrtThrdAct" type="gauge"/>
+            <attrib name="WriteNumPoolThreads" alias="ONMSProvWrtPoolThrd" type="gauge"/>
+            <attrib name="WriteCorePoolThreads" alias="ONMSProvWrtPoolCore" type="gauge"/>
+            <attrib name="WriteMaxPoolThreads" alias="ONMSProvWrtPoolMax" type="gauge"/>
+            <attrib name="WritePeakPoolThreads" alias="ONMSProvWrtPoolPeak" type="gauge"/>
+            <attrib name="WriteTasksTotal" alias="ONMSProvWrtTasksTot" type="counter"/>
+            <attrib name="WriteTasksCompleted" alias="ONMSProvWrtTasksCpt" type="counter"/>
+            <attrib name="WriteTaskQueuePendingCount" alias="ONMSProvWrtTskQPCnt" type="gauge"/>
+            <attrib name="WriteTaskQueueRemainingCapacity" alias="ONMSProvWrtTskQRCap" type="gauge"/>
          </mbean>
          <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
             <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
