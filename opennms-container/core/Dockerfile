@@ -127,6 +127,38 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
+# We pass an --arg and then reference it later to make sure it is JSON quoted properly
+RUN jq --null-input \
+    --arg created "${BUILD_DATE}" \
+    --arg title "OpenNMS Horizon ${VERSION}" \
+    --arg source "${SOURCE}" \
+    --arg revision "${REVISION}" \
+    --arg version "${VERSION}" \
+    --arg vendor "The OpenNMS Group, Inc." \
+    --arg authors "OpenNMS Community" \
+    --arg licenses "AGPL-3.0" \
+    --arg image_base "${BASE_IMAGE}" \
+    --arg jobid "${BUILD_JOB_ID}" \
+    --arg buildnumber "${BUILD_NUMBER}" \
+    --arg buildurl "${BUILD_URL}" \
+    --arg branch "${BUILD_BRANCH}" \
+    '{ \
+        "org.opencontainers.image.created": $created, \
+        "org.opencontainers.image.title": $title, \
+        "org.opencontainers.image.source": $source, \
+        "org.opencontainers.image.revision": $revision, \
+        "org.opencontainers.image.version": $version, \
+        "org.opencontainers.image.vendor": $vendor, \
+        "org.opencontainers.image.authors": $authors, \
+        "org.opencontainers.image.licenses": $licenses, \
+        "org.opennms.image.base": $image_base, \
+        "org.opennms.cicd.jobid": $jobid, \
+        "org.opennms.cicd.buildnumber": $buildnumber, \
+        "org.opennms.cicd.buildurl": $buildurl, \
+        "org.opennms.cicd.branch": $branch, \
+    }' \
+    > /usr/share/opennms/.container-labels.json
+
 WORKDIR /usr/share/opennms
 
 ### Containers should NOT run as root as a good practice

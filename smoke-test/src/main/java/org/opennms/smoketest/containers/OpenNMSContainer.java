@@ -70,6 +70,7 @@ import org.opennms.smoketest.utils.RestClient;
 import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -142,6 +143,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private int generatedUserId = -1;
     private Exception afterTestCalled = null;
     private Exception waitUntilReadyException = null;
+    private JSONObject containerMetadata;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super(IMAGE);
@@ -533,6 +535,23 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public int getGeneratedUserId() {
         return generatedUserId;
+    }
+
+    @Override
+    protected void containerIsCreated(String containerId) {
+        super.containerIsCreated(containerId);
+
+        var path = Path.of("/usr/share/opennms/.container-labels.json");
+
+        try {
+            containerMetadata = new JSONObject(TestContainerUtils.getFileFromContainerAsString(this, path));
+            logger().info("Container metadata: {}", containerMetadata.toString());
+            logger().info("Labels: {}", this.getCurrentContainerInfo().getConfig().getLabels());
+        } catch (NotFoundException e) {
+            logger().warn("Could not get metadata from container: {}", e.getMessage().trim());
+        } catch (Exception e) {
+            logger().warn("Could not get metadata from container", e);
+        }
     }
 
     @Override
