@@ -27,10 +27,10 @@ DOCKER_OUTPUT_OCI       := type=docker,dest=$(DOCKER_OCI)
 DOCKER_OUTPUT_IMAGE     := type=image
 DOCKERX_INSTANCE        := opennms-build-env-oci
 SOURCE                  := $(shell git remote get-url origin)
-REVISION                := $(shell git describe --always)
+REVISION                := $(shell git describe --always --dirty)
 BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
-BUILD_BRANCH            := $(shell git describe --always)
+BUILD_BRANCH            := $(shell git describe --always --all --always --dirty | sed -e 's,^heads/,,' -e 's,^tags/,,')
 README                  := tarball-root/data/tmp/README
 ASSEMBLE_COMMAND        := ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
 
