@@ -35,10 +35,10 @@ import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
-import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -306,6 +306,7 @@ public class LldpLocalGroupTracker extends AggregateTracker {
 		return lldpElement;
     }
 
+    @Override
     public void printSnmpData() {
         System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_LOC_CHASSISID_SUBTYPE_OID, LLDP_LOC_CHASSISID_SUBTYPE_ALIAS, getLldpLocChassisidSubType(), LldpChassisIdSubType.get(getLldpLocChassisidSubType()));
         System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_CHASSISID_OID, LLDP_LOC_CHASSISID_ALIAS , decodeLldpChassisId(getLldpLocChassisid(),getLldpLocChassisidSubType()));

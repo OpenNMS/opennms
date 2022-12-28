@@ -306,11 +306,12 @@ public class Dot1dBaseTracker extends AggregateTracker
     	return bridge;
     }
 
+	@Override
 	public void printSnmpData() {
 		System.out.printf("\t\t%s (%s)= %s\n", BASE_BRIDGE_ADDRESS_OID, BASE_BRIDGE_ADDRESS, getBridgeAddress());
 		System.out.printf("\t\t%s (%s)= %s\n", BASE_NUM_PORTS_OID, BASE_NUM_PORTS, getNumberOfPorts());
-		System.out.printf("\t\t%s (%s)= %s (%s)\n", BASE_NUM_TYPE_OID, BASE_NUM_TYPE, getBridgeType(), BridgeDot1dBaseType.get(getBridgeType()));
-		System.out.printf("\t\t%s (%s)= %s (%s)\n", STP_PROTOCOL_SPEC_OID, STP_PROTOCOL_SPEC, getStpProtocolSpecification(), BridgeDot1dStpProtocolSpecification.get(getStpProtocolSpecification()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", BASE_NUM_TYPE_OID, BASE_NUM_TYPE, getBridgeType(), BridgeDot1dBaseType.getTypeString(getBridgeType()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", STP_PROTOCOL_SPEC_OID, STP_PROTOCOL_SPEC, getStpProtocolSpecification(), BridgeDot1dStpProtocolSpecification.getTypeString(getStpProtocolSpecification()));
 		System.out.printf("\t\t%s (%s)= %s\n", STP_PRIORITY_OID, STP_PRIORITY, getStpPriority());
 		System.out.printf("\t\t%s (%s)= %s\n", STP_DESIGNATED_ROOT_OID, STP_DESIGNATED_ROOT, getStpDesignatedRoot());
 		System.out.printf("\t\t%s (%s)= %s\n", STP_ROOT_COST_OID, STP_ROOT_COST, getStpRootCost());

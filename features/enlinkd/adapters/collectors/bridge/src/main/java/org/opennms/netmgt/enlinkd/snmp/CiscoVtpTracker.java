@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.snmp.AggregateTracker;
+import java.util.Objects;
+
 import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
@@ -63,7 +65,7 @@ public class CiscoVtpTracker extends AggregateTracker
 
         public static VtpVersion getByValue(Integer vtpVersion) {
             for (VtpVersion version: values()) {
-                if (version.getValue() == vtpVersion) {
+                if (Objects.equals(version.getValue(), vtpVersion)) {
                     return version;
                 }
             }
@@ -139,6 +141,7 @@ public class CiscoVtpTracker extends AggregateTracker
         return VtpVersion.getByValue(m_store.getInt32(CISCO_VTP_VERSION));
     }
 
+    @Override
     public void printSnmpData() {
         System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VERSION_OID, CISCO_VTP_VERSION, getVtpVersion(), decodeVtpVersion());
     }

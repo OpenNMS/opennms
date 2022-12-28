@@ -387,7 +387,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.error("run: collection interrupted, exiting",e);
             return;
         }
-        
+
+        ospfGeneralGroup.printSnmpData();
         OspfElement ospfElement = ospfGeneralGroup.getOspfElement();
         assertEquals(InetAddress.getByName("192.168.100.246"), ospfElement.getOspfRouterId());
         assertNull(ospfElement.getOspfRouterIdNetmask());

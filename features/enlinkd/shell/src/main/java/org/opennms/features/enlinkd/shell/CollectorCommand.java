@@ -60,8 +60,8 @@ import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
@@ -69,9 +69,9 @@ import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
+import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
 /**
@@ -93,24 +93,11 @@ public class CollectorCommand implements Action, Completer {
     public static CollectionTracker getByClassName(String name) {
         switch (name) {
             case CISCO_VTP:
-                return new CiscoVtpTracker() {
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                     }
-                };
+                return new CiscoVtpTracker();
             case CISCO_VTP_VLAN_TABLE:
                 return  new CiscoVtpVlanTableTracker();
             case DOT1D_BASE:
-                return  new Dot1dBaseTracker() {
-
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                    }
-                };
+                return  new Dot1dBaseTracker();
             case DOT1D_BASE_PORT_TABLE:
                 return  new Dot1dBasePortTableTracker();
             case DOT1D_STP_PORT_TABLE:
@@ -120,37 +107,19 @@ public class CollectorCommand implements Action, Completer {
             case DOT1Q_TP_FDB_TABLE:
                 return new Dot1qTpFdbTableTracker();
             case CDP_GLOBAL_GROUP:
-                return  new CdpGlobalGroupTracker() {
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                    }
-                };
+                return  new CdpGlobalGroupTracker();
             case CDP_CACHE_TABLE:
                 return new CdpCacheTableTracker();
             case IP_NET_TO_MEDIA_TABLE:
                 return new IpNetToMediaTableTracker();
             case ISIS_SYS_OBJECT_GROUP:
-                return new IsisSysObjectGroupTracker() {
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                    }
-                };
+                return new IsisSysObjectGroupTracker();
             case ISIS_CIRC_TABLE:
                 return new IsisCircTableTracker();
             case ISIS_IS_ADJ_TABLE:
                 return new IsisISAdjTableTracker();
             case LLDP_LOCAL_GROUP:
-                return new LldpLocalGroupTracker() {
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                    }
-                };
+                return new LldpLocalGroupTracker();
             case LLDP_LOCAL_TABLE:
                 return  new LldpLocalTableTracker();
             case LLDP_REM_TABLE:
@@ -162,13 +131,7 @@ public class CollectorCommand implements Action, Completer {
             case TIME_TETRA_LLDP_REM_TABLE:
                 return new TimeTetraLldpRemTableTracker();
             case OSPF_GENERAL_GROUP:
-                return new OspfGeneralGroupTracker() {
-                    @Override
-                    protected void storeResult(SnmpResult res) {
-                        super.storeResult(res);
-                        printSnmpData();
-                    }
-                };
+                return new OspfGeneralGroupTracker();
             case OSPF_AREA_TABLE:
                 return new OspfAreaTableTracker();
             case OSPF_IF_TABLE:
@@ -263,6 +226,9 @@ public class CollectorCommand implements Action, Completer {
             System.out.println("(Empty collection set)");
         }
 
+        if (tracker instanceof AggregateTracker) {
+            ((AggregateTracker)  tracker).printSnmpData();
+        }
         return null;
     }
 
