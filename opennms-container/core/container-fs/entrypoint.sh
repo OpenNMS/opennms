@@ -146,6 +146,15 @@ applyOverlayConfig() {
 
 # Start opennms in foreground
 start() {
+  local revision=$(jq -r '."org.opencontainers.image.revision"' <  /usr/share/opennms/.container-labels.json)
+  local branch=$(jq -r '."org.opennms.cicd.branch"' <  /usr/share/opennms/.container-labels.json)
+  local jobid=$(jq -r '."org.opennms.cicd.jobid"' <  /usr/share/opennms/.container-labels.json)
+
+  local resource_attributes="service.version=${revision}"
+
+  test -z "${branch}" || resource_attributes+=",opennms.cicd.branch=${branch}"
+  test -z "${jobid}" || resource_attributes+=",opennms.cicd.jobid=${jobid}"
+
   local OPENNMS_JAVA_OPTS="$("${OPENNMS_HOME}/bin/_module_opts.sh") \
   -Dorg.apache.jasper.compiler.disablejsr199=true
   -Dopennms.home=${OPENNMS_HOME}
@@ -161,6 +170,7 @@ start() {
   -Djava.io.tmpdir=${OPENNMS_HOME}/data/tmp
   -Djava.locale.providers=CLDR,COMPAT
   -Dotel.service.name=OpenNMS
+  -Dotel.resource.attributes=${resource_attributes}
   -XX:+StartAttachListener"
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar start
 }
