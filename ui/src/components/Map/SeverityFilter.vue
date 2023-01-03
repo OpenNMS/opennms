@@ -38,7 +38,8 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
   width: 250px;
   right: 60px;
   top: 80px;
-  z-index: var($zindex-tooltip);
+  /* z-index needs to be below $zindex-fixed (1030) which is the z-index of the FeatherAppBar component */
+  z-index: var($zindex-sticky);
   .feather-input-wrapper {
     background: var($primary-text-on-color);
     border: 2px solid var($secondary);

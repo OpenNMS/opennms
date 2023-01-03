@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,21 +21,28 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.scv.api;
 
-import java.util.Set;
+package org.opennms.features.scv.cli.commands;
 
-public interface SecureCredentialsVault {
+import java.util.function.Function;
 
-    Set<String> getAliases();
+import org.kohsuke.args4j.Argument;
+import org.opennms.features.scv.cli.ScvCli;
 
-    Credentials getCredentials(String alias);
+public class DeleteCommand implements Function<ScvCli, Integer> {
+    @Argument(required = true,
+            index = 0,
+            metaVar = "alias",
+            usage = "the alias for this entry")
+    private String alias = null;
 
-    void setCredentials(String alias, Credentials credentials);
-
-    void deleteCredentials(String alias);
+    @Override
+    public Integer apply(ScvCli scvCli) {
+        scvCli.getSecureCredentialsVault().deleteCredentials(alias);
+        return 0;
+    }
 }
