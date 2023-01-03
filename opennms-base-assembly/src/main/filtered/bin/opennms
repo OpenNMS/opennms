@@ -481,6 +481,7 @@ doStart(){
 	# wait for startup
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$START_TIMEOUT" ]; do
+		sleep $STATUS_WAIT
 		if doStatus "$@"; then
 			return 0
 		fi
@@ -490,7 +491,6 @@ doStart(){
 			echo "Started ${install.package.description}, but it stopped running: for details see $REDIRECT" >&2
 			return 1
 		fi
-		sleep $STATUS_WAIT
 		((STATUS_ATTEMPTS++))
 	done
 

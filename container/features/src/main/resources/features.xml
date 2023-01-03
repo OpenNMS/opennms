@@ -229,7 +229,7 @@
     </feature>
     <feature name="jackson-dataformat-yaml" version="${jacksonVersion}" description="Jackson :: Data Format :: YAML">
         <feature>jackson-core</feature>
-        <bundle dependency="true">mvn:org.yaml/snakeyaml/1.26</bundle>
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
     </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
@@ -2005,7 +2005,7 @@
     </feature>
 
     <feature name="fst" description="FST" version="${project.version}">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>

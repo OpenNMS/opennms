@@ -35,6 +35,8 @@ import java.util.TimerTask;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.features.apilayer.common.VersionBean;
+import org.opennms.features.apilayer.minion.RuntimeInfoImpl;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.slf4j.Logger;
@@ -50,6 +52,9 @@ public class HeartbeatProducer {
 
     public HeartbeatProducer(MinionIdentity identity, MessageDispatcherFactory messageDispatcherFactory) {
         final MinionIdentityDTO identityDTO = new MinionIdentityDTO(identity);
+        // retrieve minion version
+        final RuntimeInfoImpl minionInfo = new RuntimeInfoImpl(identity);
+        final VersionBean minionVersion = (VersionBean) minionInfo.getVersion();
         final SyncDispatcher<MinionIdentityDTO> dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -60,6 +65,7 @@ public class HeartbeatProducer {
                             identity.getId(), identity.getLocation());
                     // We reuse the same DTO instead of creating a new object
                     // on every trigger, so we need to update the timestamp each time
+                    identityDTO.setVersion(minionVersion.toString());
                     identityDTO.setTimestamp(new Date());
                     dispatcher.send(identityDTO);
                 } catch (Throwable t) {

@@ -5,7 +5,7 @@
 == System requirements
 
 * *Java 11*: OpenNMS Horizon 31 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 31 requires any supported version of PostgreSQL from 10 up to (and including) 14.
+* *PostgreSQL 10 or higher*: Horizon 31 requires any supported version of PostgreSQL from 10 up to (and including) 15.
 
 == New features and improvements
 
