@@ -616,16 +616,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         schedule(false);
     }
-    
-    public void reloadConfig() {
-        LOG.info("reloadConfig: reload enlinkd configuration file");
+
+    @Override
+    public boolean reloadConfig() {
+        LOG.info("reloadConfig: reload enlinkd configuration file and daemon service");
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
             LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
-            return;
+            return false;
         }
         reload();
+        return true;
     }
 
     @Override

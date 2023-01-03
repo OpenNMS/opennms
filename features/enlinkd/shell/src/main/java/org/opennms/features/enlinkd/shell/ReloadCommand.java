@@ -26,35 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.api;
+package org.opennms.features.enlinkd.shell;
+
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
 
 /**
- * Provides an interface to reload a topology daemon.
+ * Force enlinkd to reload via karaf command.
+ * Log into console via: ssh -p 8101 admin@localhost
+ * Install: feature:install opennms-enlinkd-shell
+ * Usage: type 'opennms:enlinkd-relaod' in karaf console
  */
-public interface ReloadableTopologyDaemon {
+@Command(scope = "opennms", name = "enlinkd-reload", description = "Triggers a restart of the enlinkd daemon")
+@Service
+public class ReloadCommand implements Action {
 
-    /**
-     * Reload enlinkd daemon service
-     */
-    void reload();
 
-    /**
-     * Reload enlinkd configuration and daemon service
-     */
-    boolean reloadConfig();
+    @Reference
+    private ReloadableTopologyDaemon reloadableTopologyDaemon;
 
-    /**
-     * Triggers a reload of the topology in case the topology has been updated
-     */
-    void reloadTopology();
 
-    /**
-     * Run Single Snmp Collection for specified node and protocol
-     */
-    boolean runSingleSnmpCollection(final String nodeCriteria, String protocol);
+    @Override
+    public Void execute() {
+        System.out.println("restarting enhanced linkd daemon");
+        reloadableTopologyDaemon.reload();
+        System.out.println("enhanced linkd daemon restarted");
+        return null;
+    }
 
-    /**
-     * Execute the Enlinkd Topology Discovery for Bridge
-     */
-    void runDiscoveryBridgeDomains();
 }
