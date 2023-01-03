@@ -21,15 +21,3 @@ export const getIpInterfaces = async (queryParameters?: QueryParameters): Promis
     return false
   }
 }
-
-// TODO: May not need this
-export const getIpInterfacesByNodeIds = async (nodeIds: number[]): Promise<IpInterfaceApiResponse | false> => {
-  try {
-    const query = nodeIds.map(id => `node.id==${id}`).join(',')
-
-    const resp = await v2.get(`${endpoint}?_s=${query}`)
-    return resp.data as IpInterfaceApiResponse
-  } catch (err) {
-    return false
-  }
-}
