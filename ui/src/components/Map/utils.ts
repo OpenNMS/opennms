@@ -18,4 +18,16 @@ const numericSeverityLevel = (severity: string | undefined) => {
   return 0
 }
 
-export { numericSeverityLevel }
+const toFixed = (s: string, n: number) => {
+  if (s) {
+    const num = parseFloat(s)
+
+    if (!Number.isNaN(num)) {
+      return num.toFixed(n)
+    }
+  }
+
+  return s
+}
+
+export { toFixed, numericSeverityLevel }

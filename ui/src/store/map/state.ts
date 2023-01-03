@@ -13,6 +13,7 @@ export interface State {
   searchedNodeLabels: string[]
   nodeSortObject: FeatherSortObject
   alarmSortObject: FeatherSortObject
+  nodeSearchTerm: string
 }
 
 const state: State = {
@@ -25,7 +26,8 @@ const state: State = {
   selectedSeverity: 'NORMAL',
   searchedNodeLabels: [],
   nodeSortObject: { property: 'label', value: SORT.ASCENDING },
-  alarmSortObject: { property: 'id', value: SORT.DESCENDING }
+  alarmSortObject: { property: 'id', value: SORT.DESCENDING },
+  nodeSearchTerm: ''
 }
 
 export default state

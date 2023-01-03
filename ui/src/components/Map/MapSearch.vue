@@ -27,12 +27,14 @@ const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 const store = useStore()
 const searchStr = ref()
 const loading = ref(false)
+const outsideSearch = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
 const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
   store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
+
   if (nodeLabels.length) {
     if (nodeLabels.length === 1) {
       // fly to last selected node
@@ -62,6 +64,33 @@ const results = computed(() => {
     return store.state.searchModule.searchResults[0].results
   }
   return []
+})
+
+// search term set by an outside component rather than user text input, i.e. from MapNodesGrid
+const nodeSearchTerm = computed<string>(() => store.state.mapModule.nodeSearchTerm)
+
+watch(nodeSearchTerm, async (searchTerm) => {
+  if (searchTerm) {
+    labels.value = defaultLabels
+    searchStr.value = [{ label: searchTerm }]
+
+    loading.value = true
+    outsideSearch.value = true
+    await store.dispatch('searchModule/search', searchTerm)
+    labels.value = { noResults: 'No results found' }
+    loading.value = false
+  }
+})
+
+watch(results, (newResults) => {
+  if (outsideSearch.value) {
+    outsideSearch.value = false
+    const label = newResults?.[0].label
+
+    if (label) {
+      selectItem([{ label }])
+    }
+  }
 })
 </script>
 

@@ -6,7 +6,6 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
-
 import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
 import {
   getGraphNodesNodes,
@@ -32,6 +31,7 @@ import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
+import { getIpInterfaces, getIpInterfacesByNodeIds } from './ipInterfaceService'
 import { search } from './searchService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
@@ -50,6 +50,8 @@ export default {
   getNodeById,
   getNodeOutages,
   getNodeIfServices,
+  getIpInterfaces,
+  getIpInterfacesByNodeIds,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
