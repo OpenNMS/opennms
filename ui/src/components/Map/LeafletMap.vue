@@ -43,7 +43,7 @@
               :baseHref="mainMenu.baseHref"
               :baseNodeUrl="baseNodeUrl"
               :node="node"
-              :ipListForNode="ipListForNode"
+              :ipAddress="ipAddressForNode(node)"
               :nodeLabelToAlarmSeverity="nodeLabelToAlarmSeverity"
             />
             <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
@@ -140,6 +140,11 @@ const ipInterfaceMap = computed<Map<string,IpInterface[]>>(() => {
 const ipListForNode = (node: Node | null): IpInterface[] => {
   const key = node?.id || ''
   return (key && ipInterfaceMap.value.get(key)) || []
+}
+
+const ipAddressForNode = (node: Node | null) => {
+  const ifList = ipListForNode(node)
+  return (ifList.length > 0 && ifList[0].ipAddress) || ''
 }
 
 const nodeLabelToAlarmSeverity = (label: string) => {

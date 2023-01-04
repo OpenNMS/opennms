@@ -10,11 +10,11 @@
     <br />
     <div class="flex">
       <div>IP Address:</div>
-      <div>{{ ipAddressForNode(node) || 'N/A' }}</div>
+      <div>{{ ipAddress || 'N/A' }}</div>
     </div>
     <div class="flex">
       <div>IP Address:</div>
-      <div>{{ ipAddressForNode(node) || 'N/A' }}</div>
+      <div>{{ ipAddress || 'N/A' }}</div>
     </div>
     <div class="flex">
       <div>Description:</div>
@@ -44,24 +44,19 @@ import { PropType } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import Location from '@featherds/icon/action/Location'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
-import { IpInterface, Node } from '@/types'
+import { Node } from '@/types'
 import { stringToFixedFloat } from './utils'
 
 const props = defineProps({
   baseHref: { type: Object as PropType<string> },
   baseNodeUrl: { type: Object as PropType<string> },
   node: { type: Object as PropType<Node>, default: () => { return }},
-  ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true },
+  ipAddress: { type: Object as PropType<string> },
   nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true }
 })
 
 const latitude = computed(() => stringToFixedFloat(props.node.assetRecord.latitude, 6))
 const longitude = computed(() => stringToFixedFloat(props.node.assetRecord.longitude, 6))
-
-const ipAddressForNode = (node: Node | null) => {
-  const ifList = props.ipListForNode(node)
-  return (ifList.length > 0 && ifList[0].ipAddress) || ''
-}
 
 const getTopologyLink = (node: Node) => {
   return `${props.baseHref}topology?provider=Enhanced Linkd&focus-vertices=${node.id}`
