@@ -1,11 +1,8 @@
 # Build Container images
 
 This section describes how to build container images on your local system.
-Container images can be built with the following convenation:
-
-1. From a tarball in `horizon/tarball` when compiled and assembled from source
-2. From local DEB files in `horizon/debs`, `minion/debs`, `sentinel/debs`
-3. From DEBs downloaded from the offical repositories
+Container images can be built with tarballs that come from a normal assembly
+build.
 
 With running `docker build` the lookup for installation files is done in this order.
 
@@ -14,7 +11,7 @@ It is right now not possible to install _Minion_ and _Sentinel_ from tarballs.
 ## Build Container Images
 
 ```bash
-cd horizon
+cd core
 docker build -t myhorizon .
 ```
 

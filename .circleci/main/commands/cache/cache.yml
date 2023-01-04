@@ -111,6 +111,9 @@ commands:
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
+      - run:
+          description: clean up cache tmp directory
+          command: rm -rf ~/.npm/_cacache/tmp
       - save_cache:
           key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
