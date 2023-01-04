@@ -116,9 +116,27 @@ const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const ipInterfaces = computed<IpInterface[]>(() => store.state.ipInterfacesModule.ipInterfaces)
 
+// cached map of node id -> IpInterface list
+const ipInterfaceMap = computed<Map<string,IpInterface[]>>(() => {
+  const nodeIfMap = new Map<string,IpInterface[]>()
+
+  for (let ip of ipInterfaces.value) {
+    const key = ip.nodeId.toString()
+
+    if (nodeIfMap.has(key)) {
+      nodeIfMap.get(key)?.push(ip)
+    } else {
+      nodeIfMap.set(key, [ip])
+    }
+  }
+
+  return nodeIfMap
+})
+
 const ipAddressForNode = (node: Node | undefined) => {
-  const ipInterface = ipInterfaces.value.find(ip => ip.nodeId.toString() === node?.id)
-  return ipInterface?.ipAddress || ''
+  const key = node?.id || ''
+  const ifList = (key && ipInterfaceMap.value.get(key)) || []
+  return (ifList && ifList.length > 0 && ifList[0].ipAddress) || ''
 }
 
 const nodeLabelToAlarmSeverity = (label: string) => {
