@@ -3,7 +3,7 @@
     <h3>Node: <a :href="`${baseNodeUrl}${node.id}`" target="_blank">{{ node.label }}</a></h3>
 
     <span class="larger-icon"><FeatherIcon :icon="Location" /></span>
-    {{ toFixed(node.assetRecord.latitude, 6) }}, {{ toFixed(node.assetRecord.longitude, 6) }}
+    {{ latitude }}, {{ longitude }}
     <br />
     <a :href="getTopologyLink(node)">View in Topology Map</a>
     <br />
@@ -44,16 +44,24 @@ import { PropType } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import Location from '@featherds/icon/action/Location'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
-import { Node } from '@/types'
-import { toFixed } from './utils'
+import { IpInterface, Node } from '@/types'
+import { stringToFixedFloat } from './utils'
 
 const props = defineProps({
   baseHref: { type: Object as PropType<string> },
   baseNodeUrl: { type: Object as PropType<string> },
   node: { type: Object as PropType<Node>, default: () => { return }},
-  ipAddressForNode: { type: Function as PropType<(node: Node) => string>, required: true },
-  nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true },
+  ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true },
+  nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true }
 })
+
+const latitude = computed(() => stringToFixedFloat(props.node.assetRecord.latitude, 6))
+const longitude = computed(() => stringToFixedFloat(props.node.assetRecord.longitude, 6))
+
+const ipAddressForNode = (node: Node | null) => {
+  const ifList = props.ipListForNode(node)
+  return (ifList.length > 0 && ifList[0].ipAddress) || ''
+}
 
 const getTopologyLink = (node: Node) => {
   return `${props.baseHref}topology?provider=Enhanced Linkd&focus-vertices=${node.id}`

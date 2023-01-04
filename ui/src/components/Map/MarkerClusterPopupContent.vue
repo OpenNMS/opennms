@@ -1,12 +1,12 @@
 <template>
-  <div style="display: none" ref="clusterPopupContent" v-if="cluster">
-    <div>
+  <div class="marker-cluster-popup" ref="clusterPopupContent" v-if="cluster">
+    <div class="marker-cluster-popup-content">
       <h3>Nodes: {{ cluster.getChildCount() }}</h3>
       <br />
       <div class="marker-cluster-header-info">
         <div class="col">
           <span class="larger-icon"><FeatherIcon :icon="Location" /></span>
-          <span>{{ cluster.getLatLng().lat.toFixed(6) }}, {{  cluster.getLatLng().lng.toFixed(6) }}</span>
+          <span>{{ latitude }}, {{ longitude }}</span>
         </div>
         <div class="col">
           <span><a :href="getTopologyLink()">View in Topology Map</a></span>
@@ -59,7 +59,8 @@ interface ClusterInfo {
 }
 
 const props = defineProps({
-  cluster: { type: Object as PropType<Cluster>, default: () => { return }}
+  cluster: { type: Object as PropType<Cluster>, default: () => { return }},
+  ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true }
 })
 
 const store = useStore()
@@ -67,7 +68,13 @@ const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
-const ipInterfaces = computed<IpInterface[]>(() => store.state.ipInterfacesModule.ipInterfaces)
+const latitude = computed(() => props.cluster.getLatLng().lat.toFixed(6))
+const longitude = computed(() => props.cluster.getLatLng().lng.toFixed(6))
+
+const ipAddressesForNode = (node: Node | null) => {
+  const ifList = props.ipListForNode(node)
+  return ifList.map(ip => ip?.ipAddress).join(', ') || 'N/A'
+}
 
 const nodeFromMarker = (marker: Marker<any>) => {
   const name = (marker as any).options.name
@@ -93,7 +100,7 @@ const getItems = () => {
     const nodeLink = (nodeId && `${baseNodeUrl.value}${nodeId}`) || '#'
     const description = node?.assetRecord?.description || 'N/A'
     const severity = nodeLabelAlarmSeverityMap.value[node?.label || '']
-    const ipAddress = ipInterfaces.value.filter(ip => ip?.nodeId.toString() === nodeId).map(ip => ip?.ipAddress).join(', ') || 'N/A'
+    const ipAddress = ipAddressesForNode(node)
 
     return {
       name: node?.label || '',

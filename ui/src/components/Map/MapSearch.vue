@@ -66,31 +66,41 @@ const results = computed(() => {
   return []
 })
 
-// search term set by an outside component rather than user text input, i.e. from MapNodesGrid
+// search term set by an outside component rather than from user text input, i.e. from MapNodesGrid
 const nodeSearchTerm = computed<string>(() => store.state.mapModule.nodeSearchTerm)
 
-watch(nodeSearchTerm, async (searchTerm) => {
-  if (searchTerm) {
+// when results are updated as a result of a search initiated from an outside component,
+// select the item (which may also perform the fly-to-node behavior)
+const selectItemFromOutsideSearch = (searchResults: any) => {
+  if (outsideSearch.value) {
+    outsideSearch.value = false
+    const label = searchResults?.[0].label
+
+    if (label) {
+      selectItem([{ label }])
+    }
+  }
+}
+
+// when an outside component modifies nodeSearchTerm, launch a search with this term,
+// similar to 'search()' above
+// search term may be a node label or else an expression (e.g. 'nodeid == 10')
+// when results are received and outsideSearch is true, this will trigger watch(results)
+watchEffect(async () => {
+  if (nodeSearchTerm.value) {
     labels.value = defaultLabels
-    searchStr.value = [{ label: searchTerm }]
+    searchStr.value = [{ label: nodeSearchTerm.value }]
 
     loading.value = true
     outsideSearch.value = true
-    await store.dispatch('searchModule/search', searchTerm)
+    await store.dispatch('searchModule/search', nodeSearchTerm.value)
     labels.value = { noResults: 'No results found' }
     loading.value = false
   }
 })
 
 watch(results, (newResults) => {
-  if (outsideSearch.value) {
-    outsideSearch.value = false
-    const label = newResults?.[0].label
-
-    if (label) {
-      selectItem([{ label }])
-    }
-  }
+  selectItemFromOutsideSearch(newResults)
 })
 </script>
 
