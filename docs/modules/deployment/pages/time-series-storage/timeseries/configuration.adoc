@@ -54,7 +54,7 @@ Must be a power of two.
 | org.opennms.timeseries.config.buffer_type
 | Type of buffer (`RINGBUFFER` or `OFFHEAP`). +
 `RINGBUFFER` is a high-performance queue.
-It will only keep data in memory.
+It keeps data only in memory.
 If the queue overflows, it will drop data. +
 `OFFHEAP` is a queue that will store data in memory.
 When the queue overflows, it will persist extra data onto the disk.
@@ -66,7 +66,7 @@ When the queue overflows, it will persist extra data onto the disk.
 
 | org.opennms.timeseries.config.offheap.path
 | Location for storing off-heap data.
-This location should be a high performance disk that will accommodate a high-load system.
+This location should be a high-performance disk that will accommodate a high-load system.
 | /tmp
 
 | org.opennms.timeseries.config.offheap.max_file_size

@@ -2,7 +2,7 @@
 [[newts-monitor]]
 = Newts Monitoring
 
-This section describes the metrics that {page-component-title} collects for monitoring the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on a Cassandra node.
+This section describes the metrics that {page-component-title} collects to monitor the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on a Cassandra node.
 
 JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} to collect these metrics (
 see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX Authentication and Authorization] in the Cassandra documentation).
@@ -178,7 +178,7 @@ The JMXCollector retrieves MBean entities from the Cassandra node.
 | Name  | Description
 
 | TotalDiskSpaceUsed
-| Total disk space used by SSTables belonging to this column family including obsolete ones waiting to be garbage collected.
+| Total disk space that the SSTables belonging to this column family use, including obsolete ones waiting to be garbage collected.
 
 | LiveDiskSpaceUsed
 | Disk space used by SSTables belonging to this column family.

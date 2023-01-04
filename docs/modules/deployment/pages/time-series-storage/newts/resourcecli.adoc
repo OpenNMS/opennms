@@ -88,7 +88,7 @@ node[70]
 
 === Show subcommand
 
-The `show` subcommand shows details for a given resource.
+The `show` subcommand displays details for a given resource.
 The following example displays details for the resource identified by resourceId `node[70]`:
 
 [source, console]

@@ -16,7 +16,7 @@ The following hardware specs are the minimum required to run {page-component-tit
 | 4GB (physical)
 | 16GB (physical) and above
 
-| *Storage (Disk Space)*
+| *Storage (disk space)*
 | 50-GB HDD, SSD
 | 1TB with SSD and above
 |===

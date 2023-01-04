@@ -46,7 +46,7 @@ NOTE: Make sure that the `org.opennms.timeseries.strategy` property is not set i
 +
 The `writeUrl` and `readUrl` properties are required.
 All other properties shown here are example values to overwrite the defaults.
-Keep an eye on your Cortex cluster's performance and adjust as necessary.
+Monitor your Cortex cluster's performance and adjust these properties as necessary.
 Substitute the correct host and port for your Cortex cluster.
 +
 You can configure the plugin via the Karaf shell or by creating a `.cfg` file:
@@ -95,7 +95,7 @@ opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
 
 == Cortex tips
 
-You can view information on your Cortex server by navigating to the following URLs:
+Navigate to the following URLS to view information about your Cortex server:
 
 * View server status: \http://cortex-service-host:9009
 * View the ring: \http://cortex-service-host:9009/ring

@@ -16,7 +16,7 @@ The following hardware specs are the minimum required to run a Minion:
 | 4GB (physical)
 | 8GB (physical) and above
 
-| *Storage (Disk Space)*
+| *Storage (disk space)*
 | 20-GB HDD, SSD
 | 100GB with SSD and above
 |===

@@ -10,7 +10,7 @@ The following suggestions try to minimize the data collection gap that occurs wh
 
 . Determine the parameters needed to migrate your existing data.
 . Reconfigure {page-component-title} to persist all new collected data to Newts storage.
-. Convert and Persist the RRD- or JRobin-based data to Newts using the `newts-repository-converter` utility.
+. Use the `newts-repository-converter` utility to convert and persist the RRD- or JRobin-based data to Newts.
 
 === Prerequisites
 
@@ -18,7 +18,7 @@ To complete this migration, you must have the following:
 
 * Working {page-component-title} installation.
 * Previously configured RRDTool- or JRobin-based storage strategy.
-* Installed and configured Newts cluster that is reachable by your {page-component-title} instance.
+* Installed and configured Newts cluster that your {page-component-title} instance can reach.
 
 === Migration plan
 
@@ -27,7 +27,7 @@ Follow the steps below to migrate your data to Newts:
 . Verify and write down the values for the following properties in `opennms.properties`.
 You will need this information later to invoke the `newts-repository-converter` utility.
 .. `$\{OPENNMS_HOME}/etc/opennms.properties`:
-*** In `org.opennms.rrd.storeByGroup`, check if `storeByGroup` is enabled.
+*** In `org.opennms.rrd.storeByGroup`, enable `storeByGroup`.
 *** In `rrd.base.dir`, check for the location where RRD or JRB files are stored.
 *** In `rrd.binary`, check for the location of the RRDTool binary.
 .. `$\{OPENNMS_HOME}/etc/rrd-configuration.properties`:

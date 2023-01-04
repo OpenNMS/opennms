@@ -116,7 +116,7 @@ Indicates that the response was completed and sent back, but not before the time
 
 Apache Cassandra is based on a staged event-driven architecture (SEDA).
 This separates different operations into stages.
-Each stage is loosely coupled using a messaging service, and each uses queues and thread pools to group and execute its tasks.
+Each stage is loosely coupled using a messaging service, and each uses queues and thread pools to group and run its tasks.
 
 The documentation for Cassandra thread pool monitoring originated from the https://blog.pythian.com/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
 
@@ -130,10 +130,10 @@ The documentation for Cassandra thread pool monitoring originated from the https
 | Tasks that are currently running.
 
 | CompletedTasks
-| Tasks that have been completed.
+| Tasks that have finished.
 
 | CurrentlyBlockedTasks
-| Tasks that have been blocked due to a full queue.
+| Tasks that are blocked due to a full queue.
 
 | PendingTasks
 | Tasks that are queued to run.
@@ -141,7 +141,7 @@ The documentation for Cassandra thread pool monitoring originated from the https
 
 === Memtable FlushWriter
 
-You can sort and write memtables to the disk using `org.apache.cassandra.metrics.ThreadPools`.
+You can use using `org.apache.cassandra.metrics.ThreadPools` to sort and write memtables to disk.
 
 Most of the time, memtable issues are caused by overrunning disk capability.
 Sorting can cause issues as well; they are usually accompanied by a high load, but a small number of actual flushes (as seen in `cfstats`).
@@ -162,7 +162,7 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 === Anti-entropy stage
 
-This stage is primarily focused on repairing consistency.
+This stage primarily focuses on repairing consistency.
 It handles repair messages (for example, Merkle tree transfers from validation compaction) and streaming.
 
 TIP: Alerts: pending > 15 || blocked > 0
@@ -182,7 +182,7 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 === Migration stage
 
-Any schema changes are made during this stage.
+Any schema changes occur during this stage.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
@@ -220,7 +220,7 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 === Request response stage
 
-When a response to a request is received, this stage is used to perform any callbacks that were created with the original request.
+When a response to a request is received, this stage performs any callbacks that were created with the original request.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
@@ -248,4 +248,4 @@ Cassandra also collects some key metrics from the Java virtual machine:
 This includes heap and non-heap memory.
 * `java.lang:type=GarbageCollector,name=ConcurrentMarkSweep`: Metrics for the Java virtual machine's garbage collection process.
 
-TIP: If you use Apache Cassandra for running Newts, you can also enable additional metrics for the Newts keyspace.
+TIP: If you use Apache Cassandra to run Newts, you can also enable additional metrics for the Newts keyspace.
