@@ -40,7 +40,7 @@ At a high level, with a xref:deep-dive/flows/basic.adoc#flows-basic[basic setup]
 * (Optional) The REST API generates summaries and time series data from the flows or aggregates stored on Elasticsearch.
 * OpenNMS Helm visualizes flows and aggregates:
 ** The Flow Deep Dive dashboard visualizes flows and aggregates that are stored in Elasticsearch using a flows datasource.
-** The Cortex Flow Deep Dive dashboard visualizes aggregates that are stored in Cortex using a Prometheus datasource.
+** The Cortex Flow Deep Dive dashboard uses a Prometheus datasource to visualize aggregates that are stored in Cortex.
 
 .Overview of flows integration
 image::flows/flow_integration_overview.png[Network graph displays how flows integrate with OpenNMS, 700]
