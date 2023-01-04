@@ -45,6 +45,8 @@ commands:
         type: string
       container_name:
         type: string
+      container_dir:
+        type: string
       tarball_match:
         type: string
       tarball_path:
@@ -66,7 +68,7 @@ commands:
 
             export DOCKER_CONTENT_TRUST=1
             docker container prune -f
-            cd opennms-container/<< parameters.container_name >>
+            cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
@@ -77,5 +79,5 @@ commands:
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
                  oci
       - store_artifacts:
-          path: ~/project/opennms-container/<< parameters.container_name >>/images/
+          path: ~/project/opennms-container/<< parameters.container_dir >>/images/
           destination: /
