@@ -8,7 +8,7 @@ Using a service monitor framework with xref:reference:daemons/daemon-config-file
 You can view a summary of this availability information, calculated over the last 24 hours, on the main dashboard:
 
 .Service availability on the node detail page
-image::operation:service-assurance/service-availability.png[Node detail page displaying 24-hour service availability statistics]
+image::operation:service-assurance/service-availability.png["Node detail page displaying service availability statistics"]
 
 Pollerd schedules and runs service monitors, as defined in `poller-configuration.xml`.
 When a service monitor detects an outage, pollerd sends an event that {page-component-title} uses to create an alarm.

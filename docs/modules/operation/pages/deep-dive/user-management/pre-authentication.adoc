@@ -1,63 +1,58 @@
 
-[[ga-role-user-management-pre-authentication]]
 = Web UI Pre-Authentication
 
-You can configure {page-component-title} to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the {page-component-title} webapp using a header.
-
-Define the pre-authentication configuration in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
+You can configure your {page-component-title} instance to run behind a proxy that provides authentication.
+Authenticated users can then be directed to the {page-component-title} web UI using a header.
+You can configure pre-authentication settings in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
 This file is automatically included in the Spring security context, but is not enabled by default.
 
-WARNING: Do not configure {page-component-title} this way unless you are certain the web UI is accessible only to the proxy and not to end users.
-Otherwise, malicious attackers can craft queries that include the pre-authentication header and get full control of the web UI and REST APIs.
+WARNING: Do not configure {page-component-title} to use pre-authentication unless you are certain that the web UI is accessibly only to the proxy, and not to end users.
+If end users have access to the web UI, malicious attackers can craft queries that include the pre-authentication header, allowing them full control of the web UI and any REST APIs.
 
 == Enable pre-authentication
 
-Edit the `header-preauth.xml` file, and set the `enabled` property:
+Set the `enabled` property in `header-preauth.xml`:
 
-[source,xml]
-----
+[source, xml]
 <beans:property name="enabled" value="true" />
-----
 
 == Configure pre-authentication
 
-You can also set the following properties to change the behavior of the pre-authentication plugin:
+You can configure the following properties to change the pre-authentication plugin's behavior:
 
-[options="header"]
-[cols="1,3,2"]
+[options="autowidth"]
 |====
-| Property
-| Description
-| Default
+| Property  | Description | Default Value
 
 | enabled
-| Whether the pre-authentication plugin is active.
+| Indicates whether the pre-authentication plugin is active.
 | false
 
 | failOnError
-| If `true`, disallow login if the header is not set or the user does not exist.
-If `false`, fall through to other mechanisms (basic auth, form login, and so on).
+| If `true`, block users from logging in if their header is not set or the user does not exist. +
+If `fales`, fall through to other mechanisms (basic authentication, form login, and so on).
 | false
 
 | userHeader
-| The HTTP header that specifies the user to authenticate as.
+| The HTTP header that specifies which user is authenticated.
 | X-Remote-User
 
 | credentialsHeader
 | A comma-separated list of credentials to associate with the principal.
 If specified, the header must be set for authentication to be successful.
-|
+| _Blank_
 
 | authoritiesHeader
-| The HTTP header that will contain a comma-separated list of authorities (roles) the user will have.
-| _no default value_
+| HTTP header.
+When set, this contains a comma-separated list of roles for the authenticated user.
+| _Blank_
 |====
 
 == Enable pre-authorization
 
 Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
 
-[source,xml]
+[source, xml]
 ----
 <beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
   <beans:property name="preAuthenticatedUserDetailsService">
@@ -66,11 +61,7 @@ Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring
 </beans:bean>
 ----
 
-You can then use the following command to test:
+After the pre-authentication plugin is enabled and set up, you can test its configuration using the following console command:
 
 [source, console]
-----
 curl -H "X-Remote-User: myuser" -H "X-Remote-Role: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami
-----
-
-

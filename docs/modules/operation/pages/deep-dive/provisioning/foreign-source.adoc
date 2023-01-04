@@ -3,7 +3,6 @@
 = Foreign Source Definition
 
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
-
 Policies determine entity persistence and set attributes on the discovered entities that control {page-component-title} management behavior.
 Provisiond applies the existing default foreign source definition unless you choose to modify it.
 
@@ -17,7 +16,8 @@ To edit service detectors and set an automatic scan interval, follow these steps
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 +
-image::provisioning/FS_def.png[]
+.Default foreign source definition page
+image::provisioning/FS_def.png["Page displaying detectors included in the default foreign source definition"]
 +
 NOTE: The screen displays a list of service detectors and a tab to view and define policies.
 Provisiond scans the services in the order in which the detectors appear in the list.
@@ -45,7 +45,7 @@ Type `0` to disable automatic scanning.
 
 . Click *Save* to save the foreign source definition.
 
-== Create policies
+== Create a policy
 
 To create a policy for a foreign source definition, follow these steps:
 

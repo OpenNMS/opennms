@@ -7,7 +7,7 @@ Directed discovery is the process of manually adding nodes to {page-component-ti
 NOTE: Two other methods of manually adding nodes (quick adding a node and manually adding an interface) are in the process of being deprecated.
 We do not recommend using these features.
 
-Make sure you complete the tasks in xref:operation:quick-start/inventory.adoc[Step 3: Provision Inventory] before adding nodes.
+Make sure you complete the tasks in xref:quick-start/inventory.adoc[Step 3: Provision Inventory] before adding nodes.
 
 [[requisition-add-nodes]]
 == Add nodes through the requisition UI
@@ -22,14 +22,13 @@ Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requ
 {page-component-title} automatically generates the foreign ID used to identify the node.
 . Enter the appropriate information in each of the tabs:
 +
-[options="header", cols="1,3"]
+[options="autowidth"]
 |===
-| Tab
-| Settings
+| Tab   | Settings
 
 | Basic Information
-| Required: Auto-generated foreign ID, node label +
-Optional: Minion location, building, city
+| *Required:* Auto-generated foreign ID, node label +
+*Optional:* Minion location, building, city
 
 | <<deep-dive/service-assurance/path-outages#ga-service-assurance-path-outage, Path Outage>>
 | Parent foreign source, parent foreign ID, parent node label
@@ -60,14 +59,16 @@ There are endpoints for both xref:development:rest/nodes.adoc[individual nodes] 
 [[requisition-new-suspect]]
 == Add nodes via newSuspect events
 
-You can use `$\{OPENNMS_HOME}/bin/send-event.pl` to generate newSuspect events:
+You can use `$\{OPENNMS_HOME}/bin/send-event.pl` to generate `newSuspect` events:
 
 [source, console]
 ----
-# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address uei.opennms.org/internal/discovery/newSuspect
+# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address uei.opennms.org/internal/discovery/newSuspect <1>
 ----
 
-The newSuspect events trigger provisiond to check the IP address specified in the command above (replace `ip-address` with the IP address that you want to use for discovery).
+<1> Replace `ip-address` with the IP address that you want to use for discovery.
+
+The events trigger provisiond to check the IP address specified in the command above.
 
 NOTE: This adds the discovered node directly into your {page-component-title} database.
 We strongly recommend that you use <<requisition-add-nodes, requisitions>> when adding individual IP addresses.

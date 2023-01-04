@@ -1,5 +1,4 @@
 
-[[ga-on-call-role]]
 = On-Call Roles
 
 On-call roles let you assign a predefined <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> to an existing group of users.
@@ -25,7 +24,8 @@ The description should be meaningful (for example, describe the team that the on
 . Specify the user and designate an on-call schedule.
 . Click *Save*.
 +
-image::users/on-call-schedule.png[]
+.Example on-call schedule
+image::users/on-call-schedule.png["Example on-call schedule for a single user"]
 
 . Repeat as necessary for other dates and users.
 . Click *Done* to apply the changes.

@@ -11,7 +11,7 @@ For additional information, including alternative notification mechanisms, see x
 
 Notifications are disabled by default in a fresh {page-component-title} installation, as indicated by the red bell symbol in the top menu bar:
 
-image::notifications/red-bell-notifications.png[Portion of Horizon top menu bar showing red bell symbol, 300]
+image::notifications/red-bell-notifications.png["Portion of Horizon top menu bar displaying a red notification bell symbol", 300]
 
 Follow these steps to enable notifications:
 
@@ -28,10 +28,9 @@ This configuration file update happens immediately, with no need to restart {pag
 
 The following event notifications are defined by default:
 
-[options="header", cols="1,1"]
+[options="autowidth"]
 |===
-| Event Notification
-| Default State
+| Event Notification    | Default State
 
 | High threshold
 | OFF
@@ -95,6 +94,7 @@ For the purpose of this Quick Start guide, do not specify a delay interval, and 
 ** Click *Next Step*.
 +
 The Admin group and the email address that you specified appear in the Initial Targets list.
+
 . Verify the settings, and click *Finish*.
 
 Users in the Admin group will see pop-up notifications in their browsers about events in {page-component-title}.

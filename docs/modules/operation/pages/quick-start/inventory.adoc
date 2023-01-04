@@ -44,7 +44,7 @@ NOTE: If you are using SNMPv3, you need to configure details for a User-Based Se
 This configuration sets up SNMP for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`:
 
 .Example SNMP community name configuration settings
-image::provisioning/SNMP_Config.png[SNMP community name configuration page with example IP address and location settings, 600]
+image::provisioning/SNMP_Config.png["SNMP community name configuration page with example IP address and location settings", 600]
 
 These settings are automatically optimized into `snmp-config.xml`.
 For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
@@ -70,7 +70,7 @@ NOTE: The requisition's entry in the Requisitions list remains red until you syn
 You will synchronize the list after you <<#configure-discovery, configure discovery settings>>.
 
 .Example Requisitions list
-image::provisioning/red_requisition.png[Requisitions list showing two requisitions; one is red, indicating that it has not been synchronized with the database]
+image::provisioning/red_requisition.png["Requisitions list showing two requisitions; one is red, indicating that it has not been synchronized with the database"]
 
 After the requisition is created, you can add nodes to it.
 
