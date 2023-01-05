@@ -38,6 +38,9 @@ commands:
         - add_ssh_keys:
             fingerprints:
               - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+              - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+              - "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
+              - "aa:e8:af:11:e4:78:e7:75:b7:a1:69:d0:c8:17:0c:7a"
         - cached-checkout
         - run:
             name: Create git identity
@@ -210,7 +213,7 @@ commands:
               -H "Content-Type: application/json" \
               -H "Circle-Token: ${CIRCLE_API_TOKEN}" \
               -X GET \
-              "https://circleci.com/api/v2/project/gh/OpenNMS/opennms/${CIRCLE_BUILD_NUM}/artifacts" \
+              "https://circleci.com/api/v2/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/artifacts" \
             | grep -o 'https://[^"]*' \
             | grep "/<< parameters.location >>/" \
             > ~/.artifacts/<< parameters.location >>.txt
