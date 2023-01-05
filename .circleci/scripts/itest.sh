@@ -13,7 +13,6 @@ find_tests()
     # Generate surefire & failsafe test list based on current
     # branch and the list of files changed
     # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
-    pyenv local 3.8.5
     python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
       --changes-only="${CCI_CHANGES_ONLY:-true}" \
       --output-unit-test-classes=surefire_classnames \
