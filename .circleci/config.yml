@@ -1092,7 +1092,7 @@ jobs:
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - "14:12:ff:38:2a:de:3f:7c:97:d2:8e:54:d6:f4:2e:31"
+                  - "f0:af:a6:85:ac:7b:0f:d9:21:26:19:e4:1b:3d:3c:60"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}
