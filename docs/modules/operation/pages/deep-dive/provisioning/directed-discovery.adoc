@@ -7,7 +7,7 @@ Directed discovery is the process of manually adding nodes to {page-component-ti
 NOTE: Two other methods of manually adding nodes (quick adding a node and manually adding an interface) are in the process of being deprecated.
 We do not recommend using these features.
 
-Make sure you complete the tasks in xref:quick-start/inventory.adoc[Step 3: Provision Inventory] before adding nodes.
+Make sure you complete the tasks in xref:quick-start/inventory.adoc[] before adding nodes.
 
 [[requisition-add-nodes]]
 == Add nodes through the requisition UI
@@ -50,7 +50,6 @@ Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requ
 . Click *Return* to view the list of nodes in the requisition.
 . Click *Synchronize* to add the new nodes to the {page-component-title} database.
 
-[[requisition-rest]]
 == Add nodes via REST API
 
 You can use the REST API to add nodes to your {page-component-title} database.

@@ -1,7 +1,7 @@
 
 = Thresholding Tasks
 
-For information on how to create a basic or expression-based threshold, see xref:quick-start/thresholding.adoc[Step 5: Set up a Threshold] in the Quick Start section.
+For information on how to create a basic or expression-based threshold, see xref:quick-start/thresholding.adoc[] in the Quick Start section.
 This section describes related thresholding tasks.
 
 [[ga-threshold-metadata]]

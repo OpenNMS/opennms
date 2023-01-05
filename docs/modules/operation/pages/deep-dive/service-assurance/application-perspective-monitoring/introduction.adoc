@@ -35,7 +35,7 @@ image::application-perspective-monitoring/configure-app.png["Example of a config
 After you configure the application, Minions at the specified perspective locations start to monitor its associated services.
 The figure below shows an HTTP outage detected from all perspective locations, and by pollerd:
 
-.Example HTTP outage detected by Application Perspective Monitoring
+.HTTP outage detected by Application Perspective Monitoring
 image::application-perspective-monitoring/perspective-outages.png["Outages list displaying five perspectives of an HTTP outage", 700]
 
 The Perspective column shows the perspective location from which a Minion detected the outage.

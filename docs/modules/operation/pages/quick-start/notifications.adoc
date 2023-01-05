@@ -5,7 +5,7 @@ This section describes how to turn default notifications on in {page-component-t
 
 {page-component-title} uses notifications to inform users about xref:deep-dive/events/introduction.adoc[events] in the network without requiring them to log in to the web UI.
 Notifications are commonly sent through email and text or pager messages, but can be customized to send to a variety of external systems.
-For additional information, including alternative notification mechanisms, see xref:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section and the xref:reference:daemons/daemon-config-files/notifd.adoc[notifd] reference section.
+For additional information, including alternative notification mechanisms, see xref:deep-dive/notifications/introduction.adoc[] in the Deep Dive section and the xref:reference:daemons/daemon-config-files/notifd.adoc[notifd] reference section.
 
 == Enable notifications
 
@@ -61,7 +61,7 @@ The following event notifications are defined by default:
 |===
 
 You can turn each of them on or off on the Configure Event Notifications page.
-See xref:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section for more information.
+See xref:deep-dive/notifications/introduction.adoc[] in the Deep Dive section for more information.
 
 == Configure destination paths
 

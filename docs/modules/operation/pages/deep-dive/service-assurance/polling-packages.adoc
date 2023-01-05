@@ -13,10 +13,10 @@ This provides great flexibility for determining service levels on a given device
 .Polling package assigned to nodes with rules and filters
 [source, xml]
 ----
-<package name="example1"><1>
-  <filter>IPADDR != '0.0.0.0'</filter><2>
-  <include-range begin="1.1.1.1" end="254.254.254.254" /><3>
-  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /><3>
+<package name="example1"> <1>
+  <filter>IPADDR != '0.0.0.0'</filter> <2>
+  <include-range begin="1.1.1.1" end="254.254.254.254" /> <3>
+  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /> <3>
 ----
 
 <1> The polling package's unique name.
@@ -189,51 +189,12 @@ Common use cases for such services are HTTP virtual hosts where multiple web app
 [[ga-pollerd-packages-test-service-manually]]
 == Manually test services
 
-To troubleshoot, you can run a test via the Karaf shell:
+To troubleshoot the polling services, you can run a test via the Karaf shell:
 
 [source, console]
 ssh -p 8101 admin@localhost
 
-Once in the shell, you can show the commands help as follows:
-
-[source, console]
-----
-opennms> opennms:poll --help
-DESCRIPTION
-        opennms:poll
-
-	Invokes a monitor against a host at a specified location
-
-SYNTAX
-        opennms:poll [options] host [attributes]
-
-ARGUMENTS
-        host
-                Hostname or IP address of the system to poll
-                (required).
-        attributes
-                Monitor specific attributes in key=value form
-
-OPTIONS
-        --help
-                Display this help message
-        -l, --location
-                Location
-                (defaults to Default)
-        -s, --system-id
-                System ID
-        -t, --ttl
-                Time to live
-        -P, --package
-                Poller package
-        -S, --service
-                Service name
-        -n, --node-id
-                Node ID for service
-        -c, --class
-                Monitor class
-
-----
+NOTE: In the shell, you can view the command's help information by using `opennms:poll --help`.
 
 The following example runs the ICMP monitor on a specific IP interface:
 
@@ -241,7 +202,7 @@ The following example runs the ICMP monitor on a specific IP interface:
 opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 
 The output is verbose, which lets you debug monitor configurations.
-Important output lines:
+Important output lines are as follows:
 
 [source, console]
 ----
@@ -272,30 +233,18 @@ Filters are ubiquitous in {page-component-title} configurations with `<filter>` 
 Use the Karaf shell to verify filters.
 For more information, see xref:reference:configuration/filters/filters.adoc[Filters].
 
+.SSH to localhost
 [source, console]
 ssh -p 8101 admin@localhost
 
-Once in the shell, show command help as follows:
+NOTE: In the shell, you can view the command's help information by using `opennms:filter --help`.
 
-[source, console]
-----
-opennms> opennms:filter --help
-DESCRIPTION
-        opennms:filter
-	Enumerates nodes/interfaces that match a given filter.
-SYNTAX
-        opennms:filter filterRule
-ARGUMENTS
-        filterRule
-                A filter rule
-----
-
-For example, run a filter rule that matches a location:
+For example, you can run a filter rule that matches a location:
 
 [source, console]
 opennms:filter  "location='MINION'"
 
-Output displays as follows:
+The output displays as follows:
 
 [source, console]
 ----
@@ -304,7 +253,7 @@ nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
 		127.0.0.1
 ----
 
-Another example: Run a filter that matches a node location and for a given IP address range.
+You can also run a filter that matches a node location within a given IP address range:
 
 [source, console]
 opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
@@ -332,9 +281,9 @@ nodeId=6 nodeLabel=label3 location=Default
 		172.17.0.123
 ----
 
-NOTE: Displayed node information includes nodeId, nodeLabel, location, and optional fields like foreignId, foreignSource, and categories when they exist.
+NOTE: Displayed node information includes the `nodeId`, `nodeLabel`, `location`, and optional fields like `foreignId`, `foreignSource`, and `categories` (when they exist).
 
 == Monitor Microsoft AD services
 
-To monitor Microsoft AD services you must edit `$\{OPENNMS_HOME}/etc/poller-configuration.xml`.
+To monitor Microsoft AD services, you must edit `$\{OPENNMS_HOME}/etc/poller-configuration.xml`.
 See the https://opennms.discourse.group/t/monitor-microsoft-ad-services/1051[Monitor Microsoft AD Services] article on Discourse for details.

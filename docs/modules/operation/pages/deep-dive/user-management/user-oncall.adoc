@@ -8,7 +8,6 @@ For each on-call role, a user is designated as a supervisor.
 They are responsible for the group of users assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
 The supervisor's account must have admin privileges.
 
-[[ga-user-on-call]]
 == Assign a group to an on-call role
 
 Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
