@@ -38,7 +38,7 @@ The following provides a more detailed overview of the communication between a {
 .Minion communication
 image::deployment/minion/communication.png[]
 
-By default, the {page-component-title} instance automatically provisions the Minion as a node and automatically monitors it with the Minion-Heartbeat service.
+By default, the {page-component-title} instance automatically provisions the Minion as a node and monitors it with the Minion-Heartbeat service.
 The Minion sends heartbeat messages to show it is running and functioning properly in the defined location.
 
 The specific management protocol messages (for example, SNMP, ICMP) are piped through a message broker communication channel and executed by a Minion.
