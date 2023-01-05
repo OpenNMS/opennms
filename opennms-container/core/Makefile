@@ -3,7 +3,7 @@
 ##
 
 CONTAINER_TYPE_FRIENDLY := Horizon
-DOCKER_PROJECT          := horizon
+DOCKER_PROJECT          := core
 TARBALL                 := ../../opennms-full-assembly/target/*-core.tar.gz
 
 include ../common.mk
