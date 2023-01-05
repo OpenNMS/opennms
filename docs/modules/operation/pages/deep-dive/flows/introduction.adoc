@@ -37,25 +37,24 @@ At a high level, with a xref:deep-dive/flows/basic.adoc#flows-basic[basic setup]
 ** Metadata related to associated nodes (such as IDs and categories) are added to the flows.
 . Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
 . (Optional) The OpenNMS streaming analytics tool aggregates flows and outputs them to Elasticsearch, Cortex, or Kafka.
-. (Optional) The REST API generates summaries and time series data from the flows or aggregates stored on Elasticsearch.
-. OpenNMS Helm visualizes flows and aggregates:
-** The Flow Deep Dive dashboard visualizes flows and aggregates, retrieving their data from Elasticsearch via a flows datasource.
-** The Cortex Flow Deep Dive dashboard uses a Prometheus datasource to visualize aggregates that are stored in Cortex.
+
+Collected flows data can be accessed via:
+
+* OpenNMS Helm dashboards:
+** The "Flow Deep Dive" dashboard visualizes flows and aggregates that are stored in Elasticsearch using a flows datasource.
+** The "Cortex Flow Deep Dive" dashboard visualizes aggregates that are stored in Cortex using a Prometheus datasource.
+* The REST API can generate summaries and time series data from the stored flows or aggregates.
 
 .Overview of flows integration
-image::flows/flow_integration_overview.png[Network graph displays how flows integrate with OpenNMS, 700]
+image::flows/flow_integration_overview.png["Network graph displays how flows integrate with {page-component-title}", 700]
 
 === Technologies
 
 {page-component-title} supports the following flows technologies:
 
-[options="header" cols="1,1,1,1,1"]
+[cols="1,1,1,1,1"]
 |===
-| Feature
-| NetFlow v5
-| NetFlow v9
-| sFlow
-| IPFIX
+| Feature   | NetFlow v5    | NetFlow v9    | sFlow | IPFIX
 
 | *Open/Proprietary*
 | Proprietary
