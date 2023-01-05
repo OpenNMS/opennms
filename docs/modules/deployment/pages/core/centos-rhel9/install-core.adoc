@@ -20,7 +20,7 @@ endif::[]
 If you want time series trending and forecast functions, you must install the https://www.r-project.org/[R project] packages.
 The additional download size for packages is ~390MB.
 
-.Install R-core packages for time series trending and forecasting (optional)
+.(Optional) Install R-core packages for time series trending and forecasting
 [source, console]
 ----
 sudo dnf -y install epel-release
