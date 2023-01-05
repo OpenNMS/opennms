@@ -1682,6 +1682,9 @@ jobs:
   create-merge-foundation-branch:
     <<: *docker_container_config
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |
@@ -1735,6 +1738,9 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
             - restore_cache:
                 keys:
                   - meridian-v1-{{ .Branch }}-{{ .Revision }}
@@ -1777,6 +1783,9 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "de:f5:9c:0b:a9:24:8d:1c:c5:88:49:6d:51:51:c7:d0"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}
