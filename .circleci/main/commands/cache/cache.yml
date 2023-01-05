@@ -208,7 +208,7 @@ commands:
               -L \
               -H "Accept: application/json" \
               -H "Content-Type: application/json" \
-              -H "Circle-Token: ${CIRCLECI_READ_TOKEN_OPENNMS}" \
+              -H "Circle-Token: ${CIRCLE_TOKEN}" \
               -X GET \
               "https://circleci.com/api/v2/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/artifacts" \
             | grep -o 'https://[^"]*' \
@@ -242,7 +242,7 @@ commands:
                   -sS \
                   -L \
                   -O \
-                  -H "Circle-Token: ${CIRCLECI_READ_TOKEN_OPENNMS}" \
+                  -H "Circle-Token: ${CIRCLE_TOKEN}" \
                   "${URL}"
               done \
                 < ~/.artifacts/<< parameters.location >>.txt
