@@ -5,7 +5,6 @@ find_tests()
     # Generate surefire & failsafe test list based on current
     # branch and the list of files changed
     # (The format of the output files contains the canonical class names i.e. org.opennms.core.soa.filter.FilterTest)
-    pyenv local 3.5.2
     python3 .circleci/scripts/find-tests/find-tests.py generate-test-lists \
       --changes-only="${CCI_CHANGES_ONLY:-true}" \
       --output-unit-test-classes=surefire_classnames \
@@ -47,9 +46,9 @@ echo "#### Installing other dependencies"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
 # limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
-deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
+echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted
+deb-src http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee /etc/apt/sources.list
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
