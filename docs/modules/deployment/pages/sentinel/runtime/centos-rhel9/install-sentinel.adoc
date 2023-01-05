@@ -1,8 +1,6 @@
 .Install OpenJDK 11 JRE runtime
 [source, console]
-----
 sudo dnf -y install java-11-openjdk-headless
-----
 
 ifeval::["{page-component-title}" == "Horizon"]
 include::../../../repos/rhel-centos/horizon-rhel9.adoc[]
@@ -24,8 +22,8 @@ endif::[]
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
-     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, it is recommended to exclude the {page-component-title} packages from updates except when you are planning on performing an upgrade.
 
 .Disable auto updates for {page-component-title} Sentinel
 [source, console]
@@ -59,6 +57,4 @@ tree /opt/sentinel -L 1
 
 .Enable {page-component-title} Sentinel on system boot and start immediately
 [source, console]
-----
 sudo systemctl enable --now sentinel
-----
