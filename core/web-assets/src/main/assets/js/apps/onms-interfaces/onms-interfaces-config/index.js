@@ -98,7 +98,7 @@ angular.module('onms-interfaces-config', [
   };
 
   $scope.isCollectionEnabled = function(intf) {
-    return intf.collectFlag === 'C' || intf.collectFlag === 'UC' || intf.collectFlag == 'PC';
+    return intf.collectFlag === 'C' || intf.collectFlag === 'UC' || intf.collectFlag === 'PC';
   };
 
   $scope.updateCollection = function($event, intf) {
