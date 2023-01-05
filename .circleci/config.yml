@@ -1881,7 +1881,7 @@ jobs:
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - "45:4b:bc:36:e7:c7:b3:d3:3b:b8:87:f3:b5:f2:c1:58"
+                  - "48:f7:8f:b7:2f:42:50:ea:cc:5d:4f:dc:1a:45:5a:1d"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}
