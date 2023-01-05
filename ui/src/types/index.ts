@@ -88,6 +88,8 @@ export interface Node {
   assetRecord: {
     longitude: string
     latitude: string
+    description: string
+    maintcontract: string
   }
   categories: Category[]
   createTime: number
