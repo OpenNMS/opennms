@@ -122,6 +122,9 @@
             }
         },
         "build": {
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -133,6 +136,9 @@
         },
         "docs": {
             "job": "build-docs",
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -144,6 +150,9 @@
         },
         "ui": {
             "job": "build-ui",
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -163,6 +172,9 @@
             ]
         },
         "minion-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -175,6 +187,9 @@
             }
         },
         "horizon-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -187,6 +202,9 @@
             }
         },
         "sentinel-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -244,6 +262,9 @@
             ]
         },
         "sentinel-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -256,11 +277,17 @@
             }
         },
         "tarball-assembly-only": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ]
         },
         "minion-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -273,6 +300,9 @@
             }
         },
         "horizon-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -360,6 +390,9 @@
             ]
         },
         "create-merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "horizon-deb-build",
                 "horizon-rpm-build",
@@ -385,6 +418,9 @@
             }
         },
         "merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "tarball-assembly-only"
             ],
@@ -398,6 +434,9 @@
             }
         },
         "create-merge-meridian-branch": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "horizon-deb-build",
                 "horizon-rpm-build",
