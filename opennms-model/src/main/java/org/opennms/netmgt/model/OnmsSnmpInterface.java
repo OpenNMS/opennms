@@ -499,7 +499,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
                 break;
             case NONE:
                 // Don't let provisiond override either
-                if (!isCollectionUserSpecified() || !isCollectionPolicySpecified()) {
+                if (!isCollectionUserSpecified() && !isCollectionPolicySpecified()) {
                     m_collect = shouldCollect ? "C" : "N";
                 }
                 break;
