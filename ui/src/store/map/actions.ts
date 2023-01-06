@@ -88,6 +88,10 @@ const setAlarmSortObject = (context: VuexContext, sortObj: FeatherSortObject) =>
   context.commit('SAVE_ALARM_SORT_OBJECT', sortObj)
 }
 
+const setNodeSearchTerm = (context: VuexContext, searchTerm: string) => {
+  context.commit('SAVE_NODE_SEARCH_TERM', searchTerm)
+}
+
 export default {
   getNodes,
   getAlarms,
@@ -100,5 +104,6 @@ export default {
   setSelectedSeverity,
   setSearchedNodeLabels,
   setNodeSortObject,
-  setAlarmSortObject
+  setAlarmSortObject,
+  setNodeSearchTerm
 }

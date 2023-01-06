@@ -21,6 +21,7 @@ commands:
               exit 1
             fi
 
+            docker container prune -f
             for FILE in *.oci; do
               echo "Loading ${FILE} into Docker..."
               _tag="opennms/$(printf "${FILE}" | sed -e 's,\.oci$,,'):latest"
@@ -33,7 +34,7 @@ commands:
                 docker image ls
                 exit 1
               fi
-              _unprefixed="$(echo "${_tag}" | cut -d/ -f2 | cut -d- -f1)"
+              _unprefixed="$(echo "${_tag}" | cut -d/ -f2 | sed -e 's,-linux-.*$,,')"
               echo "Tagging docker image ${_tag} as [opennms/]${_unprefixed}:latest"
               docker image tag "${_tag}" "opennms/${_unprefixed}:latest"
               echo "NO LONGER TAGGING docker image as ${_unprefixed}:latest WITHOUT opennms/"
@@ -67,7 +68,6 @@ commands:
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
 
             export DOCKER_CONTENT_TRUST=1
-            docker container prune -f
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
