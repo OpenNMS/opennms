@@ -40,13 +40,6 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>https://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-    <repository>
       <snapshots>
         <enabled>true</enabled>
         <updatePolicy>always</updatePolicy>
@@ -55,15 +48,6 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Maven Repository</name>
       <url>https://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <releases><enabled>false</enabled></releases>
-      <id>sonatype.org-snapshot</id>
-      <url>https://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
     </repository>
   </repositories>
 </project>
