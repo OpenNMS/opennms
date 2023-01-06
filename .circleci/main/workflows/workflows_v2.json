@@ -199,6 +199,7 @@
         },
         "smoke-test-core": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -209,6 +210,7 @@
         },
         "smoke-test-flaky": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "job": "smoke-test-flaky",
@@ -220,6 +222,7 @@
         },
         "smoke-test-minion": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -230,6 +233,7 @@
         },
         "smoke-test-sentinel": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
