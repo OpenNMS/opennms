@@ -6,7 +6,7 @@ You can group service configurations into polling packages to define more comple
 This allows you to assign different service configurations to nodes.
 To assign a polling package to nodes, use the xref:reference:configuration/filters/filters.adoc[filter] syntax.
 
-Each polling package can have its own <<deep-dive/service-assurance/downtime-model.adoc#ga-service-assurance-downtime-model, downtime model>> configuration.
+Each polling package can have its own xref:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] configuration.
 You can configure multiple packages, and an interface can exist in more than one package.
 This provides great flexibility for determining service levels on a given device.
 
@@ -35,12 +35,11 @@ You can also exclude IP interfaces:
 [source, xml]
 <exclude-range begin="192.168.0.100" end="192.168.0.104"/>
 
-[[ga-pollerd-packages-response-time-config]]
 == Response time configuration
 
 The definition of polling packages lets you configure similar services with different polling intervals.
 All the response time measurements are persisted in RRD files and require a definition.
-Each polling package contains an RRD definition.
+Each polling package contains an RRD definition:
 
 .RRD configuration for polling package
 [source, xml]
@@ -49,17 +48,17 @@ Each polling package contains an RRD definition.
   <filter>IPADDR != '0.0.0.0'</filter>
   <include-range begin="1.1.1.1" end="254.254.254.254" />
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
-  <rrd step="300"><1>
-    <rra>RRA:AVERAGE:0.5:1:2016</rra><2>
-    <rra>RRA:AVERAGE:0.5:12:1488</rra><3>
-    <rra>RRA:AVERAGE:0.5:288:366</rra><4>
-    <rra>RRA:MAX:0.5:288:366</rra><5>
-    <rra>RRA:MIN:0.5:288:366</rra><6>
+  <rrd step="300"> <1>
+    <rra>RRA:AVERAGE:0.5:1:2016</rra> <2>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra> <3>
+    <rra>RRA:AVERAGE:0.5:288:366</rra> <4>
+    <rra>RRA:MAX:0.5:288:366</rra> <5>
+    <rra>RRA:MIN:0.5:288:366</rra> <6>
 </rrd>
 ----
 
 <1> Polling interval for all services in this polling package is reflected in the step size of 300 seconds.
-All services in this package must be polled on a five-minute interval, otherwise response time measurements are not persisted correctly.
+All services in this package must be polled on a 5-minute interval, otherwise response time measurements are not persisted correctly.
 <2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
 <3> 12 steps average persistence 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
 <4> 288 steps average persistence 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
@@ -71,7 +70,6 @@ In other cases, the persisted response time data is not correctly displayed in t
 
 IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
 
-[[ga-pollerd-packages-service-status-persistence]]
 == Service status persistence
 
 You can configure each service monitor to store the current status of the service in RRD files.
@@ -87,7 +85,6 @@ To do so, add a service parameter to the appropriate services in `poller-configu
 </service>
 ----
 
-[[ga-pollerd-packages-overlapping-service]]
 == Overlapping services
 
 Because you can specify multiple polling packages, you can use the same service (like ICMP) multiple times.
@@ -101,16 +98,16 @@ The following shows which configuration is applied for a specific service:
   <filter>IPADDR != '0.0.0.0'</filter>
   <include-range begin="1.1.1.1" end="254.254.254.254" />
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
-  <rrd step="300"><1>
+  <rrd step="300"> <1>
     <rra>RRA:AVERAGE:0.5:1:2016</rra>
     <rra>RRA:AVERAGE:0.5:12:1488</rra>
     <rra>RRA:AVERAGE:0.5:288:366</rra>
     <rra>RRA:MAX:0.5:288:366</rra>
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
-  <service name="ICMP" interval="300000" user-defined="false" status="on"><2>
-    <parameter key="retry" value="5" /><3>
-    <parameter key="timeout" value="10000" /><4>
+  <service name="ICMP" interval="300000" user-defined="false" status="on"> <2>
+    <parameter key="retry" value="5" /> <3>
+    <parameter key="timeout" value="10000" /> <4>
     <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
     <parameter key="rrd-base-name" value="icmp" />
     <parameter key="ds-name" value="icmp" />
@@ -124,16 +121,16 @@ The following shows which configuration is applied for a specific service:
   <filter>IPADDR != '0.0.0.0'</filter>
   <include-range begin="192.168.1.1" end="192.168.1.254" />
   <include-range begin="2600::1" end="2600:::ffff" />
-  <rrd step="30"><1>
+  <rrd step="30"> <1>
     <rra>RRA:AVERAGE:0.5:1:20160</rra>
     <rra>RRA:AVERAGE:0.5:12:14880</rra>
     <rra>RRA:AVERAGE:0.5:288:3660</rra>
     <rra>RRA:MAX:0.5:288:3660</rra>
     <rra>RRA:MIN:0.5:288:3660</rra>
   </rrd>
-  <service name="ICMP" interval="30000" user-defined="false" status="on"><2>
-    <parameter key="retry" value="2" /><3>
-    <parameter key="timeout" value="3000" /><4>
+  <service name="ICMP" interval="30000" user-defined="false" status="on"> <2>
+    <parameter key="retry" value="2" /> <3>
+    <parameter key="timeout" value="3000" /> <4>
     <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
     <parameter key="rrd-base-name" value="icmp" />
     <parameter key="ds-name" value="icmp" />
@@ -157,7 +154,7 @@ In the previous example, all IP interfaces in `192.168.1/24` or `2600:/64` will 
 The IP interface and service pages show which polling package and service configuration are applied for this specific service.
 
 .Polling package settings applied to IP interface and service
-image::service-assurance/03_polling-package.png["Screen displaying interface and service statistics for a polling package", 700]
+image::service-assurance/03_polling-package.png["Screen displaying interface and service statistics for a polling package", 800]
 
 [[ga-pollerd-packages-patterns]]
 == Service patterns
@@ -174,22 +171,18 @@ If a poller is matched using its pattern, the parts of the service name that mat
 
 === Examples
 
-`<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
-Matches all services with names starting with `HTTP-` followed by a host name.
+* `<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`: matches all services with names starting with `HTTP-` followed by a host name.
 If the service is called `HTTP-www.example.com`, the Metadata DSL expression `${pattern:vhost}` will resolve to `www.example.com`.
-
-`<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>"`::
-Matches all services with names starting with `HTTP-` followed by a hostname and a port.
+* `<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>`: matches all services with names starting with `HTTP-` followed by a hostname and a port.
 There will be two variables (`${pattern:vhost}` and `${pattern:port}`), which you can use in the poller parameters.
 
 Use the service pattern mechanism whenever there are multiple instances of a service on the same interface.
 You can make services identifiable by specifying a distinct service name for each instance, but there is no need to add a poller definition for each service.
 Common use cases for such services are HTTP virtual hosts where multiple web applications run on the same web server, or BGP session monitoring where each router has multiple neighbors.
 
-[[ga-pollerd-packages-test-service-manually]]
 == Manually test services
 
-To troubleshoot the polling services, you can run a test via the Karaf shell:
+You can run a test via the Karaf shell to test the {page-component-title} polling services:
 
 [source, console]
 ssh -p 8101 admin@localhost
@@ -227,11 +220,11 @@ Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMon
 <6> Polling result for the service polled against the IP address.
 <7> Response time.
 
-== Test filters on Karaf Shell
+== Manually test filters
 
-Filters are ubiquitous in {page-component-title} configurations with `<filter>` syntax.
-Use the Karaf shell to verify filters.
-For more information, see xref:reference:configuration/filters/filters.adoc[Filters].
+Filters are ubiquitous in the {page-component-title} configurations that implement `<filter>` syntax.
+You can use the Karaf shell to verify filters.
+For more information, see xref:reference:configuration/filters/filters.adoc[].
 
 .SSH to localhost
 [source, console]
@@ -258,7 +251,7 @@ You can also run a filter that matches a node location within a given IP address
 [source, console]
 opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 
-Output displays as follows:
+The output displays as follows:
 
 [source, console]
 ----
@@ -286,4 +279,4 @@ NOTE: Displayed node information includes the `nodeId`, `nodeLabel`, `location`,
 == Monitor Microsoft AD services
 
 To monitor Microsoft AD services, you must edit `$\{OPENNMS_HOME}/etc/poller-configuration.xml`.
-See the https://opennms.discourse.group/t/monitor-microsoft-ad-services/1051[Monitor Microsoft AD Services] article on Discourse for details.
+See the https://opennms.discourse.group/t/monitor-microsoft-ad-services/1051[Monitor Microsoft AD Services] article on Discourse for more information.

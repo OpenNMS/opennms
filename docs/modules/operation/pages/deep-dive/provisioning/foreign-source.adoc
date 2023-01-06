@@ -19,8 +19,8 @@ To edit service detectors and set an automatic scan interval, follow these steps
 .Default foreign source definition page
 image::provisioning/FS_def.png["Page displaying detectors included in the default foreign source definition"]
 +
-NOTE: The screen displays a list of service detectors and a tab to view and define policies.
-Provisiond scans the services in the order in which the detectors appear in the list.
+NOTE: The page displays a list of service detectors and a tab to view and define policies.
+Provisiond scans the services according to the order in which detectors appear in the list.
 
 ** Click *Edit* beside a service detector's name to edit its parameters.
 To add more parameters (retries, timeout, port, and so on), click *Add Parameter* and define its name and value.
@@ -43,7 +43,7 @@ NOTE: This will undo all changes and revert the service detector to its default 
 For example, to prompt a scan every 6 days and 53 minutes, enter `6d53m`.
 Type `0` to disable automatic scanning.
 
-. Click *Save* to save the foreign source definition.
+. Click *Save*.
 
 == Create a policy
 

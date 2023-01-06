@@ -4,15 +4,14 @@
 
 By default, the monitoring interval for a service is five minutes.
 You can use the configurable downtime model to detect short service outages, like those caused by automatic network rerouting.
-
 The downtime model lets you reduce the monitoring interval to every 30 seconds for 5 minutes when a service outage is detected.
-If the service comes back online within 5 minutes, a shorter outage is documented, and the impact on service availability can be less than 5 minutes.
+If the service comes back online within 5 minutes, a shorter outage is documented.
 
 The image below shows two outages: the first is a service that was detected as being up after 90 seconds.
 The second has not yet been resolved--the monitor has not detected an available service, and was not available within the first 5 minutes (polled 10 times, every 30 seconds).
 
 .Example downtime model
-image::service-assurance/01_downtime-model.png[]
+image::service-assurance/01_downtime-model.png["Example downtime model timeline displaying the time between a service being considered unavailable, and an ongoing outage"]
 
 The scheduler changed the polling interval back to five minutes.
 

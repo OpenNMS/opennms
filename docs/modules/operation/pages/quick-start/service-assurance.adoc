@@ -1,13 +1,13 @@
 
 = Step 7: Determine Service Availability
 
-By default, {page-component-title} monitors a number of services including ICMP, DNS, Elasticsearch, SMTP, FTP, SNMP, HTTP(S), SSH, Postgres, IMAP, and POP3.
+By default, {page-component-title} monitors a number of services, including ICMP, DNS, Elasticsearch, SMTP, FTP, SNMP, HTTP(S), SSH, Postgres, IMAP, and POP3.
 
 Using a service monitor framework with xref:reference:daemons/daemon-config-files/pollerd.adoc[pollerd] as the main component, provisioning detectors detect the existence of a service, and pollerd runs the monitors to test service availability and measure response time.
 You can view a summary of this availability information, calculated over the last 24 hours, on the main dashboard:
 
-.Service availability on the node detail page
-image::operation:service-assurance/service-availability.png["Node detail page displaying service availability statistics"]
+.Service availability summary
+image::operation:service-assurance/service-availability.png["{page-component-title} dashboard displaying service availability statistics for the localhost node"]
 
 Pollerd schedules and runs service monitors, as defined in `poller-configuration.xml`.
 When a service monitor detects an outage, pollerd sends an event that {page-component-title} uses to create an alarm.

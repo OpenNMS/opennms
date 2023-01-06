@@ -49,10 +49,9 @@ image::metadata/meta-expression1.png["Page displaying configuration settings for
 
 This expression will trigger an event when the number of logged-in users exceeds one.
 
-.{page-component-title} dashboard displaying thresholding events
+.{page-component-title} dashboard displaying threshold-generated events
 image::metadata/meta-expression2.png["{page-component-title} dashboard displaying events triggered by a threshold"]
 
-[[metric-collect]]
 == Confirm that you are collecting metrics
 
 Before creating a threshold, you should make sure that you are collecting the metric against which you want to threshold:
@@ -78,8 +77,8 @@ To determine the name of the data source, navigate to the *Resource Graphs* scre
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.
 For example, "Number of Processes" or "System Uptime":
 +
-.{page-component-title} metric graphs
-image::thresholding/Graphs.png["Two example metric graphs: one displaying system uptime, and one displaying the number of active processes across a time period"]
+.{page-component-title} performance data metric graphs
+image::thresholding/Graphs.png["Two example performance data metric graphs: one displaying system uptime, and one displaying the number of active processes over time"]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
 . Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].

@@ -30,13 +30,13 @@ To configure Application Perspective Monitoring, you must first create an applic
 ** Select the perspective locations from which to monitor the specified services from the *Available Locations* list, and click *Add >>* to add them to the application.
 
 .Example application configuration
-image::application-perspective-monitoring/configure-app.png["Example of a configured application, including services and locations for perspective monitoring", 700]
+image::application-perspective-monitoring/configure-app.png["Example of a configured application, including services and locations for perspective monitoring", 800]
 
 After you configure the application, Minions at the specified perspective locations start to monitor its associated services.
 The figure below shows an HTTP outage detected from all perspective locations, and by pollerd:
 
 .HTTP outage detected by Application Perspective Monitoring
-image::application-perspective-monitoring/perspective-outages.png["Outages list displaying five perspectives of an HTTP outage", 700]
+image::application-perspective-monitoring/perspective-outages.png["Outages list displaying five perspectives of an HTTP outage"]
 
 The Perspective column shows the perspective location from which a Minion detected the outage.
 If the column is empty, it indicates that the normal process detected the outage: either {page-component-title} detected it in the default location, or a Minion detected it in the corresponding node's location.

@@ -20,7 +20,7 @@ Set the `enabled` property in `header-preauth.xml`:
 
 You can configure the following properties to change the pre-authentication plugin's behavior:
 
-[options="autowidth"]
+[cols="1,2,1"]
 |====
 | Property  | Description | Default Value
 

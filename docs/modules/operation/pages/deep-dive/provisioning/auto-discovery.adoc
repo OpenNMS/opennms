@@ -7,41 +7,40 @@ This is done through discovery, which is run either periodically on a schedule o
 
 NOTE: Make sure you complete the tasks in xref:quick-start/inventory.adoc[] before adding nodes.
 
-[[discovery-configure]]
 == Configure discovery
 
 Configuring discovery specifies the parameters that {page-component-title} uses when scanning for nodes.
 To configure discovery for a requisition, follow these steps:
 
-. Log in as a user with admin permissions.
+. Log in to the {page-component-title} web UI as a user with admin permissions.
 . Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Configure Discovery*.
 +
 NOTE: To configure a discovery scan to run only once, click *Run Single Discovery Scan* instead, and configure it as appropriate.
 
-. Under General Settings, you can either set your own scheduling options (sleep time, retries, timeout, and so on), or continue with the default settings.
-. Under Specific Addresses, click *Add New* to add an IP address for discovery.
+. (Optional) Under General Settings, define the scheduling options (sleep time, retries, timeout, and so on).
+. Under Specific Addresses, click *Add New* to add an IP address for discovery:
 ** Type the target IP address, the timeout, and the maximum number of retries in the appropriate boxes.
 ** Choose a requisition from the *Foreign Source* list.
 Any discovered nodes will be added to this requisition upon discovery.
 ** (Optional) If you have any installed Minions, choose one from the *Location* list.
 ** Click *Add* to save the configuration settings.
-. (Optional) Include specific URLs by clicking *Add New* under Include URLs.
+. (Optional) Include specific URLs by clicking *Add New* under Include URLs:
 ** Type the target URL, the timeout, and the maximum number of retries in the appropriate boxes.
 ** Choose a requisition from the *Foreign Source* list.
 ** (Optional) If you have any installed Minions, choose one from the *Location* list.
 ** Click *Add* to save the configuration settings.
-. (Optional) Exclude specific URLs by clicking *Add New* under Exclude URLs.
+. (Optional) Exclude specific URLs by clicking *Add New* under Exclude URLs:
 ** Type the target URL in the *URL* box.
 ** Choose a requisition from the *Foreign Source* list.
 ** (Optional) If you have any installed Minions, choose one from the *Location* list.
 ** Click *Add* to save the configuration settings.
-. (Optional) Set an inclusive range of IP addresses to add for discovery by clicking *Add New* under Include Ranges.
+. (Optional) Set an inclusive range of IP addresses to add for discovery by clicking *Add New* under Include Ranges:
 ** Type the beginning and ending IP addresses, the timeout, and the maximum number of retries in the appropriate boxes.
 ** Choose a requisition from the *Foreign Source* list.
 ** (Optional) If you have any installed Minions, choose one from the *Location* list.
 ** Click *Add* to save the configuration settings.
-. (Optional) Set an inclusive range to remove from discovery by clicking *Add New* under Exclude Ranges.
+. (Optional) Set an inclusive range to remove from discovery by clicking *Add New* under Exclude Ranges:
 ** Type the beginning and ending IP addresses in the appropriate boxes.
 ** (Optional) If you have any installed Minions, choose one from the *Location* list.
 ** Click *Add* to save the configuration settings.
@@ -101,12 +100,11 @@ NOTE: A definition that does not include specific detectors will fall back to IC
 </discovery-configuration>
 ----
 
-[[ga-manual-discovery]]
 == Configure manual discovery
 
 In addition to the configuration settings above, there are some optional settings you can configure via `$\{OPENNMS_HOME}/etc/discovery-configuration.xml`:
 
-[options="autowidth"]
+[cols="1,2,1"]
 |===
 | Name	| Description	| Default Value
 

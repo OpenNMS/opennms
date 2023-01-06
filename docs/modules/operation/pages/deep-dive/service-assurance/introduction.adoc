@@ -2,8 +2,7 @@
 [[ga-service-assurance]]
 = Service Assurance
 
-This section describes how {page-component-title} tests the availability of a service or device and measures its latency (see xref:quick-start/service-assurance.adoc[] in the Quick Start section for additional information on determining service availability).
-
+This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
 In {page-component-title}, a service monitor framework fulfills these tasks.
 The main component, pollerd, provides the following functionality:
 
@@ -11,20 +10,21 @@ The main component, pollerd, provides the following functionality:
 * Measures response times for service quality.
 * Correlates node and interface outages based on a xref:deep-dive/service-assurance/critical-service.adoc[critical service].
 
+See xref:quick-start/service-assurance.adoc[] in the Quick Start section for additional information on determining service availability.
+
 The following image shows the model and representation of availability and response time:
 
 .Service availability and response time
 image::service-assurance/01_node-model.png["Graphical representations of service availability and response time for services on a single node", 750]
 
 This information is based on service monitors which are stored and run by pollerd.
-A service can have any arbitrary name, and is associated with a service monitor.
-For example, two services can be defined with the names "HTTP" and "HTTP-8080".
+A service can have any arbitrary name, and is associated with a service monitor; for example, two services can be defined with the names "HTTP" and "HTTP-8080".
 Both are associated with the HTTP Service Monitor, but each uses a different TCP port configuration parameter.
 
 The following image shows how pollerd interacts with other {page-component-title} components, and applications or agents to be monitored:
 
-.Pollerd relationships
-image::service-assurance/02_service-assurance.png["Network architecture diagram showing relationships between pollerd and various {page-component-title} components", 750]
+.Pollerd architecture
+image::service-assurance/02_service-assurance.png["Network architecture diagram showing relationships between pollerd and {page-component-title} components", 800]
 
 Availability is calculated over the last 24 hours, and is displayed in Surveillance Views, SLA Categories, and Node Detail pages.
 Response times are displayed as IP interface resource graphs on Node Detail pages.

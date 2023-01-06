@@ -15,7 +15,7 @@ image::notifications/red-bell-notifications.png["Portion of Horizon top menu bar
 
 Follow these steps to enable notifications:
 
-. Log out of the `admin` account and log in as the user that you created in xref:quick-start/users.adoc[Step 1: First-Time Login].
+. Log out of the `admin` account and log in as the user that you created in xref:quick-start/users.adoc[].
 . Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, select *On* beside Notification Status, and click *Update*.
 

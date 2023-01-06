@@ -8,8 +8,8 @@ To improve efficiency, {page-component-title} deems all services on an interface
 
 The following image shows how to use critical services to generate these events:
 
-.Service assurance with pollerd
-image::service-assurance/03_node-outage-correlation.png["Example of three nodes experiencing varying critical service events", 700]
+.Examples of service assurance with pollerd
+image::service-assurance/03_node-outage-correlation.png["Example of three nodes experiencing varying critical service events", 800]
 
 . All critical services are up on the node; only a `nodeLostService` event is sent.
 . A critical service on one of many IP interfaces is down; an `interfaceDown` event is sent.

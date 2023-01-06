@@ -68,7 +68,7 @@ This procedure describes how to create an empty requisition using the default fo
 NOTE: The requisition's entry in the Requisitions list remains red until you synchronize it with the database.
 You will synchronize the list after you <<#configure-discovery, configure discovery settings>>.
 
-.Example Requisitions list
+.Requisitions list
 image::provisioning/red_requisition.png["Requisitions list showing two requisitions; one is red, indicating that it has not been synchronized with the database"]
 
 After the requisition is created, you can add nodes to it.
@@ -80,7 +80,7 @@ The following pages describe additional configuration options for requisitions:
 
 * <<deep-dive/provisioning/directed-discovery.adoc#directed-discovery, Manually specify nodes to add to a requisition>>.
 * <<deep-dive/provisioning/auto-discovery.adoc#auto-discovery, Automatically discover nodes to add to a requisition>>.
-* Customize a requisition with xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and <<deep-dive/provisioning/policies.adoc#policies, policies>>.
+* Customize a requisition using xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and <<deep-dive/provisioning/policies.adoc#policies, policies>>.
 
 [[configure-discovery]]
 == Configure discovery

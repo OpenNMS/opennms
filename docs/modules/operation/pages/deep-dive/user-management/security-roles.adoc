@@ -17,11 +17,11 @@ Those marked with an asterisk are the most commonly used.
 
 [caption=]
 .Default {page-component-title} security roles
-[options="autowidth"]
+[cols="1,2"]
 |===
 | Security Role | Description
 
-| ROLE_ADMIN ^*^
+| ROLE_ADMIN *
 | Permissions to create, read, update, and delete items via the web UI and the REST API (see `ROLE_FILESYSTEM_EDITOR` for exceptions).
 
 | ROLE_ASSET_EDITOR
@@ -59,7 +59,7 @@ endif::opennms-prime[]
 | ROLE_PROVISION
 | Permissions to use the provisioning system and configure SNMP in {page-component-title} to access management information from devices.
 
-| ROLE_READONLY ^*^
+| ROLE_READONLY *
 | Permissions only to read information in the web UI.
 Does not allow user to change alarm states or notifications.
 
@@ -69,10 +69,10 @@ Does not allow user to change alarm states or notifications.
 | ROLE_REST
 | Permissions to interact with the entire {page-component-title} REST API.
 
-| ROLE_RTC ^*^
+| ROLE_RTC *
 | Permissions to exchange information with the {page-component-title} Real-Time Console for availability calculations.
 
-| ROLE_USER ^*^
+| ROLE_USER *
 | Default permissions for a new user to interact with the web UI.
 Allows users to escalate and acknowledge alarms and notifications.
 |===

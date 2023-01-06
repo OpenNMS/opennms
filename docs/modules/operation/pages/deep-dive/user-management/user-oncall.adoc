@@ -23,8 +23,8 @@ The description should be meaningful (for example, describe the team that the on
 . Specify the user and designate an on-call schedule.
 . Click *Save*.
 +
-.Example on-call schedule
-image::users/on-call-schedule.png["Example on-call schedule for a single user"]
+.Example on-call schedule configuration
+image::users/on-call-schedule.png["Example on-call schedule settings for a single user"]
 
 . Repeat as necessary for other dates and users.
 . Click *Done* to apply the changes.
