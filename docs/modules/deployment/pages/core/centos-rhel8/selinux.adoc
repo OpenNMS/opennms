@@ -22,7 +22,7 @@ Use `audit2allow -a` to check if {page-component-title} violates SELinux policie
 
 NOTE: If the `audit2allow` command is missing, run `dnf install policycoreutils-devel` to install the package.
 
-Look for entries preventing bind ICMP sockets to bind:
+Look for entries that prevent the binding of ICMP sockets:
 
 [source, console]
 ----
@@ -68,3 +68,5 @@ getenforce
 ----
 
 You can verify the package with the following command: `semodule --list-modules | grep JniPing`.
+
+Note that this command is based on the `audit2allow` command on a CentOS 8 system.
