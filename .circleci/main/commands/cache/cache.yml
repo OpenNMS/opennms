@@ -17,7 +17,6 @@ commands:
             keys:
               - source-v4-{{ .Branch }}-{{ .Revision }}
               - source-v4-{{ .Branch }}-
-              - source-v4-
         - checkout
         - run:
             name: git config merge.renameLimit
