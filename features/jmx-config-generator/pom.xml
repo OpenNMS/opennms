@@ -130,10 +130,4 @@
             <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>https://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
