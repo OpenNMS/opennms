@@ -150,7 +150,6 @@ commands:
             keys:
               - source-v2-{{ .Branch }}-{{ .Revision }}
               - source-v2-{{ .Branch }}-
-              - source-v2-
         - checkout
         - run:
             name: git config merge.renameLimit
