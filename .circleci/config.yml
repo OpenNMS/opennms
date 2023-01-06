@@ -714,6 +714,8 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build:
+          context:
+            - "CircleCI"
           filters:
             branches:
               ignore:
@@ -721,6 +723,8 @@ workflows:
           post-steps:
             - jira/notify
       - tarball-assembly:
+          context:
+            - "CircleCI"
           requires:
             - build
           post-steps:
@@ -729,7 +733,9 @@ workflows:
           matrix:
             parameters:
               architecture: [linux/amd64,linux/arm64,linux/arm/v7]
-          context: "docker-content-trust"
+          context:
+            - "CircleCI"
+            - "docker-content-trust"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -748,7 +754,9 @@ workflows:
           post-steps:
             - jira/notify
       - minion-image-multi-arch:
-          context: "docker-content-trust"
+          context:
+            - "CircleCI"
+            - "docker-content-trust"
           requires:
             - minion-image-single-arch
           filters:
@@ -760,6 +768,8 @@ workflows:
           post-steps:
             - jira/notify
       - horizon-rpm-build:
+          context:
+            - "CircleCI"
           requires:
             - build
           filters:
@@ -776,6 +786,8 @@ workflows:
           post-steps:
             - jira/notify
       - minion-rpm-build:
+          context:
+            - "CircleCI"
           requires:
             - build
           filters:
@@ -790,6 +802,8 @@ workflows:
           post-steps:
             - jira/notify
       - sentinel-rpm-build:
+          context:
+            - "CircleCI"
           requires:
             - build
           filters:
@@ -806,6 +820,8 @@ workflows:
           post-steps:
             - jira/notify
       - integration-test:
+          context:
+            - "CircleCI"
           requires:
             - build
           filters:
@@ -816,6 +832,8 @@ workflows:
           post-steps:
             - jira/notify
       - integration-test-with-coverage:
+          context:
+            - "CircleCI"
           requires:
             - build
           filters:
@@ -825,11 +843,15 @@ workflows:
           post-steps:
             - jira/notify
       - code-coverage:
+          context:
+            - "CircleCI"
           requires:
             - integration-test-with-coverage
           post-steps:
             - jira/notify
       - smoke-test-core:
+          context:
+            - "CircleCI"
           requires:
             - tarball-assembly
             - horizon-rpm-build
@@ -847,6 +869,8 @@ workflows:
           post-steps:
             - jira/notify
       - smoke-test-flaky:
+          context:
+            - "CircleCI"
           requires:
             - tarball-assembly
             - horizon-rpm-build
@@ -864,6 +888,8 @@ workflows:
           post-steps:
             - jira/notify
       - smoke-test-minion:
+          context:
+            - "CircleCI"
           requires:
             - tarball-assembly
             - horizon-rpm-build
@@ -881,6 +907,8 @@ workflows:
           post-steps:
             - jira/notify
       - smoke-test-sentinel:
+          context:
+            - "CircleCI"
           requires:
             - tarball-assembly
             - horizon-rpm-build
@@ -897,25 +925,10 @@ workflows:
                 - /.*smoke.*/
           post-steps:
             - jira/notify
-      #- smoke-test-minimal:
-      #    requires:
-      #      - tarball-assembly
-      #      - horizon-rpm-build
-      #      - minion-rpm-build
-      #      - sentinel-rpm-build
-      #    filters:
-      #      branches:
-      #        only:
-      #          - develop
-      #          - /^master-.*/
-      #          - /^release-.*/
-      #          - /^foundation.*/
-      #          - /^features.*/
-      #          - /.*smoke.*/
-      #          - /^dependabot.*/
-      #    post-steps:
-      #      - jira/notify
       - horizon-publish-oci:
+          context:
+            - "CircleCI"
+            - "docker-content-trust"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -935,6 +948,9 @@ workflows:
           post-steps:
             - jira/notify
       - sentinel-publish-oci:
+          context:
+            - "CircleCI"
+            - "docker-content-trust"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -956,6 +972,8 @@ workflows:
       # These don't actually require `integration-test`/`code-coverage` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
+          context:
+            - "CircleCI"
           requires:
             - integration-test
             - code-coverage
@@ -966,6 +984,8 @@ workflows:
           post-steps:
             - jira/notify
       - minion-deb-build:
+          context:
+            - "CircleCI"
           requires:
             - integration-test
             - code-coverage
@@ -976,6 +996,8 @@ workflows:
           post-steps:
             - jira/notify
       - sentinel-deb-build:
+          context:
+            - "CircleCI"
           requires:
             - integration-test
             - code-coverage
@@ -1041,6 +1063,8 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
+          context:
+            - "CircleCI"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
