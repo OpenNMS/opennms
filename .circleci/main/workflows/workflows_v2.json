@@ -155,6 +155,7 @@
         },
         "integration-test": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -442,6 +443,7 @@
         },
         "publish": {
             "context": [
+                "CircleCI",
                 "cloudsmith-publish-account",
                 "docker-content-trust",
                 "docker-publish-account",
@@ -473,6 +475,7 @@
         },
         "integration-test-with-coverage": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
