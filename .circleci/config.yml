@@ -700,6 +700,8 @@ workflows:
         - equal: [ false, << pipeline.parameters.minimal >> ]
     jobs:
       - build-docs:
+          context:
+            - "CircleCI"
           filters:
             branches:
               ignore:
