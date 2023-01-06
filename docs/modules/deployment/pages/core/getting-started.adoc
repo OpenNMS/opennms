@@ -47,7 +47,7 @@ include::../time-sync.adoc[]
 
 [{tabs}]
 ====
-CentOS/RHEL 8::
+CentOS/RHEL 8/9::
 +
 --
 include::centos-rhel8/selinux.adoc[]
@@ -65,13 +65,6 @@ Debian/Ubuntu::
 --
 include::debian-ubuntu/selinux.adoc[]
 --
-
-Docker::
-+
---
-include::docker/selinux.adoc[]
---
-endif::[]
 ====
 
 [[setup-postgresql]]
