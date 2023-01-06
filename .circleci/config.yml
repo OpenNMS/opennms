@@ -663,6 +663,8 @@ workflows:
         - equal: [ true, << pipeline.parameters.minimal >> ]
     jobs:
       - build:
+          context:
+            - "CircleCI"
           post-steps:
             - jira/notify
       - create-merge-foundation-branch:
@@ -1010,6 +1012,8 @@ workflows:
           post-steps:
             - jira/notify
       - create-merge-foundation-branch:
+          context:
+            - "CircleCI"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
