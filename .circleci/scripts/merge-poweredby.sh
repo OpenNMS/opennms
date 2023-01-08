@@ -39,6 +39,11 @@ else
 fi
 git config merge.renameLimit 999999
 
+echo "=== clearing unnecessarily cached remotes"
+git remote | grep -v -E "^(origin|${POWEREDBY})$" | while read -r REMOTE; do
+  git remote remove "${REMOTE}"
+done
+
 echo "=== remotes:"
 git remote --verbose
 

@@ -8,5 +8,6 @@ jobs:
       - build-image-single-arch:
           architecture: linux/amd64
           container_name: sentinel
+          container_dir: sentinel
           tarball_match: sentinel
           tarball_path: /opennms-assemblies/sentinel/target

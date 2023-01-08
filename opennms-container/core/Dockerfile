@@ -3,7 +3,7 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
-FROM ${BASE_IMAGE} as horizon-tarball
+FROM ${BASE_IMAGE} as core-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
@@ -22,11 +22,11 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as horizon-base
+FROM ${BASE_IMAGE} as core-base
 
 # If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
-COPY --chown=10001:0 --from=horizon-tarball /opt/usr-share /usr/share
+COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
@@ -88,7 +88,7 @@ RUN groupadd \
 ##
 # Install and setup OpenNMS RPMS
 ##
-FROM horizon-base
+FROM core-base
 
 SHELL ["/bin/bash", "-c"]
 
