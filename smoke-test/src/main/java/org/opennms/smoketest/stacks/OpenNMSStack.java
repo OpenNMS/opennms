@@ -130,7 +130,6 @@ public final class OpenNMSStack implements TestRule {
         sentinelContainers = Collections.EMPTY_LIST;
 
         delegateTestRule = RuleChain.emptyRuleChain();
-        return;
     }
 
     private OpenNMSStack(StackModel model) {
@@ -187,7 +186,13 @@ public final class OpenNMSStack implements TestRule {
         }
 
         for (final Map<String, String> configuration : model.getLegacyMinions()) {
-            final MinionContainer minion = new MinionContainer(model, configuration);
+            final MinionProfile profile = new MinionProfile.Builder()
+                    .withId(configuration.get("MINION_ID"))
+                    .withLocation(configuration.get("MINION_LOCATION"))
+                    .withLegacyConfiguration(configuration)
+                    .build();
+
+            final MinionContainer minion = new MinionContainer(model, profile);
             minions.add(minion);
             chain = chain.around(minion);
         }

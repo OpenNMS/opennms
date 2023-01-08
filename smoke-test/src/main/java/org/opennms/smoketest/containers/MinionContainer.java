@@ -41,6 +41,7 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -48,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -67,7 +67,6 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
@@ -94,14 +93,18 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
     private final String id;
     private final String location;
-    private final GenericContainer container;
+    private final MinionProfile profile;
+    private final Path overlay;
     private Exception waitUntilReadyException = null;
 
-    private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
+    public MinionContainer(final StackModel model, final MinionProfile profile) {
         super(IMAGE);
         this.model = Objects.requireNonNull(model);
-        this.id = Objects.requireNonNull(id);
-        this.location = Objects.requireNonNull(location);
+        this.profile = Objects.requireNonNull(profile);
+        this.id = Objects.requireNonNull(profile.getId());
+        this.location = Objects.requireNonNull(profile.getLocation());
+
+        this.overlay = writeOverlay();
 
         Integer[] tcpPorts = {
                 MINION_DEBUG_PORT,
@@ -118,7 +121,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 MINION_TELEMETRY_NXOS_PORT,
         };
 
-        this.container = withExposedPorts(tcpPorts)
+        withExposedPorts(tcpPorts)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
@@ -133,29 +136,25 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
-                .waitingFor(Objects.requireNonNull(waitStrategy).apply(this));
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
+                .addFileSystemBind(overlay.toString(),
+                "/opt/minion-etc-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
-    }
 
-    public MinionContainer(final StackModel model, final MinionProfile profile) {
-        this(model, profile.getId(), profile.getLocation(), profile.getWaitStrategy());
-
-        container.addFileSystemBind(writeMinionConfig(profile).toString(),
-                "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        if (profile.isLegacy()) {
+            for (final Map.Entry<String, String> entry : profile.getLegacyConfiguration().entrySet()) {
+                addEnv(entry.getKey(), entry.getValue());
+            }
+        } else {
+            addFileSystemBind(writeMinionConfig(profile).toString(),
+                    "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        }
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "*:" + MINION_DEBUG_PORT);
-        }
-    }
-
-    public MinionContainer(final StackModel model, final Map<String, String> configuration) {
-        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), WaitForMinion::new);
-
-        for(final Map.Entry<String, String> entry : configuration.entrySet()) {
-            container.addEnv(entry.getKey(), entry.getValue());
         }
     }
 
@@ -223,6 +222,25 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(jaeger, Map.class));
         }
+    }
+
+    private Path writeOverlay() {
+        try {
+            final Path home = Files.createTempDirectory(ALIAS).toAbsolutePath();
+            writeOverlay(home, profile);
+            return home;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeOverlay(Path home, MinionProfile profile) throws IOException {
+        // Allow other users to read the folder
+        OverlayUtils.setOverlayPermissions(home);
+
+        // Copy the files from the profile *first*
+        // If this test class writes something, we expect it to be there
+        OverlayUtils.copyFiles(profile.getFiles(), home);
     }
 
     public InetSocketAddress getSyslogAddress() {
