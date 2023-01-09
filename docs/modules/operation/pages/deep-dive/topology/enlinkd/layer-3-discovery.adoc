@@ -14,5 +14,5 @@ For this reason, you must have a working SNMP configuration.
 The following pages describe the MIBs required to allow link discovery:
 
  * xref:operation:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[Layer 2 LLDP Data]
-xref:operation:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[Layer 2 CDP Data]
+* xref:operation:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[Layer 2 CDP Data]
 xref:operation:deep-dive/topology/enlinkd/layer-2/bridge-discovery.adoc[Layer 2 Vridge Data]
