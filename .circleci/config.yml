@@ -643,14 +643,20 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-setup >> ]
     jobs:
       - build:
+          context:
+            - "CircleCI"
           post-steps:
             - jira/notify
       - integration-test-with-coverage:
+          context:
+            - "CircleCI"
           requires:
             - build
           post-steps:
             - jira/notify
       - code-coverage:
+          context:
+            - "CircleCI"
           requires:
             - integration-test-with-coverage
           post-steps:
