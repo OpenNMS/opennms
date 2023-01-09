@@ -125,7 +125,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 3000
 
 | isis-priority
-| The priority used for running IS-IS link discovery.
+| The priority for running IS-IS link discovery.
 | 4000
 
 3+| *Boolean*
