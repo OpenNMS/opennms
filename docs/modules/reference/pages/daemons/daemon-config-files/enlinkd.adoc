@@ -109,7 +109,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 100
 
 | cdp-priority
-| The priority used for executing CDP link discovery.
+| The priority for running CDP link discovery.
 | 1000
 
 | lldp-priority
