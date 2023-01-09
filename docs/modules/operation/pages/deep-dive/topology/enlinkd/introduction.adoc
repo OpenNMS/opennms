@@ -24,7 +24,7 @@ xref:operation:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 Discove
 
 
 [[ga-enlinkd-layers]]
-== Topology Layers
+== Topology layers
 
 The enlinkd topology map supports layered protocol maps.
 
