@@ -360,8 +360,7 @@ public class AggregateTracker extends CollectionTracker {
         responses.forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
 
         // Store the results in the appropriate child trackers
-        responsesByCorrelationId.forEach((key, value) -> {
-            int index = key;
+        responsesByCorrelationId.forEach((index, value) -> {
             if (index < 0 || index > (m_children.length - 1)) {
                 // This shouldn't happen, but just in case...
                 LOG.warn("Invalid index on response: {}, {}, {}", index, value, m_children.length);
