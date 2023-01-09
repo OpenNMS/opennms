@@ -241,7 +241,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         try {
             return getSnmpNode(Integer.parseInt(nodeCriteria));
         } catch (NumberFormatException e) {
-            LOG.info("getSnmpNode: not nodeid");
+            LOG.info("getSnmpNode: not nodeId");
         }
         String[] values = nodeCriteria.split(":");
         LOG.info("getSnmpNode: foreignSource: {}, foreignId: {} ", values[0], values[1]);
