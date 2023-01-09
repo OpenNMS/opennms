@@ -175,11 +175,11 @@ public class OspfAreaTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker.OspfAreaRow} object.
      */
     public void processOspfAreaRow(final OspfAreaTableTracker.OspfAreaRow row) {
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_ID_OID+"."+row.getInstance().toString(), OSPF_AREA_ID, str(row.getOspfAreaId()));
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AUTH_TYPE_OID+"."+row.getInstance().toString(), OSPF_AUTH_TYPE, row.getOspfAuthType());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IMPORT_AS_EXTERN_OID+"."+row.getInstance().toString(), OSPF_IMPORT_AS_EXTERN, row.getOspfImportAsExtern());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_BDR_RTR_COUNT_OID+"."+row.getInstance().toString(), OSPF_AREA_BDR_RTR_COUNT, row.getOspfAreaBdrRtrCount());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AS_BDR_RTR_COUNT_OID+"."+row.getInstance().toString(), OSPF_AS_BDR_RTR_COUNT, row.getOspfAsBdrRtrCount());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_LSA_COUNT_OID+"."+row.getInstance().toString(), OSPF_AREA_LSA_COUNT, row.getOspfAreaLsaCount());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_ID_OID + "." + row.getInstance().toString(), OSPF_AREA_ID, str(row.getOspfAreaId()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AUTH_TYPE_OID + "." + row.getInstance().toString(), OSPF_AUTH_TYPE, row.getOspfAuthType());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IMPORT_AS_EXTERN_OID + "." + row.getInstance().toString(), OSPF_IMPORT_AS_EXTERN, row.getOspfImportAsExtern());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_BDR_RTR_COUNT_OID + "." + row.getInstance().toString(), OSPF_AREA_BDR_RTR_COUNT, row.getOspfAreaBdrRtrCount());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AS_BDR_RTR_COUNT_OID + "." + row.getInstance().toString(), OSPF_AS_BDR_RTR_COUNT, row.getOspfAsBdrRtrCount());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_AREA_LSA_COUNT_OID + "." + row.getInstance().toString(), OSPF_AREA_LSA_COUNT, row.getOspfAreaLsaCount());
     }
 }
