@@ -101,7 +101,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 300000
 
 | discovery-bridge-threads
-| Number of threads used for executing bridge link discovery.
+| Number of threads used for running bridge link discovery.
 | 1
 
 | max_bft
