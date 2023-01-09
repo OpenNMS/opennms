@@ -210,11 +210,11 @@ public class IsisISAdjTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker.IsIsAdjRow} object.
      */
     public void processIsisAdjRow(final IsIsAdjRow row) {
-        System.out.printf("\t\t%s (%s)= %s (%s)\n",ISIS_IS_ADJ_STATE_OID+"."+row.getInstance().toString(), ISIS_IS_ADJ_STATE, row.getIsisISAdjStatus(), IsisISAdjState.getTypeString(row.getIsisISAdjStatus()));
-        System.out.printf("\t\t%s (%s)= %s \n",ISIS_IS_ADJ_NBR_SNPAADDR_OID+"."+row.getInstance().toString(), ISIS_IS_ADJ_NBR_SNPAADDR, row.getIsisISAdjNeighSnpaAddress());
-        System.out.printf("\t\t%s (%s)= %s (%s)\n",ISIS_IS_ADJ_NBR_SYSTYPE_OID+"."+row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSTYPE, row.getIsisISAdjNeighSysType(), IsisISAdjNeighSysType.getTypeString(row.getIsisISAdjNeighSysType()));
-        System.out.printf("\t\t%s (%s)= %s \n",ISIS_IS_ADJ_NBR_SYSID_OID+"."+row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSID, row.getIsisISAdjNeighSysID());
-        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID+"."+row.getInstance().toString(), ISIS_IS_ADJ_NBR_EXTENDED_CIRCID, row.getIsisISAdjNbrExtendedCircID());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_STATE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_STATE, row.getIsisISAdjStatus(), IsisISAdjState.getTypeString(row.getIsisISAdjStatus()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SNPAADDR_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SNPAADDR, row.getIsisISAdjNeighSnpaAddress());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_NBR_SYSTYPE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSTYPE, row.getIsisISAdjNeighSysType(), IsisISAdjNeighSysType.getTypeString(row.getIsisISAdjNeighSysType()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SYSID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSID, row.getIsisISAdjNeighSysID());
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_EXTENDED_CIRCID, row.getIsisISAdjNbrExtendedCircID());
     }
 
 
