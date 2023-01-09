@@ -95,7 +95,7 @@ import com.google.common.collect.ImmutableMap;
  * @author jwhite
  */
 @SuppressWarnings("java:S2068")
-public class OpenNMSContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> implements KarafContainer<OpenNMSContainer>, TestLifecycleAware {
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
     public static final String KAFKA_ALIAS = "kafka";

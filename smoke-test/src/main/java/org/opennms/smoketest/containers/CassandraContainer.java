@@ -33,7 +33,7 @@ import org.testcontainers.containers.Network;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 
-public class CassandraContainer extends org.testcontainers.containers.CassandraContainer {
+public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
 
     public CassandraContainer() {
         // Reduce JVM heap to 512m

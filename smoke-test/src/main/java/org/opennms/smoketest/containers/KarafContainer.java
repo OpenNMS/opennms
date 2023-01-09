@@ -33,7 +33,7 @@ import java.net.InetSocketAddress;
 import org.opennms.smoketest.utils.SshClient;
 import org.testcontainers.containers.Container;
 
-public interface KarafContainer extends Container {
+public interface KarafContainer<T extends Container<T>> extends Container<T> {
 
     /**
      * Create a new SSH client connected to the Karaf shell in this container.

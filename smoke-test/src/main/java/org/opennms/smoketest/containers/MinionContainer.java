@@ -74,7 +74,7 @@ import org.testcontainers.utility.MountableFile;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.base.Strings;
 
-public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
