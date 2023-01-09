@@ -56,7 +56,7 @@ public class CiscoVtpTracker extends AggregateTracker
         private final Integer value;
 
         VtpVersion(Integer value) {
-            this.value =value;
+            this.value = value;
         }
 
         public Integer getValue() {
