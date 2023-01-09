@@ -151,7 +151,7 @@ public class IsisSysObjectGroupTracker extends AggregateTracker {
     @Override
     public void printSnmpData() {
         System.out.printf("\t\t%s (%s)= %s \n", ISIS_SYS_ID_OID, ISIS_SYS_ID_ALIAS, getIsisSysId());
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_SYS_ADMIN_STATE_OID, ISIS_SYS_ADMIN_STATE_ALIAS, getIsisSysAdminState(),IsisAdminState.get(getIsisSysAdminState()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_SYS_ADMIN_STATE_OID, ISIS_SYS_ADMIN_STATE_ALIAS, getIsisSysAdminState(), IsisAdminState.get(getIsisSysAdminState()));
     }
 
 }
