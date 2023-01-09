@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -37,6 +38,10 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Year;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageIT extends OpenNMSSeleniumIT {
@@ -126,5 +131,20 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
             findElementByLink(entry[0]).click();
             waitForElement(By.xpath(entry[1]));
         }
+    }
+
+    @Test
+    public void testCopyrightYear() {
+        LOG.info("Starting test");
+        login();
+        String footer = findElementById("footer").getText();
+
+        Year thisYear = Year.now();
+
+        Pattern pattern = Pattern.compile("\\d{4}-" + thisYear, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(footer);
+        boolean matchFound = matcher.find();
+
+        assertTrue(matchFound);
     }
 }
