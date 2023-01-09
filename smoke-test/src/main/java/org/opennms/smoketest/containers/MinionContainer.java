@@ -362,4 +362,28 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     public String getId() {
         return this.id;
     }
+
+    @Override
+    protected Logger logger() {
+        return LoggerFactory.getLogger(getLoggerName(getDockerImageName()) + " " + getId() + "@" + getLocation());
+    }
+
+    /*
+     * This is a copy of org.testcontainers.utility.DockerLoggerFactory.getLogger,
+     * changed to return a String instead of a Logger.
+     */
+    public static String getLoggerName(String dockerImageName) {
+        final String abbreviatedName;
+        if (dockerImageName.contains("@sha256")) {
+            abbreviatedName = dockerImageName.substring(0, dockerImageName.indexOf("@sha256") + 14) + "...";
+        } else {
+            abbreviatedName = dockerImageName;
+        }
+
+        if ("UTF-8".equals(System.getProperty("file.encoding"))) {
+            return "\uD83D\uDC33 [" + abbreviatedName + "]";
+        } else {
+            return "docker[" + abbreviatedName + "]";
+        }
+    }
 }

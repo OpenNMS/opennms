@@ -280,6 +280,11 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         return SENTINEL_JETTY_PORT;
     }
 
+    @Override
+    protected Logger logger() {
+        return LoggerFactory.getLogger(MinionContainer.getLoggerName(getDockerImageName()) + " " + profile.getId());
+    }
+
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
