@@ -155,7 +155,6 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 |===
 
 |*WARNING*
-|===
 
 The first run of the bridge discovery process is scheduled for `initial_sleep_time + bridge_topology_interval`.
 The first run of the updaters is scheduled for `0L`.
