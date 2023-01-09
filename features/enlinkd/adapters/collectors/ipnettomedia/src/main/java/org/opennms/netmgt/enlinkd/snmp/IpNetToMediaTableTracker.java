@@ -239,10 +239,10 @@ public class IpNetToMediaTableTracker extends TableTracker
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker.IpNetToMediaRow} object.
      */
     public void processIpNetToMediaRow(final IpNetToMediaRow row) {
-		System.out.printf("\t\t%s (%s)= %s \n",IPNETTOMEDIA_TABLE_IFINDEX_OID+"."+row.getInstance().toString(), IPNETTOMEDIA_TABLE_IFINDEX, row.getIpNetToMediaIfIndex());
-		System.out.printf("\t\t%s (%s)= %s \n",IPNETTOMEDIA_TABLE_PHYSADDR_OID+"."+row.getInstance().toString(), IPNETTOMEDIA_TABLE_PHYSADDR, row.getIpNetToMediaPhysAddress());
-		System.out.printf("\t\t%s (%s)= %s \n",IPNETTOMEDIA_TABLE_NETADDR_OID+"."+row.getInstance().toString(), IPNETTOMEDIA_TABLE_NETADDR, str(row.getIpNetToMediaNetAddress()));
-		System.out.printf("\t\t%s (%s)= %s (%s)\n",IPNETTOMEDIA_TABLE_TYPE_OID+"."+row.getInstance().toString(), IPNETTOMEDIA_TABLE_TYPE, row.getIpNetToMediatype(), IpNetToMediaType.get(row.getIpNetToMediatype()) );
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_IFINDEX_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_IFINDEX, row.getIpNetToMediaIfIndex());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_PHYSADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_PHYSADDR, row.getIpNetToMediaPhysAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_NETADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_NETADDR, str(row.getIpNetToMediaNetAddress()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", IPNETTOMEDIA_TABLE_TYPE_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_TYPE, row.getIpNetToMediatype(), IpNetToMediaType.get(row.getIpNetToMediatype()) );
 
 	}
 
