@@ -128,8 +128,8 @@ public class IsisCircTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker.IsIsCircRow} object.
      */
     public void processIsisCircRow(final IsIsCircRow row) {
-        System.out.printf("\t\t%s (%s)= %s \n",ISIS_CIRC_IFINDEX_OID+"."+row.getInstance().toString(), ISIS_CIRC_IFINDEX, row.getIsisCircIfIndex());
-        System.out.printf("\t\t%s (%s)= %s (%s)\n",ISIS_CIRC_ADMIN_STATE_OID+"."+row.getInstance().toString(), ISIS_CIRC_ADMIN_STATE, row.getIsisCircAdminState(), IsisAdminState.getTypeString(row.getIsisCircAdminState()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_CIRC_IFINDEX_OID + "." + row.getInstance().toString(), ISIS_CIRC_IFINDEX, row.getIsisCircIfIndex());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_CIRC_ADMIN_STATE_OID + "." + row.getInstance().toString(), ISIS_CIRC_ADMIN_STATE, row.getIsisCircAdminState(), IsisAdminState.getTypeString(row.getIsisCircAdminState()));
     }
 
 
