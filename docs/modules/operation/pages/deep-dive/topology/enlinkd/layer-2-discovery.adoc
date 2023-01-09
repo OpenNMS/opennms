@@ -13,6 +13,7 @@ These links are discovered based on information that is provided by an agent's u
 
 Information on Layer 2 network links is provided by SNMP agents that support the appropriate MIBs.
 For this reason, you must have a working SNMP configuration.
+
 The following pages describe the MIBs required to allow link discovery:
 
 xref:operation:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[Layer 2 LLDP Discovery]
