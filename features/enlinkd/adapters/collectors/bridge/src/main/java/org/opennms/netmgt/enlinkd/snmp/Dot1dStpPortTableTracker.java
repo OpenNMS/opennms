@@ -273,15 +273,15 @@ public class Dot1dStpPortTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker.Dot1dStpPortRow} object.
      */
     public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT, row.getDot1dStpPort() );
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_PRIORITY_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_PRIORITY, row.getDot1dStpPortPriority());
-		System.out.printf("\t\t%s (%s)= %s (%s)\n",DOT1D_STP_PORT_STATE_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_STATE, row.getDot1dStpPortState(),BridgeDot1dStpPortState.get(row.getDot1dStpPortState()));
-		System.out.printf("\t\t%s (%s)= %s (%s)\n",DOT1D_STP_PORT_ENABLE_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_ENABLE, row.getDot1dStpPortEnable(),BridgeDot1dStpPortEnable.get(row.getDot1dStpPortEnable()));
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_PATH_COST_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_PATH_COST, row.getDot1dStpPortPathCost());
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_DESIGNATED_ROOT_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_ROOT, row.getDot1dStpPortDesignatedRoot());
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_DESIGNATED_COST_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_COST, row.getDot1dStpPortDesignatedCost());
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_BRIDGE, row.getDot1dStpPortDesignatedBridge());
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_STP_PORT_DESIGNATED_PORT_OID+"."+row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_PORT, row.getDot1dStpPortDesignatedPort());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT, row.getDot1dStpPort() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_PRIORITY_OID + "."+row.getInstance().toString(), DOT1D_STP_PORT_PRIORITY, row.getDot1dStpPortPriority());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_STP_PORT_STATE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_STATE, row.getDot1dStpPortState(), BridgeDot1dStpPortState.get(row.getDot1dStpPortState()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_STP_PORT_ENABLE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_ENABLE, row.getDot1dStpPortEnable(), BridgeDot1dStpPortEnable.get(row.getDot1dStpPortEnable()));
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_PATH_COST_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_PATH_COST, row.getDot1dStpPortPathCost());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_ROOT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_ROOT, row.getDot1dStpPortDesignatedRoot());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_COST_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_COST, row.getDot1dStpPortDesignatedCost());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_BRIDGE, row.getDot1dStpPortDesignatedBridge());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_PORT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_PORT, row.getDot1dStpPortDesignatedPort());
 
 
 	}
