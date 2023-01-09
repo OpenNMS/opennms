@@ -65,7 +65,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 100
 
 | executor-threads
-| Number of parallel threads used by Priority Executor.
+| Number of parallel threads used by priority executor.
 | 5
 
 | initial_sleep_time
