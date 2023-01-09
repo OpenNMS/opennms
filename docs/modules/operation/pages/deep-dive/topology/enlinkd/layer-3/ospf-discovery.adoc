@@ -67,7 +67,7 @@ Area ID `0.0.0.0` is used for the OSPF backbone.
 
 | ospfImportAsExtern
 | Indicates if an area is a stub area, NSSA, or standard
-area.  Type-5 AS-external LSAs and type-11 Opaque LSAs are
+area. Type-5 AS-external LSAs and type-11 Opaque LSAs are
 not imported into stub areas or NSSAs.  NSSAs import
 AS-external data as type-7 LSAs
 | .1.3.6.1.2.1.14.2.1.3
