@@ -11,6 +11,7 @@ You can use the following routing daemons to provide links-based Layer 3 informa
 SNMP agents that support the appropriate MIBs provide information on Layer 2 network links.
 For this reason, you must have a working SNMP configuration.
 
+
 The following pages describe the MIBs required to allow link discovery:
 
  * xref:operation:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[Layer 2 LLDP Data]
