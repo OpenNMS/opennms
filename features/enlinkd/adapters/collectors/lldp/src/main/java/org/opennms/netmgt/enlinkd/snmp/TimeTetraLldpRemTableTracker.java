@@ -206,12 +206,12 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
      * @param row a {@link TimeTetraLldpRemRow} object.
      */
     public void processLldpRemRow(final TimeTetraLldpRemRow row) {
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_CHASSIS_ID_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_ID_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID, row.getLldpRemPortid());
-        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_DESCR_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
-        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_SYSNAME_OID+"."+row.getInstance().toString(), TIMETETRA_LLDP_REM_SYSNAME, row.getLldpRemSysname());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID, row.getLldpRemPortid());
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_DESCR_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_SYSNAME_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_SYSNAME, row.getLldpRemSysname());
 
     }
 
