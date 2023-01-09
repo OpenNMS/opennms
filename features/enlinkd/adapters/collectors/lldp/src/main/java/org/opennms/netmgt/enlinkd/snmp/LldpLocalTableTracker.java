@@ -117,9 +117,9 @@ public class LldpLocalTableTracker extends TableTracker {
      * @param row a {@link LldpLocalTableTracker.LldpLocalPortRow} object.
      */
     public void processLldpLocPortRow(final LldpLocalPortRow row) {
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE, row.getLldpLocalPortIdSubtype(), LldpUtils.LldpPortIdSubType.getTypeString(row.getLldpLocalPortIdSubtype().getValue()));
-        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_PORTID_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID, row.getLldpLocPortId());
-        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_DESCR_OID+"."+row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_DESCR, row.getLldpLocPortDesc());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE_OID + "." + row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE, row.getLldpLocalPortIdSubtype(), LldpUtils.LldpPortIdSubType.getTypeString(row.getLldpLocalPortIdSubtype().getValue()));
+        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_PORTID_OID + "." + row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_PORTID, row.getLldpLocPortId());
+        System.out.printf("\t\t%s (%s)= %s \n", LldpLocPortGetter.LLDP_LOC_DESCR_OID + "." + row.getInstance().toString(), LldpLocPortGetter.LLDP_LOC_DESCR, row.getLldpLocPortDesc());
     }
 
     public static LldpElement getLldpElement(String sysname, Collection<LldpLocalPortRow> rows) {
