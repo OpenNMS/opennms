@@ -7,10 +7,8 @@ NOTE: Enlinkd shell command must be installed
 
 To use the commands, log into the Karaf Shell on your system using:
 
-[source]
-----
+[source, console]
 ssh -p 8101 admin@localhost
-----
 
 To install Enhanced Linkd Shell Commands
 [source]
