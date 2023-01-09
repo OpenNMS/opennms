@@ -233,7 +233,7 @@ You can verify your firewall and port forwarding configuration by sending an SNM
 [source, console]
 snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way" <1><2>
 
-<1> By default, OpenNMS uses the `public` community string.
+<1> By default, {page-component-title} uses the `public` community string.
 If you changed the community string in {page-component-title}, use that name here.
 <2> Replace `opennms-core-host` with the IP or FQDN of your {page-component-title} core instance.
 
