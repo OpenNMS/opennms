@@ -73,7 +73,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 60000
 
 | cdp_rescan_interval
-| Interval in milliseconds for Cisco Discovery Protocol (CDP) links discovery.
+| Interval (in milliseconds) for Cisco Discovery Protocol (CDP) links discovery.
 | 86400000
 
 | lldp_rescan_interval
