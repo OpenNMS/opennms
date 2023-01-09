@@ -57,6 +57,7 @@
           <instructions>
             <Import-Package>
               io.opentracing.util,
+              io.opentracing.noop,
               io.opentracing,
               io.opentracing.propagation,
               io.opentracing.tag,
