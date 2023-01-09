@@ -89,7 +89,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 86400000
 
 | isis_rescan_interval
-| Interval in milliseconds for Intermediate System to Intermediate System (IS-IS) links discovery.
+| Interval (in milliseconds) for Intermediate System to Intermediate System (IS-IS) links discovery.
 | 86400000
 
 | topology_interval
