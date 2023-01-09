@@ -61,7 +61,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 3
 
 | executor-queue-size
-| The initial queue size of the Priority Executor.
+| The initial queue size of the priority executor.
 | 100
 
 | executor-threads
