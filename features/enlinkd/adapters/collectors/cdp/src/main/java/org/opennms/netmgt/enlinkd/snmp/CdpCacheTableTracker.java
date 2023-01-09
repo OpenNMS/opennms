@@ -273,12 +273,12 @@ public class CdpCacheTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker.CdpCacheRow} object.
      */
     public void processCdpCacheRow(final CdpCacheRow row) {
-		System.out.printf("\t\t%s (%s)= %s (%s)\n",CDP_CACHE_ADDRESS_TYPE_OID+"."+row.getInstance().toString(), CDP_CACHE_ADDRESS_TYPE, row.getCdpCacheAddressType(), CiscoNetworkProtocolType.get(row.getCdpCacheAddressType())  );
-		System.out.printf("\t\t%s (%s)= %s \n",CDP_CACHE_ADDRESS_OID+"."+row.getInstance().toString(), CDP_CACHE_ADDRESS, row.getCdpCacheAddressString());
-		System.out.printf("\t\t%s (%s)= %s \n",CDP_CACHE_VERSION_OID+"."+row.getInstance().toString(), CDP_CACHE_VERSION, row.getCdpCacheVersion());
-		System.out.printf("\t\t%s (%s)= %s \n",CDP_CACHE_DEVICE_ID_OID+"."+row.getInstance().toString(), CDP_CACHE_DEVICE_ID, row.getCdpCacheDeviceId());
-		System.out.printf("\t\t%s (%s)= %s \n",CDP_CACHE_DEVICE_PORT_OID+"."+row.getInstance().toString(), CDP_CACHE_DEVICE_PORT, row.getCdpCacheDevicePort());
-		System.out.printf("\t\t%s (%s)= %s \n",CDP_CACHE_PLATFORM_OID+"."+row.getInstance().toString(), CDP_CACHE_PLATFORM, row.getCdpCachePlatform());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_CACHE_ADDRESS_TYPE_OID + "." + row.getInstance().toString(), CDP_CACHE_ADDRESS_TYPE, row.getCdpCacheAddressType(), CiscoNetworkProtocolType.get(row.getCdpCacheAddressType())  );
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_ADDRESS_OID + "." + row.getInstance().toString(), CDP_CACHE_ADDRESS, row.getCdpCacheAddressString());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_VERSION_OID + "." + row.getInstance().toString(), CDP_CACHE_VERSION, row.getCdpCacheVersion());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_DEVICE_ID_OID + "." + row.getInstance().toString(), CDP_CACHE_DEVICE_ID, row.getCdpCacheDeviceId());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_DEVICE_PORT_OID + "." + row.getInstance().toString(), CDP_CACHE_DEVICE_PORT, row.getCdpCacheDevicePort());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_PLATFORM_OID + "." + row.getInstance().toString(), CDP_CACHE_PLATFORM, row.getCdpCachePlatform());
 	}
 
 }
