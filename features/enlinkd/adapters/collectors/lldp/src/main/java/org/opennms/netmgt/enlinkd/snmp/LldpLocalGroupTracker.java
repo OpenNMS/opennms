@@ -309,7 +309,7 @@ public class LldpLocalGroupTracker extends AggregateTracker {
     @Override
     public void printSnmpData() {
         System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_LOC_CHASSISID_SUBTYPE_OID, LLDP_LOC_CHASSISID_SUBTYPE_ALIAS, getLldpLocChassisidSubType(), LldpChassisIdSubType.get(getLldpLocChassisidSubType()));
-        System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_CHASSISID_OID, LLDP_LOC_CHASSISID_ALIAS , decodeLldpChassisId(getLldpLocChassisid(),getLldpLocChassisidSubType()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_CHASSISID_OID, LLDP_LOC_CHASSISID_ALIAS , decodeLldpChassisId(getLldpLocChassisid(), getLldpLocChassisidSubType()));
         System.out.printf("\t\t%s (%s)= %s \n", LLDP_LOC_SYSNAME_OID, LLDP_LOC_SYSNAME_ALIAS, getLldpLocSysname());
     }
 	
