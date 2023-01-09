@@ -8,21 +8,21 @@ The following hardware specs are the minimum required to run {page-component-tit
 |===
 |   | Just Testing^1^   | Minimum Server Specification^2^
 
-| *CPU*
+s| CPU
 | 2GHz dual core x86_64
 | 3GHz quad core x86_64 and above
 
-| *RAM*
+s| RAM
 | 4GB (physical)
 | 16GB (physical) and above
 
-| *Storage (disk space)*
+s| Storage (disk space)
 | 50-GB HDD, SSD
 | 1TB with SSD and above
 |===
 
-^1^ You can install the packages, and the {page-component-title} services start. +
-^2^ Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
+. You can install the packages, and the {page-component-title} services start. +
+. Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
 
 [[operating-systems-core]]
 == Operating systems
@@ -55,7 +55,8 @@ NOTE: See the xref:releasenotes:whatsnew.adoc[release notes] for information abo
 [[system-components-core]]
 == Compatibility
 
-{page-component-title} {full-display-version} is compatible with the following components:
+{page-component-title} {full-display-version} is compatible with the following components.
+Components marked with an asterisk are required.
 
 [options="autowidth"]
 |===
@@ -73,18 +74,18 @@ NOTE: See the xref:releasenotes:whatsnew.adoc[release notes] for information abo
 | Elasticsearch
 | {compatible-elasticsearch}
 
-| Java Development Kit
+| Java Development Kit *
 | {compatible-javajdk}
 
 | Kafka
 | {compatible-kafka}
 
-| PostgreSQL
+| PostgreSQL *
 | {compatible-postgresql}
 
-| RRDTool
+| RRDTool *
 | {compatible-rrdtool}
 
-| Browser
+| Browser *
 | Latest https://www.mozilla.org[Mozilla Firefox] or https://www.google.com/intl/en_us/chrome/[Google Chrome]
 |===

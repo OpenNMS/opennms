@@ -8,21 +8,21 @@ The following hardware specs are the minimum required to run a Minion:
 |===
 |   | Just Testing^1^   | Minimum Server Specification^2^
 
-| *CPU*
+s| CPU
 | 2GHz dual core x86_64
 | 3GHz quad core x86_64 and above
 
-| *RAM*
+s| RAM
 | 4GB (physical)
 | 8GB (physical) and above
 
-| *Storage (disk space)*
+s| Storage (disk space)
 | 20-GB HDD, SSD
 | 100GB with SSD and above
 |===
 
-^1^ You can install the packages, and the Minion services start. +
-^2^ Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
+. You can install the packages, and the Minion services start. +
+. Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
 
 [[operating-systems-minion]]
 == Operating systems
