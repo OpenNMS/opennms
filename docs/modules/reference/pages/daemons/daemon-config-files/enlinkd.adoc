@@ -43,7 +43,7 @@ For example, if you start both the CDP and LLDP discovery protocols, the web UI 
 
 Enhanced linkd supports a priority executor to collect SNMP data from devices.
 Data collection is scheduled for each node and protocol and put into a priority executor running queue.
-The data collection is performed according with the Priority assigned.
+The data collection is performed according to the priority assigned.
 
 Restart enlinkd or {page-component-title} to apply configuration changes.
 
