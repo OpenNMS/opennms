@@ -81,7 +81,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 86400000
 
 | bridge_rescan_interval
-| Interval in milliseconds for Bridge Protocol data collection.
+| Interval (in milliseconds) for Bridge Protocol data collection.
 | 86400000
 
 | ospf_rescan_interval
