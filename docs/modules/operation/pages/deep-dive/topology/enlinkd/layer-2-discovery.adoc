@@ -8,7 +8,7 @@ Enlinkd is able to discover Layer 2 network links based on the following protoco
 * link:https://en.wikipedia.org/wiki/Cisco_Discovery_Protocol[Cisco Discovery Protocol] (CDP)
 * link:https://en.wikipedia.org/wiki/Bridging_(networking)[Bridge Discovery]
 
-Connections that the collectors and the bridge domain discovery process find are called "links."
+Connections that the collectors and the bridge domain discovery process find are called "links".
 These links are discovered based on information that is provided by an agent's understanding of connections at the OSI Layer 2, Layer 3, or other OSI layers.
 
 Information on Layer 2 network links is provided by SNMP agents that support the appropriate MIBs.
