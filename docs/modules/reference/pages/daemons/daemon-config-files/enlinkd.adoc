@@ -121,7 +121,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 10000
 
 | ospf-priority
-| The priority used for running OSPF link discovery.
+| The priority for running OSPF link discovery.
 | 3000
 
 | isis-priority
