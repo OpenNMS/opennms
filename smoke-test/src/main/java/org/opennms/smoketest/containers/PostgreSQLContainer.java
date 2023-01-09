@@ -50,7 +50,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer implements TestLifecycleAware {
+public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer<PostgreSQLContainer> implements TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLContainer.class);
 
     private LoadingCache<Integer, HibernateDaoFactory> daoFactoryCache = CacheBuilder.newBuilder()
