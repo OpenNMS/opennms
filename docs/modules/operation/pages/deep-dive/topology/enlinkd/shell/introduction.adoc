@@ -11,7 +11,5 @@ To use the commands, log into the Karaf Shell on your system using:
 ssh -p 8101 admin@localhost
 
 To install Enhanced Linkd Shell Commands
-[source]
-----
+[source, console]
 feature:install opennms-enlinkd-shell
-----
