@@ -203,9 +203,9 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
      *            object.
      */
     public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
-        System.out.printf("\t\t%s (%s)= %s (this is extracted from table index)\n",DOT1Q_TP_FDB_ADDRESS_OID+"."+row.getInstance().toString(), DOT1Q_TP_FDB_ADDRESS, row.getDot1qTpFdbAddress());
-        System.out.printf("\t\t%s (%s)= %s \n",DOT1Q_TP_FDB_PORT_OID+"."+row.getInstance().toString(), DOT1Q_TP_FDB_PORT, row.getDot1qTpFdbPort() );
-        System.out.printf("\t\t%s (%s)= %s (%s)\n",DOT1Q_TP_FDB_STATUS_OID+"."+row.getInstance().toString(), DOT1Q_TP_FDB_STATUS, row.getDot1qTpFdbStatus(),BridgeDot1qTpFdbStatus.get(row.getDot1qTpFdbStatus())  );
+        System.out.printf("\t\t%s (%s)= %s (this is extracted from table index)\n", DOT1Q_TP_FDB_ADDRESS_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_ADDRESS, row.getDot1qTpFdbAddress());
+        System.out.printf("\t\t%s (%s)= %s \n", DOT1Q_TP_FDB_PORT_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_PORT, row.getDot1qTpFdbPort() );
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1Q_TP_FDB_STATUS_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_STATUS, row.getDot1qTpFdbStatus(), BridgeDot1qTpFdbStatus.get(row.getDot1qTpFdbStatus())  );
 
     }
 
