@@ -155,7 +155,6 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 |===
 
 |*WARNING*
-|*use-{protocol}-discovery*=*false* deletes *protocol* persisted data.
 |===
 
 The first run of the bridge discovery process is scheduled for `initial_sleep_time + bridge_topology_interval`.
