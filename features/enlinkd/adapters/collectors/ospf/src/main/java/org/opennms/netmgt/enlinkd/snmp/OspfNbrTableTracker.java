@@ -144,9 +144,9 @@ public class OspfNbrTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker.OspfNbrRow} object.
      */
     public void processOspfNbrRow(final OspfNbrRow row) {
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_IPADDRESS_OID+"."+row.getInstance().toString(), OSPF_NBR_IPADDRESS, str(row.getOspfNbrIpAddress()));
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ADDRESS_LESS_INDEX_OID+"."+row.getInstance().toString(), OSPF_NBR_ADDRESS_LESS_INDEX, row.getOspfNbrAddressLessIndex());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ROUTERID_OID+"."+row.getInstance().toString(), OSPF_NBR_ROUTERID, str(row.getOspfNbrRouterId()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_IPADDRESS_OID + "." + row.getInstance().toString(), OSPF_NBR_IPADDRESS, str(row.getOspfNbrIpAddress()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ADDRESS_LESS_INDEX_OID + "." + row.getInstance().toString(), OSPF_NBR_ADDRESS_LESS_INDEX, row.getOspfNbrAddressLessIndex());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ROUTERID_OID + "." + row.getInstance().toString(), OSPF_NBR_ROUTERID, str(row.getOspfNbrRouterId()));
     }
 
 
