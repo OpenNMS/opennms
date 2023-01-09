@@ -204,7 +204,7 @@ public class CdpGlobalGroupTracker extends AggregateTracker
         if (getCdpGlobalDeviceFormat() == null) {
             System.out.printf("\t\t%s (%s)= (no value found)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT);
         } else {
-            System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT, getCdpGlobalDeviceFormat(),(CdpGlobalDeviceIdFormat.getTypeString(getCdpGlobalDeviceFormat())));
+            System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT, getCdpGlobalDeviceFormat(), (CdpGlobalDeviceIdFormat.getTypeString(getCdpGlobalDeviceFormat())));
         }
     }
 }
