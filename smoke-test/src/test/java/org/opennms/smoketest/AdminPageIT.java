@@ -145,6 +145,6 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         Matcher matcher = pattern.matcher(footer);
         boolean matchFound = matcher.find();
 
-        assertTrue(matchFound);
+        assertTrue("Is the year in the footer is equals to current? - ", matchFound);
     }
 }
