@@ -90,7 +90,7 @@ public class CiscoVtpTracker extends AggregateTracker
          *	version in use on the device. If the device does not support
          *	vtp, the version is none(3)."
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,CISCO_VTP_VERSION,CISCO_VTP_VERSION_OID)
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CISCO_VTP_VERSION,CISCO_VTP_VERSION_OID)
 	};
 
     private final SnmpStore m_store;
