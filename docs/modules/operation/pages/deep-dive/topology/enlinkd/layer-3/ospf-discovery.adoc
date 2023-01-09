@@ -86,9 +86,7 @@ AS-external data as type-7 LSAs
 | .1.3.6.1.2.1.14.2.1.6
 
 | ospfAreaLsaCount
-| The total number of link state advertisements
- in this area's link state database, excluding
- AS-external LSAs.
+| The total number of link state advertisements in this area's link state database, excluding AS-external LSAs.
 | .1.3.6.1.2.1.14.2.1.7
 
 | ospfIfIpAddress
