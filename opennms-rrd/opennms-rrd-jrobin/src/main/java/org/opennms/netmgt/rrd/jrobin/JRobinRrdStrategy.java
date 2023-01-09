@@ -223,7 +223,10 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     @Override
     public void updateFile(final RrdDb rrdFile, final String owner, final String data) throws Exception {
         Sample sample = rrdFile.createSample();
-        sample.setAndUpdate(data);
+        sample.set(data);
+        LOG.debug("updateFile: Adding sample %s to %s", sample.dump(), rrdFile.getPath());
+        sample.update();
+        LOG.debug("updateFile: RRD file after update: %s", rrdFile.dump());
     }
 
     /**
