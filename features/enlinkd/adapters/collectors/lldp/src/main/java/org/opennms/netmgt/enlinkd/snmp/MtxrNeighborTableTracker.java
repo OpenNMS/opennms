@@ -137,7 +137,7 @@ public class MtxrNeighborTableTracker extends TableTracker {
     }
 
     public void processMtxrIndexPortRow(final MtxrNeighborRow row) {
-        System.out.printf("\t\t%s (%s)= %s \n", MTXR_NEIGHBOR_INTERFACE_ID_OID+"."+row.getInstance().toString(), MTXR_NEIGHBOR_INTERFACE_ID, row.getMtxrNeighborInterfaceId());
+        System.out.printf("\t\t%s (%s)= %s \n", MTXR_NEIGHBOR_INTERFACE_ID_OID + "." + row.getInstance().toString(), MTXR_NEIGHBOR_INTERFACE_ID, row.getMtxrNeighborInterfaceId());
     }
 
 }
