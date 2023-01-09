@@ -117,7 +117,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 2000
 
 | bridge-priority
-| The priority used for running Bridge data collection.
+| The priority for running Bridge data collection.
 | 10000
 
 | ospf-priority
