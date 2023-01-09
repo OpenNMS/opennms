@@ -77,7 +77,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 86400000
 
 | lldp_rescan_interval
-| Interval in milliseconds for Link Layer Discovery Protocol (LLDP) links discovery.
+| Interval (in milliseconds) for Link Layer Discovery Protocol (LLDP) links discovery.
 | 86400000
 
 | bridge_rescan_interval
