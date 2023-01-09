@@ -45,7 +45,6 @@ public class OspfIfTableTracker extends TableTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
 
-    //public static final SnmpObjId OSPF_IF_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
 
     public final static SnmpObjId OSPF_IF_IPADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
     public final static SnmpObjId OSPF_ADDRESS_LESS_IF_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
