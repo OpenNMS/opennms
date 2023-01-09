@@ -150,7 +150,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | true
 
 | disable-bridge-vlan-discovery
-| Enable or Disable Discovery of Vlans
+| Enable or disable discovery of VLANs.
 | false
 |===
 
