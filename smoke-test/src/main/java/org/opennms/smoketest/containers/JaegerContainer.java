@@ -96,6 +96,14 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
                         URLEncoder.encode(SystemInfoUtils.getInstanceId(), Charset.defaultCharset())),
                         opennms.toFile());
                 LOG.info("OpenNMS Jaeger trace JSON: {}", opennms.toUri());
+
+                Path minion = Paths.get("target", "logs", prefix, ALIAS, "minion-traces.json");
+                FileUtils.copyURLToFile(getURL("/api/traces?service=Minion"), minion.toFile());
+                LOG.info("Minion Jaeger trace JSON: {}", minion.toUri());
+
+                Path sentinel = Paths.get("target", "logs", prefix, ALIAS, "sentinel-traces.json");
+                FileUtils.copyURLToFile(getURL("/api/traces?service=Sentinel"), sentinel.toFile());
+                LOG.info("Sentinel Jaeger trace JSON: {}", sentinel.toUri());
             } catch (Exception e) {
                 System.err.println("Received exception while trying to save all Jaeger traces");
                 e.printStackTrace(System.err);
