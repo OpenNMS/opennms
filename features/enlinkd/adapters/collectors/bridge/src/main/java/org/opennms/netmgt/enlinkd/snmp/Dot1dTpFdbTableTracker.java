@@ -195,9 +195,9 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker.Dot1dTpFdbRow} object.
      */
     public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_TP_FDB_ADDRESS_OID+"."+row.getInstance().toString(), DOT1D_TP_FDB_ADDRESS, row.getDot1dTpFdbAddress() );
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_TP_FDB_PORT_OID+"."+row.getInstance().toString(), DOT1D_TP_FDB_PORT, row.getDot1dTpFdbPort() );
-		System.out.printf("\t\t%s (%s)= %s (%s)\n",DOT1D_TP_FDB_STATUS_OID+"."+row.getInstance().toString(), DOT1D_TP_FDB_STATUS, row.getDot1dTpFdbStatus(),BridgeDot1qTpFdbStatus.get(row.getDot1dTpFdbStatus())  );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_ADDRESS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_ADDRESS, row.getDot1dTpFdbAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_PORT_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_PORT, row.getDot1dTpFdbPort());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_TP_FDB_STATUS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_STATUS, row.getDot1dTpFdbStatus(), BridgeDot1qTpFdbStatus.get(row.getDot1dTpFdbStatus()));
 	}
 	
 
