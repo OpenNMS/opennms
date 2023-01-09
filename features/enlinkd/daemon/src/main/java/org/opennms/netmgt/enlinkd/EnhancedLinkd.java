@@ -314,7 +314,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         }
         boolean runned = false;
         for (SchedulableNodeCollectorGroup group: m_groups) {
-            if ( group.getProtocolSupported().name().equalsIgnoreCase(proto)) {
+            if (group.getProtocolSupported().name().equalsIgnoreCase(proto)) {
                 group.getNodeCollector(node, 0).collect();
                 runned = true;
             }
