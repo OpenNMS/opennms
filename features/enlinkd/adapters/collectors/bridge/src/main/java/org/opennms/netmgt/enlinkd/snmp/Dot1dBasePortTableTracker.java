@@ -98,8 +98,8 @@ public class Dot1dBasePortTableTracker extends TableTracker {
     }
 
     public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_BASE_PORT_OID+"."+row.getInstance().toString(), DOT1D_BASE_PORT, row.getBaseBridgePort() );
-		System.out.printf("\t\t%s (%s)= %s \n",DOT1D_BASE_IFINDEX_OID+"."+row.getInstance().toString(), DOT1D_BASE_IFINDEX, row.getBaseBridgePortIfindex() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_PORT_OID + "." + row.getInstance().toString(), DOT1D_BASE_PORT, row.getBaseBridgePort() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_IFINDEX_OID + "." + row.getInstance().toString(), DOT1D_BASE_IFINDEX, row.getBaseBridgePortIfindex() );
 	}
 
 
