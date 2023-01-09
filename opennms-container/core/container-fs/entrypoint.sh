@@ -91,7 +91,7 @@ initConfigWhenEmpty() {
 
   if [ ! "$(ls --ignore .git --ignore .gitignore -A ${OPENNMS_HOME}/etc)"  ]; then
     echo "No existing configuration in ${OPENNMS_HOME}/etc found. Initialize from etc-pristine."
-    rsync -r --out-format="%n %C" ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/ || exit ${E_INIT_CONFIG}
+    rsync -r --out-format="%n %C" ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/. || exit ${E_INIT_CONFIG}
   fi
 
   if [[ ! -d /opennms-data/mibs ]]; then
@@ -121,7 +121,7 @@ applyOverlayConfig() {
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
     # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -rl --out-format="%n %C" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
+    rsync -K -rl --out-format="%n %C" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi
@@ -129,7 +129,7 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${OPENNMS_OVERLAY_ETC}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${OPENNMS_OVERLAY_ETC}."
-    rsync -r --out-format="%n %C" ${OPENNMS_OVERLAY_ETC}/* ${OPENNMS_HOME}/etc || exit ${E_INIT_CONFIG}
+    rsync -r --out-format="%n %C" ${OPENNMS_OVERLAY_ETC}/* ${OPENNMS_HOME}/etc/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY_ETC}. Use default configuration."
   fi
@@ -137,7 +137,7 @@ applyOverlayConfig() {
   # Overlay jetty specific config
   if [ -d "${OPENNMS_OVERLAY_JETTY_WEBINF}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_JETTY_WEBINF})" ]; then
     echo "Apply custom Jetty WEB-INF configuration from ${OPENNMS_OVERLAY_JETTY_WEBINF}."
-    rsync -r --out-format="%n %C" ${OPENNMS_OVERLAY_JETTY_WEBINF}/* ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF || exit ${E_INIT_CONFIG}
+    rsync -r --out-format="%n %C" ${OPENNMS_OVERLAY_JETTY_WEBINF}/* ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi
