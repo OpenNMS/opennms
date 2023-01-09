@@ -19,6 +19,7 @@ You can view detailed information about a node's connections and supporting link
 
 
 
+
 Enhanced Linkd collects topology data from CDP, LLDP, OSPF, IS-IS and Bridge MIBs.
 For more information, see xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 Discovery] and xref:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 Discovery].
 
