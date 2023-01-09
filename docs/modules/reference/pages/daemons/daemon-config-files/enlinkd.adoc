@@ -113,7 +113,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | 1000
 
 | lldp-priority
-| The priority used for executing LLDP link discovery.
+| The priority for running LLDP link discovery.
 | 2000
 
 | bridge-priority
