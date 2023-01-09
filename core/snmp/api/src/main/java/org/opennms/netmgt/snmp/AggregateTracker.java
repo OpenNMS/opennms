@@ -233,7 +233,7 @@ public class AggregateTracker extends CollectionTracker {
     }
 
     public AggregateTracker(Collection<Collectable> children, CollectionTracker parent) {
-        this(children.toArray(new Collectable[0]), parent);
+        this(children.toArray(new Collectable[children.size()]), parent);
     }
 
     public AggregateTracker(Collectable[] children) {
