@@ -15,7 +15,7 @@ The following pages describe enlinkd and how to configure it, the supported disc
 You can view detailed information about a node's connections and supporting link data on the node detail page in the {page-component-title} web UI.
 
 [[ga-enlinkd-collectors]]
-== Enhanced Linkd Supported Protocol
+== Enhanced linkd supported protocols
 Enhanced Linkd collects topology data from CDP, LLDP, OSPF, IS-IS and Bridge MIBs.
 
 xref:operation:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 Discovery]
