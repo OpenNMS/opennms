@@ -15,7 +15,7 @@ You can find generic information about the OSPF link discovery process in the OS
 
 The OSPF Topology Updater consolidates OSPF data and provides the OSPF OnmsTopology.
 Only full bidirectional connections between two OSPF-supported devices become edges in the topology.
-For example, Node A and node B are connected by an edge if, and only if, there is an OSPF link in Node A to Node B, and vice versa.
+For example, node A and node B are connected by an edge if, and only if, there is an OSPF link in Node A to Node B, and vice versa.
 
 Information gathered from supported OIDs is stored in the following database tables:
 
