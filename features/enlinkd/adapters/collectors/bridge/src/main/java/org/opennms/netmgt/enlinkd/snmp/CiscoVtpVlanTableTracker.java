@@ -153,8 +153,8 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker.CiscoVtpVlanRow} object.
      */
     public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_STATE_OID +"."+row.getVlanIndex(), CISCO_VTP_VLAN_STATE, row.getVlanStatus().getIntCode(), VlanStatus.getVlanStatusString(row.getVlanStatus().getIntCode()));
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_TYPE_OID +"."+row.getVlanIndex(), CISCO_VTP_VLAN_TYPE, row.getVlanType().getIntCode(), VlanType.getVlanTypeString(row.getVlanType().getIntCode()));
-        System.out.printf("\t\t%s (%s)= %s \n", CISCO_VTP_VLAN_NAME_OID +"."+row.getVlanIndex(), CISCO_VTP_VLAN_NAME, row.getVlanName());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_STATE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_STATE, row.getVlanStatus().getIntCode(), VlanStatus.getVlanStatusString(row.getVlanStatus().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_TYPE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_TYPE, row.getVlanType().getIntCode(), VlanType.getVlanTypeString(row.getVlanType().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s \n", CISCO_VTP_VLAN_NAME_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_NAME, row.getVlanName());
     }
 }
