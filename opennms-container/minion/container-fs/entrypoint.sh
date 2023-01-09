@@ -152,7 +152,7 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${MINION_OVERLAY_ETC}" ] && [ -n "$(ls -A ${MINION_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${MINION_OVERLAY_ETC}."
-    rsync -r --out-format="%n %C" ${MINION_OVERLAY_ETC}/* ${MINION_HOME}/etc || exit ${E_INIT_CONFIG}
+    rsync -Lr --out-format="%n %C" ${MINION_OVERLAY_ETC}/* ${MINION_HOME}/etc || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${MINION_OVERLAY_ETC}. Use default configuration."
   fi
