@@ -79,7 +79,7 @@ AS-external data as type-7 LSAs.
 | .1.3.6.1.2.1.14.2.1.5
 
 | ospfAsBdrRtrCount
-| The total number of Autonomous System Border
+| The total number of autonomous system border
  Routers reachable within this area.  This is
  initially zero and is calculated in each SPF
  pass.
