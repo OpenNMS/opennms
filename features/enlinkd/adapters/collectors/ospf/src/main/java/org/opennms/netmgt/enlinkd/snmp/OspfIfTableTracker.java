@@ -147,9 +147,9 @@ public class OspfIfTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker.OspfIfRow} object.
      */
     public void processOspfIfRow(final OspfIfRow row) {
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_IPADDRESS_OID+"."+row.getInstance().toString(), OSPF_IF_IPADDRESS, str(row.getOspfIpAddress()));
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_ADDRESS_LESS_IF_OID+"."+row.getInstance().toString(), OSPF_ADDRESS_LESS_IF, row.getOspfAddressLessIf());
-        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_AREA_ID_OID+"."+row.getInstance().toString(), OSPF_IF_AREA_ID, str(row.getOspfIfAreaId()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_IPADDRESS_OID + "." + row.getInstance().toString(), OSPF_IF_IPADDRESS, str(row.getOspfIpAddress()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_ADDRESS_LESS_IF_OID + "." + row.getInstance().toString(), OSPF_ADDRESS_LESS_IF, row.getOspfAddressLessIf());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_AREA_ID_OID + "." + row.getInstance().toString(), OSPF_IF_AREA_ID, str(row.getOspfIfAreaId()));
     }
 
 
