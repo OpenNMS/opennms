@@ -3,7 +3,7 @@
 
 A number of Karaf Shell commands are made available to help administer and diagnose issues related to performance data collection.
 
-NOTE: Enlinkd shell command must be installed
+NOTE: The enlinkd shell commands must be installed before use.
 
 To use the commands, log into the Karaf Shell on your system using:
 
