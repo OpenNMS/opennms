@@ -24,7 +24,14 @@
           layer-type="base"
         />
         <MarkerCluster
-          :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
+          :options="{
+            showCoverageOnHover: true,
+            chunkedLoading: true,
+            disableClusteringAtZoom: 19,
+            zoomToBoundsOnClick: false,
+            iconCreateFunction
+          }"
+          :onClusterClick="onClusterClick"
         >
           <LMarker
             v-for="node of nodes"
@@ -32,14 +39,13 @@
             :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
             :name="node.label"
           >
-            <LPopup>
-              Node:
-              <router-link :to="`/node/${node.id}`" target="_blank">{{ node.label }}</router-link>
-              <br />
-              Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
-              <br />
-              Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
-            </LPopup>
+            <MarkerPopup
+              :baseHref="mainMenu.baseHref"
+              :baseNodeUrl="baseNodeUrl"
+              :node="node"
+              :ipAddress="ipAddressForNode(node)"
+              :nodeLabelToAlarmSeverity="nodeLabelToAlarmSeverity"
+            />
             <LIcon :icon-url="setIcon(node)" :icon-size="iconSize" />
           </LMarker>
           <!-- Disable polylines until they work -->
@@ -54,6 +60,13 @@
       </template>
     </LMap>
   </div>
+  <div class="marker-cluster-popup-hide">
+    <MarkerClusterPopupContents
+      v-if="showClusterPopup"
+      :cluster="popupCluster"
+      :ipListForNode="ipListForNode"
+      ref="clusterPopupContent" />
+  </div>
 </template>
 <script setup lang ="ts">
 import 'leaflet/dist/leaflet.css'
@@ -62,28 +75,35 @@ import {
   LTileLayer,
   LMarker,
   LIcon,
-  LPopup,
-  LControlLayers,
+  LControlLayers
   // LPolyline,
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
-import { Node } from '@/types'
+import { Map as LeafletMap, divIcon, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
-import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
+import { IpInterface, Node } from '@/types'
+import { MainMenu } from '@/types/mainMenu'
 import MapSearch from './MapSearch.vue'
-import { numericSeverityLevel } from './utils'
+import MarkerPopup from './MarkerPopup.vue'
+import MarkerClusterPopupContents from './MarkerClusterPopupContent.vue'
 import SeverityFilter from './SeverityFilter.vue'
+import { numericSeverityLevel } from './utils'
 
 const store = useStore()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
 const leafletObject = ref({} as LeafletMap)
+
+const showClusterPopup = ref(false)
+const clusterPopupContent = ref()
+const popupCluster = ref<Cluster>()
+
 const zoom = ref<number>(2)
 const iconWidth = 25
 const iconHeight = 42
@@ -95,11 +115,45 @@ const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
+const ipInterfaces = computed<IpInterface[]>(() => store.state.ipInterfacesModule.ipInterfaces)
 
-const getHighestSeverity = (severitites: string[]) => {
+// cached map of node id -> IpInterface list
+const ipInterfaceMap = computed<Map<string,IpInterface[]>>(() => {
+  const nodeIfMap = new Map<string,IpInterface[]>()
+
+  for (let ip of ipInterfaces.value) {
+    const key = ip.nodeId.toString()
+
+    if (nodeIfMap.has(key)) {
+      nodeIfMap.get(key)?.push(ip)
+    } else {
+      nodeIfMap.set(key, [ip])
+    }
+  }
+
+  return nodeIfMap
+})
+
+const ipListForNode = (node: Node | null): IpInterface[] => {
+  const key = node?.id || ''
+  return (key && ipInterfaceMap.value.get(key)) || []
+}
+
+const ipAddressForNode = (node: Node | null) => {
+  const ifList = ipListForNode(node)
+  return (ifList.length > 0 && ifList[0].ipAddress) || ''
+}
+
+const nodeLabelToAlarmSeverity = (label: string) => {
+  return nodeLabelAlarmSeverityMap.value[label] || 'NORMAL'
+}
+
+const getHighestSeverity = (severities: string[]) => {
   let highestSeverity = 'NORMAL'
-  for (const severity of severitites) {
+  for (const severity of severities) {
     if (numericSeverityLevel(severity) > numericSeverityLevel(highestSeverity)) {
       highestSeverity = severity
     }
@@ -111,18 +165,46 @@ const getHighestSeverity = (severitites: string[]) => {
 const iconCreateFunction = (cluster: Cluster) => {
   const childMarkers = cluster.getAllChildMarkers()
   // find highest level of severity
-  const severitites = []
+  const severities = []
   for (const marker of childMarkers) {
-    const markerSeverity = nodeLabelAlarmServerityMap.value[(marker as any).options.name]
+    const markerSeverity = nodeLabelAlarmSeverityMap.value[(marker as any).options.name]
     if (markerSeverity) {
-      severitites.push(markerSeverity)
+      severities.push(markerSeverity)
     }
   }
-  const highestSeverity = getHighestSeverity(severitites)
+  const highestSeverity = getHighestSeverity(severities)
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
 
-const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
+// display the Marker Cluster / node group popup
+const onClusterClick = async (ev: any) => {
+  const cluster: Cluster = ev.layer as Cluster
+  await initializeClusterPopup(cluster)
+  launchClusterPopup(cluster)
+}
+
+// initialize the MarkerClusterPopupContent component and await its rendering
+const initializeClusterPopup = async (cluster: Cluster) => {
+  popupCluster.value = cluster
+  showClusterPopup.value = true
+  await nextTick()
+}
+
+// get markup content generated by the MarkerClusterPopupContent component
+// to inject into the Leaflet popup component and launch the popup
+const launchClusterPopup = (cluster: Cluster) => {
+  const content = clusterPopupContent.value.$refs.clusterPopupContent.innerHTML
+  const options: PopupOptions = { }
+
+  const leafletObject = window['L']
+
+  leafletObject.popup(options)
+    .setLatLng(cluster.getLatLng())
+    .setContent(content)
+    .openOn(map.value.leafletObject)
+}
+
+const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmSeverityMap.value[node.label])
 
 const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
@@ -167,7 +249,9 @@ const getNodeCoordinateMap = computed(() => {
 
 const onLeafletReady = async () => {
   await nextTick()
+
   leafletObject.value = map.value.leafletObject
+
   if (leafletObject.value != undefined && leafletObject.value != null) {
     // set default map view port
     leafletObject.value.zoomControl.setPosition('topright')
@@ -215,7 +299,7 @@ const setBoundingBox = (nodeLabels: string[]) => {
 
 const invalidateSizeFn = () => leafletObject.value.invalidateSize()
 
-/*****Tile Layer*****/
+/***** Tile Layer *****/
 const tileProviders = [
   {
     name: 'OpenStreetMap',
@@ -233,10 +317,16 @@ const tileProviders = [
   },
 ]
 
+onMounted(async () => {
+  store.dispatch('mapModule/getNodes')
+  store.dispatch('nodesModule/getNodes')
+  store.dispatch('ipInterfacesModule/getAllIpInterfaces')
+})
+
 defineExpose({ invalidateSizeFn })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .search-bar {
   position: absolute;
   margin-left: 10px;
@@ -244,6 +334,9 @@ defineExpose({ invalidateSizeFn })
 }
 .geo-map {
   height: 100%;
+}
+.marker-cluster-popup-hide {
+  display: none;
 }
 </style>
 
@@ -276,6 +369,44 @@ defineExpose({ invalidateSizeFn })
         background: var($error);
       }
       opacity: 0.7;
+    }
+  }
+}
+.leaflet-popup-content {
+  min-width: 440px;
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  > div {
+    line-height: 1.5em;
+    margin-right: 16px;
+    width: calc(60% - 16px);
+    flex-grow: 1;
+    &:first-child {
+      width: calc(40%);
+      margin-right: 0;
+    }
+    > span.alarm-severity {
+      font-weight: var($font-semibold);
+      text-align: center;
+      padding: 2px;
+
+      &.NORMAL {
+        background: var($success);
+        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+      }
+      &.WARNING,
+      &.MINOR,
+      &.MAJOR {
+        background: var($warning);
+      }
+      &.CRITICAL {
+        background: var($error);
+        color: var($state-text-color-on-surface-dark); // --feather-state-text-color-on-surface-dark;
+      }
     }
   }
 }

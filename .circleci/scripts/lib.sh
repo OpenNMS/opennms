@@ -77,7 +77,7 @@ get_reference_branch() {
     local _pr_num="$(get_pr_num || echo 0)"
 
     if [ "${_pr_num}" -gt 0 ] && [ -n "${GITHUB_API_TOKEN}" ]; then
-      local _github_base="$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_API_TOKEN}" "https://api.github.com/repos/OpenNMS/opennms/pulls/${_pr_num}" | jq -r '.base.ref')"
+      local _github_base="$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_API_TOKEN}" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${_pr_num}" | jq -r '.base.ref')"
       if [ -n "${_github_base}" ]; then
         __cache_reference_branch="${_github_base}"
       fi

@@ -93,6 +93,8 @@
           </FeatherDropdownItem>
         </FeatherDropdown>
 
+        <form ref="logoutForm" name="vueLogoutForm" :action="computeLogoutFormLink()" method="post"></form>
+
         <!-- Self-service menu -->
         <FeatherDropdown v-if="mainMenu.selfServiceMenu" class="menubar-dropdown"
           @mouseenter="hoverItem(SelfServiceIndex)" :modelValue="hoveredItems[SelfServiceIndex]">
@@ -109,9 +111,9 @@
             </FeatherButton>
           </template>
           <FeatherDropdownItem v-for="item in mainMenu.selfServiceMenu.items" :key="item.name || ''"
-            @click="onMenuItemClick(item.url || '', item.isVueLink)">
+            @click="onSelfServiceMenuItemClick(item)">
             <div class="menubar-dropdown-item-content menubar-padding">
-              <a :href="computeLink(item.url || '', item.isVueLink)" class="dropdown-menu-link">
+              <a :href="computeSelfServiceMenuLink(item)" class="dropdown-menu-link">
                 <template v-if="item.icon">
                   <font-awesome-icon :icon="`fa-solid ${item.icon}`"></font-awesome-icon>
                 </template>
@@ -262,6 +264,7 @@ import { useStore } from 'vuex'
 
 import {
   MainMenu,
+  MenuItem,
   TopMenuItem,
   NoticeStatusDisplay,
   NotificationSummary,
@@ -276,6 +279,7 @@ const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
 const dark = 'open-dark'
 const maxNotifications = 2
+const logoutForm = ref()
 const outsideClick = ref()
 const HelpIndex = 0
 const SelfServiceIndex = 1
@@ -404,6 +408,21 @@ const computePluginRelLink = (plugin: Plugin) => {
   return `ui/#/plugins/${plugin.extensionId}/${plugin.resourceRootPath}/${plugin.moduleFileName}`
 }
 
+const computeLogoutFormLink = () => {
+  const logoutMenu = mainMenu.value.selfServiceMenu?.items?.find(x => x.id === 'logout')
+  const baseLink = logoutMenu?.url || 'j_spring_security_logout'
+
+  return computeLink(baseLink, false)
+}
+
+const computeSelfServiceMenuLink = (item: MenuItem) => {
+  if (item.id === 'logout') {
+    return 'javascript:document.vueLogoutForm.submit()'
+  }
+
+  return computeLink(item.url || '', item.isVueLink)
+}
+
 const computeSearchLink = () => {
   if (mainMenu.value.menus) {
     const searchMenus = mainMenu.value?.menus.filter(m => m.name === 'Search')
@@ -418,6 +437,15 @@ const computeSearchLink = () => {
 const onMenuItemClick = (url: string, isVueLink?: boolean | null) => {
   const link = computeLink(url, isVueLink)
   window.location.assign(link)
+}
+
+const onSelfServiceMenuItemClick = (item: MenuItem) => {
+  if (item.id === 'logout') {
+    logoutForm.value.submit()
+    return
+  }
+
+  onMenuItemClick(item.url || '', item.isVueLink)
 }
 
 const onNotificationItemClick = (item: OnmsNotification) => {

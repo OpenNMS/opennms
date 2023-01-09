@@ -1,3 +1,15 @@
+opennms-sentinel (31.0.2-1) stable; urgency=medium
+
+  * New minor release. It fixes a great many bugs and security
+    vulnerabilities, updates the versions of many library dependencies, and
+    introduces some enhancements related to Minion Appliances. The official
+    documentation has also received significant improvements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Dec 2022 16:52:00 -0400
+
 opennms-sentinel (31.0.1-1) stable; urgency=medium
 
   * New minor release. It contains a few small changes including a fix for

@@ -42,11 +42,17 @@ include::../time-sync.adoc[]
 [[setup-postgresql]]
 == Set up PostgreSQL
 
-TIP: PostgreSQL 14 uses the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
+TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
 If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before continuing with the <<install-core-instance, core instance installation>>.
 
 [{tabs}]
 ====
+CentOS/RHEL 9::
++
+--
+include::centos-rhel9/postgresql.adoc[]
+--
+
 CentOS/RHEL 8::
 +
 --
@@ -82,6 +88,12 @@ Do not expose the web console and login pages directly to the Internet without a
 
 [{tabs}]
 ====
+CentOS/RHEL 9::
++
+--
+include::centos-rhel9/install-core.adoc[]
+--
+
 CentOS/RHEL 8::
 +
 --
@@ -120,7 +132,7 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8::
+CentOS/RHEL 7/8/9::
 +
 --
 include::centos-rhel/initialize-core.adoc[]
@@ -149,9 +161,10 @@ To achieve this, use the `scvcli` command line utility to add the credentials, a
 .Create encrypted credentials for the PostgreSQL database connections:
 [source, console]
 ----
-./bin/scvcli set postgres opennms opennms-password
-./bin/scvcli set postgres-admin postgres postgres-password
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password<1>
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 ----
+<1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
 
 .Reference the encrypted credentials stored in the secure credentials vault:
 [source, xml]
@@ -212,7 +225,7 @@ NOTE: If you need the SNMP trap listener on port `162/udp` directly, see the "Bi
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8::
+CentOS/RHEL 7/8/9::
 +
 --
 include::centos-rhel/firewall-core.adoc[]
@@ -246,7 +259,6 @@ Your configuration works as expected when you see an SNMP trap event in the web 
 . Log in to the web UI.
 . Click menu:Status[Events > All Events].
 . Verify that you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
-
 
 == First monitored node
 

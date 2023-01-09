@@ -108,7 +108,7 @@ declare -a SONAR_ARGS=(
 
 if [ "${PR_NUM}" -gt 0 ]; then
   SONAR_ARGS=("${SONAR_ARGS[@]}" "-Dsonar.pullrequest.key=${PR_NUM}" "-Dsonar.pullrequest.branch=${CIRCLE_BRANCH}" "-Dsonar.pullrequest.base=${REFERENCE_BRANCH}")
-  SONAR_ARGS=("${SONAR_ARGS[@]}" "-Dsonar.pullrequest.provider=GitHub" "-Dsonar.pullrequest.github.repository=OpenNMS/opennms")
+  SONAR_ARGS=("${SONAR_ARGS[@]}" "-Dsonar.pullrequest.provider=GitHub" "-Dsonar.pullrequest.github.repository=${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}")
 else
   SONAR_ARGS=("${SONAR_ARGS[@]}" "-Dsonar.branch.name=${CIRCLE_BRANCH}")
   if [ -n "${REFERENCE_BRANCH}" ] && [ "${REFERENCE_BRANCH}" != "${CIRCLE_BRANCH}" ]; then
