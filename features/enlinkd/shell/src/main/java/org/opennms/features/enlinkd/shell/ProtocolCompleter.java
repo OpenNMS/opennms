@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.service.api;
+package org.opennms.features.enlinkd.shell;
 
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.List;
 
-public enum ProtocolSupported {
-    NODES,
-    CDP,
-    LLDP,
-    BRIDGE,
-    OSPF,
-    OSPFAREA,
-    ISIS,
-    USERDEFINED,
-    NETWORKROUTER;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
+import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 
-    public static String[] getCliProtocols() {
-        return new String[]{
-                CDP.name().toLowerCase(Locale.ROOT),
-                LLDP.name().toLowerCase(Locale.ROOT),
-                BRIDGE.name().toLowerCase(Locale.ROOT),
-                OSPF.name().toLowerCase(Locale.ROOT),
-                ISIS.name().toLowerCase(Locale.ROOT)
-        };
+public class ProtocolCompleter implements Completer {
+
+    @Override
+    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
+        StringsCompleter serviceNames = new StringsCompleter();
+        serviceNames.getStrings().addAll(Arrays.asList(ProtocolSupported.getCliProtocols()));
+        return serviceNames.complete(session, commandLine, candidates);
     }
-
 }

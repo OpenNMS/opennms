@@ -1,0 +1,15 @@
+
+= Shell Commands
+
+A number of Karaf Shell commands are available to help administer and diagnose issues related to performance data collection.
+
+NOTE: The enlinkd shell commands must be installed before use.
+
+To use the commands, log in to the Karaf Shell on your system:
+
+[source, console]
+ssh -p 8101 admin@localhost
+
+Install the enhanced linkd shell commands:
+[source, console]
+feature:install opennms-enlinkd-shell

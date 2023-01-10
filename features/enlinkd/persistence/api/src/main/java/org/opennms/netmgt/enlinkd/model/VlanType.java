@@ -94,7 +94,7 @@ public class VlanType implements Comparable<VlanType>, Serializable {
 
     private static final Integer[] s_order = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27};
 
-    private Integer m_vlanType;
+    private final Integer m_vlanType;
 
     private static final Map<Integer, String> vlanTypeMap = new HashMap<>();
 
@@ -129,16 +129,13 @@ public class VlanType implements Comparable<VlanType>, Serializable {
         vlanTypeMap.put(27, "3com/vlanIPX8022SNAPProtocol");
     }
 
-    @SuppressWarnings("unused")
-    private VlanType() {
-    }
 
     public VlanType(Integer vlanType) {
         m_vlanType = vlanType;
     }
 
-    public void setIntCode(Integer vlanType) {
-        m_vlanType = vlanType;
+    public Integer getIntCode() {
+        return m_vlanType;
     }
 
     @Override
@@ -242,8 +239,6 @@ public class VlanType implements Comparable<VlanType>, Serializable {
      * <p>getVlanTypeString</p>
      *
      * @return a {@link java.lang.String} object.
-     */
-    /**
      */
     public static String getVlanTypeString(Integer code) {
         if (vlanTypeMap.containsKey(code))

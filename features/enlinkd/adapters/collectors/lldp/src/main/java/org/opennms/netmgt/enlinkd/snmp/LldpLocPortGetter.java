@@ -45,9 +45,13 @@ public class LldpLocPortGetter extends SnmpGetter {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocPortGetter.class);
 
-    public final static SnmpObjId LLDP_LOC_PORTID_SUBTYPE = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.2");
-    public final static SnmpObjId LLDP_LOC_PORTID         = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
-    public final static SnmpObjId LLDP_LOC_DESCR          = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.4");
+    public final static String LLDP_LOC_PORTID_SUBTYPE = "lldpLocPortIdSubtype";
+    public final static String LLDP_LOC_PORTID = "lldpLocPortId";
+    public final static String LLDP_LOC_DESCR = "lldpLocPortDesc";
+
+    public final static SnmpObjId LLDP_LOC_PORTID_SUBTYPE_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.2");
+    public final static SnmpObjId LLDP_LOC_PORTID_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
+    public final static SnmpObjId LLDP_LOC_DESCR_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.4");
 
 	public LldpLocPortGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
 	    super(peer, client, location);
@@ -55,7 +59,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE), SnmpObjId.get(LLDP_LOC_PORTID), SnmpObjId.get(LLDP_LOC_DESCR)), lldpRemLocalPortNum);
+        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE_OID), SnmpObjId.get(LLDP_LOC_PORTID_OID), SnmpObjId.get(LLDP_LOC_DESCR_OID)), lldpRemLocalPortNum);
     }
 
     public LldpLink getLldpLink(LldpRemTableTracker.LldpRemRow row) {

@@ -235,7 +235,40 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         return subnets;
     }
 
+    @Override
+    public Node getSnmpNode(final String nodeCriteria) {
+        LOG.info("getSnmpNode: nodeCriteria {}", nodeCriteria);
+        try {
+            return getSnmpNode(Integer.parseInt(nodeCriteria));
+        } catch (NumberFormatException e) {
+            LOG.info("getSnmpNode: not nodeId");
+        }
+        String[] values = nodeCriteria.split(":");
+        LOG.info("getSnmpNode: foreignSource: {}, foreignId: {} ", values[0], values[1]);
+        final Criteria criteria = new Criteria(OnmsNode.class);
+        criteria.setAliases(List.of(new Alias(
+                "ipInterfaces",
+                "iface",
+                JoinType.LEFT_JOIN)));
+        criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
+        criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
+                PrimaryType.PRIMARY.getCharCode()));
+        criteria.addRestriction(new EqRestriction("foreignId", values[1]));
+        criteria.addRestriction(new EqRestriction("foreignSource", values[0]));
+        return getNodebyCriteria(criteria);
+    }
 
+    private Node getNodebyCriteria(Criteria criteria) {
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+
+        if (nodes.size() > 0) {
+            final OnmsNode node = nodes.get(0);
+            return new Node(node.getId(), node.getLabel(),
+                    node.getPrimaryInterface().getIpAddress(),
+                    node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
+        }
+        return null;
+    }
     @Override
     public Node getSnmpNode(final int nodeid) {
         final Criteria criteria = new Criteria(OnmsNode.class);
@@ -247,16 +280,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
                                                   PrimaryType.PRIMARY.getCharCode()));
         criteria.addRestriction(new EqRestriction("id", nodeid));
-        final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
-
-        if (nodes.size() > 0) {
-            final OnmsNode node = nodes.get(0);
-            return new Node(node.getId(), node.getLabel(),
-                            node.getPrimaryInterface().getIpAddress(),
-                            node.getSysObjectId(), node.getSysName(),node.getLocation() == null ? null : node.getLocation().getLocationName());
-        } else {
-            return null;
-        }
+        return getNodebyCriteria(criteria);
     }
 
     @Override

@@ -104,5 +104,6 @@
     </onmsgi:service>
 
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon" ref="daemon"/>
+	<onmsgi:service interface="org.opennms.netmgt.config.EnhancedLinkdConfig" ref="linkdConfig"/>
 
 </beans>
