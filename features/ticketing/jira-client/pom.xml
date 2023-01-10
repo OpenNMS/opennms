@@ -129,13 +129,4 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>atlassian-public</id>
-            <url>https://maven.opennms.org/content/repositories/atlassian-public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
