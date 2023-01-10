@@ -9,9 +9,7 @@ Application Perspective Monitoring uses the Minion infrastructure to monitor a s
 When a service is not responsive, an outage is generated with the corresponding perspective information.
 
 .Application Perspective Monitoring diagram
-image::application-perspective-monitoring/apm-operation.png["Network diagram illustrating how remote services are monitored with Application Perspective Monitoring", 700]
-
-The service monitor configuration is looked up in `poller-configuration.xml`.
+image::application-perspective-monitoring/apm-operation.png["Network diagram illustrating how Application Perspective Monitoring monitors remote services", 700]
 
 NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used only for Application Perspective Monitoring.
 
@@ -32,7 +30,7 @@ To configure Application Perspective Monitoring, you must first create an applic
 .Example application configuration
 image::application-perspective-monitoring/configure-app.png["Example of a configured application, including services and locations for perspective monitoring", 800]
 
-After you configure the application, Minions at the specified perspective locations start to monitor its associated services.
+After you configure the application, Minions at the specified perspective locations start to monitor the application's associated services.
 The figure below shows an HTTP outage detected from all perspective locations, and by pollerd:
 
 .HTTP outage detected by Application Perspective Monitoring

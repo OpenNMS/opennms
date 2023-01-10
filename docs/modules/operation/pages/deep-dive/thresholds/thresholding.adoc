@@ -20,7 +20,7 @@ This is the data against which {page-component-title} evaluates thresholds.
 Thresholds trigger events when specific values are met, and notifications and alarms can be configured for these events.
 
 .Thresholding network diagram
-image::thresholding/thresholding-flow.png["Network diagram showing the relationships between thresholding components in {page-component-title}"]
+image::thresholding/thresholding-flow.png["Network diagram showing the relationships among thresholding components in {page-component-title}"]
 
 {page-component-title} uses four thresholding algorithms to trigger an event (see xref:quick-start/thresholding.adoc[] in the Quick Start section for more information).
 {page-component-title} applies these algorithms against any performance data collected by <<deep-dive/performance-data-collection/introduction.adoc#ga-performance-mgmt, collectd>> or pushed to <<deep-dive/telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>.

@@ -151,10 +151,10 @@ You can use this to define a less specific catch-all filter as the default confi
 Use a more specific polling package to overwrite the default settings.
 In the previous example, all IP interfaces in `192.168.1/24` or `2600:/64` will be monitored with ICMP using custom polling, retry, and timeout settings.
 
-The IP interface and service pages show which polling package and service configuration are applied for this specific service.
+The IP interface and service pages show which polling package and service configuration are applied for this specific service, and associated statistics.
 
 .Polling package settings applied to IP interface and service
-image::service-assurance/03_polling-package.png["Screen displaying interface and service statistics for a polling package", 800]
+image::service-assurance/03_polling-package.png["Screen displaying interface and service configuration and statistics for a polling package", 800]
 
 [[ga-pollerd-packages-patterns]]
 == Service patterns
@@ -187,7 +187,7 @@ You can run a test via the Karaf shell to test the {page-component-title} pollin
 [source, console]
 ssh -p 8101 admin@localhost
 
-NOTE: In the shell, you can view the command's help information by using `opennms:poll --help`.
+NOTE: In the shell, you can use `opennms:poll --help` to view the command's help information.
 
 The following example runs the ICMP monitor on a specific IP interface:
 
@@ -195,7 +195,7 @@ The following example runs the ICMP monitor on a specific IP interface:
 opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 
 The output is verbose, which lets you debug monitor configurations.
-Important output lines are as follows:
+Important output lines include the following:
 
 [source, console]
 ----
@@ -230,7 +230,7 @@ For more information, see xref:reference:configuration/filters/filters.adoc[].
 [source, console]
 ssh -p 8101 admin@localhost
 
-NOTE: In the shell, you can view the command's help information by using `opennms:filter --help`.
+NOTE: In the shell, you can use `opennms:filter --help` to view the command's help information.
 
 For example, you can run a filter rule that matches a location:
 

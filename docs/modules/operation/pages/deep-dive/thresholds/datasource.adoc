@@ -78,7 +78,7 @@ To determine the name of the data source, navigate to the *Resource Graphs* scre
 For example, "Number of Processes" or "System Uptime":
 +
 .{page-component-title} performance data metric graphs
-image::thresholding/Graphs.png["Two example performance data metric graphs: one displaying system uptime, and one displaying the number of active processes over time"]
+image::thresholding/Graphs.png["Two example performance data metric graphs: one displays system uptime, and one displays the number of active processes over time"]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
 . Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
