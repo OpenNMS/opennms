@@ -2,7 +2,7 @@
 [[resource-types]]
 = Resource Types
 
-{page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and display in the web UI.
+{page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and displaying in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 
 There are two labels for a resource type.
@@ -38,15 +38,14 @@ The latter file path is specific to SNMP.
 
 You can configure the following persistence selector strategies to specify how to archive performance metrics:
 
-[options="header", cols="2,2"]
+[options="autowidth"]
 |===
-| Class
-| Description
+| Class | Description
 
-| `org.opennms.netmgt.collection.support.PersistAllSelectorStrategy`
+| org.opennms.netmgt.collection.support.PersistAllSelectorStrategy
 | Persist all indexes.
 
-| `org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy`
+| org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy
 | Persist indexes based on JEXL evaluation. +
 This class takes a single parameter, `match-expression`, which defines a JEXL expression.
 On evaluation, this expression should return either `true` (persist index to storage) or `false` (discard data).
@@ -54,32 +53,31 @@ On evaluation, this expression should return either `true` (persist index to sto
 
 == Storage strategies
 
-You can configure the following storage strategies to specify how to store performance metrics in the long-term:
+You can configure the following storage strategies to specify how to store performance metrics in the long term:
 
-[options="header", cols="2,2"]
+[options="autowidth"]
 |===
-| Class
-| Storage Path Value
+| Class | Storage Path Value
 
-| `org.opennms.netmgt.collection.support.IndexStorageStrategy`
+| org.opennms.netmgt.collection.support.IndexStorageStrategy
 | Index
 
-| `org.opennms.netmgt.collection.support.JexlIndexStorageStrategy`
+| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy
 | Value after JexlExpression evaluation.
 
-| `org.opennms.netmgt.collection.support.ObjectNameStorageStrategy`
+| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy
 | Value after JexlExpression evaluation.
 
-| `org.opennms.netmgt.dao.support.FrameRelayStorageStrategy`
-| interface label + '.' + DLCI
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy
+| Interface label + '.' + DLCI
 
-| `org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy`
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy
 | Uses the value from the `hrStorageDescr` column in the `hrStorageTable`, cleaned to make a valid directory name on supported file systems.
 
-| `org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy`
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy
 | Uses the value from an SNMP lookup of OID in the `sibling-column-name` parameter, cleaned to make a valid directory name on supported file systems.
 
-| `org.opennms.protocols.xml.collector.XmlStorageStrategy`
+| org.opennms.protocols.xml.collector.XmlStorageStrategy
 | Index, cleaned to make a valid directory name on supported file systems.
 |===
 
@@ -87,10 +85,11 @@ You can configure the following storage strategies to specify how to store perfo
 
 The `JexlIndexStorageStrategy` class takes two parameters: `index-format`, which is required, and `clean-output`, which is optional.
 
-[options="header", cols="2,2"]
+[caption=]
+.`JexlIndexStorageStrategy` parameters
+[options="autowidth"]
 |===
-| Parameter
-| Description
+| Parameter | Description
 
 | index-format
 | The JexlExpression to evaluate.
@@ -123,8 +122,7 @@ public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
 
 === ObjectNameStorageStrategy
 
-The `ObjectNameStorageStrategy` extends the `JexlIndexStorageStrategy`, and as such, its requirements are the same.
-
+The `ObjectNameStorageStrategy` extends the `JexlIndexStorageStrategy` and, as such, its requirements are the same.
 Extra key/value pairs are added to the JexlContext, which can then be used in the `index-format` template.
 
 The original `index` string is converted to an `ObjectName` and can be referenced as `$\{objectname}`.
@@ -143,15 +141,14 @@ As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX proxy
 </storageStrategy>
 ----
 
-In this example, passing an MBean through this storage strategy will produce a clean `index` value.
-For example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`.
+In this example, passing an MBean through this storage strategy will produce a clean `index` value (for example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`).
 
 === HostFileSystemStorageStrategy
 
 The `HostFileSystemStorageStrategy` class takes no parameters and is marked as deprecated.
 You should replace it with the following definition:
 
-.SiblingColumnStorageStrategy class definition
+.`SiblingColumnStorageStrategy` class definition
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
@@ -168,10 +165,9 @@ You should replace it with the following definition:
 The `SiblingColumnStorageStrategy` class replaces `HostFileSystemStorageStrategy`, which is deprecated.
 It takes the following parameters:
 
-[options="header", cols="2,2"]
+[options="autowidth"]
 |===
-| Parameter
-| Description
+| Parameter | Description
 
 | sibling-column-name
 | Name of another `mibObj` in the same group.
