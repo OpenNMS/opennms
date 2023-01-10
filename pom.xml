@@ -5087,7 +5087,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <!-- Override `eclipse-repository` as it is broken in dependent POMs -->
     <repository>
       <id>opennms-repo</id>
       <name>OpenNMS Mega-Repository</name>

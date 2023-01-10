@@ -61,4 +61,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+<<<<<<< HEAD
+=======
+
+>>>>>>> ranger/mega-maven-repo-f2023
 </project>
