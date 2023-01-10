@@ -28,7 +28,7 @@ Building this configuration in {page-component-title} requires the following inf
 Parent Foreign Source:: The foreign source where the parent node is defined.
 If the parent node is in the same requisition as the child node, this field can be left blank.
 Parent Foreign ID:: The foreign ID of the parent node this node depends on.
-It is possible to define the parent node based on the label, though using the ID is more reliable in the case the node label changes in the future.
+It is possible to define the parent node based on the label, though using the ID is more reliable in case the node label changes in the future.
 IP Interface:: The primary IP interface is used as the critical IP.
 While you do not need to provide the IP interface when configuring the path on the node in a requisition, it is important to make sure the node has the correct IP interface set as the primary for the path calculation.
 
