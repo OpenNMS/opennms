@@ -43,6 +43,7 @@ cd $OPENNMS_HOME/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
 ----
 
+The following shows settings to configure a reload event in the UI:
 .Send `configuration-reload` event in the web UI
 image::service-assurance/04_send-event-WebUI.png["Page displaying configuration settings for generating a configuration-reload event", 700]
 
