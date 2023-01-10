@@ -119,14 +119,6 @@ You can verify the package with the following command: `semodule --list-modules 
 
 Note that this command is based on the `audit2allow` command on a CentOS 8 system.
 
-ifeval::["{page-component-title}" == "Horizon"]
-Debian/Ubuntu::
-+
---
-include::debian-ubuntu/selinux.adoc[]
---
-====
-
 [[setup-postgresql]]
 == Set up PostgreSQL
 
