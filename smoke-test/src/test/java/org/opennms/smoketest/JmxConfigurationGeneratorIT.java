@@ -164,7 +164,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
             setVaadinValue("authenticatePassword", "admin");
 
             // go to next page
-            clickElemente(By.id("next"));
+            clickElement(By.id("next"));
 
             try {
                 setImplicitWait(1, TimeUnit.SECONDS);
