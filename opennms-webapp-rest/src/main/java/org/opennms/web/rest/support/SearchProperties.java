@@ -300,8 +300,8 @@ public abstract class SearchProperties {
 				.put(PrimaryType.PRIMARY.getCode(), PrimaryType.PRIMARY.getCode())
 				.put(PrimaryType.SECONDARY.getCode(), PrimaryType.SECONDARY.getCode())
 				.put(PrimaryType.NOT_ELIGIBLE.getCode(), PrimaryType.NOT_ELIGIBLE.getCode())
-				.build()),
-	}));
+				.build())
+	));
 
 	static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsMonitoringLocation.class, "locationName", "ID", STRING),
