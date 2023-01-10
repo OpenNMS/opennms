@@ -1,3 +1,12 @@
+opennms (31.0.3-1) stable; urgency=medium
+
+  * Minor release which fixes a number of UI and backend bugs, brings one
+    small UI enhancement, patches two potential security vulnerabilities, and
+    formalizes support for RHEL 9 and PostgreSQL 15.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.3/index.html
+
 opennms-minion (31.0.2-1) stable; urgency=medium
 
   * New minor release. It fixes a great many bugs and security
