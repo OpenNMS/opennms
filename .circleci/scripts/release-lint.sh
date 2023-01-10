@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -n "$1" ]; then
   OPENNMS_FULL_VERSION="$1"; shift
