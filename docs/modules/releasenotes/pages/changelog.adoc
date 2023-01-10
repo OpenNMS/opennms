@@ -2,6 +2,51 @@
 [[release-31-changelog]]
 = Changelog
 
+[[releasenotes-changelog-31.0.3]]
+
+== Release 31.0.3
+
+Release 31.0.3 is a minor release which fixes a number of UI and backend bugs, brings one small UI enhancement, patches two potential security vulnerabilities, and formalizes support for RHEL 9 and PostgreSQL 15.
+
+The codename for Horizon 31.0.3 is https://wikipedia.org/wiki/$$Biscotti$$[_Biscotti_].
+
+=== Task
+
+* Geo Map: Add content to the map marker pop up (Issue https://issues.opennms.org/browse/NMS-13698[NMS-13698])
+* Uncontrolled Resource Consumption in Jackson-databind (Issue https://issues.opennms.org/browse/NMS-15030[NMS-15030])
+* Add flow version table to Flow Introduction (Issue https://issues.opennms.org/browse/NMS-15158[NMS-15158])
+* Change OpenNMS Copyright from 2022 to 2023 (Issue https://issues.opennms.org/browse/NMS-15211[NMS-15211])
+* Change OpenNMS Copyright from 2022 to 2023 in the documentation footer (Issue https://issues.opennms.org/browse/NMS-15212[NMS-15212])
+
+=== Enhancement
+
+* Include Minion version on "Manage Minions" page (Issue https://issues.opennms.org/browse/NMS-14493[NMS-14493])
+* Update docs to include RHEL 9 install instructions (Issue https://issues.opennms.org/browse/NMS-15147[NMS-15147])
+* Test and Document Support for PostgreSQL 15 (Issue https://issues.opennms.org/browse/NMS-15151[NMS-15151])
+
+=== Bug
+
+* RRD persistence with default configs in our Horizon OCI points to wrong libjrrd2.so (Issue https://issues.opennms.org/browse/NMS-14778[NMS-14778])
+* Chrome/Edge Web Browser :  Geographical Map Node Counters are wrong (Issue https://issues.opennms.org/browse/NMS-14792[NMS-14792])
+* Form Resubmission From Cache (Issue https://issues.opennms.org/browse/NMS-14933[NMS-14933])
+* Web UI menu item "Endpoints" not in best location (Issue https://issues.opennms.org/browse/NMS-15004[NMS-15004])
+* Incorrect labels on OpenNMS-JMX collection resource types (Issue https://issues.opennms.org/browse/NMS-15044[NMS-15044])
+* Snmp collect reversing to unticked after a few hours (Issue https://issues.opennms.org/browse/NMS-15117[NMS-15117])
+* Log Out does not work from new nav-bar menu (Issue https://issues.opennms.org/browse/NMS-15119[NMS-15119])
+* reloading BSM daemon causes the state of serviceProblem alarm to be reset (Issue https://issues.opennms.org/browse/NMS-15124[NMS-15124])
+* Vue Menubar items obscured by Geo Map (Issue https://issues.opennms.org/browse/NMS-15149[NMS-15149])
+* Flows adapters don't start on Sentinel running as a container. (Issue https://issues.opennms.org/browse/NMS-15161[NMS-15161])
+
+=== Epic
+
+* Formalize support for RHEL 9 and its derivatives (Issue https://issues.opennms.org/browse/NMS-14897[NMS-14897])
+
+=== Story
+
+* Fix smoke test for new UI (Issue https://issues.opennms.org/browse/NMS-14910[NMS-14910])
+* Add JSON support (in additional to GBP) to the Kafka producer for flows (Issue https://issues.opennms.org/browse/NMS-15027[NMS-15027])
+* publish opennms-plugin-cloud 1.0.6 (Issue https://issues.opennms.org/browse/NMS-15142[NMS-15142])
+
 [[releasenotes-changelog-31.0.2]]
 
 == Release 31.0.2
