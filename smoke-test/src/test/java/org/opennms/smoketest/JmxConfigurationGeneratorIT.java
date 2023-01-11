@@ -218,7 +218,9 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
         final String deselectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='deselect']";
         final String selectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='select']";
 
-        clickElement(By.xpath(treeNodeXpath));
+        final By treeNode = By.xpath(treeNodeXpath);
+		scrollToElement(treeNode);
+        clickElement(treeNode);
 
         // F**king Vaadin redraws the *entire* tree with new DOM so it turns out the new
         // PooledDataSource span usually isn't there yet after the last click, even if
