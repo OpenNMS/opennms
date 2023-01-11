@@ -7,40 +7,72 @@ You can create custom commands to send notifications to a platform of your choic
 
 == Default notification commands
 
-callHomePhone, callMobilePhone, and callWorkPhone::
-Ring one of the phone numbers configured in the user's contact information.
-All three commands are implemented using the in-process Asterisk notification strategy, and differ only by which contact field the command uses.
+[caption=]
+.Default {page-component-title} notification commands
+[options="autowidth"]
+|===
+| Command       | Description
 
-ircCat::
-Conveys a notice to an instance of the IRCcat Internet Relay Chat bot.
-Implemented by the in-process IRCcat notification strategy.
+| callHomePhone
+| Calls the home phone number configured in the user's contact information. +
+Uses the in-process Asterisk notification strategy.
 
-javaEmail and javaPagerEmail::
-By far the most commonly used commands, these deliver a notice to a user's `email` or `pagerEmail` contact field value.
-By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, you can easily configure SMS notifications.
-Both commands use the in-process JavaMail notification strategy for implementation.
+| callMobilePhone
+| Calls the mobile phone number configured in the user's contact information. +
+Uses the in-process Asterisk notification strategy.
 
-microblogDM, microblogReply, and microblogUpdate::
-Sends a notice to a user as a direct message, at a user via an at reply, or to everybody as an update via a microblog service with a Twitter v1-compatible API.
-A separate, in-process notification strategy implements each command.
+| callWorkPhone
+| Calls the work phone number configured in the user's contact information. +
+Uses the in-process Asterisk notification strategy.
 
-numericPage and textPage::
-Sends a notice to a user's numeric or alphanumeric pager.
+| ircCat
+| Conveys a notice to an instance of the IRCcat Internet Relay Chat bot. +
+Uses the in-process IRCcat notification strategy.
+
+| javaEmail
+| Delivers a notice to the email address listed in the user's `email` contact field. +
+Uses the in-process JavaMail notification strategy.
+
+| javaPagerEmail
+| Delivers a notice to the email address listed in the user's `pagerEmail` contact field.
+By configuring `pagerEmail` to target an email-to-SMS gateway, you can easily configure SMS notifications. +
+Uses the in-process JavaMail notification strategy.
+
+| microblogDM
+| Sends a notice to a user as a direct message via a microblog service with a Twitter v1-compatible API.
+
+| microblogReply
+| Sends a notice to a user as an at-reply via a microblog service with a Twitter v1-compatible API.
+
+| microblogUpdate
+| Sends a notice to everyone as an update via a microblog service with a Twitter v1-compatible API.
+
+| numericPage
+| Sends a notice to a user's numeric pager. +
 Implemented as an external command using the `qpage` utility.
 
-xmppGroupMessage and xmppMessage::
-Sends a message to an XMPP group or user.
-Implemented with the in-process XMPP notification strategy.
+| textPage
+| Sends a notice to a user's alphanumeric pager. +
+Implemented as an external command using the `qpage` utility.
+
+| xmppGroupMessage
+| Sends a message to an XMPP group. +
+Uses the in-process XMPP notification strategy.
+
+| xmppMessage
+| Sends a message to an XMPP user. +
+Uses the in-process XMPP notification strategy.
+|===
 
 == Custom notification commands
 
-Edit the `$\{OPENNMS_HOME}/etc/notificationCommands.xml` file to customize and extend notification commands.
+You can edit `$\{OPENNMS_HOME}/etc/notificationCommands.xml` to customize and extend notification commands.
 
-IMPORTANT: Use external binary notification commands sparingly as they spawn additional process threads on your core {page-component-title} system.
+IMPORTANT: Use external binary notification commands sparingly, as they spawn additional process threads on your core {page-component-title} system.
 
 === Custom command configuration
 
-The `streamed` attribute dictates whether the substitution text and switch text (or both) will be placed in the command line or in the input stream when the command starts to run.
+The `streamed` attribute dictates whether the substitution text or switch text (or both) will be placed in the command line or in the input stream when the command starts to run.
 
 .Place boilerplate arguments
 [source, xml]
@@ -59,7 +91,7 @@ The `streamed` attribute dictates whether the substitution text and switch text 
 ----
 
 NOTE: When you combine the two (substitution and switch), each is written as a separate argument in the command line.
-For example,
+For example:
 +
 [source, xml]
 ----
@@ -73,16 +105,13 @@ and not:
    -Dnodeid=8
 ----
 
-=== Valid switches from the NotificationManager class
+=== Valid switches from NotificationManager
 
-The NotificationManager class defines some special switches, providing data for the class or command that runs.
+The `NotificationManager` class defines some special switches, providing data for the class or command that is run:
 
-[options="header, autowidth"]
-[cols="3,1,2"]
+[options="autowidth"]
 |===
-| Internal Name
-| Switch Name
-| Source
+| Internal Name | Switch Name   | Source
 
 | PARAM_DESTINATION
 | -d
@@ -167,13 +196,13 @@ The NotificationManager class defines some special switches, providing data for 
 
 === Extended dynamic values
 
-You can pass arbitrary parameters from the notification to the notificationCommand via the <parameter> tag, which can then be used as required.
+You can pass arbitrary parameters from the notification to the `notificationCommand` via the `<parameter>` tag.
 
 == Examples
 
 === SnmpTrapNotificationStrategy
 
-This configuration sends an OpenNMS trap to an external system with the `nodelabel` in the varbind.
+This configuration sends a {page-component-title} trap to an external system with the `nodelabel` in the varbind:
 
 [source, xml]
 ----
@@ -199,7 +228,7 @@ This configuration sends an OpenNMS trap to an external system with the `nodelab
 ----
 
 The parameters defined here are passed to the notification command as switches.
-You will see these in the `notificationCommands.xml` file:
+You can see these in the `notificationCommands.xml` file:
 
 [source, xml]
 ----
@@ -238,7 +267,7 @@ You will see these in the `notificationCommands.xml` file:
 ----
 
 You can define any or none of these parameters and switches.
-However, if you define a parameter in the notification, you must also define a corresponding switch in the notification command.
+If you define a parameter in the notification, however, you must define a corresponding switch in the notification command.
 The defaults are as follows:
 
 [source, properties]
@@ -254,4 +283,4 @@ trapSpecific="1" (any valid trapSpecific ID)
 trapVarbind="OpenNMS Trap Notification" (any string or one or more valid %<event field>% such as "%eventUEI%" in the string)
 ----
 
-The one allowed trap varbind will be sent with the object ID `.1.3.6.1.4.1.5813.20.1` and the object type `DisplayString`.
+The one allowed trap varbind will be sent with the object ID `.1.3.6.1.4.1.5813.20.1` and the `DisplayString` object type.
