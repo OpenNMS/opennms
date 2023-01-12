@@ -1,3 +1,38 @@
+opennms (31.0.3-1) stable; urgency=medium
+
+  * Minor release which fixes a number of UI and backend bugs, brings one
+    small UI enhancement, patches two potential security vulnerabilities, and
+    formalizes support for RHEL 9 and PostgreSQL 15.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Jan 2023 16:28:00 -0400
+
+opennms (31.0.2-1) stable; urgency=medium
+
+  * New minor release. It fixes a great many bugs and security
+    vulnerabilities, updates the versions of many library dependencies, and
+    introduces some enhancements related to Minion Appliances. The official
+    documentation has also received significant improvements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Dec 2022 16:52:00 -0400
+
+opennms (31.0.1-1) stable; urgency=medium
+
+  * New minor release. It contains a few small changes including a fix for
+    unusually large docker images and some other small bug fixes, as well as
+    some updates to the new Quick Start Guide and a fix to the installation
+    instructions for the Cortex plugin.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 16 Nov 2022 09:39:00 -0400
+
 opennms (31.0.0-1) stable; urgency=low
 
   * New major release. It contains several new features, including the Cloud

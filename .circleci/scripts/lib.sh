@@ -13,20 +13,27 @@ if [ -n "${CIRCLE_BRANCH}" ]; then
   # If $CIRCLE_BRANCH _is_ set, dump the local and latest tags,
   # and instead set tags based on the branch.
 
-  # Always include $CIRCLE_BRANCH with "/" turned into "-".
+  # By default, include $CIRCLE_BRANCH with "/" turned into "-".
   DOCKER_BRANCH_TAG="${CIRCLE_BRANCH//\//-}"
   DOCKER_TAGS=("${DOCKER_BRANCH_TAG}")
 
   # In addition, set a few extra tag aliases for convenience.
   case "${CIRCLE_BRANCH}" in
     "master-"*)
-      DOCKER_TAGS=("${DOCKER_TAGS[@]}" "${OPENNMS_VERSION}" "${OPENNMS_SHORT_VERSION}-latest" "${OPENNMS_MAJOR_VERSION}-latest" "latest")
+      # Only point to the "real" version of the release, plus update the floating "latest" tag.
+      # Don't create a master-* tag; it's redundant.
+      DOCKER_TAGS=("${OPENNMS_VERSION}" "latest")
       ;;
     "release-"*)
-      DOCKER_TAGS=("${DOCKER_TAGS[@]}" "${OPENNMS_POM_VERSION}" "${OPENNMS_VERSION}-rc" "${OPENNMS_SHORT_VERSION}-rc" "${OPENNMS_MAJOR_VERSION}-rc" "release-candidate")
+      # Create a tag for the snapshot version, as well as floating "release-candidate".
+      # Don't create a release-*.x tag; it's redundant.
+      DOCKER_TAGS=("${OPENNMS_POM_VERSION}" "release-candidate")
       ;;
     "develop")
-      DOCKER_TAGS=("${DOCKER_TAGS[@]}" "${OPENNMS_POM_VERSION}" "${OPENNMS_MAJOR_VERSION}-dev" "bleeding")
+      # Create a tag for the snapshot version, as well as floating "bleeding".
+      # Also allow "develop" as an alias for "bleeding"; we don't reset $DOCKER_TAGS,
+      # like we do for master and release.
+      DOCKER_TAGS=("${DOCKER_TAGS[@]}" "${OPENNMS_POM_VERSION}" "bleeding")
       ;;
   esac
 fi
@@ -70,7 +77,7 @@ get_reference_branch() {
     local _pr_num="$(get_pr_num || echo 0)"
 
     if [ "${_pr_num}" -gt 0 ] && [ -n "${GITHUB_API_TOKEN}" ]; then
-      local _github_base="$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_API_TOKEN}" "https://api.github.com/repos/OpenNMS/opennms/pulls/${_pr_num}" | jq -r '.base.ref')"
+      local _github_base="$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_API_TOKEN}" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${_pr_num}" | jq -r '.base.ref')"
       if [ -n "${_github_base}" ]; then
         __cache_reference_branch="${_github_base}"
       fi

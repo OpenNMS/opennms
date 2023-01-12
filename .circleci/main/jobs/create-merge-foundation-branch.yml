@@ -2,6 +2,9 @@
   create-merge-foundation-branch:
     executor: base-executor
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |

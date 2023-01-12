@@ -89,13 +89,16 @@ public class KarafShellUtils {
     }
 
     /**
-     * Awaits that the health check succeeds within the given amount of minutes.
+     * Awaits that the health check succeeds within 3 minutes.
      *
      * @throws RuntimeException if the health check does not succeed.
      */
-    public static void awaitHealthCheckSucceeded(InetSocketAddress addr, int timeoutMinutes, String what) {
+    public static void awaitHealthCheckSucceeded(KarafContainer container) {
+        InetSocketAddress addr = container.getSshAddress();
         Objects.requireNonNull(addr);
-        await(what + " health check").atMost(timeoutMinutes, MINUTES)
+        await(container.getDockerImageName() + " health check").atMost(3, MINUTES)
+                .failFast("container is no longer running", () -> !container.isRunning())
+                .pollDelay(Duration.ZERO) // Poll immediately in case it's already up so we can move on
                 .pollInterval(5, SECONDS)
                 .ignoreExceptions()
                 .untilAsserted(() -> testHealthCheckSucceeded(addr));
@@ -108,7 +111,10 @@ public class KarafShellUtils {
      */
     public static void testHealthCheckSucceeded(InetSocketAddress sshAddr) throws Exception {
         final var healthCheckResult = executeHealthCheck(sshAddr);
-        assertThat("health check result: " + healthCheckResult, healthCheckResult.isSuccess());
+        assertThat("health check result: " + healthCheckResult
+                        + "\nMost recent exception from karaf:\n"
+                        + new KarafShell(sshAddr).run("log:exception-display").getLeft(),
+                healthCheckResult.isSuccess());
     }
 
     /**
@@ -136,6 +142,10 @@ public class KarafShellUtils {
      */
     @SuppressWarnings("java:S5443")
     public static void saveCoverage(final KarafContainer container, final String prefix, final String type) {
+        if (!container.isRunning()) {
+            LOG.warn("Container [{}] isn't running, cannot save coverage data", container.getDockerImageName());
+            return;
+        }
         try {
             LOG.info("Triggering code coverage data file dump...");
             KarafShellUtils.triggerCoverageDump(container, "/tmp/jacoco.exec");

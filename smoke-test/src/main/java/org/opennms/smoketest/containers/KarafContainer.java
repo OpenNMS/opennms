@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest.containers;
 
+import java.net.InetSocketAddress;
+
 import org.opennms.smoketest.utils.SshClient;
 import org.testcontainers.containers.Container;
 
@@ -40,4 +42,10 @@ public interface KarafContainer extends Container {
      */
     SshClient ssh();
 
+    /**
+     * Returns the socket address for the Karaf shell in this container.
+     *
+     * @return an InetSocketAddress usable for connecting to the Karaf shell.
+     */
+    InetSocketAddress getSshAddress();
 }

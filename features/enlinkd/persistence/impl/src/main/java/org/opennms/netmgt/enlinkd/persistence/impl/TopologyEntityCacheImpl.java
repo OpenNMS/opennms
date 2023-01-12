@@ -41,6 +41,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
@@ -68,6 +69,9 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
 
     private final LoadingCache<String, List<OspfLinkTopologyEntity>> ospfLinkTopologyEntities = createCache (
             () -> topologyEntityDao.getOspfLinkTopologyEntities());
+
+    private final LoadingCache<String, List<OspfAreaTopologyEntity>> ospfAreaTopologyEntities = createCache (
+            () -> topologyEntityDao.getOspfAreaTopologyEntities());
 
     private final LoadingCache<String, List<LldpLinkTopologyEntity>> lldpLinkTopologyEntities = createCache (
             () -> topologyEntityDao.getLldpLinkTopologyEntities());
@@ -116,6 +120,11 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
     }
 
     @Override
+    public List<OspfAreaTopologyEntity> getOspfAreaTopologyEntities() {
+        return this.ospfAreaTopologyEntities.getUnchecked(CACHE_KEY);
+    }
+
+    @Override
     public List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities() {
         return this.isIsLinkTopologyEntities.getUnchecked(CACHE_KEY);
     }
@@ -157,6 +166,7 @@ public class TopologyEntityCacheImpl implements TopologyEntityCache {
         isIsLinkTopologyEntities.refresh(CACHE_KEY);
         lldpLinkTopologyEntities.refresh(CACHE_KEY);
         ospfLinkTopologyEntities.refresh(CACHE_KEY);
+        ospfAreaTopologyEntities.refresh(CACHE_KEY);
         cdpElementTopologyEntities.refresh(CACHE_KEY);
         isIsElementTopologyEntities.refresh(CACHE_KEY);
         lldpElementTopologyEntities.refresh(CACHE_KEY);

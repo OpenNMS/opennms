@@ -28,25 +28,80 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.snmp.TableTracker;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
-
+import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MtxrNeighborTableTracker extends TableTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(MtxrNeighborTableTracker.class);
 
-    public final static SnmpObjId MTXR_NEIGHBOR_INTERFACE_ID = SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.8");
+    /*
+        mtxrNeighborIndex OBJECT-TYPE
+            SYNTAX ObjectIndex
+            MAX-ACCESS not-accessible
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 1 }
+
+        mtxrNeighborIpAddress OBJECT-TYPE
+            SYNTAX IpAddress
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 2 }
+
+        mtxrNeighborMacAddress OBJECT-TYPE
+            SYNTAX MacAddress
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 3 }
+
+        mtxrNeighborVersion OBJECT-TYPE
+            SYNTAX DisplayString
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 4 }
+
+        mtxrNeighborPlatform OBJECT-TYPE
+            SYNTAX DisplayString
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 5 }
+
+        mtxrNeighborIdentity OBJECT-TYPE
+            SYNTAX DisplayString
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 6 }
+
+        mtxrNeighborSoftwareID OBJECT-TYPE
+            SYNTAX DisplayString
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 7 }
+
+        mtxrNeighborInterfaceID OBJECT-TYPE
+            SYNTAX ObjectIndex
+            MAX-ACCESS read-only
+            STATUS current
+            DESCRIPTION ""
+            ::= { mtxrNeighborTableEntry 8 }
+     */
+
+    public final static SnmpObjId MTXR_NEIGHBOR_INTERFACE_ID_OID = SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.8");
+    public final static String MTXR_NEIGHBOR_INTERFACE_ID = "mtxrNeighborInterfaceID";
 
     public static final SnmpObjId[] s_mtxrneiinterfaceid_elemList = new SnmpObjId[] {
-            MTXR_NEIGHBOR_INTERFACE_ID
+            MTXR_NEIGHBOR_INTERFACE_ID_OID
     };
 
     public static class MtxrNeighborRow extends SnmpRowResult {
@@ -60,16 +115,10 @@ public class MtxrNeighborTableTracker extends TableTracker {
         }
 
         public Integer getMtxrNeighborInterfaceId() {
-            return getValue(MTXR_NEIGHBOR_INTERFACE_ID).toInt();
+            return getValue(MTXR_NEIGHBOR_INTERFACE_ID_OID).toInt();
         }
 
     }
-
-    public Map<Integer, MtxrNeighborRow> getMtxrNeighborMap() {
-        return mtxrNeighborMap;
-    }
-
-    private final Map<Integer, MtxrNeighborRow> mtxrNeighborMap = new HashMap<>();
 
     public MtxrNeighborTableTracker() {
 	    super(s_mtxrneiinterfaceid_elemList);
@@ -88,16 +137,7 @@ public class MtxrNeighborTableTracker extends TableTracker {
     }
 
     public void processMtxrIndexPortRow(final MtxrNeighborRow row) {
-        mtxrNeighborMap.put(row.getMtxrNeighborIndex(), row);
-    }
-
-    public Integer getMtxrinterfaceId(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow) {
-        Integer mtxrInterfaceId = null;
-        if (mtxrNeighborMap.containsKey(mtxrlldprow.getMtxrNeighborIndex())) {
-            mtxrInterfaceId = mtxrNeighborMap.get(mtxrlldprow.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId();
-        }
-       LOG.debug("getLldpLink: neiIndex {} -> interfaceId {}", mtxrlldprow.getMtxrNeighborIndex(), mtxrInterfaceId);
-       return mtxrInterfaceId;
+        System.out.printf("\t\t%s (%s)= %s \n", MTXR_NEIGHBOR_INTERFACE_ID_OID + "." + row.getInstance().toString(), MTXR_NEIGHBOR_INTERFACE_ID, row.getMtxrNeighborInterfaceId());
     }
 
 }

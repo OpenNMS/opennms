@@ -72,6 +72,7 @@ public class UsageStatisticsReportDTOTest {
 
         String expectedJson = "{" +
             "\"alarms\":0," +
+            "\"applianceCounts\":{}," +
             "\"applications\":0," +
             "\"availableProcessors\":null," +
             "\"businessEdgeCount\":0," +

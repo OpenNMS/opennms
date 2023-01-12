@@ -2,12 +2,17 @@
 [[ga-enlinkd-layer-3-link-discovery]]
 = Layer 3 Link Discovery
 
-With Enlinkd it is possible to get links based on network routing applications.
-The following routing daemons can be used to provide a discovery of links based Layer 3 information:
+Using enlinkd, it is possible to get links based on data from network routing applications.
+You can use the following routing daemons to provide links-based Layer 3 information:
 
 * link:https://en.wikipedia.org/wiki/Open_Shortest_Path_First[Open Shortest Path First] (OSPF)
 * link:https://en.wikipedia.org/wiki/IS-IS[Intermediate System to Intermediate System] (IS-IS)
 
-This information is provided by SNMP agents with appropriate MIB support.
-For this reason it is required to have a working SNMP configuration running.
-The link data discovered from Enlinkd is provided in the Topology User Interface and on the detail page of a node.
+SNMP agents that support the appropriate MIBs provide information on Layer 2 network links.
+For this reason, you must have a working SNMP configuration.
+
+The following pages describe the MIBs required to allow link discovery:
+
+* xref:operation:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[Layer 2 LLDP Data]
+* xref:operation:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[Layer 2 CDP Data]
+* xref:operation:deep-dive/topology/enlinkd/layer-2/bridge-discovery.adoc[Layer 2 Bridge Data]

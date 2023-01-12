@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -453,6 +453,8 @@ public class JsmiMibParser implements MibParser, Serializable {
             return "integer";
         if (type.equals(SmiPrimitiveType.IP_ADDRESS)) // IpAddress will be treated as strings.
             return "string";
+        if (type.equals(SmiPrimitiveType.BITS)) // BITS are extension of octet string.
+            return "octetstring";
         return type.toString().replaceAll("_", "").toLowerCase();
     }
 

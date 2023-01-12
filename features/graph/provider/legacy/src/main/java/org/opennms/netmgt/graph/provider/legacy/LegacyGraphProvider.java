@@ -51,53 +51,19 @@ import com.google.common.collect.Lists;
 
 public class LegacyGraphProvider implements GraphProvider {
 
-    private MetaTopologyProvider delegate;
+    private final org.opennms.features.topology.api.topo.GraphProvider graphProvider;
 
     public LegacyGraphProvider(final MetaTopologyProvider metaTopologyProvider) {
-        this.delegate = Objects.requireNonNull(metaTopologyProvider);
+        this.graphProvider = Objects.requireNonNull(metaTopologyProvider).getDefaultGraphProvider();
     }
 
     @Override
     public ImmutableGraph<?, ?> loadGraph() {
-        final GraphInfo graphInfo = getGraphInfo();
-        final BackendGraph currentGraph = delegate.getDefaultGraphProvider().getCurrentGraph();
-        final GenericGraph.GenericGraphBuilder builder = GenericGraph.builder();
-        builder.graphInfo(graphInfo)
-                .id(currentGraph.getNamespace())
-                .property(GenericProperties.Enrichment.RESOLVE_NODES, true)
-                .property(GenericProperties.Enrichment.DEFAULT_STATUS, true);
-
-        currentGraph.getVertices().forEach(legacyVertex -> {
-            final LegacyVertex domainVertex = new LegacyVertex(legacyVertex);
-            final GenericVertex genericVertex = domainVertex.asGenericVertex();
-            builder.addVertex(genericVertex);
-        });
-
-        currentGraph.getEdges().forEach(legacyEdge -> {
-            final LegacyEdge domainEdge = new LegacyEdge(legacyEdge);
-            final GenericEdge genericEdge = domainEdge.asGenericEdge();
-            builder.addEdge(genericEdge);
-        });
-
-        final Set<org.opennms.netmgt.graph.api.VertexRef> focus = delegate.getDefaultGraphProvider().getDefaults().getCriteria().stream()
-                .filter(c -> VertexHopCriteria.class.isAssignableFrom(c.getClass()))
-                .map(c -> (VertexHopCriteria) c)
-                .flatMap(c -> c.getVertices().stream())
-                .map(v -> new org.opennms.netmgt.graph.api.VertexRef(v.getNamespace(), v.getId()))
-                .collect(Collectors.toSet());
-        builder.focus(new Focus(FocusStrategy.SELECTION, Lists.newArrayList(focus)));
-
-        final GenericGraph graph = builder.build();
-        return graph;
+        return LegacyGraph.getImmutableGraphFromTopoGraphProvider(graphProvider);
     }
 
     @Override
     public GraphInfo getGraphInfo() {
-        final org.opennms.features.topology.api.topo.GraphProvider defaultGraphProvider = delegate.getDefaultGraphProvider();
-        final TopologyProviderInfo delegateInfo = defaultGraphProvider.getTopologyProviderInfo();
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(defaultGraphProvider.getNamespace());
-        graphInfo.setDescription(delegateInfo.getDescription());
-        graphInfo.setLabel(delegateInfo.getName());
-        return graphInfo;
+        return LegacyGraph.getGraphInfo(graphProvider);
     }
 }

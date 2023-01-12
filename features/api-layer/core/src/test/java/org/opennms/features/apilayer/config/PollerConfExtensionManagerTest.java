@@ -49,6 +49,7 @@ import org.opennms.integration.api.v1.config.poller.Service;
 import org.opennms.integration.api.xml.ClasspathPollerConfigurationLoader;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.ExcludeRange;
+import org.opennms.netmgt.events.api.EventForwarder;
 
 public class PollerConfExtensionManagerTest {
 
@@ -66,7 +67,7 @@ public class PollerConfExtensionManagerTest {
     @Test
     public void callbackCalled() {
         PollerConfigManager objectToNotify = mock(PollerConfigManager.class);
-        PollerConfExtensionManager instance = new PollerConfExtensionManager(objectToNotify);
+        PollerConfExtensionManager instance = new PollerConfExtensionManager(objectToNotify, mock(EventForwarder.class));
         instance.onBind(pollerConfiguration1, null);
         verify(objectToNotify, times(1)).setExternalData(any(), any());
         instance.onBind(pollerConfiguration2, null);
@@ -76,7 +77,7 @@ public class PollerConfExtensionManagerTest {
     @Test
     public void dataMatches() {
         PollerConfigManager objectToNotify = mock(PollerConfigManager.class);
-        PollerConfExtensionManager instance = new PollerConfExtensionManager(objectToNotify);
+        PollerConfExtensionManager instance = new PollerConfExtensionManager(objectToNotify, mock(EventForwarder.class));
         instance.onBind(pollerConfiguration1, null);
         instance.onBind(pollerConfiguration2, null);
 

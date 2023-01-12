@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 const RequisitionsData = require('../model/RequisitionsData');
@@ -305,7 +305,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl;
       $log.debug('getRequisitions: retrieving requisitions.');
       $http.get(url)
-      .success(function(data) {
+      .then(function getRequisitionsSuccess(response) {
+        const data = response.data;
         var requisitionsData = new RequisitionsData();
         angular.forEach(data['model-import'], function(onmsRequisition) {
           var requisition = new Requisition(onmsRequisition, false);
@@ -321,8 +322,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
             deferred.reject(error);
           }
         );
-      })
-      .error(function(error, status) {
+      }, function getRequisitionsError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getRequisitions: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve the requisitions.' + requisitionsService.internal.errorHelp);
       });
@@ -354,12 +356,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionNamesUrl;
       $log.debug('getRequisitionNames: getting requisition names');
       $http.get(url)
-      .success(function(data) {
+      .then(function getRequisitionNamesSuccess(response) {
+        const data = response.data;
         $log.debug('getRequisitionNames: got requisition names');
         requisitionsService.internal.setCatchedConfigData('requisitionNames', data['foreign-source']);
         deferred.resolve(data['foreign-source']);
-      })
-      .error(function(error, status) {
+      }, function getRequisitionNamesError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getRequisitionNames: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve requisition names.' + requisitionsService.internal.errorHelp);
       });
@@ -383,7 +387,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats';
       $log.debug('updateDeployedStats: retrieving deployed statistics.');
       $http.get(url)
-      .success(function(data) {
+      .then(function updateDeployedStatsSuccess(response) {
+        const data = response.data;
         angular.forEach(requisitionsData.requisitions, function(existingReq) {
           var deployedReq = null;
           angular.forEach(data['foreign-source'], function(r) {
@@ -398,8 +403,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           }
         });
         deferred.resolve(requisitionsData);
-      })
-      .error(function(error, status) {
+      }, function updateDeployedStatsError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('updateDeployedStats: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve the deployed statistics.' + requisitionsService.internal.errorHelp);
       });
@@ -423,11 +429,13 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/' + encodeURIComponent(existingReq.foreignSource);
       $log.debug('updateDeployedStatsForRequisition: retrieving deployed statistics for requisition ' + existingReq.foreignSource);
       $http.get(url)
-      .success(function(deployedReq) {
+      .then(function updateDeployedStatsForRequisitionSuccess(response) {
+        const deployedReq = response.data;
         requisitionsService.internal.updateRequisition(existingReq, deployedReq);
         deferred.resolve(existingReq);
-      })
-      .error(function(error, status) {
+      }, function updateDeployedStatsForRequisitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('updateDeployedStatsForRequisition: GET ' + url + ' failed:', error, status);
         deferred.resolve(existingReq);
       });
@@ -459,8 +467,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getRequisition: getting requisition ' + foreignSource);
       $http.get(url)
-      .success(function(data) {
-        const req = new Requisition(data);
+      .then(function getRequisitionSuccess(response) {
+        const req = new Requisition(response.data);
         $log.debug('getRequisition: got requisition ' + foreignSource);
         requisitionsService.updateDeployedStatsForRequisition(req).then(
           function(updatedReq) { // success;
@@ -472,8 +480,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
             deferred.resolve(updatedReq);
           }
         );
-      })
-      .error(function(error, status) {
+      }, function getRequisitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getRequisition: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -508,16 +517,17 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/import';
       $log.debug('synchronizeRequisition: synchronizing requisition ' + foreignSource + ' with rescanExisting=' + rescanExisting);
       $http({ method: 'PUT', url: url, params: { rescanExisting: rescanExisting }})
-      .success(function(data) {
+      .then(function(response) {
         $log.debug('synchronizeRequisition: synchronized requisition ' + foreignSource);
         const r = requisitionsService.internal.getCachedRequisition(foreignSource);
         if (r) {
           $log.debug('synchronizeRequisition: updating deployed status of requisition ' + foreignSource);
           r.setDeployed(true);
         }
-        deferred.resolve(data);
-      })
-      .error(function(error, status) {
+        deferred.resolve(response.data);
+      }, function(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('synchronizeRequisition: PUT ' + url + ' failed:', error, status);
         deferred.reject('Cannot synchronize the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -549,7 +559,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl;
       $log.debug('addRequisition: adding requisition ' + foreignSource);
       $http.post(url, emptyReq)
-      .success(function() {
+      .then(function addRequisitionSuccess() {
         var requisition = new Requisition(emptyReq, false);
         $log.debug('addRequisition: added requisition ' + requisition.foreignSource);
         const data = requisitionsService.internal.getCachedRequisitionsData();
@@ -558,7 +568,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           data.requisitions.push(requisition);
         }
         deferred.resolve(requisition);
-      }).error(function(error, status) {
+      }, function addRequisitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('addRequisition: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot add the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -602,11 +614,13 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredReqPending, deferredReqDeployed, deferredFSPending, deferredFSDeployed ])
-      .then(function(results) {
+      .then(function deleteRequisitionSuccess(response) {
         $log.debug('deleteRequisition: deleted requisition ' + foreignSource);
         requisitionsService.removeRequisitionFromCache(foreignSource);
-        deferred.resolve(results);
-      }, function(error, status) {
+        deferred.resolve(response.data);
+      }, function deleteRequisitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('deleteRequisition: DELETE operation failed:', error, status);
         deferred.reject('Cannot delete the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -642,7 +656,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       $log.debug('removeAllNodesFromRequisition: removing nodes from requisition ' + foreignSource);
       var url = requisitionsService.internal.requisitionsUrl;
       $http.post(url, requisition)
-      .success(function(data) {
+      .then(function removeAllNodesFromRequisitionSuccess(response) {
+        const data = response.data;
         $log.debug('removeAllNodesFromRequisition: removed nodes from requisition ' + foreignSource);
         requisitionsService.synchronizeRequisition(foreignSource, 'false').then(
           function() { // synchronizeRequisition:success
@@ -658,7 +673,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
             deferred.reject('Cannot synchronize requisition ' + foreignSource);
           }
         );
-      }).error(function(error, status) {
+      }, function removeAllNodesFromRequisitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('removeAllNodesFromRequisition: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -692,8 +709,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url  = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/nodes/' + encodeURIComponent(foreignId);
       $log.debug('getNode: getting node ' + foreignId + '@' + foreignSource);
       $http.get(url)
-      .success(function(data) {
-        var node = new RequisitionNode(foreignSource, data);
+      .then(function getNodeSuccess(response) {
+        const node = new RequisitionNode(foreignSource, response.data);
         $log.debug('getNode: got node ' + foreignId + '@' + foreignSource);
         const requisition = requisitionsService.internal.getCachedRequisition(foreignSource);
         if (requisition) {
@@ -701,8 +718,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           requisition.setNode(node);
         }
         deferred.resolve(node);
-      })
-      .error(function(error, status) {
+      }, function getNodeError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getNode: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve node ' + foreignId + ' from requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -731,7 +749,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes';
       $log.debug('saveNode: saving node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
       $http.post(url, requisitionNode)
-      .success(function(data) {
+      .then(function saveNodeSuccess(response) {
+        const data = response.data;
         $log.debug('saveNode: saved node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
         node.modified = true;
         const requisition = requisitionsService.internal.getCachedRequisition(node.foreignSource);
@@ -769,7 +788,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           }
         }
         deferred.resolve(data);
-      }).error(function(error, status) {
+      }, function saveNodeError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('saveNode: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot save node ' + node.foreignId + ' on requisition ' + node.foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -794,7 +815,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId);
       $log.debug('deleteNode: deleting node ' + node.nodeLabel + ' from requisition ' + node.foreignSource);
       $http.delete(url)
-      .success(function(data) {
+      .then(function deleteNodeSuccess(response) {
+        const data = response.data;
         $log.debug('deleteNode: deleted node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
         const r = requisitionsService.internal.getCachedRequisition(node.foreignSource);
         if (r) {
@@ -808,7 +830,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           }
         }
         deferred.resolve(data);
-      }).error(function(error, status) {
+      }, function deleteNodeError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('deleteNode: DELETE ' + url + ' failed:', error, status);
         deferred.reject('Cannot delete node ' + node.foreignId + ' from requisition ' + node.foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -834,11 +858,12 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getForeignSourceDefinition: getting definition for requisition ' + foreignSource);
       $http.get(url)
-      .success(function(data) {
+      .then(function getForeignSourceDefinitionSuccess(response) {
         $log.debug('getForeignSourceDefinition: got definition for requisition ' + foreignSource);
-        deferred.resolve(data);
-      })
-      .error(function(error, status) {
+        deferred.resolve(response.data);
+      }, function getForeignSourceDefinitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getForeignSourceDefinition: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -864,10 +889,12 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesUrl;
       $log.debug('saveForeignSourceDefinition: saving definition for requisition ' + foreignSource);
       $http.post(url, foreignSourceDef)
-      .success(function(data) {
+      .then(function saveForeignSourceDefinitionSuccess(response) {
         $log.debug('saveForeignSourceDefinition: saved definition for requisition ' + foreignSource);
-        deferred.resolve(data);
-      }).error(function(error, status) {
+        deferred.resolve(response.data);
+      }, function saveForeignSourceDefinitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('saveForeignSourceDefinition: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -944,10 +971,12 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredFSPending, deferredFSDeployed ])
-      .then(function(results) {
+      .then(function deleteForeignSourceDefinitionSuccess(response) {
         $log.debug('deleteForeignSourceDefinition: deleted foreign source definition ' + foreignSource);
-        deferred.resolve(results);
-      }, function(error, status) {
+        deferred.resolve(response.data);
+      }, function deleteForeignSourceDefinitionError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('deleteForeignSourceDefinition: DELETE operation failed:', error, status);
         deferred.reject('Cannot delete the foreign source definition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
@@ -982,12 +1011,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesConfigUrl + '/detectors';
       $log.debug('getAvailableDetectors: getting available detectors');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailableDetectorsSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailableDetectors: got available detectors');
         requisitionsService.internal.setCatchedConfigData('detectorsConfig', data.plugins);
         deferred.resolve(data.plugins);
-      })
-      .error(function(error, status) {
+      }, function getAvailableDetectorsError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailableDetectors: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available detectors.' + requisitionsService.internal.errorHelp);
       });
@@ -1022,12 +1053,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesConfigUrl + '/policies';
       $log.debug('getAvailablePolicies: getting available policies');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailablePoliciesSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailablePolicies: got available policies');
         requisitionsService.internal.setCatchedConfigData('policiesConfig', data.plugins);
         deferred.resolve(data.plugins);
-      })
-      .error(function(error, status) {
+      }, function getAvailablePoliciesError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailablePolicies: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available policies.' + requisitionsService.internal.errorHelp);
       });
@@ -1065,12 +1098,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/' + encodeURIComponent(foreignSource);
       $log.debug('getAvailableServices: getting available services');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailableServicesSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailableServices: got available services');
         requisitionsService.internal.setCatchedConfigData('servicesConfig', data.element);
         deferred.resolve(data.element);
-      })
-      .error(function(error, status) {
+      }, function getAvailableServicesError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailableServices: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available services.' + requisitionsService.internal.errorHelp);
       });
@@ -1107,12 +1142,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesConfigUrl + '/assets';
       $log.debug('getAvailableAssets: getting available assets');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailableAssetsSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailableAssets: got available assets');
         requisitionsService.internal.setCatchedConfigData('assetsConfig', data.element);
         deferred.resolve(data.element);
-      })
-      .error(function(error, status) {
+      }, function getAvailableAssetsError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailableAssets: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available assets.' + requisitionsService.internal.errorHelp);
       });
@@ -1149,12 +1186,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.foreignSourcesConfigUrl + '/categories';
       $log.debug('getAvailableCategories: getting available categories');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailableCategoriesSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailableCategories: got available categories');
         requisitionsService.internal.setCatchedConfigData('categoriesConfig', data.element);
         deferred.resolve(data.element);
-      })
-      .error(function(error, status) {
+      }, function getAvailableCategoriesError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailableCategories: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available categories.' + requisitionsService.internal.errorHelp);
       });
@@ -1178,7 +1217,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.monitoringLocationsUrl;
       $log.debug('getAvailableLocations: getting available locations');
       $http.get(url)
-      .success(function(data) {
+      .then(function getAvailableLocationsSuccess(response) {
+        const data = response.data;
         $log.debug('getAvailableLocations: got available locations');
         const locations = data.location.map((loc) => {
           return loc['location-name'];
@@ -1187,8 +1227,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
         });
         $log.debug('Locations =' + JSON.stringify(locations));
         deferred.resolve(locations);
-      })
-      .error(function(error, status) {
+      }, function getAvailableLocationsError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('getAvailableLocations: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve available locations.' + requisitionsService.internal.errorHelp);
       });
@@ -1367,10 +1408,12 @@ const RequisitionNode  = require('../model/RequisitionNode');
       var url = requisitionsService.internal.snmpConfigUrl + '/' + ipAddress;
       $log.debug('updateSnmpCommunity: updating snmp community for ' + ipAddress);
       $http.put(url, {'readCommunity' : snmpCommunity, 'version' : snmpVersion})
-      .success(function() {
+      .then(function updateSnmpCommunitySuccess() {
         $log.debug('updateSnmpCommunity: updated snmp community for ' + ipAddress);
         deferred.resolve(ipAddress);
-      }).error(function(error, status) {
+      }, function updateSnmpCommunityError(response) {
+        const error = response.data;
+        const status = response.status;
         $log.error('updateSnmpCommunity: PUT ' + url + ' failed:', error, status);
         deferred.reject('Cannot update snmp community for ' + ipAddress + '.' + requisitionsService.internal.errorHelp);
       });

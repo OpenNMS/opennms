@@ -88,6 +88,8 @@ export interface Node {
   assetRecord: {
     longitude: string
     latitude: string
+    description: string
+    maintcontract: string
   }
   categories: Category[]
   createTime: number
@@ -461,6 +463,7 @@ export interface Expression {
 }
 
 export interface Plugin {
+  extensionClass?: string
   extensionId: string
   menuEntry: string
   moduleFileName: string

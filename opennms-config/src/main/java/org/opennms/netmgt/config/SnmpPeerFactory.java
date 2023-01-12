@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.TextEncryptor;
@@ -72,8 +74,6 @@ import org.springframework.core.io.Resource;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-import com.googlecode.concurentlocks.ReadWriteUpdateLock;
-import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 /**
  * This class is the main repository for SNMP configuration information used by
@@ -109,9 +109,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private static AtomicBoolean s_loaded = new AtomicBoolean(false);
 
-    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-    private final Lock m_readLock = m_globalLock.updateLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
 
     /**
      * The config class loaded from the config file
@@ -155,12 +153,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         m_config = config;
     }
 
-    protected Lock getReadLock() {
-        return m_readLock;
+    private Lock getReadLock() {
+        return m_lock.readLock();
     }
 
-    protected Lock getWriteLock() {
-        return m_writeLock;
+    private Lock getWriteLock() {
+        return m_lock.writeLock();
     }
 
     public static synchronized void init() throws IOException {
@@ -252,25 +250,27 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         // Marshal to a string first, then write the string to the file. This
         // way the original config isn't lost if the XML from the marshal is hosed.
         getWriteLock().lock();
-
-        final String marshalledConfig = getSnmpConfigAsString();
-
-        FileOutputStream out = null;
-        Writer fileWriter = null;
         try {
-            if (marshalledConfig != null) {
-                out = new FileOutputStream(file);
-                fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-                fileWriter.write(marshalledConfig);
-                fileWriter.flush();
-                fileWriter.close();
-                if (m_container != null) {
-                    m_container.reload();
+            final String marshalledConfig = getSnmpConfigAsString();
+
+            FileOutputStream out = null;
+            Writer fileWriter = null;
+            try {
+                if (marshalledConfig != null) {
+                    out = new FileOutputStream(file);
+                    fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+                    fileWriter.write(marshalledConfig);
+                    fileWriter.flush();
+                    fileWriter.close();
+                    if (m_container != null) {
+                        m_container.reload();
+                    }
                 }
+            } finally {
+                IOUtils.closeQuietly(fileWriter);
+                IOUtils.closeQuietly(out);
             }
         } finally {
-            IOUtils.closeQuietly(fileWriter);
-            IOUtils.closeQuietly(out);
             getWriteLock().unlock();
         }
     }

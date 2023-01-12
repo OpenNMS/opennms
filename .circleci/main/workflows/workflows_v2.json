@@ -122,6 +122,9 @@
             }
         },
         "build": {
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -133,6 +136,9 @@
         },
         "docs": {
             "job": "build-docs",
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -144,6 +150,9 @@
         },
         "ui": {
             "job": "build-ui",
+            "context": [
+                "CircleCI"
+            ],
             "filters": {
                 "branches": {
                     "ignore": [
@@ -155,6 +164,7 @@
         },
         "integration-test": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -162,6 +172,9 @@
             ]
         },
         "minion-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -174,6 +187,9 @@
             }
         },
         "horizon-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -186,6 +202,9 @@
             }
         },
         "sentinel-rpm-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -199,10 +218,10 @@
         },
         "smoke-test-core": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
-                "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64"
@@ -210,11 +229,11 @@
         },
         "smoke-test-flaky": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "job": "smoke-test-flaky",
             "requires": [
-                "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
@@ -222,10 +241,10 @@
         },
         "smoke-test-minion": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
-                "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
@@ -233,16 +252,19 @@
         },
         "smoke-test-sentinel": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
-                "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64"
             ]
         },
         "sentinel-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -255,11 +277,17 @@
             }
         },
         "tarball-assembly-only": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ]
         },
         "minion-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build"
             ],
@@ -272,6 +300,9 @@
             }
         },
         "horizon-deb-build": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "build",
                 "tarball-assembly-only"
@@ -286,6 +317,7 @@
         },
         "minion-image-single-arch-linux-amd64": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -294,6 +326,7 @@
         },
         "horizon-image-single-arch-linux-amd64": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -302,6 +335,7 @@
         },
         "sentinel-image-single-arch-linux-amd64": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [
@@ -310,6 +344,7 @@
         },
         "minion-image-single-arch": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "variations": [
@@ -317,52 +352,59 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "horizon-image-single-arch": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "sentinel-image-single-arch": {
-            "context": [
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
-        "create-merge-foundation-branch": {
-            "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
-                "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
-                "minion-deb-build",
-                "minion-rpm-build",
-                "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
-                "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
                 "smoke-test-core",
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "horizon-image-single-arch": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "sentinel-image-single-arch": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "create-merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "integration-test"
             ],
             "filters": {
                 "branches": {
@@ -377,6 +419,9 @@
             }
         },
         "merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "tarball-assembly-only"
             ],
@@ -390,24 +435,20 @@
             }
         },
         "create-merge-meridian-branch": {
+            "context": [
+                "CircleCI"
+            ],
             "requires": [
                 "horizon-deb-build",
                 "horizon-rpm-build",
                 "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
                 "minion-deb-build",
                 "minion-rpm-build",
                 "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
                 "sentinel-deb-build",
                 "sentinel-rpm-build",
                 "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "integration-test"
             ],
             "filters": {
                 "branches": {
@@ -423,20 +464,13 @@
                 "horizon-deb-build",
                 "horizon-rpm-build",
                 "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
                 "minion-deb-build",
                 "minion-rpm-build",
                 "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
                 "sentinel-deb-build",
                 "sentinel-rpm-build",
                 "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "integration-test"
             ],
             "filters": {
                 "branches": {
@@ -449,6 +483,7 @@
         },
         "publish": {
             "context": [
+                "CircleCI",
                 "cloudsmith-publish-account",
                 "docker-content-trust",
                 "docker-publish-account",
@@ -458,15 +493,13 @@
                 "horizon-deb-build",
                 "horizon-rpm-build",
                 "horizon-image-single-arch",
-                "horizon-image-single-arch-linux-amd64",
                 "minion-deb-build",
                 "minion-rpm-build",
                 "minion-image-single-arch",
-                "minion-image-single-arch-linux-amd64",
                 "sentinel-deb-build",
                 "sentinel-rpm-build",
                 "sentinel-image-single-arch",
-                "sentinel-image-single-arch-linux-amd64"
+                "integration-test"
             ],
             "filters": {
                 "branches": {
@@ -483,6 +516,7 @@
         },
         "integration-test-with-coverage": {
             "context": [
+                "CircleCI",
                 "docker-publish-account"
             ],
             "requires": [

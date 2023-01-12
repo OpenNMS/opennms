@@ -28,14 +28,17 @@
 
 package org.opennms.core.tracing.jaeger;
 
-import org.opennms.core.tracing.api.TracerWrapper;
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.tracing.api.TracerWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.jaegertracing.Configuration;
+import io.jaegertracing.internal.JaegerTracer;
+import io.jaegertracing.internal.propagation.TextMapCodec;
 import io.jaegertracing.internal.samplers.ConstSampler;
 import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 import io.opentracing.util.GlobalTracer;
 
 /**
@@ -64,8 +67,13 @@ public class JaegerTracerWrapper implements TracerWrapper {
         Configuration config = new Configuration(serviceName)
                 .withSampler(samplerConfig)
                 .withReporter(reporterConfig);
-        GlobalTracer.get();
+        TextMapCodec textMapCodec = new TextMapCodec.Builder().build();
+        JaegerTracer tracer = config.getTracerBuilder()
+                .registerInjector(Format.Builtin.TEXT_MAP, textMapCodec)
+                .registerExtractor(Format.Builtin.TEXT_MAP, textMapCodec)
+                .build();
+        GlobalTracer.registerIfAbsent(tracer);
         LOG.info("Jaeger tracer initialized with serviceName = {}", serviceName);
-        return config.getTracer();
+        return tracer;
     }
 }

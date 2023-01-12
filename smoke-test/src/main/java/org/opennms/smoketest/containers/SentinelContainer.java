@@ -32,13 +32,16 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,11 +50,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
@@ -59,10 +61,10 @@ import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -83,14 +85,16 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
     private static final int SENTINEL_JETTY_PORT = 8181;
+    static final String IMAGE = "opennms/sentinel";
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
     private final SentinelProfile profile;
     private final Path overlay;
+    private Exception waitUntilReadyException = null;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
-        super(ALIAS);
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
@@ -164,6 +168,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         // Copy over the fixed configuration from the class-path
         FileUtils.copyDirectory(new File(MountableFile.forClasspathResource("sentinel-overlay").getFilesystemPath()), home.toFile());
 
+        final Properties sysProps = getSystemProperties();
+        File propsFile = etc.resolve("custom.system.properties").toFile();
+        try (@SuppressWarnings("java:S6300") FileOutputStream fos = new FileOutputStream(propsFile)) {
+            sysProps.store(fos, "Generated");
+        }
+
         Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
         writeFeaturesBoot(bootD.resolve("stest.boot"), getFeaturesOnBoot());
@@ -230,7 +240,21 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             featuresOnBoot.add("sentinel-jsonstore-postgres");
         }
 
+        if (model.isJaegerEnabled()) {
+            featuresOnBoot.add("opennms-core-tracing-jaeger");
+        }
+
         return featuresOnBoot;
+    }
+
+    public Properties getSystemProperties() {
+        final Properties props = new Properties();
+
+        if (model.isJaegerEnabled()) {
+            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+        }
+
+        return props;
     }
 
     public InetSocketAddress getSshAddress() {
@@ -254,6 +278,34 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         return SENTINEL_JETTY_PORT;
     }
 
+    /**
+     * Workaround exception details that are lost from waitUntilReady due to
+     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     */
+    @Override
+    protected void doStart() {
+        try {
+            super.doStart();
+        } catch (Exception e) {
+            if (waitUntilReadyException != null) {
+                // If the caught exception includes waitUntilReadyException, no need to do anything special
+                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
+                    if (cause == waitUntilReadyException) {
+                        throw e;
+                    }
+                }
+                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
+                        + " See cause further below. Intervening org.testcontainer exceptions are shown first:"
+                        + "\n\t\t----------------------------------------------------------\n"
+                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
+                        + "\t\t----------------------------------------------------------",
+                        waitUntilReadyException);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
@@ -263,17 +315,24 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
             try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
-                throw new RuntimeException(e);
+                waitUntilReadyWrapped();
+            } catch (Exception e) {
+                container.waitUntilReadyException = e;
+
+                throw e;
             }
+        }
+
+        protected void waitUntilReadyWrapped() {
+            LOG.info("Waiting for Sentinel health check...");
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
         }
     }

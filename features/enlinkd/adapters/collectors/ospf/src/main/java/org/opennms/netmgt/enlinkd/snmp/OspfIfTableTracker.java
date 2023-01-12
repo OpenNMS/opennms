@@ -32,7 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.OspfIf;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -43,83 +43,102 @@ import org.slf4j.LoggerFactory;
 
 public class OspfIfTableTracker extends TableTracker {
 
-	private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
-	
-    public static final SnmpObjId OSPF_IF_TABLE_ENTRY  = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
-    
-    public final static SnmpObjId OSPF_IF_IPADDRESS    = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
-    public final static SnmpObjId OSPF_ADDRESS_LESS_IF = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
+    private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
 
-    public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[] {
-        
-        /**
-         *  "The IP address of this OSPF interface."
-        */
-        OSPF_IF_IPADDRESS,
-        
-        /**
-         * "For the purpose of easing  the  instancing  of
-         * addressed   and  addressless  interfaces;  This
-         * variable takes the value 0 on  interfaces  with
-         * IP  Addresses,  and  the corresponding value of
-         * ifIndex for interfaces having no IP Address."
-         * 
-         */
-        OSPF_ADDRESS_LESS_IF
-        
+
+    public final static SnmpObjId OSPF_IF_IPADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
+    public final static SnmpObjId OSPF_ADDRESS_LESS_IF_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.2");
+    public final static SnmpObjId OSPF_IF_AREA_ID_OID = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.3");
+
+    public final static String OSPF_IF_IPADDRESS = "ospfIfIpAddress";
+    public final static String OSPF_ADDRESS_LESS_IF = "ospfAddressLessIf";
+    public final static String OSPF_IF_AREA_ID = "ospfIfAreaId";
+
+    public static final SnmpObjId[] s_ospfiftable_elemList = new SnmpObjId[]{
+
+            /*
+             *  "The IP address of this OSPF interface."
+            */
+            OSPF_IF_IPADDRESS_OID,
+
+            /*
+             * "For the purpose of easing  the  instancing  of
+             * addressed   and  addressless  interfaces;  This
+             * variable takes the value 0 on  interfaces  with
+             * IP  Addresses,  and  the corresponding value of
+             * ifIndex for interfaces having no IP Address."
+             *
+            */
+            OSPF_ADDRESS_LESS_IF_OID,
+            /*
+             * A 32-bit integer uniquely identifying the area
+             * to which the interface connects.  Area ID
+             * 0.0.0.0 is used for the OSPF backbone.
+            */
+            OSPF_IF_AREA_ID_OID
+
     };
-    
+
     public static class OspfIfRow extends SnmpRowResult {
 
-    	public OspfIfRow(int columnCount, SnmpInstId instance) {
-			super(columnCount, instance);
-            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
-		}
-    	
-    	public InetAddress getOspfIpAddress() {
-	        return getValue(OSPF_IF_IPADDRESS).toInetAddress();
-	    }
-	    
-	    public Integer getOspfAddressLessIf() {
-	        return getValue(OSPF_ADDRESS_LESS_IF).toInt();
-	    }
-	    
+        public OspfIfRow(int columnCount, SnmpInstId instance) {
+            super(columnCount, instance);
+            LOG.debug("column count = {}, instance = {}", columnCount, instance);
+        }
 
-	public OspfLink getOspfLink() {
-		
-            LOG.debug( "getOspfLink: ospf ip address: {}, address less ifindex {}", 
-                       str(getOspfIpAddress()),
-                       getOspfAddressLessIf());
+        public InetAddress getOspfIpAddress() {
+            return getValue(OSPF_IF_IPADDRESS_OID).toInetAddress();
+        }
 
-            OspfLink link = new OspfLink();
-            link.setOspfIpAddr(getOspfIpAddress());
-            link.setOspfAddressLessIndex(getOspfAddressLessIf());
-            return link;
+        public Integer getOspfAddressLessIf() {
+            return getValue(OSPF_ADDRESS_LESS_IF_OID).toInt();
+        }
 
-	}
+        public InetAddress getOspfIfAreaId() {
+            return getValue(OSPF_IF_AREA_ID_OID).toInetAddress();
+        }
+
+
+        public OspfIf getOspfIf() {
+
+            LOG.debug("getOspfIf: ospf ip address: {}, address less ifindex {}, area id {}",
+                    str(getOspfIpAddress()),
+                    getOspfAddressLessIf(),
+                    str(getOspfIfAreaId()));
+
+            OspfIf ospfIf = new OspfIf();
+            ospfIf.setOspfIfIpaddress(getOspfIpAddress());
+            ospfIf.setOspfIfAddressLessIf(getOspfAddressLessIf());
+            ospfIf.setOspfIfAreaId(getOspfIfAreaId());
+            return ospfIf;
+
+        }
 
     }
-    
-    
+
 
     public OspfIfTableTracker() {
         super(s_ospfiftable_elemList);
     }
 
     public OspfIfTableTracker(final RowCallback rowProcessor) {
-    	super(rowProcessor,s_ospfiftable_elemList);
+        super(rowProcessor, s_ospfiftable_elemList);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
         return new OspfIfRow(columnCount, instance);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processOspfIfRow((OspfIfRow)row);
+        processOspfIfRow((OspfIfRow) row);
     }
 
     /**
@@ -128,6 +147,9 @@ public class OspfIfTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker.OspfIfRow} object.
      */
     public void processOspfIfRow(final OspfIfRow row) {
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_IPADDRESS_OID + "." + row.getInstance().toString(), OSPF_IF_IPADDRESS, str(row.getOspfIpAddress()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_ADDRESS_LESS_IF_OID + "." + row.getInstance().toString(), OSPF_ADDRESS_LESS_IF, row.getOspfAddressLessIf());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_IF_AREA_ID_OID + "." + row.getInstance().toString(), OSPF_IF_AREA_ID, str(row.getOspfIfAreaId()));
     }
 
 

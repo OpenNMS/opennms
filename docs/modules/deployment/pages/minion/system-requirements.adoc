@@ -25,7 +25,8 @@ See the release notes for information about platform support changes, including 
 |===
 | Operating System        | Supported Versions (64-bit)
 | RHEL                    | {compatible-rhel7} +
-                            {compatible-rhel8}
+                            {compatible-rhel8} +
+                            {compatible-rhel9}
 | CentOS                  | {compatible-centos7} +
                             {compatible-centos-stream}
 ifeval::["{page-component-title}" == "Horizon"]

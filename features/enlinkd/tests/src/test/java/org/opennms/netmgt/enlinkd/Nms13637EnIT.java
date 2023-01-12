@@ -52,10 +52,10 @@ import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
 
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_LLDP_ID;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -71,7 +71,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MKTROUTER1_IP, port=161, resource=MKTROUTER1_RESOURCE),
             @JUnitSnmpAgent(host=MKTROUTER2_IP, port=161, resource=MKTROUTER2_RESOURCE),
-            @JUnitSnmpAgent(host=MKT_CISCO_SW01_IP, port=161, resource=MKT_CISCO_SW01_RESOURCE)
+            @JUnitSnmpAgent(host= CISCO_SW01_IP, port=161, resource= CISCO_SW01_RESOURCE)
     })
 
     public void testLldpLinks() {
@@ -93,7 +93,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         assertFalse(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        final OnmsNode ciscohomesw = m_nodeDao.findByForeignId("linkd", MKT_CISCO_SW01_NAME);
+        final OnmsNode ciscohomesw = m_nodeDao.findByForeignId("linkd", CISCO_SW01_NAME);
         final OnmsNode router1 = m_nodeDao.findByForeignId("linkd", MKTROUTER1_NAME);
         final OnmsNode router2 = m_nodeDao.findByForeignId("linkd", MKTROUTER2_NAME);
 
@@ -131,7 +131,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
                     break;
                 case "sw01-office":
                     assertEquals(ciscohomesw.getId().intValue(), node.getNode().getId().intValue());
-                    assertEquals(MKT_CISCO_SW01_LLDP_ID, node.getLldpChassisId());
+                    assertEquals(CISCO_SW01_LLDP_ID, node.getLldpChassisId());
                     ek++;
                     break;
                 default:
@@ -153,7 +153,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
                 Assert.assertEquals("", link.getLldpRemPortDescr());
             } else {
                 Assert.assertEquals(ciscohomesw.getId().intValue(), link.getNode().getId().intValue());
-                switch (link.getLldpLocalPortNum()) {
+                switch (link.getLldpRemIndex()) {
                     case 9:
                     case 73:
                     case 74:

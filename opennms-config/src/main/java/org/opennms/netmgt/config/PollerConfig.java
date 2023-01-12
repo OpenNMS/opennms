@@ -295,8 +295,6 @@ public interface PollerConfig extends PathOutageConfig {
 
     public List<Package> getPackages();
 
-    List<Monitor> getConfiguredMonitors();
-
     /**
      * Find the {@link Package} containing the service selected for the given IP.
      * @param ipAddr the address to select the package for
@@ -345,14 +343,6 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a {@link org.opennms.netmgt.config.poller.Package} object.
      */
     public Package getPackage(String pkgName);
-    
-    /**
-     * <p>getServiceSelectorForPackage</p>
-     *
-     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
-     * @return a {@link org.opennms.netmgt.model.ServiceSelector} object.
-     */
-    public ServiceSelector getServiceSelectorForPackage(Package pkg);
 
     /**
      * <p>getThreads</p>
@@ -363,13 +353,7 @@ public interface PollerConfig extends PathOutageConfig {
 
     public Set<String> getServiceMonitorNames();
 
-    /**
-     * <p>getServiceMonitor</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
-     */
-    public ServiceMonitor getServiceMonitor(String svcName);
+    public Optional<ServiceMonitorLocator> getServiceMonitorLocator(String svcName);
     
     /**
      * <p>update</p>
@@ -392,14 +376,6 @@ public interface PollerConfig extends PathOutageConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
     void addPackage(Package pkg);
-    
-    /**
-     * <p>addMonitor</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @param className a {@link java.lang.String} object.
-     */
-    void addMonitor(String svcName, String className);
 
     /**
      * <p>getLocalConfiguration</p>
@@ -426,7 +402,7 @@ public interface PollerConfig extends PathOutageConfig {
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
 
-    default void setExternalData(List<Package> externalPackages, List<Monitor> externalMonitors) {};
+    void setExternalData(List<Package> externalPackages, List<Monitor> externalMonitors);
 
     /**
      * <p>getReadLock</p>

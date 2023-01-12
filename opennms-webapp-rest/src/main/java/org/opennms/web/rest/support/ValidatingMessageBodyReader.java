@@ -87,7 +87,7 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 
 			}
 
-			return JaxbUtils.unmarshal(clazz, new InputSource(stream), jaxbContext);
+			return JaxbUtils.unmarshal(clazz, new InputSource(stream), jaxbContext, true);
 
 		} catch (final JAXBException e) {
 			LOG.warn("An error occurred while unmarshaling a {} object", clazz.getSimpleName(), e);

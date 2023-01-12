@@ -66,7 +66,8 @@ public class LldpLink implements Serializable {
 	private OnmsNode m_node;
 	
 	private LldpPortIdSubType m_lldpPortIdSubType;
-	private Integer m_lldpLocalPortNum;
+	private Integer m_lldpRemLocalPortNum;
+	private Integer m_lldpRemIndex;
 	private Integer m_lldpPortIfindex;
 	private String m_lldpPortId;
 	private String m_lldpPortDescr;
@@ -83,11 +84,12 @@ public class LldpLink implements Serializable {
 	public LldpLink() {
 	}
 
-    public LldpLink(OnmsNode node, Integer localPortNum, Integer portIfIndex, String portId,
+    public LldpLink(OnmsNode node, Integer lldpRemIndex, Integer lldpRemLocalPortNum, Integer portIfIndex, String portId,
                     String portDescr, LldpPortIdSubType portIdSubType, String remChassisId, String remSysname, LldpChassisIdSubType remChassisIdSubType,
                     String remPortId, LldpPortIdSubType remPortIdSubType, String remPortDescr) {
         setNode(node);
-        setLldpLocalPortNum(localPortNum);
+        setLldpRemIndex(lldpRemIndex);
+		setLldpRemLocalPortNum(lldpRemLocalPortNum);
         setLldpPortIfindex(portIfIndex);
         setLldpPortId(portId);
         setLldpPortDescr(portDescr);
@@ -126,16 +128,23 @@ public class LldpLink implements Serializable {
 		m_node = node;
 	}
 
-    @Column(name="lldpLocalPortNum", nullable = false)
-	public Integer getLldpLocalPortNum() {
-		return m_lldpLocalPortNum;
+    @Column(name="lldpRemLocalPortNum", nullable = false)
+	public Integer getLldpRemLocalPortNum() {
+		return m_lldpRemLocalPortNum;
 	}
 
-	public void setLldpLocalPortNum(Integer lldpLocalPortNum) {
-		m_lldpLocalPortNum = lldpLocalPortNum;
+	public void setLldpRemLocalPortNum(Integer lldpRemLocalPortNum) {
+		m_lldpRemLocalPortNum = lldpRemLocalPortNum;
 	}
 
+	@Column(name="lldpRemIndex", nullable = false)
+	public Integer getLldpRemIndex() {
+		return m_lldpRemIndex;
+	}
 
+	public void setLldpRemIndex(Integer lldpRemIndex) {
+		m_lldpRemIndex = lldpRemIndex;
+	}
 
     @Column(name="lldpPortIdSubType", nullable = false)
     @Type(type="org.opennms.netmgt.enlinkd.model.LldpPortIdSubTypeUserType")
@@ -298,8 +307,10 @@ public class LldpLink implements Serializable {
 
 		return "lldplink: nodeid:[" +
 				getNode().getId() +
-				"]. portnum:[ " +
-				getLldpLocalPortNum() +
+				"]. remLocalPortNum:[ " +
+				getLldpRemLocalPortNum() +
+				"]. remIndex:[ " +
+				getLldpRemIndex() +
 				"], ifindex:[" +
 				getLldpPortIfindex() +
 				"], port type/id:[" +

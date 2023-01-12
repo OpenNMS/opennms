@@ -99,7 +99,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
 /**
@@ -568,7 +568,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         Tracer.SpanBuilder spanBuilder;
         Map<String, String> tracingInfoMap = new HashMap<>();
         sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
         if (context != null) {
             // Span on consumer side will follow the span from producer (minion).
             spanBuilder = tracer.buildSpan(sinkMessage.getModuleId()).addReference(References.FOLLOWS_FROM, context);

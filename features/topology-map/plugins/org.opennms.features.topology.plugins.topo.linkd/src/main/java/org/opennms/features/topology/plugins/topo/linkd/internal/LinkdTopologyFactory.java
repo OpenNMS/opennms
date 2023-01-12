@@ -76,6 +76,9 @@ public class LinkdTopologyFactory {
             if (namespace.equalsIgnoreCase(ProtocolSupported.OSPF.name())) {
                 protocolSupportedSet.add(ProtocolSupported.OSPF);
             }
+            if (namespace.equalsIgnoreCase(ProtocolSupported.OSPFAREA.name())) {
+                protocolSupportedSet.add(ProtocolSupported.OSPFAREA);
+            }
             if (namespace.equalsIgnoreCase(ProtocolSupported.ISIS.name())) {
                 protocolSupportedSet.add(ProtocolSupported.ISIS);
             }

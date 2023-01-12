@@ -1000,7 +1000,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkdConfig.useBridgeDiscovery());
         assertTrue(m_linkdConfig.useIsisDiscovery());
 
-        assertEquals(8, getSupportedProtocolsAsProtocolSupported().size());
+        assertEquals(9, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
@@ -1008,6 +1008,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.LLDP));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.OSPFAREA));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.USERDEFINED));
 
         //update config to suppoort only BRIDGE discovery

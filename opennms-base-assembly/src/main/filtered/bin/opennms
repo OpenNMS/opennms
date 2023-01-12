@@ -1,29 +1,4 @@
 #!/usr/bin/env bash
-#
-# chkconfig:   345 99 01
-# description: Starts and stops the ${install.package.description} network management \
-#              poller and backend processes
-# processname: opennms
-# pidfile:     ${install.pid.file}
-#
-### BEGIN INIT INFO
-# Provides:          opennms
-# Required-Start:    $local_fs $network
-# Should-Start:      $time $named ypbind ${install.postgresql.service}
-# Required-Stop:     $local_fs $network
-# Should-Stop:       $time $named ypbind
-# Default-Start:     3 5
-# Default-Stop:      0 1 2 6
-# Short-Description: ${install.package.description} daemon for network monitoring
-# Description:       ${install.package.description} daemon for network monitoring
-### END INIT INFO
-#
-#  For info on the "chkconfig:" section, see:
-#     http://www.sensi.org/~alec/unix/redhat/sysvinit.html
-#
-#  For info on the "BEGIN INIT INFO" section, see:
-#     http://www.suse.de/~mmj/Package-Conventions/
-#
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
@@ -419,6 +394,17 @@ doStart(){
 		return 1
 	fi
 
+	# make sure the directory exists for writing a pidfile
+	local _piddir="$(dirname "${OPENNMS_PIDFILE}")"
+	if [ ! -e "${_piddir}" ]; then
+		mkdir -p "${_piddir}"
+	fi
+
+	if [ -e "${OPENNMS_PIDFILE}" ]; then
+		echo "WARNING: starting OpenNMS, but PID file ${OPENNMS_PIDFILE} already exists."
+		rm "${OPENNMS_PIDFILE}"
+	fi
+
 	##########################################################################
 	# Run opennms with the "-t" option to enable the Java Platform Debugging
 	# Architecture. This will open a server socket on port 8001 that can be
@@ -495,6 +481,7 @@ doStart(){
 	# wait for startup
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$START_TIMEOUT" ]; do
+		sleep $STATUS_WAIT
 		if doStatus "$@"; then
 			return 0
 		fi
@@ -504,7 +491,6 @@ doStart(){
 			echo "Started ${install.package.description}, but it stopped running: for details see $REDIRECT" >&2
 			return 1
 		fi
-		sleep $STATUS_WAIT
 		((STATUS_ATTEMPTS++))
 	done
 
@@ -1027,7 +1013,8 @@ if [ "$myuser" != "$RUNAS" ]; then
 		exec "${_cmd[@]}"
 	fi
 	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
-    echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
+	# shellcheck disable=SC2145
+	echo "       To correct this, try 'sudo -u $RUNAS $0 $@'" >&2
 	echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
 	echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
 	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
@@ -1035,9 +1022,12 @@ if [ "$myuser" != "$RUNAS" ]; then
 	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
-if [ -e "${OPENNMS_PIDFILE}" ]; then
-	# if the file already exists, make sure it's writable in the future
-	chown "${RUNAS}" "${OPENNMS_PIDFILE}"
+if [ "$SYSTEMD" -ne 1 ]; then
+	SYSTEMCTL="$(command -v systemctl 2>/dev/null || which systemctl 2>/dev/null || :)"
+	if [ -x "$SYSTEMCTL" ]; then
+		echo 'WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.'
+		echo 'You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.'
+	fi
 fi
 
 case "$COMMAND" in

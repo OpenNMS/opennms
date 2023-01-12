@@ -11,6 +11,7 @@
 ** xref:quick-start/service-assurance.adoc[]
 ** xref:quick-start/notification-config.adoc[]
 ** xref:quick-start/visualize-data.adoc[]
+** xref:quick-start/beyond-qs.adoc[]
 
 * xref:deep-dive/introduction.adoc[]
 
@@ -108,6 +109,7 @@
 
 ** xref:deep-dive/notifications/introduction.adoc[]
 *** xref:deep-dive/notifications/concepts.adoc[]
+*** xref:deep-dive/notifications/configuration.adoc[]
 *** xref:deep-dive/notifications/bonus-strategies.adoc[]
 **** xref:deep-dive/notifications/strategies/mattermost.adoc[]
 **** xref:deep-dive/notifications/strategies/slack.adoc[]
@@ -125,6 +127,7 @@
 *** xref:deep-dive/topology/topology.adoc[]
 *** xref:deep-dive/topology/graphml-asset-topology-provider.adoc[]
 *** xref:deep-dive/topology/enlinkd/introduction.adoc[]
+**** xref:deep-dive/topology/enlinkd/shell/introduction.adoc[]
 **** xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[]
 ***** xref:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[]
 ***** xref:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[]

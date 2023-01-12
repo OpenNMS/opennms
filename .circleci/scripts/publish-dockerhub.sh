@@ -40,8 +40,9 @@ for TYPE in horizon minion sentinel; do
   # in dockerhub, only push the "branchname-arch" version of the individual ones
   find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
-    _internal_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
-    _arch_tag="$(printf '%s' "${_internal_tag}" | sed -e "s,^${TYPE}-,,")"
+    _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
+    _internal_tag="opennms/${_file_tag}"
+    _arch_tag="$(printf '%s' "${_file_tag}" | sed -e "s,^${TYPE}-,,")"
 
     _push_tag="${DOCKER_BRANCH_TAG}-${_arch_tag}"
     docker tag "${_internal_tag}" "${DOCKER_REPO}:${_push_tag}"

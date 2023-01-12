@@ -35,11 +35,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+
+import com.google.common.base.MoreObjects;
 
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
@@ -58,8 +60,8 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     }
 
     @Override
-    public CompletableFuture<ServiceMonitor> getServiceMonitor(ServiceMonitorRegistry registry) {
-        return registry.getMonitorFutureByClassName(m_serviceClass);
+    public ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry) {
+        return registry.getMonitorByClassName(m_serviceClass);
     }
 
     /**
@@ -82,4 +84,29 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         return m_serviceClass;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DefaultServiceMonitorLocator)) {
+            return false;
+        }
+        final DefaultServiceMonitorLocator that = (DefaultServiceMonitorLocator) o;
+        return Objects.equals(this.m_serviceName, that.m_serviceName) &&
+               Objects.equals(this.m_serviceClass, that.m_serviceClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.m_serviceName, this.m_serviceClass);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                          .add("serviceName", this.m_serviceName)
+                          .add("serviceClass", this.m_serviceClass)
+                          .toString();
+    }
 }

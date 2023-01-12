@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { Plugin } from '@/types'
 import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import Home from '@/containers/Home.vue'
 import FileEditor from '@/containers/FileEditor.vue'
@@ -12,6 +13,26 @@ const { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded } = useRole()
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 
+// for backward compatibility with legacy OpenNMS plugins
+// should eventually be removed when plugins are compliant with new schema
+const isLegacyPlugin = (plugin: Plugin) => {
+  if (plugin.extensionClass &&
+      (plugin.extensionClass === 'org.opennms.plugins.cloud.ui.CloudUiExtension' ||
+       plugin.menuEntry === 'Cloud Services') &&
+       plugin.moduleFileName === 'uiextension.es.js') {
+    return true
+  }
+
+  if (plugin.extensionClass &&
+      (plugin.extensionClass === 'org.opennms.alec.ui.UIExtension' ||
+       plugin.menuEntry === 'ALEC') &&
+       plugin.moduleFileName === 'uiextension.es.js') {
+    return true
+  }
+
+  return false
+}
+
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
   routes: [
@@ -21,6 +42,8 @@ const router = createRouter({
       component: Home
     },
     {
+      // for compatibility with legacy plugins
+      // should be removed when all plugins have unique 'extensionId' and follow new pattern
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
       name: 'Plugin',
       props: true,
@@ -45,7 +68,18 @@ const router = createRouter({
     {
       path: '/configuration',
       name: 'Configuration',
-      component: () => import('@/containers/ProvisionDConfig.vue')
+      component: () => import('@/containers/ProvisionDConfig.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'No role access to external requisitions.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
     },
     {
       path: '/logs',
@@ -149,3 +183,4 @@ const router = createRouter({
 router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
+export { isLegacyPlugin }

@@ -28,6 +28,12 @@ include::../../time-sync.adoc[]
 
 [{tabs}]
 ====
+CentOS/RHEL 9::
++
+--
+include::centos-rhel9/install-sentinel.adoc[]
+--
+
 CentOS/RHEL 8::
 +
 --

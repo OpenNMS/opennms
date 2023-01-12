@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -40,9 +40,11 @@ import org.slf4j.LoggerFactory;
 public class IsisCircTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisCircTableTracker.class);
 
-    public final static SnmpObjId ISIS_CIRC_IFINDEX     = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
-    public final static SnmpObjId ISIS_CIRC_ADMIN_STATE = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
+    public final static SnmpObjId ISIS_CIRC_IFINDEX_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
+    public final static SnmpObjId ISIS_CIRC_ADMIN_STATE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
 
+    public final static String ISIS_CIRC_IFINDEX = "isisCircIfIndex";
+    public final static String ISIS_CIRC_ADMIN_STATE = "isisCircAdminState";
     public static final SnmpObjId[] isisCirctable_elemList = new SnmpObjId[] {
         /*
          *  isisCircIfIndex OBJECT-TYPE
@@ -54,8 +56,8 @@ public class IsisCircTableTracker extends TableTracker {
          *         circuit corresponds.  This object cannot be modified
          *         after creation."
          *  ::= { isisCircEntry 2 }    
-         */     
-    	ISIS_CIRC_IFINDEX,
+         */
+            ISIS_CIRC_IFINDEX_OID,
     	
     	/*
     	 *  isisCircAdminState OBJECT-TYPE
@@ -67,7 +69,7 @@ public class IsisCircTableTracker extends TableTracker {
          *      DEFVAL { off }
          *  ::= { isisCircEntry 3 }
     	 */
-    	ISIS_CIRC_ADMIN_STATE
+            ISIS_CIRC_ADMIN_STATE_OID
 
     };
     
@@ -83,11 +85,11 @@ public class IsisCircTableTracker extends TableTracker {
 	    }
 	    
 	    public Integer getIsisCircIfIndex() {
-	        return getValue(ISIS_CIRC_IFINDEX).toInt();
+	        return getValue(ISIS_CIRC_IFINDEX_OID).toInt();
 	    }
 	    
 	    public Integer getIsisCircAdminState() {
-	        return getValue(ISIS_CIRC_ADMIN_STATE).toInt();
+	        return getValue(ISIS_CIRC_ADMIN_STATE_OID).toInt();
 	    }
 	    
 	    public IsIsLink getIsisLink() {
@@ -126,6 +128,8 @@ public class IsisCircTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker.IsIsCircRow} object.
      */
     public void processIsisCircRow(final IsIsCircRow row) {
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_CIRC_IFINDEX_OID + "." + row.getInstance().toString(), ISIS_CIRC_IFINDEX, row.getIsisCircIfIndex());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_CIRC_ADMIN_STATE_OID + "." + row.getInstance().toString(), ISIS_CIRC_ADMIN_STATE, row.getIsisCircAdminState(), IsisAdminState.getTypeString(row.getIsisCircAdminState()));
     }
 
 

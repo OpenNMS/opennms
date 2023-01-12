@@ -60,6 +60,9 @@ public class UsageStatisticsIT {
         createNode("Cisco #2", "test-fs", "cisco2", ".1.3.6.1.4.1.9.1.799");
         createNode("Cisco #3", "test-fs", "cisco3", ".1.3.6.1.4.1.9.1.799");
         createNode("Juniper #1", "test-fs", "juniper1", ".1.3.6.1.4.1.2636.1.1.1.2.137");
+        createNode("Virtual Appliance #1", "test-fs", "appliance1", ".1.3.6.1.4.1.5813.42.5.1");
+        createNode("Virtual Appliance #2", "test-fs", "appliance2", ".1.3.6.1.4.1.5813.42.5.1");
+        createNode("Mini Appliance #1", "test-fs", "appliance3", ".1.3.6.1.4.1.5813.42.5.2");
     }
 
     private static void createNode(final String label, final String foreignSource, final String foreignId, final String sysObjectId) {
@@ -138,9 +141,14 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("monitoredServices"), is(0L));
         assertThat((long) usageReport.get("ipInterfaces"), is(0L));
         assertThat((long) usageReport.get("snmpInterfaces"), is(0L));
-        assertThat((long) usageReport.get("nodes"), is(4L));
+        assertThat((long) usageReport.get("nodes"), is(7L));
         assertThat((long) usageReport.get("events"), greaterThan(1L));
         assertThat((long) usageReport.get("alarms"), is(0L));
         assertThat((long) usageReport.get("minions"), is(0L));
+
+        final Map<String, Integer> appliances = (Map<String, Integer>)usageReport.get("applianceCounts");
+        assertThat((long) appliances.get("virtualAppliance"), is(2L));
+        assertThat((long) appliances.get("applianceMini"), is(1L));
+        assertThat((long) appliances.get("appliance1U"), is(0L));
     }
 }
