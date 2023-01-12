@@ -80,7 +80,6 @@ import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
@@ -184,8 +183,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
 
         withExposedPorts(exposedPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);

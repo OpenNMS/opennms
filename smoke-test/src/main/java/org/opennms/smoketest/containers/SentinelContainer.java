@@ -77,7 +77,6 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.collect.ImmutableMap;
 
 public class SentinelContainer extends GenericContainer<SentinelContainer> implements KarafContainer<SentinelContainer>, TestLifecycleAware {
@@ -120,10 +119,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
                 .waitingFor(new WaitForSentinel(this))
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                })
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits)
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -286,7 +282,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
     /**
      * Workaround exception details that are lost from waitUntilReady due to
-     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     * <a href="https://github.com/testcontainers/testcontainers-java/pull/6167">this issue</a>.
      */
     @Override
     protected void doStart() {

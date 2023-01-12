@@ -31,8 +31,6 @@ package org.opennms.smoketest.containers;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Network;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
-
 public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
 
     public CassandraContainer() {
@@ -40,9 +38,6 @@ public class CassandraContainer extends org.testcontainers.containers.CassandraC
         withEnv("JVM_OPTS", "-Xms512m -Xmx512m")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.CASSANDRA_ALIAS)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                });
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
     }
 }
