@@ -76,6 +76,7 @@ import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionOverallMonitor;
 import org.opennms.netmgt.provision.service.operations.RequisitionImport;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -313,7 +314,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, String monitorKey) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null, monitorHolder.getMonitor(monitorKey));
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null, monitorHolder.getMonitor(monitorKey), monitorHolder.getOverallMonitorForMetric(monitorKey));
     }
 
     /**
@@ -324,7 +325,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location, String monitorKey) {
         LOG.info("createNewSuspectScan called with IP: {}, foreignSource {} and monitorKey {}", ipAddress, foreignSource == null ? "null" : foreignSource, monitorKey);
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitor(monitorKey));
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location, monitorHolder.getMonitor(monitorKey), monitorHolder.getOverallMonitorForMetric(monitorKey));
     }
 
     /**
@@ -335,7 +336,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId, String monitorKey) {
         LOG.info("createForceRescanScan called with nodeId: "+nodeId);
-        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey));
+        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey), monitorHolder.getOverallMonitorForMetric(monitorKey));
     }
 
     //Helper functions for the schedule
@@ -540,6 +541,8 @@ public class Provisioner implements SpringServiceDaemon {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
             monitor.beginImporting();
+            ProvisionOverallMonitor overallMonitor = monitorHolder.createOverallMonitor(url);
+            overallMonitor.start();
             final Resource resource;
 
             final URL u = new URL(url);
@@ -568,6 +571,7 @@ public class Provisioner implements SpringServiceDaemon {
                 foreignSource = ri.getRequisition().getForeignSource();
             }
             monitor.finishImporting();
+            overallMonitor.end();
             LOG.info("Finished Importing: {}", monitor);
     
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);

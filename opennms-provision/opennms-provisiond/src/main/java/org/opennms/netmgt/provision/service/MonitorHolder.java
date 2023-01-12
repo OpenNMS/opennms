@@ -43,8 +43,11 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * It is the holder class for all provisiond performance monitors. It also creates a JmxReporter.
@@ -55,6 +58,9 @@ public class MonitorHolder {
     private final DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private LoadingCache<String, TimeTrackingMonitor> monitors;
+    private final ConcurrentHashMap<String, TimeTrackerOverallMonitor> overallMonitors = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> metricAssociation = new ConcurrentHashMap<>();
+    private static final int MAX_METRIC_ASSOCIATION_SIZE = 30;
     private MetricRegistry metricRegistry = new MetricRegistry();
     private JmxReporter jmxReporter;
 
@@ -108,7 +114,9 @@ public class MonitorHolder {
      */
     public TimeTrackingMonitor createMonitor(String name, ImportJob job) throws ExecutionException {
         monitors.cleanUp();
-        return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode())));
+        String metricName = MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode()));
+        updateAssociations(name, metricName);
+        return monitors.get(metricName);
     }
 
     /**
@@ -120,7 +128,44 @@ public class MonitorHolder {
      */
     public TimeTrackingMonitor createMonitor(String name) throws ExecutionException {
         monitors.cleanUp();
-        return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat)));
+        String metricName = MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat));
+        updateAssociations(name, metricName);
+        return monitors.get(metricName);
+    }
+
+    /**
+     * Keep track of metrics and overall metrics
+     *
+     * @param key
+     * @param metricName
+     */
+    public void updateAssociations(final String key, final String metricName) {
+
+        if (!metricAssociation.containsKey(key)) {
+            var names = new ConcurrentLinkedDeque<String>();
+            names.add(metricName);
+            metricAssociation.put(key, names);
+        } else if (metricAssociation.containsKey(key) && !metricAssociation.get(key).contains(metricName)) {
+            metricAssociation.get(key).addFirst(metricName);
+        }
+        if (metricAssociation.get(key).size() > MAX_METRIC_ASSOCIATION_SIZE) {
+            metricAssociation.get(key).removeLast();
+        }
+
+    }
+
+    /**
+     * It will return existing overall monitor or create new one
+     *
+     * @param name
+     * @return
+     */
+    public TimeTrackerOverallMonitor createOverallMonitor(String name) {
+        if (overallMonitors.containsKey(name)) {
+            return overallMonitors.get(name);
+        } else {
+            return overallMonitors.put(name, new TimeTrackerOverallMonitor(name, metricRegistry));
+        }
     }
 
     /**
@@ -141,6 +186,23 @@ public class MonitorHolder {
     public Map<String, TimeTrackingMonitor> getMonitors() {
         monitors.cleanUp();
         return monitors.asMap();
+    }
+
+    public TimeTrackerOverallMonitor getOverallMonitor(String key) {
+        return overallMonitors.get(key);
+    }
+
+    public TimeTrackerOverallMonitor getOverallMonitorForMetric(String metricName) {
+        AtomicReference<String> keyName = new AtomicReference<>();
+        metricAssociation.forEach((key, metrics) -> {
+            if (metrics.contains(metricName))
+                keyName.set(key);
+        });
+        return keyName.get() == null ? null : overallMonitors.get(keyName.get());
+    }
+
+    public Map<String, TimeTrackerOverallMonitor> getOverallMonitors() {
+        return overallMonitors;
     }
 
     public void shutdown() {
