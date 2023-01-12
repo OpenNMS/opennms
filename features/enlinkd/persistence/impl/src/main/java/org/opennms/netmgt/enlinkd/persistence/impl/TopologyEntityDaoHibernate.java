@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -89,7 +89,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     public List<IpInterfaceTopologyEntity> getIpTopologyEntities() {
         return (List<IpInterfaceTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity(" +
-                        "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
+                        "i.id, i.ipAddress, i.isManaged, i.snmpPrimary, i.node.id, i.snmpInterface.id) " +
                         "from org.opennms.netmgt.model.OnmsIpInterface i");
     }
 
