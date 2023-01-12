@@ -30,12 +30,15 @@ package org.opennms.smoketest.containers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -69,9 +72,11 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
         // This can take a few seconds, so we only do it on failures
         if (failed) {
             try {
-                Path output = Paths.get("target", "logs", prefix, ALIAS, "opennms-traces.json");
-                FileUtils.copyURLToFile(getURL("/api/traces?service=OpenNMS"), output.toFile());
-                LOG.info("Jaeger trace JSON: {}", output.toUri());
+                Path opennms = Paths.get("target", "logs", prefix, ALIAS, "opennms-traces.json");
+                FileUtils.copyURLToFile(getURL("/api/traces?service=" +
+                        URLEncoder.encode(SystemInfoUtils.getInstanceId(), Charset.defaultCharset())),
+                        opennms.toFile());
+                LOG.info("OpenNMS Jaeger trace JSON: {}", opennms.toUri());
             } catch (Exception e) {
                 System.err.println("Received exception while trying to save all Jaeger traces");
                 e.printStackTrace(System.err);

@@ -41,6 +41,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 
@@ -79,7 +80,7 @@ public class JaegerTracingIT {
                 .until(
                         () -> {
                             given().accept(ContentType.JSON)
-                                    .param("service", "OpenNMS")
+                                    .param("service", SystemInfoUtils.getInstanceId())
                                     .param("operation", "trapd.listener.config")
                                     .param("limit", 1)
                                     .get("/traces")
@@ -103,7 +104,7 @@ public class JaegerTracingIT {
                         givenWithFailureDetails((spec) -> {
                             spec
                                     .accept(ContentType.JSON)
-                                    .param("service", "OpenNMS")
+                                    .param("service", SystemInfoUtils.getInstanceId())
                                     .param("operation", "Echo")
                                     .param("limit", 1)
                                     .get("/traces")
