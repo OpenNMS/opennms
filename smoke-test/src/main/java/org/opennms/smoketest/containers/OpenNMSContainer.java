@@ -216,7 +216,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(new WaitForOpenNMS(this))
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
                 .addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -474,7 +474,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
     }
 
-    private static class WaitForOpenNMS extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
+    public static class WaitForOpenNMS extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final OpenNMSContainer container;
 
         public WaitForOpenNMS(OpenNMSContainer container) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,56 +27,31 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
+import java.nio.file.Path;
 
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
-import org.testcontainers.containers.Container;
+import org.opennms.smoketest.utils.TestContainerUtils;
 
 @Category(MinionTests.class)
-public class MinionStartupIT {
-
-    final static Map<String, String> configuration = new TreeMap<>();
-
-    static {
-        configuration.put("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
-        configuration.put("MINION_LOCATION", "Fulda");
-        configuration.put("MINION_ID", "Minion-Fulda");
-    }
-
+public class MinionOverlayIT {
     @ClassRule
     public final static OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
-            // check Minion startup without files in 'opennms.properties.d' directory, see NMS-13347
             .withMinions(new MinionProfile.Builder()
-                    .withId(configuration.get("MINION_ID"))
-                    .withLocation(configuration.get("MINION_LOCATION"))
-                    .withLegacyConfiguration(configuration) // this will prevent any configuration files from being created
+                    // Copy a random file to the overlay for testing
+                    .withFile("empty-discovery-configuration.xml", "random-overlay-test-file")
                     .build())
             .build());
 
     @Test
-    public void testMinionRunning() throws IOException, InterruptedException {
-        assertTrue(stack.minion().isRunning());
-
-        // Do a sanity check and make sure that opennms.properties.d doesn't exist
-        var dir = "/opt/minion/etc/opennms.properties.d";
-        Container.ExecResult ls = stack.minion().execInContainer("/bin/ls", "-ld", dir);
-        assertNotEquals("The directory " + dir + " shouldn't be created in the container"
-                        + " when in legacy configuration mode, but 'ls -ld " + dir + "' returned a 0 exit code."
-                        + " Output from ls:\n"
-                        + ls.getStdout(),
-                0, ls.getExitCode());
-
+    public void testFileOverlay() {
+        // This will throw an exception if the file doesn't exist
+        TestContainerUtils.getFileFromContainerAsString(stack.minion(),
+                Path.of("/opt/minion/etc/random-overlay-test-file"));
     }
 }
