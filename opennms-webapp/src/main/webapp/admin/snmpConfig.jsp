@@ -32,6 +32,7 @@
 <%@page import="com.google.common.base.Strings"%>
 <%@page import="org.opennms.web.svclayer.model.SnmpInfo"%>
 <%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page language="java" contentType="text/html" session="true"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
@@ -496,7 +497,7 @@ if (request.getAttribute("success") != null) {
           Read Community String
           </label>
           <div class="col-sm-8">
-            <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=readCommunityString%>">
+            <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=WebSecurityUtils.sanitizeString(readCommunityString)%>">
             <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
           </div>
         </div>
@@ -506,7 +507,7 @@ if (request.getAttribute("success") != null) {
           Write Community String
           </label>
           <div class="col-sm-8">
-            <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=writeCommunityString%>">
+            <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=WebSecurityUtils.sanitizeString(writeCommunityString)%>">
             <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
           </div>
         </div>
