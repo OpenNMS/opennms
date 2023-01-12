@@ -2,8 +2,8 @@ jobs:
   horizon-image-single-arch-linux-amd64:
     executor: base-executor
     resource_class: medium
-    environment:
-      DOCKER_CLI_EXPERIMENTAL: enabled
+    #environment:
+    #  DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch:
           architecture: linux/amd64
