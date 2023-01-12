@@ -71,7 +71,6 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.base.Strings;
 
 public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
@@ -122,8 +121,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         };
 
         withExposedPorts(tcpPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })

@@ -57,8 +57,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.VncRecordingContainer;
 import org.testcontainers.lifecycle.TestDescription;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
-
 /**
  * Base class for Selenium based testing of the OpenNMS web application.
  */
@@ -88,7 +86,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
     private static final CachingRecordingFileFactory RECORDING_FILE_FACTORY = new CachingRecordingFileFactory();
 
     public static final WorkaroundBrowserWebDriverContainer firefox =
-            (WorkaroundBrowserWebDriverContainer) new WorkaroundBrowserWebDriverContainer()
+            new WorkaroundBrowserWebDriverContainer()
             .withCapabilities(getFirefoxOptions())
             .withRecordingMode(RECORDING_MODE, RECORDING_DIRECTORY, RECORDING_FORMAT)
             .withRecordingFileFactory(RECORDING_FILE_FACTORY)
@@ -99,8 +97,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
             .withEnv("JAVA_OPTS", "-Djava.security.egd=file:/dev/./urandom")
             .withEnv("SCREEN_WIDTH", "2048")
             .withEnv("SCREEN_HEIGHT", "1400")
-            .withCreateContainerCmdModifier(cmd -> {
-                final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+            .withCreateContainerCmdModifier(createCmd -> {
                 TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
 
                 // Use this hook to ensure that the downloads directory exists
@@ -152,13 +149,13 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
     public static Optional<Throwable> failed = Optional.empty();
 
     /**
-     * @ClassRule does not seem to know if tests failed, but afterTest needs
+     * {@code @ClassRule} does not seem to know if tests failed, but afterTest needs
      * to know if a screen recording should be saved. Store the latest failure
      * exception here. The specific failure and exception doesn't matter for
      * this, we just need to know if there are >0 exceptions for afterTest.
      */
     @Rule(order = Integer.MIN_VALUE)
-    public TestWatcher watchman= new TestWatcher() {
+    public TestWatcher watchman = new TestWatcher() {
         @Override
         protected void failed(Throwable e, Description description) {
             failed = Optional.of(e);
@@ -195,10 +192,9 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
      * can't just stop the container because we need it around and running because that's where the transcoder runs).
      * Lastly, we provide an alternate RecordingFileFactory that caches the recording file name and we output the
      * full path as a URI to make it easier to view the recordings.
-     * @param <SELF>
      */
-    public static class WorkaroundBrowserWebDriverContainer<SELF extends BrowserWebDriverContainer<SELF>>
-            extends BrowserWebDriverContainer<SELF> {
+    public static class WorkaroundBrowserWebDriverContainer
+            extends BrowserWebDriverContainer<WorkaroundBrowserWebDriverContainer> {
         @Override
         public void beforeTest(TestDescription description) {
             // These are static and reused across all test classes, so reset before every test class run
@@ -226,17 +222,11 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
                                 + "Stderr: " + results.getStderr());
                     }
                 }
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+            } catch (NoSuchFieldException | IllegalAccessException | IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
-            // This is where the recording is transcoded and extracted to the local system.
+            // This is where the recording is trans-coded and extracted to the local system.
             super.afterTest(description, OpenNMSSeleniumIT.failed);
 
             // I really wanted a better message with a clickable URI at the end of the test.
