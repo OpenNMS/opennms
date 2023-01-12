@@ -111,6 +111,7 @@ public class JettyServer extends AbstractServiceDaemon {
             m_server.start();
         } catch (final Throwable t) {
             LOG.error("Error starting Jetty Server", t);
+            throw new IllegalStateException(t);
         }
     }
 
@@ -121,6 +122,7 @@ public class JettyServer extends AbstractServiceDaemon {
             m_server.stop();
         } catch (final Throwable t) {
             LOG.error("Error stopping Jetty Server", t);
+            throw new IllegalStateException(t);
         }
     }
 
