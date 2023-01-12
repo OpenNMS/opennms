@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
@@ -55,7 +54,8 @@ public class PrimaryType implements Comparable<PrimaryType>, Serializable {
         return String.valueOf(m_collType);
     }
 
-    @Column(name="isSnmpPrimary")
+    /* this needs to be marked transient because we're not using it embedded anymore */
+    @Transient
     public char getCharCode() {
         return m_collType;
     }
@@ -125,17 +125,20 @@ public class PrimaryType implements Comparable<PrimaryType>, Serializable {
         }
     }
 
-    public static PrimaryType get(final String code) {
+    public static PrimaryType get(final Object code) {
         if (code == null) {
             return NOT_ELIGIBLE;
-        }
-        final String codeText = code.trim();
-        if (codeText.length() < 1) {
-            return NOT_ELIGIBLE;
-        } else if (codeText.length() > 1) {
-            throw new IllegalArgumentException("Cannot convert string '"+codeText+"' to a collType");
+        } else if (code instanceof Character) {
+            return get(((Character) code).charValue());
         } else {
-            return get(codeText.charAt(0));
+            final String codeText = code.toString().trim();
+            if (codeText.length() < 1) {
+                return NOT_ELIGIBLE;
+            } else if (codeText.length() > 1) {
+                throw new IllegalArgumentException("Cannot convert string '"+codeText+"' to a collType");
+            } else {
+                return get(codeText.charAt(0));
+            }
         }
     }
 
