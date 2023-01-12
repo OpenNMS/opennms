@@ -33,12 +33,15 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 
 import org.opennms.smoketest.containers.MinionContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
+
+import com.google.common.io.Resources;
 
 /**
  * All the Minion related settings that need to be tweaked on
@@ -60,6 +63,7 @@ public class MinionProfile {
 
     private final String dominionGrpcScvClientSecret;
     private final Function<MinionContainer, WaitStrategy> waitStrategy;
+    private final Map<String, String> legacyConfiguration;
 
     private MinionProfile(Builder builder) {
         location = builder.location;
@@ -69,6 +73,7 @@ public class MinionProfile {
         files = Collections.unmodifiableList(builder.files);
         dominionGrpcScvClientSecret = builder.dominionGrpcScvClientSecret;
         waitStrategy = Objects.requireNonNull(builder.waitStrategy);
+        legacyConfiguration = builder.legacyConfiguration; // it is okay for this to be null when config is non-legacy
     }
 
     public static Builder newBuilder() {
@@ -83,6 +88,7 @@ public class MinionProfile {
         private List<OverlayFile> files = new LinkedList<>();
         private String dominionGrpcScvClientSecret;
         private Function<MinionContainer, WaitStrategy> waitStrategy = MinionContainer.WaitForMinion::new;
+        private Map<String, String> legacyConfiguration = null;
 
         public Builder withLocation(String location) {
             this.location = Objects.requireNonNull(location);
@@ -113,6 +119,18 @@ public class MinionProfile {
             return this;
         }
 
+        /**
+         * Add files to the container over
+         *
+         * @param resourceName resource path
+         * @param target path the target file related to $OPENNMS_HOME/
+         * @return this builder
+         */
+        public Builder withFile(String resourceName, String target) {
+            files.add(new OverlayFile(Resources.getResource(resourceName), target));
+            return this;
+        }
+
         public Builder withDominionGrpcScvClientSecret(final String dominionGrpcScvClientSecret) {
             this.dominionGrpcScvClientSecret = dominionGrpcScvClientSecret;
             return this;
@@ -120,6 +138,11 @@ public class MinionProfile {
 
         public Builder withWaitStrategy(final Function<MinionContainer, WaitStrategy> waitStrategy) {
             this.waitStrategy = waitStrategy;
+            return this;
+        }
+
+        public Builder withLegacyConfiguration(Map<String, String> configuration) {
+            this.legacyConfiguration = Collections.unmodifiableMap(configuration);
             return this;
         }
 
@@ -154,5 +177,13 @@ public class MinionProfile {
 
     public Function<MinionContainer, WaitStrategy> getWaitStrategy() {
         return waitStrategy;
+    }
+
+    public boolean isLegacy() {
+        return legacyConfiguration != null;
+    }
+
+    public Map<String, String> getLegacyConfiguration() {
+        return legacyConfiguration;
     }
 }
