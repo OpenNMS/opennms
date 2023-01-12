@@ -34,7 +34,7 @@ To manually send an event in the web UI, follow these steps:
 The event that you created is shown at the top of the list.
 
 [[event-utility]]
-=== `send-event.pl` utility
+=== send-event.pl utility
 
 In addition to manually adding events, you can also use the `send-event.pl` utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
 For example, you can use the utility to do the following:
@@ -51,7 +51,7 @@ You can find UEIs and their associated parameters in `$\{OPENNMS_HOME}/etc/event
 
 [caption=]
 .`send-event.pl` parameters
-[options="autowidth"]
+[cols="1,3"]
 |===
 | Name/Alias    | Description
 
@@ -108,7 +108,7 @@ You can also define your own UEIs.
 | Print version and exit successfully.
 |===
 
-Note that parameter descriptions use the percentage sign (`%`) as a delimiter to mark a replacement variable (see xref:deep-dive/events/event-tokens.adoc#replacement-tokens[Replacement tokens]).
+Note that parameter descriptions use the percentage sign (`%`) as a delimiter to mark a replacement variable (see xref:deep-dive/events/event-tokens.adoc[]).
 If a literal percent sign appears in your description, you must escape it with a `%` (for example, `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`).
 
 === Example

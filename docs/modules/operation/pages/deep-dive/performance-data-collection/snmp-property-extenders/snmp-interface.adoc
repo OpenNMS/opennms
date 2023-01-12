@@ -7,8 +7,7 @@ Resources representing rows in the `ifTable` are modeled differently in {page-co
 This is helpful when the string property that you want to import is associated with a network interface, represented by a row in the `ifTable`.
 For example, the `dot1dBasePortTable` has its own index which does not share any components with any other table, but its `dot1dBasePortIfIndex` column contains a value that is a valid `ifIndex`.
 
-[source, snmp-mib]
-----
+....
    dot1dBasePortEntry OBJECT-TYPE
        -- ...
        DESCRIPTION
@@ -33,8 +32,7 @@ ifEntry OBJECT-TYPE
             particular interface."
     INDEX   { ifIndex } <3>
     ::= { ifTable 1 }
-----
-
+....
 <1> The entry type for `dot1dBasePortTable` is indexed on `dot1dBasePort`, which has no significance outside this table.
 <2> `dot1dBasePortTable` contains column `dot1dBasePortIfIndex`, which tells us the `ifIndex` corresponding to the physical port underlying the associated bridge base port.
 <3> `ifIndex` is the index of the `ifTable` entry type (and of the `ifXTable` entry type, as well).
@@ -106,10 +104,9 @@ The following example shows how to use `dot1dBasePortIfIndex` as a pointer-like 
   </group>
 </groups>
 ----
-
-<1> First, we collect `ifIndex`, `ifDescr`, `ifName`, and `ifAlias` in a group associated with the `ifIndex` source resource-type, using modified names to avoid collisions with internal workings (the `ifIndex` type is built in, so we do not need a custom resource-type definition for it).
-<2> Next, we collect the pointer-like column `dot1dBasePortIfIndex` in the target group.
-<3> To derive the `dot1dBasePortIfDescr` string property, we tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to use the `interfaceDescr` property.
+<1> Collect `ifIndex`, `ifDescr`, `ifName`, and `ifAlias` in a group associated with the `ifIndex` source resource-type, using modified names to avoid collisions with internal workings (the `ifIndex` type is built in, so we do not need a custom resource-type definition for it).
+<2> Collect the pointer-like column `dot1dBasePortIfIndex` in the target group.
+<3> To derive the `dot1dBasePortIfDescr` string property, tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to use the `interfaceDescr` property.
 <4> From the source group.
 <5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName`.
 <6> From the source group instead.

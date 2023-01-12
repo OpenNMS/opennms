@@ -5,7 +5,7 @@ This section describes reference and administrative information associated with 
 
 == Configuration and log files
 
-[options="autowidth"]
+[cols="2,3"]
 |===
 | File  | Description
 

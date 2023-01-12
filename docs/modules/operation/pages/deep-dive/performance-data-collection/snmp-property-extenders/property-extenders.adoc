@@ -9,6 +9,7 @@ For example, the Cisco ENVMON MIB's temperature status table contains both a num
 A partial snmpwalk of this table illustrates this direct relationship:
 
 [options="header, autowidth"]
+[cols="2,2,2"]
 |===
 | ciscoEnvMonTemperatureStatusIndex
 | ciscoEnvMonTemperatureStatusDescr +

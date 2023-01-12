@@ -7,8 +7,7 @@ Unlike the xref:deep-dive/performance-data-collection/snmp-property-extenders/in
 This is useful when the target MIB table contains a column whose value can be used as an index in the source MIB table.
 For example, the Cisco Process MIB's `cpmCPUTotalTable` has its own index, which is not shared with any other tables, but its `cpmCPUTotalPhysicalIndex` column contains an integer which can be used as an index for the `entPhysicalTable`.
 
-[source, snmp-mib]
-----
+....
 cpmCPUTotalEntry OBJECT-TYPE
     -- ...
     DESCRIPTION
@@ -45,13 +44,12 @@ entPhysicalEntry       OBJECT-TYPE
             table."
     INDEX   { entPhysicalIndex } <3>
     -- ...
-----
-
+....
 <1> The `cpmCPUTotalTable` entry type is indexed on `cpmCPUTotalIndex`, which has no meaning outside of this table.
 <2> The `cpmCPUTotalPhysicalIndex` column contains a value of `entPhysicalIndex` that corresponds to the CPU referenced in a given row.
 <3> The `entPhysicalTable` entry type is indexed on `entPhysicalIndex`, and provides many useful textual columns.
 
-By treating `cpmCPUTotalPhysicalIndex` similar to https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], it's possible to import string properties from the `entPhysicalTable` for use in the resource label.
+By treating `cpmCPUTotalPhysicalIndex` similar to a https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], it's possible to import string properties from the `entPhysicalTable` for use in the resource label.
 
 NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
 This relationship does not hold across all product lines or software revisions.
@@ -111,8 +109,7 @@ The target resource gains a pair of string properties, which we will call `cpmCP
   </group>
 </groups>
 ----
-
-<1> First, we collect `entPhysicalDescr` and `entPhysicalName` in the source group, which uses a resource type associated with the `entPhysicalTable`.
-<2> Next, we collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource type is associated with the `cpmCPUTotalTable`.
-<3> We derive `cpmCPUTotalName` in the target group, telling the extender to use the pointer-like property's value as an index into the source table, and specifying that we want to use the source attribute `entPhysicalName`.
+<1> Collect `entPhysicalDescr` and `entPhysicalName` in the source group, which uses a resource type associated with the `entPhysicalTable`.
+<2> Collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource type is associated with the `cpmCPUTotalTable`.
+<3> Derive `cpmCPUTotalName` in the target group, telling the extender to use the pointer-like property's value as an index into the source table, and specifying that we want to use the source attribute `entPhysicalName`.
 <4> Deriving `cpmCPUTotalDescr` is almost identical, except this time we use the value of `entPhysicalDescr`.

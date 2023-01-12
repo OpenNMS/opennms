@@ -111,7 +111,7 @@ To make the feature start immediately, log into the Karaf shell and run `feature
 
 Pollerd can generate the following device configuration backup events in {page-component-title}:
 
-[options="autowidth"]
+[cols="2,3"]
 |===
 | Event Name    | Description
 

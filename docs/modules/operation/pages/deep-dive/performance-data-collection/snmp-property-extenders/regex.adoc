@@ -6,8 +6,7 @@ The Regex property extender works similarly to the xref:deep-dive/performance-da
 This is useful when some portion of the target MIB table's index can be used as an index in the source MIB table.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`, whereas the `bsnAPTable` is indexed on `bsnAPDot3MacAddress` alone.
 
-[source, snmp-mib]
-----
+....
 bsnAPIfLoadParametersEntry OBJECT-TYPE
     -- ...
     DESCRIPTION
@@ -27,8 +26,7 @@ bsnAPEntry OBJECT-TYPE
         "An entry in the bsnAPTable."
     INDEX           { bsnAPDot3MacAddress } <2>
     -- ...
-----
-
+....
 <1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`.
 <2> `bsnAPDot3MacAddress` is the sole index for the entry type for `bsnAPTable`.
 
@@ -84,7 +82,6 @@ The following example shows how to use the value of `bsnAPDot3MacAddress` as an 
   </group>
 </groups>
 ----
-
 <1> Regular string property `bsnAPName` on the source table.
 <2> Extended string property `bsnAPName` on the target table.
 <3> Regular expression; the portion in parentheses is what gets extracted.

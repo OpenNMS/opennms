@@ -3,13 +3,13 @@
 
 A notification command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
 {page-component-title} includes several default notification commands.
-You can create custom commands to send notifications to a platform of your choice.
+You can also create custom commands to send notifications to a platform of your choice.
 
 == Default notification commands
 
 [caption=]
 .Default {page-component-title} notification commands
-[options="autowidth"]
+[cols="1,3"]
 |===
 | Command       | Description
 
@@ -90,9 +90,9 @@ The `streamed` attribute dictates whether the substitution text or switch text (
    </argument>
 ----
 
-NOTE: When you combine the two (substitution and switch), each is written as a separate argument in the command line.
+When you combine the two (substitution and switch), each is written as a separate argument in the command line.
 For example:
-+
+
 [source, xml]
 ----
    <argument streamed="false">

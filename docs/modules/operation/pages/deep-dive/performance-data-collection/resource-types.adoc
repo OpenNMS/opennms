@@ -13,12 +13,12 @@ There are two types of strategy definitions for resource types: the persistence 
 The persistence selector strategy filters the group indexes down to a subset for storage on disk.
 The storage strategy converts an index into a resource path label for persistence.
 
-There are two resource types that do not have a `resource-type` definition: `node` and `ifIndex`.
+Two resource types do not have a `resource-type` definition: `node` and `ifIndex`.
 
 You can define resource types by placing files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`.
 The latter file path is specific to SNMP.
 
-.Example diskIOIndex resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`
+.Example `diskIOIndex` resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`
 [source, xml]
 ----
 <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
@@ -38,7 +38,7 @@ The latter file path is specific to SNMP.
 
 You can configure the following persistence selector strategies to specify how to archive performance metrics:
 
-[options="autowidth"]
+[cols="2,2"]
 |===
 | Class | Description
 
@@ -55,7 +55,7 @@ On evaluation, this expression should return either `true` (persist index to sto
 
 You can configure the following storage strategies to specify how to store performance metrics in the long term:
 
-[options="autowidth"]
+[cols="2,2"]
 |===
 | Class | Storage Path Value
 
@@ -130,7 +130,8 @@ The domain from the `ObjectName` can be referenced as `$\{domain}`.
 All key properties from the `ObjectName` can also be referenced by using `$\{key}`.
 
 You can use this storage strategy with JMX MBean data collections where multiple MBeans can return the same set of attributes.
-As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
+
+NOTE: As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
 
 .Example storage storage strategy used with JMX MBean
 [source, xml]
@@ -165,7 +166,7 @@ You should replace it with the following definition:
 The `SiblingColumnStorageStrategy` class replaces `HostFileSystemStorageStrategy`, which is deprecated.
 It takes the following parameters:
 
-[options="autowidth"]
+[cols="1,3"]
 |===
 | Parameter | Description
 

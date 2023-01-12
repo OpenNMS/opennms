@@ -4,8 +4,8 @@
 {page-component-title} creates alarms for issues in the network.
 Alarm notes let you assign comments to a specific alarm, or to a whole class of alarms, and share that information with other people on your team.
 
-.Alarm detail page with sample notes
-image::alarms/01_alarm-notes.png["Alarm detail page displaying sample notes in the Sticky Memo and Journal Memo boxes", 800]
+.Alarm Details page with sample notes
+image::alarms/01_alarm-notes.png["Alarm detail page displaying sample notes in the Sticky Memo and Journal Memo boxes", 850]
 
 You can add two types of notes to existing alarms or alarm classes:
 

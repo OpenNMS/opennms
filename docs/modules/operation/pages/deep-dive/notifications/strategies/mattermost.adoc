@@ -39,7 +39,7 @@ After it is loaded, your new `mattermost` notification command will be available
 
 The following table lists optional properties that you may use in `mattermost.properties` to customize your Mattermost notifications:
 
-[options="autowidth"]
+[cols="2,2,1,1"]
 |===
 | Parameter | Description | Default Value | Example
 

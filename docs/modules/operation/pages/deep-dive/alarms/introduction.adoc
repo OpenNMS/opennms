@@ -4,48 +4,43 @@
 {page-component-title} monitors problem states with its managed entities, their resources, the services they provide, and any applications that they host.
 Simply stated, {page-component-title} uses the network to monitor problem states.
 
-While events (or messages) carry problem state attributes, such as acknowledgement and severity, alarms are the indicators of problems in the network (see )
-
-{page-component-title} monitors the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, the network.
-{page-component-title}, characterizes the state of these problems as alarms.
-
-While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network (see xref:deep-dive/bsm/introduction.adoc[]).
+While events carry problem state attributes, such as acknowledgement and severity, alarms are the indicators of problems in the network (see xref:deep-dive/bsm/introduction.adoc[]).
 
 == Single alarm tracking problem states
 
 An alarm is instantiated on the first occurrence of a `service-down` problem:
 
 .`service-down` alarm created
-image::alarms/single_alarm_1.png["Alarm List displaying one alarm of Minor severity", 800]
+image::alarms/single_alarm_1.png["Alarm List displaying one alarm of Minor severity"]
 
 You can click *Count* to display the corresponding events and their details:
 
 .Alarm displaying service down event
-image::alarms/single_alarm_2.png["Alarm Details page displaying a service down event", 800]
+image::alarms/single_alarm_2.png["Alarm Details page displaying a service down event"]
 
 The alarm is cleared immediately when service is restored, and no alarm is created when the service returns to a normal state:
 
 .Alarm cleared
-image::alarms/single_alarm_3.png["Alarm List displaying one cleared alarm and its log message", 800]
+image::alarms/single_alarm_3.png["Alarm List displaying one cleared alarm and its log message"]
 
 .Service down and service restored events
-image::alarms/single_alarm_4.png["Alarm Details page displaying one service down event and one service restored event", 800]
+image::alarms/single_alarm_4.png["Alarm Details page displaying one service down event and one service restored event"]
 
 If the problem occurs again, the events are reduced into the existing alarm.
 Its Count is updated to reflect the new activity:
 
 .Reduced alarm
-image::alarms/single_alarm_5.png["Alarm List displaying one alarm with a Count of 2", 800]
+image::alarms/single_alarm_5.png["Alarm List displaying one alarm with a Count of 2"]
 
 .List of events
-image::alarms/single_alarm_6.png["Alarm Details page displaying two service down events and one service restored event", 800]
+image::alarms/single_alarm_6.png["Alarm Details page displaying two service down events and one service restored event"]
 
 The alarm is once again cleared immediately when service is restored:
 
 .Reduced alarm cleared
-image::alarms/single_alarm_7.png["Alarm List displaying one cleared alarm with a Count of 2, and its log message", 800]
+image::alarms/single_alarm_7.png["Alarm List displaying one cleared alarm with a Count of 2, and its log message"]
 
 Note that the alarm's Count does not increment when the problem is resolved.
 
 .Service down and restored events
-image::alarms/single_alarm_8.png["Alarm Details page displaying two service down events and two service restored events", 800]
+image::alarms/single_alarm_8.png["Alarm Details page displaying two service down events and two service restored events"]

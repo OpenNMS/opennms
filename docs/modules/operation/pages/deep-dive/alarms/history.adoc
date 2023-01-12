@@ -40,7 +40,7 @@ If the file does not exist, create it.
 When alarms are created, a document that includes all alarm fields, and additional details on related objects (for example, the node), is pushed to Elasticsearch.
 To avoid pushing a new document every time a new event is reduced to an existing alarm, documents are pushed only when at least one condition is met:
 
-* We have not recently pushed a document for that alarm (see `alarmReindexDurationMs`).
+* A document has not recently been pushed for the alarm (see `alarmReindexDurationMs`).
 * The severity of the alarm has changed.
 * The alarm has been acknowledged or unacknowledged.
 * The associated sticky or journal memos have changed.

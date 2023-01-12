@@ -47,10 +47,9 @@ You must also append the script variable `filenameSuffix` to the file name; this
 
 === Example
 
-This sample script is for a Juniper SRX firewall.
-You will need to modify it for other device types.
+This example script is for a Juniper SRX firewall.
+You will need to modify it to configure other device types.
 
-.Sample Juniper SRX firewall script
 [source, script]
 ----
 await: >
@@ -126,7 +125,9 @@ The following examples demonstrate how to configure a `dcb` user account, specif
 
 ==== ArubaOS configuration
 
-.Create a `dcb` account based on a custom user group with limited privileges
+This script creates a `dcb` user account based on a custom user group (`dcb-group`).
+The user group has limited privileges, which are passed on to the `dcb` account.
+
 [source, script]
 ----
 aruba-os# configure
@@ -143,7 +144,9 @@ aruba-os(config)# exit
 
 ==== ArubaOS-CX configuration
 
-.Create a `dcb` account based on a custom user group with limited privileges
+This script creates a `dcb` user account based on a custom user group (`dcb-group`).
+The user group has limited privileges, which are passed on to the `dcb` account.
+
 [source, script]
 ----
 aruba-os-cx# config
@@ -161,7 +164,8 @@ aruba-os-cx(config)#
 
 ==== Cisco IOS configuration
 
-.Create a `dcb` account based on a custom privilege
+This script creates a `dcb` user account based on a custom privilege configuration:
+
 [source, script]
 ----
 cisco-ios#configure terminal
@@ -173,7 +177,9 @@ cisco-ios(config)#exit
 
 ==== Juniper Junos configuration
 
-.Create a `dcb` account based on a custom login class
+This script creates a `dcb` user account based on a custom login class (`dcb-class`).
+The login class has limited privileges, which are passed on to the `dcb` account.
+
 [source, script]
 ----
 admin@juniper-junos# set system login class dcb-class permissions all
