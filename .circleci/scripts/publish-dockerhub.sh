@@ -28,9 +28,9 @@ for TYPE in horizon minion sentinel; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
   # figure out DCT environment variables for $TYPE
-  _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
-  _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
-  _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
+  _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+  _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+  _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
 
   # save $TYPE's key
   printf '%s' "${!_key_contents_variable}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
