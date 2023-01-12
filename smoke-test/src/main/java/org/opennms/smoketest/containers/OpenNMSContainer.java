@@ -33,7 +33,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -65,7 +64,6 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -81,7 +79,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
-import org.testcontainers.utility.MountableFile;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.NotFoundException;
@@ -224,21 +221,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
     }
 
-    public void installFeature(String feature, Path kar) {
-        if (kar != null) {
-            copyFileToContainer(MountableFile.forHostPath(kar),
-                    "/usr/share/opennms/deploy/" + kar.getFileName().toString());
-        }
-
-        var karafShell = new KarafShell(getSshAddress());
-        karafShell.runCommand("feature:list | grep " + feature,
-                output -> output.contains(feature),false);
-
-        // Note that the feature name doesn't always match the KAR name
-        assertTrue(karafShell.runCommandOnce("feature:install " + feature,
-                output -> !output.toLowerCase().contains("error"), false));
-    }
-
     @SuppressWarnings("java:S5443")
     private Path writeOverlay() {
         try {
@@ -356,6 +338,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(OPENNMS_SSH_PORT));
     }
@@ -363,6 +346,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/opennms"); // I'm not sure if this is right-enough for OpenNMS Karaf?
     }
 
     public int getWebPort() {

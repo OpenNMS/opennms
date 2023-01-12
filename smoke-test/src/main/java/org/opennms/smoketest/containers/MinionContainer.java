@@ -247,12 +247,20 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         return new InetSocketAddress(getContainerIpAddress(), TestContainerUtils.getMappedUdpPort(this, MINION_SYSLOG_PORT));
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(MINION_SSH_PORT));
     }
 
+    @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/minion");
     }
 
     public URL getWebUrl() {

@@ -257,6 +257,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         return props;
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(SENTINEL_SSH_PORT));
     }
@@ -264,6 +265,11 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/sentinel");
     }
 
     public URL getWebUrl() {
