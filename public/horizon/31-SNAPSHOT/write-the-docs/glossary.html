@@ -1,0 +1,3167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Glossary</title>
+    <link rel="prev" href="build-docs.html">
+    <meta name="generator" content="Antora 3.1.1">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="stylesheet" href="../../../_/css/search.css">
+    <link rel="stylesheet" href="../../../_/css/admonition-labels.css">
+    <link rel="icon" href="../../../_/img/favicon.svg">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a href="https://www.opennms.com"><img class="navbar-logo" src="../../../_/img/logotype.svg"/></a>
+      <a class="navbar-site-title" href="../../..">Horizon</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Videos</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item"
+               href="https://www.youtube.com/watch?v=GJzmkshdjiI&list=PLsXgBGH3nG7iZSlssmZB3xWsAJlst2j2z"
+               target="blank">OpenNMS 101 Training</a>
+            <a class="navbar-item"
+               href="https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4"
+               target="blank">OpenNMS 102 Training</a>
+            <a class="navbar-item" href="https://www.youtube.com/opennms" target="blank">OpenNMS on YouTube</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Community Tools</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://www.opennms.com" target="blank">Project Website</a>
+            <a class="navbar-item" href="https://issues.opennms.org" target="blank">JIRA</a>
+            <a class="navbar-item" href="https://opennms.discourse.group" target="blank">Discourse</a>
+            <a class="navbar-item" href="https://chat.opennms.com" target="blank">Mattermost Chat</a>
+            <a class="navbar-item" href="https://toolbox.opennms.eu" target="blank">Toolbox</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">OpenNMS Group</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://www.opennms.com/training" target="blank">Training</a>
+            <a class="navbar-item" href="https://www.opennms.com/support" target="blank">Commercial Support</a>
+            <a class="navbar-item" href="https://www.opennms.com/sponsored-development" target="blank">Sponsored
+              Development</a>
+          </div>
+        </div>
+        <a class="navbar-item" href="https://vault.opennms.com/docs/">Archived Docs</a>
+      </div>
+      <div class="navbar-item">
+      <span class="control">
+        <a class="button is-primary" href="https://github.com/opennms" target="blank">GitHub</a>
+      </span>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="body">
+<div class="nav-container" data-component="horizon" data-version="31-SNAPSHOT">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Horizon</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Release Notes</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../releasenotes/whatsnew.html">What&#8217;s New in OpenNMS Horizon 31</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../releasenotes/changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Deployment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/core/introduction.html">Basic Horizon deployment</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/core/system-requirements.html">Minimum System Requirements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/core/getting-started.html">Installation and Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/core/install-jdbc-driver.html">Install JDBC Driver on Horizon Core</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/core/setup-message-broker.html">Set up Message Broker</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/minion/introduction.html">Minion</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/minion/system-requirements.html">Minimum system requirements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/minion/install.html">Install Minion</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/minion/installing-jdbc-driver.html">Install JDBC Driver on Minion</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/minion/off-heap-storage.html">Off-heap storage</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/sentinel/introduction.html">Sentinel</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/sentinel/runtime/install.html">Installing Sentinel Runtime</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/time-series-storage.html">Time Series Database</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/rrdtool.html">RRDtool</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/time-series-storage/newts/introduction.html">Newts</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/newts.html">Configure Horizon Core to Use Newts</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/configuration.html">Configuration Reference</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/cassandra-jmx.html">Cassandra Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/cassandra-newts-jmx.html">Newts Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/newts-repository-converter.html">RRD/JRB to Newts Migration Utility</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/newts/resourcecli.html">Resource Management Tool (resourcecli)</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/ts-integration-layer.html">Time Series Integration Layer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/configuration.html">Enable Time Series Integration Layer</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/cortex.html">Cortex Time Series Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/time-series-storage/timeseries/hosted-tss.html">OpenNMS Time Series DB</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../deployment/opentracing/jaeger-tracing.html">Setting up Jaeger Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../deployment/upgrade/introduction.html">Upgrade Horizon</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/upgrade/diff.html">Identify Changed Configuration Files</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/upgrade/git-diff.html">Manage Configuration Changes with Git</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/upgrade/basic.html">Basic Upgrade Steps</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../deployment/upgrade/git-upgrade.html">Upgrade Horizon with Git</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../deployment/upgrade/backup/introduction.html">Back up OpenNMS Horizon</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../deployment/upgrade/restore/introduction.html">Restore OpenNMS Horizon</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Operation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../operation/overview/overview.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/quick-start/introduction.html">Quick Start</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/users.html">Step 1: First-Time Login</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/notifications.html">Step 2: Turn on Default Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/inventory.html">Step 3: Provision Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/performance-data.html">Step 4: Set Up Performance Data Collection</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/thresholding.html">Step 5: Set up a Threshold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/baseline.html">Step 6: Establish a Baseline</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/service-assurance.html">Step 7: Determine Service Availability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/notification-config.html">Step 8: Configure Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/visualize-data.html">Step 9: Visualize Data</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/quick-start/beyond-qs.html">Beyond the Quick Start Guide</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/introduction.html">Deep Dive</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">User Management</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/user-config.html">User Creation and Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/security-roles.html">Assign User Permissions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/user-groups.html">Groups</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/user-oncall.html">On-Call Roles</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/user-maintenance.html">User Maintenance</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/user-management/pre-authentication.html">Web UI Pre-Authentication</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/provisioning/introduction.html">Provisioning</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/provisioning/configuration.html">Configuration Options</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/foreign-source.html">Foreign Source Definition</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/adapters.html">Adapters</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/detectors.html">Detectors</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/policies.html">Policies</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/import-handler.html">Import Handlers</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/directed-discovery.html">Directed Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/auto-discovery.html">Auto Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/integration.html">Integrating with Provisiond</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/scalability.html">Addressing Scalability</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/fine-grained.html">Fine-Grained provisioning using provision.pl</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/provisioning/snmp-profile.html">SNMP Profiles</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/thresholds/thresholding.html">Thresholding</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/thresholds/datasource.html">Thresholding Tasks</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/thresholds/thresh-group.html">Create a Threshold Group</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/thresholds/thresh-service.html">Thresholding Service</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/thresholds/troubleshoot.html">Troubleshoot and Manage Thresholds</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/introduction.html">Service Assurance</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/configuration.html">Configure Pollerd</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/critical-service.html">Improve Monitoring Efficiency</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/downtime-model.html">Detect Short Service Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/path-outages.html">Use Path Outages to Suppress Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/polling-packages.html">Poller Packages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/service-monitors.html">Service Monitors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/service-assurance/application-perspective-monitoring/introduction.html">Application Perspective Monitoring</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/device-config-backup/introduction.html">Device Configuration Backup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/device-config-backup/ssh.html">Configure Backup Script</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/device-config-backup/configuration.html">Poller Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/device-config-backup/dcb-requisition.html">Create Requisition for Device Configuration Backup</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/device-config-backup/dcb.html">Manage Device Configuration Backups</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/introduction.html">Performance Management</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/collectd/collection-packages.html">Configure Collector Packages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/collectd/configuration.html">Configuring Collectd</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/data-types.html">Data Types</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/resource-types.html">Resource Types</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-index.html">Create a Custom Resource Type</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/collectors.html">Collectors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/events/perf-data.html">SNMP Trap Performance Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/property-extenders.html">SNMP Property Extenders</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/cisco-cbqos.html">Cisco CBQoS property extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/enum-lookup.html">Enum Lookup property extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/index-split.html">Index Split Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/pointer-like-index.html">Pointer-Like Index Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/regex.html">Regex Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/snmp-interface.html">SNMP Interface Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/snmp-property-extenders/value-mapping.html">Value Mapping Property Extender</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/collectd/collect-admin.html">Collectd Administration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/shell/introduction.html">Shell Commands</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/shell/adhoc-collection.html">Ad hoc collection</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/shell/measurements.html">Measurements &amp; Resources</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/performance-data-collection/shell/stress-testing.html">Stress Testing</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/events/introduction.html">Events</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/events/event-configuration.html">Event Daemon Configuration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/event-definition.html">Event Definition</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/event-tokens.html">Replacement Tokens</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/event-debugging.html">Event Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/events/event-translator.html">Event Translator</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/events/event-sources.html">Sources of Events</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/eif-adapter.html">IBM Tivoli Event Integration Facility</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/kafka.html">Kafka Consumer (Events)</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/rest.html">REST</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/sink-api.html">Sink</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/snmp-traps.html">SNMP Traps</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/syslog.html">Syslog Messages</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/tl1.html">TL1 Autonomous Messages</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/events/sources/xml-tcp.html">XML-TCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/events/perf-data.html">SNMP Trap Performance Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/events/event-advanced-search.html">Advanced Event Search</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/alarms/introduction.html">Alarms</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/alarmd.html">Alarm Service Daemon</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/configuring-alarms.html">Configure Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/alarm-notes.html">Alarm Notes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/alarm-sound-flash.html">Alarm Sounds</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/history.html">Alarm History</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/alarm-advanced-search.html">Advanced Alarm Search</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/alarms/ifttt-integration.html">IFTTT Integration</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/notifications/introduction.html">Notifications</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/notifications/concepts.html">Concepts</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/notifications/configuration.html">Notification Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/notifications/commands.html">Notification Commands</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/notifications/bonus-strategies.html">Bonus Notification Methods</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/notifications/strategies/mattermost.html">Mattermost</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/notifications/strategies/slack.html">Slack Notifications</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/bsm/introduction.html">Business Service Monitoring</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/bsm/business-service-definition.html">Business Service Definition</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/bsm/edges.html">Edges</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/bsm/business-service-map.html">Business Service Topology</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/bsm/operational-status.html">Operational Status</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/bsm/map-functions.html">Map Functions</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/bsm/reduce-functions.html">Reduce Functions</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/bsm/root-cause-impact-analysis.html">Root Cause and Impact Analysis</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/topology/introduction.html">Topology</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/topology/topology.html">Topology Map</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/topology/graphml-asset-topology-provider.html">Asset Topology Provider</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/introduction.html">Enhanced Link Daemon</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-2-discovery.html">Layer 2 Link Discovery</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-2/lldp-discovery.html">Link Layer Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-2/cdp-discovery.html">Cisco Discovery Protocol</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-2/bridge-discovery.html">Transparent Bridge Discovery</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-3-discovery.html">Layer 3 Link Discovery</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-3/ospf-discovery.html">OSPF Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/topology/enlinkd/layer-3/is-is-discovery.html">IS-IS Discovery</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/database-reports/database.html">Database Reports</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/database-reports/template-introduction.html">Report Templates</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/availability.html">Availability by Node</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/avail-summary.html">Availability Summary</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/classic.html">Default Classic</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/calendar.html">Default Calendar</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/event.html">Event Analysis</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/grafana.html">Grafana Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/interface-avail.html">Interface Availability</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/maintenance-expired.html">Maintenance Contracts Expiring</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/maintenance-strategy.html">Maintenance Contracts Strategy</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/morning.html">Early Morning</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/response-summary.html">Response Time Summary</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/response-time.html">Response Time by Node</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/serial.html">Serial Interface Utilization</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/snmp.html">SNMP Interface Availability</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/total-bytes.html">Total Bytes Transferred by Interface</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/database-reports/templates/traffic-rates.html">Avg/Peak Traffic Rates for Nodes by Interface</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/ticketing/introduction.html">Ticketing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/workarounds/snmp.html">Overriding SNMP Client Behavior</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/dnsresolver/introduction.html">DNS Resolver</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/telemetryd/introduction.html">Telemetry Daemon</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/introduction.html">Elasticsearch Integration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/introduction.html">Feature Matrix</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/event-forwarder.html">Event Forwarder</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/event-forwarder-mapping.html">Mapping Events to Elasticsearch</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/event-forwarder-mapping-table.html">Table of Index Mapping</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/flows.html">Flow Support</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/situation-feedback.html">Situation Feedback</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/elasticsearch/features/alarm-history.html">Alarm History</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/flows/introduction.html">Flows</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/basic.html">Basic Flows Setup</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/distributed.html">Using Minions as a flow collector</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/sentinel/sentinel.html">Scale Flow Processing with Sentinel</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/classification-engine.html">Flows Classification</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/aggregation.html">Aggregated flows by REST API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/data-collection.html">Data collection of flow applications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/thresholding.html">Thresholding flow applications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/flows/troubleshooting.html">Flows Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/geographical-map/introduction.html">Geographical Maps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/geographical-map/searching.html">Map Search</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/kafka-producer/kafka-producer.html">Kafka Producer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/kafka-producer/enable-kafka.html">Enable the Kafka Producer</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/kafka-producer/configure-kafka.html">Configure the Kafka Producer</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/kafka-producer/shell-commands.html">Shell Commands</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/alarm-correlation/situation-feedback.html">Alarm Correlation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/meta-data.html">Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/snmp-poller/concepts.html">SNMP Interface Poller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Horizon Administration</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/introduction.html">Administrative Web Interface</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/dashboard.html">Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/grafana-dashboard-box.html">Grafana Dashboard Box</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/heatmap.html">Heatmap</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/search.html">Search</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/jmx-config-generator/introduction.html">JMX Configuration Generator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/jmx-config-generator/webui.html">Web-Based Utility</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/jmx-config-generator/cli.html">CLI-based utility</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/introduction.html">Operator Board</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/alarm-detail.html">Alarm Details</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/alarms.html">Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/charts.html">Charts</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/grafana.html">Grafana</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/image.html">Image</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/ksc.html">KSC Reports</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/map.html">Map</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/rrd.html">RRD</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/rtc.html">RTC</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/summary.html">Summary</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/surveillance.html">Surveillance</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/topology.html">Topology</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/dashlet/url.html">URL</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/boosting-behavior.html">Boosting Dashlet</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="6">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/opsboard/criteria-builder.html">Criteria Builder</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/mib.html">SNMP MIB Compiler</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/surveillance-view.html">Surveillance View</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/trends.html">Trend</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/webui/log-reader.html">Instrumentation Log Reader</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/system-properties/introduction.html">System Properties</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/system-properties/system-proxies.html">Configuring system proxies</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/config-tester.html">Configuration Tester</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/rmi.html">Enable RMI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/external-auth.html">External Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/geocoder.html">Geocoder Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../operation/deep-dive/admin/http-ssl.html">HTTPS/SSL</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/https/https-server.html">Securing Jetty With HTTPS</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../operation/deep-dive/admin/https/https-client.html">SSL Client Connections</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/request-logging.html">Request Logging</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/restart.html">Shutdown and Restart</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/daemon-config-files.html">Daemon Configuration Files</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/logging/introduction.html">Logging</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/logging/log-file-viewer.html">View Log Files</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/housekeeping/introduction.html">Housekeeping Tasks</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../operation/deep-dive/admin/scv-configuration.html">Secure Credentials Vault</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/development.html">Development</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/build-from-source.html">Build from source</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/osgi/osgi-and-opennms.html">OSGi Integration within OpenNMS</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/minion/introduction.html">Minion</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/minion/container.html">Container</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/minion/guidelines.html">Guidelines</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/minion/testing.html">Testing</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/topology/introduction.html">Topology</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/topology/infopanel.html">Info Panel Items</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/topology/graphml.html">GraphML</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/topology/update.html">Topologies Updates</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/graph/graph.html">Graph Service API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/rest/CORS.html">CORS Support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/rest/rest-api.html">REST API</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/rest/osgi.html">Expose ReST services via OSGi</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/rest/implemented.html">Currently Implemented Interfaces</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/acknowledgements.html">Acknowledgements</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/alarm_statistics.html">Alarm Statistics</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/alarms.html">Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/alarm_history.html">Alarm History</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/events.html">Events</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/categories.html">Categories</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/config_management.html">Config Management</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/device_config.html">Device Config Rest API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/flows.html">Flow API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/classifications.html">Flow Classification API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/foreign_sources.html">Foreign Sources</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/graph.html">Graph API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/groups.html">Groups</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/heatmap.html">Heatmap</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/health_rest.html">Health Rest Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/ifservices.html">Monitored Services</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/ipinterfaces.html">IP Interfaces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/ksc_reports.html">KSC Reports</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/maps.html">Maps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/measurements.html">Measurements API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/meta-data.html">Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/nodes.html">Nodes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/node_links.html">Node Links</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/notifications.html">Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/outage_timeline.html">Outage Timelines</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/outages.html">Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/perspectivepoller.html">Perspective Poller</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/requisitions.html">Requisitions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/resources.html">Resources API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/rtc.html">Realtime Console Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/scheduled_outages.html">Scheduled Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/snmp_configuration.html">SNMP Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/snmpinterfaces.html">SNMP Interfaces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/snmpmetadata.html">SNMP Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/users.html">Users</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/user-defined-links.html">User-Defined Links</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/snmptrapnbi-config.html">SNMP Trap Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/emailnbi-config.html">Email Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/javamail-config.html">JavaMail Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/syslognbi-config.html">Syslog Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/bsm/bsm-development.html">Business Service Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../development/rest/situation-feedback.html">Situation Feedback</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/oia/introduction.html">Plugin Development with the OpenNMS Plugin API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../development/amqp/introduction.html">AMQP Integration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/amqp/event_forwarder.html">Event Forwarder</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/amqp/event_receiver.html">Event Receiver</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/amqp/alarm_northbounder.html">Alarm Northbounder</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../development/amqp/custom_processors.html">Custom Processors</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/ticketing/inmemory-plugin.html">InMemory Ticketer</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../development/reporting/jasperreport-styleguide.html">Jasper Report Guideline Design and Style Guidelines</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Configuration</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/file-editor.html">File Editor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/configuration/filters/filters.html">Filters</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/configuration/filters/components.html">OpenNMS components that use filters</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/configuration/filters/parameters.html">Parameters</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/configuration/filters/rule-formats.html">Rule formats</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/core-docker.html">Core Docker</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/minion-docker.html">Minion Docker</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/configuration/minion-confd/minion-confd.html">Configuring Minion via confd</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/configuration/minion-confd/jmx-exporter.html">Prometheus JMX exporter</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/configuration/minion-confd/test-confd.html">Test confd templates</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/sentinel-features.html">Sentinel features</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/tuning-activemq.html">Tuning ActiveMQ</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/tuning-kafka.html">Tuning Apache Kafka</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/configuration/ttl-rpc.html">Time to Live (TTL) for RPCs</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/performance-data-collection/introduction.html">Collectors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/http.html">HttpCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/jdbc.html">JDBC Collector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/jmx.html">JmxCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/nsclient.html">NSClientCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/prometheus.html">PrometheusCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/SnmpCollector.html">SnmpCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/tca.html">TcaCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/vmware.html">VmwareCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/vmware-cim.html">VmwareCimCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/wmi.html">WmiCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/wsman.html">WsManCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/performance-data-collection/collectors/xml.html">XmlCollector</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/service-assurance/introduction.html">Service Monitors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/ActiveMQMonitor.html">ActiveMQMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/AvailabilityMonitor.html">AvailabilityMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/BgpSessionMonitor.html">BgpSessionMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/BSFMonitor.html">BSFMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/CiscoIpSlaMonitor.html">CiscoIpSlaMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/CiscoPingMibMonitor.html">CiscoPingMibMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/CitrixMonitor.html">CitrixMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/DeviceConfigMonitor.html">DeviceConfigMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/DhcpMonitor.html">DhcpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/DiskUsageMonitor.html">DiskUsageMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/DnsMonitor.html">DnsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/DNSResolutionMonitor.html">DNSResolutionMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/FtpMonitor.html">FtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/HostResourceSwRunMonitor.html">HostResourceSwRunMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/HttpMonitor.html">HttpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/HttpPostMonitor.html">HttpPostMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/HttpsMonitor.html">HttpsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/IcmpMonitor.html">IcmpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/ImapMonitor.html">ImapMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/ImapsMonitor.html">ImapsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JCifsMonitor.html">JCifsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JDBCMonitor.html">JDBCMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JDBCQueryMonitor.html">JDBCQueryMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JDBCStoredProcedureMonitor.html">JDBCStoredProcedureMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JmxMonitor.html">JmxMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/JolokiaBeanMonitor.html">JolokiaBeanMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/LdapMonitor.html">LdapMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/LdapsMonitor.html">LdapsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/MailTransportMonitor.html">MailTransportMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/MemcachedMonitor.html">MemcachedMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/NetScalerGroupHealthMonitor.html">NetScalerGroupHealthMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/NrpeMonitor.html">NrpeMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/NtpMonitor.html">NtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/OmsaStorageMonitor.html">OmsaStorageMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/OpenManageChassisMonitor.html">OpenManageChassisMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/PageSequenceMonitor.html">PageSequenceMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/PassiveStatusMonitor.html">PassiveStatusMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/PercMonitor.html">PercMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/Pop3Monitor.html">Pop3Monitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/PrTableMonitor.html">PrTableMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/RadiusAuthMonitor.html">RadiusAuthMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SmbMonitor.html">SmbMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SmtpMonitor.html">SmtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SnmpMonitor.html">SnmpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SshMonitor.html">SshMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SSLCertMonitor.html">SSLCertMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/StrafePingMonitor.html">StrafePingMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/SystemExecuteMonitor.html">SystemExecuteMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/TcpMonitor.html">TcpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/VmwareCimMonitor.html">VmwareCimMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/VmwareMonitor.html">VmwareMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/WebMonitor.html">WebMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/Win32ServiceMonitor.html">Win32ServiceMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/WmiMonitor.html">WmiMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/service-assurance/monitors/WsManMonitor.html">WsManMonitor</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/telemetryd/introduction.html">Telemetryd</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/telemetryd/listeners/introduction.html">Listener Reference</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/listeners/tcp.html">TCP Listener</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/listeners/udp.html">UDP Listener</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/telemetryd/protocols/introduction.html">Protocol Reference</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/bmp.html">BGP Monitoring Protocol</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/nxos.html">Cisco NX-OS Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/graphite.html">Graphite Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/ipfix.html">IPFIX</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/jti.html">Junos Telemetry Interface</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/netflow5.html">NetFlow v5</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/netflow9.html">NetFlow v9</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/openconfig.html">OpenConfig Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/telemetryd/protocols/sflow.html">sFlow</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/ticketing/introduction.html">Ticketer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/ticketing/ticketer/jira.html">Jira Ticketing Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/ticketing/ticketer/remedy.html">Remedy Ticketing Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/ticketing/ticketer/tsrm.html">TSRM Ticketing Plugin</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Provisioning</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/provisioning/adapters/introduction.html">Adapters</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/ddns.html">Dynamic DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/geoip.html">GeoIP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/hardware-inventory.html">Hardware Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/rdns.html">Reverse DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/snmp-asset.html">SNMP Asset</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/snmp-metadata.html">SNMP Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/adapters/wsman-asset.html">WS-Man Asset</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/provisioning/handlers/introduction.html">Import Handlers</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/handlers/dns.html">DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/handlers/file.html">File</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/handlers/http.html">HTTP(S)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/handlers/vmware.html">VMware</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/handlers/requisition-plugin.html">Requisition Plugins</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/provisioning/policies.html">Policies</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/policies/ip-interface.html">IP Interface Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/policies/metadata.html">Metadata Policies</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/policies/node-category.html">Node Categorization Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/policies/script.html">Script Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/policies/snmp-interface.html">SNMP Interface Policy</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/provisioning/detectors.html">Detectors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/ActiveMQDetector.html">ActiveMQ</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/BgpSessionDetector.html">BGP Session</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/BsfDetector.html">Bean Script</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/DnsDetector.html">DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/FtpDetector.html">FTP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/HostResourceSWRunDetector.html">HostResourceSWRun</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/HttpDetector.html">HTTP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/HttpsDetector.html">HTTPS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/JdbcDetector.html">JDBC</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/JdbcQueryDetector.html">JDBC Query</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/JdbcStoredProcedureDetector.html">JDBC Stored Procedure</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/LoopDetector.html">Loop</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/ReverseDNSLookupDetector.html">Reverse DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/SnmpDetector.html">SNMP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/TcpDetector.html">TCP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/WebDetector.html">Web</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/Win32ServiceDetector.html">Win32 Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/WmiDetector.html">WMI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/WsmanDetector.html">WS-MAN</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../reference/provisioning/detectors/WsmanWqlDetector.html">WS-MAN WQL</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../reference/daemons/introduction.html">Daemons</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/ackd.html">Ackd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/alarmd.html">Alarmd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/bsmd.html">Bsmd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/collectd.html">Collectd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/discovery.html">Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/enlinkd.html">Enlinkd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/eventd.html">Eventd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/jettyserver.html">JettyServer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/karaf.html">Karaf</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/karafstartupmonitor.html">KarafStartupMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/notifd.html">Notifd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/perspectivepollerd.html">PerspectivePoller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/pollerd.html">Pollerd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/provisiond.html">Provisiond</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/queued.html">Queued</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/reportd.html">Reportd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/rtcd.html">Rtcd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/snmp-interface-poller.html">SnmpPoller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/statsd.html">Statsd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/syslogd.html">Syslogd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/telemetryd.html">Telemetryd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/ticketer.html">Ticketer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../reference/daemons/daemon-config-files/trapd.html">Trapd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../operation/deep-dive/admin/logging/introduction.html">Logging</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/glossary.html">Glossary</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="overview.html">Write the Docs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="develop-docs.html">Develop Documentation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="write-docs.html">Write the Documentation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="build-docs.html">Build the Documentation</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Horizon</span>
+    <span class="version">31-SNAPSHOT</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Horizon</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">31-SNAPSHOT</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Horizon</a></li>
+    <li><a href="overview.html">Write the Docs</a></li>
+    <li><a href="glossary.html">Glossary</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///antora/docs/modules/write-the-docs/pages/glossary.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Glossary</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This glossary supplements the OpenNMS Group Editorial Style Guide.
+While it might be useful to consult when writing or editing documentation, it is for reference only.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you want to review docs for the Horizon project, we recommend that you reference this glossary.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="numberssymbols"><a class="anchor" href="#numberssymbols"></a>Numbers/Symbols</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">*</dt>
+<dd>
+<p>The corresponding phrase is "wildcard" or "asterisk."</p>
+</dd>
+<dt class="hdlist1">+</dt>
+<dd>
+<p>The corresponding phrase is "plus sign."
+It can be used in the UI to represent the "expand" command for a list or collapsible element.</p>
+</dd>
+<dt class="hdlist1">-</dt>
+<dd>
+<p>The corresponding phrase is "minus sign."
+It can be used in the UI to represent the "collapse" command for a list or collapsible element.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="a"><a class="anchor" href="#a"></a>A</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">a versus an</dt>
+<dd>
+<p>Use the article "a" before words that begin with consonants.</p>
+<div class="paragraph">
+<p>Use "an" before words that begin with vowels, an "ef" sound (as in "an FAQ"), or an unsounded "h" (as in "an hour").</p>
+</div>
+</dd>
+<dt class="hdlist1">-able</dt>
+<dd>
+<p>Do not add "-able" as a suffix when the result is not a real word.
+Consult a <a href="overview.html#ga-opennms-docs-dictionaries" class="xref page">dictionary</a> to see if the final construction is a valid use of the suffix.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">orderable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">doable<br>
+scalable</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1"><a id="glossary-abort"></a> abort</dt>
+<dd>
+<p>Avoid.
+Use "end" for operations, "exit" for programs, "stop" for hardware operations, and "cancel" for requests or processes.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-above-below"></a> above, below</dt>
+<dd>
+<p>Avoid when referring to information in text.
+Instead, use "preceding" and "following" (or "previous" and "next") if you cannot make specific cross-references.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-active-inactive"></a> active, inactive</dt>
+<dd>
+<p>Do not use to describe options, functions, or items that users can select.
+Use <a href="#glossary-available-unavailable">available and unavailable</a> instead.</p>
+</dd>
+<dt class="hdlist1">admin</dt>
+<dd>
+<p>Unless referring to a permissions role (for example, "the Admin role"), do not use initial capitalization.</p>
+</dd>
+<dt class="hdlist1">affect, effect</dt>
+<dd>
+<p>Use "affect" (verb) to mean "influence."
+Use "effect" (noun) to mean "result."</p>
+<div class="exampleblock">
+<div class="title">Example 1. Use of "affect" and "effect" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>Even minor changes affect the performance of the database.</p>
+</div>
+<div class="paragraph">
+<p>Even minor changes have an effect on the performance of the database.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-all-always"></a> all, always</dt>
+<dd>
+<p>Do not use.
+Avoid all-encompassing terms unless they are accurate descriptions.</p>
+</dd>
+<dt class="hdlist1">and/or</dt>
+<dd>
+<p>Avoid using this construction.
+Choose either "and" or "or," or rewrite the sentence.</p>
+<div class="paragraph">
+<p>If avoiding the construction makes a sentence long or cumbersome, however, it&#8217;s okay to use.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Use of "or" and "and/or" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>You can save the document under its current name or under a new name.</p>
+</div>
+<div class="paragraph">
+<p>Will the new version contain information on how to write object-oriented code and/or use the class libraries?</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-available-unavailable"></a> available, unavailable</dt>
+<dd>
+<p>Use to describe options or functions that users can select and deselect.
+Do not use <a href="#glossary-active-inactive">active, inactive</a>, <a href="#glossary-enabled-disabled">enabled, or disabled</a>.</p>
+<div class="paragraph">
+<p>See also <a href="#glossary-dimmed">dimmed</a>.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="b"><a class="anchor" href="#b"></a>B</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">back up, back out</dt>
+<dd>
+<p>Verb; two words.</p>
+<div class="exampleblock">
+<div class="title">Example 3. Use of "back up" and "back out" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>Do you plan to back up your files?</p>
+</div>
+<div class="paragraph">
+<p>If something goes wrong, you can back out.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">backup, backout</dt>
+<dd>
+<p>Noun and adjective.</p>
+<div class="exampleblock">
+<div class="title">Example 4. Use of "backup" and "backout" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>Did you create a backup for that?</p>
+</div>
+<div class="paragraph">
+<p>We need a backout plan.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-box"></a> box</dt>
+<dd>
+<p>When referencing the UI, use "box" instead of <a href="#glossary-field">field</a> to refer to any box <em>except</em> a check box, a <a href="#glossary-lists">list</a>, or a menu box.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-button"></a> button</dt>
+<dd>
+<p>Do not use the words "the" and "button" when referring to named buttons.
+If you refer to an unnamed button or an icon in the interface, use the tooltip name along with "the" and "button."</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="c"><a class="anchor" href="#c"></a>C</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">can versus may</dt>
+<dd>
+<p>Use "can" instead of "may." "Can" implies ability, while "may" implies permission.
+Use "might" instead of "may" when implying uncertainty or a conditional situation.</p>
+<div class="exampleblock">
+<div class="title">Example 5. Use of "can" and "might" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>You can enter any alphanumeric character.</p>
+</div>
+<div class="paragraph">
+<p>The list might take a few seconds to appear if you are part of a large group.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">case</dt>
+<dd>
+<p>Use "case sensitive" and "not case sensitive."
+Use a hyphen when writing "case-sensitive" as an adjective (for example, "your case-sensitive password").</p>
+</dd>
+<dt class="hdlist1">choose</dt>
+<dd>
+<p>Use when the reader must make a decision, as opposed to <a href="#glossary-select">selecting</a> (not "picking") an item from a list to carry out a decision already made.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-clear"></a> clear</dt>
+<dd>
+<p>Use for check boxes instead of "deselect," "turn off," "unmark," "uncheck," or "unselect."</p>
+<div class="paragraph">
+<p>When referring to the act of removing highlighting from a selection or removing the check/filler from a check box or radio button, express the act in positive terms.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deselect the <strong>Activate</strong> check box.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Clear the <strong>Activate</strong> check box.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1"><a id="glossary-click"></a> click</dt>
+<dd>
+<p>Use to refer to choosing a command, <a href="#glossary-option">option</a>, or <a href="#glossary-button">button</a> using the mouse.</p>
+<div class="paragraph">
+<p>Don&#8217;t use "click on."
+Do not use "left-click."
+Use <a href="#glossary-right-click">right-click</a> or "double-click," as necessary.</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-client-server-client-server-based"></a> client, server client, server-based</dt>
+<dd>
+<p>All lowercase.</p>
+<div class="paragraph">
+<p>Do not use "client" to refer to a <a href="#glossary-customer">customer</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1">close</dt>
+<dd>
+<p>Verb used to describe ending a session.</p>
+<div class="paragraph">
+<p>When referring to a Close button represented with an X in the UI, write "the <strong>Close</strong> button (X)," where (X) is an image of the button.
+The image does not need alt text, as it would be redundant.</p>
+</div>
+</dd>
+<dt class="hdlist1">combo box</dt>
+<dd>
+<p>A text box with a list box attached.
+The list is always visible.
+Because users can either type or select their choice, you can use <a href="#glossary-enter">enter</a> to describe the action.</p>
+<div class="paragraph">
+<p>Always bold the name of a combo box, and refer to it as a box (for example, "the <strong>Font</strong> box").</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-context-menu"></a> context menu</dt>
+<dd>
+<p>The menu that appears when you right-click something.
+Don&#8217;t use "right-click menu."</p>
+</dd>
+<dt class="hdlist1">crash</dt>
+<dd>
+<p>Do not use to describe a program failing.
+Instead, use "exit," "quit," or "stopped responding."</p>
+<div class="paragraph">
+<p>See <a href="#glossary-abort">abort</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1">current window</dt>
+<dd>
+<p>Do not use.
+Use "active window" or "open window" instead.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-cursor"></a> cursor</dt>
+<dd>
+<p>The cursor is the pointer that appears on the screen and moves according to the movements of the mouse.
+A cursor takes on different shapes (different arrows, a hand with a pointing finger, and so on) according to its context.
+The <a href="#glossary-mouse">mouse</a> is the device that the user moves on the desk to control the cursor.</p>
+<div class="paragraph">
+<p>In general, do not refer to the mouse or the cursor.
+Instead, tell the user what to do and assume they know how to do it.</p>
+</div>
+<div class="paragraph">
+<p>Do not use "pointer."
+Do not refer to specific shapes of the cursor, unless they are directly relevant to the task at hand.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click the right button on the mouse and select <strong>Print</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Right-click and choose <strong>Print</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the pointer to click <strong>Submit</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click <strong>Submit</strong>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1"><a id="glossary-customer"></a> customer</dt>
+<dd>
+<p>A person who purchases or uses our software.
+Do not use <a href="#glossary-client-server-client-server-based">client</a> as a synonym for "customer."</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="d"><a class="anchor" href="#d"></a>D</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a id="glossary-default"></a> default</dt>
+<dd>
+<p>Use as a noun or adjective only.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The client&#8217;s name defaults into the field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default entry in the box is the client&#8217;s name.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1"><a id="glossary-desktop"></a> desktop</dt>
+<dd>
+<p>The background display on a monitor.
+Do not use <a href="#glossary-host">host</a>, "workstation," <a href="#glossary-box">box</a>, "node," or "machine."</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-dimmed"></a> dimmed</dt>
+<dd>
+<p>Use instead of "grayed" if you must describe the appearance of an unavailable command or item.
+Use along with "appears," as in "the unavailable item appears dimmed."</p>
+</dd>
+<dt class="hdlist1">display</dt>
+<dd>
+<p>Use as a transitive verb or noun referring generically to the visual output device and its technology (for example, "a flat-panel display").</p>
+</dd>
+<dt class="hdlist1">drop-down</dt>
+<dd>
+<p>Adjective.
+Use only if necessary to describe how an item such as a menu works or what it looks like.
+Its use is acceptable if necessary to describe the type of item, as in "a drop-down arrow" or "drop-down menu."</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose a location from the <strong>Data Center</strong> drop-down.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose a location from the <strong>Data Center</strong> list.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1">drop-down arrow</dt>
+<dd>
+<p>When referring to an arrow that becomes a drop-down list, indicate which list the user can view by clicking the arrow.
+For example, "Click the <strong>Size</strong> arrow for more options."
+Refer to the arrow using its hovertext name.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="e"><a class="anchor" href="#e"></a>E</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">en dash (–)</dt>
+<dd>
+<p>Use an en dash to indicate an inclusive range.</p>
+</dd>
+<dt class="hdlist1">em dash (--)</dt>
+<dd>
+<p>Use an em dash to set apart a phrase, similar to the use of parentheses.
+Do not put a space between the em dash and adjacent words.</p>
+<div class="exampleblock">
+<div class="title">Example 6. Use of em dashes in a sentence</div>
+<div class="content">
+<div class="paragraph">
+<p>Everything you see&#8212;&#8203;from the UI to the Minion appliance&#8212;&#8203;is Horizon.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">email</dt>
+<dd>
+<p>Use "email" (lowercase <em>e</em>, not hyphenated).
+Capitalize only if used at the beginning of a sentence, included in a title, or as a label on a window or screen.
+Avoid using as a verb.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-empty"></a> empty</dt>
+<dd>
+<p>Use to describe a database field, rather than "blank."
+Do not use to describe a field that is actually <a href="#glossary-null">null</a>.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-enabled-disabled"></a> enabled, disabled</dt>
+<dd>
+<p>Do not use to describe items that users can or cannot select.
+Use <a href="#glossary-available-unavailable">available and unavailable</a> instead.</p>
+</dd>
+<dt class="hdlist1">end user versus end-user</dt>
+<dd>
+<p>For nouns, use "end user" (two words).
+For adjectives, use "end-user" (hyphenated).</p>
+<div class="exampleblock">
+<div class="title">Example 7. Use of "end user" and "end-user" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>The end user of this product &#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>We will provide end-user training.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">ensure</dt>
+<dd>
+<p>Generally, use "ensure" rather than "assure," "insure," or "make sure."</p>
+<div class="paragraph">
+<p>"Ensure" means "to make sure, certain, or safe."</p>
+</div>
+<div class="paragraph">
+<p>"Assure" refers to setting someone&#8217;s mind at ease.</p>
+</div>
+<div class="paragraph">
+<p>"Insure" refers to providing insurance coverage.</p>
+</div>
+<div class="paragraph">
+<p>"Make sure" is an imperative phrase.</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-enter"></a> enter</dt>
+<dd>
+<p>Do not use as a synonym for <a href="#glossary-type">type</a>, except to indicate that a user can interact with the UI through multiple methods, such as typing text or clicking a selection from a list.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="f"><a class="anchor" href="#f"></a>F</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">fewer, less</dt>
+<dd>
+<p>Use "fewer" when you can count a set of items.
+Use "less" when you cannot.</p>
+<div class="exampleblock">
+<div class="title">Example 8. Use of "fewer" and "less" in a sentence</div>
+<div class="content">
+<div class="paragraph">
+<p>If you crush fewer grapes, you will make less wine.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-field"></a> field</dt>
+<dd>
+<p>Don&#8217;t use; instead, use <a href="#glossary-box">box</a> or an appropriate description of the UI element.</p>
+</dd>
+<dt class="hdlist1">field labels</dt>
+<dd>
+<p>Always use exact wording to refer to a field on a screen.
+Do not truncate, abbreviate, or take shortcuts.
+Field labels are written using initial capitalization and the default paragraph font, even if the actual label on the UI capitalizes only the first word.
+If the user is clicking a UI element, its name should be bolded.</p>
+<div class="exampleblock">
+<div class="title">Example 9. Formatting of a reference to a field label</div>
+<div class="content">
+<div class="paragraph">
+<p>Click <strong>Procedure Code and Modifier Inquiry</strong> to look up the correct procedure code.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">free text versus freetext</dt>
+<dd>
+<p>For nouns, use "free text" (for example, "enter free text").
+For adjectives, use "freetext" (for example, "a freetext entry").</p>
+</dd>
+<dt class="hdlist1">freeze</dt>
+<dd>
+<p>Avoid; use "stopped responding" instead.</p>
+<div class="paragraph">
+<p>See <a href="#glossary-abort">abort</a>.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="g"><a class="anchor" href="#g"></a>G</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">gigabyte</dt>
+<dd>
+<p>One gigabyte is equal to 1,073,741,824 bytes, or 1,024 megabytes.
+Use the standards outlined below:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Abbreviate as "GB," not "G," "gig," "Gb," or "Gbyte."</p>
+</li>
+<li>
+<p>When first mentioned, spell it out and include the abbreviation in parentheses.</p>
+</li>
+<li>
+<p>Don&#8217;t include a space between a numeral and "GB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.</p>
+</li>
+<li>
+<p>If used as a noun in measurements, add "of" to form a prepositional phrase.</p>
+<div class="exampleblock">
+<div class="title">Example 10. Use of "gigabyte" and "GB" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>10 gigabytes (GB)</p>
+</div>
+<div class="paragraph">
+<p>10-GB hard disk</p>
+</div>
+<div class="paragraph">
+<p>You will need to free 1GB of hard disk space.</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Git versus git</dt>
+<dd>
+<p>Use "Git" (capitalized) to refer to the version control software.</p>
+<div class="paragraph">
+<p>Use "git" to refer to the command line instructions for the version control software.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="h"><a class="anchor" href="#h"></a>H</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">hang</dt>
+<dd>
+<p>Avoid; use "exit," "quit," or "stopped responding" instead.</p>
+<div class="paragraph">
+<p>See <a href="#glossary-abort">abort</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1">home page</dt>
+<dd>
+<p>Two words, lowercase.
+Use to refer to the opening page of a website.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-host"></a> host</dt>
+<dd>
+<p>Also <a href="#glossary-desktop">desktop</a> or "workstation."
+Do not use <a href="#glossary-box">box</a>, "node," or "machine."</p>
+</dd>
+<dt class="hdlist1">hover</dt>
+<dd>
+<p>Avoid using to refer to the action of using the cursor to activate something on the screen.
+Instead, assume that the user knows how to activate the screen element in question.
+Use "point to" if the user is unlikely to know.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hover your cursor over the menu bar, then click <strong>Reports</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On the Workflows menu, choose <strong>Check Status</strong>, then click <strong>Reports</strong>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="i"><a class="anchor" href="#i"></a>I</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">icon</dt>
+<dd>
+<p>Use only to describe a graphical representation of an object that the user can select and open, such as a drive, disk, folder, document, or program.
+When referring to an icon, bold its name.</p>
+<div class="paragraph">
+<p>For UI elements that are identified by a graphic instead of label text, use the most descriptive term available (for example, <a href="#glossary-button">button</a>, <a href="#glossary-box">box</a>, or "check box").
+To refer to the graphic itself, if there is no other identifying label, use "symbol" (for example, "the warning symbol").</p>
+</div>
+</dd>
+<dt class="hdlist1">ID, IDs</dt>
+<dd>
+<p>All caps, unless referring to a field name that is formatted differently on the UI.</p>
+</dd>
+<dt class="hdlist1">in versus on</dt>
+<dd>
+<p>"On" is preferred to "in" when referring to UI components, disks, hardware platforms, the screen itself, a network, and the web.
+Don&#8217;t use "on" when referring to user actions, such as <a href="#glossary-click">click</a>.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In the Details screen, click <strong>Snapshot</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On the Details screen, click <strong>Snapshot</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In the toolbar, click <strong>Action Items</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On the toolbar, click <strong>Action Items</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click on <strong>OK</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click <strong>OK</strong>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="k"><a class="anchor" href="#k"></a>K</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">kilobyte</dt>
+<dd>
+<p>One kilobyte is equal to 1,024 bytes.
+Use the standards outlined below:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Abbreviate as "KB," not "K," "kilo," "Kb," or "Kbyte."</p>
+</li>
+<li>
+<p>When first mentioned, spell it out and include the abbreviation in parentheses.</p>
+</li>
+<li>
+<p>Don&#8217;t include a space between the numeral and "KB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.</p>
+</li>
+<li>
+<p>If used as a noun in measurements, add "of" to form a prepositional phrase.</p>
+<div class="exampleblock">
+<div class="title">Example 11. Use of "kilobyte" and "KB" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>10 kilobytes (KB)</p>
+</div>
+<div class="paragraph">
+<p>10-KB hard disk</p>
+</div>
+<div class="paragraph">
+<p>You will need to free 1KB of hard disk space.</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="l"><a class="anchor" href="#l"></a>L</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">left, right</dt>
+<dd>
+<p>When referring to an area of a screen, use "left" and "right," not "left-hand side" or "right-hand side."</p>
+<div class="paragraph">
+<p>Use only <a href="#glossary-upper-lower">upper and lower</a> to express vertical alignment, and include a hyphen (for example, "the upper-right corner of the screen").</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-lists"></a> list</dt>
+<dd>
+<p>Do not use to refer to a <a href="#glossary-menu">menu</a>.
+Do not use "pull-down list."</p>
+</dd>
+<dt class="hdlist1">lookup versus look up</dt>
+<dd>
+<p>For nouns and adjectives, use "lookup" (one word).
+For verbs, use "look up" (two words).</p>
+<div class="exampleblock">
+<div class="title">Example 12. Use of "lookup" and "look up" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>A lookup window appears.</p>
+</div>
+<div class="paragraph">
+<p>Click <strong>Search</strong> to look up an error code.</p>
+</div>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="m"><a class="anchor" href="#m"></a>M</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">main</dt>
+<dd>
+<p>Use instead of "master" to refer to the base branch of a Git repository, unless the branch is named "master."</p>
+</dd>
+<dt class="hdlist1">megabyte</dt>
+<dd>
+<p>One megabyte is equal to 1,048,576 bytes, or 1,024 kilobytes.
+Use the standards outlined below:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Abbreviate as "MB," not "M," "meg," "Mb," or "Mbyte."</p>
+</li>
+<li>
+<p>When first mentioned, spell it out and include the abbreviation in parentheses.</p>
+</li>
+<li>
+<p>Don&#8217;t include a space between the numeral and "MB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.</p>
+</li>
+<li>
+<p>If used as a noun in measurements, add "of" to form a prepositional phrase.</p>
+<div class="exampleblock">
+<div class="title">Example 13. Use of "megabyte" and "MB" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>10 megabytes (MB)</p>
+</div>
+<div class="paragraph">
+<p>10-MB hard disk</p>
+</div>
+<div class="paragraph">
+<p>You will need to free 1MB of hard disk space.</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-menu"></a> menu</dt>
+<dd>
+<p>A list of items (not <a href="#glossary-option">options</a>) on the menu bar.
+Do not use "pull-down menu."
+Don&#8217;t use "menu" to refer to <a href="#glossary-lists">lists</a>.</p>
+<div class="paragraph">
+<p>Use <a href="#glossary-available-unavailable">available and unavailable</a> to refer to the status of menu items.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="#glossary-context-menu">context menu</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-mouse"></a> mouse</dt>
+<dd>
+<p>The device that the user moves on their desk to control the <a href="#glossary-cursor">cursor</a>.</p>
+<div class="paragraph">
+<p>In general, do not refer to the mouse or the cursor.
+Instead, tell the user what to do and assume they know how to do it.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click the right button on the mouse and select <strong>Print</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Right-click and select <strong>Print</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use the pointer to click <strong>Submit</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click <strong>Submit</strong>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="n"><a class="anchor" href="#n"></a>N</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">need</dt>
+<dd>
+<p>Use instead of "must have" or "necessary."</p>
+<div class="paragraph">
+<p>Use "if needed" or "as needed" rather than "if you need to."</p>
+</div>
+</dd>
+<dt class="hdlist1">never</dt>
+<dd>
+<p>Avoid unless it is an accurate description.</p>
+<div class="paragraph">
+<p>See <a href="#glossary-all-always">all and always</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-null"></a> null</dt>
+<dd>
+<p>Use to describe a database field that is <code>null</code>.
+If the database field is empty, use <a href="#glossary-empty">empty</a> instead, not "blank."</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="o"><a class="anchor" href="#o"></a>O</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">on-site versus on site</dt>
+<dd>
+<p>Hyphenate "on-site" when using the phrase as a compound adjective.
+With verbs, use "on site" (two words).</p>
+<div class="exampleblock">
+<div class="title">Example 14. Use of "on-site" and "on site" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>There will be an on-site meeting.</p>
+</div>
+<div class="paragraph">
+<p>Training is provided on site.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">only</dt>
+<dd>
+<p>"Only" is a modifier, and should be used as such.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-option"></a> option</dt>
+<dd>
+<p>Use instead of <a href="#glossary-radio-button">radio button</a>, unless describing the element type in developer content.
+Use <a href="#glossary-select">select</a> and <a href="#glossary-clear">clear</a> to describe interacting with an option.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click the <strong>I Agree</strong> radio button.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click the <strong>I Agree</strong> option.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="p"><a class="anchor" href="#p"></a>P</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">platform</dt>
+<dd>
+<p>A generic term for the back-end hardware, software, and services that support the operation of a portal.</p>
+</dd>
+<dt class="hdlist1">pre-</dt>
+<dd>
+<p>A prefix meaning "before."
+This prefix is usually affixed to words without using a hyphen (for example, "prefix," "predate").
+Use a hyphen in the following cases:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Where excluding the hyphen might lead to a mispronunciation or misunderstanding of the word (for example, "pre-judicial," meaning "before being a judge," could be read as "prejudicial," which has a very different meaning).</p>
+</li>
+<li>
+<p>Before a character other than a letter (for example, "pre-1960").</p>
+</li>
+<li>
+<p>Before a proper noun (for example, "pre-World War I").</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">preset</dt>
+<dd>
+<p>Initial, default settings configured in a freshly installed program.</p>
+<div class="paragraph">
+<p>Compare to <a href="#glossary-default">default</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1">press</dt>
+<dd>
+<p>Verb to use when referring to a keyboard key.
+Use instead of "depress," "strike," or "hit."</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hit Enter to continue.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Press Enter to continue.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1">product, project</dt>
+<dd>
+<p>The official terms for our software.
+Do not use "application," "component," or "program."</p>
+</dd>
+<dt class="hdlist1">prompts and labels</dt>
+<dd>
+<p>Do not include the punctuation from a prompt or field label on the UI, or from the default entry associated with the prompt or field label.
+An exception to this rule is when the prompt or field label ends in a question mark.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type <strong>your name</strong> in the User: box.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type your name in the User box.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">You must type <strong>Y</strong> in the Display Template box.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">You must type <strong>Y</strong> in the Display Template? box.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="r"><a class="anchor" href="#r"></a>R</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a id="glossary-radio-button"></a> radio button</dt>
+<dd>
+<p>Use only to describe the element itself in developer content when referring to the type of buttons available.
+Otherwise, use <a href="#glossary-option">option</a>.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Incorrect</th>
+<th class="tableblock halign-left valign-top">Correct</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Click the <strong>I Agree</strong> radio button.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Select the <strong>I Agree</strong> option.</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt class="hdlist1">release</dt>
+<dd>
+<p>Refers to the iteration of software.
+Capitalize when referring to a specific release (for example, "Release 30.1").</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-right-click"></a> right-click</dt>
+<dd>
+<p>Verb used to describe the mouse action that displays the <a href="#glossary-context-menu">context menu</a>.
+Hyphenated.</p>
+</dd>
+<dt class="hdlist1">roll out versus rollout</dt>
+<dd>
+<p>Refers to the process of installing or upgrading end-user offices.</p>
+<div class="paragraph">
+<p>For verbs, use "roll out" (two words).
+For nouns and adjectives, use "rollout" (one word).</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 15. Use of "roll out" and "rollout" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>We will roll out to those offices in May.</p>
+</div>
+<div class="paragraph">
+<p>A rollout task.</p>
+</div>
+</div>
+</div>
+</dd>
+<dt class="hdlist1">run</dt>
+<dd>
+<p>Use to tell readers what to do with programs, macros, and so on.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="s"><a class="anchor" href="#s"></a>S</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a id="glossary-screen"></a> screen</dt>
+<dd>
+<p>Use to refer to the graphic portion of a visual output device.
+Avoid using to refer to UI elements.</p>
+<div class="paragraph">
+<p>A program can be described as "running in fullscreen mode."</p>
+</div>
+</dd>
+<dt class="hdlist1">see</dt>
+<dd>
+<p>As a general rule, use to direct the reader to a cross-reference.</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-select"></a> select</dt>
+<dd>
+<p>Verb.
+Use to describe interactions with check boxes and choices on a <a href="#glossary-menu">menu</a> or <a href="#glossary-lists">list</a>.
+Use <a href="#glossary-clear">clear</a> instead of "unselect."</p>
+<div class="paragraph">
+<p>Compare with <a href="#glossary-click">click</a>.</p>
+</div>
+</dd>
+<dt class="hdlist1">since</dt>
+<dd>
+<p>Use only in relation to time.
+Don&#8217;t use as a synonym for "because."</p>
+</dd>
+<dt class="hdlist1">Start button</dt>
+<dd>
+<p>Capitalize references to the <strong>Start</strong> menu and the <strong>Start</strong> button on the Windows taskbar.
+Don&#8217;t refer to the <strong>Start</strong> button as "the Windows <strong>Start</strong> button."</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="t"><a class="anchor" href="#t"></a>T</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">that</dt>
+<dd>
+<p>Use to introduce an essential clause.
+When referring to people, use "who" instead (for example, "users who," not "users that").</p>
+</dd>
+<dt class="hdlist1">there versus their versus they&#8217;re</dt>
+<dd>
+<p>"There" can be used as an adverb that indicates a place or a point, a pronoun that introduces a sentence in which the verb precedes the subject, or a noun that indicates the place.</p>
+<div class="exampleblock">
+<div class="title">Example 16. Use of "there" in sentences</div>
+<div class="content">
+<div class="paragraph">
+<p>They went there.</p>
+</div>
+<div class="paragraph">
+<p>There is no denying his skill.</p>
+</div>
+<div class="paragraph">
+<p>I&#8217;ve been there.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>"Their" is the possessive form of "they" (for example, "their experience").
+"They&#8217;re" is a contraction of "they are" (for example, "they&#8217;re going out").</p>
+</div>
+</dd>
+<dt class="hdlist1"><a id="glossary-type"></a> type</dt>
+<dd>
+<p>Use instead of "type in" or <a href="#glossary-enter">enter</a> when referring to information that a user must type, such as a password.</p>
+<div class="paragraph">
+<p>For information that a user can either type or select from a list, you can use either "type" or "enter."</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="u"><a class="anchor" href="#u"></a>U</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">UNIX</dt>
+<dd>
+<p>Not "Unix."</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-upper-lower"></a> upper, lower</dt>
+<dd>
+<p>Use when referring to a vertical position on a screen.
+Always include a hyphen when using "upper-left" or "upper-right."</p>
+</dd>
+<dt class="hdlist1">user name versus username</dt>
+<dd>
+<p>When referring to a user&#8217;s name, use "user name."</p>
+<div class="paragraph">
+<p>When referring to the name that a user needs to sign in, use "username."</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="w"><a class="anchor" href="#w"></a>W</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">want</dt>
+<dd>
+<p>Avoid if possible.
+Use instead of "wish" or "desire."</p>
+</dd>
+<dt class="hdlist1">web</dt>
+<dd>
+<p>Use "web" (lowercase) when referring to the World Wide Web.
+Don&#8217;t use "Web" (uppercase).</p>
+</dd>
+<dt class="hdlist1">Wi-Fi</dt>
+<dd>
+<p>Capitalize and use a hyphen.
+Don&#8217;t use "WiFi" or "wifi."</p>
+</dd>
+<dt class="hdlist1"><a id="glossary-window"></a> window</dt>
+<dd>
+<p>Do not use unless <a href="#glossary-screen">screen</a> does not apply.</p>
+</dd>
+<dt class="hdlist1">window titles</dt>
+<dd>
+<p>Use the exact name of the window if there is one displayed on the screen.
+Use initial capitalization for the title, but lowercase for the word "window" (for example, "the Ref/Auth Inquiry window").</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="build-docs.html">Build the Documentation</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (c) 2002–2022 The OpenNMS Group, Inc.</p>
+  <p>Licensed under the terms of the AGPL-3.0.</p>
+  <p><a href="https://docs.opennms.com/start-page/1.0.0/index.html" target="_blank">Legal Notice</a></p>
+</footer>
+<script src="../../../_/js/site.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: {
+      Macros: {
+      RR: "{\\mathbb R}",
+      NN: "{\\mathbb N}",
+      Nso: "{N_{\\mathrm{so}}}",
+      Nma: "{N_{\\mathrm{ma}}}",
+      Nno: "{N_{\\mathrm{no}}}",
+      Ne: "{N_{\\mathrm{e}}}",
+      Ilag: ["{\\mathcal{I}^{\\mathrm{lag}}_{#1}}",1],
+      calTh: "{\\mathcal{T}_h}",
+      Ck: ["{\\mathcal{C}^{#1}}",1],
+      Pk: ["{\\mathcal{P}^{#1}}",1],
+      Qk: ["{\\mathcal{Q}^{#1}}",1],
+      Pch: ["{P^{#1}_{c,h}}",1],
+      Pcho: ["{P^{#1}_{c,h,0}}",1],
+      Qch: ["{Q^{#1}_{c,h}}",1],
+      Ich: ["{\\mathcal{I}^{#1}_{c,h}#2}",2],
+      poly: ["{\\mathbb{#1}}",1],
+      nf: "{n_f}",
+      normal: "{\\mathbf{n}}",
+      ngeo: "{n_{\\mathrm{geo}}}",
+      geo: "{\\mathrm{geo}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      dim: ["{\\operatorname{dim}(#1)}",1],
+      opdim: "{\\operatorname{dim}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      poly: ["{\\mathbb{#1}}",1],
+      R: ["{\\mathbb{R}^{#1}}",1],
+      set: ["{\\left\\{#1\\right\\}}",1],
+      diam: "{\\operatorname{diam}}",
+      jump: ["{[\\![ #1 ]\\!]}",1],
+      Next: "{\\mathrm{n}}",
+      essinf: "{\\operatorname{ess}\\, \\operatorname{inf}}",
+      tr: "{\\operatorname{tr}}",
+      Id: "{\\mathcal{I}}",
+      disp: ["{\\mathbf{#1}}",1],
+      stresst: ["{\\mathbf{\\sigma(#1)}}",1],
+      deformt: ["{\\mathbf{\\varepsilon(#1)}}",1],
+      domain: "{\\Omega}",
+      prect: ["{\\left\\(#1\\right\\)}",1],
+      ds: "",
+      bold: ["{\\bf #1}",1]
+  },
+  extensions: ["mhchem.js"] }
+});
+</script>
+  </body>
+</html>

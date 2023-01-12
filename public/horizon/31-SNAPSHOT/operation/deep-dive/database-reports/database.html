@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Database Reports</title>
+    <link rel="prev" href="../topology/enlinkd/layer-3/is-is-discovery.html">
+    <link rel="next" href="template-introduction.html">
+    <meta name="generator" content="Antora 3.1.1">
+    <link rel="stylesheet" href="../../../../../_/css/site.css">
+    <link rel="stylesheet" href="../../../../../_/css/search.css">
+    <link rel="stylesheet" href="../../../../../_/css/admonition-labels.css">
+    <link rel="icon" href="../../../../../_/img/favicon.svg">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a href="https://www.opennms.com"><img class="navbar-logo" src="../../../../../_/img/logotype.svg"/></a>
+      <a class="navbar-site-title" href="../../../../..">Horizon</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Videos</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item"
+               href="https://www.youtube.com/watch?v=GJzmkshdjiI&list=PLsXgBGH3nG7iZSlssmZB3xWsAJlst2j2z"
+               target="blank">OpenNMS 101 Training</a>
+            <a class="navbar-item"
+               href="https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4"
+               target="blank">OpenNMS 102 Training</a>
+            <a class="navbar-item" href="https://www.youtube.com/opennms" target="blank">OpenNMS on YouTube</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Community Tools</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://www.opennms.com" target="blank">Project Website</a>
+            <a class="navbar-item" href="https://issues.opennms.org" target="blank">JIRA</a>
+            <a class="navbar-item" href="https://opennms.discourse.group" target="blank">Discourse</a>
+            <a class="navbar-item" href="https://chat.opennms.com" target="blank">Mattermost Chat</a>
+            <a class="navbar-item" href="https://toolbox.opennms.eu" target="blank">Toolbox</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">OpenNMS Group</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://www.opennms.com/training" target="blank">Training</a>
+            <a class="navbar-item" href="https://www.opennms.com/support" target="blank">Commercial Support</a>
+            <a class="navbar-item" href="https://www.opennms.com/sponsored-development" target="blank">Sponsored
+              Development</a>
+          </div>
+        </div>
+        <a class="navbar-item" href="https://vault.opennms.com/docs/">Archived Docs</a>
+      </div>
+      <div class="navbar-item">
+      <span class="control">
+        <a class="button is-primary" href="https://github.com/opennms" target="blank">GitHub</a>
+      </span>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="body">
+<div class="nav-container" data-component="horizon" data-version="31-SNAPSHOT">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../../../index.html">Horizon</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Release Notes</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../releasenotes/whatsnew.html">What&#8217;s New in OpenNMS Horizon 31</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../releasenotes/changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Deployment</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/core/introduction.html">Basic Horizon deployment</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/core/system-requirements.html">Minimum System Requirements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/core/getting-started.html">Installation and Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/core/install-jdbc-driver.html">Install JDBC Driver on Horizon Core</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/core/setup-message-broker.html">Set up Message Broker</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/minion/introduction.html">Minion</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/minion/system-requirements.html">Minimum system requirements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/minion/install.html">Install Minion</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/minion/installing-jdbc-driver.html">Install JDBC Driver on Minion</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/minion/off-heap-storage.html">Off-heap storage</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/sentinel/introduction.html">Sentinel</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/sentinel/runtime/install.html">Installing Sentinel Runtime</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/time-series-storage.html">Time Series Database</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/rrdtool.html">RRDtool</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/introduction.html">Newts</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/newts.html">Configure Horizon Core to Use Newts</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/configuration.html">Configuration Reference</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/cassandra-jmx.html">Cassandra Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/cassandra-newts-jmx.html">Newts Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/newts-repository-converter.html">RRD/JRB to Newts Migration Utility</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/newts/resourcecli.html">Resource Management Tool (resourcecli)</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/ts-integration-layer.html">Time Series Integration Layer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/configuration.html">Enable Time Series Integration Layer</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/cortex.html">Cortex Time Series Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/time-series-storage/timeseries/hosted-tss.html">OpenNMS Time Series DB</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../deployment/opentracing/jaeger-tracing.html">Setting up Jaeger Tracing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../deployment/upgrade/introduction.html">Upgrade Horizon</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/upgrade/diff.html">Identify Changed Configuration Files</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/upgrade/git-diff.html">Manage Configuration Changes with Git</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/upgrade/basic.html">Basic Upgrade Steps</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../deployment/upgrade/git-upgrade.html">Upgrade Horizon with Git</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../deployment/upgrade/backup/introduction.html">Back up OpenNMS Horizon</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../deployment/upgrade/restore/introduction.html">Restore OpenNMS Horizon</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Operation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../overview/overview.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../quick-start/introduction.html">Quick Start</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/users.html">Step 1: First-Time Login</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/notifications.html">Step 2: Turn on Default Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/inventory.html">Step 3: Provision Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/performance-data.html">Step 4: Set Up Performance Data Collection</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/thresholding.html">Step 5: Set up a Threshold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/baseline.html">Step 6: Establish a Baseline</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/service-assurance.html">Step 7: Determine Service Availability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/notification-config.html">Step 8: Configure Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/visualize-data.html">Step 9: Visualize Data</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../quick-start/beyond-qs.html">Beyond the Quick Start Guide</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../introduction.html">Deep Dive</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">User Management</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/user-config.html">User Creation and Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/security-roles.html">Assign User Permissions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/user-groups.html">Groups</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/user-oncall.html">On-Call Roles</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/user-maintenance.html">User Maintenance</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../user-management/pre-authentication.html">Web UI Pre-Authentication</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../provisioning/introduction.html">Provisioning</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../provisioning/configuration.html">Configuration Options</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../provisioning/foreign-source.html">Foreign Source Definition</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../provisioning/adapters.html">Adapters</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../provisioning/detectors.html">Detectors</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../provisioning/policies.html">Policies</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../provisioning/import-handler.html">Import Handlers</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/directed-discovery.html">Directed Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/auto-discovery.html">Auto Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/integration.html">Integrating with Provisiond</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/scalability.html">Addressing Scalability</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/fine-grained.html">Fine-Grained provisioning using provision.pl</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../provisioning/snmp-profile.html">SNMP Profiles</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../thresholds/thresholding.html">Thresholding</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../thresholds/datasource.html">Thresholding Tasks</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../thresholds/thresh-group.html">Create a Threshold Group</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../thresholds/thresh-service.html">Thresholding Service</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../thresholds/troubleshoot.html">Troubleshoot and Manage Thresholds</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../service-assurance/introduction.html">Service Assurance</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/configuration.html">Configure Pollerd</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/critical-service.html">Improve Monitoring Efficiency</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/downtime-model.html">Detect Short Service Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/path-outages.html">Use Path Outages to Suppress Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/polling-packages.html">Poller Packages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/service-monitors.html">Service Monitors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../service-assurance/application-perspective-monitoring/introduction.html">Application Perspective Monitoring</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../device-config-backup/introduction.html">Device Configuration Backup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../device-config-backup/ssh.html">Configure Backup Script</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../device-config-backup/configuration.html">Poller Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../device-config-backup/dcb-requisition.html">Create Requisition for Device Configuration Backup</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../device-config-backup/dcb.html">Manage Device Configuration Backups</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../performance-data-collection/introduction.html">Performance Management</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../performance-data-collection/collectd/collection-packages.html">Configure Collector Packages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../performance-data-collection/collectd/configuration.html">Configuring Collectd</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../performance-data-collection/data-types.html">Data Types</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../performance-data-collection/resource-types.html">Resource Types</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-index.html">Create a Custom Resource Type</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../performance-data-collection/collectors.html">Collectors</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../events/perf-data.html">SNMP Trap Performance Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/property-extenders.html">SNMP Property Extenders</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/cisco-cbqos.html">Cisco CBQoS property extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/enum-lookup.html">Enum Lookup property extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/index-split.html">Index Split Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/pointer-like-index.html">Pointer-Like Index Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/regex.html">Regex Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/snmp-interface.html">SNMP Interface Property Extender</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../performance-data-collection/snmp-property-extenders/value-mapping.html">Value Mapping Property Extender</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../performance-data-collection/collectd/collect-admin.html">Collectd Administration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../performance-data-collection/shell/introduction.html">Shell Commands</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../performance-data-collection/shell/adhoc-collection.html">Ad hoc collection</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../performance-data-collection/shell/measurements.html">Measurements &amp; Resources</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../performance-data-collection/shell/stress-testing.html">Stress Testing</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../events/introduction.html">Events</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../events/event-configuration.html">Event Daemon Configuration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/event-definition.html">Event Definition</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/event-tokens.html">Replacement Tokens</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/event-debugging.html">Event Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../events/event-translator.html">Event Translator</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../events/event-sources.html">Sources of Events</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/eif-adapter.html">IBM Tivoli Event Integration Facility</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/kafka.html">Kafka Consumer (Events)</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/rest.html">REST</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/sink-api.html">Sink</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/snmp-traps.html">SNMP Traps</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/syslog.html">Syslog Messages</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/tl1.html">TL1 Autonomous Messages</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../events/sources/xml-tcp.html">XML-TCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../events/perf-data.html">SNMP Trap Performance Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../events/event-advanced-search.html">Advanced Event Search</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../alarms/introduction.html">Alarms</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/alarmd.html">Alarm Service Daemon</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/configuring-alarms.html">Configure Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/alarm-notes.html">Alarm Notes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/alarm-sound-flash.html">Alarm Sounds</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/history.html">Alarm History</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/alarm-advanced-search.html">Advanced Alarm Search</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../alarms/ifttt-integration.html">IFTTT Integration</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../notifications/introduction.html">Notifications</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../notifications/concepts.html">Concepts</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../notifications/configuration.html">Notification Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../notifications/commands.html">Notification Commands</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../notifications/bonus-strategies.html">Bonus Notification Methods</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../notifications/strategies/mattermost.html">Mattermost</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../notifications/strategies/slack.html">Slack Notifications</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../bsm/introduction.html">Business Service Monitoring</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../bsm/business-service-definition.html">Business Service Definition</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../bsm/edges.html">Edges</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../bsm/business-service-map.html">Business Service Topology</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../bsm/operational-status.html">Operational Status</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../bsm/map-functions.html">Map Functions</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../bsm/reduce-functions.html">Reduce Functions</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../bsm/root-cause-impact-analysis.html">Root Cause and Impact Analysis</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../topology/introduction.html">Topology</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../topology/topology.html">Topology Map</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../topology/graphml-asset-topology-provider.html">Asset Topology Provider</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../topology/enlinkd/introduction.html">Enhanced Link Daemon</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../topology/enlinkd/layer-2-discovery.html">Layer 2 Link Discovery</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../topology/enlinkd/layer-2/lldp-discovery.html">Link Layer Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../topology/enlinkd/layer-2/cdp-discovery.html">Cisco Discovery Protocol</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../topology/enlinkd/layer-2/bridge-discovery.html">Transparent Bridge Discovery</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../topology/enlinkd/layer-3-discovery.html">Layer 3 Link Discovery</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../topology/enlinkd/layer-3/ospf-discovery.html">OSPF Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../topology/enlinkd/layer-3/is-is-discovery.html">IS-IS Discovery</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="database.html">Database Reports</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="template-introduction.html">Report Templates</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/availability.html">Availability by Node</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/avail-summary.html">Availability Summary</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/classic.html">Default Classic</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/calendar.html">Default Calendar</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/event.html">Event Analysis</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/grafana.html">Grafana Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/interface-avail.html">Interface Availability</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/maintenance-expired.html">Maintenance Contracts Expiring</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/maintenance-strategy.html">Maintenance Contracts Strategy</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/morning.html">Early Morning</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/response-summary.html">Response Time Summary</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/response-time.html">Response Time by Node</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/serial.html">Serial Interface Utilization</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/snmp.html">SNMP Interface Availability</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/total-bytes.html">Total Bytes Transferred by Interface</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="templates/traffic-rates.html">Avg/Peak Traffic Rates for Nodes by Interface</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ticketing/introduction.html">Ticketing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../workarounds/snmp.html">Overriding SNMP Client Behavior</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../dnsresolver/introduction.html">DNS Resolver</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../telemetryd/introduction.html">Telemetry Daemon</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../elasticsearch/introduction.html">Elasticsearch Integration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../elasticsearch/features/introduction.html">Feature Matrix</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../elasticsearch/features/event-forwarder.html">Event Forwarder</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../elasticsearch/features/event-forwarder-mapping.html">Mapping Events to Elasticsearch</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../elasticsearch/features/event-forwarder-mapping-table.html">Table of Index Mapping</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../elasticsearch/features/flows.html">Flow Support</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../elasticsearch/features/situation-feedback.html">Situation Feedback</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../elasticsearch/features/alarm-history.html">Alarm History</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../flows/introduction.html">Flows</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/basic.html">Basic Flows Setup</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/distributed.html">Using Minions as a flow collector</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/sentinel/sentinel.html">Scale Flow Processing with Sentinel</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/classification-engine.html">Flows Classification</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/aggregation.html">Aggregated flows by REST API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/data-collection.html">Data collection of flow applications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/thresholding.html">Thresholding flow applications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../flows/troubleshooting.html">Flows Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../geographical-map/introduction.html">Geographical Maps</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../geographical-map/searching.html">Map Search</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../kafka-producer/kafka-producer.html">Kafka Producer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../kafka-producer/enable-kafka.html">Enable the Kafka Producer</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../kafka-producer/configure-kafka.html">Configure the Kafka Producer</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../kafka-producer/shell-commands.html">Shell Commands</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../alarm-correlation/situation-feedback.html">Alarm Correlation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../meta-data.html">Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../snmp-poller/concepts.html">SNMP Interface Poller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Horizon Administration</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/webui/introduction.html">Administrative Web Interface</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/dashboard.html">Dashboard</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/grafana-dashboard-box.html">Grafana Dashboard Box</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/heatmap.html">Heatmap</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/search.html">Search</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/webui/jmx-config-generator/introduction.html">JMX Configuration Generator</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/jmx-config-generator/webui.html">Web-Based Utility</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/jmx-config-generator/cli.html">CLI-based utility</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/webui/opsboard/introduction.html">Operator Board</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/alarm-detail.html">Alarm Details</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/alarms.html">Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/charts.html">Charts</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/grafana.html">Grafana</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/image.html">Image</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/ksc.html">KSC Reports</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/map.html">Map</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/rrd.html">RRD</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/rtc.html">RTC</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/summary.html">Summary</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/surveillance.html">Surveillance</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/topology.html">Topology</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <a class="nav-link" href="../admin/webui/opsboard/dashlet/url.html">URL</a>
+  </li>
+  <li class="nav-item" data-depth="5">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/webui/opsboard/boosting-behavior.html">Boosting Dashlet</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="6">
+    <a class="nav-link" href="../admin/webui/opsboard/criteria-builder.html">Criteria Builder</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/mib.html">SNMP MIB Compiler</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/surveillance-view.html">Surveillance View</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/trends.html">Trend</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/webui/log-reader.html">Instrumentation Log Reader</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/system-properties/introduction.html">System Properties</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/system-properties/system-proxies.html">Configuring system proxies</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/config-tester.html">Configuration Tester</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/rmi.html">Enable RMI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/external-auth.html">External Authentication</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/geocoder.html">Geocoder Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../admin/http-ssl.html">HTTPS/SSL</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/https/https-server.html">Securing Jetty With HTTPS</a>
+  </li>
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../admin/https/https-client.html">SSL Client Connections</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/request-logging.html">Request Logging</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/restart.html">Shutdown and Restart</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/daemon-config-files.html">Daemon Configuration Files</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/logging/introduction.html">Logging</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/logging/log-file-viewer.html">View Log Files</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/housekeeping/introduction.html">Housekeeping Tasks</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../admin/scv-configuration.html">Secure Credentials Vault</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/development.html">Development</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/build-from-source.html">Build from source</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/osgi/osgi-and-opennms.html">OSGi Integration within OpenNMS</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/minion/introduction.html">Minion</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/minion/container.html">Container</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/minion/guidelines.html">Guidelines</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/minion/testing.html">Testing</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/topology/introduction.html">Topology</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/topology/infopanel.html">Info Panel Items</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/topology/graphml.html">GraphML</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/topology/update.html">Topologies Updates</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/graph/graph.html">Graph Service API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/rest/CORS.html">CORS Support</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/rest/rest-api.html">REST API</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/rest/osgi.html">Expose ReST services via OSGi</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/rest/implemented.html">Currently Implemented Interfaces</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/acknowledgements.html">Acknowledgements</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/alarm_statistics.html">Alarm Statistics</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/alarms.html">Alarms</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/alarm_history.html">Alarm History</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/events.html">Events</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/categories.html">Categories</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/config_management.html">Config Management</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/device_config.html">Device Config Rest API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/flows.html">Flow API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/classifications.html">Flow Classification API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/foreign_sources.html">Foreign Sources</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/graph.html">Graph API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/groups.html">Groups</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/heatmap.html">Heatmap</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/health_rest.html">Health Rest Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/ifservices.html">Monitored Services</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/ipinterfaces.html">IP Interfaces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/ksc_reports.html">KSC Reports</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/maps.html">Maps</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/measurements.html">Measurements API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/meta-data.html">Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/nodes.html">Nodes</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/node_links.html">Node Links</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/notifications.html">Notifications</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/outage_timeline.html">Outage Timelines</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/outages.html">Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/perspectivepoller.html">Perspective Poller</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/requisitions.html">Requisitions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/resources.html">Resources API</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/rtc.html">Realtime Console Data</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/scheduled_outages.html">Scheduled Outages</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/snmp_configuration.html">SNMP Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/snmpinterfaces.html">SNMP Interfaces</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/snmpmetadata.html">SNMP Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/users.html">Users</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/user-defined-links.html">User-Defined Links</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/snmptrapnbi-config.html">SNMP Trap Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/emailnbi-config.html">Email Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/javamail-config.html">JavaMail Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/syslognbi-config.html">Syslog Northbounder Interface Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/bsm/bsm-development.html">Business Service Monitoring</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../development/rest/situation-feedback.html">Situation Feedback</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/oia/introduction.html">Plugin Development with the OpenNMS Plugin API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../development/amqp/introduction.html">AMQP Integration</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/amqp/event_forwarder.html">Event Forwarder</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/amqp/event_receiver.html">Event Receiver</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/amqp/alarm_northbounder.html">Alarm Northbounder</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../development/amqp/custom_processors.html">Custom Processors</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/ticketing/inmemory-plugin.html">InMemory Ticketer</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../development/reporting/jasperreport-styleguide.html">Jasper Report Guideline Design and Style Guidelines</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Configuration</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/file-editor.html">File Editor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/configuration/filters/filters.html">Filters</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/configuration/filters/components.html">OpenNMS components that use filters</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/configuration/filters/parameters.html">Parameters</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/configuration/filters/rule-formats.html">Rule formats</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/core-docker.html">Core Docker</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/minion-docker.html">Minion Docker</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/configuration/minion-confd/minion-confd.html">Configuring Minion via confd</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/configuration/minion-confd/jmx-exporter.html">Prometheus JMX exporter</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/configuration/minion-confd/test-confd.html">Test confd templates</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/sentinel-features.html">Sentinel features</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/tuning-activemq.html">Tuning ActiveMQ</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/tuning-kafka.html">Tuning Apache Kafka</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/configuration/ttl-rpc.html">Time to Live (TTL) for RPCs</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/performance-data-collection/introduction.html">Collectors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/http.html">HttpCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/jdbc.html">JDBC Collector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/jmx.html">JmxCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/nsclient.html">NSClientCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/prometheus.html">PrometheusCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/SnmpCollector.html">SnmpCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/tca.html">TcaCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/vmware.html">VmwareCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/vmware-cim.html">VmwareCimCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/wmi.html">WmiCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/wsman.html">WsManCollector</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/performance-data-collection/collectors/xml.html">XmlCollector</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/service-assurance/introduction.html">Service Monitors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/ActiveMQMonitor.html">ActiveMQMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/AvailabilityMonitor.html">AvailabilityMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/BgpSessionMonitor.html">BgpSessionMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/BSFMonitor.html">BSFMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/CiscoIpSlaMonitor.html">CiscoIpSlaMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/CiscoPingMibMonitor.html">CiscoPingMibMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/CitrixMonitor.html">CitrixMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/DeviceConfigMonitor.html">DeviceConfigMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/DhcpMonitor.html">DhcpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/DiskUsageMonitor.html">DiskUsageMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/DnsMonitor.html">DnsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/DNSResolutionMonitor.html">DNSResolutionMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/FtpMonitor.html">FtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/HostResourceSwRunMonitor.html">HostResourceSwRunMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/HttpMonitor.html">HttpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/HttpPostMonitor.html">HttpPostMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/HttpsMonitor.html">HttpsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/IcmpMonitor.html">IcmpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/ImapMonitor.html">ImapMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/ImapsMonitor.html">ImapsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JCifsMonitor.html">JCifsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JDBCMonitor.html">JDBCMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JDBCQueryMonitor.html">JDBCQueryMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JDBCStoredProcedureMonitor.html">JDBCStoredProcedureMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JmxMonitor.html">JmxMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/JolokiaBeanMonitor.html">JolokiaBeanMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/LdapMonitor.html">LdapMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/LdapsMonitor.html">LdapsMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/MailTransportMonitor.html">MailTransportMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/MemcachedMonitor.html">MemcachedMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/NetScalerGroupHealthMonitor.html">NetScalerGroupHealthMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/NrpeMonitor.html">NrpeMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/NtpMonitor.html">NtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/OmsaStorageMonitor.html">OmsaStorageMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/OpenManageChassisMonitor.html">OpenManageChassisMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/PageSequenceMonitor.html">PageSequenceMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/PassiveStatusMonitor.html">PassiveStatusMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/PercMonitor.html">PercMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/Pop3Monitor.html">Pop3Monitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/PrTableMonitor.html">PrTableMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/RadiusAuthMonitor.html">RadiusAuthMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SmbMonitor.html">SmbMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SmtpMonitor.html">SmtpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SnmpMonitor.html">SnmpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SshMonitor.html">SshMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SSLCertMonitor.html">SSLCertMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/StrafePingMonitor.html">StrafePingMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/SystemExecuteMonitor.html">SystemExecuteMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/TcpMonitor.html">TcpMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/VmwareCimMonitor.html">VmwareCimMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/VmwareMonitor.html">VmwareMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/WebMonitor.html">WebMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/Win32ServiceMonitor.html">Win32ServiceMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/WmiMonitor.html">WmiMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/service-assurance/monitors/WsManMonitor.html">WsManMonitor</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/telemetryd/introduction.html">Telemetryd</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/telemetryd/listeners/introduction.html">Listener Reference</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/listeners/tcp.html">TCP Listener</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/listeners/udp.html">UDP Listener</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/introduction.html">Protocol Reference</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/bmp.html">BGP Monitoring Protocol</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/nxos.html">Cisco NX-OS Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/graphite.html">Graphite Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/ipfix.html">IPFIX</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/jti.html">Junos Telemetry Interface</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/netflow5.html">NetFlow v5</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/netflow9.html">NetFlow v9</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/openconfig.html">OpenConfig Telemetry</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/telemetryd/protocols/sflow.html">sFlow</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/ticketing/introduction.html">Ticketer</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/ticketing/ticketer/jira.html">Jira Ticketing Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/ticketing/ticketer/remedy.html">Remedy Ticketing Plugin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/ticketing/ticketer/tsrm.html">TSRM Ticketing Plugin</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Provisioning</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/provisioning/adapters/introduction.html">Adapters</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/ddns.html">Dynamic DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/geoip.html">GeoIP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/hardware-inventory.html">Hardware Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/rdns.html">Reverse DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/snmp-asset.html">SNMP Asset</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/snmp-metadata.html">SNMP Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/adapters/wsman-asset.html">WS-Man Asset</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/provisioning/handlers/introduction.html">Import Handlers</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/handlers/dns.html">DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/handlers/file.html">File</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/handlers/http.html">HTTP(S)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/handlers/vmware.html">VMware</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/handlers/requisition-plugin.html">Requisition Plugins</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/provisioning/policies.html">Policies</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/policies/ip-interface.html">IP Interface Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/policies/metadata.html">Metadata Policies</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/policies/node-category.html">Node Categorization Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/policies/script.html">Script Policy</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/policies/snmp-interface.html">SNMP Interface Policy</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/provisioning/detectors.html">Detectors</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/ActiveMQDetector.html">ActiveMQ</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/BgpSessionDetector.html">BGP Session</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/BsfDetector.html">Bean Script</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/DnsDetector.html">DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/FtpDetector.html">FTP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/HostResourceSWRunDetector.html">HostResourceSWRun</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/HttpDetector.html">HTTP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/HttpsDetector.html">HTTPS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/JdbcDetector.html">JDBC</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/JdbcQueryDetector.html">JDBC Query</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/JdbcStoredProcedureDetector.html">JDBC Stored Procedure</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/LoopDetector.html">Loop</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/ReverseDNSLookupDetector.html">Reverse DNS</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/SnmpDetector.html">SNMP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/TcpDetector.html">TCP</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/WebDetector.html">Web</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/Win32ServiceDetector.html">Win32 Service</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/WmiDetector.html">WMI</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/WsmanDetector.html">WS-MAN</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../../../reference/provisioning/detectors/WsmanWqlDetector.html">WS-MAN WQL</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../reference/daemons/introduction.html">Daemons</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/ackd.html">Ackd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/alarmd.html">Alarmd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/bsmd.html">Bsmd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/collectd.html">Collectd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/discovery.html">Discovery</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/enlinkd.html">Enlinkd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/eventd.html">Eventd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/jettyserver.html">JettyServer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/karaf.html">Karaf</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/karafstartupmonitor.html">KarafStartupMonitor</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/notifd.html">Notifd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/perspectivepollerd.html">PerspectivePoller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/pollerd.html">Pollerd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/provisiond.html">Provisiond</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/queued.html">Queued</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/reportd.html">Reportd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/rtcd.html">Rtcd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/snmp-interface-poller.html">SnmpPoller</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/statsd.html">Statsd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/syslogd.html">Syslogd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/telemetryd.html">Telemetryd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/ticketer.html">Ticketer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../../../reference/daemons/daemon-config-files/trapd.html">Trapd</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../admin/logging/introduction.html">Logging</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../reference/glossary.html">Glossary</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../../../write-the-docs/overview.html">Write the Docs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../write-the-docs/develop-docs.html">Develop Documentation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../write-the-docs/write-docs.html">Write the Documentation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../write-the-docs/build-docs.html">Build the Documentation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../../../write-the-docs/glossary.html">Glossary</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Horizon</span>
+    <span class="version">31-SNAPSHOT</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Horizon</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../../../index.html">31-SNAPSHOT</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../../../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../../../index.html">Horizon</a></li>
+    <li>Operation</li>
+    <li><a href="../introduction.html">Deep Dive</a></li>
+    <li><a href="database.html">Database Reports</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///antora/docs/modules/operation/pages/deep-dive/database-reports/database.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Database Reports</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Reporting on information from the Horizon monitoring system is important for strategical or operational decisions.
+Database reports give access to the embedded JasperReports engine and allow users to create and customize report templates.
+Run these reports on demand or on a predefined schedule within Horizon.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Originally database reports created reports working on data stored in the Horizon database only.
+      This is no longer mandatory, you can also use performance data.
+      Theoretically, the reports do not need to be Horizon related.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The Horizon Report Engine lets you create reports and supports distributed report repositories.
+         This documentation does not cover these features.
+         It describes only reports using JasperReports and Grafana dashboards.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-overview"><a class="anchor" href="#ga-database-reports-overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Horizon Report Engine uses the JasperReport library to create reports in various output formats.
+Each report template must be a <code>*.jrxml</code> file.
+The Horizon Report Engine passes a JDBC connection to the Horizon database to each report on execution.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Feature overview</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Supported Output Formats</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PDF, CSV</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JasperReport Version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.3.0</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For more details on how JasperReports works, please refer to the Jaspersoft Studio <a href="http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio">official documentation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-report-use-existing-report"><a class="anchor" href="#ga-database-report-use-existing-report"></a>Using existing reports</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenNMS provides the following sample report templates, located in <code>${OPENNMS_HOME}/etc/report-templates</code>, which you can customize to suit your needs:</p>
+</div>
+<table class="tableblock frame-all grid-all fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Report Name</th>
+<th class="tableblock halign-left valign-top">Category</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/avail-summary.html" class="xref page">Availability Summary</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summary of statistics on outages and availability for a user-specified node tag during a user-specified number of days.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/availability.html" class="xref page">Availability by Node</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of availability statistics for each node in a user-specified node tag during a user-specified number of days.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/calendar.html" class="xref page">Default Calendar</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same availability information as Default Classic except that the two tables on daily availability are presented as a calendar.
+This is not a JasperReport.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/classic.html" class="xref page">Default Classic</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Availability information of network focusing on last month and current month to date.
+Information on devices with most problems and monitored services.
+This is not a JasperReport.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/event.html" class="xref page">Event Analysis</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tables and charts showing different slices on the top 25 events over the past 30 days.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/grafana.html" class="xref page">Grafana Dashboards</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Grafana</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create Report from Grafana Dashboard, three options are provided.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/interface-avail.html" class="xref page">Interface Availability</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Shows the availability of interfaces with outages within a time range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/maintenance-expired.html" class="xref page">Maintenance Contracts Expired</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asset Management</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Shows which assets with maintenance contracts are going to expire within a given time range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/maintenance-strategy.html" class="xref page">Maintenance Contracts Strategy</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asset Management</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides an overview of assets, showing how many within each age group have an active contract, no contract, or an expired contract.
+It also shows how many will expire in the next 12 months.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/morning.html" class="xref page">Early Morning Report</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summary of network node status over the past 24 hours.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/response-summary.html" class="xref page">Response Time Summary</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summary of response times for nodes with a given tag.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/response-time.html" class="xref page">Response Time by Node</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How long it takes a node to respond, listed by node.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/serial.html" class="xref page">Serial Interface Utilization Summary</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summary of serial interface utilization.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/snmp.html" class="xref page">SNMP Interface Availability</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Status of SNMP interfaces over time range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/total-bytes.html" class="xref page">Total Bytes Transferred by Interface</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytes transferred by interface.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="templates/traffic-rates.html" class="xref page">Average and Peak Traffic Rates for Nodes by Interface</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Average and peak traffic rates for nodes by interface.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-report-add-custom-report"><a class="anchor" href="#ga-database-report-add-custom-report"></a>Modify existing reports</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All default Horizon reports are located in <code>$OPENNMS_HOME/etc/report-templates</code>.
+Each .jrxml file located there can be modified; the changes are applied the next time Horizon creates a report.</p>
+</div>
+<div class="paragraph">
+<p>When a subreport has been modified, Horizon will detect a change based on the report&#8217;s <code>lastModified</code> time and will recompile the report.
+A compiled version of the report is represented by a .jasper file with the same name as the .jrxml file.
+Subreports are located in <code>$OPENNMS_HOME/etc/report-templates/subreports</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If unsure, simply delete all .jasper files and Horizon will automatically compile the subreports if needed.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="add-a-custom-report"><a class="anchor" href="#add-a-custom-report"></a>Add a custom report</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To add a new JasperReport report to the local Horizon report repository, do the following:</p>
+</div>
+<div class="paragraph">
+<p>Create a new entry in the <code>$OPENNMS_HOME/etc/database-reports.xml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;report
+  id="MyReport" <i class="conum" data-value="1"></i><b>(1)</b>
+  display-name="My Report" <i class="conum" data-value="2"></i><b>(2)</b>
+  online="true" <i class="conum" data-value="3"></i><b>(3)</b>
+  report-service="jasperReportService" <i class="conum" data-value="4"></i><b>(4)</b>
+  description="This is an example description. It shows up in the web ui when creating an online report"  <i class="conum" data-value="5"></i><b>(5)</b>
+/&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A unique identifier</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The name of the report. Appears in the web UI.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Defines if this report can be executed on demand, otherwise only scheduling is possible.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The report service implementation to use. In most cases this is <code>jasperReportService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>A description of the report. Appears in the web UI.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In addition, create a new entry in the <code>$OPENNMS_HOME/etc/jasper-reports.xml</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;report
+  id="MyReport" <i class="conum" data-value="1"></i><b>(1)</b>
+  template="My-Report.jrxml" <i class="conum" data-value="2"></i><b>(2)</b>
+  engine="jdbc" <i class="conum" data-value="3"></i><b>(3)</b>
+/&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The identifier defined in the previous step. This identifier must exist in <code>$OPENNMS_HOME/etc/database-reports.xml</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The name of the template. The template must be located in <code>$OPENNMS_HOME/etc/report-templates</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The engine to use. It is either <code>jdbc</code> or <code>null</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-usage-jaspersoft-studio"><a class="anchor" href="#ga-database-reports-usage-jaspersoft-studio"></a>Jaspersoft Studio use</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When developing new reports, we recommended using the Jaspersoft Studio application.
+Download it <a href="http://community.jaspersoft.com/project/jaspersoft-studio">here</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+We recommend to always use the same Jaspersoft Studio version that the Horizon JasperReport library uses.
+     Currently Horizon uses version 6.3.0.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-connect-database"><a class="anchor" href="#ga-database-reports-connect-database"></a>Connect to the Horizon database</h3>
+<div class="paragraph">
+<p>To actually create SQL statements against the Horizon database you must create a database Data Adapter.
+The official Jaspersoft Studio documentation and wiki describe how to do this.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-measurement-ds-helpers"><a class="anchor" href="#ga-database-reports-measurement-ds-helpers"></a>Use Measurements Datasource and Helpers</h3>
+<div class="paragraph">
+<p>To use the Measurements API you must add the Measurements Datasource library to the build path of JasperStudio.
+To do so, right-click in the Project Explorer and select <strong>Configure Buildpath</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/database-reports/1_configure-build-path-1.png" alt="400">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Switch to the <strong>Libraries</strong> tab.</p>
+</li>
+<li>
+<p>Click <strong>Add External JARs</strong> and select the <code>opennms-jasperstudio-extension-{opennms-version}-jar-with-dependencies.jar</code> file located in <code>$OPENNMS_HOME/contrib/jasperstudio-extension</code>.</p>
+</li>
+<li>
+<p>Close the file selection dialog.</p>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/database-reports/2_configure-build-path-2.png" alt="2 configure build path 2">
+</div>
+</div>
+</li>
+<li>
+<p>The Measurements Datasource and Helpers should now be available.</p>
+</li>
+<li>
+<p>Go to the <strong>Dataset and Query Dialog</strong> in Jaspersoft Studio and select the "measurement" language.</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../_images/database-reports/3_dataset-query-dialog.png" alt="3 dataset query dialog">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the <code>Read Fields</code> functionality is not available, use the <code>Data preview</code>.
+       Use the <code>MEASUREMENT_URL</code>, <code>MEASUREMENT_USERNAME</code>, and <code>MEASUREMENT_PASSWORD</code> connection parameters to Access the Measurements API.
+      See <a href="#ga-database-reports-fields">Supported Fields</a> for more details.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-access-performance-data"><a class="anchor" href="#ga-database-reports-access-performance-data"></a>Accessing performance data</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
+Refer to the <a href="../../../development/rest/measurements.html" class="xref page">Measurements API documentation</a> on how to use the Measurements API.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When using the Measurements Datasource within a report, an HTTP connection to the Measurements API is established only if the report is not running within Horizon; for example, when used with Jaspersoft Studio.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To receive data from the Measurements API, create a query as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample queryString to receive data from the Measurements API</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+  &lt;source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/&gt;
+  &lt;source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/&gt;
+&lt;/query-request&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The query language. In our case, "measurement", but JasperReports supports a lot out of the box, such as sql, xpath, and so on.</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-fields"><a class="anchor" href="#ga-database-reports-fields"></a>Fields</h3>
+<div class="paragraph">
+<p>Each data source should return a number of fields, which you can use in the report.
+The Measurement Datasource supports the following fields:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 60%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">label</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Each source defined as <code>transient=false</code> can be used as a field.
+The name of the field is the label; for example, <code>IfInOctets</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">timestamp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The timestamp of the sample.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Date</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The step size of the response. Returns the same value for all rows.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Long</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">start</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The start timestamp in milliseconds of the response. Returns the same value for all rows.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Long</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">end</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The end timestamp in milliseconds of the response. Returns the same value for all rows.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Long</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For more details about the response, see the <a href="http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api">official Measurement API documentation</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-parameters"><a class="anchor" href="#ga-database-reports-parameters"></a>Parameters</h3>
+<div class="paragraph">
+<p>In addition to the queryString, the following JasperReports parameters are supported.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><strong>Required</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MEASUREMENTURL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The URL of the Measurements API; for example, <code>http://localhost:8980/opennms/rest/measurements</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><strong>Optional</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MEASUREMENT_USERNAME</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If authentication is required, specify the username; for example, "admin".</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MEASUREMENT_PASSWORD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If authentication is required, specify the password; for example, "admin"</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-disable-scheduler"><a class="anchor" href="#ga-database-reports-disable-scheduler"></a>Disable scheduler</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you need to disable the scheduler executing the reports, set the system property <code>opennms.report.scheduler.enabled</code> to false.
+You can set this in a <code>.properties</code> file in the <code>${OPENNMS_HOME}/etc/opennms.properties.d/</code> directory.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-helper-methods"><a class="anchor" href="#ga-database-reports-helper-methods"></a>Helper methods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are a few helper methods to help create reports in Horizon.</p>
+</div>
+<div class="paragraph">
+<p>These helpers come with the Measurement Datasource.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Supported helper methods for the <code>org.opennms.netmgt.jasper.helper.MeasurementsHelper</code> class</caption>
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Helper method</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Generates a node source descriptor according to the input parameters.
+Either <code>node[nodeId]</code> or <code>nodeSource[foreignSource:foreignId]</code> is returned.<br>
+<code>nodeSource[foreignSource:foreignId]</code> is returned only if <code>foreignSource</code> and <code>foreignId</code> are not empty and not null.
+Otherwise, <code>node[nodeId]</code> is returned.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>nodeId</strong>: String, the ID of the node.</p>
+</li>
+<li>
+<p><strong>foreignSource</strong>: String, the foreign source of the node. May be null.</p>
+</li>
+<li>
+<p><strong>foreignId</strong>: String, the foreign ID of the node. May be null.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more details, see <a href="#ga-database-reports-node-source-descriptor">Node source descriptor use</a>.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">getInterfaceDescriptor(snmpifname, snmpifdescr, snmpphysaddr)</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Returns the interface descriptor of a given interface; for example, <code>en0-005e607e9e00</code>.
+The input parameters are prioritized.<br>
+If an <code>snmpifdescr</code> is specified, it is used instead of the <code>snmpifname</code>.<br>
+If an <code>snmpphysaddr</code> is defined, it will be appended to <code>snmpifname</code>/<code>snmpifdescr</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>snmpifname</strong>: String, the interface name of the interface; for example, <code>en0</code>. May be null.</p>
+</li>
+<li>
+<p><strong>snmpifdescr</strong>: String, the description of the interface; for example, <code>en0</code>. May be null.</p>
+</li>
+<li>
+<p><strong>snmpphysaddr</strong>: String, the MAC address of the interface; for example, <code>005e607e9e00</code>. May be null.
+As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more details, see <a href="#ga-database-reports-interface-descriptor">Interface descriptor use</a>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="ga-database-reports-node-source-descriptor"><a class="anchor" href="#ga-database-reports-node-source-descriptor"></a>Node source descriptor use</h3>
+<div class="paragraph">
+<p>A node is addressed by a node source descriptor.
+The node source descriptor references the node either via the foreign source and foreign ID or by the node ID.</p>
+</div>
+<div class="paragraph">
+<p>If <code>storeByForeignSource</code> is enabled, it is only possible to address the node via foreign source and foreign ID.</p>
+</div>
+<div class="paragraph">
+<p>To make report creation easier, there is a helper method to create the node source descriptor.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For more information, see <a href="https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057">Storing data with foreign sources</a> on Discourse.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following example shows the use of that helper.</p>
+</div>
+<div class="listingblock">
+<div class="title">jrxml report snippet to visualize the use of the node source descriptor.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false"&gt;
+  &lt;defaultValueExpression&gt;&lt;![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $Pforeignsource, $P{foreignid})]]&gt;&lt;/defaultValueExpression&gt;
+&lt;/parameter&gt;
+&lt;queryString language="Measurement"&gt;
+  &lt;![CDATA[&lt;query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"&gt;
+&lt;source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/&gt;
+&lt;source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/&gt;
+&lt;/query-request&gt;]]&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Depending on the input parameters, you get either a node resource descriptor or a foreign source/foreign ID resource descriptor.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-interface-descriptor"><a class="anchor" href="#ga-database-reports-interface-descriptor"></a>Interface descriptor use</h3>
+<div class="paragraph">
+<p>An interfaceSnmp is addressed with the exact interface descriptor.
+To allow easy access to the interface descriptor, we provide a helper tool.
+The following example shows the use of that helper.</p>
+</div>
+<div class="listingblock">
+<div class="title">jrxml report snippet to visualize the use of the interface descriptor</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;parameter name="interface" class="java.lang.String" isForPrompting="false"&gt;
+  &lt;parameterDescription&gt;&lt;![CDATA[]]&gt;&lt;/parameterDescription&gt;
+  &lt;defaultValueExpression&gt;&lt;![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]&gt;&lt;/defaultValueExpression&gt;
+&lt;/parameter&gt;
+&lt;queryString language="Measurement"&gt;
+  &lt;![CDATA[&lt;query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"&gt;
+&lt;source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/&gt;
+&lt;source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/&gt;
+&lt;/query-request&gt;]]&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To get the appropriate interface descriptor depends on the input parameter.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ga-database-reports-https"><a class="anchor" href="#ga-database-reports-https"></a>HTTPS use</h3>
+<div class="paragraph">
+<p>To establish a secure connection to the Measurements API, you must import the public certificate of the running Horizon to the Java Truststore.
+In addition, you must configure Horizon to use that Java Truststore.
+Please follow the instructions in this <a href="../admin/http-ssl.html#ga-operation-ssl-opennms-trust-store" class="xref page">section</a> to set up the Java Truststore correctly.</p>
+</div>
+<div class="paragraph">
+<p>In addition, set the property <code>org.opennms.netmgt.jasper.measurement.ssl.enable</code> in <code>$OPENNMS_HOME\etc\opennms.properties</code> to "true" to ensure that only secure connections are established.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If <code>org.opennms.netmgt.jasper.measurement.ssl.enable</code> is set to "false", an accidentally insecure connection can be established to the Measurements API location.
+An SSL-secured connection can be established even if <code>org.opennms.netmgt.jasper.measurement.ssl.enable</code> is set to "false".
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ga-database-reports-limitations"><a class="anchor" href="#ga-database-reports-limitations"></a>Limitations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Only a JDBC Datasource to the Horizon database connection can be passed to a report, or no datasource at all.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../topology/enlinkd/layer-3/is-is-discovery.html">IS-IS Discovery</a></span>
+  <span class="next"><a href="template-introduction.html">Report Templates</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>Copyright (c) 2002–2022 The OpenNMS Group, Inc.</p>
+  <p>Licensed under the terms of the AGPL-3.0.</p>
+  <p><a href="https://docs.opennms.com/start-page/1.0.0/index.html" target="_blank">Legal Notice</a></p>
+</footer>
+<script src="../../../../../_/js/site.js"></script>
+<script async src="../../../../../_/js/vendor/highlight.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: {
+      Macros: {
+      RR: "{\\mathbb R}",
+      NN: "{\\mathbb N}",
+      Nso: "{N_{\\mathrm{so}}}",
+      Nma: "{N_{\\mathrm{ma}}}",
+      Nno: "{N_{\\mathrm{no}}}",
+      Ne: "{N_{\\mathrm{e}}}",
+      Ilag: ["{\\mathcal{I}^{\\mathrm{lag}}_{#1}}",1],
+      calTh: "{\\mathcal{T}_h}",
+      Ck: ["{\\mathcal{C}^{#1}}",1],
+      Pk: ["{\\mathcal{P}^{#1}}",1],
+      Qk: ["{\\mathcal{Q}^{#1}}",1],
+      Pch: ["{P^{#1}_{c,h}}",1],
+      Pcho: ["{P^{#1}_{c,h,0}}",1],
+      Qch: ["{Q^{#1}_{c,h}}",1],
+      Ich: ["{\\mathcal{I}^{#1}_{c,h}#2}",2],
+      poly: ["{\\mathbb{#1}}",1],
+      nf: "{n_f}",
+      normal: "{\\mathbf{n}}",
+      ngeo: "{n_{\\mathrm{geo}}}",
+      geo: "{\\mathrm{geo}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      dim: ["{\\operatorname{dim}(#1)}",1],
+      opdim: "{\\operatorname{dim}}",
+      card: ["{\\operatorname{card}(#1)}",1],
+      poly: ["{\\mathbb{#1}}",1],
+      R: ["{\\mathbb{R}^{#1}}",1],
+      set: ["{\\left\\{#1\\right\\}}",1],
+      diam: "{\\operatorname{diam}}",
+      jump: ["{[\\![ #1 ]\\!]}",1],
+      Next: "{\\mathrm{n}}",
+      essinf: "{\\operatorname{ess}\\, \\operatorname{inf}}",
+      tr: "{\\operatorname{tr}}",
+      Id: "{\\mathcal{I}}",
+      disp: ["{\\mathbf{#1}}",1],
+      stresst: ["{\\mathbf{\\sigma(#1)}}",1],
+      deformt: ["{\\mathbf{\\varepsilon(#1)}}",1],
+      domain: "{\\Omega}",
+      prect: ["{\\left\\(#1\\right\\)}",1],
+      ds: "",
+      bold: ["{\\bf #1}",1]
+  },
+  extensions: ["mhchem.js"] }
+});
+</script>
+  </body>
+</html>
