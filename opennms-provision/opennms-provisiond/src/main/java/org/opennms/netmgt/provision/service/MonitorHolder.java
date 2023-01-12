@@ -42,12 +42,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * It is the holder class for all provisiond performance monitors. It also creates a JmxReporter.
@@ -60,7 +60,7 @@ public class MonitorHolder {
     private LoadingCache<String, TimeTrackingMonitor> monitors;
     private final ConcurrentHashMap<String, TimeTrackerOverallMonitor> overallMonitors = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> metricAssociation = new ConcurrentHashMap<>();
-    private static final int MAX_METRIC_ASSOCIATION_SIZE = 30;
+    public static final int MAX_METRIC_ASSOCIATION_SIZE = 30;
     private MetricRegistry metricRegistry = new MetricRegistry();
     private JmxReporter jmxReporter;
 
@@ -134,10 +134,12 @@ public class MonitorHolder {
     }
 
     /**
-     * Keep track of metrics and overall metrics
-     *
-     * @param key
-     * @param metricName
+     * Keep track of overall metrics and single job metrics
+     * Key should be the actual requisition (overall metric) and the metric name should be a concatenation that includes
+     * requisition, timestamp and job
+     * This help to link NodeScans overall metrics to the monitorKey which is associated to a single job
+     * @param key overall metric name (requisition)
+     * @param metricName single job metric name
      */
     public void updateAssociations(final String key, final String metricName) {
 
@@ -188,21 +190,26 @@ public class MonitorHolder {
         return monitors.asMap();
     }
 
-    public TimeTrackerOverallMonitor getOverallMonitor(String key) {
-        return overallMonitors.get(key);
-    }
-
+    /**
+     * Gets an overall metric associated to a single job metric
+     * @param metricName
+     * @return
+     */
     public TimeTrackerOverallMonitor getOverallMonitorForMetric(String metricName) {
-        AtomicReference<String> keyName = new AtomicReference<>();
-        metricAssociation.forEach((key, metrics) -> {
-            if (metrics.contains(metricName))
-                keyName.set(key);
-        });
-        return keyName.get() == null ? null : overallMonitors.get(keyName.get());
+        for(var map: metricAssociation.entrySet()){
+            if(map.getValue().contains(metricName)) {
+                return overallMonitors.get(map.getKey());
+            }
+        }
+        return null;
     }
 
     public Map<String, TimeTrackerOverallMonitor> getOverallMonitors() {
         return overallMonitors;
+    }
+    
+    public AbstractMap<String, ConcurrentLinkedDeque<String>> getAssociatedMetrics(){
+        return this.metricAssociation;
     }
 
     public void shutdown() {
