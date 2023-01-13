@@ -36,11 +36,11 @@ commands:
             ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
             chmod 600 ~/.ssh/known_hosts
             git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
-  pack-config:
-    description: "Pack the dynamic config in .circleci/main/"
+  verify-config:
+    description: "Verify the dynamic config in .circleci/main/"
     steps:
       - run:
-          name: Pack Dynamic Config
+          name: Verify Dynamic Config
           command: |
             CIRCLE_BIN_DIR="$HOME/.local/bin"
             mkdir -p "$CIRCLE_BIN_DIR"
@@ -49,9 +49,9 @@ commands:
             "$CIRCLE_BIN_DIR/circleci" version
             #"$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
             "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
-      - store_artifacts:
-          path: .circleci/main.yml
-          destination: main.yml
+      #- store_artifacts:
+      #    path: .circleci/main.yml
+      #    destination: main.yml
 
 workflows:
   coverage:
@@ -212,6 +212,7 @@ jobs:
       - run:
           name: Generate Main YAML file
           command: python3 .circleci/pyscripts/generate_main.py
+      - verify-config
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
@@ -228,5 +229,3 @@ jobs:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json
-
-# VS Code Extension Version: 1.5.1
