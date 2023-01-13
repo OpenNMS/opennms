@@ -542,7 +542,10 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
             monitor.beginImporting();
             ProvisionOverallMonitor overallMonitor = monitorHolder.createOverallMonitor(url);
-            overallMonitor.start();
+            if(!Objects.isNull(overallMonitor)) {
+                LOG.info("No overall monitor found for url: " + url);
+                overallMonitor.start();
+            }
             final Resource resource;
 
             final URL u = new URL(url);
@@ -571,7 +574,9 @@ public class Provisioner implements SpringServiceDaemon {
                 foreignSource = ri.getRequisition().getForeignSource();
             }
             monitor.finishImporting();
-            overallMonitor.end();
+            if(!Objects.isNull(overallMonitor)) {
+                overallMonitor.end();
+            }
             LOG.info("Finished Importing: {}", monitor);
     
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);

@@ -62,7 +62,9 @@ public class MonitorHolder {
     private final ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> metricAssociation = new ConcurrentHashMap<>();
     public static final int MAX_METRIC_ASSOCIATION_SIZE = 30;
     private MetricRegistry metricRegistry = new MetricRegistry();
+    private MetricRegistry metricRegistryOverall = new MetricRegistry();
     private JmxReporter jmxReporter;
+    private JmxReporter jmxReporterOverall;
 
     /**
      * For spring use. Default is 3 days.
@@ -74,6 +76,8 @@ public class MonitorHolder {
     public MonitorHolder(long seconds) {
         jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.provision.status").build();
         jmxReporter.start();
+        jmxReporterOverall = JmxReporter.forRegistry(metricRegistryOverall).inDomain("org.opennms.netmgt.provision.overall").build();
+        jmxReporterOverall.start();
         this.createCacheWithExpireTime(seconds);
     }
 
@@ -163,11 +167,14 @@ public class MonitorHolder {
      * @return
      */
     public TimeTrackerOverallMonitor createOverallMonitor(String name) {
+        TimeTrackerOverallMonitor overallMonitor = null;
         if (overallMonitors.containsKey(name)) {
-            return overallMonitors.get(name);
+            overallMonitor = overallMonitors.get(name);
         } else {
-            return overallMonitors.put(name, new TimeTrackerOverallMonitor(name, metricRegistry));
+            overallMonitor = new TimeTrackerOverallMonitor(name, metricRegistryOverall);
+            overallMonitors.put(name, overallMonitor);
         }
+        return overallMonitor;
     }
 
     /**
@@ -214,5 +221,6 @@ public class MonitorHolder {
 
     public void shutdown() {
         jmxReporter.close();
+        jmxReporterOverall.close();
     }
 }
