@@ -352,10 +352,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "minion-image-single-arch-linux-amd64"
             ]
         },
         "horizon-image-single-arch": {
@@ -368,10 +365,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "horizon-image-single-arch-linux-amd64"
             ]
         },
         "sentinel-image-single-arch": {
@@ -384,10 +378,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "sentinel-image-single-arch-linux-amd64"
             ]
         },
         "create-merge-foundation-branch": {
