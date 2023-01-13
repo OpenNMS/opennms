@@ -102,7 +102,7 @@ Requires:	jicmp6 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
-Provides:	%{name}-plugin-api = %{opa_version}
+Provides:	opennms-plugin-api = %{opa_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
