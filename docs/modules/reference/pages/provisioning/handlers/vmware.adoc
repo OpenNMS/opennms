@@ -21,6 +21,9 @@ You can either create a new local user within your vCenter server or use an acco
 . Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
 . Click OK to save the role.
 
+Once the role is setup, you will need to assign the role to the user account.
+You can either create a new user to assign the role or assign the role to a user from an external authentication directory that is setup on your vCenter.
+
 === Assign OpenNMS user permissions to access vCenter objects:
 . Navigate to menu:Home[Inventory > Hosts and Clusters] within your vCenter.
 . Right click on the container to apply the permission.
@@ -41,9 +44,11 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 ----
 <?xml version="1.0"?>
 <vmware-config>
-    <vmware-server hostname="vcenter.mydomain.org" username="OpenNMS" password="secret"/>
+    <vmware-server hostname="vcenter.mydomain.org" username="domain\username" password="secret"/>
 </vmware-config>
 ----
+
+NOTE: When specifying the username, make sure to fully qualify it with the appropriate domain name for your directory.
 
 == Configure VMware requisition
 
@@ -141,6 +146,7 @@ Cannot be true if `importHostOnly` is true.
 
 | timeout
 | VMware connection timeout, in milliseconds.
+If you receive a "read timeout" error, increase this value.
 | 3000
 
 | topologyDatastores
