@@ -47,7 +47,7 @@ commands:
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
+            #"$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
             "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
       - store_artifacts:
           path: .circleci/main.yml
@@ -228,3 +228,5 @@ jobs:
           circleci_domain: circleci.com
           configuration_path: /tmp/.circleci/main.yml
           parameters: /tmp/pipeline-parameters.json
+
+# VS Code Extension Version: 1.5.1
