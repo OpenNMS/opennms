@@ -630,6 +630,24 @@
             <attrib name="MeanRate" alias="EventProcessRate" type="gauge"/>
          </mbean>
 
+         <!-- Provisiond per-requisition histo -->
+
+         <mbean name="org.opennms.netmgt.provision.overall" resource-type="requisitionMetrics" objectname="org.opennms.netmgt.provision.overall:name=*">
+            <attrib name="50thPercentile" alias="Reqtn50th" type="gauge"/>
+            <attrib name="75thPercentile" alias="Reqtn75th" type="gauge"/>
+            <attrib name="95thPercentile" alias="Reqtn95th" type="gauge"/>
+            <attrib name="98thPercentile" alias="Reqtn98th" type="gauge"/>
+            <attrib name="99thPercentile" alias="Reqtn99th" type="gauge"/>
+            <attrib name="999thPercentile" alias="Reqtn999th" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="Reqtn1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="Reqtn5m" type="gauge"/>
+            <attrib name="FifteenMinuteRate" alias="Reqtn15m" type="gauge"/>
+            <attrib name="Count" alias="ReqtnCounter" type="counter"/>
+            <attrib name="Mean" alias="ReqtnMean" type="gauge"/>
+            <attrib name="Max" alias="ReqtnMax" type="gauge"/>
+            <attrib name="Min" alias="ReqtnMin" type="gauge"/>
+         </mbean>
+
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

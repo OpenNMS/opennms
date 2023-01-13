@@ -543,7 +543,6 @@ public class Provisioner implements SpringServiceDaemon {
             monitor.beginImporting();
             ProvisionOverallMonitor overallMonitor = monitorHolder.createOverallMonitor(url);
             if(!Objects.isNull(overallMonitor)) {
-                LOG.info("No overall monitor found for url: " + url);
                 overallMonitor.start();
             }
             final Resource resource;
