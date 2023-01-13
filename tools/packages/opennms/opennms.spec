@@ -65,7 +65,7 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires: %{name}-plugin-cloud >= 1.0.0
+Requires:		opennms-plugin-cloud >= 1.0.0
 Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
@@ -213,7 +213,6 @@ Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
-Requires: %{name}-plugin-cloud
 
 %description plugins
 This installs all optional plugins.

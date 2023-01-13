@@ -28,16 +28,16 @@ for TYPE in horizon minion sentinel; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
   # figure out DCT environment variables for $TYPE
-  _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
-  _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
-  _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]')"
+  _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+  _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+  _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
 
   # save $TYPE's key
   printf '%s' "${!_key_contents_variable}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
   chmod 600 "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
 
   # in dockerhub, only push the "branchname-arch" version of the individual ones
-  find /tmp/artifacts/oci -name "${TYPE}-*.oci" | while read -r _file; do
+  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
     _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _internal_tag="opennms/${_file_tag}"

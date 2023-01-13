@@ -62,7 +62,7 @@ setCredentials() {
   ${MINION_HOME}/bin/scvcli set opennms.http ${OPENNMS_HTTP_USER} ${OPENNMS_HTTP_PASS}
   ${MINION_HOME}/bin/scvcli set opennms.broker ${OPENNMS_BROKER_USER} ${OPENNMS_BROKER_PASS}
 
-  cp ${MINION_HOME}/etc/scv.jce /keystore
+  rsync --out-format="%n %C" ${MINION_HOME}/etc/scv.jce /keystore/.
 }
 
 function updateConfig() {
@@ -152,7 +152,7 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${MINION_OVERLAY_ETC}" ] && [ -n "$(ls -A ${MINION_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${MINION_OVERLAY_ETC}."
-    cp -Lr ${MINION_OVERLAY_ETC}/* ${MINION_HOME}/etc || exit ${E_INIT_CONFIG}
+    rsync -Lr --out-format="%n %C" ${MINION_OVERLAY_ETC}/* ${MINION_HOME}/etc/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${MINION_OVERLAY_ETC}. Use default configuration."
   fi
@@ -211,7 +211,8 @@ configure() {
     done < "$MINION_PROCESS_ENV_CFG"
   fi
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
-    cp "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
+    # cacerts is a symlink to a file, so *do not* put /. on the target
+    rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
     while read certid; do
       [[ $certid =~ ^#.* ]] && continue
