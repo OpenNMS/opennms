@@ -32,8 +32,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -63,6 +65,7 @@ public class GpDetectorTest implements InitializingBean {
     public void setUp() {
         MockLogAppender.setupLogging();
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
+        System.setProperty("opennms.home", System.getProperty("user.dir"));
     }
 
     @Test(timeout=20000)
@@ -84,5 +87,35 @@ public class GpDetectorTest implements InitializingBean {
         m_detector.setBanner("world");
         m_detector.onInit();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+    }
+
+    boolean isDescendantOf(final Path root, final Path child) {
+        if (root == null || child == null) {
+            return false;
+        }
+
+        final Path absoluteRoot = root
+                .toAbsolutePath()
+                .normalize();
+
+        final Path absoluteChild = child
+                .toAbsolutePath()
+                .normalize();
+
+        if (absoluteRoot.getNameCount() >= absoluteChild.getNameCount()) {
+            return false;
+        }
+
+        final Path nextChild = absoluteChild
+                .getParent();
+
+        return nextChild.equals(absoluteRoot) || isDescendantOf(absoluteRoot, nextChild);
+    }
+
+    @Test(expected = IOException.class)
+    public void testScriptOutsideOpenNMSHome() throws Exception {
+        m_detector.setScript("/var/tmp/foo.sh");
+        m_detector.onInit();
+        m_detector.getClient().connect(InetAddress.getLocalHost(), 1234, 1000);
     }
 }

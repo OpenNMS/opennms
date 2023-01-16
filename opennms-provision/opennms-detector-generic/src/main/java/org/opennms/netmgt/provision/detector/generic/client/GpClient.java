@@ -33,6 +33,7 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.ScriptUtil;
 import org.opennms.netmgt.provision.detector.generic.request.GpRequest;
 import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -71,6 +72,11 @@ public class GpClient implements Client<GpRequest, GpResponse> {
         ExecRunner execRunner = new ExecRunner();
         execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
         final String hostAddress = InetAddressUtils.str(address);
+
+        if (!ScriptUtil.isDescendantOf(System.getProperty("opennms.home"), getScript())) {
+            throw new IOException("The location of the script must not be outside $OPENNMS_HOME.");
+        }
+
 		final String script = "" + getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout);
         if (getArgs() == null)
             setExitStatus(execRunner.exec(script));
