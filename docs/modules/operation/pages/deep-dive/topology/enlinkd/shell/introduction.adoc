@@ -51,7 +51,7 @@ CdpGlobalGroup          Dot1dBasePortTable      IpNetToMediaTable       LldpLoca
 CiscoVtp                Dot1dStpPortTable       IsisCircTable           LldpLocalTable          OspfAreaTable           TimeTetraLldpRemTable
 CiscoVtpVlanTable       Dot1dTpFdbTable         IsisISAdjTable          LldpRemTable            OspfGeneralGroup
 
-Some output example:
+Sample output:
 
 [source, console]
 admin@opennms()> opennms:enlinkd-snmp-collect OspfGeneralGroup clab-eos-ospf-s2
