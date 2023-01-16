@@ -136,7 +136,7 @@ Runs the bridge topology discovery algorithm.
 
 == opennms:enlinkd-reload-topology
 
-Triggers a reload of the topology for all enabled protocols
+Reloads the topology for all enabled protocols.
 
 == opennms:enlinkd-reload
 
