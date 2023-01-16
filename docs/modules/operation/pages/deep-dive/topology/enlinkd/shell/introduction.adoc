@@ -37,7 +37,7 @@ The `GeneratedNode` category identifies the topology.
 
 == opennms:enlinkd-snmp-collect
 
-Collect enlinkd snmp data
+Collects enlinkd SNMP data.
 
 [source, console]
 SYNTAX
