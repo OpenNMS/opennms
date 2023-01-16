@@ -140,7 +140,7 @@ Reloads the topology for all enabled protocols.
 
 == opennms:enlinkd-reload
 
-Triggers a restart of the enlinkd daemon
+Restarts the enlinkd daemon.
 
 == opennms:enlinkd-reload-config
 
