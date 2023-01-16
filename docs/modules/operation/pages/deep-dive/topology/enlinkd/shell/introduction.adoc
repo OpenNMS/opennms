@@ -30,7 +30,6 @@ For more options, view the help:
 ssh -p 8101 admin@localhost
 help opennms:generate-topology
 
-
 == opennms:delete-topology
 
 Delete generated topology.
