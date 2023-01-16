@@ -17,6 +17,7 @@ feature:install opennms-enlinkd-shell
 == opennms:generate-topology
 
 Creates a linkd topology by protocol (cdp | isis | lldp | ospf | bridge | userdefined). Default: cdp.
+Use this to test the topology map.
 
 A full topology is created initially including OnmsNodes, Elements, Links, SnmpInterfaces, IpInterfaces.
 
