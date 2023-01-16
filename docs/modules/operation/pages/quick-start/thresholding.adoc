@@ -1,5 +1,4 @@
 
-[[setup-threshold]]
 = Step 5: Set up a Threshold
 
 A threshold defines limits against the network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an xref:deep-dive/events/introduction.adoc[event] (record) when a datasource value goes above or below the specified limit.
@@ -23,17 +22,17 @@ This threshold tells {page-component-title} to create an event when the number o
 . Under Performance Measurement, click *Configure Thresholds*.
 A list of preconfigured threshold groups appears.
 +
-For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[Create a Threshold Group] in the Deep Dive section.
+For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[] in the Deep Dive section.
 
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Threshold* at the bottom of the Basic Thresholds area.
 . Set the following parameters and click *Save*:
 +
-[options="header", cols="1,3,1"]
+[caption=]
+.Basic threshold configuration settings
+[cols="1,3,1"]
 |===
-| Field
-| Description
-| Input value
+| Field | Description   | Input value
 
 | Type
 | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
@@ -79,7 +78,6 @@ If left blank, it defaults to the standard thresholding UEIs.
 | _Leave blank._
 |===
 
-[[threshold-test]]
 == Test the threshold
 
 To test the threshold that you just created, follow these steps:
@@ -91,7 +89,6 @@ You should see an event that indicates that your threshold triggered when more t
 . Log one user out of the node.
 The Events List page should indicate that the system has re-armed.
 
-[[thresh-cpu]]
 == Expression-based thresholds
 
 By default, {page-component-title} includes two expression-based thresholds.
@@ -108,13 +105,13 @@ To view the CPU usage threshold, follow these steps:
 . Click *Edit* beside the `netsnmp` group.
 . In the Expression-Based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 
-The following table describes the parameters:
+The following table describes the parameters and their suggested configurations:
 
-[options="header", cols="1,3,2"]
+[caption=]
+.Basic expression-based threshold configuration settings
+[cols="1,3,2"]
 |===
-| Parameter
-| Description
-| Value
+| Parameter | Description   | Value
 
 | Type
 | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
@@ -122,8 +119,7 @@ The following table describes the parameters:
 
 | Expression
 | Divides the five-minute CPU load average by 100 (to obtain the effective load average^1^), which is then divided by the number of CPUs.
-The resulting value is multiplied by 100 to calculate a percentage. +
-(^1^ SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.)
+The resulting value is multiplied by 100 to calculate a percentage.
 | ((loadavg5 / 100) / CpuNumCpus) * 100
 
 | Datasource type
@@ -164,9 +160,11 @@ If left blank, it defaults to the standard thresholding UEIs.
 | _Leave blank._
 |===
 
+. SNMP does not report in decimals, which is why the expression divides the `loadavg5` by 100.
+
 == Beyond Quick Start
 
-Refer to xref:deep-dive/thresholds/thresholding.adoc[Thresholding] in the Deep Dive section for more information on thresholding, including the following:
+Refer to xref:deep-dive/thresholds/thresholding.adoc[] in the Deep Dive section for more information on thresholding, including the following:
 
 * <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Using metadata in a threshold>>.
 * <<deep-dive/thresholds/thresh-group.adoc#threshold-group, Creating a threshold group>>.
