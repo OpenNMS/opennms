@@ -23,7 +23,7 @@ IS-IS links are represented in the ISIS-MIB as in the <<is-is-oids, table of sup
 Information gathered from supported OIDs is stored in the following database tables:
 
 .Database tables related to IS-IS discovery
-image::enlinkd/is-is-database.png[Network diagram depicting database tables used in IS-IS discovery]
+image::enlinkd/is-is-database.png["Network diagram depicting database tables that are used in IS-IS discovery"]
 
 [[is-is-oids]]
 == Supported OIDs
@@ -31,12 +31,11 @@ image::enlinkd/is-is-database.png[Network diagram depicting database tables used
 The following OIDs are supported for the discovery and construction of the ISIS network topology.
 The ISIS Discovery Collector collects them:
 
+[caption=]
 .Supported OIDs from the ISIS-MIB module
-[options="header" cols="1,3,1"]
+[options="autowidth"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | isisSysID
 | ID for this `Intermediate-System`.

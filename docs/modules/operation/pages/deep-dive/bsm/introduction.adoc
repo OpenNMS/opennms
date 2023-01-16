@@ -2,9 +2,15 @@
 [[ga-bsm-introduction]]
 = Business Service Monitoring
 
-While {page-component-title} detects issues in your network by device, interface or service, the Business Service Monitoring (BSM) takes it one step further.
-With the BSM feature, it is possible to model high-level business service contexts around the technical Service Monitors provided in {page-component-title} and quickly identify the most critical problems affecting them.
-To indicate which business service is affected by events at the technical service monitors level, a business service operational status is calculated.
+While {page-component-title} detects issues in your network by device, interface, or service, Business Service Monitoring (BSM) takes it one step further.
+With the BSM feature, it's possible to monitor high-level business service contexts around {page-component-title}'s technical service monitors, and quickly identify the most critical problems affecting them.
+
+A business service operational status is calculated to indicate which business services are affected by events at the technical service monitors level.
+For example, assume a company runs an online store.
+Customers can log in, select items for purchase, add them to their cart, and checkout using a payment system.
+The whole service is provided by a few web servers and access data from databases.
+An SQL service monitor is configured on each database server to monitor their status, and an HTTP service monitor is used to test each of the web servers.
+A page sequence monitor tests the store's login, shop, and payment workflows using the provided web portal.
 
 As an example, let's assume a company runs an online store.
 Customers log in, select items, place them in the shopping cart and checkout using a payment system.
@@ -12,8 +18,8 @@ The whole service is provided by a few web servers and access data from database
 To monitor the status of the databases, a SQL service monitor on each database server is configured.
 For testing the web servers a HTTP service monitor is used for each of them.
 Covering the overall functionality, a Page Sequence Monitor (PSM) tests the login, shop, and payment workflow through the provided web portal.
-A possible representation of the whole system hierarchy is shown below.
 
-[[ga-bsm-example-web-shop]]
-.Example scenario for a web shop
-image::bsm/01_bsm-example-scenario.png[]
+A possible representation of the shop's system hierarchy is shown below:
+
+.Example system hierachy
+image::bsm/01_bsm-example-scenario.png["Example system hierarchy diagram showing relationships between users, workflows, and systems"]
