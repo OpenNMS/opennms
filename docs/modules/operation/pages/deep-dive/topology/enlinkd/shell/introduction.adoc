@@ -22,7 +22,6 @@ A full topology is created initially including OnmsNodes, Elements, Links, SnmpI
 
 The `GeneratedNode` category identifies the topology.
 
-Useful to test topology-map.
 
 For more option get help:
 
