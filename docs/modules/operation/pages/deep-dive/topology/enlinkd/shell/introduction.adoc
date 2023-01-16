@@ -132,7 +132,7 @@ admin@opennms()> help opennms:enlinkd-run-collection
 
 == opennms:enlinkd-discovery-bridge-domain
 
-Execute bridge topology discovery algorithm
+Runs the bridge topology discovery algorithm.
 
 == opennms:enlinkd-reload-topology
 
