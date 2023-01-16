@@ -9,6 +9,9 @@
 * *PostgreSQL 10 or higher*: Horizon 26 requires any supported version of PostgreSQL 10 or higher.
 
 === Breaking Changes
+* Security Fix for *Authenticated Command Injection in GpDetector and ScriptPolicy* reported by Stefan Schiller (SonarSource):
+  - GpDetector only allows scripts located below `$OPENNMS_HOME`
+  - ScriptPolicy only allows scripts located below `$OPENNMS_HOME/etc/script-policies`
 
 ==== Flow Classification
 
