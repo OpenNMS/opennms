@@ -18,7 +18,7 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 ** By default, your time series database is RRDtool, which persists RRD files on the local file system.
 endif::[]
-* Log in to the web UI and change the default admin password.
+* Log in to the web UI and change the `admin` account's default password.
 
 [[requirements-core]]
 == Requirements
@@ -26,7 +26,7 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system].
+* A Linux physical server or a virtual machine running a supported xref:core/system-requirements.adoc#operating-systems-core[Linux operating system].
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
@@ -144,8 +144,8 @@ CentOS/RHEL 7::
 --
 include::centos-rhel7/postgresql.adoc[]
 --
-
 ifeval::["{page-component-title}" == "Horizon"]
+
 Debian/Ubuntu::
 +
 --
@@ -185,8 +185,8 @@ CentOS/RHEL 7::
 --
 include::centos-rhel7/install-core.adoc[]
 --
-
 ifeval::["{page-component-title}" == "Horizon"]
+
 Ubuntu::
 +
 --
@@ -235,18 +235,18 @@ endif::[]
 
 == Encrypt database credentials
 
-It is also possible to store the PostgreSQL credentials in the secure credentials vault.
+It is possible to store the PostgreSQL credentials in the secure credentials vault.
 To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`.
 
-.Create encrypted credentials for the PostgreSQL database connections:
+.Create encrypted credentials for PostgreSQL database connections:
 [source, console]
 ----
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password<1>
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password <1>
 sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 ----
 <1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
 
-.Reference the encrypted credentials stored in the secure credentials vault:
+.Reference encrypted credentials stored in the secure credentials vault:
 [source, xml]
 ----
 <jdbc-data-source name="opennms"
@@ -277,7 +277,7 @@ The OpenNMS Group uses this anonymized information to help determine product use
 We do not share it with third parties, and we will not use it for sales purposes.
 
 .Data sources collection permission prompt
-image::deployment/core/data-sources.png[Data sources collection permission prompt displaying opt-in and opt-out buttons,400]
+image::deployment/core/data-sources.png["Data sources collection permission prompt displaying opt-in and opt-out buttons", 500]
 
 Click *Show Me What is Being Sent* to see xref:operation:deep-dive/admin/housekeeping/introduction.adoc#ga-data-collection[what information we collect].
 Statistics collection and publication happen only if an admin user opts in.
@@ -296,7 +296,7 @@ For information on how to create a personalized user account, see xref:operation
 [[receive-snmp-traps]]
 == Receive SNMP traps/informs
 
-{page-component-title} core lets you receive and process SNMP traps/informs out of the box.
+{page-component-title} core lets you receive and process SNMP traps and informs out of the box.
 {page-component-title} services run as an unprivileged user and can't bind on port numbers below `1024` without escalated privileges.
 For this reason, the default port for the SNMP trap/inform listener is set to port number `10162/udp` instead of the IANA registered port number `162/udp`.
 The following example shows how to configure the local firewall daemon to forward port `162/udp` to `10162/udp`.
@@ -310,8 +310,8 @@ CentOS/RHEL 7/8/9::
 --
 include::centos-rhel/firewall-core.adoc[]
 --
-
 ifeval::["{page-component-title}" == "Horizon"]
+
 Debian/Ubuntu::
 +
 --
@@ -323,13 +323,11 @@ endif::[]
 You can verify your firewall and port forwarding configuration by sending an SNMP trap from a remote system to your {page-component-title} core instance:
 
 [source, console]
-----
-snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way"<1><2>
-----
+snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way" <1><2>
 
-. By default, OpenNMS uses the `public` community string.
+<1> By default, {page-component-title} uses the `public` community string.
 If you changed the community string in {page-component-title}, use that name here.
-. Replace `opennms-core-host` with the IP or FQDN of your {page-component-title} core instance.
+<2> Replace `opennms-core-host` with the IP or FQDN of your {page-component-title} core instance.
 
 On RHEL and CentOS, the `snmptrap` command line tool is part of the `net-snmp-utils`.
 If you run on Debian or Ubuntu, the tool is part of the `snmp-utils` package.
