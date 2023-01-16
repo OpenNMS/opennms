@@ -1,7 +1,7 @@
 
 = Shell Commands
 
-A number of Karaf Shell commands are available to help administer and diagnose issues related to performance data collection.
+A number of Karaf Shell commands are available to help administer and diagnose issues related enlinkd and topology-map.
 
 NOTE: The enlinkd shell commands must be installed before use.
 
@@ -13,3 +13,136 @@ ssh -p 8101 admin@localhost
 Install the enhanced linkd shell commands:
 [source, console]
 feature:install opennms-enlinkd-shell
+
+== opennms:generate-topology
+
+Creates a linkd topology by protocol (cdp | isis | lldp | ospf | bridge | userdefined). Default: cdp.
+
+A full topology is created from the scratch including OnmsNodes, Elements, Links, SnmpInterfaces, IpInterfaces.
+
+The topology is identified by category 'GeneratedNode'
+
+Useful to test topology-map.
+
+For more option get help:
+
+[source, console]
+ssh -p 8101 admin@localhost
+help opennms:generate-topology
+
+
+== opennms:delete-topology
+
+Delete generated topology.
+The topology is identified by category 'GeneratedNode'
+
+== opennms:enlinkd-snmp-collect
+
+Collect enlinkd snmp data
+
+[source, console]
+SYNTAX
+opennms:enlinkd-snmp-collect [options] trackerClass host.
+
+Tracker Classes Supported:
+
+[source, console]
+CdpCacheTable           Dot1dBase               Dot1qTpFdbTable         IsisSysObjectGroup      MtxrLldpRemTable        OspfIfTable
+CdpGlobalGroup          Dot1dBasePortTable      IpNetToMediaTable       LldpLocalGroup          MtxrNeighborTable       OspfNbrTable
+CiscoVtp                Dot1dStpPortTable       IsisCircTable           LldpLocalTable          OspfAreaTable           TimeTetraLldpRemTable
+CiscoVtpVlanTable       Dot1dTpFdbTable         IsisISAdjTable          LldpRemTable            OspfGeneralGroup
+
+Some output example:
+
+[source, console]
+admin@opennms()> opennms:enlinkd-snmp-collect OspfGeneralGroup clab-eos-ospf-s2
+.1.3.6.1.2.1.14.1.1 (ospfRouterId)= 10.0.0.2
+.1.3.6.1.2.1.14.1.2 (ospfAdminStat)= 1 (enabled)
+.1.3.6.1.2.1.14.1.3 (ospfVersionNumber)= 2
+.1.3.6.1.2.1.14.1.4 (ospfAreaBdrRtrStatus)= 2 (FALSE)
+.1.3.6.1.2.1.14.1.5 (ospfAreaASBdrRtrStatus)= 2 (FALSE)
+
+[source, console]
+admin@opennms()> enlinkd-snmp-collect OspfNbrTable clab-eos-ospf-s1
+		.1.3.6.1.2.1.14.10.1.1.10.1.0.2.0 (ospfNbrIpAddr)= 10.1.0.2
+		.1.3.6.1.2.1.14.10.1.2.10.1.0.2.0 (ospfNbrAddressLessIndex)= 0
+		.1.3.6.1.2.1.14.10.1.3.10.1.0.2.0 (ospfNbrRtrId)= 10.0.0.2
+		.1.3.6.1.2.1.14.10.1.1.10.1.0.10.0 (ospfNbrIpAddr)= 10.1.0.10
+		.1.3.6.1.2.1.14.10.1.2.10.1.0.10.0 (ospfNbrAddressLessIndex)= 0
+		.1.3.6.1.2.1.14.10.1.3.10.1.0.10.0 (ospfNbrRtrId)= 10.0.0.3
+
+[source, console]
+admin@opennms()> enlinkd-snmp-collect LldpRemTable clab-eos-ospf-s1
+.1.0.8802.1.1.2.1.4.1.1.4.0.1.1 (lldpRemChassisIdSubtype)= 4 (macAddress)
+.1.0.8802.1.1.2.1.4.1.1.5.0.1.1 (lldpRemChassisId)= 001c73717d99
+.1.0.8802.1.1.2.1.4.1.1.6.0.1.1 (lldpRemPortIdSubtype)= 5 (interfaceName)
+.1.0.8802.1.1.2.1.4.1.1.7.0.1.1 (lldpRemPortId)= Ethernet1
+.1.0.8802.1.1.2.1.4.1.1.8.0.1.1 (lldpRemPortDesc)= s2 -> s1
+.1.0.8802.1.1.2.1.4.1.1.9.0.1.1 (lldpRemSysName)= s2
+.1.0.8802.1.1.2.1.4.1.1.4.0.2.1 (lldpRemChassisIdSubtype)= 4 (macAddress)
+.1.0.8802.1.1.2.1.4.1.1.5.0.2.1 (lldpRemChassisId)= 001c73422183
+.1.0.8802.1.1.2.1.4.1.1.6.0.2.1 (lldpRemPortIdSubtype)= 5 (interfaceName)
+.1.0.8802.1.1.2.1.4.1.1.7.0.2.1 (lldpRemPortId)= Ethernet2
+.1.0.8802.1.1.2.1.4.1.1.8.0.2.1 (lldpRemPortDesc)= s3 -> s1
+.1.0.8802.1.1.2.1.4.1.1.9.0.2.1 (lldpRemSysName)= s3
+
+[source, console]
+admin@opennms()> enlinkd-snmp-collect Bridgease clab-eos-ospf-s1
+className Bridgease, not found a suitable collectionTracker~                                                                                                                             admin@opennms()> enlinkd-snmp-collect Dot1dBase clab-eos-ospf-s1
+.1.3.6.1.2.1.17.1.1 (dot1dBaseBridgeAddress)= 001c73ddd89b
+.1.3.6.1.2.1.17.1.2 (dot1dBaseNumPorts)= 2
+.1.3.6.1.2.1.17.1.3 (dot1dBaseType)= 2 (transparent-only)
+.1.3.6.1.2.1.17.2.1 (dot1dStpProtocolSpecification)= null (other-vendor-specific)
+.1.3.6.1.2.1.17.2.2 (dot1dStpPriority)= null
+.1.3.6.1.2.1.17.2.5 (dot1dStpDesignatedRoot)= null
+.1.3.6.1.2.1.17.2.6 (dot1dStpRootCost)= null
+.1.3.6.1.2.1.17.2.7 (dot1dStpRootPort)= null
+
+
+For more option get help:
+
+[source, console]
+ssh -p 8101 admin@localhost
+admin@opennms()> help opennms:enlinkd-snmp-collect
+
+== opennms:enlinkd-run-collection
+
+Execute a linkd snmp data collection over specified node and persist the data collected for the specified protocol.
+
+[source, console]
+SYNTAX
+opennms:enlinkd-run-collection [options] protocol
+
+[source, console]
+ARGUMENTS
+protocol
+type of protocol (cdp | isis | lldp | ospf | bridge ).
+(required)
+
+[source, console]
+OPTIONS
+-n, --node
+Node ID or FS:FID
+(required)
+
+For more option get help:
+
+[source, console]
+ssh -p 8101 admin@localhost
+admin@opennms()> help opennms:enlinkd-run-collection
+
+== opennms:enlinkd-discovery-bridge-domain
+
+Execute bridge topology discovery algorithm
+
+== opennms:enlinkd-reload-topology
+
+Triggers a reload of the topology for all enabled protocols
+
+== opennms:enlinkd-reload
+
+Triggers a restart of the enlinkd daemon
+
+== opennms:enlinkd-reload-config
+
+Triggers a reload of configuration file and restart of the enlinkd daemon

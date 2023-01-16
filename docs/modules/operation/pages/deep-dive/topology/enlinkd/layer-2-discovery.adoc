@@ -15,6 +15,7 @@ Information on Layer 2 network links is provided by SNMP agents that support the
 For this reason, you must have a working SNMP configuration.
 
 The following pages describe the MIBs required to allow link discovery:
+
 * xref:operation:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[Layer 2 LLDP Discovery]
 * xref:operation:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[Layer 2 CDP Discovery]
 * xref:operation:deep-dive/topology/enlinkd/layer-2/bridge-discovery.adoc[Bridge Discovery]
