@@ -106,7 +106,7 @@ admin@opennms()> help opennms:enlinkd-snmp-collect
 
 == opennms:enlinkd-run-collection
 
-Execute a linkd snmp data collection over specified node and persist the data collected for the specified protocol.
+Runs an enlinkd SNMP data collection over a specified node and persists the data collected for the specified protocol.
 
 [source, console]
 SYNTAX
