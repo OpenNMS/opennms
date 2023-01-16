@@ -144,4 +144,4 @@ Restarts the enlinkd daemon.
 
 == opennms:enlinkd-reload-config
 
-Triggers a reload of configuration file and restart of the enlinkd daemon
+Reloads the configuration file and restarts the enlinkd daemon.
