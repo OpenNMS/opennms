@@ -98,7 +98,7 @@ className Bridgease, not found a suitable collectionTracker~                    
 .1.3.6.1.2.1.17.2.7 (dot1dStpRootPort)= null
 
 
-For more option get help:
+For more options, view the help:
 
 [source, console]
 ssh -p 8101 admin@localhost
