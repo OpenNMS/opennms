@@ -33,7 +33,7 @@ help opennms:generate-topology
 == opennms:delete-topology
 
 Delete generated topology.
-The topology is identified by category 'GeneratedNode'
+The `GeneratedNode` category identifies the topology.
 
 == opennms:enlinkd-snmp-collect
 
