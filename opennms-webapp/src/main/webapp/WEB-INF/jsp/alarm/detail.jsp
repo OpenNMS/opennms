@@ -47,7 +47,9 @@
         org.opennms.web.api.Util,
         org.apache.commons.configuration.Configuration,
         org.apache.commons.configuration.ConfigurationException,
-        org.apache.commons.configuration.PropertiesConfiguration"
+        org.apache.commons.configuration.PropertiesConfiguration,
+        org.opennms.web.element.NetworkElementFactory,
+        java.util.stream.Collectors"
 %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -252,6 +254,17 @@
             <%=WebSecurityUtils.sanitizeString(alarm.getReductionKey())%>
             <% } else {%>
             &nbsp;
+            <% }%>
+        </td>
+    </tr>
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
+        <th class="col-2">Resolvable</th>
+        <td class="col-10" colspan="3">
+            <%
+                final Set<String> resolvingUeis = NetworkElementFactory.getInstance(getServletContext()).getResolvingUeisForAlarmUei(alarm.getUei());
+                if (resolvingUeis.size() == 0) {
+            %>No<% } else {%>Yes, by
+            <%=resolvingUeis.stream().collect(Collectors.joining(", "))%>
             <% }%>
         </td>
     </tr>
