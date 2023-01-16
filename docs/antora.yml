@@ -11,6 +11,7 @@ asciidoc:
     compatible-centos-stream: 'CentOS Stream 9.x'
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
+    compatible-rhel9: '9.x'
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
     compatible-opennms-helm: '7+'

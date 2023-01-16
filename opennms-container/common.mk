@@ -25,7 +25,7 @@ DOCKER_FLAGS            :=
 DOCKER_OUTPUT           :=
 DOCKER_OUTPUT_OCI       := type=docker,dest=$(DOCKER_OCI)
 DOCKER_OUTPUT_IMAGE     := type=image
-DOCKERX_INSTANCE        := env-$(DOCKER_PROJECT)-oci
+DOCKERX_INSTANCE        := opennms-build-env-oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := 0
@@ -98,7 +98,7 @@ test: $(TARBALL)
 	$(info Ready to go, let's light this candle!)
 	@true
 
-$(README): $(TARBALL)
+$(README): $(TARBALL) Dockerfile $(shell find container-fs -type f)
 	@echo "Unpacking tarball for Docker context..."
 	rm -rf tarball-root
 	mkdir -p tarball-root
@@ -195,13 +195,15 @@ uninstall:
 uninstall-all: uninstall
 	-docker image rm `docker image ls --format='{{ .Repository }}:{{ .Tag }}' '$(DOCKER_BASE):buildx-*T*Z'`
 
-clean:
+clean-context:
 	$(info Destroy builder environment: $(DOCKERX_INSTANCE) ...)
 	-docker buildx rm $(DOCKERX_INSTANCE)
 	-docker context rm "$(DOCKERX_INSTANCE)-context"
 
-clean-all: clean
+clean: clean-context
 	$(info Delete tarball and artifacts ...)
 	rm -rf images/*.oci
 	rm -rf tarball-root
 	rm -rf $(ADDITIONAL_TARGETS)
+
+clean-all: clean

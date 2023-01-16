@@ -395,7 +395,8 @@ doStart(){
 	fi
 
 	# make sure the directory exists for writing a pidfile
-	local _piddir="$(dirname "${OPENNMS_PIDFILE}")"
+	local _piddir
+	_piddir="$(dirname "${OPENNMS_PIDFILE}")"
 	if [ ! -e "${_piddir}" ]; then
 		mkdir -p "${_piddir}"
 	fi
@@ -1025,6 +1026,7 @@ fi
 if [ "$SYSTEMD" -ne 1 ]; then
 	SYSTEMCTL="$(command -v systemctl 2>/dev/null || which systemctl 2>/dev/null || :)"
 	if [ -x "$SYSTEMCTL" ]; then
+		# shellcheck disable=SC2016
 		echo 'WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.'
 		echo 'You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.'
 	fi

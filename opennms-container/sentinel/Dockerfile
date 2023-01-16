@@ -22,7 +22,7 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
 
 FROM ${BASE_IMAGE} as sentinel-base
 
-ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime"
+ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime rsync"
 
 ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 

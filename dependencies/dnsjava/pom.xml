@@ -21,13 +21,4 @@
       <version>${dnsjavaVersion}</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>sonatype-public-repo</id>
-      <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

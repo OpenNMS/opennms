@@ -31,7 +31,6 @@ package org.opennms.smoketest.stacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -130,7 +129,6 @@ public final class OpenNMSStack implements TestRule {
         sentinelContainers = Collections.EMPTY_LIST;
 
         delegateTestRule = RuleChain.emptyRuleChain();
-        return;
     }
 
     private OpenNMSStack(StackModel model) {
@@ -179,19 +177,12 @@ public final class OpenNMSStack implements TestRule {
         opennmsContainer = new OpenNMSContainer(model, model.getOpenNMS());
         chain = chain.around(opennmsContainer);
 
-        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size() + model.getLegacyMinions().size());
+        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size());
         for (final MinionProfile profile : model.getMinions()) {
             final MinionContainer minion = new MinionContainer(model, profile);
             minions.add(minion);
             chain = chain.around(minion);
         }
-
-        for (final Map<String, String> configuration : model.getLegacyMinions()) {
-            final MinionContainer minion = new MinionContainer(model, configuration);
-            minions.add(minion);
-            chain = chain.around(minion);
-        }
-
         minionContainers = Collections.unmodifiableList(minions);
 
         final List<SentinelContainer> sentinels = new ArrayList<>(model.getSentinels().size());
