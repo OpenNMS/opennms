@@ -20,7 +20,7 @@ Creates a linkd topology by protocol (cdp | isis | lldp | ospf | bridge | userde
 
 A full topology is created initially including OnmsNodes, Elements, Links, SnmpInterfaces, IpInterfaces.
 
-The topology is identified by category 'GeneratedNode'
+The `GeneratedNode` category identifies the topology.
 
 Useful to test topology-map.
 
