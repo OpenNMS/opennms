@@ -106,7 +106,6 @@
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
-    <module>opennms-reporting</module>
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
@@ -1763,7 +1762,6 @@
     <pyroscopeVersion>0.10.2</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
-    <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>7.4.5</rocksdbjniVersion>
@@ -2692,11 +2690,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-rancid-provisioning-adapter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-wsman-asset-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3260,11 +3253,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-reporting</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3296,11 +3284,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-tcp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-rws</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3425,12 +3408,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>smack-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rancid-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

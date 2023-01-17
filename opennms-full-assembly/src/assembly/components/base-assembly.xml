@@ -26,7 +26,6 @@
           <exclude>etc/nsclient-config.xml</exclude>
 
           <!-- provisioning adapters -->
-          <exclude>lib/*rancid-provisioning-adapter*</exclude>
           <exclude>etc/*snmp-asset-adapter*</exclude>
           <exclude>lib/*snmp-asset-provisioning-adapter*</exclude>
           <exclude>etc/*snmp-hardware-inventory-adapter*</exclude>

@@ -70,14 +70,12 @@
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
-        <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
         <!-- <entry key="rt.properties" value="rtConfigDaoCheck"/> --><!-- Not part of standard build -->
         <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
-        <entry key="rws-configuration.xml" value="rwsConfigFactory"/>
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
@@ -356,12 +354,6 @@
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
   </bean>
 
-  <bean id="rancidAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="rancidAdapterConfigFactory" class="org.opennms.netmgt.config.RancidAdapterConfigFactory" depends-on="rancidAdapterConfigFactory-init" factory-method="getInstance"/>
-
   <bean id="reportdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/reportd-configuration.xml"/>
   </bean>
@@ -402,12 +394,6 @@
   </bean>
 
   <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
-
-  <bean id="rwsConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="rwsConfigFactory" class="org.opennms.netmgt.config.RWSConfigFactory" depends-on="rwsConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="scriptdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ScriptdConfigFactory.init</value></property>

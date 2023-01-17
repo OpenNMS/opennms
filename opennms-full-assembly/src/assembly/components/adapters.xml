@@ -18,7 +18,6 @@
         <include>org.opennms:opennms-wsman-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-snmp-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-snmp-hardware-inventory-provisioning-adapter:jar:${project.version}</include>
-        <include>org.opennms:opennms-rancid-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-snmp-metadata-provisioning-adapter:jar:${project.version}</include>
       </includes>
     </dependencySet>

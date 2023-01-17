@@ -459,11 +459,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -525,12 +520,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
-      <type>pom</type>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
     </dependency>

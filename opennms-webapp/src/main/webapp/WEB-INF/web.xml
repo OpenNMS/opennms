@@ -35,8 +35,6 @@
         /WEB-INF/spring-security.d/*.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
 
-        <!-- From opennms-reporting -->
-        classpath:/META-INF/opennms/applicationContext-reporting.xml
         <!-- From org.opennms.features.reporting.core -->
         classpath:/META-INF/opennms/applicationContext-reportingCore.xml
         <!-- From org.opennms.features.reporting.dao -->

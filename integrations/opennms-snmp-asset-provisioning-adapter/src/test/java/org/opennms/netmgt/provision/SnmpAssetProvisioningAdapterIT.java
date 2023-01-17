@@ -88,7 +88,7 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 		m_adapter.setTimeUnit(TimeUnit.SECONDS);
 
 		NetworkBuilder nb = new NetworkBuilder();
-		nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1").setSysObjectId(".1.3");
+		nb.addNode("test.example.com").setForeignSource("test").setForeignId("1").setSysObjectId(".1.3");
 		nb.addInterface("192.168.0.1");
 		m_nodeDao.save(nb.getCurrentNode());
 		m_nodeDao.flush();
@@ -104,7 +104,7 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		OnmsNode n = m_nodeDao.findByForeignId("test", "1");
 		assertNotNull(n);
 		m_adapter.addNode(n.getId());
 
@@ -122,7 +122,7 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		OnmsNode n = m_nodeDao.findByForeignId("test", "1");
 		assertNotNull(n);
 		m_adapter.deleteNode(n.getId());
 

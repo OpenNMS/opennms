@@ -14,8 +14,6 @@
     <module>opennms-reverse-dns-provisioning-adapter</module>
     <module>opennms-puppet-provisioning-adapter</module>
     <module>opennms-R</module>
-    <module>opennms-rancid-provisioning-adapter</module>
-    <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-snmp-hardware-inventory-provisioning-adapter</module>
     <module>opennms-wsman-asset-provisioning-adapter</module>

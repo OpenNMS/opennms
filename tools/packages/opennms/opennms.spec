@@ -107,6 +107,8 @@ Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
+Provides:	%{name}-plugin-provisioning-rancid = %{version}-%{release}
+Obsoletes:	%{name}-plugin-provisioning-rancid < %{version}
 Recommends:	haveged
 
 %description core
@@ -189,8 +191,6 @@ Requires(pre):	%{name}-plugin-northbounder-jms
 Requires:	%{name}-plugin-northbounder-jms
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
-Requires(pre):	%{name}-plugin-provisioning-rancid
-Requires:	%{name}-plugin-provisioning-rancid
 Requires(pre):	%{name}-plugin-provisioning-reverse-dns
 Requires:	%{name}-plugin-provisioning-reverse-dns
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
@@ -277,20 +277,6 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-provisioning-reverse-dns
 The Reverse DNS provisioning adapter allows for updating the hostname on an
 interface based on its reverse DNS lookup.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-provisioning-rancid
-Summary:	RANCID Provisioning Adapter
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-provisioning-rancid
-The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
-RANCID's device database when %{_descr} provisions nodes.
 
 %{extrainfo}
 %{extrainfo2}
@@ -794,10 +780,6 @@ rm -rf %{buildroot}
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-reverse-dns-provisioning-adapter*.jar
 
-%files plugin-provisioning-rancid
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
-
 %files plugin-provisioning-snmp-asset
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
@@ -1024,9 +1006,6 @@ fi
 
 %post plugin-provisioning-reverse-dns
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-reverse-dns"
-
-%post plugin-provisioning-rancid
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-rancid"
 
 %post plugin-provisioning-snmp-asset
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-snmp-asset"
