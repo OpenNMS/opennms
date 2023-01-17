@@ -9,7 +9,7 @@ This daemon is disabled by default.
 
 == Parsers
 
-Parsers can be used to convert syslog message fields into {page-component-title} event fields.
+You can use parsers to convert syslog message fields into {page-component-title} event fields.
 
 [caption=]
 .Syslog message parsers
@@ -33,7 +33,7 @@ Parsers can be used to convert syslog message fields into {page-component-title}
 === RadixTreeSyslogParser
 
 The `RadixTreeSyslogParser` normally uses a set of internally defined patterns to parse multiple syslog message formats.
-To customize the set of patterns, you can modify `$\{OPENNMS_HOME}/etc/syslog-grok-patterns.txt`.
+To customize the set of patterns, modify `$\{OPENNMS_HOME}/etc/syslog-grok-patterns.txt`.
 
 The patterns are defined in Grok-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
 Whitespace in the pattern will match `0...n` whitespace characters, and character literals in the pattern will match the corresponding characters.
@@ -83,7 +83,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Semantic Token    | Description
 
 | day
-| Two-digit day of month (1–31)
+| Two-digit day of month (01–31)
 
 | facilityPriority
 | Facility-priority integer
@@ -92,7 +92,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
 
 | hour
-| Two-digit hour of day (0–23)
+| Two-digit hour of day (00–23)
 
 | message
 | Remaining string message.
@@ -104,7 +104,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | Two-digit minute (0–59)
 
 | month
-| Two-digit month (1–12)
+| Two-digit month (01–12)
 
 | parm*
 | Generic string parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, `parmComponentId` maps to a string parameter with key "ComponentId").
@@ -116,7 +116,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String process name
 
 | second
-| Two-digit second (0–59)
+| Two-digit second (00–59)
 
 | secondFraction
 | One- to six-digit fractional second value as a string.

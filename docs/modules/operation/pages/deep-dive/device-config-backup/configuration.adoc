@@ -52,7 +52,7 @@ include::debian-ubuntu/firewall-core.adoc[]
 == Configure TFTP IP address
 
 The device configuration backup feature allows the retrieval of network device configurations using TFTP.
-To achieve this, a TFTP server needs to be started on your {page-component-title} instance, or on a Minion.
+To achieve this, a TFTP server needs to be started on your {page-component-title} instance or on a Minion.
 
 Usually, the IP address is determined by selecting the interface address that the operating system uses to reach the destination device.
 In the case of a Minion running in Docker outside of host networking mode, the IP address cannot be automatically determined; you need to configure it manually:
@@ -169,7 +169,7 @@ You can also back up and retrieve device configuration settings manually via the
 [source, karaf]
 ssh -p 8101 admin@localhost
 
-NOTE: In the shell, you can use `opennms:dcb-get --help` to view the command's help information.
+NOTE: In the shell, use `opennms:dcb-get --help` to view the command's help information.
 
 .Run device configuration backup from a specific interface
 [source, console]
@@ -201,5 +201,5 @@ OPTIONS
                 Whether to persist config or not
 ----
 
-NOTE: These commands will not persist configuration settings by default.
+NOTE: By default, these commands do not persist configuration settings.
 To persist configuration settings in the {page-component-title} database, use the `-p` flag.

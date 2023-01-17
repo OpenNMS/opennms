@@ -53,7 +53,7 @@ On evaluation, this expression should return either `true` (persist index to sto
 
 == Storage strategies
 
-You can configure the following storage strategies to specify how to store performance metrics in the long term:
+You can configure the following storage strategies to specify how to store performance metrics long-term:
 
 [cols="2,2"]
 |===
@@ -131,7 +131,7 @@ All key properties from the `ObjectName` can also be referenced by using `$\{key
 
 You can use this storage strategy with JMX MBean data collections where multiple MBeans can return the same set of attributes.
 
-NOTE: As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
+NOTE: As of OpenNMS Horizon 20, this is supported only when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
 
 .Example storage storage strategy used with JMX MBean
 [source, xml]
@@ -142,7 +142,7 @@ NOTE: As of OpenNMS Horizon 20, this is only supported when using an HTTP-to-JMX
 </storageStrategy>
 ----
 
-In this example, passing an MBean through this storage strategy will produce a clean `index` value (for example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`).
+In this example, passing an MBean through this storage strategy produces a clean `index` value (for example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`).
 
 === HostFileSystemStorageStrategy
 

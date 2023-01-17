@@ -4,7 +4,7 @@
 When collecting tabular numerical metrics from an MIB table, it's helpful to include one or more string properties from each conceptual row of the table in question.
 These properties can be used in the `resourceLabel` attribute of the `resourceType` that is associated with the collected data.
 
-When the string property exists as a column in the same table that contains the numerical metrics, it's easy to associate the string to the correct resource by adding a `mibObj` with the same `instance` attribute and the `string` type.
+When the string property exists as a column in the same table that contains the numerical metrics, it's easy to associate the string with the correct resource by adding a `mibObj` with the same `instance` attribute and the `string` type.
 For example, the Cisco ENVMON MIB's temperature status table contains both a numeric gauge for the temperature value and a string describing the associated temperature sensor.
 A partial snmpwalk of this table illustrates this direct relationship:
 
@@ -68,7 +68,7 @@ In this contrived configuration example, `ifDescr` (from `ifTable`) is freely mi
 ----
 
 Most SNMP property extenders make it possible to include string properties from a "source" MIB table that is indexed differently from the table containing most of the relevant data.
-For the purpose of configuring property extenders, the table containing the majority of the data (and into which we want to include the string properties) is called the "target table", and the table containing the string property is called the "source table".
+When configuring property extenders, the table containing the majority of the data (and into which we want to include the string properties) is called the "target table", and the table containing the string property is called the "source table".
 Several different extenders are available; selecting the right one depends on the relationship between the target table and the source table.
 
 A few property extenders also exist whose effect is strictly local to the "target" resource.

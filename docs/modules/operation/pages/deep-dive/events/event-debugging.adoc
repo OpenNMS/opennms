@@ -99,7 +99,7 @@ You can also define your own UEIs.
 7 = Critical +
 
 | -t (--timezone)
-| The time zone that you are in.
+| Your time zone.
 
 | -v (--verbose)
 | Print the raw XML that is generated.
@@ -121,7 +121,7 @@ $\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/intern
 == Karaf Shell
 
 Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
-This command is useful for displaying event definitions that may not be easily accessible on disk, or verifying that particular events were actually loaded:
+This command is useful to display event definitions that may not be easily accessible on disk, or to verify that particular events were actually loaded:
 
 [source, karaf]
 opennms:show-event-config -u uei.opennms.org/alarms

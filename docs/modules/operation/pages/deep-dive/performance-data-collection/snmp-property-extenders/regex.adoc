@@ -30,7 +30,7 @@ bsnAPEntry OBJECT-TYPE
 <1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`.
 <2> `bsnAPDot3MacAddress` is the sole index for the entry type for `bsnAPTable`.
 
-By extracting only the first index component and using the result as an index into the source MIB table, it's possible to import the human-sensible `bsnAPName` string property from the source MIB table.
+By extracting only the first index component and using the result as an index into the source MIB table, it's possible to import the human-readable `bsnAPName` string property from the source MIB table.
 
 == Configuration
 

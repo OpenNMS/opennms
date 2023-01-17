@@ -71,4 +71,3 @@ Configure the system proxy settings via <<deep-dive/admin/system-properties/intr
 |===
 
 IMPORTANT: Some of the optional configuration parameters are not compatible with some versions of Mattermost.
-For instance, the `channel` option is known not to work with Mattermost 3.7.0.

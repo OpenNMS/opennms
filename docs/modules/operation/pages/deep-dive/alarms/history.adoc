@@ -3,7 +3,7 @@
 = Alarm History
 
 The alarm history feature integrates with Elasticsearch to provide long-term storage and maintain a history of alarm state changes.
-When it is enabled, alarms are indexed in Elasticsearch when they are created, deleted, or when any "interesting" fields on the alarm are updated.
+When it is enabled, alarms are indexed in Elasticsearch when they are created, deleted, or when any interesting fields (for example, Ticket State, Sticky Memo) on the alarm are updated.
 Alarms are indexed so that operators can answer the following questions:
 
 * What were all the state changes of a particular alarm?
@@ -11,7 +11,7 @@ Alarms are indexed so that operators can answer the following questions:
 * Which alarms were present (not deleted) on the system at a given point in time?
 * Which alarms are currently present on the system?
 
-A simple REST API is also made available for the purposes of evaluating the results, verifying the data that is stored and providing examples on how to query the data.
+A simple REST API also lets you evaluate the results, verify stored data, and provide examples on how to query the data.
 
 NOTE: This feature requires Elasticsearch 7.0+.
 
@@ -31,7 +31,7 @@ admin@opennms()> config:property-set elasticUrl http://es:9200
 admin@opennms()> config:update
 ----
 
-** (Optional) To set the feature to start automatically upon future service starts, you can add `opennms-alarm-history-elastic` to `$\{OPENNMS_HOME}/etc/featuresBoot.d/alarm.boot`.
+** (Optional) To set the feature to start automatically upon future service starts, add `opennms-alarm-history-elastic` to `$\{OPENNMS_HOME}/etc/featuresBoot.d/alarm.boot`.
 If the file does not exist, create it.
 ** (Optional) To start the feature immediately, run the `feature:install opennms-alarm-history-elastic` command in the Karaf shell.
 
@@ -48,9 +48,9 @@ To avoid pushing a new document every time a new event is reduced to an existing
 * The alarm has been associated with or removed from a situation.
 * A related alarm has been added to or removed from the situation.
 
-NOTE: To change this behavior and push a new document for every change, you can set `indexAllUpdates` to `true`.
+NOTE: To change this behavior and push a new document for every change, set `indexAllUpdates` to `true`.
 
-When alarms are deleted, a new document containing the alarm ID, reduction key, and deletion time is pushed to Elasticsearch.
+When alarms are deleted, {page-component-title} pushes a new document containing the alarm ID, reduction key, and deletion time to Elasticsearch.
 
 === Alarm document fields
 
@@ -63,11 +63,11 @@ When alarms are deleted, a new document containing the alarm ID, reduction key, 
 | @first_event_time
 | Time (in milliseconds) associated with the first event that triggered this alarm.
 
-| @first_event_time
+| @last_event_time
 | Time (in milliseconds) associated with the last event that triggered this alarm.
 
 | @update_time
-| Time (in milliseconds) when the document was created.
+| Time (in milliseconds) when the document was created or updated.
 
 | @deleted_time
 | Time (in milliseconds) when the alarm was deleted.
@@ -82,7 +82,14 @@ When alarms are deleted, a new document containing the alarm ID, reduction key, 
 | Severity of the alarm.
 
 | severity_id
-| Numerical ID used to represent the severity.
+| Numerical ID used to represent the severity. +
+1 = Indeterminate +
+2 = Cleared +
+3 = Normal +
+4 = Warning +
+5 = Minor +
+6 = Major +
+7 = Critical
 |===
 
 == Options
@@ -98,7 +105,7 @@ You can set the following optional properties in `$\{OPENNMS_HOME}/etc/org.openn
 | false
 
 | alarmReindexDurationMs
-| Time (in milliseconds) to wait before re-indexing an alarm if nothing "interesting" has changed.
+| Time (in milliseconds) to wait before re-indexing an alarm if nothing significant has changed.
 | 3600000
 
 | lookbackPeriodMs

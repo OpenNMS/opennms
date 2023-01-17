@@ -49,7 +49,7 @@ entPhysicalEntry       OBJECT-TYPE
 <2> The `cpmCPUTotalPhysicalIndex` column contains a value of `entPhysicalIndex` that corresponds to the CPU referenced in a given row.
 <3> The `entPhysicalTable` entry type is indexed on `entPhysicalIndex`, and provides many useful textual columns.
 
-By treating `cpmCPUTotalPhysicalIndex` similar to a https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], it's possible to import string properties from the `entPhysicalTable` for use in the resource label.
+Treating `cpmCPUTotalPhysicalIndex` similarly to a https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], makes it possible to import string properties from the `entPhysicalTable` for use in the resource label.
 
 NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
 This relationship does not hold across all product lines or software revisions.

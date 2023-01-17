@@ -2,7 +2,7 @@
 [[backup-script]]
 = Configure Backup Script
 
-{page-component-title} uses an SSH scripting engine to run the commands required for devices to upload their configuration settings.
+{page-component-title} uses an SSH scripting engine to run the commands on devices to upload their configuration settings.
 You must create a script for each device type whose configuration you want to back up, and save the scripts in `$\{OPENNMS_HOME}/etc/device-config`.
 Each script simulates an interactive session with the network device, and tells the device to create a backup of its configuration.
 The backup is then sent to a TFTP server which is operated by either {page-component-title} or a Minion.
@@ -67,7 +67,7 @@ send: exit
 == Vendor TFTP support
 
 See your device manufacturer's official documentation for details on their TFTP support.
-Some links to popular device manufacturers are provided below:
+The following are links to popular device manufacturers:
 
 * https://www.arubanetworks.com/techdocs/ArubaOS_63_Web_Help/Content/ArubaFrameStyles/Management_Utilities/Managing_Files_on_the_.htm[Aruba]
 * https://www.cisco.com/c/de_de/support/docs/ios-nx-os-software/ios-software-releases-122-mainline/46741-backup-config.html[Cisco]
