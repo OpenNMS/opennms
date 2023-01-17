@@ -1,37 +1,33 @@
-[[response-time-report]]
+
 = Response Time by Node Report
 
-This report lists the response times by nodes across specified node tags.
+This report lists the response times by nodes, filtered by specified node tags.
 
-This report has a table for each matching node tag that contains the devices and a row for each IP interface with the minimum, average, and maximum ICMP latency of the period of the report.
+This report has a table for each matching node tag that lists the devices, and a row for each IP interface with the minimum, average, and maximum ICMP latency of the period of the report.
 
 You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
 
-[options="header, autowidth"]
-[cols="1,2,3"]
-
+.Report customization parameters
+[options="autowidth"]
 |===
-| Field
-| Description
-| Default
+| Field | Description   | Default Value
 
 | Surveillance Category
-| Identify one or more node tags to filter nodes to be included in the report.
+| One or more node tags to include in the report.
 To select multiple tags, use wildcards as described below.
 If no tags match the entered string, the report will have no data.
 | %
 
 | Start Date
 | The starting date for the data contained in this report.
-| 7 days before today
+| _7 days before today_
 
 | End Date
 | The end date for the data contained in this report.
 If the end date is later than the start date, the report will have no data.
-| Today
-
+| _Today_
 |===
 
 include::standard-text-fields.adoc[]

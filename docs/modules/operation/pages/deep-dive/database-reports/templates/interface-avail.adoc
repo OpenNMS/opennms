@@ -1,15 +1,14 @@
-[[interface-avail-report]]
+
 = Interface Availability Report
 
+This report shows a summary of interface availability for interfaces with outages.
+It's a multi-page report that provides the following data for all router interfaces, organized by IP address, over the specified date range:
 
-This report shows interface availability for interfaces with outages within the time range.
-It is a multi-page report that provides the following availability data for all router interfaces by IP address over the user-specified date range:
-
-* Number of outages
-* Mean Time To Repair ("MTTR") (in hours)
-* Length of time for each outage (in hours)
-* Percent outage (per unit in category)
-* Percent availability (per unit in category)
+* Number of outages.
+* Mean Time To Repair ("MTTR") (in hours).
+* Length of time for each outage (in hours).
+* Percent outage (per unit in category).
+* Percent availability (per unit in category).
 
 //QUESTION: Need to validate explanation of the last two, in the summary chart at the end, are these averages over the entire period or per day?
 
@@ -17,20 +16,17 @@ This report can be customized with a company logo (approximately 195px by 50px) 
 
 == Parameters
 
-[options="header, autowidth"]
-[cols="1,2,3"]
-
+.Report customization parameters
+[options="autowidth"]
 |===
-| Field
-| Description
-| Default
+| Field | Description   | Default Value
 
 | Report Time Range in Days
-| The range in days from the report start date.
+| The range, in days, from the report Start Date.
 | 7
 
 | Availability Warning
-| Percent availability that triggers a warning.
+| Availability percentage at which a warning is triggered.
 | 98
 
 | Availability Critical
@@ -38,7 +34,6 @@ This report can be customized with a company logo (approximately 195px by 50px) 
 | 97
 
 | Start Date
-| Start date for the report.
-| 7 days before today
-
+| The starting date for the data contained in this report.
+| _7 days before today_
 |===
