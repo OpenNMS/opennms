@@ -1,8 +1,5 @@
 version: 2.1
 
-aliases:
-  #aliases:general#
-
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   continuation: circleci/continuation@0.3.1
@@ -34,3 +31,5 @@ jobs:
   #jobs:create-merge-meridian-branch#
   #jobs:merge-poweredby-branch#
   #jobs:publish#
+
+# VS Code Extension Version: 1.5.1
