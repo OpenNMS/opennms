@@ -27,8 +27,8 @@ Description::
     A long-form description of all instances of this event.
     You can use HTML formatting to format the body of the event text.
 Log Message::
-    A long-form log message describing this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
-    The possible options for this setting are the following:
+    A long-form log message that describes this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
+    It includes the `dest` (destination) attribute that defines how the event is treated, including the following options:
     logndisplay:::
         Both log the event in the database and display it in the Web UI.
     logonly:::
@@ -37,7 +37,7 @@ Log Message::
         Neither log the event in the database nor display it.
     donotpersist:::
         Do not log the event in the database, but still send it to daemons that are listening for this type of event, such as those being used to generate notifications.
-        Note that eventd and alarmd don't process this type of events.
+        Note that eventd and alarmd do not process this type of event.
     discardtraps:::
         This applies only to traps coming in via trapd.
         This will cause trapd to discard the trap without creating an event.
