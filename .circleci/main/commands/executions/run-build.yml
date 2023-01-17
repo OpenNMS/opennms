@@ -26,6 +26,9 @@ commands:
           name: Compile OpenNMS
           command: |
             ulimit -n 65536 || :
+            mkdir -p ~/.m2
+            echo "${GPG_SECRET_KEY}" | base64 -d > ~/.m2/sign-key.asc
+            export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
