@@ -2,9 +2,10 @@
 [[ga-service-assurance-path-outage]]
 = Use Path Outages to Suppress Notifications
 
-An outage of a core network component can cause a lot of node outages.
-You can use path outages to suppress notifications based on how nodes depend on each other in the network, as defined by a critical path.
-The critical path needs to be configured from the network perspective of the monitoring system.
+An outage on a central network component can cause a large number of node outages.
+You can use path outages to suppress notifications based on how nodes depend on each other in the network, as outlined in a critical path definition.
+The critical path must be configured from the network perspective of the monitoring system.
+By default, the path outage feature is disabled and must be enabled in `poller-configuration.xml`.
 
 == Enable path outages
 
@@ -17,12 +18,12 @@ A service restart is required after changing this setting.
 
 The following image shows a sample network topology:
 
-[[path-outage-example]]
-image::service-assurance/02_path-outage.png[width=600]
+.Example network topology diagram
+image::service-assurance/02_path-outage.png["Network architecture diagram displaying a {page-component-title} instance and four associated nodes", 700]
 
 From the perspective of the monitoring system, a router named `default-gw-01` is on the critical path to reach two networks.
 If `default-gw-01` is down, it is not possible to reach any node in the two networks behind it.
-In this case, an administrator would like to receive just one notification for `default-gw-01`; notifications for the other nodes behind it should not be generated.
+In this case, an administrator should receive only one notification for `default-gw-01`; notifications for the other nodes behind it should not be generated.
 Building this configuration in {page-component-title} requires the following information:
 
 Parent Foreign Source:: The foreign source where the parent node is defined.
@@ -34,21 +35,18 @@ While you do not need to provide the IP interface when configuring the path on t
 
 In this example, we have created all nodes in a requisition named `Network-ACME` and we use the node label value as the foreign ID:
 
-. Click the *Gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the screen.
 . Under Provisioning, click *Manage Provisioning Requisitions*.
 . Click *Edit* beside the requisition that you want to modify.
 . Click *Edit* beside the node that you want to modify.
 . Navigate to the *Path Outage* tab, and configure the network path using the following parameters:
 +
-[options="header, autowidth"]
-[cols="1,1,1"]
+[options="autowidth"]
 |===
-| Parent Foreign Source
-| Parent Foreign ID
-| Provisioned Node
+| Parent Foreign Source | Parent Foreign ID | Provisioned Node
 
-| not defined
-| not defined
+| _Not defined_
+| _Not defined_
 | default-gw-01
 
 | Network-ACME

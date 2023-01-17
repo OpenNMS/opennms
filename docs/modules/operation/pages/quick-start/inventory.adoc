@@ -1,5 +1,4 @@
 
-[[provision-getting-started]]
 = Step 3: Provision Inventory
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) that you want to monitor.
@@ -44,7 +43,7 @@ NOTE: If you are using SNMPv3, you need to configure details for a User-Based Se
 This configuration sets up SNMP for agents listening on IP addresses `10.1.1.1` through `10.254.254.254`:
 
 .Example SNMP community name configuration settings
-image::provisioning/SNMP_Config.png[SNMP community name configuration page with example IP address and location settings, 600]
+image::provisioning/SNMP_Config.png["SNMP community name configuration page with example IP address and location settings", 600]
 
 These settings are automatically optimized into `snmp-config.xml`.
 For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
@@ -69,8 +68,8 @@ This procedure describes how to create an empty requisition using the default fo
 NOTE: The requisition's entry in the Requisitions list remains red until you synchronize it with the database.
 You will synchronize the list after you <<#configure-discovery, configure discovery settings>>.
 
-.Example Requisitions list
-image::provisioning/red_requisition.png[Requisitions list showing two requisitions; one is red, indicating that it has not been synchronized with the database]
+.Requisitions list
+image::provisioning/red_requisition.png["Requisitions list showing two requisitions; one is red, indicating that it has not been synchronized with the database"]
 
 After the requisition is created, you can add nodes to it.
 
@@ -81,7 +80,7 @@ The following pages describe additional configuration options for requisitions:
 
 * <<deep-dive/provisioning/directed-discovery.adoc#directed-discovery, Manually specify nodes to add to a requisition>>.
 * <<deep-dive/provisioning/auto-discovery.adoc#auto-discovery, Automatically discover nodes to add to a requisition>>.
-* Customize a requisition with xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and <<deep-dive/provisioning/policies.adoc#policies, policies>>.
+* Customize a requisition using xref:reference:provisioning/detectors.adoc#ref-detectors[detectors] and <<deep-dive/provisioning/policies.adoc#policies, policies>>.
 
 [[configure-discovery]]
 == Configure discovery
@@ -97,7 +96,7 @@ To configure discovery, follow these steps:
 . In the General Settings section, select the requisition that you just created from the *Requisition* list.
 ** (Optional) Change the default values, as desired.
 . Click *Save and Restart Discovery* in the top-left of the screen.
-. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png[Synchronize requisition symbol,20]).
+. Return to *Manage Provisioning Requisitions* and click *Synchronize the Requisition* (image:provisioning/sync_requisition.png["Synchronize requisition symbol", 20]).
 . Choose a scan option and click *Synchronize*.
 
 You can view imported nodes by clicking menu:Info[Nodes] in the top menu bar.
@@ -110,4 +109,4 @@ Beyond this guide, you can complete additional tasks to provision your system:
 * Specify more complex entity detection with OpenNMS detectors (ActiveMQ, DNS, FTP, JDBC, TCP, and so on).
 * Create policies to manage provisioning behavior.
 
-Refer to xref:deep-dive/provisioning/introduction.adoc[Provisioning] in the Deep Dive section for details about these and other provisioning-related tasks.
+Refer to xref:deep-dive/provisioning/introduction.adoc[] in the Deep Dive section for details about these and other provisioning-related tasks.
