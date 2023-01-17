@@ -28,9 +28,9 @@ Description::
     You can use HTML formatting to format the body of the event text.
 Log Message::
     A long-form log message that describes this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
-    It includes the `dest` (destination) attribute that defines how the event is treated, including the following options:
+    It includes the `dest` (destination) attribute, which defines how the event is treated, including the following options:
     logndisplay:::
-        Both log the event in the database and display it in the Web UI.
+        Log the event in the database and display it in the web UI.
     logonly:::
         Log the event in the database, but do not display it.
     suppress:::
