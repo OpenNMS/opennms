@@ -38,12 +38,12 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.opennms.smoketest.containers.CassandraContainer;
 import org.opennms.smoketest.containers.ElasticsearchContainer;
+import org.opennms.smoketest.containers.JaegerContainer;
 import org.opennms.smoketest.containers.LocalOpenNMS;
 import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -101,7 +101,7 @@ public final class OpenNMSStack implements TestRule {
 
     private final PostgreSQLContainer postgreSQLContainer;
 
-    private final GenericContainer jaegerContainer;
+    private final JaegerContainer jaegerContainer;
 
     private final OpenNMSContainer opennmsContainer;
 
@@ -136,10 +136,7 @@ public final class OpenNMSStack implements TestRule {
         RuleChain chain = RuleChain.outerRule(postgreSQLContainer);
 
         if (model.isJaegerEnabled()) {
-            jaegerContainer = new GenericContainer("jaegertracing/all-in-one:1.39")
-                    .withNetwork(Network.SHARED)
-                    .withNetworkAliases("jaeger")
-                    .withExposedPorts(16686);
+            jaegerContainer = new JaegerContainer();
             chain = chain.around(jaegerContainer);
         } else {
             jaegerContainer = null;
@@ -222,7 +219,7 @@ public final class OpenNMSStack implements TestRule {
         return sentinelContainers.get(index);
     }
 
-    public GenericContainer jaeger() {
+    public JaegerContainer jaeger() {
         if (jaegerContainer == null) {
             throw new IllegalStateException("Jaeger container is not enabled in this stack.");
         }

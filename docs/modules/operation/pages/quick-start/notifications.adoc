@@ -5,17 +5,17 @@ This section describes how to turn default notifications on in {page-component-t
 
 {page-component-title} uses notifications to inform users about xref:deep-dive/events/introduction.adoc[events] in the network without requiring them to log in to the web UI.
 Notifications are commonly sent through email and text or pager messages, but can be customized to send to a variety of external systems.
-For additional information, including alternative notification mechanisms, see xref:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section and the xref:reference:daemons/daemon-config-files/notifd.adoc[notifd] reference section.
+For additional information, including alternative notification mechanisms, see xref:deep-dive/notifications/introduction.adoc[] in the Deep Dive section and the xref:reference:daemons/daemon-config-files/notifd.adoc[notifd] reference section.
 
 == Enable notifications
 
 Notifications are disabled by default in a fresh {page-component-title} installation, as indicated by the red bell symbol in the top menu bar:
 
-image::notifications/red-bell-notifications.png[Portion of Horizon top menu bar showing red bell symbol, 300]
+image::notifications/red-bell-notifications.png["Portion of Horizon top menu bar displaying a red notification bell symbol", 300]
 
 Follow these steps to enable notifications:
 
-. Log out of the `admin` account and log in as the user that you created in xref:quick-start/users.adoc[Step 1: First-Time Login].
+. Log out of the `admin` account and log in as the user that you created in xref:quick-start/users.adoc[].
 . Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, select *On* beside Notification Status, and click *Update*.
 
@@ -28,10 +28,9 @@ This configuration file update happens immediately, with no need to restart {pag
 
 The following event notifications are defined by default:
 
-[options="header", cols="1,1"]
+[options="autowidth"]
 |===
-| Event Notification
-| Default State
+| Event Notification    | Default State
 
 | High threshold
 | OFF
@@ -62,7 +61,7 @@ The following event notifications are defined by default:
 |===
 
 You can turn each of them on or off on the Configure Event Notifications page.
-See xref:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section for more information.
+See xref:deep-dive/notifications/introduction.adoc[] in the Deep Dive section for more information.
 
 == Configure destination paths
 
@@ -95,6 +94,7 @@ For the purpose of this Quick Start guide, do not specify a delay interval, and 
 ** Click *Next Step*.
 +
 The Admin group and the email address that you specified appear in the Initial Targets list.
+
 . Verify the settings, and click *Finish*.
 
 Users in the Admin group will see pop-up notifications in their browsers about events in {page-component-title}.
