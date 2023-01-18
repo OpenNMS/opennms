@@ -1694,6 +1694,7 @@
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <jasyptVersion>1.9.3</jasyptVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -2842,6 +2843,16 @@
         <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jasypt</groupId>
+        <artifactId>jasypt</artifactId>
+        <version>${jasyptVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.jasypt</artifactId>
+        <version>${jasyptVersion}_1</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
