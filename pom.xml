@@ -1786,6 +1786,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
+    <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.14</zookeeperVersion>
@@ -3657,6 +3658,16 @@
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
         <version>${caffeineVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>${xstreamVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
+        <version>${xstreamVersion}_1</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>

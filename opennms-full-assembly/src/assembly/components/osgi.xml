@@ -8,6 +8,10 @@
       <filtered>false</filtered>
       <outputDirectory>system</outputDirectory>
       <directory>target/opennms-repo</directory>
+      <excludes>
+        <exclude>**/*xstream*/1.4.8_1</exclude>
+        <exclude>**/*xstream*/1.4.8_1/*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </component>
