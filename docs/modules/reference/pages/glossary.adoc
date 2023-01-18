@@ -139,8 +139,7 @@ Minions communicate with these remote devices while OpenNMS performs coordinatio
 Nephron:: An OpenNMS component that enables horizontal scaling of flow processing.
 Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
 
-Network Operating Center (NOC):: One or more locations where a network is monitored and controlled.
-(See https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center].)
+Network Operations Center (NOC):: One or more locations where a network is monitored and controlled (see https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center]).
 
 xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[New-Fangled Time Series Datastore (Newts)]:: An OpenNMS time series datastore based on Apache Cassandra.
 Use it as an alternative persistence strategy instead of JRobin or RRDtool.
