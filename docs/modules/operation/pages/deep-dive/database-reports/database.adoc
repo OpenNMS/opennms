@@ -18,8 +18,11 @@ The {page-component-title} Report Engine uses the JasperReport library to create
 Each report template must be saved as a `*.jrxml` file.
 Each time a report is run, the Report Engine passes it a JDBC connection to the {page-component-title} database.
 
+NOTE: Only a JDBC connection to the {page-component-title} database can be passed to the report.
+
 [caption=]
 .Report Engine features
+[cols="1,1"]
 |===
 s| Supported Output Formats
 | PDF, CSV
@@ -28,13 +31,13 @@ s| JasperReport Version
 | {jasperreportsversion}
 |===
 
-For more details on how JasperReports works, please refer to the Jaspersoft Studio http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
+For more details on how JasperReports works, please refer to the JasperSoft Studio http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
 
 == Report templates
 
 {page-component-title} includes the following sample report templates:
 
-[options="autowidth"]
+[cols="2,1,3"]
 |===
 | Report Name | Category  | Description
 
@@ -124,7 +127,7 @@ TIP: If you're not sure that your compiled subreports match the current template
 
 To add a new report to your local {page-component-title} repository, follow these steps:
 
-. Create a new entry in `$OPENNMS_HOME/etc/database-reports.xml`:
+. Create a new entry in `$\{OPENNMS_HOME}/etc/database-reports.xml`:
 +
 [source, xml]
 -----
@@ -144,7 +147,7 @@ Appears in the web UI.
 <5> A description of the report.
 Appears in the web UI.
 
-. Create a new entry in `$OPENNMS_HOME/etc/jasper-reports.xml`:
+. Create a new entry in `$\{OPENNMS_HOME}/etc/jasper-reports.xml`:
 +
 [source, xml]
 -----
@@ -155,12 +158,12 @@ Appears in the web UI.
 />
 -----
 <1> The identifier defined in the previous step.
-This identifier must exist in `$OPENNMS_HOME/etc/database-reports.xml`.
+This identifier must exist in `$\{OPENNMS_HOME}/etc/database-reports.xml`.
 <2> The name of the template.
-The template must be located in `$OPENNMS_HOME/etc/report-templates`.
+The template must be located in `$\{OPENNMS_HOME}/etc/report-templates`.
 <3> The engine to use (either `jdbc` or `null`).
 
-== Jaspersoft Studio
+== JasperSoft Studio
 
 We recommend that you use JasperSoft Studio to develop new reports.
 Download it via the http://community.jaspersoft.com/project/jaspersoft-studio[official JasperSoft website].
@@ -173,32 +176,32 @@ Currently, {page-component-title} uses JasperSoft Studio version {jasperreportsv
 You must create a database data adapter to run SQL queries against your {page-component-title} database.
 The official JasperSoft Studio documentation and wiki describe how to do this.
 
-=== Use Measurements Datasource and Helpers
+=== Use Measurements Datasource and helpers
 
 You must add the Measurements Datasource library to JasperStudio's build path to use the Measurements API:
 
 . Open the Project Explorer.
 . Right-click in the window and select *Configure Buildpath*.
 +
-image::database-reports/1_configure-build-path-1.png["Project Explorer UI displaying the Properties dialog", 800]
+image::database-reports/1_configure-build-path-1.png["Project Explorer UI displaying the Properties dialog"]
 
 . Navigate to the *Libraries* tab.
 . Click *Add External JARs*.
-. Select `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` from the `$OPENNMS_HOME/contrib/jasperstudio-extension` directory.
+. Select `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` from the `$\{OPENNMS_HOME}/contrib/jasperstudio-extension` directory.
 . Close the file selection dialog.
 +
-image::database-reports/2_configure-build-path-2.png["Project Explorer UI displaying the Properties dialog with the external JAR configured", 800]
+image::database-reports/2_configure-build-path-2.png["Project Explorer UI displaying the Properties dialog with the external JAR configured"]
 +
-The Measurements Datasource and Helpers should now be available.
+The Measurements Datasource and helpers should now be available.
 
 . Open JasperSoft Studio and navigate the Dataset and Query dialog.
 . Select the *Measurement* language.
 +
-image::database-reports/3_dataset-query-dialog.png["JasperSoft Studio UI displaying the Dataset and Query dialog", 800]
+image::database-reports/3_dataset-query-dialog.png["JasperSoft Studio UI displaying the Dataset and Query dialog"]
 
 NOTE: If the Read Fields functionality is not available, use the Data Preview.
 To access the Measurements API, use the `MEASUREMENT_URL`, `MEASUREMENT_USERNAME`, and `MEASUREMENT_PASSWORD` parameters.
-See <<ga-database-reports-fields, Supported fields>> for more details.
+See <<ga-database-reports-fields, Datasource fields>> for more information.
 
 == Access performance data
 
@@ -217,8 +220,7 @@ To receive data from the Measurements API, create a query:
   <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
 </query-request>
 ------
-<1> The query language.
-In this case, "measurement".
+<1> The query language; in this case, "measurement".
 JasperReports supports many languages out of the box, including SQL, xpath, and so on.
 
 [[ga-database-reports-fields]]
@@ -227,7 +229,7 @@ JasperReports supports many languages out of the box, including SQL, xpath, and 
 Each datasource returns a number of fields which you can use in reports.
 The Measurement Datasource supports the following fields:
 
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Name  | Description | Type
 
@@ -256,7 +258,7 @@ Returns the same value for all rows.
 | java.lang.Long
 |===
 
-For more information, see the http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
+For more information, see xref:development:rest/measurements.adoc[].
 
 === Parameters
 
@@ -282,64 +284,44 @@ In addition to the `queryString`, the following JasperReports parameters are sup
 
 == Disable report scheduler
 
-When you need to disable the scheduler executing the reports, set the system property `opennms.report.scheduler.enabled` to false.
-You can set this in a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+To disable the report scheduler, set `opennms.report.scheduler.enabled` to `false`.
+You can set it in a `.properties` file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
 
-[[ga-database-reports-helper-methods]]
 == Helper methods
 
-There are a few helper methods to help create reports in {page-component-title}.
+You can use helper methods to create reports in {page-component-title}.
+These helpers are included with the Measurement Datasource.
 
-These helpers come with the Measurement Datasource.
-
-.Supported helper methods for the `org.opennms.netmgt.jasper.helper.MeasurementsHelper` class
-[options="header"]
-[cols="2,3a"]
+[caption=]
+.Supported `org.opennms.netmgt.jasper.helper.MeasurementsHelper` methods
+[cols="1,1"]
 |===
-| Helper method
-| Description
+| Helper Method | Description
 
 | getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)
 | Generates a node source descriptor according to the input parameters.
 Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned. +
-`nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not null.
-Otherwise, `node[nodeId]` is returned.
-
-* *nodeId*: String, the ID of the node.
-* *foreignSource*: String, the foreign source of the node. May be null.
-* *foreignId*: String, the foreign ID of the node. May be null.
-
-For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptor use>>.
+`nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not `null`.
+Otherwise, `node[nodeId]` is returned. +
+For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptors>>.
 
 | getInterfaceDescriptor(snmpifname, snmpifdescr, snmpphysaddr)
-| Returns the interface descriptor of a given interface; for example, `en0-005e607e9e00`.
+| Returns the interface descriptor of a given interface (for example, `en0-005e607e9e00`).
 The input parameters are prioritized. +
 If an `snmpifdescr` is specified, it is used instead of the `snmpifname`. +
-If an `snmpphysaddr` is defined, it will be appended to `snmpifname`/`snmpifdescr`.
-
-* *snmpifname*: String, the interface name of the interface; for example, `en0`. May be null.
-* *snmpifdescr*: String, the description of the interface; for example, `en0`. May be null.
-* *snmpphysaddr*: String, the MAC address of the interface; for example, `005e607e9e00`. May be null.
-As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined.
-
-For more details, see <<ga-database-reports-interface-descriptor, Interface descriptor use>>.
+If an `snmpphysaddr` is defined, it will be appended to `snmpifname` or `snmpifdescr`. +
+Because each input parameter may be `null`, at least one must be defined. +
+For more details, see <<ga-database-reports-interface-descriptor, Interface descriptors>>.
 |===
 
 [[ga-database-reports-node-source-descriptor]]
-=== Node source descriptor use
+=== Node source descriptors
 
-A node is addressed by a node source descriptor.
-The node source descriptor references the node either via the foreign source and foreign ID or by the node ID.
+A node is addressed by a node source descriptor, which references the node using either the foreign source and foreign ID, or the node ID.
+If `storeByForeignSource` is enabled, you can address the node only using its foreign source and foreign ID (see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse).
 
-If `storeByForeignSource` is enabled, it is only possible to address the node via foreign source and foreign ID.
+To make report creation easier, the Measurement Datasource includes a helper method that creates the node source descriptor:
 
-To make report creation easier, there is a helper method to create the node source descriptor.
-
-NOTE: For more information, see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse.
-
-The following example shows the use of that helper.
-
-.jrxml report snippet to visualize the use of the node source descriptor.
 [source, xml]
 ------
 <parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
@@ -351,16 +333,15 @@ The following example shows the use of that helper.
 <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/>
 </query-request>]]>
 ------
-Depending on the input parameters, you get either a node resource descriptor or a foreign source/foreign ID resource descriptor.
+
+Depending on the input parameters, the method returns either a node resource descriptor or a foreign source/foreign ID resource descriptor.
 
 [[ga-database-reports-interface-descriptor]]
-=== Interface descriptor use
+=== Interface descriptors
 
-An interfaceSnmp is addressed with the exact interface descriptor.
-To allow easy access to the interface descriptor, we provide a helper tool.
-The following example shows the use of that helper.
+An interface is addressed using its exact interface descriptor.
+The Measurement Datasource includes a helper method that allows easy access to the interface descriptor:
 
-.jrxml report snippet to visualize the use of the interface descriptor
 [source, xml]
 ------
 <parameter name="interface" class="java.lang.String" isForPrompting="false">
@@ -374,21 +355,12 @@ The following example shows the use of that helper.
 </query-request>]]>
 ------
 
-To get the appropriate interface descriptor depends on the input parameter.
+=== Connect to Measurements API
 
-[[ga-database-reports-https]]
-=== HTTPS use
+To establish a secure connection to the Measurements API, you must import your {page-component-title} instance's public certificate to the Java Truststore and configure {page-component-title} to use the Java Truststore.
+See <<deep-dive/admin/https/https-client.adoc#ga-operation-ssl-opennms-trust-store, Configure {page-component-title} to use the defined Java Truststore>> for setup instructions.
 
-To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
-In addition, you must configure {page-component-title} to use that Java Truststore.
-Please follow the instructions in this <<deep-dive/admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,section>> to set up the Java Truststore correctly.
+You must also set `org.opennms.netmgt.jasper.measurement.ssl.enable` to `true` in `$\{OPENNMS_HOME}/etc/opennms.properties` to ensure that only secure connections are established.
 
-In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
-
-WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false", an accidentally insecure connection can be established to the Measurements API location.
-An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false".
-
-[[ga-database-reports-limitations]]
-== Limitations
-
-Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
+WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`, an insecure connection to the Measurements API can be established.
+Setting it to `true` ensures that this does not happen.

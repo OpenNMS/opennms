@@ -3,8 +3,6 @@
 = Asset Topology Provider
 
 {page-component-title} lets users define arbitrarily complex layered topologies using http://graphml.graphdrawing.org/[GraphML] (see xref:development:graph/graph.adoc[]).
-The ability to display complex layered topologies is a great feature, but creating a usable GraphML topology for a large network can be a complex task.
-
 The Asset Topology Provider avoids the need for users to work directly with GraphML by directly generating a layered GraphML topology based on node parameters and the contents of the node asset table.
 This simplifies the task for many use cases by allowing users to define fields in the node asset table, which lets you position nodes physically and logically in a complex topology.
 
@@ -132,6 +130,8 @@ To this end, it is possible to define a node filter that chooses which nodes are
 
 You can define filters using the same asset table keys that are available for `assetLayers`.
 
+[caption=]
+.Node filtering operations
 [options="autowidth"]
 |===
 | Operation  | Definition   | Example
@@ -181,10 +181,10 @@ filter=asset-region=~.*gar(t|d);asset-building=~.*4
 The Asset Topology Provider persists both the asset topology graph definitions and the generated GraphML graphs.
 This means that it is possible to regenerate graphs without re-entering the configuration if the asset table changes.
 
-The Asset Topology Provider persists GraphML graphs alongside any other GraphML graphs in `${OPENNMS_HOME}/etc/graphml`.
+The Asset Topology Provider persists GraphML graphs alongside any other GraphML graphs in `$\{OPENNMS_HOME}/etc/graphml`.
 Note that if you use REST or any other means to generate other GraphML graphs, you should ensure that the `providerIds` and labels are distinct from those that the Asset Topology Provider uses.
 
-The asset graph definitions for the Asset Topology Provider are persisted to `${OPENNMS_HOME}/etc/org.opennms.features.topology.plugins.topo.asset.xml`.
+The asset graph definitions for the Asset Topology Provider are persisted to `$\{OPENNMS_HOME}/etc/org.opennms.features.topology.plugins.topo.asset.xml`.
 Normally, you should use the Karaf shell or events to define new graphs, rather than editing this file directly.
 
 The configuration file contains each of the graph definitions as properties in the following format:
@@ -247,7 +247,7 @@ ssh admin@localhost -p 8101
 
 The following commands are available:
 
-[options="autowidth"]
+[cols="2,2,3"]
 |===
 | Command   | Description   | Options
 
@@ -292,7 +292,7 @@ If one graph fails, the command tries to complete the rest of the definitions.
 == Create asset-based topologies via events
 
 The Asset Topology Provider listens for events that trigger the generation and installation or removal of topologies.
-These events are defined in `${OPENNMS_HOME}/etc/events/GraphMLAssetPluginEvents.xml`, and use the default parameters if none are supplied.
+These events are defined in `$\{OPENNMS_HOME}/etc/events/GraphMLAssetPluginEvents.xml`, and use the default parameters if none are supplied.
 
 To create a new topology from your current {page-component-title} inventory, use the following commands:
 

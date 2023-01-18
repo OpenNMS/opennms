@@ -6,9 +6,10 @@ This section describes how to configure the topology map.
 
 == Properties
 
-The topology map supports the following properties, which can be configured by editing `etc/org.opennms.features.topology.app.cfg`:
+The topology map supports the following properties.
+You can configure them by editing `etc/org.opennms.features.topology.app.cfg`:
 
-[options="autowidth"]
+[cols="1,3,1,1"]
 |===
 | Property  | Description   | Type  | Default Value
 
@@ -145,7 +146,7 @@ To add new icons, either add definitions to an existing `.svg` file, or create a
 
 No matter how you add new icons to {page-component-title}, it's important that each new `icon id` describes a set of icons, rather than a single one.
 
-.Example SVG file with a custom icon with id `my-custom`
+.Example custom icon definition
 [source,xml]
 ----
 <?xml version="1.0" encoding="utf-8"?>

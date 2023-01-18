@@ -30,8 +30,9 @@ The last section shows the top 25 nodes with the most common traps, assuming tha
 
 You can customize this report with a company logo (approximately 195px by 50px) in the header.
 
-== Parameters
+== Parameter
 
+[caption=]
 .Report customization parameter
 [options="autowidth"]
 |===

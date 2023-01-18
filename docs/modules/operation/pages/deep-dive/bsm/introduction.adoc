@@ -21,5 +21,4 @@ Covering the overall functionality, a Page Sequence Monitor (PSM) tests the logi
 
 A possible representation of the shop's system hierarchy is shown below:
 
-.Example system hierachy
 image::bsm/01_bsm-example-scenario.png["Example system hierarchy diagram showing relationships between users, workflows, and systems"]

@@ -3,7 +3,9 @@
 
 A reduce function aggregates the operational status for a business service, using alarm severity information from the edges as input.
 
-[options="autowidth"]
+[caption=]
+.Reduce function options
+[cols="1,3"]
 |===
 | Name  | Description
 
@@ -23,9 +25,9 @@ This means at least two of four alarms need to be raised to change the business 
 For this computation, the severities are mapped to numbers: +
 WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3 +
 All other severities are ignored. +
-The aggregation uses a formula to compute the resulting business service severity from its _n_ child entities based on the base number _b_. +
+The aggregation uses a formula to compute the resulting business service severity from its _n_ child entities based on the base number _b_.
 The base value defines how many items of a severity _x_ will result in a severity _x+1_.
-Results lower than 0 are treated as NORMAL and results higher than 3 are treated as CRITICAL.
+Results lower than `0` are treated as NORMAL, and results higher than `3` are treated as CRITICAL.
 If all input values are of severity INDETERMINATE, the result is INDETERMINATE.
 |===
 
@@ -36,7 +38,7 @@ The IP service is driven by the monitoring of the ICMP service for three web ser
 In this example, `Web-ICMP-3` is weighted three times higher than the others with a configured threshold of `0.33` (33%).
 
 [caption=]
-.Example for status calculation using the threshold function
+.Example status calculation using the threshold function
 [options="autowidth"]
 |===
 | Name  | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal

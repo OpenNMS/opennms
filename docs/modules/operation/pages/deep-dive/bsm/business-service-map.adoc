@@ -1,8 +1,9 @@
 
 = Business Service Topology
 
-Business services can depend on each other and, together, they build a business service hierarchy.
-You can visualize the hierarchy using the Topology User Interface in the Business Services view.
+Business services can depend on each other.
+Together, they build a business service hierarchy.
+You can visualize the hierarchy using the {page-component-title} topology map.
 
 == Operational status
 
@@ -14,13 +15,13 @@ Based on the hierarchy, a service's operational status is calculated using map a
 A map function influences which severity is used as an input to the business service.
 A reduce function consolidates severities from all edges of a business service and uses them as inputs; they are then reduced to a single severity, which becomes the service's operational status.
 
-== Topology User Interface
+== Topology map
 
-The Topology User Interface lets you traverse business service hierarchies using the semantic zoom level (SZL).
+The Topology Map lets you traverse business service hierarchies using the semantic zoom level (SZL).
 The SZL defines how many neighbors are shown related to the elements that are in focus.
 
-.Topology User Interface
-image::bsm/02_bsm-service-hierarchy.png["{page-component-title} UI displaying the Topology UI, with four components highlighted"]
+.Example topology map
+image::bsm/02_bsm-service-hierarchy.png["{page-component-title} UI displaying the topology map, with four components highlighted"]
 
 . A top-level business service that depends on other business services, monitored services, and alarms.
 This service is referenced by the reduction key.
@@ -28,9 +29,9 @@ This service is referenced by the reduction key.
 . The IP edge service that is used as an input, with automatically generated reduction keys for node down, interface down, and node lost service events.
 . Reduction key edge that is used as an input for the top-level business service, which references only a node lost service of a page sequence monitor for the user login.
 
-To add or remove a selected business service or edge from focus, select it and click *Add to Focus* or *Remove From Focus*.
+To add or remove a business service or edge from focus, select it and click *Add to Focus* or *Remove From Focus*.
 To focus on a specific business service or edge, select it and click *Set as Focal Point*.
-The *eye* symbol highlights all elements in the Topology UI that are set to focus.
+The *eye* symbol highlights all elements in the topology map that are set to focus.
 
 === Simulation mode
 
@@ -50,11 +51,11 @@ Follow these steps to enter simulation mode:
 
 You can customize the icons for each element in the Business Service view.
 To do so, select an element and choose *Change Icon* in the context menu.
-You can add custom `.svg` files using the instructions in the xref:deep-dive/topology/topology.adoc#ga-topology-add-icons[topology map] documentation.
+You can add custom `.svg` files using the instructions in xref:deep-dive/topology/topology.adoc#ga-topology-add-icons[Add new icons].
 
 === Share view
 
 You can use the Share function to generate a link to the current view and send it to another user.
-This allows them access to your configured Business Service View.
+This allows them access to your configured Business Service view.
 
-NOTE: The user receiving the link needs an OpenNMS account to see the Business Service Topology map.
+NOTE: The user receiving the link needs an OpenNMS account to see the topology map.

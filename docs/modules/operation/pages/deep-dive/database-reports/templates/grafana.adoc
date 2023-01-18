@@ -15,9 +15,9 @@ image::database-reports/Dashboard-pdf.png["Example of a {page-component-title} d
 == Before you begin
 
 This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel.
-{page-component-title} lets you create a report for any Grafana dashboard, not just those created using http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+{page-component-title} lets you create a report for any Grafana dashboard, not just those created using https://docs.opennms.com/helm/latest/index.html[OpenNMS Helm].
 
-You must set Grafana as a data source by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}.
+You must set Grafana as a data source by <<grafana-endpoint, configuring the Grafana endpoint>> in {page-component-title}.
 
 If you are using the Docker image for Grafana, you must complete additional configuration steps.
 Refer to Grafana's https://grafana.com/docs/grafana/latest/administration/image_rendering/#remote-rendering-service[Remote rendering service documentation] for more information on how to set up remote rendering.
@@ -78,8 +78,9 @@ image::database-reports/PDF-Report.png["{page-component-title} UI displaying an 
 
 == Parameters
 
+[caption=]
 .Report customization parameters
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Field | Description   | Default Value
 

@@ -3,6 +3,8 @@
 
 The map function defines how the severity of an edge is used in the parent system's reduce function when the operational status is calculated.
 
+[caption=]
+.Map function options
 [options="autowidth"]
 |===
 | Name  | Description

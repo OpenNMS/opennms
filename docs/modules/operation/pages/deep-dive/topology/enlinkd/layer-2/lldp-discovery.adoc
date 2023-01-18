@@ -29,8 +29,8 @@ The following OIDs are supported for the discovery and construction of the LLDP 
 The LLDP Discovery Collector collects them:
 
 [caption=]
-.Supported OIDs from the LLDP-MIB module
-[options="autowidth"]
+.Supported OIDs from the `LLDP-MIB` module
+[cols="1,2,1"]
 |===
 | Name  | Description   | OID
 

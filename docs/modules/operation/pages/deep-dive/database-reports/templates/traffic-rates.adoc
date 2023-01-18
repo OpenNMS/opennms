@@ -8,8 +8,9 @@ You can customize this report with a company logo (approximately 195px by 50px) 
 
 == Parameters
 
+[caption=]
 .Report customization parameters
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Field | Description   | Default Value
 
