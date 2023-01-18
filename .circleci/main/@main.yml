@@ -1,8 +1,5 @@
 version: 2.1
 
-aliases:
-  #aliases:general#
-
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.5
   continuation: circleci/continuation@0.3.1
