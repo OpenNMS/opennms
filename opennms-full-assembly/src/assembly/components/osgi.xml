@@ -8,6 +8,10 @@
       <filtered>false</filtered>
       <outputDirectory>system</outputDirectory>
       <directory>target/opennms-repo</directory>
+      <excludes>
+        <exclude>**/scala-library/2.11.0</exclude>
+        <exclude>**/scala-library/2.11.0/*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </component>
