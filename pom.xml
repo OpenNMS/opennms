@@ -1705,6 +1705,7 @@
     <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
+    <jettisonVersion>1.4.1</jettisonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>2.9.1</jestGsonVersion>
