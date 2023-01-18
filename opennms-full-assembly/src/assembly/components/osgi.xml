@@ -8,6 +8,10 @@
       <filtered>false</filtered>
       <outputDirectory>system</outputDirectory>
       <directory>target/opennms-repo</directory>
+      <excludes>
+        <exclude>**/proton-j/0.14.0</exclude>
+        <exclude>**/proton-j/0.14.0/*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </component>
