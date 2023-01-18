@@ -1718,6 +1718,7 @@
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
+    <jschVersion>0.2.6</jschVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -4489,9 +4490,9 @@
         <version>${servletApiVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.jcraft</groupId>
+        <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
-        <version>0.1.51</version>
+        <version>${jschVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
