@@ -65,7 +65,6 @@
 *** xref:deep-dive/performance-data-collection/resource-types.adoc[]
 **** xref:deep-dive/performance-data-collection/snmp-index.adoc[]
 *** xref:deep-dive/performance-data-collection/collectors.adoc[]
-*** xref:deep-dive/events/perf-data.adoc[]
 *** xref:deep-dive/performance-data-collection/snmp-property-extenders/property-extenders.adoc[]
 **** xref:deep-dive/performance-data-collection/snmp-property-extenders/cisco-cbqos.adoc[]
 **** xref:deep-dive/performance-data-collection/snmp-property-extenders/enum-lookup.adoc[]

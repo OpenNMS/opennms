@@ -1,34 +1,45 @@
 
-[[ga-alarmd-introduction]]
 = Alarms
 
-{page-component-title} monitors the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, the network.
-{page-component-title}, characterizes the state of these problems as alarms.
+{page-component-title} uses a network's managed entities, their resources, the services they provide, and any applications that they host to monitor problem states.
 
-While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network, (see also situations and <<deep-dive/bsm/introduction.adoc#ga-bsm-introduction, Business Services>>).
+While events carry immutable problem state attributes such as severity, alarms indicate problems in the network (see xref:deep-dive/bsm/introduction.adoc[]) and carry changeable attributes such as acknowledgment.
 
-== Single Alarm Tracking Problem States
+== Single alarm tracking problem states
 
-.First occurrence of a service-down problem (SNMP), alarm instantiated
-image::alarms/single_alarm_1.png[]
+An alarm is instantiated on the first occurrence of a `service-down` problem:
 
-.The service down event from the poller (via clicking on alarm count)
-image::alarms/single_alarm_2.png[]
+.`service-down` alarm created
+image::alarms/single_alarm_1.png["Alarm List displaying one alarm of minor severity"]
 
-.Alarm is cleared immediately (no longer creating separate alarm for normal state)
-image::alarms/single_alarm_3.png[]
+Click the number displayed in the *Count* column to display the corresponding events and their details:
 
-.Both service down and service restored events from the poller
-image::alarms/single_alarm_4.png[]
+.Alarm displaying service down event
+image::alarms/single_alarm_2.png["Alarm Details page displaying a service down event"]
 
-.The second occurrence of the service down problem (SNMP), alarm reduced
-image::alarms/single_alarm_5.png[]
+The alarm is cleared immediately when service is restored, and no alarm is created when the service returns to a normal state:
 
-.Both service down events and the previous service restored event from the poller
-image::alarms/single_alarm_6.png[]
+.Alarm cleared
+image::alarms/single_alarm_3.png["Alarm List displaying one cleared alarm and its log message"]
 
-.The alarm is again cleared immediately (notice counter does not increment)
-image::alarms/single_alarm_7.png[]
+.Service down and service restored events
+image::alarms/single_alarm_4.png["Alarm Details page displaying one service down event and one service restored event"]
 
-.Both service down and restored events
-image::alarms/single_alarm_8.png[]
+If the problem occurs again, the events are reduced into the existing alarm.
+The alarm's count is updated to reflect the new activity:
+
+.Reduced alarm
+image::alarms/single_alarm_5.png["Alarm List displaying one alarm with a count of 2"]
+
+.List of events
+image::alarms/single_alarm_6.png["Detailed event list page displaying two service down events and one service restored event, all of which are members of the same alarm"]
+
+The alarm is once again cleared immediately when service is restored:
+
+.Reduced alarm cleared
+image::alarms/single_alarm_7.png["Alarm List displaying one cleared alarm with a count of 2, and its log message"]
+
+Note that the alarm's count does not increment when the problem is resolved.
+
+.Service down and restored events
+image::alarms/single_alarm_8.png["Detailed event list page displaying two service down events and two service restored events, all of which are members of the same alarm"]
