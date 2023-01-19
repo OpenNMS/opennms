@@ -102,6 +102,8 @@
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
 
+                        <bundle>mvn:org.scala-lang/scala-library/${scala11LibraryVersion}</bundle>
+
                         <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
 
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
