@@ -55,6 +55,7 @@
     <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
+
     <bean id="clientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
@@ -85,6 +86,7 @@
     <bean id="circuitBreaker"
           factory-ref="circuitBreakerProvider"
           factory-method="getCircuitBreaker">
+        <argument value="Feedback"/>
     </bean>
 
     <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
