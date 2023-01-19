@@ -111,8 +111,7 @@
                 "horizon-image-single-arch-with-trivy-linux-amd64",
                 "minion-image-single-arch-with-trivy",
                 "minion-image-single-arch-with-trivy-linux-amd64",
-                "sentinel-image-single-arch-with-trivy",
-                "sentinel-image-single-arch-with-trivy-linux-amd64"
+                "sentinel-image-single-arch-with-trivy"
             ]
         },
         "experimental": {
@@ -335,6 +334,15 @@
                 "tarball-assembly-only"
             ]
         },
+        "minion-image-single-arch-with-trivy-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -344,7 +352,25 @@
                 "tarball-assembly-only"
             ]
         },
+        "horizon-image-single-arch-with-trivy-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
         "sentinel-image-single-arch-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
+        "sentinel-image-single-arch-with-trivy-linux-amd64": {
             "context": [
                 "CircleCI",
                 "docker-publish-account"
