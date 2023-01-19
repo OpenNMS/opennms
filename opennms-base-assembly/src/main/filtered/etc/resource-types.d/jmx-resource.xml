@@ -95,7 +95,7 @@
    </resourceType>
 
    <!-- provisiond requisition metrics -->
-   <resourceType name="requisitionMetrics" label="Requisiton Metrics" resourceLabel="Requisition ${index}">
+   <resourceType name="requisitionMetrics" label="Requisition Metrics" resourceLabel="Requisition ${index}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
          <parameter key="sibling-column-name" value="name" />
