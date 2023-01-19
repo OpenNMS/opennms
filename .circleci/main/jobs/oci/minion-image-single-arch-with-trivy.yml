@@ -1,13 +1,10 @@
 jobs:
   minion-image-single-arch-with-trivy:
+    executor: base-executor
+    resource_class: medium
     parameters:
       architecture:
         type: string
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: false
-    environment:
-      DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch-with-trivy:
           architecture: << parameters.architecture >>
