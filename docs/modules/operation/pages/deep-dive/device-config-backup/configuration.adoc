@@ -74,6 +74,31 @@ config:property-set tftpServerIPv6Address ::1
 config:update
 ----
 
+== Configure maximum backup file size
+
+By default, the maximum file size the internal TFTP server will accept when {page-component-title} receives a backup is 50,000 bytes.
+We recommend that you increase that size.
+
+.Connect to Karaf shell on {page-component-title}
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Connect to Karaf shell on Minion
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure TFTP port (Minion/{page-component-title})
+[source, karaf]
+----
+config:edit org.opennms.features.deviceconfig.tftp
+config:property-set maximumReceiveSize 100000000
+config:update
+----
+
 == SSH session I/O collection
 
 By default, the SSH scripting service collects all SSH session output for debugging, and stores it in the poller's status.
@@ -160,8 +185,6 @@ For a rough estimate, start with the number of devices that you expect might be 
 For example, if you have 50 devices and each backup process takes 1 minute, you should increase the thread pool size by 50.
 
 NOTE: Changes to the thread pool size take effect the next time that {page-component-title} restarts.
-
-== Back up and retrieve device configuration via Karaf
 
 You can also back up and retrieve device configuration settings manually via the Karaf shell:
 

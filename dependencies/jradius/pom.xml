@@ -108,13 +108,4 @@
       <type>pom</type>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>coova</id>
-      <url>https://maven.opennms.org/content/repositories/coova/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

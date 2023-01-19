@@ -29,7 +29,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_DEBS="hostname uuid-runtime"
+ARG REQUIRED_DEBS="hostname uuid-runtime rsync"
 
 # Prevent prompts
 ENV DEBIAN_FRONTEND=noninteractive

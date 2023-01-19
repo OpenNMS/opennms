@@ -31,7 +31,6 @@ package org.opennms.smoketest.stacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -39,12 +38,12 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.opennms.smoketest.containers.CassandraContainer;
 import org.opennms.smoketest.containers.ElasticsearchContainer;
+import org.opennms.smoketest.containers.JaegerContainer;
 import org.opennms.smoketest.containers.LocalOpenNMS;
 import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.containers.SentinelContainer;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -102,7 +101,7 @@ public final class OpenNMSStack implements TestRule {
 
     private final PostgreSQLContainer postgreSQLContainer;
 
-    private final GenericContainer jaegerContainer;
+    private final JaegerContainer jaegerContainer;
 
     private final OpenNMSContainer opennmsContainer;
 
@@ -130,7 +129,6 @@ public final class OpenNMSStack implements TestRule {
         sentinelContainers = Collections.EMPTY_LIST;
 
         delegateTestRule = RuleChain.emptyRuleChain();
-        return;
     }
 
     private OpenNMSStack(StackModel model) {
@@ -138,10 +136,7 @@ public final class OpenNMSStack implements TestRule {
         RuleChain chain = RuleChain.outerRule(postgreSQLContainer);
 
         if (model.isJaegerEnabled()) {
-            jaegerContainer = new GenericContainer("jaegertracing/all-in-one:1.39")
-                    .withNetwork(Network.SHARED)
-                    .withNetworkAliases("jaeger")
-                    .withExposedPorts(16686);
+            jaegerContainer = new JaegerContainer();
             chain = chain.around(jaegerContainer);
         } else {
             jaegerContainer = null;
@@ -179,19 +174,12 @@ public final class OpenNMSStack implements TestRule {
         opennmsContainer = new OpenNMSContainer(model, model.getOpenNMS());
         chain = chain.around(opennmsContainer);
 
-        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size() + model.getLegacyMinions().size());
+        final List<MinionContainer> minions = new ArrayList<>(model.getMinions().size());
         for (final MinionProfile profile : model.getMinions()) {
             final MinionContainer minion = new MinionContainer(model, profile);
             minions.add(minion);
             chain = chain.around(minion);
         }
-
-        for (final Map<String, String> configuration : model.getLegacyMinions()) {
-            final MinionContainer minion = new MinionContainer(model, configuration);
-            minions.add(minion);
-            chain = chain.around(minion);
-        }
-
         minionContainers = Collections.unmodifiableList(minions);
 
         final List<SentinelContainer> sentinels = new ArrayList<>(model.getSentinels().size());
@@ -231,7 +219,7 @@ public final class OpenNMSStack implements TestRule {
         return sentinelContainers.get(index);
     }
 
-    public GenericContainer jaeger() {
+    public JaegerContainer jaeger() {
         if (jaegerContainer == null) {
             throw new IllegalStateException("Jaeger container is not enabled in this stack.");
         }

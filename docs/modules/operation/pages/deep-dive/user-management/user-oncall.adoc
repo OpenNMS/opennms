@@ -1,5 +1,4 @@
 
-[[ga-on-call-role]]
 = On-Call Roles
 
 On-call roles let you assign a predefined <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> to an existing group of users.
@@ -9,7 +8,6 @@ For each on-call role, a user is designated as a supervisor.
 They are responsible for the group of users assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
 The supervisor's account must have admin privileges.
 
-[[ga-user-on-call]]
 == Assign a group to an on-call role
 
 Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
@@ -25,7 +23,8 @@ The description should be meaningful (for example, describe the team that the on
 . Specify the user and designate an on-call schedule.
 . Click *Save*.
 +
-image::users/on-call-schedule.png[]
+.Example on-call schedule configuration
+image::users/on-call-schedule.png["Example on-call schedule settings for a single user"]
 
 . Repeat as necessary for other dates and users.
 . Click *Done* to apply the changes.
