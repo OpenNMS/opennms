@@ -229,7 +229,7 @@
     
     <feature name="fst" description="FST" version="${project.version}">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
