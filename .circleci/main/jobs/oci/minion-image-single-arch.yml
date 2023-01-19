@@ -5,8 +5,6 @@ jobs:
     parameters:
       architecture:
         type: string
-    #environment:
-    #  DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - build-image-single-arch:
           architecture: << parameters.architecture >>

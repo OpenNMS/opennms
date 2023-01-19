@@ -26,18 +26,18 @@ setup: true
 
 commands:
   shallow-clone:
-    description: "Quick shallow checkout"
-    steps:
-      - run:
-          name: git clone
-          command: |
-            install -d -m 700 ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
-            chmod 600 ~/.ssh/known_hosts
-            git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+      description: "Quick shallow checkout"
+      steps:
+        - run:
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   verify-config:
-    description: "Verify the dynamic config in .circleci/main/"
+    description: "Verify generated main.yml file"
     steps:
       - run:
           name: Verify Dynamic Config
@@ -47,11 +47,7 @@ commands:
             export PATH="$CIRCLE_BIN_DIR:$PATH"
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            #"$CIRCLE_BIN_DIR/circleci" config pack /tmp/.circleci/main --skip-update-check > /tmp/.circleci/main.yml || exit 1
             "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
-      #- store_artifacts:
-      #    path: .circleci/main.yml
-      #    destination: main.yml
 
 workflows:
   coverage:
@@ -211,7 +207,7 @@ jobs:
           command: python3 .circleci/pyscripts/process_generate.py
       - run:
           name: Generate Main YAML file
-          command: python3 .circleci/pyscripts/generate_main.py
+          command: python3 .circleci/pyscripts/generate_main.py 
       - verify-config
       - store_artifacts:
           path: /tmp/pipeline-parameters.json

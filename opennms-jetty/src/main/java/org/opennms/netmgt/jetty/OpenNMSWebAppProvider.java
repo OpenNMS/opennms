@@ -67,6 +67,7 @@ public class OpenNMSWebAppProvider extends WebAppProvider {
             context.setAttribute(AnnotationConfiguration.CONTAINER_INITIALIZERS, jspInitializers());
             context.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
             context.addBean(new ServletContainerInitializersStarter(context), true);
+            context.setThrowUnavailableOnStartupException(true);
         }
 
         return handler;
