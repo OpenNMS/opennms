@@ -441,7 +441,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "sentinel-image-single-arch-linux-amd64"
+                "sentinel-image-single-arch-with-trivy-linux-amd64"
             ]  
         },
         "sentinel-image-single-arch": {
