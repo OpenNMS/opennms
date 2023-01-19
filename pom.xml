@@ -1694,6 +1694,7 @@
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <javassistVersion>3.29.2-GA</javassistVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
@@ -4306,6 +4307,11 @@
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>9999.use-org-javassist-not-javassist</version>
+      </dependency>
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${javassistVersion}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
