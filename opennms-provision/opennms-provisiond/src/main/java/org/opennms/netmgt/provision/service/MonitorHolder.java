@@ -149,7 +149,7 @@ public class MonitorHolder {
 
         if (!metricAssociation.containsKey(key)) {
             var names = new ConcurrentLinkedDeque<String>();
-            names.add(metricName);
+            names.addFirst(metricName);
             metricAssociation.put(key, names);
         } else if (metricAssociation.containsKey(key) && !metricAssociation.get(key).contains(metricName)) {
             metricAssociation.get(key).addFirst(metricName);
