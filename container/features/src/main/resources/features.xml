@@ -10,11 +10,16 @@
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
-    <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
+    <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
+        <!-- start this early so camel-amqp doesn't use its old version -->
+        <bundle start-level="75">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-http</feature>
         <feature>camel-amqp</feature>
+    </feature>
+    <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
+        <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
         <feature>opennms-dao-api</feature>
@@ -22,10 +27,7 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-forwarder/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-event-receiver" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Receiver">
-        <feature>camel-core</feature>
-        <feature>camel-blueprint</feature>
-        <feature>camel-http</feature>
-        <feature>camel-amqp</feature>
+        <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
         <feature>opennms-dao-api</feature>
@@ -33,10 +35,7 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-receiver/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-alarm-northbounder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Alarm Northbounder">
-        <feature>camel-core</feature>
-        <feature>camel-blueprint</feature>
-        <feature>camel-http</feature>
-        <feature>camel-amqp</feature>
+        <feature>opennms-camel-amqp</feature>
         <feature>opennms-core-camel</feature>
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.alarm-northbounder/${project.version}</bundle>
@@ -192,7 +191,7 @@
         <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Import-Package=org.hibernate.hql.ast</bundle>
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
-        <bundle dependency="true">mvn:org.javassist/javassist/3.18.2-GA</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
         <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Export-Package=org.hibernate*;version="3.6.10"</bundle>
         <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
@@ -246,12 +245,12 @@
     <feature name="joda-time" version="${jodaTimeVersion}" description="Joda :: Joda-Time">
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
     </feature>
-    <feature name="jolokia-client" version="1.7.1" description="Jolokia-Client">
+    <feature name="jolokia-client" version="${jolokiaClientVersion}" description="Jolokia-Client">
         <feature>javax.servlet</feature>
         <feature>json-simple</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>mvn:org.jolokia/jolokia-client-java/1.7.1</bundle>
+        <bundle>mvn:org.jolokia/jolokia-client-java/${jolokiaClientVersion}</bundle>
     </feature>
     <feature name="jrobin" version="1.6.0" description="JRobin">
         <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
@@ -489,7 +488,7 @@
         <feature>opennms-snmp</feature>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
-        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.3</bundle>
+        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
@@ -1999,7 +1998,7 @@
 
     <feature name="fst" description="FST" version="${project.version}">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:org.javassist/javassist/3.19.0-GA</bundle>
+        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>

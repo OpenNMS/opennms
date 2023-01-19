@@ -1,11 +1,14 @@
 
-[[ga-notifications-strategy-slack]]
 = Slack Notifications
 
-If your organization uses the Slack team communications platform, you can configure {page-component-title} to send notices to any Slack channel via an incoming webhook.
-You must configure an incoming webhook in your Slack team and do a bit of manual configuration to your {page-component-title} instance.
+If your organization uses https://slack.com/[Slack], you can configure {page-component-title} to send notices to any channel via an incoming webhook.
+You must configure an incoming webhook in your Slack settings and manually configure some settings in your {page-component-title} instance.
 
-First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
+For more information on incoming webhooks in Slack, see the https://api.slack.com/incoming-webhooks[Slack API] documentation.
+
+== Setup
+
+First, add the following XML to `notificationCommands.xml` (no customization should be needed):
 
 [source, xml]
 ----
@@ -22,53 +25,46 @@ First, add the following bit of XML to the `notificationCommands.xml` configurat
 </command>
 ----
 
-Then create a new file called `slack.properties` in the `opennms.properties.d` directory with the following contents (customizing values as appropriate):
+Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 
 [source, properties]
-----
 org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
-----
 
-Restart OpenNMS so that the `slack.properties` file will be loaded. Your new `slack` notification command is now available for use in a destination path.
+Customize its values as appropriate for your organization.
 
-== Additional Options
-The following table lists optional properties that you may use in `slack.properties` to customize your Slack notifications.
+{page-component-title} loads `slack.properties` upon restart.
+After it is loaded, your new `slack` notification command will be available for use in a destination path.
 
-IMPORTANT: To improve the layout, the property names have been shortened to their final component; you must prepend `org.opennms.netmgt.notifd.slack.` when using them.
+== Additional configuration options
 
-.Additional optional parameters for the Slack notification strategy
-[options="header"]
-[cols="1,3,1,2"]
+The following table lists optional properties that you may use in `slack.properties` to customize your Slack notifications:
+
+[cols="2,2,1,1"]
 |===
-| Parameter
-| Description
-| Default
-| Example
+| Parameter | Description | Default Value | Example
 
-| channel
+| org.opennms.netmgt.notifd.slack.channel
 | Specify a channel or private group other than the one targeted by the webhook.
-| Webhook default
+| _Webhook default_
 | NetOps
 
-| username
+| org.opennms.netmgt.notifd.slack.username
 | The username to associate with the notification posts.
-| None
+| _Blank_
 | OpenNMS_Bot
 
-| iconEmoji
+| org.opennms.netmgt.notifd.slack.iconEmoji
 | An emoji sequence to use as the icon for the notification posts.
-| No icon
+| _Blank_
 | :metal:
 
-| iconURL
+| org.opennms.netmgt.notifd.slack.iconURL
 | The URL of an image to use as the icon for the notification posts.
-| No icon
+| _Blank_
 | \https://example.org/assets/icon.png
 
-| useSystemProxy
+| org.opennms.netmgt.notifd.slack.useSystemProxy
 | Should the system-wide proxy settings be used? Configure the system proxy settings via <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
 | true
 | true
 |===
-
-For more information on incoming webhooks in Slack, see https://api.slack.com/incoming-webhooks[Slack API].
