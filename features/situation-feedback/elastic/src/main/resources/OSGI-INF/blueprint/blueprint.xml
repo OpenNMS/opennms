@@ -77,7 +77,6 @@
     <bean id="circuitBreakerProvider"
           class="org.opennms.features.jest.client.CircuitBreakerProvider">
         <property name="failureRateThreshold" value="${circuitbreaker.failure_rate_threshold_in_percent}"/>
-        <!-- TODO: how long should it be opened? is one minute enough?-->
         <property name="waitDurationInOpenStateInMills" value="${circuitbreaker.wait_in_open_state_milliseconds}"/>
         <property name="ringBufferSizeInClosedState" value="${circuitbreaker.ring_buffer_size_in_closed.state}"/>
         <property name="ringBufferSizeInHalfOpenState" value="${circuitbreaker.ring_buffer_size_in_half_open_state}"/>
@@ -88,7 +87,7 @@
           factory-method="getCircuitBreaker">
     </bean>
 
-    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.ClientWithCircuitBreaker">
+    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
         <argument ref="jestClient"/>
         <argument ref="circuitBreaker"/>
     </bean>

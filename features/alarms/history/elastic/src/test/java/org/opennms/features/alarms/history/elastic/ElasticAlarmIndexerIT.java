@@ -51,21 +51,25 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
 import com.jayway.awaitility.Awaitility;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticAlarmIndexerIT {
-    private JestClient jestClient;
+    private JestClientWithCircuitBreaker jestClient;
     private AlarmHistoryRepository alarmHistoryRepo;
     private ElasticAlarmIndexer elasticAlarmIndexer;
+    private CircuitBreaker circuitBreaker;
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
@@ -82,7 +86,8 @@ public class ElasticAlarmIndexerIT {
     @Before
     public void setUp() throws IOException {
         RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        jestClient = restClientFactory.createClient();
+        final JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticAlarmIndexerIT.class.getName()));
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         MetricRegistry metrics = new MetricRegistry();

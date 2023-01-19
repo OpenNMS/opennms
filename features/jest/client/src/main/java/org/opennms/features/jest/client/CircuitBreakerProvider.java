@@ -43,7 +43,7 @@ public class CircuitBreakerProvider {
     private Class<? extends Throwable>[] recordExceptions = null;
     private Class<? extends Throwable> ignoreExceptions = null;
 
-    public CircuitBreaker getCircuitBreaker() {
+    public CircuitBreaker getCircuitBreaker(String name) {
         final CircuitBreakerConfig.Builder builder = CircuitBreakerConfig.custom();
         if (failureRateThreshold != null) {builder.failureRateThreshold(failureRateThreshold);}
         if (waitDurationInOpenStateInMills != null) {builder.waitDurationInOpenState(Duration.ofMillis(waitDurationInOpenStateInMills));}
@@ -51,7 +51,7 @@ public class CircuitBreakerProvider {
         if (ringBufferSizeInClosedState != null) {builder.ringBufferSizeInClosedState(ringBufferSizeInClosedState);}
         if (recordExceptions != null) {builder.recordExceptions(recordExceptions);}
         if (ignoreExceptions != null) {builder.ignoreExceptions(ignoreExceptions);}
-        return CircuitBreakerRegistry.of(builder.build()).circuitBreaker("CircuitBreaker");
+        return CircuitBreakerRegistry.of(builder.build()).circuitBreaker(name);
     }
 
     public void setFailureRateThreshold(Float failureRateThreshold) {

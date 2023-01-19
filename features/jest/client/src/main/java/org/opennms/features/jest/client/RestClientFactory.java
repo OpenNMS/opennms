@@ -71,6 +71,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -301,6 +302,10 @@ public class RestClientFactory {
 			this.client = new OnmsJestClient(factory.getObject(), executor);
 		}
 		return this.client;
+	}
+
+	public JestClientWithCircuitBreaker createClientWithCircuitBreaker(CircuitBreaker circuitBreaker) {
+		return new JestClientWithCircuitBreaker(createClient(), circuitBreaker);
 	}
 
 	private List<String> parseUrl(String elasticURL) {

@@ -36,21 +36,20 @@ import static org.mockito.Mockito.mock;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.features.jest.client.template.TemplateInitializer;
 
 import com.codahale.metrics.MetricRegistry;
 
-import io.searchbox.client.JestClient;
-
 public class ElasticAlarmIndexerTest {
     private final ElasticAlarmIndexer elasticAlarmIndexer = new ElasticAlarmIndexer(mock(MetricRegistry.class),
-            mock(JestClient.class), mock(TemplateInitializer.class));
+            mock(JestClientWithCircuitBreaker.class), mock(TemplateInitializer.class));
 
     @Test
     public void testGetDocumentIfNeedsIndexing() {

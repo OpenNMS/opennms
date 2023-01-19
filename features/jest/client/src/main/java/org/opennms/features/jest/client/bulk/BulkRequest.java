@@ -34,11 +34,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.opennms.features.jest.client.ClientWithCircuitBreaker;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.core.BulkResult;
 
 public class BulkRequest<T> {
@@ -46,20 +45,18 @@ public class BulkRequest<T> {
     public static long[] SLEEP_TIME = new long[]{ 500, 1000, 5000, 10000, 30000, 60000 };
 
     private static final Logger LOG = LoggerFactory.getLogger(BulkRequest.class);
-    private final JestClient client;
+    private final JestClientWithCircuitBreaker client;
     private final List<T> documents;
     private final Function<List<T>, BulkWrapper> transformer;
     private final int retryCount;
     private int retries = 0;
     private BulkWrapper bulkAction;
-    private final ClientWithCircuitBreaker clientWithCircuitBreaker;
 
-    public BulkRequest(final JestClient client, final List<T> documents, final Function<List<T>, BulkWrapper> documentToBulkTransformer, int retryCount) {
+    public BulkRequest(final JestClientWithCircuitBreaker client, final List<T> documents, final Function<List<T>, BulkWrapper> documentToBulkTransformer, int retryCount) {
         this.client = Objects.requireNonNull(client);
         this.transformer = Objects.requireNonNull(documentToBulkTransformer);
         this.documents = new ArrayList<>(Objects.requireNonNull(documents));
         this.retryCount = retryCount;
-        this.clientWithCircuitBreaker = client instanceof ClientWithCircuitBreaker? (ClientWithCircuitBreaker) client : null;
     }
 
     public BulkResultWrapper execute() throws IOException {
@@ -103,7 +100,7 @@ public class BulkRequest<T> {
     }
 
     private boolean canRetry() {
-        return retries < retryCount -1 && (clientWithCircuitBreaker == null || clientWithCircuitBreaker.canRetry());
+        return retries < retryCount -1 &&  client.canRetry();
     }
 
 

@@ -38,10 +38,9 @@ import java.util.Collections;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-
-import io.searchbox.client.JestClient;
 
 public class EventToIndexTest {
 
@@ -57,7 +56,7 @@ public class EventToIndexTest {
     @Test
     public void testHandleParameters() {
         @SuppressWarnings("resource")
-        final EventToIndex etoi = new EventToIndex(mock(JestClient.class), 1);
+        final EventToIndex etoi = new EventToIndex(mock(JestClientWithCircuitBreaker.class), 1);
         etoi.setGroupOidParameters(true);
 
         final Event e = new EventBuilder("opennms/fake-uei", "source").addParam(".3.1.2", "oid-param").addParam("nodeLabel", "fake-node").getEvent();

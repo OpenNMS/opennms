@@ -37,12 +37,12 @@ import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 
-public class ClientWithCircuitBreaker implements JestClient {
+public class JestClientWithCircuitBreaker implements JestClient {
 
     private final JestClient client;
     private final CircuitBreaker circuitBreaker;
 
-    public ClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker) {
+    public JestClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker) {
         this.client = client;
         this.circuitBreaker = circuitBreaker;
     }
