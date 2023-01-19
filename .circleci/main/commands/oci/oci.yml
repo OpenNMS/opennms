@@ -88,27 +88,45 @@ commands:
         type: string
       container_name:
         type: string
+      container_dir:
+        type: string
+      tarball_match:
+        type: string
+      tarball_path:
+        type: string
     steps:
       - attach_workspace:
           at: ~/
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
+            # set up multi-arch
+            docker container prune -f
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
             export DOCKER_CONTENT_TRUST=1
-            cd opennms-container/<< parameters.container_name >>
+            cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
-                 DOCKER_IMAGE_NAME="${TAG}.oci" \
-                 DOCKER_TAG="${TAG}" \
+                 DOCKER_OCI="images/${TAG}.oci" \
+                 DOCKER_TAG="opennms/${TAG}" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}" \
-                 build install
+                 oci
       - run:
           name: Install trivy
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+      - run:
+          name: Detect if we should use .trivyignore
+          command: |
+           if [ -s ~/project/.circleci/trivy-config/trivyignore ]
+           then
+             echo "creating trivyignore under /tmp/bin/.trivyignore"
+             cp ~/project/.circleci/trivy-config/trivyignore /tmp/bin/.trivyignore
+           fi 
       - run:
           name: Scan the local image with trivy
           command: |
