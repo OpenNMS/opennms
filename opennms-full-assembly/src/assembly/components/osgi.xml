@@ -9,8 +9,14 @@
       <outputDirectory>system</outputDirectory>
       <directory>target/opennms-repo</directory>
       <excludes>
+        <exclude>**/*jasypt*/1.9.2_1</exclude>
+        <exclude>**/*jasypt*/1.9.2_1/*</exclude>
         <exclude>**/proton-j/0.14.0</exclude>
         <exclude>**/proton-j/0.14.0/*</exclude>
+        <exclude>**/scala-library/2.11.0</exclude>
+        <exclude>**/scala-library/2.11.0/*</exclude>
+        <exclude>**/*xstream*/1.4.8_1</exclude>
+        <exclude>**/*xstream*/1.4.8_1/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

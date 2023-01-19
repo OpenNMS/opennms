@@ -1694,12 +1694,15 @@
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <jasyptVersion>1.9.3</jasyptVersion>
+    <javassistVersion>3.29.2-GA</javassistVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
+    <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
@@ -1714,10 +1717,12 @@
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
+    <jschVersion>0.2.6</jschVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1760,13 +1765,14 @@
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <lz4JavaVersion>1.7.1</lz4JavaVersion>
-    <quartzVersion>2.2.3</quartzVersion>
+    <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.18.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
-    <scalaLoggingVersion>3.9.4</scalaLoggingVersion>
+    <scalaLibraryVersion>2.12.17</scalaLibraryVersion>
+    <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
+    <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -1786,6 +1792,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
+    <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.14</zookeeperVersion>
@@ -2844,6 +2851,16 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>org.jasypt</groupId>
+        <artifactId>jasypt</artifactId>
+        <version>${jasyptVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.jasypt</artifactId>
+        <version>${jasyptVersion}_1</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>javamail-dependencies</artifactId>
         <version>${project.version}</version>
@@ -3659,6 +3676,16 @@
         <version>${caffeineVersion}</version>
       </dependency>
       <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>${xstreamVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.xstream</artifactId>
+        <version>${xstreamVersion}_1</version>
+      </dependency>
+      <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
@@ -4127,6 +4154,11 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${jbossLoggingVersion}</version>
+      </dependency>
       <!--
 
       JMesa is the latest version of the extremecomponents library. We
@@ -4306,6 +4338,11 @@
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>9999.use-org-javassist-not-javassist</version>
+      </dependency>
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${javassistVersion}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -4489,9 +4526,9 @@
         <version>${servletApiVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.jcraft</groupId>
+        <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
-        <version>0.1.51</version>
+        <version>${jschVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
@@ -4528,7 +4565,7 @@
       <dependency>
         <groupId>org.jolokia</groupId>
         <artifactId>jolokia-client-java</artifactId>
-        <version>1.3.3</version>
+        <version>${jolokiaClientVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>

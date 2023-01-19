@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
-      <version>1.9.0</version>
+      <version>${jasyptVersion}</version>
     </dependency>
   </dependencies>
 </project>
