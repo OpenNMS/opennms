@@ -12,3 +12,6 @@ jobs:
       - build-image-single-arch-with-trivy:
           architecture: << parameters.architecture >>
           container_name: minion
+          container_dir: minion
+          tarball_match: minion
+          tarball_path: /opennms-assemblies/minion/target
