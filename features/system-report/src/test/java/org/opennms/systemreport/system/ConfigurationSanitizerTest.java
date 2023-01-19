@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 public class ConfigurationSanitizerTest {
     private ConfigurationSanitizer configurationSanitizer;

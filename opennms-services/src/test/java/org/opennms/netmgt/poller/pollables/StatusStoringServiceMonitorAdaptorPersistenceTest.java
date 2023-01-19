@@ -30,7 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -152,7 +152,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
                                                                  anyList(),
                                                                  isNull());
 
-        verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(this.rrdStrategy, atLeastOnce()).createFile(any());
         verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve("smtp-base.jrb").toString()));
         verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":1"));
         verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":-1"));
