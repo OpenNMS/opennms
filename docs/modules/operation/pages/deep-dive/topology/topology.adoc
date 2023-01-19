@@ -191,7 +191,7 @@ router
 workgroup_switch
 my-custom <2>
 ----
-<1> Already existing `icon id`s.
-<2> New `icon id`.
+<1> Already existing icon IDs.
+<2> New icon ID.
 
 NOTE: The order of entries in `org.opennms.features.topology.app.icons.list` determines the order in the icon selection dialog in the topology map.

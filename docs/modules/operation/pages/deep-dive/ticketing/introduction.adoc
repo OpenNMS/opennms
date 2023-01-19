@@ -5,7 +5,7 @@ The ticketing integration lets {page-component-title} create and update tickets 
 
 To activate the ticketing integration, configure the following settings in a `.properties` file in `$\{OPENNMS_HOME}/etc/opennms.properties.d`:
 
-[options="autowidth"]
+[cols="2,3,1"]
 |===
 | Property  | Description   | Default Value
 
@@ -25,6 +25,6 @@ If enabled, various links to control the issue state appear on the alarm details
 | $\{id}
 |===
 
-== Supported ticketer
+== Supported ticketers
 
 For information on supported ticketers and how to configure them, see xref:reference:ticketing/introduction.adoc[].

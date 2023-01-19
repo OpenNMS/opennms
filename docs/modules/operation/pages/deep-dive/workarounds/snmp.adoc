@@ -93,7 +93,7 @@ You can override this behavior by setting a property inside `$\{OPENNMS_HOME}/et
 [source, properties]
 org.opennms.netmgt.snmp.errorStatus._[statusCode]_._[type]_
 
-For example, to make `authorizationError(16)` abort and not retry, you would set:
+For example, to make `authorizationError(16)` stop and not retry, you would set the following parameters:
 
 [source, properties]
 ----
