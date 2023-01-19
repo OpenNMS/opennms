@@ -92,7 +92,6 @@ commands:
       - attach_workspace:
           at: ~/
       # - dockerhub-login
-      - qemu-user-static
       - install-buildx
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
@@ -129,3 +128,5 @@ commands:
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_name >>/images/
           destination: /
+
+# VS Code Extension Version: 1.5.1
