@@ -105,6 +105,10 @@
                         <bundle>mvn:org.scala-lang/scala-library/${scala11LibraryVersion}</bundle>
 
                         <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
+
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1</bundle>
                     </installedBundles>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
