@@ -14,7 +14,7 @@ The tests require Docker images to run. There are two alternatives to get them, 
 You can pull existing images down with:
 ```
 export VERSION=XX.X.X
-docker pull opennms/horizon-core-web:$VERSION
+docker pull opennms/horizon:$VERSION
 docker pull opennms/minion:$VERSION
 docker pull opennms/sentinel:$VERSION
 ```
@@ -24,12 +24,12 @@ docker pull opennms/sentinel:$VERSION
 And then tag them for the tests:
 ```
 export VERSION=XX.X.X
-docker tag opennms/horizon-core-web:XX.X.X horizon
+docker tag opennms/horizon:XX.X.X horizon
 docker tag opennms/minion:XX.X.X minion
 docker tag opennms/sentinel:XX.X.X sentinel
 ```
 
-### B) Pull images from build artifacts
+### b) Pull images from build artifacts
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
