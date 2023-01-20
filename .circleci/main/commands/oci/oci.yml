@@ -131,8 +131,8 @@ commands:
            then
              echo "creating trivyignore under /tmp/bin/.trivyignore"
              cp ~/project/.circleci/trivy-config/trivyignore /tmp/bin/.trivyignore
-             cp ~/project/.circleci/trivy-config/trivyignore ~/.trivyignore
-             ls /tmp/bin/
+             cp ~/project/.circleci/trivy-config/trivyignore ~/project/.trivyignore
+             ls -l /tmp/bin/
              cat /tmp/bin/.trivyignore
            fi 
       - run:
