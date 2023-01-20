@@ -796,10 +796,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rancid-provisioning-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
     </dependency>
     <dependency>

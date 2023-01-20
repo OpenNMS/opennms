@@ -131,19 +131,6 @@
     Configure Path Outage</a>
   </p>
   
-      <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
-  <p>
-    <a href="admin/rancid/rancidAdmin.htm?node=<%=nodeId%>">
-    Configure Rancid Integration</a>
-  
-  </p>
-
-  <p>
-    <a href="admin/storage/storageAdmin.htm?node=<%=nodeId%>">
-    Configure Software Images</a>
-  </p>
-
-  <% } %>
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -204,17 +191,6 @@
   </p>
   <% } %>
   
-        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
-  <p>
-    <b>Configure Rancid</b> Configure RANCID group router.db files and rancid cloginrc
-     authentication data.
-  </p>
-
-  <p>
-    <b>Configure Software Images</b> Add and Delete software images.
-  </p>
-
-  <% } %>
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

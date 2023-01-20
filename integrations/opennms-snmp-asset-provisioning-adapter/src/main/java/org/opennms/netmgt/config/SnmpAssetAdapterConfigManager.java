@@ -49,14 +49,6 @@ import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>Abstract RancidAdapterConfigManager class.</p>
- *
- * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
- * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
- */
 public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAssetAdapterConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
@@ -70,21 +62,9 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
      */
     private SnmpAssetAdapterConfiguration m_config;
 
-    /**
-     * <p>Constructor for RancidAdapterConfigManager.</p>
-     */
     public SnmpAssetAdapterConfigManager() {
     }
 
-	/**
-	 * <p>Constructor for RancidAdapterConfigManager.</p>
-	 *
-	 * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
-	 * @param reader a {@link java.io.InputStream} object.
-	 * @param verifyServer a boolean.
-	 * @throws java.io.IOException if any.
-	 * @param serverName a {@link java.lang.String} object.
-	 */
 	public SnmpAssetAdapterConfigManager(final long lastModified, final InputStream reader) throws IOException {
 		reloadXML(lastModified, reader);
 	}
