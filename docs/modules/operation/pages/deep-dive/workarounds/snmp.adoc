@@ -3,7 +3,7 @@
 
 By default, the SNMP subsystem in {page-component-title} does not treat any https://tools.ietf.org/html/rfc3416[RFC 3416] `error-status` as fatal.
 Instead, it will attempt to continue the request, if possible.
-Only a subset of errors will cause {page-component-title}'s SNMP client to attempt retries, however.
+Only a subset of errors will cause {page-component-title}'s SNMP client to attempt retries.
 
 The default SNMP `error-status` handling behavior is as follows:
 

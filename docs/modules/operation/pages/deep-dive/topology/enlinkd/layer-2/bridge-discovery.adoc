@@ -1,7 +1,7 @@
 
 = Transparent Bridge Discovery
 
-Discovering xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table (BFT) requires a special algorithm which is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
+Discovering xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table requires a special algorithm that is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
 The gathered information is used to classify links as macLinks and bridgeLinks.
 
 == Definitions

@@ -23,7 +23,7 @@ This report can be customized with a company logo (approximately 195px by 50px) 
 | Field | Description   | Default Value
 
 | Report Time Range in Days
-| The range, in days, from the report Start Date.
+| The range, in days, from the report `Start Date`.
 | 7
 
 | Availability Warning

@@ -26,7 +26,7 @@ If no tags match the entered string, the report will have no data.
 
 | End Date
 | The end date for the data contained in this report.
-If the end date is later than the _Start Date_, the report will have no data.
+If the end date is later than the `Start Date`, the report will have no data.
 | _Today_
 |===
 

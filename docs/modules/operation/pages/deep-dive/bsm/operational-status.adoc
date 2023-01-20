@@ -24,7 +24,7 @@ The overall status is calculated from the edges, using the map and reduce functi
 
 | Warning
 | An event has occurred that may require action.
-This severity indicates a condition that should be noted (logged), but does not require immediate action.
+This severity indicates a condition that should be logged, but does not require immediate action.
 | 4
 
 | Normal

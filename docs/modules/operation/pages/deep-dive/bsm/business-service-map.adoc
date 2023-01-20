@@ -17,8 +17,8 @@ A reduce function consolidates severities from all edges of a business service a
 
 == Topology map
 
-The Topology Map lets you traverse business service hierarchies using the semantic zoom level (SZL).
-The SZL defines how many neighbors are shown related to the elements that are in focus.
+The Topology Map lets you traverse business service hierarchies using the semantic zoom level.
+The semantic zoom level defines how many neighbors are shown related to the elements that are in focus.
 
 .Example topology map
 image::bsm/02_bsm-service-hierarchy.png["{page-component-title} UI displaying the topology map, with four components highlighted"]
@@ -51,11 +51,11 @@ Follow these steps to enter simulation mode:
 
 You can customize the icons for each element in the Business Service view.
 To do so, select an element and choose *Change Icon* in the context menu.
-You can add custom `.svg` files using the instructions in xref:deep-dive/topology/topology.adoc#ga-topology-add-icons[Add new icons].
+To add custom `.svg` files, follow the instructions in xref:deep-dive/topology/topology.adoc#ga-topology-add-icons[Add new icons].
 
 === Share view
 
 You can use the Share function to generate a link to the current view and send it to another user.
 This allows them access to your configured Business Service view.
 
-NOTE: The user receiving the link needs an OpenNMS account to see the topology map.
+NOTE: The user who receives the link needs an OpenNMS account to see the topology map.

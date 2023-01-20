@@ -1,7 +1,7 @@
 
 = Reduce Functions
 
-A reduce function aggregates the operational status for a business service, using alarm severity information from the edges as input.
+A reduce function uses alarm severity information from the edges to aggregate the operational status for a business service.
 
 [caption=]
 .Reduce function options

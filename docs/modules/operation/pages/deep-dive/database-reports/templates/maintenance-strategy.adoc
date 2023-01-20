@@ -1,7 +1,7 @@
 
 = Maintenance Contracts Strategy Report
 
-This is an assessment management report that can help create and review your network device maintenance strategy.
+This is an assessment management report that can help you create and review your network device maintenance strategy.
 
 The report includes a pie chart whose slices represent three contract states: In Contract, Expired, and No Contract.
 

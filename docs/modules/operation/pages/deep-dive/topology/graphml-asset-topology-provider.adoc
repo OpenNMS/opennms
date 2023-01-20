@@ -33,7 +33,7 @@ It then searches within each region to find the building entries and creates a c
 Finally, it creates layer 2 nodes corresponding to each monitored node and places each in the correct building.
 
 {page-component-title}-monitored nodes that have empty region or building asset fields cannot be placed correctly in this topology.
-These nodes are shown in the previous diagram as unallocated nodes.
+The previous diagram shows these nodes as unallocated nodes.
 Finally, only building and region nodes are generated which can be linked to {page-component-title} nodes in the topology.
 The Asset Topology Provider does not generate spurious graph nodes in upper layers that are not directly and completely referenced by {page-component-title} nodes in the lowest layer.
 
@@ -253,7 +253,7 @@ The following commands are available:
 
 | opennms:asset-topo-create
 | Creates asset topology.
-Uses the default settings if a tag isn't included in the command.^1^
+Uses the default settings if a tag is not included in the command.^1^
 | *-l, --label:* Asset topology label (displayed in topology menu).
 Default: `asset`. +
 *-i, --providerId:* Unique `providerId` of asset topology.
@@ -287,7 +287,7 @@ If one graph fails, the command tries to complete the rest of the definitions.
 |
 |===
 
-. If you simply type `asset-topology:create`, a default topology is created using `providerId`.
+. If you type `asset-topology:create`, a default topology is created using `providerId`.
 
 == Create asset-based topologies via events
 
