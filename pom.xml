@@ -1616,7 +1616,7 @@
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.14.5</activemqVersion>
-    <atomikosVersion>3.9.2</atomikosVersion>
+    <atomikosVersion>5.0.9</atomikosVersion>
     <batikVersion>1.7</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
