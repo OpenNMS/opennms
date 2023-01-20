@@ -51,21 +51,19 @@ public class JestClientWithCircuitBreaker implements JestClient {
     public <T extends JestResult> T execute(Action<T> clientRequest) throws IOException {
         try {
             return circuitBreaker.decorateCheckedSupplier(() -> client.execute(clientRequest)).apply();
-        } catch (IOException | RuntimeException e) {
+        } catch (IOException e) {
             throw e;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 
     @Override
     public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<? super T> jestResultHandler) {
         try {
-            circuitBreaker.decorateCheckedRunnable(
-                        () -> client.executeAsync(clientRequest, jestResultHandler)
-                ).run();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+            jestResultHandler.completed(execute(clientRequest));
+        } catch (IOException e) {
+            jestResultHandler.failed(e);
         }
     }
 
@@ -83,11 +81,5 @@ public class JestClientWithCircuitBreaker implements JestClient {
     @Override
     public void close() throws IOException {
         client.close();
-    }
-
-    public boolean canRetry() {
-        return circuitBreaker.getState().equals(CircuitBreaker.State.CLOSED) ||
-                circuitBreaker.getState().equals(CircuitBreaker.State.HALF_OPEN) ||
-                circuitBreaker.getState().equals(CircuitBreaker.State.DISABLED);
     }
 }

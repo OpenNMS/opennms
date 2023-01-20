@@ -100,7 +100,7 @@ public class BulkRequest<T> {
     }
 
     private boolean canRetry() {
-        return retries < retryCount -1 &&  client.canRetry();
+        return retries < retryCount - 1;
     }
 
 
