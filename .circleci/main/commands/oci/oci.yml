@@ -135,6 +135,7 @@ commands:
       - run:
           name: Scan the local image with trivy
           command: |
+            docker images
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
