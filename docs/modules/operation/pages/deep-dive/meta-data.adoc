@@ -3,32 +3,31 @@
 = Metadata
 
 {page-component-title} supports the assignment of arbitrary metadata to nodes, interfaces and services.
-You can then use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds.
+You can use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds.
 
-The metadata is a simple triad of strings containing a context, a key and the associated value.
-Each node, each interface and each service can have an arbitrary number of metadata elements assigned to it.
+The metadata is made up of a simple triad of strings containing a context, a key, and the associated value.
+Each node, interface, and service can have an arbitrary number of metadata elements assigned to it.
 The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
 The association of metadata with nodes, interfaces, and services happens during provisioning with the use of <<reference:provisioning/detectors.adoc#ref-provisioning-meta-data, detectors>>.
-Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development:rest/meta-data.adoc#metadata-rest[ReST endpoints].
+Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development:rest/meta-data.adoc[REST endpoints].
 
-A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) lets users access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
-There is no limitation in defining metadata: users can decide how to define it and use it in expressions.
+A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) lets users access metadata that is associated with the elements they are working on, and use it as a variable in parameters and expressions.
+There is no limitation to defining metadata: users can decide how to define and use it in expressions.
 
-View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI:
+You can view the metadata that is currently assigned to nodes, interfaces, and services on the entity's details page:
 
-image::metadata/metadata-view.png[]
+.Node metadata
+image::metadata/metadata-view.png["{page-component-title} web UI showing a node's associated metadata"]
 
-[[ga-metadata-contexts]]
 == Contexts
 
-A context distinguishes different kinds of metadata use.
-{page-component-title} uses several default contexts: pattern (used with polling), requisition, node, interface, and service.
-
-Three special contexts provide details about nodes, interfaces and services objects.
+Contexts distinguish different kinds of metadata use.
+{page-component-title} uses several default contexts: `pattern` (used with polling), `requisition`, `node`, `interface`, and `service`.
+Three special contexts provide details about nodes, interfaces, and service objects.
 Each context has keys associated with it that you can use in a metadata expression.
 
-You can create user-defined contexts in the ReST API by prefixing the context name with `X-`.
+You can create user-defined contexts in the REST API by prefixing its name with `X-`.
 Using an `X-` prefix can help to avoid future {page-component-title} contexts interfering with a user-defined context, since {page-component-title} contexts are not prefixed in this way.
 
 === Node context
@@ -36,22 +35,48 @@ Using an `X-` prefix can help to avoid future {page-component-title} contexts in
 The `node` context provides details about the node currently processed.
 The following keys are available under this context:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
 | Context:Key            | Description
-| node:label             | The node's label
-| node:foreign-source    | The node's foreign source name
-| node:foreign-id        | The node's foreign ID
-| node:netbios-domain    | The NetBIOS domain as provided by SNMP
-| node:netbios-name      | The NetBIOS name as provided by SNMP
-| node:os                | The node's operating system
-| node:sys-name          | The system name of the node
-| node:sys-location      | The system location of the node
-| node:sys-contact       | The system contact specified for the node
-| node:sys-description   | The system description of the node
-| node:location          | The node's monitoring location name
-| node:area              | The node's monitoring location area
-| node:geohash           | A https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
+
+| node:label
+| The node's label
+
+| node:foreign-source
+| The node's foreign source name
+
+| node:foreign-id
+| The node's foreign ID
+
+| node:netbios-domain
+| The NetBIOS domain as provided by SNMP.
+
+| node:netbios-name
+| The NetBIOS name as provided by SNMP.
+
+| node:os
+| The node's operating system
+
+| node:sys-name
+| The node's system name
+
+| node:sys-location
+| The node's system location
+
+| node:sys-contact
+| The system contact specified for the node.
+
+| node:sys-description
+| The node's system description
+
+| node:location
+| The node's monitoring location name
+
+| node:area
+| The node's monitoring location area
+
+| node:geohash
+| A https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude or longitude.
 |===
 
 === Interface context
@@ -59,16 +84,30 @@ The following keys are available under this context:
 The `interface` context provides details about the interface currently processed.
 The following keys are available under this context:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
 | Context:Key                | Description
-| interface:hostname         | The hostname associated with the IP address of the interface
-| interface:address          | The IP address of the interface
-| interface:netmask          | The netmask of the interface
-| interface:if-index         | The SNMP interface index
-| interface:if-alias         | The SNMP interface alias
-| interface:if-description   | The SNMP interface description
-| interface:phy-addr         | The physical address of the interface
+
+| interface:hostname
+| The hostname associated with the IP address of the interface.
+
+| interface:address
+| The interface's IP address
+
+| interface:netmask
+| The interface's netmask
+
+| interface:if-index
+| The SNMP interface index
+
+| interface:if-alias
+| The SNMP interface alias
+
+| interface:if-description
+| The SNMP interface description
+
+| interface:phy-addr
+| The interface's physical address
 |===
 
 === Service context
@@ -76,57 +115,60 @@ The following keys are available under this context:
 The `service` context provides details about the service currently processed.
 The following key is available under this context:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
 | Context:Key        | Description
-| service:name       | The full name of the service
+
+| service:name
+| The service's full name
 |===
 
 [[ga-metadata-scv]]
 === SCV (Secure Credentials Vault)
 
-The special context `scv` provides access to values stored in the xref:operation:deep-dive/admin/scv-configuration.adoc[Secure Credentials Vault].
-The key used in this context must consist of the alias and the attribute of the credential separated by a colon.
-
-Example: `${scv:mydevice:password}`.
-This will access the `password` attribute of a credential named `mydevice`.
+The special context `scv` provides access to values stored in the xref:deep-dive/admin/scv-configuration.adoc[].
+The key used in this context must consist of the alias and the attribute of the credential, separated by a colon (for example, `${scv:mydevice:password}` will access the `password` attribute of a credential named `mydevice`).
 
 [[ga-metadata-webui]]
-== Adding Metadata through the Web UI
+== Add metadata through the web UI
 
-You can edit the requisition context in the web UI:
+Follow these steps to edit the `requisition` context in the web UI:
 
-. Under the admin menu, select *Configure OpenNMS*.
-. Select *Manage Provisioning Requisitions*.
-. Click the edit icon beside the requisition you want to work with.
-. Click edit beside the node you want to work with.
-. In the *Meta-Data* area, click *Add Meta-Data*.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, select *Manage Provisioning Requisitions*.
+. Click *Edit* beside the requisition that you want to modify.
+. Click *Edit* beside the node that you want to modify.
+. Navigate to the *Meta-Data* tab, and click *Add Meta-Data*.
 +
-image::metadata/metadata_add.png[]
+image::metadata/metadata_add.png["{page-component-title} UI displaying the Meta-Data Entry dialog with example parameters"]
 
-. Specify `node` or `interface` as the *scope* of where the metadata will apply.
-. Specify the key and a value and click *Save*.
+. In the *Scope* list, select either *Node* or *Interface*.
+. Specify the key and a value, and click *Save*.
 
 [[ga-meta-data-dsl]]
-== The Metadata DSL
+== The metadata DSL
+
 The metadata DSL lets you interpolate metadata into a parameter.
-The syntax lets you use patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+Its syntax lets you use patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
 
-Each expression can contain multiple references to metadata that will be replaced with the corresponding value during evaluation.
-Placeholders start with `${` and end with `}` containing a reference to a context-key pair.
-You may choose to define multiple fallback context-key pairs and and an optional trailing default value.
-Separate context and key by a `:`.
-Use a `|` to separate optional fallback context-key pairs and default value.
-If the first context:key item is not available (not on a service, interface, node or any other of the special contexts) the next one after the | is used.
-The last one, the default value, is not interpreted as a `context:key` but is used as a literal and will always succeed.
+Each expression can contain multiple references to metadata.
+The references will be replaced with their corresponding values during evaluation.
+Placeholders start with `${` and end with `}`, and they contain references to context-key pairs.
+You may choose to define multiple fallback context-key pairs and a trailing default value.
+Separate the context and the key using a colon.
+Use a vertical bar (`|`) to separate any fallback context-key pairs and default values.
 
-The interpolation supports recursive evaluation.
-This allows a user to specify an pattern inside another pattern or to provide whole expressions stored as metadata.
+If the first context-key value is not available (not found on a service, interface, node, or any other special context), the next value following the vertical bar is used.
+The final value--the default value--is not interpreted as a context-key, but is used as a literal.
+Its evaluation will always succeed.
 
-*Examples*
+The interpolation process supports recursive evaluation.
+This lets you specify a pattern inside another pattern, or provide whole expressions stored as metadata.
+
+=== Examples
 
 `${requisition:username}`::
-Will resolve to the `username` as defined in the requisitioning UI or an empty value, if there is no such username defined.
+Will resolve to the `username`, as defined in the requisitioning UI, or an empty value, if no such username is defined.
 
 A placeholder can contain an optional default value which is separated by a `|`.
 
