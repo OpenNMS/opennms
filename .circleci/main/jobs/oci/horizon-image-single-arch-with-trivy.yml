@@ -1,10 +1,10 @@
 jobs:
   horizon-image-single-arch-with-trivy:
+    executor: base-executor
+    resource_class: medium
     parameters:
       architecture:
         type: string
-    executor: base-executor
-    resource_class: medium
     steps:
       - build-image-single-arch-with-trivy:
           architecture: << parameters.architecture >>
