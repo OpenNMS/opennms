@@ -1,7 +1,7 @@
 
 = Map Functions
 
-The map function defines how the severity of an edge is used in the parent system's reduce function when the operational status is calculated.
+The map function defines how to use the severity of an edge in the parent system's reduce function when {page-component-title} calculates the operational status of the business service.
 
 [caption=]
 .Map function options
