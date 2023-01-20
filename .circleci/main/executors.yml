@@ -17,15 +17,3 @@ executors:
   ui-executor:
     docker:
       - image: cimg/node:16.3.0
-  github-executor:
-    docker:
-      - image: cibuilds/github:0.12
-  integration-test-executornew:
-    docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11-b8711
-        environment:
-          PGHOST: localhost
-          PGPORT: 5432
-      - image: cimg/postgres:10.22
-        environment:
-          POSTGRES_INITDB_ARGS: -E UNICODE
