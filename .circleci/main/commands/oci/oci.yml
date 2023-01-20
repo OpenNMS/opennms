@@ -135,7 +135,7 @@ commands:
       - run:
           name: Scan the local image with trivy
           command: |
-            docker image load -i ~/project/opennms-container/<< parameters.container_name >>/images/*.oci
+            docker image load -i ~/project/opennms-container/*/images/*.oci
             docker images
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
