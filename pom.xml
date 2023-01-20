@@ -1792,7 +1792,6 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
-    <xmlgraphicsCommonsVersion>2.8</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
@@ -3649,11 +3648,6 @@
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
         <version>${batikVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>xmlgraphics-commons</artifactId>
-        <version>${xmlgraphicsCommonsVersion}</version>
       </dependency>
       <dependency>
         <groupId>bsf</groupId>
