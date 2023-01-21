@@ -48,10 +48,12 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.FopFactoryBuilder;
 import org.apache.fop.apps.MimeConstants;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -218,8 +220,7 @@ public class PDFReportRenderer implements ReportRenderer {
      */
     public void render(final Reader in, final OutputStream out, final Reader xslt) throws ReportRenderException {
         try {
-            final FopFactory fopFactory = FopFactory.newInstance();
-            fopFactory.setStrictValidation(false);
+            final FopFactory fopFactory = new FopFactoryBuilder(new ClassPathResource("/fop.xconf").getURI()).build();
             final Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
 
             final TransformerFactory tfact = TransformerFactory.newInstance();
