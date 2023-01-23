@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
@@ -212,8 +211,6 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
 
     @Override
     public void onEvent(SampleBatchEvent event) {
-        // We'd expect the logs from this thread to be in collectd.log
-        Logging.putPrefix("collectd");
 
         // Decrement our entry counter
         numEntriesOnRingBuffer.decrementAndGet();
