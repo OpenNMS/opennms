@@ -1,0 +1,6 @@
+Host karaf
+	Hostname localhost
+	Port 8101
+	User opennms
+	StrictHostKeyChecking no
+#	UserKnownHostsFile /dev/null

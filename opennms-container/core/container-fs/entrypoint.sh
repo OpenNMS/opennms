@@ -115,6 +115,15 @@ initConfigWhenEmpty() {
   else
     echo "Use existing RRD data directory."
   fi
+
+#  # XXX note: this appends the key, but doesn't erase the file like is done for minion and sentinel
+#  mkdir -p "${OPENNMS_HOME}/.ssh" && \
+#            chmod 700 "${OPENNMS_HOME}/.ssh" && \
+#            ssh-keygen -t rsa -f "${OPENNMS_HOME}/.ssh/id_rsa" -q -N "" && \
+#            echo "opennms=$(cat "${OPENNMS_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${OPENNMS_HOME}/etc/keys.properties" && \
+#            echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${OPENNMS_HOME}/etc/keys.properties && \
+#            ls -l "${OPENNMS_HOME}/.ssh/id_rsa" && \
+#            chmod 600 "${OPENNMS_HOME}/.ssh/id_rsa"
 }
 
 applyOverlayConfig() {
