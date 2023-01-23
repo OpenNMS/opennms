@@ -95,7 +95,13 @@
             "extends": [
                 "build",
                 "integration-test-with-coverage",
-                "code-coverage"
+                "code-coverage",
+                "horizon-image-single-arch-trivy",
+                "sentinel-image-single-arch-trivy",
+                "minion-image-single-arch-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
         "master-branch": {
@@ -595,7 +601,7 @@
         },
         "code-coverage": {
             "requires": [
-                "integration-test-with-coverage"
+                "integration-test-with-coverage",
             ]
         }
     }

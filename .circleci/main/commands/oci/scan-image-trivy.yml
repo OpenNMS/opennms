@@ -42,32 +42,17 @@ commands:
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
       - run:
-          name: Detect if we should use .trivyignore
-          command: |
-           if [ -s ~/project/.circleci/trivy-config/trivyignore ]
-           then
-             echo "creating trivyignore under /tmp/bin/.trivyignore"
-             cp ~/project/.circleci/trivy-config/trivyignore /tmp/bin/.trivyignore
-             cp ~/project/.circleci/trivy-config/trivyignore ~/project/.trivyignore
-             ls -l /tmp/bin/
-             cat /tmp/bin/.trivyignore
-           fi 
-      - run:
           name: Scan the local image with trivy
           command: |
             docker image load -i ~/project/opennms-container/*/images/*.oci
-            docker images
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
-            /tmp/bin/trivy image --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
       - store_artifacts:
           path: /tmp/report.txt
           destination: report.txt
-      - store_artifacts:
-          path: ~/project/opennms-container/<< parameters.container_name >>/images/
-          destination: /
