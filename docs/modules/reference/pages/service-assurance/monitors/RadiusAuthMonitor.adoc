@@ -108,6 +108,8 @@ Sample configuration shows how to configure the monitor in `poller-configuration
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="Radius-Authentication" interval="300000" user-defined="false" status="on">
@@ -120,5 +122,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="ds-name" value="radiusauth" />
 </service>
 
-<monitor service="Radius-Authentication" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
+<monitor service="Radius-Authentication" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" /> <1>
 ----
+<1> Required monitor section.

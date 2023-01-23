@@ -274,6 +274,8 @@ Test for an end-to-end email transaction.
 Examples use CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="MTM" interval="300000" user-defined="false" status="on">
@@ -300,6 +302,8 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="ds-name" value="mtm_lat"/>
   <parameter key="retry" value="20" />
 </service>
+
+<monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
 
 Test that we can connect via IMAPS and open the OPENNMS folder.
@@ -322,4 +326,7 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
   <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="ds-name" value="rdmail_lat"/>
 </service>
+
+<monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
+<1> Required monitor section.

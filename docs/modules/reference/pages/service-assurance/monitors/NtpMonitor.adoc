@@ -44,6 +44,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <!-- Fast NTP server -->
@@ -54,5 +56,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="rrd-base-name" value="ntp"/>
   <parameter key="ds-name" value="ntp"/>
 </service>
-<monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor"/>
+<monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor"/> <1>
 ----
+<1> Required monitor section.

@@ -87,7 +87,9 @@ WARNING: It's not possible to reconfigure an IP SLA entry.
          To change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
          Back up your Cisco configuration manually or take a look at http://www.shrubbery.net/rancid/[RANCID].
 
-To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries:
+To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries.
+
+Note that you must include the monitor section for each monitor in your definition.
 
 [source, xml]
 ----
@@ -106,8 +108,9 @@ To monitor both of the entries, the configuration in `poller-configuration.xml` 
     <parameter key="ignore-thresh" value="true" /><2>
 </service>
 
-<monitor service="IP-SLA-WEB-Google" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
-<monitor service="IP-SLA-PING-OpenNMS" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+<monitor service="IP-SLA-WEB-Google" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" /> <3>
+<monitor service="IP-SLA-PING-OpenNMS" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" /> <3>
 ----
 <1> Service is up if the IP SLA state is `ok(1)`.
 <2> Service is down if the IP SLA state is `overThreshold(3)`.
+<3> Required monitor section.

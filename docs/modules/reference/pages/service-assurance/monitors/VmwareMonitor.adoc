@@ -56,6 +56,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Sample configuration on how to configure the monitor in `poller-configuration.xml`.
 With this configuration, the monitor will go down if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
@@ -64,5 +66,6 @@ With this configuration, the monitor will go down if any unacknowledged vSphere 
   <parameter key="reportAlarms" value="red, yellow"/>
 </service>
 
-<monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+<monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/> <1>
 ----
+<1> Required monitor section.

@@ -223,6 +223,8 @@ Each page is checked to ensure its HTTP response code fits into the response-ran
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the monitor section in your definition.
+
 .Configuration to test the login to the OpenNMS Web application
 [source, xml]
 ----
@@ -257,7 +259,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 
 .Test with mixing HTTP and HTTPS in a page sequence
@@ -304,7 +306,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 
 .Test login with dynamic credentials using session variables
@@ -346,7 +348,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 
 .Log in to demo.opennms.org without knowing username and password
@@ -378,7 +380,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 
 .Example with per-page response times
@@ -400,5 +402,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
+<1> Required monitor section.

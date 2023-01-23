@@ -34,6 +34,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#<ref
 
 == Examples
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <!-- Overriding default SNMP config -->
@@ -42,8 +44,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#<ref
   <parameter key="timeout" value="5000"/>
 </service>
 
-<monitor service="OMA-Chassis" class-name="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" />
+<monitor service="OMA-Chassis" class-name="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" /> <1>
 ----
+<1> Required monitor section.
 
 == Dell MIBs
 

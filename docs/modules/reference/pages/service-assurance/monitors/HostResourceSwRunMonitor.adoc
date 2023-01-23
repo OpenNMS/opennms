@@ -83,6 +83,9 @@ If neither is defined, the monitor checks all instances to see if they are runni
 == Examples
 
 The following example shows how to monitor the process called httpd running on a server using this monitor.
+
+Note that you must include the monitor section in your definition.
+
 Define the configuration in `poller-configuration.xml` as follows:
 [source, xml]
 ----
@@ -94,8 +97,9 @@ Define the configuration in `poller-configuration.xml` as follows:
     <parameter key="match-all" value="true"/><3>
 </service>
 
-<monitor service="Process-httpd" class-name="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor"/>
+<monitor service="Process-httpd" class-name="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor"/> <4>
 ----
 <1> Name of the process on the system.
 <2> Test if the process is in a valid state (in other words, have a `run-level` no higher than `notRunnable(3)`.
 <3> If the httpd process runs multiple times, the test is done for each instance of the process.
+<4> Required monitor section.

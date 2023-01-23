@@ -111,6 +111,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 == Examples
 
 To monitor the session state `Established`, add a service to your poller configuration in `$OPENNMS_HOME/etc/poller-configuration.xml`.
+
+Note that you must include the monitor section in your definition.
+
 For example:
 
 [source, xml]
@@ -124,8 +127,10 @@ For example:
     <parameter key="bgpPeerIp" value="99.99.99.99" />
 </service>
 
-<monitor service="BGP-Peer-99.99.99.99-AS65423" class-name="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
+<monitor service="BGP-Peer-99.99.99.99-AS65423" class-name="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" /> <1>
 ----
+<1> Required monitor section.
+
 
 == Error code mapping
 

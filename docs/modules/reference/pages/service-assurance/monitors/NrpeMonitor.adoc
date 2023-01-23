@@ -66,6 +66,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 This example shows how to configure the NrpeMonitor running the check_apt command on a configured NRPE.
 
+Note that you must include the monitor section in your definition.
+
 .Configuration of the NRPE check command on the agent in 'nrpe.cfg'
 [source,bash]
 ----
@@ -83,5 +85,6 @@ command[check_apt]=/usr/lib/nagios/plugins/check_apt
   <parameter key="padding" value="2" />
 </service>
 
-<monitor service="NRPE-Check-APT" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+<monitor service="NRPE-Check-APT" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" /> <1>
 ----
+<1> Required monitor section.

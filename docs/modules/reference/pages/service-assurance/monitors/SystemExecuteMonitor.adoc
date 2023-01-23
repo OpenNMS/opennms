@@ -65,7 +65,6 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-
 === Placeholder use
 
 [source, xml]
@@ -76,6 +75,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 === Exit status example
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="Script_Example" interval="300000" user-defined="true" status="on">
@@ -83,8 +84,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
   <parameter key="timeout" value="5000"/>
 </service>
 
-<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/> <1>
 ----
+<1> Required monitor section.
 
 [source, bash]
 ----

@@ -59,6 +59,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 Sample configuration on how to configure the monitor in `poller-configuration.xml`.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="ActiveMQ" interval="300000" user-defined="false" status="on">
@@ -66,5 +68,7 @@ Sample configuration on how to configure the monitor in `poller-configuration.xm
    <parameter key="use-nodelabel" value="true"/>
 </service>
 
-<monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
+<monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" /> <1>
 ----
+
+<1> Required monitor section.

@@ -68,6 +68,8 @@ Some example configuration how to configure the monitor in the `poller-configura
 <parameter key="args" value="http://${variable1}/${variable2}/static"/>
 ----
 
+IMPORTANT: You must include the monitor section in your configuration
+
 .This section is optional and gives specific hints
 == SystemExecuteMonitor vs. GpMonitor
 

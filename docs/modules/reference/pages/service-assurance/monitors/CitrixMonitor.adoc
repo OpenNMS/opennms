@@ -36,6 +36,9 @@ WARNING: If you use session reliability to configure the MetaFrame Presentation 
 == Examples
 
 The following example configures {page-component-title} to monitor the ICA protocol on TCP 1494 with two retries and waiting five seconds for each retry.
+
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <service name="Citrix-TCP-ICA" interval="300000" user-defined="false" status="on">
@@ -43,5 +46,6 @@ The following example configures {page-component-title} to monitor the ICA proto
     <parameter key="timeout" value="5000" />
 </service>
 
-<monitor service="Citrix-TCP-ICA" class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+<monitor service="Citrix-TCP-ICA" class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor" /> <1>
 ----
+<1> Required monitor section.

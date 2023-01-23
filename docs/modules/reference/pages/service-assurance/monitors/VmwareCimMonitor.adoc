@@ -66,7 +66,10 @@ See the ignoreStandBy parameter below on how to change the state.
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
+
 Example configuration on how to configure the monitor in `poller-configuration.xml`.
+
+Note that you must include the monitor section in your definition.
 
 [source, xml]
 ----
@@ -75,5 +78,6 @@ Example configuration on how to configure the monitor in `poller-configuration.x
   <parameter key="timeout" value="3000"/>
 </service>
 
-<monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+<monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/> <1>
 ----
+<1> Required monitor section.

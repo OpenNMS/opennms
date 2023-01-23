@@ -41,10 +41,13 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <!-- Monitor 1st RAID arrays using configuration from snmp-config.xml -->
 <service name="PERC" interval="300000" user-defined="false" status="on" />
 
-<monitor service="PERC" class-name="org.opennms.netmgt.poller.monitors.PercMonitor" />
+<monitor service="PERC" class-name="org.opennms.netmgt.poller.monitors.PercMonitor" /> <1>
 ----
+<1> Required monitor section.

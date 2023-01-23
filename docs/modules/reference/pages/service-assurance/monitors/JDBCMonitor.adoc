@@ -60,10 +60,11 @@ Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL J
 For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
 To provide a JDBC driver,  place the driver-jar in your `$OPENNMS_HOME/lib` folder.
 
-
 == Examples
 
 The following example checks if the PostgreSQL database that {page-component-title} uses is available.
+
+Note that you must include the monitor section in your definition.
 
 [source, xml]
 ----
@@ -74,5 +75,6 @@ The following example checks if the PostgreSQL database that {page-component-tit
   <parameter key="password" value="opennms"/>
 </service>
 
-<monitor service="OpenNMS-DBMS" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
+<monitor service="OpenNMS-DBMS" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" /> <1>
 ----
+<1> Required monitor section.

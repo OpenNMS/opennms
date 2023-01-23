@@ -57,7 +57,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Some example configuration how to configure the monitor in the `poller-configuration.xml`
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+
+Note that you must include the monitor section in your definition.
 
 [source, xml]
 ----
@@ -68,5 +70,6 @@ Some example configuration how to configure the monitor in the `poller-configura
   <parameter key="timeout" value="3000"/>
 </service>
 
-<monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+<monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" /> <1>
 ----
+<1> Required monitor section.

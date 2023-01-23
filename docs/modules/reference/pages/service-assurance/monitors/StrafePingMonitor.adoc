@@ -88,6 +88,8 @@ Additionally, you must assign the nodes to a node tag named `Latency`.
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <package name="strafer" >
@@ -114,5 +116,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <downtime interval="600000" begin="43200000" end="432000000"/>
   <downtime begin="432000000" delete="true"/>
 </package>
-<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
+<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <1>
 ----
+<1> Required monitor section.

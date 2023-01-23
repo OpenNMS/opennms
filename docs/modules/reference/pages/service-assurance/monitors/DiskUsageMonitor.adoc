@@ -72,6 +72,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
+Note that you must include the monitor section in your definition.
+
 [source, xml]
 ----
 <!-- Make sure there's at least 5% of free space available on storages ending with "/home" -->
@@ -82,8 +84,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
   <parameter key="match-type" value="endsWith" />
   <parameter key="free" value="5" />
 </service>
-<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" /> <1>
 ----
+<1> Required monitor section.
 
 == DiskUsageMonitor versus thresholds
 
