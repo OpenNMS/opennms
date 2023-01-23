@@ -1,5 +1,5 @@
 commands:
-  image-trivy:
+  scan-image-trivy:
     parameters:
       architecture:
         type: string
@@ -18,12 +18,25 @@ commands:
       - download-download-artifacts
       - run:
           name: download tarball dependency to << parameters.tarball_path >>
-          command:  |
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
+          name: build << parameters.container_name >>=<< parameters.architecture >> container image
+          command: |
+            # set up multi-arch
+            docker container prune -f
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
+            export DOCKER_CONTENT_TRUST=1
+            cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            mkdir /tmp/oci
-            download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="${TAG}" oci "${CIRCLE_BRANCH}" "/tmp/oci"
-            ls -l /tmp/oci
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_OCI="images/${TAG}.oci" \
+                 DOCKER_TAG="opennms/${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 oci
       - run:
           name: Install trivy
           command: |
@@ -55,3 +68,6 @@ commands:
       - store_artifacts:
           path: /tmp/report.txt
           destination: report.txt
+      - store_artifacts:
+          path: ~/project/opennms-container/<< parameters.container_name >>/images/
+          destination: /

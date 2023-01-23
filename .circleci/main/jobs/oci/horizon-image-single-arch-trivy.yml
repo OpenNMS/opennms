@@ -6,7 +6,7 @@ jobs:
       architecture:
         type: string
     steps:
-      - image-trivy:
+      - scan-image-trivy:
           architecture: << parameters.architecture >>
           container_name: horizon
           container_dir: core
