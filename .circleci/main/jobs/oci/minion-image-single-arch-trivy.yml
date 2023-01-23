@@ -1,5 +1,5 @@
 jobs:
-  minion-image-single-arch:
+  minion-image-single-arch-trivy:
     executor: base-executor
     resource_class: medium
     parameters:

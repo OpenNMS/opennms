@@ -1,5 +1,5 @@
 jobs:  
-  sentinel-image-single-arch:
+  sentinel-image-single-arch-trivy:
     executor: base-executor
     resource_class: medium
     parameters:
