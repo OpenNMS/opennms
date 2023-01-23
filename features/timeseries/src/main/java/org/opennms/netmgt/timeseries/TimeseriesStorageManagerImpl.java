@@ -53,7 +53,7 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
 
     public TimeseriesStorageManagerImpl() {
         this(new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-                .blocking()
+                .blocking(ServiceLookupBuilder.GRACE_PERIOD_MS, ServiceLookupBuilder.LOOKUP_DELAY_MS, 0)
                 .build());
     }
 
