@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
@@ -202,9 +201,6 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     @Override
     public void onEvent(SampleBatchEvent event) throws Exception {
-        // We'd expect the logs from this thread to be in collectd.log
-        Logging.putPrefix("collectd");
-
         List<Sample> samples = event.getSamples();
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
