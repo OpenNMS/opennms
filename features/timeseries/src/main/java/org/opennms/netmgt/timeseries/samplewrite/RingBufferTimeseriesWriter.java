@@ -161,7 +161,28 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
     @Override
     public void destroy() {
         if (workerPool != null) {
+            var start = Instant.now();
+            LOG.info("destroy(): Draining and halting the time series worker pool. Entries in ring buffer: {}",
+                    numEntriesOnRingBuffer.get());
+            var destroyStatusThread = new Thread(() -> {
+                while (true) {
+                    LOG.info("destroy() in progress. Entries left in ring buffer to drain: {}",
+                            numEntriesOnRingBuffer.get());
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        LOG.info("Apparently my work is done here. Entries in ring buffer: {}",
+                                numEntriesOnRingBuffer.get());
+                        break;
+                    }
+                }
+            }, getClass().getSimpleName() + "-destroy-status");
+            destroyStatusThread.start();
             workerPool.drainAndHalt();
+            LOG.info("Completed draining ring buffer entries (current size {}). Worker pool is halted. Took {}.",
+                    numEntriesOnRingBuffer.get(),
+                    Duration.between(start, Instant.now()));
+            destroyStatusThread.interrupt();
         }
     }
 
