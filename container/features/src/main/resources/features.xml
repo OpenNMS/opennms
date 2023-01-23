@@ -2004,6 +2004,13 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries/${project.version}</bundle>
     </feature>
+    
+    <feature name="inmemory-timeseries-plugin" description="FOR TESTING ONLY" version="${project.version}">
+        <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/${re2jVersion}</bundle>
+        <bundle dependency="true">mvn:org.opennms.features/inmemory-timeseries-plugin/${project.version}</bundle>
+        <feature>opennms-timeseries-api</feature>
+    </feature>
+
 
     <feature name="fst" description="FST" version="${project.version}">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
