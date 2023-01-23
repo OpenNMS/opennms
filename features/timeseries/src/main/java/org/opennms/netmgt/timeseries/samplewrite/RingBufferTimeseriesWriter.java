@@ -196,10 +196,16 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         numEntriesOnRingBuffer.decrementAndGet();
 
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
-            this.storage.get().store(event.getSamples());
-            this.stats.record(event.getSamples());
+            var timeSeriesStorage = this.storage.get();
+
+            if (timeSeriesStorage == null) {
+                RATE_LIMITED_LOGGER.error("There is no available TimeSeriesStorage implementation. {} samples will be lost.", event.getSamples().size());
+            } else {
+                timeSeriesStorage.store(event.getSamples());
+                this.stats.record(event.getSamples());
+            }
         } catch (Throwable t) {
-            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
+            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Up to {} samples may be lost: {}: {}", event.getSamples().size(), t.getClass().getSimpleName(), t.getMessage(), t);
         } finally {
             event.setSamples(null); // free sample reference for garbage collection
         }
