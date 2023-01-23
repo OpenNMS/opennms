@@ -1,5 +1,5 @@
 jobs:
-  horizon-image-single-arch-linux-amd64:
+  horizon-image-single-arch-linux-amd64-trivy:
     executor: base-executor
     resource_class: medium
     steps:
