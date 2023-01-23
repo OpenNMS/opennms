@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,6 @@ import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
@@ -103,6 +103,7 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
     private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
+    private final AtomicBoolean readyToRockAndRoll = new AtomicBoolean(false);
 
     @Inject
     public RingBufferTimeseriesWriter(final TimeseriesStorageManager storage,
@@ -155,10 +156,13 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         ringBuffer.addGatingSequences(workerPool.getWorkerSequences());
 
         workerPool.start(executor);
+
+        readyToRockAndRoll.set(true);
     }
 
     @Override
     public void destroy() {
+        readyToRockAndRoll.set(false);
         if (workerPool != null) {
             var start = Instant.now();
             LOG.info("destroy(): Draining and halting the time series worker pool. Entries in ring buffer: {}",
@@ -187,26 +191,34 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
 
     @Override
     public void insert(List<Sample> samples) {
+        if (!readyToRockAndRoll.get()) {
+            insertDrop(samples, "We are not ready to rock and roll");
+            return;
+        }
 
         // Add the samples to the ring buffer
         if (!ringBuffer.tryPublishEvent(TRANSLATOR, samples)) {
-            RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
-                    samples.size(), new Object() {
-                        @Override
-                        public String toString() {
-                            // We wrap this in a toString() method to avoid build the string
-                            // unless the log message is actually printed
-                            return samples.stream()
-                                    .map(s -> s.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue())
-                                    .distinct()
-                                    .collect(Collectors.joining(", "));
-                        }
-                    });
-            droppedSamples.mark(samples.size());
+            insertDrop(samples, "The ring buffer is full");
             return;
         }
         // Increase our entry counter
         numEntriesOnRingBuffer.incrementAndGet();
+    }
+
+    private void insertDrop(List<Sample> samples, String message) {
+        RATE_LIMITED_LOGGER.error(message + ". {} samples associated with resource ids {} will be dropped.",
+                samples.size(), new Object() {
+                    @Override
+                    public String toString() {
+                        // We wrap this in a toString() method to avoid build the string
+                        // unless the log message is actually printed
+                        return samples.stream()
+                                .map(s -> s.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue())
+                                .distinct()
+                                .collect(Collectors.joining(", "));
+                    }
+                });
+        droppedSamples.mark(samples.size());
     }
 
     @Override
