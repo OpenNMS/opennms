@@ -29,6 +29,7 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -80,6 +81,7 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
+    private static final Duration STORAGE_GET_WARNING_DURATION = Duration.ofSeconds(5);
 
     private WorkerPool<SampleBatchEvent> workerPool;
 
@@ -196,7 +198,13 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         numEntriesOnRingBuffer.decrementAndGet();
 
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
+            var start =  Instant.now();
             var timeSeriesStorage = this.storage.get();
+            var getDuration = Duration.between(start, Instant.now());
+
+            if (getDuration.compareTo(STORAGE_GET_WARNING_DURATION) > 0) {
+                RATE_LIMITED_LOGGER.warn("storage.get() took an excessive amount of time, {}, and returned: {}", getDuration, timeSeriesStorage);
+            }
 
             if (timeSeriesStorage == null) {
                 RATE_LIMITED_LOGGER.error("There is no available TimeSeriesStorage implementation. {} samples will be lost.", event.getSamples().size());
