@@ -601,7 +601,7 @@
         },
         "code-coverage": {
             "requires": [
-                "integration-test-with-coverage",
+                "integration-test-with-coverage"
             ]
         }
     }
