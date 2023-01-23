@@ -211,10 +211,6 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
 
     @Override
     public void onEvent(SampleBatchEvent event) {
-
-        // Decrement our entry counter
-        numEntriesOnRingBuffer.decrementAndGet();
-
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
             var start =  Instant.now();
             var timeSeriesStorage = this.storage.get();
@@ -235,6 +231,9 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         } finally {
             event.setSamples(null); // free sample reference for garbage collection
         }
+
+        // Decrement our entry counter
+        numEntriesOnRingBuffer.decrementAndGet();
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR = (event, sequence, samples) -> event.setSamples(samples);
