@@ -78,7 +78,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
@@ -183,11 +182,15 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
 
     @Override
     public void destroy() throws Exception {
-        this.trackerSession.close();
-        this.trackerSession = null;
+        if (this.trackerSession != null) {
+            this.trackerSession.close();
+            this.trackerSession = null;
+        }
 
-        this.scheduler.shutdown();
-        this.scheduler = null;
+        if (this.scheduler != null) {
+            this.scheduler.shutdown();
+            this.scheduler = null;
+        }
     }
 
     @Override
