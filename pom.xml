@@ -1736,7 +1736,7 @@
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <minaVersion>2.1.6</minaVersion>
-    <mockitoVersion>4.11.0</mockitoVersion>
+    <mockitoVersion>4.6.1</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.78.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
