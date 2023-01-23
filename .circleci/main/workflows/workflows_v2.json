@@ -96,18 +96,23 @@
                 "build",
                 "integration-test-with-coverage",
                 "code-coverage",
-                "horizon-image-single-arch-trivy",
-                "sentinel-image-single-arch-trivy",
-                "minion-image-single-arch-trivy",
-                "horizon-image-single-arch-linux-amd64-trivy",
-                "sentinel-image-single-arch-linux-amd64-trivy",
-                "minion-image-single-arch-linux-amd64-trivy"
+                "trivy-scan"
             ]
         },
         "master-branch": {
             "extends": [
                 "tarball-assembly-only",
                 "integration-test"
+            ]
+        },
+        "trivy-scan": {
+            "extends": [
+                "horizon-image-single-arch-trivy",
+                "sentinel-image-single-arch-trivy",
+                "minion-image-single-arch-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
         "experimental": {
