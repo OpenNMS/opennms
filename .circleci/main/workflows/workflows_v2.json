@@ -106,7 +106,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "horizon-image-single-arch-trivy"
             ]
         }
     },
@@ -355,6 +355,19 @@
                 "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "horizon-image-single-arch-trivy":{
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "tarball-assembly-only"
             ]
         },
         "horizon-image-single-arch": {
