@@ -522,6 +522,8 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
       - minion-rpm-build:
+          context:
+            - "docker-publish-account"
           requires:
             - build
           filters:
@@ -562,6 +564,8 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
+          context:
+            - "docker-publish-account"
           requires:
             - horizon-rpm-build
           filters:
@@ -571,6 +575,8 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
       - minion-publish-oci:
+          context:
+            - "docker-publish-account"
           requires:
             - minion-rpm-build
           filters:
