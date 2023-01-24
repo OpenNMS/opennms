@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -481,4 +482,6 @@ public interface NetworkElementFactoryInterface {
 	Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
 
 	Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName);
+
+	Set<String> getResolvingUeisForAlarmUei(final String uei);
 }
