@@ -798,6 +798,8 @@ workflows:
       - minion-rpm-build:
           context:
             - "CircleCI"
+            - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - build
           filters:
@@ -939,6 +941,7 @@ workflows:
           context:
             - "CircleCI"
             - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -961,6 +964,7 @@ workflows:
           context:
             - "CircleCI"
             - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -1077,6 +1081,7 @@ workflows:
       - publish-cloudsmith:
           context:
             - "CircleCI"
+            - "cloudsmith-publish-account"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
