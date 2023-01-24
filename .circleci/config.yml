@@ -572,9 +572,15 @@ workflows:
 #    jobs:
 #      - build
 #      - integration-test-with-coverage:
+#          context:
+#            - "CircleCI"
+#            - "SonarCloud"
 #          requires:
 #            - build
 #      - code-coverage:
+#          context:
+#            - "CircleCI"
+#            - "SonarCloud"
 #          requires:
 #            - integration-test-with-coverage
   build-minimal:
