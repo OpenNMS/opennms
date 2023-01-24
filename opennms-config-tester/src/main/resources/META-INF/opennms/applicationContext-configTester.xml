@@ -77,7 +77,7 @@
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
         <!-- <entry key="rt.properties" value="rtConfigDaoCheck"/> --><!-- Not part of standard build -->
         <entry key="rtc-configuration.xml" value="rtcConfigFactory"/>
-        <entry key="rws-configuration.xml" value="rwsConfigFactory"/>
+        <!-- <entry key="rws-configuration.xml" value="rwsConfigFactory"/> -->
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
@@ -323,7 +323,7 @@
   <bean id="otrsConfigDao" class="org.opennms.netmgt.ticketer.otrs.DefaultOtrsConfigDao"/>
 
   <bean id="otrsConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject" ref="otrsConfigDao" />
+    <property name="targetObject" ref="otrsConfigDao" />
     <property name="targetMethod"><value>getEndpoint</value></property>
   </bean>
 
@@ -367,26 +367,26 @@
   </bean>
   
   <bean id="responseAdhocGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
-  	<property name="prefabConfigs">
-  	  <map>
-  	  </map>
+      <property name="prefabConfigs">
+        <map>
+        </map>
     </property>
-  	<property name="adhocConfigs">
-  	  <map>
-  	    <entry key="response" value="file:${opennms.home}/etc/response-adhoc-graph.properties"/>
-  	  </map>
+      <property name="adhocConfigs">
+        <map>
+          <entry key="response" value="file:${opennms.home}/etc/response-adhoc-graph.properties"/>
+        </map>
     </property>
   </bean>
 
   <bean id="responsePrefabGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
-  	<property name="prefabConfigs">
-  	  <map>
-  	    <entry key="response" value="file:${opennms.home}/etc/response-graph.properties"/>
-  	  </map>
+      <property name="prefabConfigs">
+        <map>
+          <entry key="response" value="file:${opennms.home}/etc/response-graph.properties"/>
+        </map>
     </property>
-  	<property name="adhocConfigs">
-  	  <map>
-  	  </map>
+      <property name="adhocConfigs">
+        <map>
+        </map>
     </property>
   </bean>
 
@@ -397,7 +397,7 @@
   <bean id="rtConfigDao" class="org.opennms.netmgt.rt.ReadOnlyRtConfigDao"/>
 
   <bean id="rtConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject" ref="rtConfigDao" />
+    <property name="targetObject" ref="rtConfigDao" />
     <property name="targetMethod"><value>getBaseURL</value></property>
   </bean>
 
@@ -424,26 +424,26 @@
   <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.api.FactoryBasedSnmpConfigDao"/>
   
   <bean id="snmpAdhocGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
-  	<property name="prefabConfigs">
-  	  <map>
-  	  </map>
+      <property name="prefabConfigs">
+        <map>
+        </map>
     </property>
-  	<property name="adhocConfigs">
-  	  <map>
-  	    <entry key="performance" value="file:${opennms.home}/etc/snmp-adhoc-graph.properties"/>
-  	  </map>
+      <property name="adhocConfigs">
+        <map>
+          <entry key="performance" value="file:${opennms.home}/etc/snmp-adhoc-graph.properties"/>
+        </map>
     </property>
   </bean>
   
   <bean id="snmpPrefabGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
-  	<property name="prefabConfigs">
-  	  <map>
-  	    <entry key="performance" value="file:${opennms.home}/etc/snmp-graph.properties"/>
-  	  </map>
+      <property name="prefabConfigs">
+        <map>
+          <entry key="performance" value="file:${opennms.home}/etc/snmp-graph.properties"/>
+        </map>
     </property>
-  	<property name="adhocConfigs">
-  	  <map>
-  	  </map>
+      <property name="adhocConfigs">
+        <map>
+        </map>
     </property>
   </bean>
   

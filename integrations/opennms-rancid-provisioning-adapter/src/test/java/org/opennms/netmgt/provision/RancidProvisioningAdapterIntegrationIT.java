@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,15 +29,12 @@
 package org.opennms.netmgt.provision;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -47,7 +44,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,16 +77,11 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
     private NodeDao m_nodeDao;
     
     @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
-    
-    @Autowired
     private DatabasePopulator m_populator;
 
     @Autowired
     private RancidProvisioningAdapter m_adapter; 
     
-    private static final int NODE_ID = 1;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);

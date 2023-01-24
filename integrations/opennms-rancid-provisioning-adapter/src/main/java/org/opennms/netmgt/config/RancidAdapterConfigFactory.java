@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * <p>RancidAdapterConfigFactory class.</p>
@@ -59,13 +61,13 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-    
+
     /**
      * Loaded version
      */
     private long m_currentVersion = -1L;
 
-    
+
     /**
      * constructor constructor
      *
@@ -96,17 +98,25 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
             return;
         }
 
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
 
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
 
-        final InputStream reader = new FileInputStream(cfgFile);
-        RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(cfgFile.lastModified(), reader);
-        reader.close();
-        setInstance(config);
-
+            try (final InputStream reader = new FileInputStream(cfgFile)) {
+                RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(cfgFile.lastModified(), reader);
+                setInstance(config);
+            }
+        } catch (final FileNotFoundException e) {
+            LOG.warn("unable to locate {}, falling back to default", ConfigFileConstants.getFileName(ConfigFileConstants.RANCID_CONFIG_FILE_NAME));
+            final ClassPathResource resource = new ClassPathResource("/" + ConfigFileConstants.getFileName(ConfigFileConstants.RANCID_CONFIG_FILE_NAME));
+            try (final InputStream stream = resource.getInputStream()) {
+                RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(0, stream);
+                setInstance(config);
+            }
+        }
     }
-    
+
     /**
      * Reload the config from the default config file
      *
@@ -132,7 +142,7 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
         }
         return m_singleton;
     }
-    
+
     private static synchronized void setInstance(final RancidAdapterConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
@@ -176,6 +186,12 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
                 reloadXML(new FileInputStream(cfgFile));
                 LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
+            }
+        } catch (final FileNotFoundException e) {
+            LOG.warn("unable to locate {}, falling back to default", ConfigFileConstants.getFileName(ConfigFileConstants.RANCID_CONFIG_FILE_NAME));
+            final ClassPathResource resource = new ClassPathResource("/" + ConfigFileConstants.getFileName(ConfigFileConstants.RANCID_CONFIG_FILE_NAME));
+            try (final InputStream stream = resource.getInputStream()) {
+                reloadXML(stream);
             }
         } finally {
             getWriteLock().unlock();
