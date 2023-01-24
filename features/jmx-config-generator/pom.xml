@@ -14,10 +14,6 @@
     <name>OpenNMS :: Features :: JMX Config Generator</name>
     <url>http://www.opennms.org</url>
 
-    <properties>
-        <velocity.version>1.7</velocity.version>
-    </properties>
-
     <build>
         <resources>
             <resource>
@@ -93,8 +89,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>${velocity.version}</version>
+            <artifactId>velocity-engine-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
