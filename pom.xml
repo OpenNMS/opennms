@@ -1706,6 +1706,7 @@
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
+    <jettisonVersion>1.4.1</jettisonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>2.9.1</jestGsonVersion>

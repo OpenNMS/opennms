@@ -790,6 +790,8 @@
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
         <feature version="${cxfVersion}">cxf-jaxws</feature>
         <feature>javax.servlet</feature>
+        <!-- early start-level to override jettison version in 3rd-party feature files -->
+        <bundle start-level="30">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
         <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
@@ -818,6 +820,8 @@
         <feature>opennms-poller-monitors-core</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>opennms-dao-api</feature>
+        <!-- early start-level to override jettison version in 3rd-party feature files -->
+        <bundle start-level="30">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>

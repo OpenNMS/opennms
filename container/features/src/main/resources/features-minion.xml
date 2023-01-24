@@ -189,6 +189,8 @@
     <feature>opennms-health-rest</feature>
     <feature version="${cxfVersion}">cxf-core</feature>
     <feature version="${cxfVersion}">cxf-jaxrs</feature>
+    <!-- early start-level to override jettison version in 3rd-party feature files -->
+    <bundle start-level="30">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
     <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
   </feature>
 
