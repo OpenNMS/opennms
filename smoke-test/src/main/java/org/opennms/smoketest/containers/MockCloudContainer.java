@@ -36,11 +36,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-public class MockCloudContainer extends org.testcontainers.containers.GenericContainer<MockCloudContainer> {
+import com.google.common.base.Joiner;
+
+public class MockCloudContainer extends GenericContainer<MockCloudContainer> {
     public static final String ALIAS = "cloudMock";
     public static final int PORT = 9003;
 
@@ -64,20 +67,17 @@ public class MockCloudContainer extends org.testcontainers.containers.GenericCon
     }
 
     public static String createConfig() throws IOException {
-        return format("config:edit org.opennms.plugins.cloud%n"
-                        + "property-set pas.tls.host %s%n"
-                        + "property-set pas.tls.port %s%n"
-                        + "property-set pas.tls.security TLS%n"
-                        + "property-set pas.mtls.host %s%n"
-                        + "property-set pas.mtls.port %s%n"
-                        + "property-set pas.mtls.security MTLS%n"
-                        + "property-set grpc.truststore \"%s\"%n"
-                        + "config:update",
-                ALIAS,
-                PORT,
-                ALIAS,
-                PORT,
-                classpathFileToString("/cert/horizon/servertruststore.pem")
-        );
+        return Joiner.on('\n').join(new String[] {
+                "config:edit org.opennms.plugins.cloud",
+                String.format("property-set pas.tls.host %s", ALIAS),
+                String.format("property-set pas.tls.port %s", PORT),
+                "property-set pas.tls.security TLS",
+                String.format("property-set pas.mtls.host %s", ALIAS),
+                String.format("property-set pas.mtls.port %s", PORT),
+                "property-set pas.mtls.security MTLS",
+                String.format("property-set grpc.truststore \"%s\"",
+                        classpathFileToString("/cert/horizon/servertruststore.pem")),
+                "config:update",
+        });
     }
 }
