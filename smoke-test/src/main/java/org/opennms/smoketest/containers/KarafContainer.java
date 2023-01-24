@@ -38,7 +38,7 @@ import org.opennms.smoketest.utils.SshClient;
 import org.testcontainers.containers.Container;
 import org.testcontainers.utility.MountableFile;
 
-public interface KarafContainer<T extends Container<T>> extends Container<T> {
+public interface KarafContainer<T extends KarafContainer<T>> extends Container<T> {
 
     /**
      * Create a new SSH client connected to the Karaf shell in this container.
