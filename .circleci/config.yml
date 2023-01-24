@@ -463,9 +463,13 @@ workflows:
     jobs:
       - build
       - integration-test-with-coverage:
+          context:
+            - "SonarCloud"
           requires:
             - build
       - code-coverage:
+          context:
+            - "SonarCloud"
           requires:
             - integration-test-with-coverage
   build-minimal:
