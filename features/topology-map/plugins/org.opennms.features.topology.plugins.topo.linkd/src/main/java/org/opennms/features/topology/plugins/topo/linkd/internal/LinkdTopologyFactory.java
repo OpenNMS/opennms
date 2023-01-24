@@ -32,20 +32,23 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
-
-import org.opennms.features.topology.api.topo.*;
+import java.util.Set;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
@@ -57,32 +60,32 @@ public class LinkdTopologyFactory {
 
     protected static Set<ProtocolSupported> getProtocolSupportedSet(String... names) {
         Set<ProtocolSupported> protocolSupportedSet = new LinkedHashSet<>();
-        for (String namespace: names) {
-            if (namespace.equalsIgnoreCase(ProtocolSupported.NODES.name())) {
+        for (String protocol: names) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.NODES.name())) {
                 protocolSupportedSet.add(ProtocolSupported.NODES);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.CDP.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.CDP.name())) {
                 protocolSupportedSet.add(ProtocolSupported.CDP);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.NETWORKROUTER.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.NETWORKROUTER.name())) {
                 protocolSupportedSet.add(ProtocolSupported.NETWORKROUTER);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.LLDP.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.LLDP.name())) {
                 protocolSupportedSet.add(ProtocolSupported.LLDP);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.BRIDGE.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.BRIDGE.name())) {
                 protocolSupportedSet.add(ProtocolSupported.BRIDGE);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.OSPF.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.OSPF.name())) {
                 protocolSupportedSet.add(ProtocolSupported.OSPF);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.OSPFAREA.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.OSPFAREA.name())) {
                 protocolSupportedSet.add(ProtocolSupported.OSPFAREA);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.ISIS.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.ISIS.name())) {
                 protocolSupportedSet.add(ProtocolSupported.ISIS);
             }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.USERDEFINED.name())) {
+            if (protocol.equalsIgnoreCase(ProtocolSupported.USERDEFINED.name())) {
                 protocolSupportedSet.add(ProtocolSupported.USERDEFINED);
             }
         }
@@ -90,7 +93,7 @@ public class LinkdTopologyFactory {
         return protocolSupportedSet;
     }
 
-    private GraphProvider m_delegate;
+    private LinkdTopologyProvider m_delegate;
     private final OnmsTopologyDao m_onmsTopologyDao;
 
     private final Timer m_loadFullTimer;
@@ -143,20 +146,26 @@ public class LinkdTopologyFactory {
     }
 
     protected Vertex getDefaultVertex(BackendGraph graph) {
-        OnmsTopologyVertex node;
-        try {
-            node = m_onmsTopologyDao.getTopology(ProtocolSupported.NODES.name()).getDefaultVertex();
-        } catch (Exception e) {
-            LOG.error("getDefaultVertex: no default node found", e);
-            return null;
-        }
+        for (ProtocolSupported protocol: m_delegate.getProtocolSupported()) {
+            OnmsTopology topology;
 
-        if (node == null) {
-            LOG.info("getDefaultVertex: namespace: {}, no default node found!", graph.getNamespace());
-            return null;
+            try {
+                topology = m_onmsTopologyDao.getTopology(protocol.name());
+            } catch (Exception e) {
+                LOG.error("getDefaultVertex: {}: {}: no topology found {}", graph.getNamespace(), protocol, e.getMessage());
+                continue;
+            }
+
+            if (topology.getDefaultVertex() == null) {
+                LOG.info("getDefaultVertex: {}: {}: no default vertex found!", graph.getNamespace(), protocol);
+                continue;
+            }
+
+            LOG.info("getDefaultVertex: {}, default node found: [{}]:{}", graph.getNamespace(), topology.getDefaultVertex().getId(), topology.getDefaultVertex().getLabel());
+            return graph.getVertex(graph.getNamespace(), topology.getDefaultVertex().getId());
         }
-        LOG.info("getDefaultVertex: topology: {}, default node found: [{}]:{}", graph.getNamespace(), node.getId(), node.getLabel());
-        return graph.getVertex(graph.getNamespace(), node.getId());
+        LOG.info("getDefaultVertex: {}: no default vertex found", graph.getNamespace());
+        return null;
     }
 
     protected Defaults getDefaults(BackendGraph graph) {
@@ -190,7 +199,7 @@ public class LinkdTopologyFactory {
         return m_delegate;
     }
 
-    public void setDelegate(GraphProvider delegate) {
+    public void setDelegate(LinkdTopologyProvider delegate) {
         this.m_delegate = delegate;
     }
     
