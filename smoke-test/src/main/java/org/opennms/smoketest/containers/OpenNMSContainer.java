@@ -385,7 +385,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
         if (model.isJaegerEnabled()) {
             props.put("org.opennms.core.tracer", "jaeger");
-            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+            props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures

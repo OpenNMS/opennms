@@ -214,7 +214,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             String jaeger = "{\n" +
                     "\t\"system\": {\n" +
                     "\t\t\"properties\": {\n" +
-                    "\t\t\t\"JAEGER_ENDPOINT\": \"http://jaeger:14268/api/traces\"\n" +
+                    "\t\t\t\"JAEGER_ENDPOINT\": \"" + JaegerContainer.getThriftHttpURL() + "\"\n" +
                     "\t\t}\n" +
                     "\t}\n" +
                     "}";

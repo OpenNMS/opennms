@@ -47,20 +47,30 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
 public class JaegerContainer extends GenericContainer<JaegerContainer> implements TestLifecycleAware {
+    public static final String ALIAS = "jaeger";
+    public static final int WEB_PORT = 16686;
+    public static final int THRIFT_HTTP_PORT = 14268;
     public static final String IMAGE = "jaegertracing/all-in-one:1.39";
-    private static final String ALIAS = "jaeger";
     private static final Logger LOG = LoggerFactory.getLogger(JaegerContainer.class);
 
     public JaegerContainer() {
         super(IMAGE);
         withNetwork(Network.SHARED);
         withNetworkAliases(ALIAS);
-        withExposedPorts(16686);
+        withExposedPorts(WEB_PORT);
     }
 
     public URL getURL(String path) throws MalformedURLException {
         Objects.requireNonNull(path);
-        return new URL("http://" + getHost() + ":" + getMappedPort(16686).toString() + path);
+        return new URL("http://" + getHost() + ":" + getMappedPort(WEB_PORT).toString() + path);
+    }
+
+    /**
+     * Gets the Thrift HTTP URL.
+     * @return String suitable to pass to JAEGER_ENDPOINT
+     */
+    public static String getThriftHttpURL() {
+        return String.format("http://%s:%d/api/traces", ALIAS, THRIFT_HTTP_PORT);
     }
 
     @Override
