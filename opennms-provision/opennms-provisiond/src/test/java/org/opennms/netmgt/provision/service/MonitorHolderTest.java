@@ -69,4 +69,52 @@ public class MonitorHolderTest {
         Thread.sleep(900L);
         Assert.assertEquals("It should still have 0 now.", 0, holder.getMonitors().size());
     }
+
+    @Test
+    public void testMaxAssociatedMetrics() throws ExecutionException, InterruptedException {
+        MonitorHolder holder = new MonitorHolder(1);
+        String overallMetricName = "single-job-test";
+        for(int i = 0; i < holder.MAX_METRIC_ASSOCIATION_SIZE ; i++){
+            holder.createMonitor(overallMetricName);
+            //metric names created have a timestamp format up to the second so need to wait at least a second before adding a new one
+            Thread.sleep(1100L);
+        }
+        Assert.assertEquals("It should have " + holder.MAX_METRIC_ASSOCIATION_SIZE + " items", holder.getAssociatedMetrics().get(overallMetricName).size(), holder.MAX_METRIC_ASSOCIATION_SIZE );
+        var oldest = holder.getAssociatedMetrics().get(overallMetricName).peekLast();
+        holder.createMonitor(overallMetricName);
+        Assert.assertEquals("It should still have " + holder.MAX_METRIC_ASSOCIATION_SIZE + " items", holder.getAssociatedMetrics().get(overallMetricName).size(), holder.MAX_METRIC_ASSOCIATION_SIZE );
+        var newOldest = holder.getAssociatedMetrics().get(overallMetricName).peekLast();
+        Assert.assertNotEquals("It should remove the oldest ", oldest, newOldest);
+
+        for(int i = 0; i <= holder.MAX_METRIC_ASSOCIATION_SIZE ; i++){
+            holder.createMonitor(overallMetricName);
+            Thread.sleep(500L);
+        }
+        Assert.assertEquals("It should still have " + holder.MAX_METRIC_ASSOCIATION_SIZE + " items", holder.getAssociatedMetrics().get(overallMetricName).size(), holder.MAX_METRIC_ASSOCIATION_SIZE );
+
+    }
+
+    @Test
+    public void testOverallMonitors() throws ExecutionException, InterruptedException {
+        MonitorHolder holder = new MonitorHolder(1);
+        String overallMetricName = "single-job-test";
+        String overallMetricName2 = "single-job-test2";
+        holder.createOverallMonitor(overallMetricName);
+        holder.createOverallMonitor(overallMetricName2);
+        for(int i = 0; i < holder.MAX_METRIC_ASSOCIATION_SIZE ; i++){
+            holder.createMonitor(overallMetricName);
+            //metric names created have a timestamp format up to the second so need to wait at least a second before adding a new one
+            Thread.sleep(1100L);
+        }
+        for(int i = 0; i < 10; i++){
+            holder.createMonitor(overallMetricName2);
+            //metric names created have a timestamp format up to the second so need to wait at least a second before adding a new one
+            Thread.sleep(1100L);
+        }
+        Assert.assertEquals("Should have 2 associated metrics",holder.getAssociatedMetrics().size(), 2);
+        Assert.assertEquals("Should exists and have 10 associated metrics",holder.getAssociatedMetrics().get(overallMetricName2).size(),10);
+        Assert.assertEquals("Should have 2 overall monitors",holder.getOverallMonitors().size(), 2);
+        Assert.assertArrayEquals("overall keys should be the same as associated keys", holder.getAssociatedMetrics().keySet().toArray(new String[0]), holder.getOverallMonitors().keySet().toArray(new String[0]));
+
+    }
 }

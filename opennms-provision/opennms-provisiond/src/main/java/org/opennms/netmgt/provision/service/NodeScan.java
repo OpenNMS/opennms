@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -70,6 +71,7 @@ import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionOverallMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
@@ -100,6 +102,7 @@ public class NodeScan implements Scan {
     private Span m_span;
     private final Span m_parentSpan;
     private ProvisionMonitor monitor;
+    private ProvisionOverallMonitor overallMonitor;
 
     /**
      * <p>
@@ -130,7 +133,8 @@ public class NodeScan implements Scan {
     public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId,
             final OnmsMonitoringLocation location, final ProvisionService provisionService,
             final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory,
-            final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor) {
+            final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor,
+            final ProvisionOverallMonitor overallMonitor) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -142,6 +146,7 @@ public class NodeScan implements Scan {
         m_taskCoordinator = taskCoordinator;
         m_parentSpan = span;
         this.monitor = monitor;
+        this.overallMonitor = overallMonitor;
     }
 
     /**
@@ -304,6 +309,9 @@ public class NodeScan implements Scan {
         reset();
         if (monitor != null) {
             monitor.beginScanning(this);
+        }
+        if(!Objects.isNull(overallMonitor)){
+            overallMonitor.startNodeScan();
         }
         reset();
         if (m_parentSpan != null) {
@@ -1124,6 +1132,9 @@ public class NodeScan implements Scan {
         }
         if (monitor != null) {
             monitor.finishScanning(this);
+        }
+        if(!Objects.isNull(overallMonitor)){
+            overallMonitor.endNodeScan();
         }
     }
 }
