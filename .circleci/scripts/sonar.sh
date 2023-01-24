@@ -27,7 +27,7 @@ cd ~/project
   -Dsonar.projectKey="$SONARCLOUD_PROJECTKEY" \
   -Dsonar.organization="$SONARCLOUD_ORG" \
   -Dsonar.host.url="https://sonarcloud.io" \
-  -Dsonar.login="$SONARCLOUD_LOGIN" \
+  -Dsonar.login="$SONAR_TOKEN" \
   -Dsonar.branch.name="$CIRCLE_BRANCH" \
   -Dsonar.coverage.jacoco.xmlReportPaths="$(generate_jacoco_report_names)" \
   -Dsonar.junit.reportPaths="$(generate_junit_report_names)"

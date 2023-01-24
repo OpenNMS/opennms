@@ -495,6 +495,7 @@ workflows:
       - integration-test-with-coverage:
           context:
             - "CircleCI"
+            - "SonarCloud"
           requires:
             - build
           post-steps:
@@ -502,6 +503,7 @@ workflows:
       - code-coverage:
           context:
             - "CircleCI"
+            - "SonarCloud"
           requires:
             - integration-test-with-coverage
           post-steps:
