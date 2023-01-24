@@ -560,6 +560,8 @@ workflows:
                 - develop
                 - /.*smoke.*/
       - minion-rpm-build:
+          context:
+            - "docker-publish-account"
           requires:
             - build
           filters:
@@ -668,6 +670,8 @@ workflows:
       #          - /.*smoke.*/
       #          - /^dependabot.*/
       - horizon-publish-oci:
+          context:
+            - "docker-publish-account"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -684,6 +688,8 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
       - minion-publish-oci:
+          context:
+            - "docker-publish-account"
           requires:
             - horizon-deb-build
             - minion-deb-build
