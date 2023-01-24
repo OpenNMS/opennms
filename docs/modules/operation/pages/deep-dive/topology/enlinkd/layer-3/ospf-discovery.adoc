@@ -20,16 +20,15 @@ For example, Node A and node B are connected by an edge if, and only if, there i
 Information gathered from supported OIDs is stored in the following database tables:
 
 .Database tables related to OSPF discovery
-image::enlinkd/ospf-database.png[Network diagram depicting database tables used in OSPF discovery]
+image::enlinkd/ospf-database.png["Network diagram depicting database tables that are used in OSPF discovery"]
 
 == Supported OIDs
 
-.Supported OIDs from the OSPF-MIB module
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported OIDs from the `OSPF-MIB` module
+[cols="1,3,1"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | ospfRouterId
 | 32-bit integer uniquely identifying the router in the autonomous system.
@@ -80,12 +79,11 @@ On row creation, this can be derived from the instance.
 | .1.3.6.1.2.1.14.10.1.3
 |===
 
-.Supported OIDs from the IP-MIB module
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported OIDs from the `IP-MIB` module
+[cols="1,3,1"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | ipAdEntIfIndex
 | Index value that uniquely identifies the interface to which this entry applies.
