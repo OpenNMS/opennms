@@ -1729,7 +1729,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
+    <junitVintageEngineVersion>5.6.3</junitVintageEngineVersion>
     <karafVersion>4.3.2</karafVersion>
     <kafkaBundleVersion>2.8.2_1</kafkaBundleVersion>
     <kafkaVersion>2.8.0</kafkaVersion>
@@ -4610,7 +4610,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.13.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
