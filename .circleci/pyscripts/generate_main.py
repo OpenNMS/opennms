@@ -261,7 +261,7 @@ for e in main_yml_content:
                 and len(workflow_path) < 4
             ):
                 workflow_path = print_add(
-                    workflow_path, level, tmp_filters_enabled, "empty"
+                    workflow_path, level, filters_enabled, "empty"
                 )
 
             if workflow_path:
