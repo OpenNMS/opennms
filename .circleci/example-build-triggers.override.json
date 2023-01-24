@@ -10,5 +10,6 @@
     "debs": false,
     "oci": false,
     "build-publish": false,
+    "trivy-scan": false,
     "experimental": false
 }
