@@ -77,10 +77,12 @@ import org.opennms.nephron.NephronOptions;
 import org.opennms.nephron.Pipeline;
 import org.opennms.nephron.UnalignedFixedWindows;
 import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -131,8 +133,9 @@ public class AggregatedFlowQueryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(AggregatedFlowQueryIT.class.getName()));
+                CircuitBreakerConfig.custom().build()).circuitBreaker(AggregatedFlowQueryIT.class.getName()), eventForwarder);
         final IndexSettings rawIndexSettings = new IndexSettings();
         rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();

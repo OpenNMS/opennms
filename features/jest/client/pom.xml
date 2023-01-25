@@ -97,6 +97,18 @@
       <artifactId>resilience4j-circuitbreaker</artifactId>
       <version>${resilience4jVersion}</version>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features.events</groupId>
+          <artifactId>org.opennms.features.events.api</artifactId>
+      </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

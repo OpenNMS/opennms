@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -49,7 +50,7 @@ public abstract class AbstractEventToIndexITCase {
     @Before
     public void setUp() throws Exception {
         this.jestClient = new RestClientFactory(elasticServerRule.getUrl()).createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(AbstractEventToIndexITCase.class.getName()));
+                CircuitBreakerConfig.custom().build()).circuitBreaker(AbstractEventToIndexITCase.class.getName()), new AbstractMockDao.NullEventForwarder());
         this.eventToIndex = new EventToIndex(jestClient, 3);
     }
 

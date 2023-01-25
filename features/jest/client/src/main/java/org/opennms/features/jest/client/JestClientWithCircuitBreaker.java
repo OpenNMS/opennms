@@ -29,7 +29,13 @@
 package org.opennms.features.jest.client;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.action.Action;
@@ -38,13 +44,27 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 
 public class JestClientWithCircuitBreaker implements JestClient {
+    public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
 
     private final JestClient client;
     private final CircuitBreaker circuitBreaker;
 
-    public JestClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker) {
-        this.client = client;
-        this.circuitBreaker = circuitBreaker;
+    private final EventForwarder eventForwarder;
+
+    public JestClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker, EventForwarder eventForwarder) {
+        this.client = Objects.requireNonNull(client);
+        this.circuitBreaker = Objects.requireNonNull(circuitBreaker);
+        this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        circuitBreaker.getEventPublisher()
+                .onStateTransition(e -> {
+                    // Send an event when the circuit breaker's state changes
+                    final Event event = new EventBuilder(CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI, JestClientWithCircuitBreaker.class.getCanonicalName())
+                            .addParam("name", circuitBreaker.getName())
+                            .addParam("fromState", e.getStateTransition().getFromState().toString())
+                            .addParam("toState", e.getStateTransition().getToState().toString())
+                            .getEvent();
+                    this.eventForwarder.sendNow(event);
+                });
     }
 
     @Override
@@ -60,11 +80,13 @@ public class JestClientWithCircuitBreaker implements JestClient {
 
     @Override
     public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<? super T> jestResultHandler) {
-        try {
-            jestResultHandler.completed(execute(clientRequest));
-        } catch (IOException e) {
-            jestResultHandler.failed(e);
-        }
+        CompletableFuture.runAsync(() -> {
+            try {
+                jestResultHandler.completed(execute(clientRequest));
+            } catch (IOException e) {
+                jestResultHandler.failed(e);
+            }
+        });
     }
 
     @Override

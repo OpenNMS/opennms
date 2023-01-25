@@ -45,6 +45,8 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.integration.api.v1.flows.FlowRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.codahale.metrics.MetricRegistry;
@@ -89,8 +91,9 @@ public class ElasticFlowRepositoryRetryIT {
 
         final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
         restClientFactory.setRequestExecutorSupplier(() -> new DefaultRequestExecutor(RETRY_COOLDOWN));
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         try (JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()))) {
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()), eventForwarder)) {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 

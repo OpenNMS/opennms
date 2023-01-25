@@ -54,6 +54,8 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
     <bean id="credentialsProvider" class="org.opennms.features.jest.client.credentials.DefaultCredentialsProvider">
         <argument value="elastic-credentials.xml" />
@@ -131,6 +133,7 @@
     <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
         <argument ref="jestClient"/>
         <argument ref="circuitBreaker"/>
+        <argument ref="eventForwarder"/>
     </bean>
 
     <bean id="indexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">

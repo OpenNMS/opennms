@@ -9,6 +9,8 @@
 
     <context:annotation-config />
 
+    <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
+
     <bean id="restClientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <!-- Match the port used by the server spawned in the test case -->
         <constructor-arg value="http://localhost:9205"/>
@@ -38,6 +40,7 @@
     <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
         <constructor-arg ref="jestClient"/>
         <constructor-arg ref="circuitBreaker"/>
+        <constructor-arg ref="eventForwarder"/>
     </bean>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>

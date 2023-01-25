@@ -55,6 +55,8 @@ import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 
@@ -85,9 +87,10 @@ public class ElasticAlarmIndexerIT {
 
     @Before
     public void setUp() throws IOException {
-        RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         final JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticAlarmIndexerIT.class.getName()));
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticAlarmIndexerIT.class.getName()), eventForwarder);
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         MetricRegistry metrics = new MetricRegistry();

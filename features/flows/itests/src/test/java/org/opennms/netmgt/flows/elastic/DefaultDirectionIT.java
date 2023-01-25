@@ -48,6 +48,8 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.integration.api.v1.flows.FlowRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +90,9 @@ public class DefaultDirectionIT {
         elasticSearchRule.startServer();
 
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         try (JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()))) {
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()), eventForwarder)) {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY,
                             new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), jestClient);

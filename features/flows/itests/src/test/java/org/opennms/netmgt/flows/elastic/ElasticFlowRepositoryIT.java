@@ -75,7 +75,7 @@ public class ElasticFlowRepositoryIT {
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     new JestClientWithCircuitBreaker(client, CircuitBreakerRegistry.of(
-                            CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryIT.class.getName())),
+                            CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryIT.class.getName()), eventForwarder),
                     IndexStrategy.MONTHLY, new MockIdentity(), new MockTracerRegistry(), new IndexSettings(), 0, 0);
 
             // It does not matter what we persist here, as the response is fixed.

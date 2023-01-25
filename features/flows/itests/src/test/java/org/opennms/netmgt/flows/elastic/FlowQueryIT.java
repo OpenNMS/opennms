@@ -77,10 +77,12 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -126,8 +128,9 @@ public class FlowQueryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()));
+                CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()), eventForwarder);
         final IndexSettings settings = new IndexSettings();
         settings.setIndexPrefix("flows");
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,

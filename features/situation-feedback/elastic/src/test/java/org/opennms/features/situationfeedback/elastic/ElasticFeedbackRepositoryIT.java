@@ -51,8 +51,10 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.events.api.EventForwarder;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -71,8 +73,9 @@ public class ElasticFeedbackRepositoryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
         MockLogAppender.setupLogging(true, "DEBUG");
         final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFeedbackRepositoryIT.class.getName()));
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFeedbackRepositoryIT.class.getName()), eventForwarder);
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         final IndexSettings settings = new IndexSettings();
