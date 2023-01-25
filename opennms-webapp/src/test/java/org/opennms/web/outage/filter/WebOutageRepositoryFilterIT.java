@@ -29,15 +29,18 @@
 package org.opennms.web.outage.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -50,12 +53,15 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.api.Util;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -232,5 +238,33 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
         assertEquals(4, outages.length);
+    }
+
+    @Test
+    public void testNMS15294() {
+        final MockHttpServletRequest httpServletRequest = new MockHttpServletRequest(new MockServletContext(), "POST", "/list.htm");
+
+        httpServletRequest.setParameter("filter", "intf=192.168.1.1");
+        httpServletRequest.setParameter("\"><script>alert('foo');</script>", "foo");
+        httpServletRequest.setParameter("foo", "\"><script>alert('foo');</script>");
+
+        final Map<String, Object> additions = new HashMap<>();
+        additions.put("sortby", "id");
+        additions.put("outtype", "current");
+        additions.put("limit", "20");
+
+        final String queryString = Util.makeQueryString(
+                httpServletRequest,
+                additions,
+                new String[] { "sortby", "outtype", "limit", "multiple", "filter" },
+                Util.IgnoreType.REQUEST_ONLY
+        );
+
+        assertThat(queryString, Matchers.not(Matchers.containsString("\"")));
+        assertThat(queryString, Matchers.not(Matchers.containsString("'")));
+        assertThat(queryString, Matchers.not(Matchers.containsString(">")));
+        assertThat(queryString, Matchers.not(Matchers.containsString("<")));
+        assertThat(queryString, Matchers.not(Matchers.containsString("<script>")));
+        assertThat(queryString, Matchers.not(Matchers.containsString("alert('foo')>")));
     }
 }

@@ -1,7 +1,7 @@
 
 = Transparent Bridge Discovery
 
-Discovering xref:operation:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table (BFT) requires a special algorithm which is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
+Discovering xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table requires a special algorithm that is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
 The gathered information is used to classify links as macLinks and bridgeLinks.
 
 == Definitions
@@ -27,7 +27,7 @@ NOTE: BridgeDomainDiscovery does not support multi-VLAN; the bridge network mode
 Each VLAN has its own BFT and spanning tree.
 Although discovery is run only against the main VLAN, the algorithm has to be run against all bridges and VLANs to discover a bridge topology.
 
-Bridge domains provide no information about xref:operation:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 links]; they produce only a Layer 2 map of the broadcast domains.
+Bridge domains provide no information about xref:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 links]; they produce only a Layer 2 map of the broadcast domains.
 You can determine which Layer 3 interfaces map to Layer 2 nodes if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
 You can associate a MAC address with its corresponding IP address and the associated node using this table.
 
@@ -46,18 +46,17 @@ You can find generic information about the bridge link discovery process in the 
 Information gathered from the supported OIDs is stored in the following database tables:
 
 .Database tables related to transparent bridge discovery
-image::enlinkd/bridge-database.png[Network diagram depicting database tables used in transparent bridge discovery]
+image::enlinkd/bridge-database.png["Network diagram depicting database tables that are used in transparent bridge discovery"]
 
-== Required SNMP MIBs
+== Required SNMP MIB
 
-To define links, {page-component-title} must perform some calculations, and the SNMP agent must support the following MIBs to allow this:
+To define links, {page-component-title} must perform some calculations, and the SNMP agent must support the following MIB to allow this:
 
-.Supported MIBs from the Cisco-VTP MIB
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported MIB from the `Cisco-VTP` MIB
+[cols="1,3,1"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | vtpVersion
 | The local version of VTP.
@@ -70,12 +69,11 @@ If the device does not support VTP, the version is `none(3)`.
 
 The bridge discovery process supports the following OIDs:
 
-.Supported OIDs from the IP-MIB module
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported OIDs from the `IP-MIB` module
+[cols="1,3,1"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | ipNetToMediaIfIndex
 | Interface on which the entry's equivalent is effective.
@@ -99,12 +97,11 @@ Proper interpretation of such entries requires the relevant `ipNetToMediaType` o
 | .1.3.6.1.2.1.4.22.1.4
 |===
 
-.Supported OIDs from the BRIDGE-MIB module
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported OIDs from the `BRIDGE-MIB` module
+[cols="2,4,2"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | dot1dBaseBridgeAddress
 | MAC address used by the bridge as a unique identifier.
@@ -131,8 +128,8 @@ If a bridge is actually performing a certain type of bridging, entries in the ap
 
 | dot1dStpProtocolSpecification
 | Version of the spanning tree protocol that is being run. +
-`decLb100(2)` indicates the DEC LANbridge 100 protocol. +
-`ieee9021d(3)` indicates IEE 802.1d implementations.
+*decLb100(2):* Indicates the DEC LANbridge 100 protocol. +
+*ieee9021d(3):* Indicates IEE 802.1d implementations.
 If future versions of the IEE protocol are released that are not compatible with the current version, a new value will be defined.
 | .1.3.6.1.2.1.17.2.1.0
 
@@ -208,22 +205,21 @@ You are encouraged to assign the port value to this object when it is discovered
 
 | dot1dTpFdbStatus
 | The current entry's status. +
-`other(1)` indicates "none of the following."
+*other(1):* Indicates "none of the following".
 This may include the case in which another MIB object (which is not `dot1dTpFdbPort` or an entry in the `dot1dStaticTable`) is being used to determine if and how frames addressed to the value of `dot1dTpFdbAddress` are being forwarded. +
-`invalid(2)` indicates that the entry is no longer valid (for example, the entry was discovered but has since aged out), but has not yet been flushed from the table. +
-`learned(3)` indicates that the value of `dot1dTpFdbPort` was discovered and is being used. +
-`self(4)` indicates that the value of `dot1dTpFdbAddress` represents one of the bridge's addresses.
+*invalid(2):* Indicates that the entry is no longer valid (for example, the entry was discovered but has since aged out) but has not yet been flushed from the table. +
+*learned(3):* Indicates that the value of `dot1dTpFdbPort` was discovered and is being used. +
+*self(4):* Indicates that the value of `dot1dTpFdbAddress` represents one of the bridge's addresses.
 `dot1dTpFdbPort` indicates which of the bridge's ports has this address. +
-`mgmt(5)` indicates that the value of `dot1dTpFdbAddress` is also the value of an existing instance of `dot1dStaticAddress`.
+*mgmt(5):* Indicates that the value of `dot1dTpFdbAddress` is also the value of an existing instance of `dot1dStaticAddress`.
 | .1.3.6.1.2.1.17.4.3.1.3
 |===
 
-.Supported OIDs from the Q-BRIDGE-MIB module
-[options="header" cols="1,3,1"]
+[caption=]
+.Supported OIDs from the `Q-BRIDGE-MIB` module
+[cols="1,3,1"]
 |===
-| Name
-| Description
-| OID
+| Name  | Description   | OID
 
 | dot1qTpFdbPort
 | Either `0` or the port number of the port on which a frame whose source address is equal to the value of `dot1qTpFdbAddress` has been seen.
@@ -233,12 +229,12 @@ You are encouraged to assign the port value to this object whenever it is discov
 
 | dot1qTpFdbStatus
 | The current entry's status. +
-`other(1)` indicates "none of the following."
+*other(1):* Indicates "none of the following".
 This may include the case in which another MIB object (which is not `dot1qTpFdbPort` or an entry in the `dot1dStaticUnicastTable`) is being used to determine if and how frames addressed to the value of `dot1dTpFdbAddress` are being forwarded. +
-`invalid(2)` indicates that the entry is no longer valid (for example, the entry was discovered but has since aged out), but has not yet been flushed from the table. +
-`learned(3)` indicates that the value of `dot1dTpFdbPort` was discovered and is being used. +
-`self(4)` indicates that the value of `dot1dTpFdbAddress` represents one of the device's addresses.
+*invalid(2):* Indicates that the entry is no longer valid (for example, the entry was discovered but has since aged out) but has not yet been flushed from the table. +
+*learned(3):* Indicates that the value of `dot1dTpFdbPort` was discovered and is being used. +
+*self(4):* Indicates that the value of `dot1dTpFdbAddress` represents one of the device's addresses.
 `dot1dTpFdbPort` indicates which of the device's ports has this address. +
-`mgmt(5)` indicates that the value of `dot1dTpFdbAddress` is also the value of an existing instance of `dot1dStaticAddress`.
+*mgmt(5):* Indicates that the value of `dot1dTpFdbAddress` is also the value of an existing instance of `dot1dStaticAddress`.
 | .1.3.6.1.2.1.17.7.1.2.2.1.3
 |===

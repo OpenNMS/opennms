@@ -1,34 +1,30 @@
 
-[[gu-bsm-rc-imp-analysis]]
 = Root Cause and Impact Analysis
 
-Use the root cause operation to quickly identify the underlying reduction keys of edges that contribute to the current operational status of an element.
-Use the impact analysis operation, converse to the root cause operation, to identify all of the business services affected by a given element.
-Both of these options are available in the context menu of the Topology User Interface when visualizing business services.
+The root cause operation can quickly identify the underlying reduction keys of edges that contribute to an element's current operational status.
+The impact analysis operation identifies all business services that are affected by a given element.
+Both of these options are available in the topology map's context menu when you visualize business services.
 
-The following example shows how to identify the root cause of the critical status of the hop service.
-Use the Context Menu on the business service to investigate the root cause shown in figure <<ug-bsm-example-rca-action, View before Performing Root Cause Analysis>>.
+== Example
 
-[[ug-bsm-example-rca-action]]
-.View before performing Root Cause Analysis
-image::bsm/03_bsm-rca-action.png[]
+The following example shows how to identify the root cause of a critical status on the hop service.
+You can use the business service's context menu to investigate the root cause:
 
-The Topology UI focuses only on elements that are the reason for the operational status of the selected business service.
-In figure <<ug-bsm-example-rca-results, View after Performing Root Cause Analysis>> the Page Sequence Monitor which tests the user login is down and has set the business service to a critical status.
+.View before performing root cause analysis
+image::bsm/03_bsm-rca-action.png["{page-component-title} UI displaying the topology map, with a context menu overlaid. Root Cause Analysis is highlighted."]
 
-[[ug-bsm-example-rca-results]]
-.View after performing Root Cause Analysis
-image::bsm/04_bsm-rca-results.png[]
+The topology map focuses only on elements that affect the operational status of a selected business service.
+Here, the Page Sequence Monitor--which lets the user log in--is down, and has set the business service to Critical status:
 
-Similar to identifying a root cause for a business service, it is also possible to identify which business services from a specific edge are affected.
-Use the context menu on a specific edge element and select impact analysis shown in figure <<ug-bsm-example-ia-action, View before performing Impact Analysis>>.
+.View after performing root cause analysis
+image::bsm/04_bsm-rca-results.png["{page-component-title} UI displaying the topology map, with two elements"]
 
-[[ug-bsm-example-ia-action]]
-.View before performing Impact Analysis
-image::bsm/05_bsm-ia-action.png[]
+You can also identify which business services from a specific edge are affected by selecting *Impact Analysis* from the context menu:
 
-In figure <<ug-bsm-example-ia-results, View after performing Impact Analysis>> the business services for login, shop, and payment are affected if this HTTP service is unavailable.
+.View before performing impact analysis
+image::bsm/05_bsm-ia-action.png["{page-component-title} UI displaying the topology map, with a context menu overlaid. Impact Analysis is highlighted."]
 
-[[ug-bsm-example-ia-results]]
-.View after performing Impact Analysis
-image::bsm/06_bsm-ia-results.png[]
+In this example, the business services for the login, shop, and payment workflows are affected if the HTTP service is unavailable:
+
+.View after performing impact analysis
+image::bsm/06_bsm-ia-results.png["{page-component-title} UI displaying the topology map, with five elements."]
