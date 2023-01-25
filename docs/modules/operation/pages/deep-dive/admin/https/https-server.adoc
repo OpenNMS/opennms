@@ -65,72 +65,67 @@ org.opennms.netmgt.jetty.https-cert-alias = opennms-jetty
 
 == Restrict access to the plain-HTTP listener
 
-The steps to configure OpenNMS to start a Jetty HTTPS listener on port 8443 do not disable the plain-HTTP listener that is present by default on port 8980.
-This listener must be present so that the OpenNMS real-time console can update the availability statistics shown in the web UI.
-Once you have enabled HTTPS, you probably do not want users using HTTP, so you will need to restrict access to the plain-HTTP listener.
+The process of configuring {page-component-title} to start a Jetty HTTPS listener on port 8443 does not include disabling the plain-HTTP listener that is present by default on port 8980.
+This listener must be present so the {page-component-title} real-time console can update availability statistics shown in the web UI.
 
-There are two ways to accomplish this task.
+After you have enabled HTTPS, you likely do not want users using HTTP; to control this, you need to restrict access to the plain-HTTP listener.
+There are two methods of accomplishing this:
 
-* Tell the plain-HTTP listener to bind only to an interface that is not accessible from any untrusted networks.
-In a setup where the OpenNMS web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
-You can restrict the plain-HTTP listener to bind only to the localhost interface by setting the Jetty host property.
-Create or edit the `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` file.
+* Set the plain-HTTP listener to bind only to an interface that is not accessible from untrusted networks.
+In an environment where the {page-component-title} web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
+You can set the listener to bind only to the `localhost` interface by setting the `jetty.host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
 +
 [source, properties]
 org.opennms.netmgt.jetty.host = 127.0.0.1
 
 * Use firewall rules to limit access.
-These rules may be local to the OpenNMS web UI server (iptables, firewalld, or ufw) or they may be configured in a discrete firewall external that stands between the OpenNMS web UI server and the rest of the network.
-Configuring these rules is beyond the scope of this article.
+The rules may be local to the {page-component-title} web UI server (`iptables`, firewalld, or `ufw`), or they may be configured in a discrete external firewall that stands between the web UI and the rest of the network.
+Configuring these rules is beyond the scope of this section.
 
 == Restrict access to the HTTPS listener
 
-Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the OpenNMS Jetty HTTPS listener is reachable.
-The listener is bound to all interfaces (`0.0.0.0`) by default.
-To bind the HTTPS listener to a single interface, create or edit the `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` file.
+Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the {page-component-title} Jetty HTTPS listener can be reached.
+By default, the listener is bound to all interfaces (`0.0.0.0`); to bind it to a single interface, set the `jetty.https-host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
 
 [source, properties]
-----
 org.opennms.netmgt.jetty.https-host = 10.11.12.13
-----
 
-[[ga-ssl-server-debugging]]
 == Debugging/Properties
 
-If you encounter issues while using SSL, it might be useful to enable debug logging or use one of the built-in Java System Properties to configure the proper use of SSL.
+If you encounter issues while using SSL, it might be useful to enable debug logging.
+You could also use one of the built-in Java System Properties to configure SSL:
 
-.Java built-in System Properties
-[options="header"]
-[cols="2,3"]
+[options="autowidth"]
 |===
-| System Property Name
-| Description
+| System Property Name  | Description
 
 | javax.net.ssl.keyStore
-| Location of the Java keystore file that contains an application process's own certificate and private key.
+| Location of the keystore file that contains the application process's certificate and private key.
 
 | javax.net.ssl.keyStorePassword
-| Password to access the private key from the keystore file `javax.net.ssl.keyStore` specifies.
-This password is used twice: to unlock the keystore file (store password) and to decrypt the private key stored in the keystore (key password).
+| Password to access the private key from the keystore file specified by `javax.net.ssl.keyStore`.
+This password is used twice: once to unlock the keystore file (store password), and once to decrypt the private key stored in the keystore (key password).
 The JSSE framework requires these passwords to be identical.
 
 | javax.net.ssl.keyStoreType
-| (Optional) Keystore type. 
+| (Optional) Keystore type.
 Defaults to `jks`.
 
 | javax.net.ssl.trustStore
-| Location of the Java Truststore file that contains the collection of CA certificates this application process (truststore) trusts.
-If this property does not specify a truststore location, the Java implementation searches for and uses a keystore file in the following locations (in order):
-`$\{JAVA_HOME}/lib/security/jssecacerts` and `$\{JAVA_HOME}/lib/security/cacerts`.
+| Location of the truststore file that contains the CA certificates that the application process trusts.
+If this property does not specify a truststore location, the Java implementation searches for and uses a keystore file from the following locations, in order: +
+* `$\{JAVA_HOME}/lib/security/jssecacerts`
+* `$\{JAVA_HOME}/lib/security/cacerts`
 
 | javax.net.ssl.trustStorePassword
 | Password to unlock the truststore file.
 
 | javax.net.ssl.trustStoreType
-| (Optional) Truststore type. 
+| (Optional) Truststore type.
 Defaults to `jks`.
 
 | javax.net.debug
-| (Optional) To switch on logging for the SSL/TLS layer, set this property to ssl.
-For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities].
+| (Optional) Controls logging for the SSL/TLS layer.
+To enable, set this property to `ssl`. +
+For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities] in the official Oracle documentation.
 |===
