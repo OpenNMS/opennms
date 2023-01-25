@@ -129,6 +129,7 @@
   <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
     <argument ref="restClient"/>
     <argument ref="circuitBreaker"/>
+    <argument ref="eventForwarder"/>
   </bean>
 
   <bean id="indexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
