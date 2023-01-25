@@ -33,6 +33,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,7 +83,11 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
             .build();
     private static final Duration STORAGE_GET_WARNING_DURATION = Duration.ofSeconds(5);
 
+    private static final Duration DESTROY_GRACE_PERIOD = Duration.ofSeconds(30);
+
     private WorkerPool<SampleBatchEvent> workerPool;
+
+    private ExecutorService executor;
 
     private RingBuffer<SampleBatchEvent> ringBuffer;
 
@@ -139,7 +144,7 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         // Executor that will be used to construct new threads for consumers
         final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("TimeseriesWriter-Consumer-%d").build();
-        final Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
+        executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         @SuppressWarnings("unchecked")
         final WorkHandler<SampleBatchEvent>[] handlers = new WorkHandler[numWriterThreads];
@@ -168,7 +173,8 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
             LOG.info("destroy(): Draining and halting the time series worker pool. Entries in ring buffer: {}",
                     numEntriesOnRingBuffer.get());
             var destroyStatusThread = new Thread(() -> {
-                while (true) {
+                while (numEntriesOnRingBuffer.get() != 0 &&
+                        Duration.between(start, Instant.now()).compareTo(DESTROY_GRACE_PERIOD) < 0) {
                     LOG.info("destroy() in progress. Entries left in ring buffer to drain: {}",
                             numEntriesOnRingBuffer.get());
                     try {
@@ -178,6 +184,10 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
                                 numEntriesOnRingBuffer.get());
                         break;
                     }
+                }
+                if (numEntriesOnRingBuffer.get() != 0) {
+                    LOG.warn("destroy(): WorkerPool does not want to cooperate, forcing cooperation");
+                    executor.shutdownNow();
                 }
             }, getClass().getSimpleName() + "-destroy-status");
             destroyStatusThread.start();
