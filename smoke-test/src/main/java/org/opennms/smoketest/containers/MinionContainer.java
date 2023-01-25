@@ -71,10 +71,9 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.base.Strings;
 
-public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
@@ -122,8 +121,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         };
 
         withExposedPorts(tcpPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
@@ -216,7 +214,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             String jaeger = "{\n" +
                     "\t\"system\": {\n" +
                     "\t\t\"properties\": {\n" +
-                    "\t\t\t\"JAEGER_ENDPOINT\": \"http://jaeger:14268/api/traces\"\n" +
+                    "\t\t\t\"JAEGER_ENDPOINT\": \"" + JaegerContainer.getThriftHttpURL() + "\"\n" +
                     "\t\t}\n" +
                     "\t}\n" +
                     "}";
@@ -247,12 +245,20 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         return new InetSocketAddress(getContainerIpAddress(), TestContainerUtils.getMappedUdpPort(this, MINION_SYSLOG_PORT));
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(MINION_SSH_PORT));
     }
 
+    @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/minion");
     }
 
     public URL getWebUrl() {
