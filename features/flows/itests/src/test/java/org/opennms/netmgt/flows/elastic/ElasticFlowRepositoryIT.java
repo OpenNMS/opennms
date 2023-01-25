@@ -40,6 +40,8 @@ import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.FlowException;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.codahale.metrics.MetricRegistry;
@@ -61,7 +63,7 @@ public class ElasticFlowRepositoryIT {
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
 
     @Test(expected=PersistenceException.class)
-    public void verifyThrowsPersistenceException() throws IOException, FlowException, InterruptedException {
+    public void verifyThrowsPersistenceException() throws IOException, FlowException {
         // Stub request
         stubFor(post("/_bulk")
                     .willReturn(aResponse()
@@ -73,6 +75,7 @@ public class ElasticFlowRepositoryIT {
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
+            final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     new JestClientWithCircuitBreaker(client, CircuitBreakerRegistry.of(
                             CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryIT.class.getName()), eventForwarder),
