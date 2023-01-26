@@ -150,6 +150,10 @@
     <logger name="org.apache.kafka" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender" />
     </logger>
+    <logger name="org.eclipse.jetty.server.HttpInput" additivity="false" level="INFO">
+     <appender-ref ref="RoutingAppender"/>
+    </logger>
+
 
     <!-- Allow any message to pass through the root logger -->
     <root level="DEBUG">
