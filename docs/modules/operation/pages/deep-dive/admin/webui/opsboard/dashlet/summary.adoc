@@ -1,17 +1,16 @@
 
 = Summary
 
-This dashlet shows a trend of incoming alarms in a given time frame in the xref:deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
+The Summary dashlet shows a trend of incoming alarms in a given time frame in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
 .Summary dashlet configuration options
-[options="header,autowidth", cols="1,2"]
+[options="autowidth"]
 |===
-| Field
-| Description
+| Field | Description
 
 | Boost support
-| Change priority of the dashlet on ops board depending on alarm level severity. (See <<deep-dive/admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>.)
+| Change priority of the dashlet on an ops board, depending on alarm level severity (see xref:deep-dive/admin/webui/opsboard/boosting-behavior.adoc[Boosted Severity]).
 
 | timeslot
-| Time slot in seconds to evaluate the trend for alarms by severity and UEI.
+| Time slot, in seconds, to evaluate the trend for alarms by severity and UEI.
 |===

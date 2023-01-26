@@ -92,7 +92,7 @@ The following global options are available in each of the tool's sub-commands:
 === query
 
 The `query` sub-command is used to query an MBean server for its available MBean objects.
-The following example queries `myserver` with the credentials `myusername/mypassword` on port 7199.
+The following example queries `myserver` with the credentials `myusername`/`mypassword` on port 7199.
 It searches for MBean objects in the `java.lang` domain:
 
 [source, console]
@@ -122,7 +122,7 @@ java.lang:type=ClassLoading
 
 The following command line options are available for the `query` sub-command:
 
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Option/Argument	| Description	| Default Value
 
@@ -197,7 +197,7 @@ Where multiple `<filter criteria>` are provided, they are `OR` concatenated.
 
 The `generate-conf` sub-command can be used to generate a valid `jmx-datacollection-config.xml` file for a given set of MBean objects queried from an MBean server.
 The following example generates a `myconfig.xml` file for MBean objects in the `java.lang` domain of `myserver`, on port 7199.
-It uses the `myusername/mypassword` credentials for access:
+It uses the `myusername`/`mypassword` credentials for access:
 
 [source, console]
 ----
@@ -209,7 +209,7 @@ NOTE: You must define either a URL or a hostname and port to connect to a JMX se
 
 The following command line options are available for the `generate-conf` sub-command:
 
-[options="autowidth"]
+[cols="1,3,1"]
 |===
 | Option/Argument	| Description	| Default Value
 
@@ -303,7 +303,7 @@ java.lang.Compilation.MBeanReport, \
 
 The following command line options are available for the `generate-graph` sub-command:
 
-[options="autowidth"]
+[cols="2,4,1"]
 |===
 | Option/Argument	| Description	| Default Value
 

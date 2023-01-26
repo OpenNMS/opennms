@@ -1,5 +1,4 @@
 
-[[webui-grafana-dashboard-box]]
 = Grafana Dashboard Box
 
 http://grafana.org/[Grafana] provides an API key that lets third-party applications access it.
@@ -7,7 +6,7 @@ http://grafana.org/[Grafana] provides an API key that lets third-party applicati
 By default, it shows a set of dashboards related to {page-component-title} and your monitored environment.
 
 .Grafana dashboards on the {page-component-title} home page
-image::webui/startpage/01_grafana-box.png[]
+image::webui/startpage/01_grafana-box.png["{page-component-title} home page displaying Grafana dashboard components"]
 
 == Filter dashboards
 
@@ -17,88 +16,85 @@ If no tag is provided, all Grafana dashboards are shown.
 You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties`.
 
 .Grafana Dashboard Box configuration properties
-[options="header" cols="2,3,1,1"]
+[cols="2,3,1,2"]
 |===
-| Name
-| Description
-| Type
-| Default
+| Name  | Description   | Type  | Default Value
 
 | org.opennms.grafanaBox.show
 | Determines whether a Grafana Dashboard Box showing the available dashboards is included on the home page.
 | Boolean
-| `false`
+| false
 
 | org.opennms.grafanaBox.hostname
 | The hostname of the Grafana server.
 You may need to use the IP address or fully qualified domain name, based on your DNS records.
 | String
-| `localhost`
+| localhost
 
 | org.opennms.grafanaBox.port
 | The port for the Grafana server's REST API.
 | Integer
-| `3000`
+| 3000
 
 | org.opennms.grafanaBox.basePath
 | The base path to Grafana.
 | String
-| Empty string
+| _Empty_
 
 | org.opennms.grafanaBox.apiKey
 | The Grafana API key.
 This key is needed for REST calls to work. +
 Refer to the official https://grafana.com/docs/grafana/latest/developers/http_api/[Grafana HTTP documentation] for details on generating an API key.
 | String
-| Empty string
+| _Empty_
 
 | org.opennms.grafanaBox.tag
 | A tag that specifies which dashboards to display in the Grafana Dashboard Box.
 The tag must be assigned to an existing dashboard for it to be included. +
 When no tag is specified, all dashboards are displayed.
 | String
-| Empty string
+| _Empty_
 
 | org.opennms.grafanaBox.protocol
 | The protocol for the REST call.
 | String
-| `http`
+| http
 
 | org.opennms.grafanaBox.connectionTimeout
 | Connection timeout, in milliseconds, for fetching information from the Grafana server.
 | Integer
-| `500`
+| 500
 
 | org.opennms.grafanaBox.soTimeout
 | Socket timeout, in milliseconds.
 | Integer
-| `500`
+| 500
 
 | org.opennms.grafanaBox.dashboardLimit
 | The maximum number of entries to display.
 Setting the value to `0` will display an unlimited number of entries.
 | Integer
-| `0`
+| 0
 
 | org.opennms.grafanaBox.link.protocol
 | The protocol used to build each dashboard URL.
 | String
-| `org.opennms.grafanaBox.protocol`
+| org.opennms.grafanaBox.protocol
 
 | org.opennms.grafanaBox.link.hostname
 | Hostname used to build each dashboard URL.
 | String
-| `org.opennms.grafanaBox.hostname`
+| org.opennms.grafanaBox.hostname
 
 | org.opennms.grafanaBox.link.port
 | The port used to build each dashboard URL.
 | Integer
-| `org.opennms.grafanaBox.port`
+| org.opennms.grafanaBox.port
 
 | org.opennms.grafanaBox.link.basePath
 | The Grafana base path used to build each dashboard URL.
 | String
-| `org.opennms.grafanaBox.basePath`
+| org.opennms.grafanaBox.basePath
 |===
 
 NOTE: If you have Grafana set up behind a reverse proxy, you may need to define the `org.opennms.grafanaBox.link.\*` properties.

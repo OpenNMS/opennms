@@ -10,7 +10,7 @@ To configure system proxy servers, set some or all of the following properties:
 
 | http.proxyHost
 | Hostname or IP address of the proxy server to use for plain HTTP requests.
-| None
+| _Blank_
 
 | http.proxyPort
 | TCP port of the proxy server to use for plain HTTP requests.
@@ -18,7 +18,7 @@ To configure system proxy servers, set some or all of the following properties:
 
 | https.proxyHost
 | Hostname or IP address of the proxy server to use for HTTPS requests.
-| None
+| _Blank_
 
 | https.proxyPort
 | TCP port of the proxy server to use for HTTPS requests.
@@ -26,11 +26,11 @@ To configure system proxy servers, set some or all of the following properties:
 
 | http.nonProxyHosts
 | Pipe-separated list of hostnames or IP addresses which bypass HTTP proxying.
-| None
+| _Blank_
 
 | https.nonProxyHosts
 | Pipe-separated list of hostnames or IP addresses which bypass HTTPS proxying.
-| None
+| _Blank_
 |===
 
 Depending on the JVM in use, the properties `http.proxyUser`, `http.proxyPassword`, and their `https.*` equivalents may enable the use of proxy servers that require authentication.

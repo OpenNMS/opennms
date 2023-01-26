@@ -1,7 +1,7 @@
 
 = Alarms
 
-The Alarms dashlet displays a table with a short alarm description in the xref:deep-dive/admin/webui/opsboard/introduction.adoc[].
+The Alarms dashlet displays a table with a short alarm description in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
 .Alarm information displayed in dashlet
 [options="autowidth"]
@@ -22,11 +22,11 @@ The Alarms dashlet displays a table with a short alarm description in the xref:d
 [cols="2,3"]
 |===
 s| Boost Support
-| Change priority of the dashlet on ops board depending on the alarm level (see <<deep-dive/admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted severity>>).
+| Change priority of the dashlet on ops board depending on the alarm level (see xref:deep-dive/admin/webui/opsboard/boosting-behavior.adoc[Boosted severity]).
 
 s| Properties: Boosted Severity
 | Specify the alarm severity that boosts the dashlet to a higher priority on the ops board.
 
 s| Properties: Criteria
-| Specify criteria on which to filter alarms (see <<deep-dive/admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria builder>>).
+| Specify criteria on which to filter alarms (see xref:deep-dive/admin/webui/opsboard/criteria-builder.adoc[]).
 |===

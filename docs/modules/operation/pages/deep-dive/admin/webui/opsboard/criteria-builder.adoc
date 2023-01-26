@@ -1,33 +1,27 @@
 
-[[webui-opsboard-criteria-builder]]
 = Criteria Builder
 
-The Criteria Builder is a generic component to filter dashlet information.
-Some dashlets use this component in certain use cases to filter the displayed information.
+The Criteria Builder is a generic component used to filter dashlet information.
+Some dashlets use this component in certain situations to filter the displayed information.
 It is possible to combine multiple criteria to display a subset of information in a given dashlet.
 
 == Configuration options
 
-[options="header, %autowidth" cols="1,2,1,1,1"]
+[cols="1,2,1,1,1"]
 |===
-| Restriction
-| Description
-| Property
-| Value 1
-| Value 2
-
+| Restriction   | Description   | Property  | Value 1   | Value 2
 
 | Asc
 | Ascending order
-| -
-| -
-| -
+| _None_
+| _None_
+| _None_
 
 | Desc
 | Descending order
-| -
-| -
-| -
+| _None_
+| _None_
+| _None_
 
 | Between
 | Subset of data between value 1 and value 2.
@@ -40,42 +34,42 @@ It is possible to combine multiple criteria to display a subset of information i
 Any data containing the defined text string is selected.
 | Database attribute
 | String
-| -
+| _None_
 
 | Distinct
 | Select a single instance.
 | Database attribute
-| -
-| -
+| _None_
+| _None_
 
 | Eq
 | Select data where the defined attribute equals (`==`) a given text string.
 | Database attribute
 | String
-| -
+| _None_
 
 | Ge
-| Select data where the defined attribute is greater or equal to (`>=`) a given text value.
+| Select data where the defined attribute is greater than or equal to (`>=`) a given text value.
 | Database attribute
 | String
-| -
+| _None_
 
 | Gt
 | Select data where the defined attribute is greater than (`>`) a given text value.
 | Database attribute
 | String
-| -
+| _None_
 
 | Ilike
 | Select data where the defined attribute is like a given text value.
-This option is similar to the SQL `ilike` function and is not case sensitive.
+This option is similar to the SQL `ilike` function, and is not case sensitive.
 | Database attribute
 | String
 | String
 
 | In
 | Select data where the defined attribute matches any value in a list.
-Text value must be a comma-separated list of options.
+The text value must be a comma-separated list of options.
 | Database attribute
 | String
 | Comma-separated list of strings
@@ -84,63 +78,63 @@ Text value must be a comma-separated list of options.
 | Select data where the defined attribute matches a given `IPLIKE` expression.
 | Database attribute
 | String
-| -
+| _None_
 
 | IsNull
 | Select data where the defined attribute is `null`.
 | Database attribute
-| -
-| -
+| _None_
+| _None_
 
 | IsNotNull
 | Select data where the defined attribute is not `null`.
 | Database attribute
-| -
-| -
+| _None_
+| _None_
 
 | Le
 | Select data where the defined attribute is less than or equal to (`\<=`) a given text value.
 | Database attribute
 | String
-| -
+| _None_
 
 | Lt
 | Select data where the defined attribute is less than (`<`) a given text value.
 | Database attribute
 | String
-| -
+| _None_
 
 | Like
 | Select data where the defined attribute is like a given text value.
-This option is similar to the SQL `like` function and is case-sensitive.
+This option is similar to the SQL `like` function, and is case-sensitive.
 | Database attribute
 | String
-| -
+| _None_
 
 | Limit
 | Limit the result set to a given number.
-| -
+| _None_
 | Integer
-| -
+| _None_
 
 | Ne
 | Select data where the defined attribute does not equal (`!=`) a given text value.
 | Database attribute
 | String
-| -
+| _None_
 
 | Not
 | Unknown difference between `Ne`.
-| -
-| -
-| -
+| _None_
+| _None_
+| _None_
 
 | OrderBy
 | Order the result set using the defined attribute.
 | Database attribute
-| -
-| -
+| _None_
+| _None_
 |===
 
-TIP: For date values, you can specify absolute value in ISO format (`2019-06-20T20:45:15.123-05:00`).
+TIP: For date values, you can specify absolute value using ISO formatting (`2019-06-20T20:45:15.123-05:00`).
 Specify relative times by `+seconds` and `-seconds`.

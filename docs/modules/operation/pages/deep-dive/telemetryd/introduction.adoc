@@ -67,7 +67,7 @@ Queues transfer data between parsers and adapters, and are represented by a chan
 
 The following options can help fine-tune queue behavior:
 
-[options="autowidth"]
+[cols="2,2,3,2"]
 |===
 | Queue Attribute ({page-component-title})  | Key (Minion/Sentinel)     | Description   | Default Value
 

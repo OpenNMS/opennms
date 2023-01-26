@@ -22,7 +22,7 @@ Depending on the scale, {page-component-title} can generate a large number of lo
 === Logging levels
 
 .Service daemon logging level options
-[options="autowidth"]
+[cols="1,3"]
 |===
 | Level | Description
 
