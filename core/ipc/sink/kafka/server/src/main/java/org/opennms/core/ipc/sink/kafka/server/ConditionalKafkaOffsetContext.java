@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.sink.kafka.server;
 
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.common.SinkStrategy;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX;
+import static org.opennms.core.ipc.sink.common.SinkStrategy.Strategy.KAFKA;
 
 @Configuration
 @Conditional(ConditionalKafkaOffsetContext.Condition.class)
@@ -57,16 +59,20 @@ public class ConditionalKafkaOffsetContext {
 
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-            // Have to explicityly set disabled to true to disable otherwise defaults to enabled.
-            boolean disabled = Boolean.getBoolean(KAFKA_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
-            if (!disabled) {
-                disabled = Boolean.getBoolean(KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
+            final boolean kafkaSinkEnabled = KAFKA.equals(SinkStrategy.getSinkStrategy());
+            if (kafkaSinkEnabled) {
+                // Have to explicitly set disabled to true to disable otherwise defaults to enabled.
+                boolean disabled = Boolean.getBoolean(KAFKA_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
+                if (!disabled) {
+                    disabled = Boolean.getBoolean(KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
+                }
+                final var offsetEnabled = !disabled;
+                try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
+                    LOG.debug("Enable Kafka Offset: {}", offsetEnabled);
+                }
+                return offsetEnabled;
             }
-            final var enabled = !disabled;
-            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
-                LOG.debug("Enable Kafka Offset: {}", enabled);
-            }
-            return enabled;
+            return kafkaSinkEnabled;
         }
     }
 }
