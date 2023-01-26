@@ -6,7 +6,8 @@
         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
         <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-        <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
+        <bundle>mvn:org.apache.velocity/velocity-engine-core/${velocityVersion}</bundle>
+        <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
     </feature>
 </features>

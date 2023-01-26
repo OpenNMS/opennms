@@ -592,13 +592,18 @@
         "integration-test-with-coverage": {
             "context": [
                 "CircleCI",
-                "docker-publish-account"
+                "docker-publish-account",
+                "SonarCloud"
             ],
             "requires": [
                 "build"
             ]
         },
         "code-coverage": {
+            "context": [
+                "CircleCI",
+                "SonarCloud"
+            ],
             "requires": [
                 "integration-test-with-coverage"
             ]

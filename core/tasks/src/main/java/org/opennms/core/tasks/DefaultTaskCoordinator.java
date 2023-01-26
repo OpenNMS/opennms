@@ -371,7 +371,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     
-    private final Executor getExecutor(String name) {
+    public final Executor getExecutor(String name) {
         Executor executor = m_taskExecutors.get(name);
         if (executor == null) {
             Executor defaultExecutor = m_taskExecutors.get(m_defaultExecutorName);
