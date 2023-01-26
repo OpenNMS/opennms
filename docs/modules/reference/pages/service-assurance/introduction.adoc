@@ -123,5 +123,5 @@ The following shows the basic format of a sample service definition:
 <monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
 ----
 
-Note that all service definitions must include the monitor section. (Item 1 above.)
+<1> Note that all service definitions must include the monitor section.
 

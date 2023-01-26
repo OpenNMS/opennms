@@ -157,7 +157,7 @@ Note that you must include the monitor section in your definition.
 <monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <1>
 <monitor service="OpenNMS-22" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required monitor section for each monitor.
 
 == Test filtering proxies with HttpMonitor
 
@@ -187,4 +187,4 @@ To test this behavior, configure the HttpMonitor as follows:
 <monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <1>
 <monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required monitor section for each monitor.
