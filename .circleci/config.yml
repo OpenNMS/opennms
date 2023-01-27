@@ -279,7 +279,6 @@ commands:
           command: |
             ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
@@ -913,8 +912,6 @@ jobs:
       - run:
           name: Assemble tarballs and related artifacts
           command: |
-            # install fake makensis to satisfy the assemble dependency
-            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             export MAVEN_ARGS="install"
             case "${CIRCLE_BRANCH}" in

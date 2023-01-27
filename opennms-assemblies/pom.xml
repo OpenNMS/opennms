@@ -27,8 +27,6 @@
     <module>sentinel</module>
     <module>remote-poller-onejar</module>
     <module>remote-poller-standalone</module>
-    <module>remote-poller-nsis</module>
-    <!-- <module>system-report-onejar</module> -->
     <module>version</module>
     <module>webapp-full</module>
     <module>xsds</module>

@@ -50,24 +50,6 @@
             <version>${xmlApisVersion}</version>
           </dependency>
         </dependencies>
-        <executions>
-          <execution>
-            <id>unpack-keystore</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.core.build</groupId>
-                  <artifactId>org.opennms.core.build.keystore</artifactId>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -104,30 +86,9 @@
           <mainClass>org.opennms.poller.remote.Main</mainClass>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jarsigner-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <skip>${skipSignJar}</skip>
-          <archive>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</archive>
-          <verbose>true</verbose>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.core.build</groupId>
-      <artifactId>org.opennms.core.build.keystore</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>

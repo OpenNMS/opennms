@@ -53,24 +53,6 @@
             <version>${xmlApisVersion}</version>
           </dependency>
         </dependencies>
-        <executions>
-          <execution>
-            <id>unpack-keystore</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.core.build</groupId>
-                  <artifactId>org.opennms.core.build.keystore</artifactId>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -174,10 +156,6 @@ groovy.compiler.output.path=target/classes
           <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.build</groupId>
-      <artifactId>org.opennms.core.build.keystore</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>

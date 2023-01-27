@@ -70,7 +70,6 @@
 
     <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
-    <module>remote-poller-jnlp</module> 
 
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>

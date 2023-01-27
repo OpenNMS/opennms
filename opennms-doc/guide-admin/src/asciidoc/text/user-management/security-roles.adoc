@@ -19,7 +19,6 @@ The following _Security Roles_ are available:
 [options="header, autowidth"]
 |===
 | Security Role Name  | Description
-| _anyone_            | In case the `opennms-webapp-remoting` package is installed, any user can download the _Java Webstart_ installation package for the remote poller from http://opennms.server:8980/opennms-remoting/webstart/app.jnlp.
 | _ROLE_ANONYMOUS_    | Allows _HTTP OPTIONS_ request to show allowed HTTP methods on a ReST resources and the login and logout page of the Web User Interface.
 | _ROLE_ADMIN_        | Permissions to create, read, update and delete in the Web User Interface and the _ReST API_.
 | _ROLE_ASSET_EDITOR_ | Permissions to just update the asset records from nodes.

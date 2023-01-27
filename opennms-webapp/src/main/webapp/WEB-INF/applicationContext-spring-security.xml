@@ -121,9 +121,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <!-- Allow anonymous access to the webstart portion of the app -->
-  <http pattern="/webstart/**" security="none"/>
-
   <beans:bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
     <beans:constructor-arg>
       <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">

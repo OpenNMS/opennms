@@ -199,7 +199,7 @@ Requires:	%{name}-webapp-jetty = %{version}-%{release}
 Conflicts:	%{name}-webapp-jetty < 19.0.0-0
 
 %description webapp-remoting
-The JNLP application that provides the Remote Poller.
+The Remote Poller webapp.
 
 %{extrainfo}
 %{extrainfo2}
@@ -674,9 +674,6 @@ rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
 
 # Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
 for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
-# Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
-# NOTE: We can't do this because the JARs in webstart are signed
-#for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
 
 cd %{buildroot}
 
