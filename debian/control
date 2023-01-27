@@ -138,7 +138,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: opennms-common (=${binary:Version}), jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Depends: opennms-common (=${binary:Version}), jicmp (>= 3.0.0), jicmp6 (>= 3.0.0)
 Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0), opennms-plugin-protocol-xml (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)

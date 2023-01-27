@@ -298,12 +298,12 @@
         <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
         <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
-    <feature name="jicmp" version="2.0.1" description="jicmp">
+    <feature name="jicmp" version="${jicmpVersion}" description="jicmp">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
+        <bundle>mvn:org.opennms/jicmp-api/${jicmpVersion}</bundle>
     </feature>
-    <feature name="jicmp6" version="2.0.1" description="jicmp6">
-        <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
+    <feature name="jicmp6" version="${jicmp6Version}" description="jicmp6">
+        <bundle>mvn:org.opennms/jicmp6-api/${jicmp6Version}</bundle>
     </feature>
     <feature name="quartz" version="${quartzVersion}" description="quartz">
         <feature>c3p0</feature>
