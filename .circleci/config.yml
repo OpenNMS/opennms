@@ -737,6 +737,8 @@ workflows:
       - tarball-assembly:
           context:
             - "CircleCI"
+            - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - build
           post-steps:
@@ -748,6 +750,7 @@ workflows:
           context:
             - "CircleCI"
             - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - horizon-deb-build
             - minion-deb-build
@@ -769,6 +772,7 @@ workflows:
           context:
             - "CircleCI"
             - "docker-content-trust"
+            - "docker-publish-account"
           requires:
             - minion-image-single-arch
           filters:
