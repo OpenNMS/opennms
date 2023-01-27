@@ -108,6 +108,7 @@
         <argument ref="distPollerDao"/>
         <argument ref="snmpInterfaceDao"/>
         <argument ref="filterDao"/>
+        <argument ref="sessionUtils" />
 
         <argument ref="cachingFilterService"/>
         <argument ref="classificationRuleProvider"/>

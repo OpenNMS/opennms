@@ -61,6 +61,7 @@ import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -101,6 +102,8 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
 
     private final FilterDao filterDao;
 
+    private final SessionUtils sessionUtils;
+
     public final long systemIdHash;
 
     private final ConcurrentMap<ExporterKey, Session> sessions = Maps.newConcurrentMap();
@@ -125,6 +128,7 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
                                 final DistPollerDao distPollerDao,
                                 final SnmpInterfaceDao snmpInterfaceDao,
                                 final FilterDao filterDao,
+                                final SessionUtils sessionUtils,
                                 final FilterService filterService,
                                 final ClassificationRuleProvider classificationRuleProvider,
                                 final ClassificationEngine classificationEngine) {
@@ -135,6 +139,7 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
         this.filterDao = Objects.requireNonNull(filterDao);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.filterService = Objects.requireNonNull(filterService);
         this.classificationRuleList = classificationRuleProvider.getRules();
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
@@ -179,7 +184,11 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
         this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runTimerTask();
+                try {
+                    runTimerTask();
+                } catch (final Throwable ex) {
+                    LOG.error("Thresholding timer bailed", ex);
+                }
             }
         }, this.stepSizeMs, this.stepSizeMs);
         LOG.debug("Timer task re-scheduled (stepSizeMs={}ms, idleTimeoutMs={}ms).", this.stepSizeMs, this.idleTimeoutMs);
@@ -326,41 +335,42 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
             if (document.getExporterNodeInfo() != null && !Strings.isNullOrEmpty(document.getApplication())) {
                 final var exporterKey = new ExporterKey(document.getExporterNodeInfo().getInterfaceId());
 
-                final var session = this.sessions.computeIfAbsent(exporterKey, key -> {
-                    LOG.debug("Accepting session for exporterKey={}", exporterKey);
+                final var session = this.sessions.computeIfAbsent(exporterKey, key ->
+                        this.sessionUtils.withTransaction(() -> {
+                            LOG.debug("Accepting session for exporterKey={}", exporterKey);
 
-                    final OnmsIpInterface iface = this.ipInterfaceDao.get(exporterKey.interfaceId);
+                            final OnmsIpInterface iface = FlowThresholdingImpl.this.ipInterfaceDao.get(exporterKey.interfaceId);
 
-                    final CollectionAgent collectionAgent = FlowThresholdingImpl.this.collectionAgentFactory.createCollectionAgent(iface);
+                            final CollectionAgent collectionAgent = FlowThresholdingImpl.this.collectionAgentFactory.createCollectionAgent(iface);
 
-                    final ThresholdingSession thresholdingSession;
-                    try {
-                        thresholdingSession = FlowThresholdingImpl.this.thresholdingService.createSession(iface.getNodeId(),
-                                collectionAgent.getHostAddress(),
-                                SERVICE_NAME,
-                                new ServiceParameters(Collections.emptyMap()));
-                    } catch (ThresholdInitializationException e) {
-                        throw new RuntimeException("Error initializing thresholding session", e);
-                    }
+                            final ThresholdingSession thresholdingSession;
+                            try {
+                                thresholdingSession = FlowThresholdingImpl.this.thresholdingService.createSession(iface.getNodeId(),
+                                        collectionAgent.getHostAddress(),
+                                        SERVICE_NAME,
+                                        new ServiceParameters(Collections.emptyMap()));
+                            } catch (ThresholdInitializationException e) {
+                                throw new RuntimeException("Error initializing thresholding session", e);
+                            }
 
-                    // Find the collection package for this exporter
-                    PackageDefinition packageDefinition = null;
-                    for (final PackageDefinition pkg : options.packages) {
-                        if (pkg.getFilterRule() == null || FlowThresholdingImpl.this.filterDao.isValid(collectionAgent.getHostAddress(), pkg.getFilterRule())) {
-                            packageDefinition = pkg;
-                            break;
-                        }
-                    }
+                            // Find the collection package for this exporter
+                            PackageDefinition packageDefinition = null;
+                            for (final PackageDefinition pkg : options.packages) {
+                                if (pkg.getFilterRule() == null || FlowThresholdingImpl.this.filterDao.isValid(collectionAgent.getHostAddress(), pkg.getFilterRule())) {
+                                    packageDefinition = pkg;
+                                    break;
+                                }
+                            }
 
-                    return new Session(thresholdingSession,
-                            collectionAgent,
-                            systemIdHash,
-                            options.applicationThresholding,
-                            options.applicationDataCollection,
-                            packageDefinition,
-                            collectionAgent.getHostAddress(),
-                            getListOfApplicationsToPersist(collectionAgent.getHostAddress()));
-                });
+                            return new Session(thresholdingSession,
+                                    collectionAgent,
+                                    systemIdHash,
+                                    options.applicationThresholding,
+                                    options.applicationDataCollection,
+                                    packageDefinition,
+                                    collectionAgent.getHostAddress(),
+                                    getListOfApplicationsToPersist(collectionAgent.getHostAddress()));
+                        }));
 
                 session.process(now, document);
             }
