@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,7 +51,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.drools.compiler.compiler.DroolsParserException;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.core.util.DroolsStreamUtils;
+import org.drools.core.common.DroolsObjectInputStream;
+import org.drools.core.common.DroolsObjectOutputStream;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -533,7 +536,17 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private void marshalAndSaveFact(FactHandle factHandle) {
         Object factObject = m_kieSession.getObject(factHandle);
         try {
-            factObjects.put(DroolsStreamUtils.streamOut(factObject), factObject.getClass());
+            /*
+             * Why did the Drools upgrade from 7.31 to 7.73 completely lose access to DroolsStreamUtils?
+             * No idea, but I did this by hand instead.
+             */
+            final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            try (final DroolsObjectOutputStream doos = new DroolsObjectOutputStream(bytes)) {
+                doos.writeObject(factObject);
+            }
+            bytes.flush();
+            bytes.close();
+            factObjects.put(bytes.toByteArray(), factObject.getClass());
         } catch (IOException e) {
             LOG.error("Exception while marshalling fact {} with Class {}", factObject, factObject.getClass().getCanonicalName(), e);
         }
@@ -548,9 +561,9 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             // Check if this is a declared fact in drl.
             FactType factType = getDeclaredFactType(packageName, className);
             if (factType != null) {
-                m_kieSession.insert(DroolsStreamUtils.streamIn(factBytes, factType.getFactClass().getClassLoader()));
+                m_kieSession.insert(new DroolsObjectInputStream(new ByteArrayInputStream(factBytes), factType.getFactClass().getClassLoader()).readObject());
             } else {
-                m_kieSession.insert(DroolsStreamUtils.streamIn(factBytes, clazz.getClassLoader()));
+                m_kieSession.insert(new DroolsObjectInputStream(new ByteArrayInputStream(factBytes), clazz.getClassLoader()).readObject());
             }
         } catch (IOException | ClassNotFoundException e) {
             LOG.error("Exception while unmarshalling fact of size {} with Class {}", factBytes.length, clazz.getCanonicalName());
