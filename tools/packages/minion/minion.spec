@@ -68,10 +68,10 @@ Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Requires(post): util-linux
 Requires:       util-linux
-Requires:       jicmp >= 2.0.0
-Requires(pre):  jicmp >= 2.0.0
-Requires:       jicmp6 >= 2.0.0
-Requires(pre):  jicmp6 >= 2.0.0
+Requires:       jicmp >= 3.0.0
+Requires(pre):  jicmp >= 3.0.0
+Requires:       jicmp6 >= 3.0.0
+Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
