@@ -6,12 +6,20 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /events?
 
 == GETs (Reading Data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Notifications API GET functions
+[options="autowidth"]
 |===
-| Resource               | Description
-| `/notifications`       | Get a list of notifications.
-| `/notifications/count` | Get the number of notifications. (Returns plaintext rather than XML or JSON.)
-| `/notifications/\{id}` | Get the notification specified by the given ID.
+| Resource  | Description
+
+| /notifications
+| Get a list of notifications.
+
+| /notifications/count
+| Get the number of notifications (returns plaintext rather than XML or JSON).
+
+| /notifications/\{id}
+| Get the notification specified by the given ID.
 |===
 
-To acknowledge or unacknowledge a notification, use the `acks` endpoint -- see xref:rest/acknowledgements.adoc#rest-api-acknowledgements[Acknowledgements].
+To acknowledge or unacknowledge a notification, use the `acks` endpoint (see xref:rest/acknowledgements.adoc[]).
