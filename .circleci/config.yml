@@ -653,6 +653,7 @@ workflows:
       - tarball-assembly:
           context:
             - "CircleCI"
+            - "docker-publish-account"
           requires:
             - build
           post-steps:
@@ -712,7 +713,6 @@ workflows:
       - minion-rpm-build:
           context:
             - "CircleCI"
-            - "docker-publish-account"
           requires:
             - build
           filters:
