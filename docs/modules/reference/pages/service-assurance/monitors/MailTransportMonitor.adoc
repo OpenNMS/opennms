@@ -327,6 +327,6 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
   <parameter key="ds-name" value="rdmail_lat"/>
 </service>
 
-<monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
+<monitor service="MTM-Readmail" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
 <1> Required monitor section.

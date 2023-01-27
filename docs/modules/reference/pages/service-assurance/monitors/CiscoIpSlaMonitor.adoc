@@ -113,4 +113,4 @@ Note that you must include the monitor section for each monitor in your definiti
 ----
 <1> Service is up if the IP SLA state is `ok(1)`.
 <2> Service is down if the IP SLA state is `overThreshold(3)`.
-<3> Required monitor section for each monitor.
+<3> Required monitor section for each service monitor.
