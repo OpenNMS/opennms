@@ -120,7 +120,7 @@ drools-ticketer.rules-file=$OPENNMS_HOME/etc/drools-ticketer-rules.drl
 
 Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in the `$\{OPENNMS_HOME}/etc` directory.
 
-TIP: There is an example file at `$\{OPENNMS_HOME}\etc\examples` that you can use as a template.
+TIP: There is an example file at `$\{OPENNMS_HOME}/etc/examples` that you can use as a template.
 
 The following Drools example defines attributes to set custom fields:
 
