@@ -164,7 +164,7 @@ public class TimeseriesPersister extends AbstractPersister {
     @Override // Override to implement our own string attribute handling
     public void persistNumericAttribute(CollectionAttribute attribute) {
         boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
-        LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
+        LOG.trace("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
         Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
         currentBuilder.setAttributeValue(attribute.getAttributeType(), value);
         if(attribute.getMetricIdentifier() != null) {
