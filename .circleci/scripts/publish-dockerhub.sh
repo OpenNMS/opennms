@@ -35,7 +35,7 @@ for TYPE in horizon minion sentinel; do
   # save and load $TYPE's key
   printf '%s' "${!_key_contents_variable}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
   chmod 600 "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
-  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="$(echo "${!_key_passphrase_variable}" | base64 -d)"
+  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${!_key_passphrase_variable}"
   docker trust key load "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
 
   # put the passphrase back to the delegate for signing
@@ -53,7 +53,7 @@ for TYPE in horizon minion sentinel; do
     do_with_retries docker push --quiet "${DOCKER_REPO}:${_push_tag}"
   done
 
-  export NOTARY_TARGETS_PASSPHRASE="$(echo "${!_key_passphrase_variable}" | base64 -d)"
+  export NOTARY_TARGETS_PASSPHRASE="${!_key_passphrase_variable}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
     do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
