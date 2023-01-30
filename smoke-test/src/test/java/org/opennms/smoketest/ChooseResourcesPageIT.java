@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import java.time.Duration;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
         for (final String parameter : parameters) {
             getDriver().get(getBaseUrlInternal() + "opennms/graph/results.htm?" + parameter + scriptTag);
-            new WebDriverWait(driver, 5).until(pageContainsText("The OpenNMS Group"));
+            new WebDriverWait(getDriver(), Duration.ofSeconds(5)).until(pageContainsText("The OpenNMS Group"));
         }
     }
 
