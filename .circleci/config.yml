@@ -113,7 +113,9 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-automation >> ]
     jobs:
       - docker_gc
-
+          context:
+            - "CircleCI"
+            - "docker-publish-account"
 jobs:
   docker_gc:
     docker:
@@ -123,7 +125,7 @@ jobs:
           name:  Docker GC - remove inactive images on feature branches
           # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
           command: |
-            wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
+            wget https://github.com/docker/hub-tool/releases/download/v0.4.5/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
             apk update
             apk add expect
