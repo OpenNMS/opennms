@@ -73,16 +73,16 @@
                 </c:forEach>
             </c:if>
             <c:if test="${not empty results.generatedId}">
-                <input type="hidden" name="generatedId" value="${results.generatedId}"/>
+                <input type="hidden" name="generatedId" value="<c:out value="${results.generatedId}"/>"/>
             </c:if>
             <c:if test="${not empty results.nodeCriteria}">
-                <input type="hidden" name="nodeCriteria" value="${results.nodeCriteria}"/>
+                <input type="hidden" name="nodeCriteria" value="<c:out value="${results.nodeCriteria}"/>"/>
             </c:if>
             <c:forEach var="report" items="${results.reports}">
-                <input type="hidden" name="reports" value="${report}"/>
+                <input type="hidden" name="reports" value="<c:out value="${report}"/>"/>
             </c:forEach>
             <input type="hidden" name="relativetime" value="custom"/>
-            <input type="hidden" name="zoom" value="${param.zoom}"/>
+            <input type="hidden" name="zoom" value="<c:out value="${param.zoom}"/>"/>
 
             <div class="form-row form-group mb-1">
                 <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
