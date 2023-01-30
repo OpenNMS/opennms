@@ -112,7 +112,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ true, << pipeline.parameters.trigger-automation >> ]
     jobs:
-      - docker_gc
+      - docker_gc:
           context:
             - "CircleCI"
             - "docker-publish-account"
