@@ -57,6 +57,20 @@ commands:
           docker_layer_caching: true
       - cached-checkout
       - download-download-artifacts
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - run:
+         name: download Cloud Plugin
+         command: |
+            if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "horizon" == "<< parameters.container_dir >>" ]
+            then 
+             cd opennms-container/<< parameters.container_dir >>/rpms
+             urls=$(cloudsmith list packages --query='*-plugin-cloud tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
+             for url in $urls; do
+               wget $url
+             done
+            fi
+          
       - run:
           name: download tarball dependency to << parameters.tarball_path >>
           command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
