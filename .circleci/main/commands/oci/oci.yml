@@ -67,6 +67,10 @@ commands:
              for url in $urls; do
                wget $url
              done
+             pwd
+             ls -l opennms-container/<< parameters.container_dir >>/rpms
+             rpm -lqp *.rpm
+             ls -l opennms-container/<< parameters.container_dir >>/rpms
             fi
           
       - run:
