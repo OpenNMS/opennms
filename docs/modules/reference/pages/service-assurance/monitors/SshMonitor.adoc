@@ -54,7 +54,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -67,6 +67,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="rrd-base-name" value="ssh"/>
   <parameter key="ds-name" value="ssh"/>
 </service>
-<monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/> <1>
+<monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
 ----
-<1> Required `monitor` section.

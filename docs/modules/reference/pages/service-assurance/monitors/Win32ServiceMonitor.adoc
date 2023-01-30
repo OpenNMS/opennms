@@ -65,7 +65,7 @@ Use snmpwalk to verify the service name, as opposed to relying on the service ma
 
 Monitoring the service running state of the Task Scheduler on an English-locale Microsoft Windows Server requires, at minimum, the following entry in `poller-configuration.xml`.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -73,6 +73,5 @@ Note that you must include the `monitor` section in your definition.
     <parameter key="service-name" value="Task Scheduler"/>
 </service>
 
-<monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/> <1>
+<monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
 ----
-<1> Required `monitor` section.

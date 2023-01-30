@@ -103,7 +103,7 @@ It is possible to refer to WMI objects from other namespaces such as root/Micros
 
 The following example shows how to enable monitoring that already discovered WMI services are still running.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -118,6 +118,5 @@ Note that you must include the `monitor` section in your definition.
       <parameter key="service-name" value="WMI" />
     </service>
 
-<monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" /> <1>
+<monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
 ----
-<1> Required `monitor` section.

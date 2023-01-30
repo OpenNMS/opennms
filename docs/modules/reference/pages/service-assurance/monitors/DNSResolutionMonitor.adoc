@@ -71,7 +71,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 The following example shows the possibilities for monitoring IPv4 or IPv6 for the service configuration.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
@@ -158,6 +158,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
 <monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
 ----
-<1> Required `monitor` section for each service monitor.
+<1> Required `monitor` section for each service.
 
 To have response time graphs for the name resolution, you must configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in `$\{OPENNMS_HOME}/etc/response-graph.properties`.

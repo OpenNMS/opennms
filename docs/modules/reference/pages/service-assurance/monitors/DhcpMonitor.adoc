@@ -79,7 +79,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 .Configure a DHCP service in `poller-configuration.xml`
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -93,9 +93,8 @@ Note that you must include the `monitor` section in your definition.
  <parameter key="ds-name" value="dhcp" />
 </service>
 
-<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <1>
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
-<1> Required `monitor` section.
 
 == Example: testing DHCP server in a different subnet in extended mode
 
@@ -115,9 +114,8 @@ You can use the same monitor in `poller-configuration.xml` as in the above examp
  <parameter key="ds-name" value="dhcp" />
 </service>
 
-<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <1>
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
-<1> Required `monitor` section.
 
 NOTE: If in `extendedMode`, the time required to complete the poll for an unresponsive node increases by a factor of three.
 We recommend that you limit the number of retries to a small number.

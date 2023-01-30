@@ -241,7 +241,7 @@ The SnmpMonitor is configured to test if the fan status returns `ok(2)`.
 If so, the service is marked as up.
 Any other value indicates a problem with the thermal fan status and marks the service down.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 .Example SnmpMonitor as HP InsightManager fan monitor in `poller-configuration.xml`
 [source, xml]
@@ -259,7 +259,6 @@ Note that you must include the `monitor` section in your definition.
 <2> Operator for testing the response value.
 <3> Integer `2` as operand for the test.
 <4> Encode MIB status in the reason code to give more detailed information if the service goes down.
-<5> Required `monitor` section.
 
 == Example: test SNMP table with all matching values
 
@@ -307,7 +306,7 @@ The configuration in our monitor tests all physical drives for status `ok(2)`.
 
 .Example SnmpMonitor as HP Insight physical drive monitor in `poller-configuration.xml`
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -320,7 +319,7 @@ Note that you must include the `monitor` section in your definition.
     <parameter key="reason-template" value="One or more physical drives are not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), failed(3), predictiveFailure(4), erasing(5), eraseDone(6), eraseQueued(7)"/> <6>
 </service>
 
-<monitor service="HP-Insight-Drive-Physical" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" /> <7>
+<monitor service="HP-Insight-Drive-Physical" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
 ----
 <1> OID for SNMP table with all physical drive states.
 <2> Enable walk mode to test every entry in the table against the test criteria.
@@ -328,7 +327,6 @@ Note that you must include the `monitor` section in your definition.
 <4> Integer `2` as operand for the test.
 <5> Test in walk mode has to pass for every entry in the table.
 <6> Encode MIB status in the reason code to give more detailed information if the service goes down.
-<7> Required `monitor` section.
 
 == Example: test SNMP table with some matching values
 
@@ -370,7 +368,7 @@ The number of entries in the whole ipRouteProto table has to be counted and the 
 
 .Example SnmpMonitor used to test if the number of local static route entries is between 3 and 10
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -384,7 +382,7 @@ Note that you must include the `monitor` section in your definition.
  <parameter key="maximum" value="10" /><7>
 </service>
 
-<monitor service="All-Static-Routes" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" /> <8>
+<monitor service="All-Static-Routes" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
 ----
 <1> OID for SNMP table `ipRouteProto`.
 <2> Enable walk mode to test every entry in the table against the test criteria.
@@ -393,4 +391,3 @@ Note that you must include the `monitor` section in your definition.
 <5> Test in walk mode is set to `count` to get the number of entries in the table regarding operator and operand.
 <6> Lower count boundary set to `3`.
 <7> High count boundary is set to `10`.
-<8> Required `monitor` section.

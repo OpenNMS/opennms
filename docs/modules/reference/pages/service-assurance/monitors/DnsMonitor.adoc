@@ -105,7 +105,7 @@ This example shows how to monitor whether the IP interface from a given DNS serv
 This service should be bound to a DNS server which should be able to give a valid DNS response for a request to `www.google.com`.
 The service is up if the DNS server gives between one and ten A record responses.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 .Example configuration monitoring DNS request for a given server for `www.google.com`
 [source, xml]
@@ -117,8 +117,7 @@ Note that you must include the `monitor` section in your definition.
     <parameter key="max-answers" value="10" />
 </service>
 
-<monitor service="DNS-www.google.com" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" /> <1>
+<monitor service="DNS-www.google.com" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
 ----
-<1> Required `monitor` section.
 
 To have response time graphs for the name resolution, you must configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in `$\{OPENNMS_HOME}/etc/response-graph.properties`.

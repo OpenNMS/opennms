@@ -88,7 +88,7 @@ The following examples show how to monitor SSL certificates on services like IMA
 If the certificates expire within 30 days, the service goes down and indicates this issue in the reason of the monitor.
 In this example, the monitoring interval is reduced to test the certificate every two hours (7,200,000 ms).
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 Configuration in `poller-configuration.xml` is as follows:
 

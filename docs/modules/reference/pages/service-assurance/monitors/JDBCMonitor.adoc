@@ -75,6 +75,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="password" value="opennms"/>
 </service>
 
-<monitor service="OpenNMS-DBMS" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" /> <1>
+<monitor service="OpenNMS-DBMS" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
 ----
-<1> Required `monitor` section.

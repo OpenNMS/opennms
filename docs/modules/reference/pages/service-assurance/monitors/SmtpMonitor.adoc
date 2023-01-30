@@ -54,7 +54,7 @@ QUIT
 The following example uses CentOS/RHEL path names.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -66,6 +66,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="rrd-base-name" value="smtp" />
   <parameter key="ds-name" value="smtp" />
 </service>
-<monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" /> <1>
+<monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
 ----
-<1> Required `monitor` section.

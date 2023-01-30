@@ -32,7 +32,7 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
 
 == Example
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -44,6 +44,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="url" value="/"/>
 </service>
 
-<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" /> <1>
+<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" /> 
 ----
-<1> Required `monitor` section.

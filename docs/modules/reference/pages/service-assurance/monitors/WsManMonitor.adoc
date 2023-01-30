@@ -46,7 +46,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 The following monitor will issue a GET against the configured resource and verify that the correct service tag is returned.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -57,6 +57,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="rule" value="#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches 'C7BBBP1'"/>
 </service>
 
-<monitor service="WsMan-ServiceTag-Check" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor" /> <1>
+<monitor service="WsMan-ServiceTag-Check" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor" />
 ----
-<1> Required `monitor` section.

@@ -44,7 +44,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 The following is a sample monitor configuration in `poller-configuration.xml`.
 
-Note that you must include the `monitor` section in your definition.
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
@@ -53,6 +53,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="timeout" value="3000"/>
 </service>
 
-<monitor service="SMB" class-name="org.opennms.netmgt.poller.monitors.SmbMonitor"/> <1>
+<monitor service="SMB" class-name="org.opennms.netmgt.poller.monitors.SmbMonitor"/>
 ----
-<1> Required `monitor` section.
