@@ -25,7 +25,7 @@ The extracted data is then handed over to the configured queue for further proce
 
 For example, a listener may open a UDP socket to receive packets, and an assigned parser parses the incoming IPFIX packets.
 
-Parsers and listeners much work closely together; for that reason, they cannot be combined randomly.
+Parsers and listeners must work closely together; for that reason, they cannot be combined randomly.
 The supported parsers are described in the documentation for each listener.
 For more information on listeners, their supported parsers, and how to configure them, see xref:reference:telemetryd/listeners/introduction.adoc[Telemetryd listeners reference].
 
@@ -103,7 +103,7 @@ When the batch has been created for longer than this interval, it is dispatched,
 TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` balances messages across all partitions.
 This can be done safely for flows, but is not supported for metrics when using thresholding (order is required).
 
-In {page-component-title}, these options can be added to the `<queue>` element as attributes:
+In {page-component-title}, you can add these options to the `<queue>` element as attributes:
 
 [source, xml]
 ----
@@ -112,7 +112,7 @@ In {page-component-title}, these options can be added to the `<queue>` element a
 </queue>
 ----
 
-On a Minion, these options can be added as parser properties, and as adapter properties on Sentinel:
+On a Minion, you can add these options as parser properties, and as adapter properties on Sentinel:
 
 [source, properties]
 ----
@@ -131,8 +131,8 @@ Listeners and their parsers may run either on {page-component-title} or a Minion
 If a listener and its parsers are running on a Minion, the received messages are dispatched automatically via a queue to associated adapters running in {page-component-title} or Sentinel.
 Minions can receive data, but require {page-component-title} or Sentinel to process it.
 
-.Running Listener on a Minion forwarding packets using the messaging system
-image::telemetryd/telemetryd-minion.png["Network overview diagram showing a listener running on a Minion and its related components"]
+.Running listener on a Minion forwarding packets using the messaging system
+image::telemetryd/telemetryd-minion.png["Network overview diagram showing a listener running on a Minion, and the listener's related components"]
 
 == Reverse hostname resolution
 

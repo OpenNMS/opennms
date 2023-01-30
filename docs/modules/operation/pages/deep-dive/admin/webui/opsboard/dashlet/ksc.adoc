@@ -59,6 +59,6 @@ For more information, see `org.opennms.netmgt.config.KSC_PerformanceReportFactor
 
 NOTE: Make sure that each report's `id` is unique.
 
-== Using KSC Reports
+== Use KSC reports
 
 The *KSC Reports* section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.

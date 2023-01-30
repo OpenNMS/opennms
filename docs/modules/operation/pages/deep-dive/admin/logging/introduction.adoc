@@ -11,7 +11,7 @@ See the xref:reference:daemons/introduction.adoc[list of daemons] for log file n
 The log configuration file is available in `$\{OPENNMS_HOME}/etc/opennms/log4j2.xml`.
 The corresponding configurations are reflected in the `configuration/loggers/root/DynamicThresholdFilter/KeyValuePair` XML tree path.
 
-The default logging level is `WARN`; for troubleshooting, it is recommended to use `DEBUG`.
+The default logging level is `WARN`; for troubleshooting, we recommend that you use `DEBUG`.
 Each daemon can have an individual logging level.
 See the table below for a list of available logging levels.
 Changes to logging levels are applied immediately, and do not require any service or daemon restarts.
@@ -21,6 +21,7 @@ Depending on the scale, {page-component-title} can generate a large number of lo
 
 === Logging levels
 
+[caption=]
 .Service daemon logging level options
 [cols="1,3"]
 |===

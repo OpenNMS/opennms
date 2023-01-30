@@ -134,12 +134,12 @@ This procedure shows how to assign the Dashboard role to the `drv4doe` user:
 The user represents a router and switch jockey.
 . Add the `ROLE_PROVISION` role to the account through the web UI or by manually editing `$\{OPENNMS_HOME}/etc/users.xml`:
 ** *Web UI*
-... Click the *gear* symbol at the top-right of the screen.
+... Click the *gear* symbol at the top-right of the page.
 ... Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
 ... On the Users and Groups page, click *Configure Users*.
 ... Click *Modify* beside the `drv4doe` account.
 ... In the Security Roles section, select `ROLE_PROVISION` in the *Available Roles* list and click *Add >>* to add it to the account.
-... Click *Finish* at the bottom of the screen to update the account.
+... Click *Finish* at the bottom of the page to update the account.
 ** *Manually via code*
 ... Add the following code to `$\{OPENNMS_HOME}/etc/users.xml`:
 +

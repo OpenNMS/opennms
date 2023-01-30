@@ -5,7 +5,7 @@ If users access the {page-component-title} web UI via untrusted networks, it is 
 This section explains how to configure {page-component-title}'s built-in Jetty web server to support HTTPS.
 
 TIP: It is typically easier to leave the Jetty config as default and use NGINX or Apache as a reverse proxy.
-See https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[How to use NGINX as SSL proxy with OpenNMS Horizon] on Discorse for an example of using a reverse proxy.
+See https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[How to use NGINX as an SSL proxy with OpenNMS Horizon] on Discourse for an example of using a reverse proxy.
 
 == Customize jetty.xml
 
@@ -69,7 +69,7 @@ The process of configuring {page-component-title} to start a Jetty HTTPS listene
 This listener must be present so the {page-component-title} real-time console can update availability statistics shown in the web UI.
 
 After you have enabled HTTPS, you likely do not want users using HTTP; to control this, you need to restrict access to the plain-HTTP listener.
-There are two methods of accomplishing this:
+There are two methods to accomplish this:
 
 * Set the plain-HTTP listener to bind only to an interface that is not accessible from untrusted networks.
 In an environment where the {page-component-title} web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
@@ -90,10 +90,10 @@ By default, the listener is bound to all interfaces (`0.0.0.0`); to bind it to a
 [source, properties]
 org.opennms.netmgt.jetty.https-host = 10.11.12.13
 
-== Debugging/Properties
+== Debugging/properties
 
 If you encounter issues while using SSL, it might be useful to enable debug logging.
-You could also use one of the built-in Java System Properties to configure SSL:
+You could also use one of the built-in Java system properties to configure SSL:
 
 [cols="1,3"]
 |===

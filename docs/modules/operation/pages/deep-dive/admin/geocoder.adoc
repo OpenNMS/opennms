@@ -14,15 +14,16 @@ Resolved coordinates are stored in the database as node asset fields, but the ge
 == Address-based geocoding
 
 To enable or configure the geocoder service, use the web-based configuration tool.
-In the {page-component-title} web UI, click the *gear* symbol in the top-right of the screen.
+In the {page-component-title} web UI, click the *gear* symbol in the top-right of the page.
 Under Provisioning, select *Configure Geocoder Service*.
 
 NOTE: If you would prefer to manually edit the configuration files, you can set the active geocoder service via the `activeGeocoderId` property in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.cfg`.
 
 === Nominatim
 
-For more details, see the https://wiki.openstreetmap.org/wiki/Nominatim[official Nominatim documentation] and check the https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using the geocoder service.
+IMPORTANT: Be sure to check the https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using the geocoder service.
 
+[caption=]
 .Nominatim geocoder service properties
 [cols="1,3,1,2"]
 |===
@@ -71,9 +72,11 @@ NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.feature
 
 === Google
 
+The Google geocoder API is a service that provides geocoding and reverse geocoding of addresses. 
 The Google geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
 For more details, see the https://developers.google.com/maps/documentation/javascript/get-api-key[official Google documentation].
 
+[caption=]
 .Google geocoder API properties
 [cols="1,3,1,1"]
 |===
@@ -82,7 +85,7 @@ For more details, see the https://developers.google.com/maps/documentation/javas
 4+|*Required*
 
 | apiKey
-| The apiKey provided by the Google Cloud platform.
+| The API key that the Google Cloud platform provides.
 Required only if `useEnterpriseCredentials` is false.
 | String
 | _Empty_
@@ -107,12 +110,12 @@ Required only if `useEnterpriseCredentials` is true.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-  Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, `opennms.conf`>>.
+Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 
 | timeout
-| The connection timeout, in milliseconds, during which the Geocoder tries to resolve a single geolocation.
+| The connection timeout, in milliseconds, during which the geocoder tries to resolve a single geolocation.
 | Integer
 | 500
 |===
@@ -121,8 +124,12 @@ NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.feature
 
 === MapQuest
 
+The MapQuest geocoder lets {page-component-title} associate latitude and longitude coordinates with an actual address (geolocation).
+
+To use MapQuest, you must register and sign up for an API key.
 For more details, refer to the https://developer.mapquest.com/documentation/geocoding-api/[official MapQuest documentation].
 
+[caption=]
 .MapQuest geocoder API properties
 [cols="1,3,1,2"]
 |===
@@ -136,7 +143,7 @@ For more details, refer to the https://developer.mapquest.com/documentation/geoc
 | _Empty_
 
 | url
-| The URL template for the MapQuest Geocoder API.
+| The URL template for the MapQuest geocoder API.
 The `apikey` and `query` strings are substituted before making the request.
 | String
 | `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}`
@@ -145,7 +152,7 @@ The `apikey` and `query` strings are substituted before making the request.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, `opennms.conf`>>.
+Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 |===

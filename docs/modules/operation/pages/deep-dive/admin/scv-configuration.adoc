@@ -1,16 +1,16 @@
 
 = Secure Credentials Vault
 
-The secure credentials vault (SCV) lets you encrypt credentials that {page-component-title} uses.
+The secure credentials vault lets you encrypt credentials that {page-component-title} uses.
 It stores credentials in the Java keystore (JKS) format.
-The SCV is enabled by default.
+The secure credentials vault is enabled by default.
 
-== Configure SCV password
+== Configure secure credentials vault password
 
-A custom SCV password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
-The SCV keystore file is located in `$\{OPENNMS_HOME}/etc/scv.jce`.
+A custom secure credentials vault password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
+The secure credentials vault keystore file is located in `$\{OPENNMS_HOME}/etc/scv.jce`.
 
-IMPORTANT: You cannot change the SCV password once credentials have been stored.
+IMPORTANT: You cannot change the secure credentials vault password once credentials have been stored.
 You must delete `$\{OPENNMS_HOME}/etc/scv.jce` and manually re-add any credentials if you want to change the password after the file has been created.
 
 == Store credentials
@@ -24,9 +24,10 @@ To access or add credentials, click menu:Info[Secure Credentials Vault] in the t
 
 === Metadata expressions
 
-You can access SCV entries from metadata using the `scv` context.
+You can access secure credentials vault entries from metadata using the `scv` context.
 
-.Example metadata expressions for accessing SCV entries
+[caption=]
+.Example metadata expressions for accessing secure credentials vault entries
 [options="autowidth"]
 |===
 | Expression    | Description
@@ -54,7 +55,7 @@ To do so, follow the instructions below:
 [source, console]
 ssh -p 8101 admin@localhost
 
-. Access or update SCV entries using the shell.
+. Access or update secure credentials vault entries using the shell.
 ** Use the following command to set credentials:
 +
 [source, karaf]
@@ -80,7 +81,7 @@ ARGUMENTS
                 (required)
 ----
 
-** Use the following command to access SCV entries:
+** Use the following command to access secure credentials vault entries:
 +
 [source, karaf]
 ----

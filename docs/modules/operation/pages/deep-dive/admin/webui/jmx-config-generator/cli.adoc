@@ -35,7 +35,7 @@ mvn package
 ----
 
 A file named `jmxconfiggenerator-<VERSION>-onejar.jar` is created in the new `target` folder.
-The file can be invoked using the following command:
+Use the following command to invoke the file:
 
 [source, console]
 [subs="verbatim,attributes"]
@@ -129,7 +129,7 @@ The following command line options are available for the `query` sub-command:
 | <filter criteria>
 | A filter criteria to query the MBean server for.
 Its format is `<objectname>[:attribute name]`. +
-The `<objectname>` accepts the default JMX object name pattern, and identifies the MBeans objects to be retrieved.
+The `<objectname>` accepts the default JMX object name pattern, and identifies the MBeans objects to retrieve.
 If set to `null`, all domains are shown.
 If no key properties are specified, the domain's MBeans are retrieved. +
 To run the command for certain attributes, you must add `:<attribute name>`.
@@ -195,7 +195,7 @@ Where multiple `<filter criteria>` are provided, they are `OR` concatenated.
 
 === generate-conf
 
-The `generate-conf` sub-command can be used to generate a valid `jmx-datacollection-config.xml` file for a given set of MBean objects queried from an MBean server.
+You can use the `generate-conf` sub-command to generate a valid `jmx-datacollection-config.xml` file for a given set of MBean objects queried from an MBean server.
 The following example generates a `myconfig.xml` file for MBean objects in the `java.lang` domain of `myserver`, on port 7199.
 It uses the `myusername`/`mypassword` credentials for access:
 
@@ -214,12 +214,12 @@ The following command line options are available for the `generate-conf` sub-com
 | Option/Argument	| Description	| Default Value
 
 | <attribute id>
-| A list of attribute IDs to be included in the new configuration file.
+| A list of attribute IDs to include in the new configuration file.
 | _Empty_
 
 | --dictionary <file>
 | Path to a dictionary file containing replacements for attribute names and parts of MBean attributes.
-For each line in the file, a replacement should be defined (for example, `Auxillary:Auxil`).
+Each line in the file must include a replacement definition (for example, `Auxillary:Auxil`).
 | _Empty_
 
 | --host <host>
@@ -308,7 +308,7 @@ The following command line options are available for the `generate-graph` sub-co
 | Option/Argument	| Description	| Default Value
 
 | --input <jmx-datacollection.xml>
-| Configuration file to be used as the input when generating the graph properties file.
+| Configuration file to use as the input when generating the graph properties file.
 | _Empty_
 
 | --output <file>
@@ -320,7 +320,7 @@ The following command line options are available for the `generate-graph` sub-co
 | false
 
 | --template <file>
-| Name of the template file to be used to generate the graph properties.
+| Name of the template file to use to generate the graph properties.
 The file must use the http://velocity.apache.org[Apache Velocity] template engine.
 | _Empty_
 
@@ -337,7 +337,7 @@ The file must use the http://velocity.apache.org[Apache Velocity] template engin
 
 The JMX Config Generator uses a template file to generate graphs.
 It is possible to use a user-defined template.
-The `--template` option, followed by a file name, lets the JMX Config Generator use an external template file as base for graph generation.
+The `--template` option, followed by a file name, lets the JMX Config Generator use an external template file as the base for graph generation.
 
 The following example shows how the custom `mytemplate.vm` file is used to generate the `mygraph.properties` graph definition file, using the configuration settings defined in `myconfig.xml`:
 
@@ -346,7 +346,7 @@ The following example shows how the custom `mytemplate.vm` file is used to gener
 ./jmx-config-generator generate-graph --input myconfig.xml --output mygraph.properties --template mytemplate.vm
 ----
 
-The template file must be an http://velocity.apache.org[_Apache Velocity_] template.
+The template file must be an http://velocity.apache.org[Apache Velocity] template.
 The following sample represents the template that is used by default:
 
 [source, properties]

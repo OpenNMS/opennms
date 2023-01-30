@@ -140,7 +140,7 @@ Follow these steps to edit the `requisition` context in the web UI:
 . Click *Edit* beside the node that you want to modify.
 . Navigate to the *Meta-Data* tab, and click *Add Meta-Data*.
 +
-image::metadata/metadata_add.png["{page-component-title} UI displaying the Meta-Data Entry dialog with example parameters"]
+image::metadata/metadata_add.png["{page-component-title} UI displaying the Meta-Data Entry page with example parameters"]
 
 . In the *Scope* list, select either *Node* or *Interface*.
 . Specify the key and a value, and click *Save*.

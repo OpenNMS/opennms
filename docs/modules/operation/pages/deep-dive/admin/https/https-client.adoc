@@ -32,7 +32,7 @@ keytool \
 If this file doesn't exist, it will be created.
 
 If you create a new Java truststore, you must provide a password to protect it.
-If you updated an existing Java truststore, type the password that you chose when you first created the truststore.
+If you update an existing Java truststore, type the password that you chose when you first created the truststore.
 
 == (Optional) Download existing public certificate
 
@@ -74,10 +74,10 @@ NOTE: Each time you modify the Java truststore, you must restart {page-component
 
 == Differences between Java truststore and keystore
 
-The Java _truststore_ determines whether a remote connection should be trusted--in other words, whether a remote party is who it claims to be.
+The Java truststore determines whether a remote connection should be trusted--in other words, whether a remote party is who it claims to be.
 It serves as a client use case.
 
-The Java _keystore_ decides which authentication credentials should be sent to the remote host for authentication during an SSL handshake.
+The Java keystore decides which authentication credentials should be sent to the remote host for authentication during an SSL handshake.
 It serves as a server use case.
 
 For more information, see the https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html[JSSE Reference Guide].
@@ -86,7 +86,7 @@ For more information, see the https://docs.oracle.com/en/java/javase/11/security
 == Debugging/Properties
 
 If you encounter issues while using SSL, it might be useful to enable debug logging.
-You could also use one of the built-in Java System Properties to configure SSL:
+You could also use one of the built-in Java system properties to configure SSL:
 
 [cols="1,3"]
 |===

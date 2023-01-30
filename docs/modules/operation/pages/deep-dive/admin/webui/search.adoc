@@ -16,8 +16,8 @@ For example, if you search for "foo" and get a node match of "foobar", the resul
 However, if you search for "foo" and a match is found in a node's metadata `customkey='somefoo'` (even if the node name does not contain "foo"), the results display the name of the node (for example, `node1`) and the "foo" metadata associated with it.
 See <<search-customize, Customize search results>> for more information.
 
-From the search results, you can click on a node to navigate to its page, or click on one of the actions to navigate to the screen that lets you complete said action.
-For example, clicking *Edit Requisition 'Test'* takes you to the screen where you can edit the requisition named Test.
+From the search results, you can click on a node to navigate to its page, or click on one of the actions to navigate to the page that lets you complete said action.
+For example, clicking *Edit Requisition 'Test'* takes you to the page where you can edit the requisition named Test.
 
 == Search view
 
@@ -38,7 +38,7 @@ You can use an underscore (`_`) as a single-character wildcard, or a percent cha
 === TCP/IP address search
 
 When you search for a node by TCP or IP address, it uses a flexible format that lets you separate the four (or eight, in the case of IPv6) fields of an IP address into specific searches.
-Including an asterisk (`*`) in place of any octet matches any value for that octet.
+Include an asterisk (`*`) in place of any octet to match any value for that octet.
 Separate two numbers with a dash (`-`) to indicate a range.
 Use a comma to demarcate a list.
 

@@ -4,7 +4,7 @@
 This section provides an example of the order to follow when shutting down and restarting a sample {page-component-title} system: {page-component-title} core layer, persistence and messaging layer, and database layer.
 
 .{page-component-title} restart process
-image::admin/restart-process.png["Diagram displaying {page-component-title} components and the order in which they should be restarted"]
+image::admin/restart-process.png["Diagram displaying {page-component-title} components and the order in which to restart them"]
 
 Note that restarting the whole stack is rare.
 Usually, restarting the {page-component-title} core happens for reconfiguration or to run upgrades.
@@ -37,7 +37,7 @@ systemctl stop kibana
 . The {page-component-title} core application (core, Sentinel, Minion), in any order.
 ** Turn off notifications:
 ... Log in to the {page-component-title} web UI.
-... Click the *gear* symbol in the top-right of the screen.
+... Click the *gear* symbol in the top-right of the page.
 ... Under Event Management, turn off *Notification Status* and click *Update*.
 ** Access the {page-component-title} system via CLI (putty, SecureCRT, and so on).
 ** Use the `sudo su -` command to become a root user.
@@ -59,7 +59,7 @@ systemctl stop cassandra
 systemctl stop elasticsearch
 ----
 
-NOTE: Neither Kafka nor Zookeeper have systemd definitions.
+NOTE: Neither Kafka nor Zookeeper has systemd definitions.
 The processes are controlled based on how they were installed.
 This is beyond the scope of this guide.
 
@@ -87,7 +87,7 @@ systemctl start sentinel
 
 ** Turn on notifications:
 ... Log in to the {page-component-title} web UI.
-... Click the *gear* symbol in the top-right of the screen.
+... Click the *gear* symbol in the top-right of the page.
 ... Under Event Management, turn on *Notification Status* and click *Update*.
 . Dashboard applications (Grafana, Kibana, and so on):
 +

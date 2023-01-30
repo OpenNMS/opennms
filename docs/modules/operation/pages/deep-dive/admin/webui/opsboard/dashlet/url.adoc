@@ -13,12 +13,12 @@ The URL dashlet shows the content of a web page or other web application in the 
 
 | password
 | (Optional) Password for authentication.
-Can be left blank if basic authentication is not required.
+Leave blank if basic authentication is not required.
 
 | url
 | URL to the web application or web page.
 
 | username
 | (Optional) Username for authentication.
-Can be left blank if basic authentication is not required.
+Leave blank if basic authentication is not required.
 |===
