@@ -28,7 +28,7 @@ IMPORTANT: This monitor requires the outdated persnmpd software to be installed 
 | Default
 
 | array
-| The RAID array you want to monitor.
+| The RAID array to monitor.
 | 0.0
 
 | port

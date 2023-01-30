@@ -262,6 +262,7 @@ Note that you must include the `monitor` section in your definition.
 <monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 <1> Required `monitor` section.
+<1> Required `monitor` section.
 
 .Test with mixing HTTP and HTTPS in a page sequence
 [source, xml]
@@ -310,6 +311,7 @@ Note that you must include the `monitor` section in your definition.
 <monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 <1> Required `monitor` section.
+<1> Required `monitor` section.
 
 .Test login with dynamic credentials using session variables
 [source, xml]
@@ -353,6 +355,7 @@ Note that you must include the `monitor` section in your definition.
 <monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
 <1> Required `monitor` section.
+<1> Required `monitor` section.
 
 .Log in to `demo.opennms.org` without knowing username and password
 [source, xml]
@@ -385,6 +388,7 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <1>
 ----
+<1> Required `monitor` section.
 <1> Required `monitor` section.
 
 .Example with per-page response times
