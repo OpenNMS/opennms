@@ -61,7 +61,7 @@ commands:
          name: download Cloud Plugin
          command: |
             echo opennms-container/<< parameters.container_dir >>/rpms 
-            if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "horizon" == "<< parameters.container_dir >>" ]
+            if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
              cd opennms-container/<< parameters.container_dir >>/rpms
              urls=$(cloudsmith list packages --query='*-plugin-cloud tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
