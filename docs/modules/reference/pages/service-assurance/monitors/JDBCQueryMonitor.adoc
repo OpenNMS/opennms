@@ -145,7 +145,7 @@ For instructions on how to provide JDBC drivers on Minion, see xref:deployment:m
 
 The following example checks if the number of events in the {page-component-title} database is fewer than 250,000.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -163,13 +163,13 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.
 
 === String comparison
 
 The following example checks if the queried string matches against a defined operand.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -188,4 +188,4 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

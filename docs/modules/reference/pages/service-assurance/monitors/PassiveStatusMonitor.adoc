@@ -50,7 +50,7 @@ There are no specific parameters for configuring the PassiveStatusMonitor.
 
 If you will have only one service to monitor passively, set a basic service in `$\{OPENNMS_HOME}/etc/pollerd-configuration.xml`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -58,12 +58,12 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="PassiveStatus" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" /> <2>
 ----
-<1> As the monitor checks the PassiveStatusKeeper table in memory, small interval times allow for quick responses to updates with minimal overhead.
+<1> As the monitor checks the `PassiveStatusKeeper` table in memory, small interval times allow for quick responses to updates with minimal overhead.
 Interval times of 30 seconds to 60 seconds (as used in this example) are typical for this type of monitor.
-<2> Required monitor section.
+<2> Required `monitor` section.
 
 If you will have multiple passive monitors on a node, using xref:operation:deep-dive/service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[service patterns] can make configuration easy.
-With the following example, any service added to a node that matches the wildcard "Passive-*" will match a PassiveStatusKeeper update event for the matching `passiveServiceName` parameter.
+With the following example, any service added to a node that matches the wildcard `Passive-*` will match a PassiveStatusKeeper update event for the corresponding `passiveServiceName` parameter.
 
 [source, xml]
 ----
@@ -72,4 +72,4 @@ With the following example, any service added to a node that matches the wildcar
 </service>
 <monitor service="Passive-" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

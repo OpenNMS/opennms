@@ -63,7 +63,7 @@ The <variable> name is arbitrary.
 
 == Examples
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 .Test if a JMX connection can be established
 [source, xml]
@@ -75,6 +75,7 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="JMX-Connection-Test" class-name="org.opennms.netmgt.poller.monitors.JmxMonitor"/> <1>
 ----
+<1> Required `monitor` section.
 
 .Test a specific management bean for a value
 [source, xml]
@@ -88,6 +89,6 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="JMX-BeanValue-Test" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.
 
-CAUTION: You must escape reserved XML characters like *>*, *<*, *"*.
+IMPORTANT: You must escape reserved XML characters like `>`, `<`, and `"`.

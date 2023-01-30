@@ -40,7 +40,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -49,4 +49,4 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="PERC" class-name="org.opennms.netmgt.poller.monitors.PercMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

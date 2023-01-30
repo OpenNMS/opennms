@@ -54,7 +54,7 @@ QUIT
 The following example uses CentOS/RHEL path names.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -68,4 +68,4 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

@@ -155,7 +155,7 @@ Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we
 NOTE: Examples use CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -184,7 +184,7 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.
 
 == Example: Ping from a single IOS device routable address of each router of customer Bar
 
@@ -195,9 +195,9 @@ Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scen
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the node tags Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 
 In this case, we use the special value `$\{ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
-Since we want the same IOS device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
+Since we want the same IOS device `20.11.5.11` to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 Example `poller-configuration.xml` additions:
 
@@ -228,4 +228,4 @@ Example `poller-configuration.xml` additions:
 
 <monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

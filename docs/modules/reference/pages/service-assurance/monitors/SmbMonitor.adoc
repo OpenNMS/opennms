@@ -42,9 +42,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Sample configuration on how to configure the monitor in poller-configuration.xml.
+The following is a sample monitor configuration in `poller-configuration.xml`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -55,4 +55,4 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="SMB" class-name="org.opennms.netmgt.poller.monitors.SmbMonitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

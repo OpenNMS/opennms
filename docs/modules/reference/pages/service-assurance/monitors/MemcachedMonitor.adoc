@@ -104,7 +104,7 @@ The following example shows a configuration in `poller-configuration.xml`.
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -119,4 +119,4 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

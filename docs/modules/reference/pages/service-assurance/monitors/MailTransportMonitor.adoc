@@ -274,7 +274,7 @@ Test for an end-to-end email transaction.
 Examples use CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -305,6 +305,7 @@ Note that you must include the monitor section in your definition.
 
 <monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
+<1> Required `monitor` section.
 
 Test that we can connect via IMAPS and open the OPENNMS folder.
 
@@ -329,4 +330,4 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 
 <monitor service="MTM-Readmail" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

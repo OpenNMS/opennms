@@ -137,7 +137,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 Sample configuration on how to configure the monitor in `poller-configuration.xml`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and may look like this:
 
@@ -151,6 +151,7 @@ The RAID array monitor for your first array is configured with `virtualDiskNumbe
 
 <monitor service="OMSA-Disk-Array-1" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/> <1>
 ----
+<1> Required `monitor` section.
 
 If there is more than one RAID array to monitor, you need an additional configuration.
 In this case, `virtualDiskNumber = 2`.
@@ -165,4 +166,4 @@ In this case, `virtualDiskNumber = 2`.
 
 <monitor service="OMSA-Disk-Array-2" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.

@@ -86,9 +86,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-The following example creates a POST that contains the payload _World_.
+The following example creates a POST that contains the payload `World`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -102,9 +102,10 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="MyServlet" class-name="org.opennms.netmgt.poller.monitors.HttpPostMonitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.
 
 The resulting POST looks like this:
+
 [source, xml]
 ----
 POST /MyServlet HTTP/1.1

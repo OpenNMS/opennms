@@ -60,7 +60,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the monitor section in your definition.
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -73,4 +73,4 @@ Note that you must include the monitor section in your definition.
 </service>
 <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/> <1>
 ----
-<1> Required monitor section.
+<1> Required `monitor` section.
