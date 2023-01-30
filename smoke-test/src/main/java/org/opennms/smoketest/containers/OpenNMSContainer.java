@@ -500,7 +500,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 awaitHealthCheckSucceeded(container);
                 LOG.info("Health check passed.");
             }
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
+
     }
 
     public int getGeneratedUserId() {
