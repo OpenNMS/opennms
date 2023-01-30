@@ -39,7 +39,7 @@ public class ServiceLookupBuilder<C, F> {
 
 public static final long GRACE_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
 
-    public static final long WAIT_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
+    public static final long WAIT_PERIOD_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.waitPeriodMs", TimeUnit.MINUTES.toMillis(1));
 
     public static final long LOOKUP_DELAY_MS = SystemProperties.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
 
@@ -54,7 +54,7 @@ public static final long GRACE_PERIOD_MS = SystemProperties.getLong("org.opennms
     }
 
     public ServiceLookupBuilder blocking() {
-        return blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, GRACE_PERIOD_MS);
+        return blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, WAIT_PERIOD_MS);
     }
 
     public ServiceLookupBuilder blocking(long gracePeriodInMs, long sleepTimeInMs, long waitTimeMs) {
