@@ -554,6 +554,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 "manager.log",
                 "poller.log",
                 "provisiond.log",
+                "telemetryd.log",
                 "trapd.log",
                 "web.log"
         );
