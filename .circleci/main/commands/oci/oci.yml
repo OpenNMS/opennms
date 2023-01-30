@@ -57,8 +57,6 @@ commands:
           docker_layer_caching: true
       - cached-checkout
       - download-download-artifacts
-      - cloudsmith/ensure-api-key
-      - cloudsmith/install-cli
       - run:
          name: download Cloud Plugin
          command: |

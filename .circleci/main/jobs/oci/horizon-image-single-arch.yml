@@ -6,6 +6,7 @@ jobs:
       architecture:
         type: string
     steps:
+      - cloudsmith/install-cli
       - build-image-single-arch:
           architecture: << parameters.architecture >>
           container_name: horizon
