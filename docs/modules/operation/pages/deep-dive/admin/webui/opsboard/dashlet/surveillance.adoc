@@ -3,6 +3,7 @@
 
 The Surveillance dashlet shows a given xref:deep-dive/admin/webui/surveillance-view.adoc[] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
+[caption=]
 .Surveillance dashlet configuration options
 [options="header,autowidth", cols="1,2"]
 |===

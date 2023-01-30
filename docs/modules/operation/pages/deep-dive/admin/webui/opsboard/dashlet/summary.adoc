@@ -3,6 +3,7 @@
 
 The Summary dashlet shows a trend of incoming alarms in a given time frame in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
+[caption=]
 .Summary dashlet configuration options
 [options="autowidth"]
 |===

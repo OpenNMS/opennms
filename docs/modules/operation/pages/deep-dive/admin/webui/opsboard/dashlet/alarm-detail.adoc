@@ -3,6 +3,7 @@
 
 The Alarm Details dashlet displays a table with alarms and details about them in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
+[caption=]
 .Alarm information displayed in dashlet
 [options="autowidth"]
 |===
@@ -27,6 +28,7 @@ The Alarm Details dashlet displays a table with alarms and details about them in
 | Reason and detailed log message of the alarm.
 |===
 
+[caption=]
 .Alarm Details dashlet configuration options
 [cols="2,3"]
 |===

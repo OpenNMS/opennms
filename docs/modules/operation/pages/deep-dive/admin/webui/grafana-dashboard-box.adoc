@@ -15,6 +15,7 @@ If no tag is provided, all Grafana dashboards are shown.
 
 You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties`.
 
+[caption=]
 .Grafana Dashboard Box configuration properties
 [cols="2,3,1,2"]
 |===

@@ -124,9 +124,9 @@ The following key is available under this context:
 |===
 
 [[ga-metadata-scv]]
-=== SCV (Secure Credentials Vault)
+=== Secure credentials vault
 
-The special context `scv` provides access to values stored in the xref:deep-dive/admin/scv-configuration.adoc[].
+The special context `scv` provides access to values stored in the xref:deep-dive/admin/scv-configuration.adoc[secure credentials vault].
 The key used in this context must consist of the alias and the attribute of the credential, separated by a colon (for example, `${scv:mydevice:password}` will access the `password` attribute of a credential named `mydevice`).
 
 [[ga-metadata-webui]]
@@ -134,7 +134,7 @@ The key used in this context must consist of the alias and the attribute of the 
 
 Follow these steps to edit the `requisition` context in the web UI:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click the *gear* symbol in the top-right of the page.
 . Under Provisioning, select *Manage Provisioning Requisitions*.
 . Click *Edit* beside the requisition that you want to modify.
 . Click *Edit* beside the node that you want to modify.

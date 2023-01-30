@@ -19,6 +19,7 @@ The Alarms dashlet displays a table with a short alarm description in the <<deep
 | {page-component-title} unique event identifier for this alarm.
 |===
 
+[caption=]
 .Alarms dashlet configuration options
 [cols="2,3"]
 |===

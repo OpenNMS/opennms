@@ -27,7 +27,7 @@ After you create an ops board, you can specify how the information will be visua
 
 Follow these steps to create a new operator board:
 
-. Click the *gear* symbol at the top-right of the screen.
+. Click the *gear* symbol at the top-right of the page.
 . Under Additional Tools, click *Ops Board Configuration*.
 . Click the *plus* symbol (*+*) beside the Overview tab, type a name for the new ops board, and click *Save*.
 . Click *Add Dashlet*, select a dashlet from the *Dashlet* list, and configure its settings:

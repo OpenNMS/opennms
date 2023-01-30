@@ -46,7 +46,7 @@ image::dashboard/02_dashboard-surveillance-view.png["{page-component-title} UI d
 
 === Alarms
 
-The alarms component displays an overview of all unacknowledged alarms whose severity is higher than Normal (1).
+The alarms component displays an overview of all unacknowledged alarms whose severity is higher than `Normal (1)`.
 It sorts alarms from most to least recent, and lets you scroll through the last 100 alarms.
 
 Acknowledged alarms are removed from the operator's responsibility and, therefore, the alarms component.
