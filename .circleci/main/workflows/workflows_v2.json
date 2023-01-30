@@ -173,7 +173,8 @@
         },
         "minion-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -188,7 +189,8 @@
         },
         "horizon-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -203,7 +205,8 @@
         },
         "sentinel-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -263,7 +266,8 @@
         },
         "sentinel-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -286,7 +290,8 @@
         },
         "minion-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -301,7 +306,8 @@
         },
         "horizon-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
