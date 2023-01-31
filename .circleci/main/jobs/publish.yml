@@ -25,6 +25,14 @@ jobs:
                "${TYPE}" \
                "${CIRCLE_BRANCH}" \
                /tmp/artifacts
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+                --match="sbom" \
+               xml \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
             done
       - run:
           name: Import OCI Files
