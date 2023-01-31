@@ -74,9 +74,9 @@ commands:
                wget $url
              done
              pwd
-             ls -l opennms-container/<< parameters.container_dir >>/rpms
+             ls -l .
              rpm -lqp *.rpm
-             ls -l opennms-container/<< parameters.container_dir >>/rpms
+             ls -l .
             fi
           
       - run:
