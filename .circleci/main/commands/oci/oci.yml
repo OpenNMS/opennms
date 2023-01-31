@@ -60,7 +60,7 @@ commands:
       - run:
          name: Install Python and PiP
          command: | 
-           apt install -y python3 pip3
+           sudo apt install -y python3 pip3
       - cloudsmith/install-cli
       - run:
          name: download Cloud Plugin
