@@ -33,7 +33,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -66,6 +65,7 @@ import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
@@ -337,6 +337,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
     }
 
+    public URL getWebUrl() {
+        return getBaseUrlExternal();
+    }
+
     public RestClient getRestClient() {
         try {
             return new RestClient(new URL(getBaseUrlExternal() + "opennms"));
@@ -508,7 +512,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
             LOG.info("Waiting for OpenNMS health check...");
-            awaitHealthCheckSucceeded(container);
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
