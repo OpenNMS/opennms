@@ -39,36 +39,39 @@ import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssPluginIT {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CortexTssPluginIT.class);
-
     public static final String CORTEX_PLUGIN_RELEASE = "https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases/download/v2.0.1/opennms-cortex-tss-plugin.kar";
     public static final Path CORTEX_PLUGIN_KAR = Path.of("target", "opennms-cortex-tss-plugin.kar");
 
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.minimal(
+            b -> b.withInstallFeature("opennms-plugins-cortex-tss", CortexTssPluginIT.downloadPlugin(),
+                    "opennms-cortex-tss-plugin")
+    );
 
-    private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+    protected static Path downloadPlugin() {
+        if (!CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile().exists()) {
+            try {
+                FileUtils.copyURLToFile(new URL(CortexTssPluginIT.CORTEX_PLUGIN_RELEASE), CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return CortexTssPluginIT.CORTEX_PLUGIN_KAR;
+    }
+
+    protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        if (!CORTEX_PLUGIN_KAR.toFile().exists()) {
-            FileUtils.copyURLToFile(new URL(CORTEX_PLUGIN_RELEASE), CORTEX_PLUGIN_KAR.toFile());
-        }
-
         // Make sure the Karaf shell is healthy before we start
         KarafShellUtils.awaitHealthCheckSucceeded(stack.opennms());
     }
 
     @Test
-    public void canLoadCortexFeature() throws Exception {
-        stack.opennms().installFeature("opennms-plugins-cortex-tss", CORTEX_PLUGIN_KAR);
-
-        KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
+    public void everythingHappy() throws Exception {
+        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started");
     }
 }
