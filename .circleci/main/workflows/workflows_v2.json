@@ -458,7 +458,7 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                        "/^foundation.*/"
                     ]
                 },
                 "user_overridable": false
