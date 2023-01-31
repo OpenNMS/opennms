@@ -60,7 +60,7 @@ commands:
       - run:
          name: Install Python and PiP
          command: | 
-           sudo apt install -y python3 pip3
+           sudo apt install -y python3 python3-pip
       - cloudsmith/install-cli
       - run:
          name: download Cloud Plugin
@@ -93,6 +93,14 @@ commands:
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
+            make -n DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_OCI="images/${TAG}.oci" \
+                 DOCKER_TAG="opennms/${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 oci
+
             make DOCKER_ARCH="<< parameters.architecture >>" \
                  DOCKER_OCI="images/${TAG}.oci" \
                  DOCKER_TAG="opennms/${TAG}" \
