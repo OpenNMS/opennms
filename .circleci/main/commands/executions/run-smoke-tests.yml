@@ -50,8 +50,8 @@ commands:
           command: |
             mkdir -p ~/test-results/junit
             find . -type f -name failsafe-summary.xml -exec rm -f {} \;
-            find . -type f -regex ".*/target/.*-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/.*-reports/.*dump.*" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
             mkdir -p ~/test-artifacts/recordings
             cp -R ~/project/smoke-test/target/*.{flv,mp4} ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true

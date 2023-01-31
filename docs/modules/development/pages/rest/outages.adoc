@@ -1,13 +1,23 @@
 
 = Outages
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Outages API GET functions
+[options="autowidth"]
 |===
-| Resource                      | Description
-| `/outages`                    | Get a list of outages.
-| `/outages/count`              | Get the number of outages. (Returns plaintext, rather than XML or JSON.)
-| `/outages/\{id}`              | Get the outage specified by the given ID.
-| `/outages/forNode/\{nodeid}`  | Get the outages that match the given node ID.
+| Resource  | Description
+
+| /outages
+| Get a list of outages.
+
+| /outages/count
+| Get the number of outages (returns plaintext, rather than XML or JSON).
+
+| /outages/\{id}
+| Get the outage specified by the given ID.
+
+| /outages/forNode/\{nodeid}
+| Get the outages that match the given node ID.
 |===

@@ -13,7 +13,7 @@ jobs:
                   - poweredby-v2-{{ .Branch }}-{{ .Revision }}
                   - poweredby-v2-{{ .Branch }}-
                   - poweredby-v2-
-            - cached-checkout-for-pushing
+            - checkout-for-pushing
             - run:
                 name: Merge Foundation to PoweredBy
                 command: .circleci/scripts/merge-poweredby.sh

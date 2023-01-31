@@ -1,35 +1,55 @@
 
 = Events
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="2,10"]
+[caption=]
+.Events API GET functions
+[cols="1,3"]
 |===
-| Resource        | Description
-| `/events`       | Get a list of events. The default for offset is 0, and the default for limit is 10. To get all results, use limit=0 as a parameter on the URL (ie, `GET /events?limit=0`).
-| `/events/count` | Get the number of events. (Returns plaintext, rather than XML or JSON.)
-| `/events/\{id}` | Get the event specified by the given ID.
+| Resource  | Description
+
+| /events
+| Get a list of events.
+The default for `offset` is `0`, and the default for `limit` is `10`.
+To get all results, use `limit=0` as a parameter on the URL (for example, `GET /events?limit=0`).
+
+| /events/count
+| Get the number of events (returns plaintext, rather than XML or JSON).
+
+| /events/\{id}
+| Get the event specified by the given ID.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
-_PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-Type.
+PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
-[options="header", cols="2,10"]
+[caption=]
+.Events API PUT functions
+[options="autowidth"]
 |===
-| Resource                               | Description
-| `/events/\{id}?ack=''(true;false)`     | Acknowledges (or unacknowledges) an event.
-| `/events?x=y&...&ack=''(true;false)`   | Acknowledges (or unacknowledges) the matching events.
+| Resource  | Description
+
+| /events/\{id}?ack=''(true;false)
+| Acknowledges (or unacknowledges) an event.
+
+| /events?x=y&...&ack=''(true;false)
+| Acknowledges (or unacknowledges) the matching events.
 |===
 
-== POSTs (Adding Data)
+== POST (adding data)
 
-POST requires XML (application/xml) or JSON (application/json) as its Content-Type.
+POST requires XML (`application/xml`) or JSON (`application/json`) as its `Content-Type`.
 
 TIP: See `$\{OPENNMS_HOME}/share/xsds/event.xsd` for the reference schema.
 
-[options="header", cols="5,10"]
+[caption=]
+.Events API POST function
+[options="autowidth"]
 |===
-| Resource                                        | Description
-| `/events`                                       | Publish an event on the event bus.
+| Resource  | Description
+
+| /events
+| Publish an event on the event bus.
 |===

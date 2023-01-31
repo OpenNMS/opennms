@@ -30,6 +30,7 @@
 *** xref:rest/categories.adoc[]
 *** xref:rest/config_management.adoc[]
 *** xref:rest/device_config.adoc[]
+*** xref:rest/discovery.adoc[]
 *** xref:rest/flows.adoc[]
 *** xref:rest/classifications.adoc[]
 *** xref:rest/foreign_sources.adoc[]
