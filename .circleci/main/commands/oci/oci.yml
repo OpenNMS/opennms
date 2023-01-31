@@ -81,3 +81,30 @@ commands:
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_dir >>/images/
           destination: /
+
+  generate-sbom:
+    parameters:
+      container_dir:
+        type: string
+    steps:
+      - run:
+          name: install Syft
+          command: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "${HOME}/bin"
+      - run:
+          name: generate SBOM
+          command: |
+            cd ~/project/opennms-container/"<< parameters.container_dir >>"/images/
+            if [ -z "$(ls *.oci 2>/dev/null)" ]; then
+              echo 'ERROR: no *.oci files found in opennms-container/<< parameters.container_dir >>/images/'
+              exit 1
+            fi
+
+            mkdir -p /tmp/sboms
+            for IMAGE_FILE in *.oci; do
+              IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
+              syft packages "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
+            done
+      - store_artifacts:
+          path: /tmp/sboms/
+          destination: /
+
