@@ -83,5 +83,6 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="rrd-base-name" value="ldap"/>
   <parameter key="ds-name" value="ldap"/>
 </service>
+
 <monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
 ----

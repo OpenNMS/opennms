@@ -85,4 +85,5 @@ Note that you must include the `monitor` section for each monitor in your defini
 <monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <1>
 <monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <1>
 ----
-<1> Required `monitor` component for each service.
+<1>
+Required `monitor` component for each service.

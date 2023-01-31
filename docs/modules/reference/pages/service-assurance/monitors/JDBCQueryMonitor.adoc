@@ -163,7 +163,8 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <1>
 ----
-<1> Required `monitor` section.
+<1>
+Required `monitor` section.
 
 === String comparison
 
@@ -188,4 +189,5 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <1>
 ----
-<1> Required `monitor` section.
+<1>
+Required `monitor` section.

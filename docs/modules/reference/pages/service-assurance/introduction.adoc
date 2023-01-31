@@ -114,7 +114,8 @@ Parameters that support placeholder substitution have a kbd:[{}] icon beside the
 
 == Example service definition
 
-The following shows the basic format of a sample service definition:
+The following shows the basic format of a sample service definition.
+Note that all service definitions must include the `monitor` section.
 
 [source, xml]
 ----
@@ -122,5 +123,6 @@ The following shows the basic format of a sample service definition:
 
 <monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
 ----
-<1> Note that all service definitions must include the `monitor` section.
+<1>
+Required `monitor` section.
 

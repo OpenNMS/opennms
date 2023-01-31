@@ -305,7 +305,8 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
-<1> Required `monitor` section.
+<1>
+Required `monitor` section.
 
 Test that we can connect via IMAPS and open the OPENNMS folder.
 
@@ -330,4 +331,5 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 
 <monitor service="MTM-Readmail" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <1>
 ----
-<1> Required `monitor` section.
+<1>
+Required `monitor` section.

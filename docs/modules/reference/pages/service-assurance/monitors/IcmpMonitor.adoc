@@ -62,6 +62,7 @@ Note that you must include the `monitor` section for each service in your defini
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>
+
 <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
 ----
 
@@ -78,5 +79,6 @@ Note that you must include the `monitor` section for each service in your defini
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>
+
 <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
 ----

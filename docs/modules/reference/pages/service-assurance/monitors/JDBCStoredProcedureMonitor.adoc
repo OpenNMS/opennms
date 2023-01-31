@@ -104,4 +104,5 @@ COST 100;
 
 <monitor service="OpenNMS-DB-SP-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/> <1>
 ----
-<1> Required `monitor` section.
+<1>
+Required `monitor` section.

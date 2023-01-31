@@ -129,4 +129,5 @@ Configuration in `poller-configuration.xml` is as follows:
 <monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
 <monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
 ----
-<1> Required `monitor` section for each service monitor.
+<1>
+Required `monitor` section for each service monitor.
