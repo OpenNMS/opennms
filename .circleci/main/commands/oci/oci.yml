@@ -63,8 +63,12 @@ commands:
            sudo apt install -y python3 python3-pip 
       - cloudsmith/install-cli
       - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
          name: download Cloud Plugin
          command: |
+            export tarLocation="$(pwd)/<< parameters.tarball_path"
             echo opennms-container/<< parameters.container_dir >>/rpms 
             if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
@@ -75,20 +79,17 @@ commands:
              done
              pwd
              ls -l .
-             ls ../../../target/
+             echo $tarLocation
              dpkg-deb -R opennms-plugin-cloud_*_all.deb ./
-             cp ../../../target/opennms-*-core.tar.gz ./
+             cp $tarLocation/opennms-*-core.tar.gz ./
              gunzip opennms-*-core.tar.gz
              mv usr/share/opennms/deploy ./
              tar -rf opennms-*-core.tar deploy
              gzip opennms-*-core.tar 
              ls .
-             mv opennms-*-core.tar.gz ../../../target/
+             mv opennms-*-core.tar.gz $tarLocation/
             fi
           
-      - run:
-          name: download tarball dependency to << parameters.tarball_path >>
-          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
