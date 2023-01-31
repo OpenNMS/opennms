@@ -211,9 +211,18 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
-                .addFileSystemBind(overlay.toString(),
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
+
+        addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            if (installFeature.getValue() != null) {
+                addFileSystemBind(installFeature.getValue().toString(),
+                        "/opt/opennms/deploy/" + installFeature.getValue().getFileName(),
+                        BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            }
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
@@ -395,6 +404,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            featuresOnBoot.add(installFeature.getKey());
+        }
+
         if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("opennms-core-ipc-grpc-server");
         }
