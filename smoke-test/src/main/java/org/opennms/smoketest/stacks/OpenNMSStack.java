@@ -31,6 +31,7 @@ package org.opennms.smoketest.stacks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -68,11 +69,7 @@ public final class OpenNMSStack implements TestRule {
      */
     public static final OpenNMSStack NONE = new OpenNMSStack();
 
-	public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder()
-			.withOpenNMS(OpenNMSProfile.newBuilder()
-					.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
-					.build())
-			.build());
+	public static final OpenNMSStack MINIMAL = minimal();
 
 	public static final OpenNMSStack MINIMAL_WITH_DEFAULT_LOCALHOST = OpenNMSStack.withModel(StackModel.newBuilder().build());
 
@@ -114,6 +111,20 @@ public final class OpenNMSStack implements TestRule {
     private final List<MinionContainer> minionContainers;
 
     private final List<SentinelContainer> sentinelContainers;
+
+    public static OpenNMSStack minimal(Consumer<OpenNMSProfile.Builder>... with) {
+        var builder = OpenNMSProfile.newBuilder();
+
+        builder.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml");
+
+        for (var w : with) {
+            w.accept(builder);
+        }
+
+        return OpenNMSStack.withModel(StackModel.newBuilder()
+                .withOpenNMS(builder.build())
+                .build());
+    }
 
     /**
      * Create an empty OpenNMS stack for testing with locally-installed components outside of Docker.
