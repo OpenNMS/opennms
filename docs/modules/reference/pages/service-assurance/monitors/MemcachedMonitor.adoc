@@ -117,6 +117,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="rrd-base-name" value="memcached" />
 </service>
 
-<monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" /> <1>
+<monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
 ----
-<1> Required `monitor` section.

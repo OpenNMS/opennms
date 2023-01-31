@@ -66,5 +66,6 @@ Note that you must include the `monitor` section for each service in your defini
   <parameter key="rrd-base-name" value="smtp" />
   <parameter key="ds-name" value="smtp" />
 </service>
+
 <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
 ----

@@ -71,5 +71,6 @@ Note that you must include the `monitor` section for each service in your defini
   <parameter key="rrd-base-name" value="pop3"/>
   <parameter key="ds-name" value="pop3"/>
 </service>
+
 <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
 ----

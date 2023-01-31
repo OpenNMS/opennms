@@ -64,9 +64,8 @@ Note that you must include the `monitor` section in your definition.
    <parameter key="group-health" value="70" />
 </service>
 
-<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" /> <1>
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" /> 
 ----
-<1> Required `monitor` section.
 
 == Details about the used SNMP checks
 

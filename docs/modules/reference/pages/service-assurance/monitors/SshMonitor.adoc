@@ -67,5 +67,6 @@ Note that you must include the `monitor` section for each service in your defini
   <parameter key="rrd-base-name" value="ssh"/>
   <parameter key="ds-name" value="ssh"/>
 </service>
+
 <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
 ----

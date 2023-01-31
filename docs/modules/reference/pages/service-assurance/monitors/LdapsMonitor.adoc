@@ -53,6 +53,5 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="ds-name" value="ldaps"/>
 </service>
 
-<monitor service="LDAPS" class-name="org.opennms.netmgt.poller.monitors.LdapsMonitor" /> <1>
+<monitor service="LDAPS" class-name="org.opennms.netmgt.poller.monitors.LdapsMonitor" />
 ----
-<1> Required `monitor` section.

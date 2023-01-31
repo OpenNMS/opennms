@@ -85,6 +85,5 @@ command[check_apt]=/usr/lib/nagios/plugins/check_apt
   <parameter key="padding" value="2" />
 </service>
 
-<monitor service="NRPE-Check-APT" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" /> <1>
+<monitor service="NRPE-Check-APT" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
 ----
-<1> Required `monitor` section.

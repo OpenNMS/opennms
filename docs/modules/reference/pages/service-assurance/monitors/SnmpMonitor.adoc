@@ -253,7 +253,7 @@ Note that you must include the `monitor` section for each service in your defini
     <parameter key="reason-template" value="System fan status is not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), degraded(3), failed(4)"/> <4>
 </service>
 
-<monitor service="HP-Insight-Fan-System" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" /> <5>
+<monitor service="HP-Insight-Fan-System" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
 ----
 <1> Scalar object ID to test.
 <2> Operator for testing the response value.
