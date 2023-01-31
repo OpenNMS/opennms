@@ -23,6 +23,9 @@ case "${CIRCLE_BRANCH}" in
   master-*)
     REPO="stable"
     ;;
+  *NMS-15341*)
+    REPO="foundation-2023"
+    ;;
   *)
     echo "This branch is not eligible for deployment: ${CIRCLE_BRANCH}"
     exit 0
