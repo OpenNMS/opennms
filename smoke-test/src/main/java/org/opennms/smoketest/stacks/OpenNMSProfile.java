@@ -33,6 +33,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -58,12 +60,14 @@ public class OpenNMSProfile {
     private final boolean kafkaProducerEnabled;
     private final List<OverlayFile> files;
     private final Function<OpenNMSContainer, WaitStrategy> waitStrategy;
+    private final HashMap<String, Path> installFeatures;
 
     private OpenNMSProfile(Builder builder) {
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         kafkaProducerEnabled = builder.kafkaProducerEnabled;
         files = Collections.unmodifiableList(builder.files);
         waitStrategy = Objects.requireNonNull(builder.waitStrategy);
+        installFeatures = Objects.requireNonNull(builder.installFeatures);
     }
 
     public static Builder newBuilder() {
@@ -75,6 +79,7 @@ public class OpenNMSProfile {
         private boolean kafkaProducerEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
         private Function<OpenNMSContainer, WaitStrategy> waitStrategy = OpenNMSContainer.WaitForOpenNMS::new;
+        private HashMap<String, Path> installFeatures = new LinkedHashMap<>();
 
         /**
          * Enable/disable JVM debugging.
@@ -171,6 +176,25 @@ public class OpenNMSProfile {
             return this;
         }
 
+        public Builder withInstallFeature(final String feature) {
+            return withInstallFeature(feature, null, null);
+        }
+        public Builder withInstallFeature(final String feature, final Path karFile) {
+            return withInstallFeature(feature, karFile, null);
+        }
+        public Builder withInstallFeature(final String feature, final Path karFile, final String waitForKar) {
+            if (waitForKar != null) {
+                installFeatures.put(String.format("%s wait-for-kar=%s", feature, waitForKar), karFile);
+            } else {
+                installFeatures.put(feature, karFile);
+            }
+            return this;
+        }
+
+        public Builder withDisableFeature(final String feature) {
+            return withInstallFeature(String.format("!%s", feature), null, null);
+        }
+
         /**
          * Build the profile.
          *
@@ -196,5 +220,9 @@ public class OpenNMSProfile {
 
     public Function<OpenNMSContainer, WaitStrategy> getWaitStrategy() {
         return waitStrategy;
+    }
+
+    public HashMap<String, Path> getInstallFeatures() {
+        return installFeatures;
     }
 }
