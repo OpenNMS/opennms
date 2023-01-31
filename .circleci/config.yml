@@ -236,6 +236,7 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
+            find . -type f -name failsafe-summary.xml -exec rm -f {} \;
             find * -type f -regex ".*target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             find * -type f -regex ".*target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
             mkdir -p ~/test-artifacts/recordings
@@ -370,6 +371,7 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
+            find . -type f -name failsafe-summary.xml -exec rm -f {} \;
             find * -type f -regex ".*target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
             find * -type f -regex ".*target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
