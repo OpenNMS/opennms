@@ -293,8 +293,9 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -name failsafe-summary.xml -exec rm -f {} \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
             mkdir -p ~/test-artifacts/recordings
             cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
@@ -426,8 +427,9 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -name failsafe-summary.xml -exec rm -f {} \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
       - run:
           name: Gather tests
           when: always
