@@ -75,15 +75,15 @@ commands:
              done
              pwd
              ls -l .
-             ls ../target/
+             ls ../../../target/
              dpkg-deb -R opennms-plugin-cloud_*_all.deb ./
-             cp ../target/opennms-*-core.tar.gz ./
+             cp ../../../target/opennms-*-core.tar.gz ./
              gunzip opennms-*-core.tar.gz
-             mv mv usr/share/opennms/deploy ./
+             mv usr/share/opennms/deploy ./
              tar -rf opennms-*-core.tar deploy
              gzip opennms-*-core.tar 
              ls .
-             mv opennms-*-core.tar.gz ../target/
+             mv opennms-*-core.tar.gz ../../../target/
             fi
           
       - run:
