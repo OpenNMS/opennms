@@ -1,7 +1,7 @@
 
 = Events
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Events API GET functions
@@ -21,7 +21,7 @@ To get all results, use `limit=0` as a parameter on the URL (for example, `GET /
 | Get the event specified by the given ID.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -38,7 +38,7 @@ PUT requires form data using `application/x-www-form-urlencoded` as a `Content-T
 | Acknowledges (or unacknowledges) the matching events.
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 POST requires XML (`application/xml`) or JSON (`application/json`) as its `Content-Type`.
 

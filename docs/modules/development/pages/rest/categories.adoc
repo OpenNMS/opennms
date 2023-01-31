@@ -1,7 +1,7 @@
 
 = Categories
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Categories API GET functions
@@ -25,7 +25,7 @@
 | Get the categories for a given user group (similar to `/groups/\{group}/categories`).
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 [caption=]
 .Categories API POST function
@@ -37,7 +37,7 @@
 | Adds a new category.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 [caption=]
 .Categories API PUT functions
@@ -55,7 +55,7 @@
 | Add the given category to the given user group (similar to `/groups/\{group}/categories/\{category}`).
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Categories API DELETE functions

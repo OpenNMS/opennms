@@ -4,7 +4,7 @@
 Use the Resources API to list or delete resources at the node level and below.
 This service is especially useful in conjunction with the Measurements API.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Resources API GET functions
@@ -33,7 +33,7 @@ Otherwise, the selected node subresources are included and some or all of their 
 * Similarly, if the `stringProperties` attribute is not set, then all string properties are included. 
 Otherwise, only selected string properties are included.
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Resources API DELETE function

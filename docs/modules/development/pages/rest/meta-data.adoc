@@ -4,7 +4,7 @@
 
 You can query the actual metadata of nodes, interfaces, and services via REST endpoints.
 
-== GETs (Reading Metadata)
+== GETs (reading metadata)
 
 [caption=]
 .Metadata API GET functions

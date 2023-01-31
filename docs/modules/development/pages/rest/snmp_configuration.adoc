@@ -8,7 +8,7 @@ If no `<definition />` entry is created it matches the defaults.
 There are different versions of the interface (see below).
 The following operations are supported:
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .SNMP Configuration API GET functions
@@ -23,7 +23,7 @@ The following operations are supported:
 | Get the SNMP configuration for a given IP address at a given location.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 [caption=]
 .SNMP Configuration API PUT function

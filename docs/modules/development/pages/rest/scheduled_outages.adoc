@@ -1,7 +1,7 @@
 
 = Scheduled Outages
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Scheduled Outages API GET functions
@@ -16,7 +16,7 @@
 | Get the details of a specific outage.
 |===
 
-== POST (Setting Data)
+== POST (setting data)
 
 [caption=]
 .Scheduled Outages API POST function
@@ -28,7 +28,7 @@
 | Add a new outage (or update an existing one).
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 [caption=]
 .Scheduled Outages API PUT functions
@@ -49,7 +49,7 @@
 | Add a specific outage to the notifications.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Scheduled Outages API DELETE functions

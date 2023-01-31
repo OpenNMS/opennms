@@ -10,7 +10,7 @@ Examples:
 * `/ifservices?category.name=Production`
 * `/ifservices?status=A`
 
-== GET (Reading Data)
+== GET (reading data)
 
 [caption=]
 .Monitored Services API GET function
@@ -31,7 +31,7 @@ Get the forced unmanaged services for the nodes that belong to the requisition n
 curl -u admin:admin "http://localhost:8980/opennms/rest/ifservices?status=F&node.foreignSource=Servers"
 ----
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 [caption=]
 .Monitored Services API PUT function

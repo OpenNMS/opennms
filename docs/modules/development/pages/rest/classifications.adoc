@@ -5,7 +5,7 @@ Use the Flow Classification API to update, create, or delete flow classification
 
 NOTE: If not otherwise specified, the `Content-Type` of the response is `application/json`.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Flow Classification API GET functions
@@ -24,7 +24,7 @@ Setting `limit` to `0` returns all enabled rules.
 | /classifications/groups
 | Retrieve all existing groups.
 The request is limited to `10` items by default.
-Setting `limit` to `0` returns ALL enabled rules.
+Setting `limit` to `0` returns all enabled rules.
 
 | /classifications/groups/\{id}
 | Retrieve the group identified by `\{id}``
@@ -186,7 +186,7 @@ name;ipAddress;port;protocol
 http;;80;TCP
 ----
 
-== POSTs (Creating Data)
+== POSTs (creating data)
 
 [caption=]
 .Flow Classification API POST functions
@@ -283,7 +283,7 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 }
 ----
 
-== PUTs (Updating Data)
+== PUTs (updating data)
 
 [caption=]
 .Flow Classification API PUT functions
@@ -300,10 +300,10 @@ The ID of the rule cannot be changed.
 
 | /classifications/groups
 | Update a group.
-At the moment, only the enabled property can be changed.
+Currently, only the enabled property can be changed.
 |===
 
-== DELETEs (Deleting Data)
+== DELETEs (deleting data)
 
 [caption=]
 .Flow Classification API DELETE functions

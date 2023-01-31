@@ -10,7 +10,7 @@ Examples:
 * `/api/v2/ipinterfaces?_s=node.label==onms-prd-01`
 * `/api/v2/ipinterfaces?_s=ipAddress==192.168.32.140`
 
-== GET (Reading Data)
+== GET (reading data)
 
 [caption=]
 .IP Interfaces API GET function

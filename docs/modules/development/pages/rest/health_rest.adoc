@@ -13,7 +13,7 @@ Examples:
 * `/rest/health/probe?tag=local`
 * `/rest/health/probe?tag=local&tag=dao`
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Health rest service GET functions
@@ -99,5 +99,5 @@ Requests without parameters will return all available health check components.
 | Rest health feature is installed and running.
 This reponse is independent of the health status. +
 `healthy:true` indicates that all components found are healthy. +
-`healthy:false` indicates that at least one component didn't return a healthy status.
+`healthy:false` indicates that at least one component did not return a healthy status.
 |===

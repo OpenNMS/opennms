@@ -1,7 +1,7 @@
 
 = JavaMail Configuration
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .JavaMail Configuration API GET functions
@@ -34,7 +34,7 @@
 | Get the content of the `end2end` mail configuration named `\{name}`.
 |===
 
-== POSTs (Adding/Updating Data)
+== POSTs (adding/updating data)
 
 POST requires form data using `application/xml` or `application/json` as a `Content-Type`.
 
@@ -56,7 +56,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Adds a new or overrides an existing `end2end` mail configuration.
 |===
 
-== PUTs (Update defaults)
+== PUTs (updating defaults)
 
 On a successful request, the Email NBI will be notified about the configuration change.
 
@@ -73,7 +73,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Sets the `sendmail` named `\{name}` as the new default.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -95,7 +95,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Updates the content of the `end2end` mail configuration named `\{name}`.
 |===
 
-== DELETEs (Remove Data)
+== DELETEs (remove data)
 
 On a successful request, the Email NBI will be notified about the configuration change.
 

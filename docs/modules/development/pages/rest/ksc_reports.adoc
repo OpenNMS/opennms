@@ -1,7 +1,7 @@
 
 = KSC Reports
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .KSC Reports API GET functions
@@ -19,7 +19,7 @@
 | Get a count of all KSC reports.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 [caption=]
 .KSC Reports API PUT function
@@ -31,10 +31,10 @@
 | Modify a report with the given ID.
 |===
 
-== POSTs (Creating Data)
+== POSTs (creating data)
 
 Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].

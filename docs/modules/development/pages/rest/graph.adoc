@@ -2,7 +2,8 @@
 [[ga-development-rest-graph]]
 = Graph API
 
-Use the Graph API to read existing graph and graph containers in the system and is an `api/v2` endpoint.
+Use the Graph API to read existing graph and graph containers in the system.
+It is also an `api/v2` endpoint.
 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 

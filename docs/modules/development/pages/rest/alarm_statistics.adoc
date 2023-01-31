@@ -3,7 +3,7 @@
 
 It is possible to get some basic statistics on alarms, including the number of acknowledged alarms, total alarms, and the newest and oldest of acknowledged and unacknowledged alarms.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Alarm Statistics API GET functions

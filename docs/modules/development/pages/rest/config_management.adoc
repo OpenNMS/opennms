@@ -5,7 +5,7 @@
 Use the Config Management REST API to manage configurations for OpenNMS.
 Configurations modified will take effect instantly.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Config Management API GET functions
@@ -37,7 +37,7 @@ Returns 400 when the path parameter has a wrong format or specifies a nonexisten
 400 Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 |===
 
-== POSTs (Adding Data)
+== POSTs (adding data)
 
 [caption=]
 .Config Management API POST functions
@@ -60,7 +60,7 @@ Returns 400 when the path parameter has a wrong format, specifies a nonexistent 
 400 Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 [caption=]
 .Config Management API PUT functions
@@ -91,7 +91,7 @@ Returns 400 when the `pathToParent` parameter has a wrong format, specifies a no
 400 Return: {"MESSAGE": "<ERROR_MESSAGE>"} +
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Config Management API DELETE functions

@@ -4,7 +4,7 @@
 The SVG maps use REST to populate their data.
 This is the interface for doing that.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Maps API GET functions
@@ -22,7 +22,7 @@ This is the interface for doing that.
 | Get the elements (nodes, links, and so on) for the map with the given ID.
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 [caption=]
 .Maps API POST function
@@ -34,7 +34,7 @@ This is the interface for doing that.
 | Add a map.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 [caption=]
 .Maps API PUT function
@@ -46,7 +46,7 @@ This is the interface for doing that.
 | Update the properties of the map with the given ID.
 |===
 
-== DELETE (Removing Data)
+== DELETE (removing data)
 
 [caption=]
 .Maps API DELETE function

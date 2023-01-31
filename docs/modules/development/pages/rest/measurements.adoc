@@ -5,7 +5,7 @@ Use the Measurements API to retrieve collected values stored in RRD (or JRB) fil
 
 NOTE: Unless otherwise specified, all units of time are expressed in milliseconds.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Measurements API GET function
@@ -101,7 +101,7 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/measurements/node%5B1%5D
 </query-response>
 ----
 
-== POST (Reading Data)
+== POST (reading data)
 
 [caption=]
 .Measurements API POST function
@@ -295,19 +295,19 @@ This contains several functions that can reference previous samples in the time 
 | _None_
 
 | fn:arrayNaN("sampleName", n)
-| References the Nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with `NaN`.
+| References the nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with `NaN`.
 | fn:arrayNaN("x", 5)
 
 | fn:arrayZero("sampleName", n)
-| References the Nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with `0`.
+| References the nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with `0`.
 | fn:arrayZero("x", 5)
 
 | fn:arrayFirst("sampleName", n)
-| References the Nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with the first sample.
+| References the nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with the first sample.
 | fn:arrayFirst("x", 5)
 
 | fn:arrayStart("sampleName", n, constant)
-| References the Nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with a supplied constant.
+| References the nth previous sample in the "sampleName" sample series, replacing the `N` samples before the start of the series with a supplied constant.
 | fn:arrayStart("x", 5, 10)
 |===
 

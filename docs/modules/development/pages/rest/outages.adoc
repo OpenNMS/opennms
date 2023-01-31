@@ -1,7 +1,7 @@
 
 = Outages
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Outages API GET functions

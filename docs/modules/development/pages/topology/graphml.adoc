@@ -2,7 +2,7 @@
 :imagesdir: ../../images
 = GraphML
 
-In {page-component-title}, the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.
+In {page-component-title}, the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML]-formatted files to visualize graphs.
 
 [quote, , http://graphml.graphdrawing.org]
 ____
@@ -55,7 +55,7 @@ A very minimal example is given below:
 
 == Create, update, or delete GraphML topology
 
-To create a GraphML Topology, a valid GraphML xml file must exist.
+To create a GraphML topology, a valid GraphML xml file must exist.
 Afterwards this is sent to the {page-component-title} REST API to create it:
 
 [source, shell]
@@ -141,7 +141,7 @@ If multiple IDs should be added to focus, they are separated by `,` (for example
 | Graph
 | Integer
 | 1
-| Defines the default SZL.
+| Defines the default semantic zoom level.
 
 | vertex-status-provider
 | No
@@ -177,7 +177,7 @@ If not defined, the `id` is used instead.
 | Node
 | String
 | _Blank_
-| Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign id.
+| Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign ID.
 Can be used only in combination with `foreignID`. Please note that this attribute will not be used when the attribute `nodeID` is set.
 
 | foreignID
@@ -185,7 +185,7 @@ Can be used only in combination with `foreignID`. Please note that this attribut
 | Node
 | String
 | _Blank_
-| Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign id.
+| Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign ID.
 Use only in combination with `foreignSource`.
 Note that this attribute will not be used when the attribute `nodeID` is set.
 
@@ -202,7 +202,7 @@ If not defined, the `id` attribute is used instead.
 | Node
 | Integer
 | 0
-| Sets the level of the Vertex which is used by certain layout algorithms (for example, `Hierarchical Layout` and `Grid Layout`).
+| Sets the level of the vertex which is used by certain layout algorithms (for example, `Hierarchical Layout` and `Grid Layout`).
 
 | edge-path-offset
 | No
@@ -229,7 +229,7 @@ If none is provided the value is calculated by joining the graph namespaces usin
 |===
 
 [[gd-topology-graphml-focus-strategy]]
-== Focus Strategies
+== Focus strategies
 
 A focus strategy defines which vertices to add to focus when selecting the topology.
 The following strategies are available:
@@ -439,7 +439,8 @@ The following strategies are supported:
 
 * *NONE:* No breadcrumbs are shown.
 * *SHORTEST_PATH_TO_ROOT:* Generates breadcrumbs from all visible vertices to the root layer (`TopologyProvider`).
-The algorithms assumes a hierarchical graph. Be aware that all vertices MUST share the same root layer, otherwise the algorithm to determine the path to root does not work.
+The algorithms assume a hierarchical graph. 
+Be aware that all vertices must share the same root layer, otherwise the algorithm to determine the path to root does not work.
 
 The following figure visualizes a GraphML defining multiple layers (see below for the GraphML definition):
 

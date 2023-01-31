@@ -3,7 +3,7 @@
 
 NOTE: the default offset is 0, the default limit is 10 results. To get all results, use `limit=0` as a parameter on the URL (ie, `GET /events?limit=0`).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Alarms API GET functions
@@ -21,7 +21,7 @@ NOTE: the default offset is 0, the default limit is 10 results. To get all resul
 | Get the alarms specified by the given ID.
 |===
 
-Note that you can also query by severity, like so:
+Note that you can also query by severity:
 
 [options="autowidth"]
 |===
@@ -31,7 +31,7 @@ Note that you can also query by severity, like so:
 | Get the alarms with a severity greater than or equal to `MINOR`.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 

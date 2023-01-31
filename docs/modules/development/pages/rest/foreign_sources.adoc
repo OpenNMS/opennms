@@ -9,7 +9,7 @@ Foreign source definitions are POSTed and will be deployed when the correspondin
 
 If a request says that it gets the "active" foreign source, that means it returns the pending foreign source (being edited for deployment) if there is one, otherwise it returns the deployed foreign source.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Foreign Sources API GET functions
@@ -45,7 +45,7 @@ If a request says that it gets the "active" foreign source, that means it return
 | Get the specified policy for the foreign source named `\{name}`.
 |===
 
-== POSTs (Adding Data)
+== POSTs (adding data)
 
 POST requires XML using `application/xml` as its `Content-Type`.
 
@@ -65,7 +65,7 @@ POST requires XML using `application/xml` as its `Content-Type`.
 | Add a policy to the named foreign source.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -79,7 +79,7 @@ PUT requires form data using `application/x-www-form-urlencoded` as a `Content-T
 | Modify a foreign source with the given name.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Foreign Sources API DELETE functions

@@ -5,7 +5,7 @@ Situation feedback is an optional feature for the management of user-contributed
 
 It is a simple API for the submission and retrieval of correlation feedback.
 
-== GET (Reading Data)
+== GET (reading data)
 
 [caption=]
 .Situation Feedback API GET function
@@ -53,7 +53,7 @@ curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
 
 ----
 
-== POST (Adding Data)
+== POST (adding data)
 
 POST requires using `application/json` as a `Content-Type`.
 

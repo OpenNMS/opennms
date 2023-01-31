@@ -3,7 +3,7 @@
 
 Like users, groups have a simplified interface.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Groups API GET functions
@@ -24,7 +24,7 @@ Like users, groups have a simplified interface.
 | Get the categories associated with a group, given a group name.
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 [caption=]
 .Groups API POST function
@@ -36,7 +36,7 @@ Like users, groups have a simplified interface.
 | Add a new group.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 [caption=]
 .Groups API PUT functions
@@ -54,7 +54,7 @@ Like users, groups have a simplified interface.
 | Associate a category with the group, given a group name and category name.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Groups API DELETE functions

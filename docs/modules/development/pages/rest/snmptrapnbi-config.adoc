@@ -1,7 +1,7 @@
 
 = SNMP Trap Northbounder Interface Configuration
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .SNMP Trap Northbounder Interface Configuration API GET functions
@@ -22,7 +22,7 @@
 | Gets the content of the destination named `\{name}`.
 |===
 
-== PUT (Update defaults)
+== PUT (update defaults)
 
 On a successful request, the Syslog NBI will be notified about the configuration change.
 
@@ -36,7 +36,7 @@ On a successful request, the Syslog NBI will be notified about the configuration
 | Sets the status of the SNMP Trap NBI.
 |===
 
-== POSTs (Adding Data)
+== POSTs (adding data)
 
 POST requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -55,7 +55,7 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 | Adds a new or overrides an existing destination.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -71,7 +71,7 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 | Updates the content of the destination named `\{name}`.
 |===
 
-== DELETE (Remove Data)
+== DELETE (remove data)
 
 On a successful request, the SNMP Trap NBI will be notified about the configuration change.
 

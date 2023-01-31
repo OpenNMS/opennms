@@ -8,7 +8,7 @@ To get all results, use limit=0 as a parameter on the URL (GET /nodes?limit=0).
 
 Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (GET /nodes/fs:fid).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Nodes API GET functions
@@ -57,7 +57,7 @@ This includes the ID and node label.
 | Get a specific entity from the hardware inventory information.
 |===
 
-== POSTs (Adding Data)
+== POSTs (adding data)
 
 POST requires XML using `application/xml` as its `Content-Type`.
 
@@ -93,7 +93,7 @@ POST requires XML using `application/xml` as its `Content-Type`.
 |===
 
 [[rest-api-nodes-put]]
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a content type.
 
@@ -123,7 +123,7 @@ PUT requires form data using `application/x-www-form-urlencoded` as a content ty
 It is possible to use this endpoint to add custom attributes.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
 

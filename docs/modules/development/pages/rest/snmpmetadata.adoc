@@ -1,7 +1,7 @@
 
 = SNMP Metadata
 
-== GET (Reading Data)
+== GET (reading data)
 
 Lets you query the gathered SNMP data stored in a node's metadata.
 

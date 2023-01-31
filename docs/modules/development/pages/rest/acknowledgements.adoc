@@ -4,7 +4,7 @@
 NOTE: The default offset is 0, the default limit is 10 results.
 To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?limit=0`).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Acknowledgement API GET functions
@@ -22,7 +22,7 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?li
 | Get the acknowledgement specified by the given ID.
 |===
 
-== POST (Setting Data)
+== POST (setting data)
 
 [caption=]
 .Acknowledgement API POST function
@@ -32,7 +32,8 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?li
 
 | /acks
 | Creates or modifies an acknowledgement for the given alarm ID or notification ID.
-To affect an alarm, set an `alarmId<` parameter in the URL-encoded POST body. To affect a notification, set `notifyId` instead.
+To affect an alarm, set an `alarmId<` parameter in the URL-encoded POST body.
+To affect a notification, set `notifyId` instead.
 An `action` parameter is also required, and may be one of `ack`, `unack`, `clear`, or `esc` (escalate).
 |===
 

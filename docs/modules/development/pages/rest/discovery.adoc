@@ -3,7 +3,7 @@
 
 Use this endpoint to trigger a one-time discovery scan.
 
-== POSTs (Submitting one-time scan configuration)
+== POST (submitting one-time scan configuration)
 
 [caption=]
 .Discovery POST function

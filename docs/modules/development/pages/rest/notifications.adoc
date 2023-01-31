@@ -4,7 +4,7 @@
 NOTE: The default offset is 0, the default limit is 10 results.
 To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /events?limit=0`).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Notifications API GET functions

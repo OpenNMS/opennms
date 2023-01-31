@@ -6,7 +6,7 @@ Since users are not currently stored in the database, the REST interface for the
 IMPORTANT: You cannot use hibernate criteria for filtering.
 You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesystem for any addition or modification actions to take effect (see link:http://jira.opennms.org/browse/NMS-6469[NMS-6469] for details).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Users API GET functions
@@ -21,7 +21,7 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 | Get a specific user, by username.
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 [caption=]
 .Users API POST function
@@ -36,7 +36,7 @@ To indicate that the supplied password uses the salted encryption algorithm rath
 Note that you may add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password; it will hash and salt the password when it is saved.
 |===
 
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 [caption=]
 .Users API PUT functions
@@ -52,7 +52,7 @@ Note that, if you are setting the password, you may also add the query parameter
 | Add a security role to the user.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 [caption=]
 .Users API DELETE functions

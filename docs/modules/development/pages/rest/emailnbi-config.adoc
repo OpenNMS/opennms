@@ -1,7 +1,7 @@
 
 = Email Northbounder Interface Configuration
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Email Northbounder GET functions
@@ -22,7 +22,7 @@
 | Gets the content of the destination named `\{name}`.
 |===
 
-== PUT (Update defaults)
+== PUT (update defaults)
 
 On a successful request, the Email NBI will be notified about the configuration change.
 
@@ -36,7 +36,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Sets the status of the Email NBI.
 |===
 
-== POST (Adding Data)
+== POST (adding data)
 
 POST requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -52,7 +52,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Adds a new or overrides an existing destination.
 |===
 
-== PUT (Modifying Data)
+== PUT (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
 
@@ -68,7 +68,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Updates the content of the destination named `\{name}`.
 |===
 
-== DELETE (Remove Data)
+== DELETE (remove data)
 
 On a successful request, the Email NBI will be notified about the configuration change.
 

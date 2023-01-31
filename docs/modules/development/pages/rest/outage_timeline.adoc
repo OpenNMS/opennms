@@ -1,7 +1,7 @@
 
 = Outage Timelines
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Outage Timelines API GET functions

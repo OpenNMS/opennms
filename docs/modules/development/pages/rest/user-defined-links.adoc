@@ -3,7 +3,7 @@
 
 User-defined links (UDLs) for the enlinkd topology can be be queried, added, modified, or deleted via REST endpoints.
 
-== GETs (Reading UDLs)
+== GETs (reading UDLs)
 
 [caption=]
 .User-defined link API GET functions
@@ -38,7 +38,7 @@ User-defined links (UDLs) for the enlinkd topology can be be queried, added, mod
 curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d '{"node-id-a": 1, "node-id-z": 2, "component-label-a": "tp1", "component-label-z": "tp2", "link-id": "n1:tp1->n2:tp2", "owner": "me"}' http://localhost:8980/opennms/api/v2/userdefinedlinks
 ----
 
-== DELETE (Removing UDLs)
+== DELETE (removing UDLs)
 
 [caption=]
 .User-defined link API DELETE function

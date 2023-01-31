@@ -1,7 +1,7 @@
 
 = Device Config REST API
 
-Use the Device Config Rest API to fetch existing configurations and trigger retrieval of the device configs.
+Use the Device Config REST API to fetch existing configurations and trigger retrieval of the device configs.
 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
@@ -14,7 +14,7 @@ NOTE: If not otherwise specified, the `Content-Type` of the request and response
 | /device-config
 | GET
 | Retrieves all the configurations, sorted by `lastUpdated`.
-This API also supports following query params: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `configType`, `createdAfter`, and `createdBefore`.
+This API also supports the following query paramaters: `limit`, `offset`, `orderBy`, `order`, `deviceName`, `ipAddress`, `configType`, `createdAfter`, and `createdBefore`.
 
 | /device-config/\{id}
 | GET

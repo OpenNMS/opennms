@@ -61,10 +61,10 @@ Specifying multiple properties will result in an implicit `AND` operator between
 | Case-sensitive wildcarding (`%` is the wildcard).
 
 | gt
-| Greater than
+| Greater than.
 
 | lt
-| Less than
+| Less than.
 
 | ge
 | Greater than or equal to.
@@ -219,5 +219,5 @@ The response status and response time are displayed and you can use the tabs to 
 
 Most `POST` and `PUT` commands require additional JSON request data; the API Explorer will generally display the schema and some sample JSON for the particular request.
 
-.Sending a REST Request in the API Explorer
-image::horizon:development:rest/rest-api-explorer-request.png["OpenNMS UI displaying the REST API Explorer. A REST Request has been sent, and its results are shown."]
+.Sending a REST request in the API Explorer
+image::horizon:development:rest/rest-api-explorer-request.png["OpenNMS UI displaying the REST API Explorer. A REST request has been sent, and its results are shown."]

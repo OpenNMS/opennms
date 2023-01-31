@@ -6,7 +6,7 @@ Use the Alarm History API to retrieve state changes and point-in-time snapshots 
 NOTE: This endpoint is only available when the Alarm History feature is enabled.
 See <<operation:deep-dive/alarms/history.adoc#ga-alarm-history, Alarm History>> for details.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
 [caption=]
 .Alarm History API GET functions
