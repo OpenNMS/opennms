@@ -57,6 +57,10 @@ commands:
           docker_layer_caching: true
       - cached-checkout
       - download-download-artifacts
+      - run:
+         name: Install Python and PiP
+         command: | 
+           apt install -y python3 pip3
       - cloudsmith/install-cli
       - run:
          name: download Cloud Plugin
