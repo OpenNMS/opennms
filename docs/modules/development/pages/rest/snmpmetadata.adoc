@@ -1,16 +1,20 @@
 
 = SNMP Metadata
 
-== GETs (Reading Data)
+== GET (reading data)
 
 Lets you query the gathered SNMP data stored in a node's metadata.
 
 NOTE: This API is v2-only.
 
-[options="header", cols="5,10"]
+[caption=]
+.SNMP Metadata API GET function
+[options="autowidth"]
 |===
-| Resource                              | Description
-| `snmpmetadata/\{nodeid}`              | Get the node's data for the context `snmp`.
+| Resource  | Description
+
+| snmpmetadata/\{nodeid}
+| Get the node's data for the context `snmp`.
 |===
 
 == Use examples with cURL

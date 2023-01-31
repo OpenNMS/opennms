@@ -10,12 +10,16 @@ Examples:
 * `/api/v2/ipinterfaces?_s=node.label==onms-prd-01`
 * `/api/v2/ipinterfaces?_s=ipAddress==192.168.32.140`
 
-== GETs (Reading Data)
+== GET (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.IP Interfaces API GET function
+[options="autowidth"]
 |===
-| Resource         | Description
-| `/ipinterfaces`  | Get all IP interfaces for the given search criteria.
+| Resource  | Description
+
+| /ipinterfaces
+| Get all IP interfaces for the given search criteria.
 |===
 
 Example:

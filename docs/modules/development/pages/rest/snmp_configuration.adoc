@@ -8,21 +8,31 @@ If no `<definition />` entry is created it matches the defaults.
 There are different versions of the interface (see below).
 The following operations are supported:
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header, %autowidth"]
+[caption=]
+.SNMP Configuration API GET functions
+[options="autowidth"]
 |===
-| Parameter                                         | Description
-| `/snmpConfig/\{ipaddress}`                        | Get the SNMP configuration for a given IP address.
-| `/snmpConfig/\{ipaddress}?location=\{location}`   | Get the SNMP configuration for a given IP address at a given location.
+| Parameter | Description
+
+| /snmpConfig/\{ipaddress}
+| Get the SNMP configuration for a given IP address.
+
+| /snmpConfig/\{ipaddress}?location=\{location}
+| Get the SNMP configuration for a given IP address at a given location.
 |===
 
-== PUTs (Modifying Data)
+== PUT (modifying data)
 
-[options="header, %autowidth"]
+[caption=]
+.SNMP Configuration API PUT function
+[options="autowidth"]
 |===
-| Parameter                   | Description
-| `/snmpConfig/\{ipaddress}`  | Add or update the SNMP configuration for a given IP address.
+| Parameter | Description
+
+| /snmpConfig/\{ipaddress}
+| Add or update the SNMP configuration for a given IP address.
 |===
 
 == Determine API version
@@ -58,17 +68,37 @@ Version 1 supports only a few attributes defined in `snmp-info.xsd`.
 ----
 
 The following table shows all supported attributes, optional restrictions, and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
-All parameters can be set regardless of the version.
+All parameters can be set regardless of the version:
 
-[options="header"]
+[cols="1,1,1,2"]
 |===
-| attribute snmp-info.xml | attribute snmp-config.xml | default | restriction
-| version                 | version                   | v1      | `v1`, `v2c`, or `v3` are valid arguments.
-                                                                  If an invalid or empty argument is provided, `v1` is used.
-| port                    | port                      | 161     | Integer > 0
-| retries                 | retry                     | 1       | Integer > 0
-| timeout                 | timeout                   | 3000    | Integer > 0
-| community               | read-community            | public  | any string with a length >= 1
+| Attribute `snmp-info.xml` | Attribute `snmp-config.xml` | Default Value | Restriction
+
+| version
+| version
+| v1
+| `v1`, `v2c`, or `v3` are valid arguments.
+If an invalid or empty argument is provided, `v1` is used.
+
+| port
+| port
+| 161
+| Integer > `0`
+
+| retries
+| retry
+| 1
+| Integer > `0`
+
+| timeout
+| timeout
+| 3000
+| Integer > `0`
+
+| community
+| read-community
+| public
+| Any string with a length >= `1`
 |===
 
 .Example 1:
@@ -150,33 +180,133 @@ The SnmpInfo schema is defined as follows:
 ----
 
 The following table shows all supported attributes and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
-It also shows the version limitations, default values, and the restrictions, if any.
+It also shows the version limitations, default values, and the restrictions, if any:
 
-[options="header, %autowidth"]
+[cols="1,1,1,1,2"]
 |===
-| attribute snmp-info.xml | attribute snmp-config.xml | default      | restricted to version | restriction
-| version                 | version                   | v1           | -                     | `v1`, `v2c`, or `v3` are valid arguments.
-                                                                                               If an invalid or empty argument is provided, `v1` is used.
-| port                    | port                      | 161          | -                     | Integer > 0
-| retries                 | retry                     | 1            | -                     | Integer > 0
-| timeout                 | timeout                   | 3000         | -                     | Integer > 0
-| maxVarsPerPdu           | max-vars-per-pdu          | 10           | -                     | Integer > 0
-| maxRepetitions          | max-repetitions           | 2            | -                     | Integer > 0
-| maxRequestSize          | max-request-size          | 65535        | -                     | Integer > 0
-| proxyHost               | proxy-host                |              | -                     |
-| readCommunity           | read-community            | public       | v1, v2c               |
-| writeCommunity          | write-community           | private      | v1, v2c               |
-| securityName            | security-name             | opennmsUser  | v3                    |
-| securityLevel           | security-level            | noAuthNoPriv | v3                    | Integer value, which can be `null`, `1`, `2`, or `3`.
+| Attribute `snmp-info.xml` | Attribute `snmp-config.xml` | Default Value | Restricted to Version | Restriction
+
+| version
+| version
+| v1
+| _None_
+| `v1`, `v2c`, or `v3` are valid arguments.
+If an invalid or empty argument is provided, `v1` is used.
+
+| port
+| port
+| 161
+| _None_
+| Integer > `0`
+
+| retries
+| retry
+| 1
+| _None_
+| Integer > `0`
+
+| timeout
+| timeout
+| 3000
+| _None_
+| Integer > `0`
+
+| maxVarsPerPdu
+| max-vars-per-pdu
+| 10
+| _None_
+| Integer > `0`
+
+| maxRepetitions
+| max-repetitions
+| 2
+| _None_
+| Integer > `0`
+
+| maxRequestSize
+| max-request-size
+| 65535
+| _None_
+| Integer > `0`
+
+| proxyHost
+| proxy-host
+| _Blank_
+| _None_
+| _None_
+
+| readCommunity
+| read-community
+| public
+| v1, v2c
+| _None_
+
+| writeCommunity
+| write-community
+| private
+| v1, v2c
+| _None_
+
+| securityName
+| security-name
+| opennmsUser
+| v3
+| _None_
+
+| securityLevel
+| security-level
+| noAuthNoPriv
+| v3
+| Integer value, which can be `null`, `1`, `2`, or `3`.
 See note below table for an explanation of these values.
-| authPassPhrase          | auth-passphrase           | 0p3nNMSv3    | v3                    |
-| authProtocol            | auth-protocol             | MD5          | v3                    | Only `MD5`, `SHA`, `SHA-224`, `SHA-256`, `SHA-512` are valid arguments.
-| privPassPhrase          | privacy-passphrase        | 0p3nNMSv3    | v3                    |
-| privProtocol            | privacy-protocol          | DES          | v3                    | Only `DES`, `AES`, `AES192`, or `AES256` are valid arguments.
-| engineId                | engine-id                 |              | v3                    |
-| contextEngineId         | context-engine-id         |              | v3                    |
-| contextName             | context-name              |              | v3                    |
-| enterpriseId            | enterprise-id             |              | v3                    |
+
+| authPassPhrase
+| auth-passphrase
+| 0p3nNMSv3
+| v3
+| _None_
+
+| authProtocol
+| auth-protocol
+| MD5
+| v3
+| Only `MD5`, `SHA`, `SHA-224`, `SHA-256`, `SHA-512` are valid arguments.
+
+| privPassPhrase
+| privacy-passphrase
+| 0p3nNMSv3
+| v3
+| _None_
+
+| privProtocol
+| privacy-protocol
+| DES
+| v3
+| Only `DES`, `AES`, `AES192`, or `AES256` are valid arguments.
+
+| engineId
+| engine-id
+| _Blank_
+| v3
+| _None_
+
+| contextEngineId
+| context-engine-id
+| _Blank_
+| v3
+| _None_
+
+| contextName
+| context-name
+| _Blank_
+| v3
+| _None_
+
+| enterpriseId
+| enterprise-id
+| _Blank_
+| v3
+| _None_
 |===
 
 .Note on the `securityLevel` field

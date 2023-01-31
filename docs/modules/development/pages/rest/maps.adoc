@@ -1,39 +1,59 @@
 
 = Maps
 
-The _SVG maps_ use _ReST_ to populate their data.
+The SVG maps use REST to populate their data.
 This is the interface for doing that.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Maps API GET functions
+[options="autowidth"]
 |===
-| Resource                  | Description
-| `/maps`                   | Get the list of maps.
-| `/maps/\{id}`             | Get the map with the given _ID_.
-| `/maps/\{id}/mapElements` | Get the elements (_nodes_, _links_, _etc_.) for the map with the given _ID_.
-|===
+| Resource  | Description
 
-== POSTs (Adding Data)
+| /maps
+| Get the list of maps.
 
-[options="header", cols="5,10"]
-|===
-| Resource | Description
-| `/maps`  | Add a map.
-|===
+| /maps/\{id}
+| Get the map with the given ID.
 
-== PUTs (Modifying Data)
-
-[options="header", cols="5,10"]
-|===
-| Resource      | Description
-| `/maps/\{id}` | Update the properties of the map with the given _ID_.
+| /maps/\{id}/mapElements
+| Get the elements (nodes, links, and so on) for the map with the given ID.
 |===
 
-== DELETEs (Removing Data)
+== POST (adding data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Maps API POST function
+[options="autowidth"]
 |===
-| Resource      | Description
-| `/maps/\{id}` | Delete the map with the given _ID_.
+| Resource  | Description
+
+| /maps
+| Add a map.
+|===
+
+== PUT (modifying data)
+
+[caption=]
+.Maps API PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /maps/\{id}
+| Update the properties of the map with the given ID.
+|===
+
+== DELETE (removing data)
+
+[caption=]
+.Maps API DELETE function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /maps/\{id}
+| Delete the map with the given ID.
 |===

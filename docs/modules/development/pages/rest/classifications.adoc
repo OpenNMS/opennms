@@ -1,63 +1,61 @@
+
 = Flow Classification API
 
 Use the Flow Classification API to update, create, or delete flow classification rules.
 
 NOTE: If not otherwise specified, the `Content-Type` of the response is `application/json`.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Flow Classification API GET functions
+[cols="1,4"]
 |===
-| Resource
-| Description
+| Resource  | Description
 
-| `/classifications`
+| /classifications
 | Retrieve a list of all enabled rules.
-  The request is limited to `10` items by default.
-  Setting `limit` to `0` returns ALL enabled rules.
+The request is limited to `10` items by default.
+Setting `limit` to `0` returns all enabled rules.
 
-| `/classifications/\{id}`
+| /classifications/\{id}
 | Retrieve the rule identified by `\{id}`.
 
-| `/classifications/groups`
+| /classifications/groups
 | Retrieve all existing groups.
-  The request is limited to `10` items by default.
-  Setting `limit` to `0` returns ALL enabled rules.
+The request is limited to `10` items by default.
+Setting `limit` to `0` returns all enabled rules.
 
-| `/classifications/groups/\{id}`
+| /classifications/groups/\{id}
 | Retrieve the group identified by `\{id}``
-  Supports downloading all rules of the given group in CSV format.
-  For this, set the accept header: `Accept: text/comma-separated-values`.
+Supports downloading all rules of the given group in CSV format.
+For this, set the accept header: `Accept: text/comma-separated-values`.
 
-| `/classifications/protocols`
+| /classifications/protocols
 | Retrieve all supported TCP protocols.
-
 |===
-
 
 The `/classifications` endpoint supports the following URL parameters:
 
 NOTE: The given filters are combined using a logical `AND`.
- There is no support for using `OR` logic, or combinations thereof.
+There is no support for using `OR` logic, or combinations thereof.
 
-[options="header", cols="1,1,2"]
+[caption=]
+.Flow Classification API GET functions
+[cols="1,1,3"]
 |===
-
-|Name
-|Default
-|Comment
+| Name  | Default Value | Comment
 
 | groupFilter
-| (none)
+| _Empty_
 | The group by which to filter the rules.
 Should be the `id` retrieved by `/classifications/groups`.
 It is not possible to retrieve the rules for a disabled group.
 
 | query
-| (none)
+| _Empty_
 | A `string` to query a rule by `port` OR `ipAddress` or `name` or `protocol`.
-  Must not contain `%` or `*` to perform a like query.
-
+Must not contain `%` or `*` to perform a like query.
 |===
 
 === Examples
@@ -188,21 +186,21 @@ name;ipAddress;port;protocol
 http;;80;TCP
 ----
 
-== POSTs (Creating Data)
+== POSTs (creating data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Flow Classification API POST functions
+[cols="1,3"]
 |===
-| Resource
-| Description
+| Resource  | Description
 
-| `/classifications`
+| /classifications
 | Post a new rule or import rules from CSV.
-  If multiple rules are imported (to user-defined group) from a CSV file all existing rules are deleted.
+If multiple rules are imported (to user-defined group) from a CSV file all existing rules are deleted.
 
-| `/classifications/classify`
+| /classifications/classify
 | Classify the given request based on all enabled rules.
 |===
-
 
 === Examples
 
@@ -285,37 +283,37 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 }
 ----
 
-== PUTs (Updating Data)
+== PUTs (updating data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Flow Classification API PUT functions
+[options="autowidth"]
 |===
-| Resource
-| Description
+| Resource  | Description
 
-| `/classifications/\{id}`
+| /classifications/\{id}
 | Update a rule identified by `\{id}`.
-  The ID of the rule cannot be changed.
+The ID of the rule cannot be changed.
 
-| `/groups/\{id}`
+| /groups/\{id}
 | Retrieve the rule identified by `\{id}`.
 
-| `/classifications/groups`
+| /classifications/groups
 | Update a group.
-  At the moment, only the enabled property can be changed.
+Currently, only the enabled property can be changed.
 |===
 
+== DELETEs (deleting data)
 
-== DELETEs (Deleting Data)
-
-[options="header", cols="5,10"]
+[caption=]
+.Flow Classification API DELETE functions
+[options="autowidth"]
 |===
-| Resource
-| Description
+| Resource  | Description
 
-| `/classifications?groupId=\{groupid}`
+| /classifications?groupId=\{groupid}
 | Deletes all rules of a given group.
 
-| `/groups/\{id}`
+| /groups/\{id}
 | Delete the given group and all its containing rules.
-
 |===
