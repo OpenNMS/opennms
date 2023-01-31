@@ -505,15 +505,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
-            // Defer the health-check (if we do run it) until the system has completely started
+            // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
-            // Only wait for the health-check if Elasticsearch is enabled, since it's
-            // currently required to pass.
-            if (container.getModel().isElasticsearchEnabled()) {
-                LOG.info("Waiting for OpenNMS health check...");
-                awaitHealthCheckSucceeded(container);
-                LOG.info("Health check passed.");
-            }
+            LOG.info("Waiting for OpenNMS health check...");
+            awaitHealthCheckSucceeded(container);
+            LOG.info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
