@@ -95,10 +95,10 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp >= 2.0.0
-Requires:	jicmp >= 2.0.0
-Requires(pre):	jicmp6 >= 2.0.0
-Requires:	jicmp6 >= 2.0.0
+Requires(pre):	jicmp >= 3.0.0
+Requires:	jicmp >= 3.0.0
+Requires(pre):	jicmp6 >= 3.0.0
+Requires:	jicmp6 >= 3.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
