@@ -31,6 +31,7 @@ package org.opennms.smoketest.utils;
 import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertTrue;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
@@ -155,5 +156,11 @@ public class KarafShell {
         Objects.requireNonNull(function);
         runCommand(null, function);
         return this;
+    }
+
+    public void checkFeature(String feature, String regex) {
+        assertTrue(String.format("feature '%s' is expected to be installed in state matching regex '%s'", feature, regex),
+                runCommandOnce("feature:list | grep " + feature,
+                        output -> output.matches("(?ms).*?\\|\\s*(" + regex + ")\\s*\\|.*"), false));
     }
 }
