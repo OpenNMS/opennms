@@ -37,7 +37,7 @@
         <constructor-arg value="Alarm"/>
     </bean>
 
-    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
+    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker" init-method="init">
         <constructor-arg ref="jestClient"/>
         <constructor-arg ref="circuitBreaker"/>
         <constructor-arg ref="eventForwarder"/>

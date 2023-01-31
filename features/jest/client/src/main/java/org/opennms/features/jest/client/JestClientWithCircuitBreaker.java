@@ -36,6 +36,8 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.action.Action;
@@ -45,6 +47,7 @@ import io.searchbox.client.JestResultHandler;
 
 public class JestClientWithCircuitBreaker implements JestClient {
     public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
+    private static final Logger LOG = LoggerFactory.getLogger(JestClientWithCircuitBreaker.class);
 
     private final JestClient client;
     private final CircuitBreaker circuitBreaker;
@@ -55,13 +58,19 @@ public class JestClientWithCircuitBreaker implements JestClient {
         this.client = Objects.requireNonNull(client);
         this.circuitBreaker = Objects.requireNonNull(circuitBreaker);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
+    }
+
+    public void init() {
         circuitBreaker.getEventPublisher()
                 .onStateTransition(e -> {
+                    final String from = e.getStateTransition().getFromState().toString();
+                    final String to = e.getStateTransition().getToState().toString();
+                    LOG.info("CircuitBreaker with name {} changed state from {} to {}", circuitBreaker.getName(), from, to);
                     // Send an event when the circuit breaker's state changes
                     final Event event = new EventBuilder(CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI, JestClientWithCircuitBreaker.class.getCanonicalName())
                             .addParam("name", circuitBreaker.getName())
-                            .addParam("fromState", e.getStateTransition().getFromState().toString())
-                            .addParam("toState", e.getStateTransition().getToState().toString())
+                            .addParam("fromState", from)
+                            .addParam("toState", to)
                             .getEvent();
                     this.eventForwarder.sendNow(event);
                 });
@@ -92,6 +101,7 @@ public class JestClientWithCircuitBreaker implements JestClient {
     @Override
     @Deprecated
     public void shutdownClient() {
+        circuitBreaker.getEventPublisher().onStateTransition(event -> {});
         client.shutdownClient();
     }
 

@@ -126,7 +126,7 @@
     <argument value="Flow"/>
   </bean>
 
-  <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
+  <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker" init-method="init">
     <argument ref="restClient"/>
     <argument ref="circuitBreaker"/>
     <argument ref="eventForwarder"/>
