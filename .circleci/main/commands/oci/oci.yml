@@ -68,7 +68,7 @@ commands:
       - run:
          name: download Cloud Plugin
          command: |
-            export tarLocation="$(pwd)/<< parameters.tarball_path"
+            export tarLocation="$(pwd)/<< parameters.tarball_path >>"
             echo opennms-container/<< parameters.container_dir >>/rpms 
             if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
@@ -87,7 +87,7 @@ commands:
              tar -rf opennms-*-core.tar deploy
              gzip opennms-*-core.tar 
              ls .
-             mv opennms-*-core.tar.gz $tarLocation/
+             mv opennms-*-core.tar.gz "$tarLocation/"
             fi
           
       - run:
