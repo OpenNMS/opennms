@@ -123,6 +123,5 @@ Note that all service definitions must include the `monitor` section.
 
 <monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
 ----
-<1>
-Required `monitor` section.
+<1> Required *monitor* section.
 

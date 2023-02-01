@@ -184,8 +184,7 @@ Note that you must include the `monitor` section for each service in your defini
 
 <monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
 ----
-<1>
-Required `monitor` section.
+<1> Required *monitor* section.
 
 == Example: Ping from a single IOS device routable address of each router of customer Bar
 
@@ -229,5 +228,4 @@ Example `poller-configuration.xml` additions:
 
 <monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
 ----
-<1>
-Required `monitor` section.
+<1> Required *monitor* section.
