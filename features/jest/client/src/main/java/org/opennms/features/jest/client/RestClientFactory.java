@@ -306,7 +306,9 @@ public class RestClientFactory {
 	}
 
 	public JestClientWithCircuitBreaker createClientWithCircuitBreaker(CircuitBreaker circuitBreaker, EventForwarder eventForwarder) {
-		return new JestClientWithCircuitBreaker(createClient(), circuitBreaker, eventForwarder);
+		final JestClientWithCircuitBreaker jestClientWithCircuitBreaker = new JestClientWithCircuitBreaker(createClient(), circuitBreaker);
+		jestClientWithCircuitBreaker.setEventForwarder(eventForwarder);
+		return jestClientWithCircuitBreaker;
 	}
 
 	private List<String> parseUrl(String elasticURL) {
