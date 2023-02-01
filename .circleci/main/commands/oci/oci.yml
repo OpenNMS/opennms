@@ -81,7 +81,7 @@ commands:
              ls -l .
              echo $tarLocation
              dpkg-deb -R opennms-plugin-cloud_*_all.deb ./
-             cp usr/share/opennms/deploy/*.kar ./plugins/
+             cp usr/share/opennms/deploy/*.kar .opennms-container/<< parameters.container_dir >>/plugins
              #cp $tarLocation/opennms-*-core.tar.gz ./
              #gunzip opennms-*-core.tar.gz
              #mv usr/share/opennms/deploy ./
