@@ -73,7 +73,8 @@ commands:
             if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
              cd opennms-container/<< parameters.container_dir >>/rpms
-             urls=$(cloudsmith list packages --query='*-plugin-cloud tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
+             #urls=$(cloudsmith list packages --query='*-plugin-cloud tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
+             urls=$(cloudsmith list packages --query='opennms-plugin-cloud tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
              for url in $urls; do
                wget $url
              done
@@ -89,6 +90,7 @@ commands:
              #gzip opennms-*-core.tar 
              #ls .
              #mv opennms-*-core.tar.gz "$tarLocation/"
+             rm *.rpm *.deb
             fi
           
       - run:

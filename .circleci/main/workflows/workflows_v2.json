@@ -389,10 +389,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "minion-image-single-arch-trivy": {
@@ -431,10 +428,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "sentinel-image-single-arch-trivy": {
@@ -460,10 +454,7 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "smoke-test-core",
-                "smoke-test-flaky",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "tarball-assembly-only"
             ]
         },
         "create-merge-foundation-branch": {
