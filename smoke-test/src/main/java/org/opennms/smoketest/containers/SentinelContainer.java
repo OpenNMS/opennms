@@ -77,10 +77,9 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.collect.ImmutableMap;
 
-public class SentinelContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class SentinelContainer extends GenericContainer<SentinelContainer> implements KarafContainer<SentinelContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
@@ -120,10 +119,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
                 .waitingFor(new WaitForSentinel(this))
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                })
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits)
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -257,6 +253,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         return props;
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(SENTINEL_SSH_PORT));
     }
@@ -264,6 +261,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/sentinel");
     }
 
     public URL getWebUrl() {
@@ -280,7 +282,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
     /**
      * Workaround exception details that are lost from waitUntilReady due to
-     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     * <a href="https://github.com/testcontainers/testcontainers-java/pull/6167">this issue</a>.
      */
     @Override
     protected void doStart() {

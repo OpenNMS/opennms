@@ -33,7 +33,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
 import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
@@ -65,7 +64,6 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -81,9 +79,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
-import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
@@ -95,7 +91,7 @@ import com.google.common.collect.ImmutableMap;
  * @author jwhite
  */
 @SuppressWarnings("java:S2068")
-public class OpenNMSContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> implements KarafContainer<OpenNMSContainer>, TestLifecycleAware {
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
     public static final String KAFKA_ALIAS = "kafka";
@@ -187,8 +183,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
 
         withExposedPorts(exposedPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
@@ -222,21 +217,6 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
-    }
-
-    public void installFeature(String feature, Path kar) {
-        if (kar != null) {
-            copyFileToContainer(MountableFile.forHostPath(kar),
-                    "/usr/share/opennms/deploy/" + kar.getFileName().toString());
-        }
-
-        var karafShell = new KarafShell(getSshAddress());
-        karafShell.runCommand("feature:list | grep " + feature,
-                output -> output.contains(feature),false);
-
-        // Note that the feature name doesn't always match the KAR name
-        assertTrue(karafShell.runCommandOnce("feature:install " + feature,
-                output -> !output.toLowerCase().contains("error"), false));
     }
 
     @SuppressWarnings("java:S5443")
@@ -356,6 +336,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(OPENNMS_SSH_PORT));
     }
@@ -363,6 +344,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/opennms"); // I'm not sure if this is right-enough for OpenNMS Karaf?
     }
 
     public int getWebPort() {
@@ -399,7 +385,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         if (model.isJaegerEnabled()) {
             props.put("org.opennms.core.tracer", "jaeger");
-            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+            props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures

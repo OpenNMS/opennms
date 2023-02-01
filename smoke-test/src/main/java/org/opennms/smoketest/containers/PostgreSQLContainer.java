@@ -45,12 +45,11 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer implements TestLifecycleAware {
+public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer<PostgreSQLContainer> implements TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLContainer.class);
 
     private LoadingCache<Integer, HibernateDaoFactory> daoFactoryCache = CacheBuilder.newBuilder()
@@ -69,10 +68,7 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
         super("postgres:10.7-alpine");
         withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.DB_ALIAS)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                });
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
     }
 
     @Override
