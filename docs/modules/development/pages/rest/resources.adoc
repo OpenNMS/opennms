@@ -4,15 +4,25 @@
 Use the Resources API to list or delete resources at the node level and below.
 This service is especially useful in conjunction with the Measurements API.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Resources API GET functions
+[cols="1,3"]
 |===
-| Resource                                | Description
-| `/resources`                            | Retrieve the full tree of resources in the system (expensive, use with care).
-| `/resources/\{resourceid}`              | Retrieve the tree of resources starting with the named resource ID.
-| `/resources/fornode/\{nodecriteria}`    | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple.
-| `/resources/select`                     | Select partial node resources by specifying node IDs (database IDs or external ids), node filter rules, subresource names, and string property names using the attributes `nodes`, `filterRules`, `nodeSubresources`, and `stringProperties`, respectively. 
+| Resource  | Description
+
+| /resources
+| Retrieve the full tree of resources in the system (expensive, use with care).
+
+| /resources/\{resourceid}
+| Retrieve the tree of resources starting with the named resource ID.
+
+| /resources/fornode/\{nodecriteria}
+| Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple.
+
+| /resources/select
+| Select partial node resources by specifying node IDs (database IDs or external ids), node filter rules, subresource names, and string property names using the attributes `nodes`, `filterRules`, `nodeSubresources`, and `stringProperties`, respectively.
 All attributes can have comma-separated lists of values.
 |===
 
@@ -23,21 +33,30 @@ Otherwise, the selected node subresources are included and some or all of their 
 * Similarly, if the `stringProperties` attribute is not set, then all string properties are included. 
 Otherwise, only selected string properties are included.
 
-== DELETEs (Removing Data)
-[options="header", cols="5,10"]
+== DELETEs (removing data)
+
+[caption=]
+.Resources API DELETE function
+[options="autowidth"]
 |===
-| Resource                    | Description
-| `/resources/\{resourceid}`  | Delete resource with the named resource ID, and all its child resources, if any.
+| Resource  | Description
+
+| /resources/\{resourceid}
+| Delete resource with the named resource ID, and all its child resources, if any.
 |===
 
-The following table shows all supported query string parameters and their default values.
+The following table shows all supported query string parameters and their default values:
 
-[options="header"]
+[caption=]
+[cols="1,1,3"]
 |===
-| Name  | Default | Comment
-| depth | varies  | GET only.
-                    Limits the tree depth for retrieved resources.
-                    Defaults to 1 when listing all resources, or to -1 (no limit) when listing a single resource.
+| Name  | Default Value | Comment
+
+| depth
+| _Varies_
+| GET only.
+Limits the tree depth for retrieved resources.
+Defaults to `1` when listing all resources, or to `-1` (no limit) when listing a single resource.
 |===
 
 == Use examples with cURL

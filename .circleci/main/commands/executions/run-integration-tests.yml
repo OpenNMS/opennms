@@ -35,8 +35,9 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/.*-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/.*-reports/.*dump.*" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -name failsafe-summary.xml -exec rm -f {} \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
       - run:
           name: Gather tests
           when: always

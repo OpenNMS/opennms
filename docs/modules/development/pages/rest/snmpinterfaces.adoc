@@ -10,12 +10,16 @@ Examples:
 * `/api/v2/snmpinterfaces?_s=node.label==onms-prd-01`
 * `/api/v2/snmpinterfaces?_s=ifIndex==6`
 
-== GETs (Reading Data)
+== GET (reading data)
 
-[options="header, autowidth", cols="5,10"]
+[caption=]
+.SNMP Interfaces API GET function
+[options="autowidth"]
 |===
-| Resource            | Description
-| `/snmpinterfaces`   | Get all SNMP interfaces for the given search criteria.
+| Resource  | Description
+
+| /snmpinterfaces
+| Get all SNMP interfaces for the given search criteria.
 |===
 
 Example:
@@ -27,7 +31,7 @@ Get SNMP interfaces whose node are in the foreign source `Servers` and are assoc
 curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node.foreignSource==Servers;ipInterfaces.ipAddress=127.0.0.1"
 ----
 
-== PUTs/POSTs (Modifying Data)
+== PUTs/POSTs (modifying data)
 
 The `/snmpinterfaces` REST API is read-only.
-To create new SNMP interfaces, use the `snmpinterfaces` resources under the xref:rest/nodes.adoc#nodes-rest[nodes endpoint].
+To create new SNMP interfaces, use the `snmpinterfaces` resources under the xref:rest/nodes.adoc[nodes endpoint].

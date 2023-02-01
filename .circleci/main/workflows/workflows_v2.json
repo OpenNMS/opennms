@@ -184,7 +184,8 @@
         },
         "minion-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -199,7 +200,8 @@
         },
         "horizon-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -214,7 +216,8 @@
         },
         "sentinel-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -274,7 +277,8 @@
         },
         "sentinel-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -297,7 +301,8 @@
         },
         "minion-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -312,7 +317,8 @@
         },
         "horizon-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -529,7 +535,7 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                        "/^foundation.*/"
                     ]
                 },
                 "user_overridable": false
