@@ -676,27 +676,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.0.2</version>
-        <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -802,19 +781,6 @@
                 </pluginExecutionFilter>
                 <action>
                   <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>webstart-maven-plugin</artifactId>
-                  <versionRange>[0.9,)</versionRange>
-                  <goals>
-                    <goal>jnlp-download-servlet</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -1059,12 +1025,6 @@
               <artifactId>structure-maven-plugin</artifactId>
               <version>1.0</version>
               <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>javax.samples.jnlp</groupId>
-              <artifactId>jnlp-servlet</artifactId>
-              <version>1.6.0</version>
-              <repositoryType>MAIN</repositoryType>
             </DynamicDependency>
           </dynamicDependencies>
         </configuration>
@@ -1585,24 +1545,11 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-
-    <!-- code signing properties - used in opennms-webstart -->
-    <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
-    <webstart.keypass>opennms</webstart.keypass>
-    <webstart.storepass>opennms</webstart.storepass>
-    <webstart.keyalias>opennms-webstart-key</webstart.keyalias>
-    <webstart.keystore.delete>true</webstart.keystore.delete>
-    <webstart.keygen>true</webstart.keygen>
-    <webstart.dnameCn>${user.name}</webstart.dnameCn>
-    <webstart.dnameL/>
-    <webstart.dnameSt/>
-    <webstart.dnameC/>
-
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
-    <test.storepass>${webstart.storepass}</test.storepass>
-    <test.keyalias>${webstart.keyalias}</test.keyalias>
-    <test.keypass>${webstart.keypass}</test.keypass>
-    <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
+    <test.storepass>opennms</test.storepass>
+    <test.keyalias>opennms-keystore-key</test.keyalias>
+    <test.keypass>opennms</test.keypass>
+    <test.dnameCn>cn=${user.name}</test.dnameCn>
 
     <!-- whether to enable snapshot dependencies when building -->
     <enable.snapshots>false</enable.snapshots>
@@ -1781,7 +1728,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.8.4</snappyJavaVersion>
+    <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
@@ -1830,7 +1777,6 @@
     <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
     <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
-    <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.1</frontendPluginVersion>
@@ -1858,7 +1804,6 @@
       </activation>
       <properties>
         <skipPdfGeneration>false</skipPdfGeneration>
-        <skipSignJar>false</skipSignJar>
       </properties>
       <build>
         <plugins>
@@ -2086,7 +2031,6 @@
       <id>run-expensive-tasks</id>
       <properties>
         <skipPdfGeneration>false</skipPdfGeneration>
-        <skipSignJar>false</skipSignJar>
       </properties>
     </profile>
     <profile>
@@ -2905,12 +2849,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jna-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jnlp-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -4378,10 +4316,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>javax.jnlp</groupId>
-        <artifactId>jnlp</artifactId>
-        <version>1.5.0</version>
-      </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
@@ -4409,11 +4343,6 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
         <version>4.1.0.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.samples.jnlp</groupId>
-        <artifactId>jnlp-servlet</artifactId>
-        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
