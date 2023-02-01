@@ -117,7 +117,7 @@ commands:
             if [ -d opennms-container/<< parameters.container_dir >>/plugins ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
              cd opennms-container/<< parameters.container_dir >>/plugins
-             urls=$(jq -r '.[0].assets[0].browser_download_url' <<< $(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases))
+             urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
              for url in $urls; do
                wget $url
              done
