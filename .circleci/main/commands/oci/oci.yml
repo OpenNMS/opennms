@@ -88,7 +88,7 @@ commands:
              rm *.rpm *.deb
             fi
       - run:
-         name: download Cloud Plugin
+         name: download ALEC Plugin
          command: |
             export tarLocation="$(pwd)/<< parameters.tarball_path >>"
             echo opennms-container/<< parameters.container_dir >>/rpms 
