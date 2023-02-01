@@ -33,7 +33,6 @@
     <module>jinterop</module>
     <module>jmx</module>
     <module>jna</module>
-    <module>jnlp</module>
     <module>jradius</module>
     <module>jradius-extended</module>
     <module>jrobin</module>

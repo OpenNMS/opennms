@@ -139,9 +139,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <!-- Allow anonymous access to the webstart portion of the app -->
-  <http pattern="/webstart/**" security="none"/>
-
   <http pattern="/admin/userGroupView/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
     <csrf />
