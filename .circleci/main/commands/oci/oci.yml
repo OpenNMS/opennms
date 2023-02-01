@@ -86,6 +86,7 @@ commands:
              ls ../plugins
              ls ../
              rm *.rpm *.deb
+             rm -r usr DEBIAN
             fi
       - run:
          name: download ALEC Plugin
@@ -104,7 +105,21 @@ commands:
              echo $tarLocation
              dpkg-deb -R opennms-alec-plugin_*_all.deb ./
              cp usr/share/opennms/deploy/*.kar ../plugins
-             rm *.rpm *.deb
+             rm *.rpm *.deb 
+             rm -r usr DEBIAN
+            fi
+      - run:
+         name: download Cortex Plugin
+         command: |
+            export tarLocation="$(pwd)/<< parameters.tarball_path >>"
+            echo opennms-container/<< parameters.container_dir >>/rpms 
+            if [ -d opennms-container/<< parameters.container_dir >>/plugins ] && [ "core" == "<< parameters.container_dir >>" ]
+            then 
+             cd opennms-container/<< parameters.container_dir >>/plugins
+             urls=$(jq -r '.[0].assets[0].browser_download_url' <<< $(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases))
+             for url in $urls; do
+               wget $url
+             done
             fi
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
