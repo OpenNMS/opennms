@@ -1576,10 +1576,10 @@
     <rpm.database.password>opennms</rpm.database.password>
 
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
-    <test.storepass>${webstart.storepass}</test.storepass>
-    <test.keyalias>${webstart.keyalias}</test.keyalias>
-    <test.keypass>${webstart.keypass}</test.keypass>
-    <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
+    <test.storepass>opennms</test.storepass>
+    <test.keyalias>opennms-keystore-key</test.keyalias>
+    <test.keypass>opennms</test.keypass>
+    <test.dnameCn>cn=${user.name}</test.dnameCn>
 
     <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
@@ -1720,6 +1720,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.26</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
+    <snappyVersion>1.1.9.0</snappyVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
