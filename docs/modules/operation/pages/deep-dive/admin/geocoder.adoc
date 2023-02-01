@@ -1,61 +1,79 @@
 
 = Geocoder Service
 
-The Geocoder Service resolves geolocation information within {page-component-title}.
+The geocoder service resolves geolocation information within {page-component-title}.
 {page-component-title} supports several external geocoder services.
 By default, geolocation resolution is disabled.
 
 When enabled, geolocation is performed based on the presence of address-related asset fields assigned to a node.
-The geocoder service will only run against nodes that are missing latitute and longitude fields but do have street address fields.
-See the xref:deep-dive/provisioning/directed-discovery.adoc[provisioning] documentation for steps to define asset fields on a requisition.
+The geocoder service will run only against nodes that are missing latitude and longitude fields, but that do have street address fields.
+See xref:deep-dive/provisioning/directed-discovery.adoc[Provisioning] for steps to define asset fields on a requisition.
 
 Resolved coordinates are stored in the database as node asset fields, but the geocoder service does not update requisitions.
 
 == Address-based geocoding
 
-To enable or configure the Geocoder Service, use the web-based configuration tool.
-In the web UI, click the menu:Gear Icon[Provisioning > Configure Geocoder Service].
+To enable or configure the geocoder service, use the web-based configuration tool:
 
-NOTE: If you would prefer to manually edit the config files, you can set the active Geocoder Service via the property `activeGeocoderId` in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.cfg`.
+. In the {page-component-title} web UI, click the *gear* symbol in the top-right of the page.
+. Under Provisioning, select *Configure Geocoder Service*.
+. You can use one of three geocoder services: Google, MapQuest, or Nominatim.
+To enable one, turn the corresponding switch *On*.
+. Navigate to the appropriate tab and configure the service:
+** *Google:*
+*** Choose whether to authenticate using the `clientId` and signature.
+*** Type the API key and configure the timeout.
+*** Choose whether to use the system proxy.
+** *MapQuest:*
+*** Type the API key.
+*** Choose whether to use the system proxy.
+** *Nominatim:*
+*** Type your email address.
+*** (Optional) Configure the user agent and referer.
+*** Accept the terms of use.
+*** Choose whether to use the system proxy.
+. Click *Save*.
+
+NOTE: If you would prefer to manually edit the configuration files, you can set the active geocoder service via the `activeGeocoderId` property in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.cfg`.
 
 === Nominatim
 
-For more details, see the link:https://wiki.openstreetmap.org/wiki/Nominatim[official documentation]
-and check the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using
-the geocoder service.
+https://wiki.openstreetmap.org/wiki/Nominatim[Nominatim] is a tool that searches OpenStreetMap data and creates synthetic addresses for OpenStreetMap points.
+It lets {page-component-title} look up coordinates for a given address (geolocation).
+For more information, see the https://nominatim.org/release-docs/develop/[official Nominatim documentation].
 
-[options="header"]
-[cols="2,3,1,2"]
+IMPORTANT: Be sure to check the https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using the geocoder service.
+
+[caption=]
+.Nominatim geocoder service properties
+[cols="1,3,1,2"]
 |===
-| Property
-| Description
-| Type
-| Default
+| Property  | Description | Type  | Default Value
 
 4+| *Required*
 
 | acceptUsageTerms
-| To use the Nominatim Geocoder Service you must accept the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy].
-Set this to `true` to agree to their terms.
+| To use the Nominatim geocoder service, you must accept the https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy].
+Set this property to `true` to agree to their terms.
 | Boolean
 | false
 
 | url
-| The URL template for the Nominatim Geocoder API.
+| The URL template for the Nominatim geocoder API.
 The `email` and `query` strings are substituted before making the request.
 | String
-| \https://nominatim.openstreetmap.org/search?format=json&amp;email=\{email}&limit=1&q=\{query}
+| `\https://nominatim.openstreetmap.org/search?format=json&amp;email=\{email}&limit=1&q=\{query}`
 
 | email
-| According to the official documentation, provide this in case you are making a large number of requests.
-Alternatively, provide this information in the userAgent property.
+| Provide this in case you are making a large number of requests.
+Alternatively, you can provide this information in the `userAgent` property.
 | String
-| empty string
+| _Empty_
 
 | referer
 | Note that either `referer` or `userAgent` is required.
 | String
-| empty string
+| _Empty_
 
 | userAgent
 | Note that either `referer` or `userAgent` is required.
@@ -75,82 +93,81 @@ NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.feature
 
 === Google
 
-The Google Geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
-For more details, see the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation].
+The Google geocoder API is a service that provides geocoding and reverse geocoding of addresses. 
+The Google geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
+For more details, see the https://developers.google.com/maps/documentation/javascript/get-api-key[official Google documentation].
 
-[options="header"]
+[caption=]
+.Google geocoder API properties
 [cols="2,3,1,1"]
 |===
-| Property
-| Description
-| Type
-| Default
+| Property  | Description | Type  | Default Value
 
 4+|*Required*
 
 | apiKey
-| The apiKey provided by the Google Cloud Platform.
+| The API key that the Google Cloud platform provides.
 Required only if `useEnterpriseCredentials` is false.
 | String
-| empty string
+| _Empty_
 
 | clientId
-| The Google Geocoder API client ID.
+| The Google geocoder API client ID.
 Required only if `useEnterpriseCredentials` is true.
 | String
-| empty string
+| _Empty_
 
 | signature
-| The Google Geocoder API signature.
+| The Google geocoder API signature.
 | String
-| empty string
+| _Empty_
 
 4+| *Optional*
 
 | useEnterpriseCredentials
-| If authentication with clientId and signature is required, set this to true.
+| If authentication with `clientId` and `signature` is required, set this to `true`.
 | Boolean
 | false
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-  Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 
 | timeout
-| The connection timeout in milliseconds the Geocoder tries to resolve a single geolocation.
+| The connection timeout, in milliseconds, during which the geocoder tries to resolve a single geolocation.
 | Integer
 | 500
 |===
 
 NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.google.cfg`.
 
-
 === MapQuest
 
-For more details, refer to the link:https://developer.mapquest.com/documentation/geocoding-api/[official documentation].
+The MapQuest geocoder lets {page-component-title} associate latitude and longitude coordinates with an actual address (geolocation).
 
-[options="header"]
-[cols="1,3,1,3"]
+To use MapQuest, you must register and sign up for an API key.
+For more details, refer to the https://developer.mapquest.com/documentation/geocoding-api/[official MapQuest documentation].
+
+[caption=]
+.MapQuest geocoder API properties
+[cols="1,3,1,2"]
 |===
-| Property
-| Description
-| Type
-| Default
+| Property  | Description | Type  | Default Value
 
 4+| *Required*
+
 | apiKey
 | The API key.
 | String
-| empty string
+| _Empty_
 
 | url
-| The URL template for the MapQuest Geocoder API.
+| The URL template for the MapQuest geocoder API.
 The `apikey` and `query` strings are substituted before making the request.
 | String
-| \http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}
-
+| `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}`
 
 4+| *Optional*
 

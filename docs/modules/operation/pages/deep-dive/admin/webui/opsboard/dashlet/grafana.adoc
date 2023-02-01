@@ -1,17 +1,17 @@
 
 = Grafana
 
-This dashlet displays a Grafana dashboard for a given time range in the xref:deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
-The <<deep-dive/admin/webui/grafana-dashboard-box.adoc#webui-grafana-dashboard-box, Grafana Dashboard Box>> configuration is used to access the Grafana instance.
+The Grafana dashlet displays a Grafana dashboard for a given time range in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[] configuration is used to access the Grafana instance.
 
+[caption=]
 .Grafana dashlet configuration options
-[options="header,autowidth", cols="1,2"]
+[options="autowidth"]
 |===
-| Field
-| Description
+| Field | Description
 
 | Boost support
-| not available
+| _Not available_
 
 | Properties: Title
 | Title of the Grafana dashboard to display.
@@ -20,8 +20,8 @@ The <<deep-dive/admin/webui/grafana-dashboard-box.adoc#webui-grafana-dashboard-b
 | URI to the Grafana Dashboard to display.
 
 | Properties: from
-| Start of time range
+| Start of time range.
 
 | Properties: to
-| End of time range
+| End of time range.
 |===

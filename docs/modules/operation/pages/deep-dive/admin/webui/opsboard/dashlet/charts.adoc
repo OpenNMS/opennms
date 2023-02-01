@@ -1,18 +1,17 @@
 
-[[charts]]
 = Charts
 
-This dashlet displays predefined bar graphs in the Charts UI (*Reports>Charts*) and the xref:deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config [Ops Board].
-You can also <<custom-chart, create custom charts>> in the `charts-configuration.xml` file.
+The Charts dashlet displays predefined bar graphs in the Charts UI (menu:Reports[Charts]) and the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+You can also <<custom-chart, create custom charts>> in `charts-configuration.xml`.
 
+[caption=]
 .Charts dashlet configuration options
-[options="header, autowidth", cols="1,2"]
+[options="autowidth"]
 |===
-| Field
-| Description
+| Field | Description
 
 | Boost support
-| Not available
+| _Not available_
 
 | Properties: Chart
 | Type of the existing chart to display.
@@ -27,22 +26,19 @@ You can also <<custom-chart, create custom charts>> in the `charts-configuration
 [[custom-chart]]
 == Create a custom chart
 
-To create a custom chart, follow these steps:
+Follow these steps to create a custom chart:
 
-. Find and copy a similar, existing chart in the `charts-configuration.xml`.
-. Modify the name, domain-axis-label, and title value to match the new information the chart will present.
-. For each series-def:
-* Change the series name and domain-axis label to an appropriate name
-* Modify the SQL to return a row with two columns — the first column is the label, the second the numeric value.
+. Find and copy a similar existing chart in `charts-configuration.xml`.
+. Modify the `name`, `domain-axis-label`, and `title` values to match the new information the chart will present.
+. For each `series-def` value:
+** Change the series name and domain-axis label as appropriate.
+** Modify the SQL to return a row with two columns--the first column is the label, the second the numeric value.
 In most cases, the first column will be a string in single quotes, the second will be a count(*).
-
-. Restart OpenNMS.
+. Restart {page-component-title}.
 
 .Custom chart example
-
 [source, xml]
 ----
-
   <tns:bar-chart name="Physical interfaces by type"
         variation="2d"
         domain-axis-label="Ethernet/PPP/Frame Relay"

@@ -1,5 +1,4 @@
 
-[[surveillance-view]]
 = Surveillance View
 
 When monitoring a large network that contains devices of different priorities, you may want to see how the whole system is working at a glance.
@@ -9,30 +8,39 @@ Using categories, you can define a matrix that lets you aggregate monitoring dat
 Imagine that you have 10 servers with 10 internet connections, and 5 PCs with DSL lines.
 They may be categorized as follows:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
-|                    | Servers | Internet Connections
-| Super important    | 1 of 10 | 0 of 10
-| Slightly important | 0 of 10 | 0 of 10
-| Vanity             | 4 of 10 | 0 of 10
+|   | Servers | Internet Connections
+
+s| Super important
+| 1 of 10
+| 0 of 10
+
+s| Slightly important
+| 0 of 10
+| 0 of 10
+
+s| Vanity
+| 4 of 10
+| 0 of 10
 |===
 
-In this way, the Surveillance View can provide a quick idea of where trouble might be occurring.
+In this way, the surveillance view can provide a quick idea of where trouble might be occurring.
 The matrix display allows for a significantly higher aggregation of data than a simple list.
 The Surveillance View also shows nodes rather than services--an important thing to keep in mind when you look at categories.
 
 When monitoring your network, you want to know how many servers or services are experiencing issues.
 
-.Surveillance View displaying three categories; one category is experiencing an outage
-image::surveillance-view/01_surveillance-view.png[]
+.Surveillance view displaying three categories
+image::surveillance-view/01_surveillance-view.png["{page-component-title} UI displaying a surveillance view, which shows three categories. One category is experiencing an outage."]
 
 The following defines the visual status indicators:
 
-* *Green:* no services down.
-* *Yellow:* one service down.
-* *Red:* more than one service down.
+* *Green:* No services down.
+* *Yellow:* One service down.
+* *Red:* More than one service down.
 
-The Surveillance View also serves as the foundation of the xref:operation:deep-dive/admin/webui/dashboard.adoc[Dashboard].
+The surveillance view also serves as the foundation of the xref:deep-dive/admin/webui/dashboard.adoc[].
 
 [[surveillance-view-default-config]]
 == Default configuration
@@ -88,20 +96,20 @@ WARNING: The old `report-category` attribute is deprecated and is no longer supp
 
 Use the Surveillance View Configurations editor to modify the Surveillance View:
 
-. Click the *Gear* symbol at the top-right of the screen.
+. Click the *gear* symbol at the top-right of the page.
 . Under Additional Tools, click *Surveillance Views Configuration*.
 
 The page displays an overview of configured Surveillance Views and lets you edit, remove, and preview them.
 You can also select a default Surveillance View by selecting the Default box beside its name.
 
-.Surveillance View Configuration UI, with three entries; the `default` configuration is designated as the default view
-image::surveillance-view/02_surveillance-view-config-ui.png[]
+.Surveillance view configuration page
+image::surveillance-view/02_surveillance-view-config-ui.png["{page-component-title} UI displaying the surveillance view configuration page. Three entries are listed, and the `default` configuration is designated as the default view."]
 
-When you configure a Surveillance View, you must define its title and the time (in seconds) between refreshes.
+When you configure a surveillance view, you must define its title and the time (in seconds) between refreshes.
 You can also add and delete columns and rows, and reorder them as appropriate by clicking the *Up Arrow* and *Down Arrow* symbols.
 
-.Surveillance View Configuration dialog
-image::surveillance-view/03_surveillance-view-config-ui-edit.png[]
+.Surveillance view configuration page
+image::surveillance-view/03_surveillance-view-config-ui-edit.png["Surveillance view configuration page showing a list of rows and columns that can be added to the View"]
 
 Editing row or column definitions requires you to choose a unique label and at least one {page-component-title} category.
 

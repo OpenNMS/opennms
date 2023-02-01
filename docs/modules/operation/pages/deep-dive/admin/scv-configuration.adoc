@@ -1,18 +1,16 @@
 
-[[scv-overview]]
 = Secure Credentials Vault
 
-The secure credentials vault (SCV) lets you encrypt credentials {page-component-title} uses.
-It stores credentials in the Java KeyStore (JKS) format.
+The secure credentials vault lets you encrypt credentials that {page-component-title} uses.
+It stores credentials in the Java keystore (JKS) format.
+The secure credentials vault is enabled by default.
 
-The SCV is enabled by default.
+== Configure secure credentials vault password
 
-== Configure SCV password
+A custom secure credentials vault password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
+The secure credentials vault keystore file is located in `$\{OPENNMS_HOME}/etc/scv.jce`.
 
-A custom SCV password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
-The SCV keystore file is located at `$\{OPENNMS_HOME}/etc/scv.jce`.
-
-IMPORTANT: You cannot change the SCV password once credentials have been stored.
+IMPORTANT: You cannot change the secure credentials vault password once credentials have been stored.
 You must delete `$\{OPENNMS_HOME}/etc/scv.jce` and manually re-add any credentials if you want to change the password after the file has been created.
 
 == Store credentials
@@ -26,13 +24,13 @@ To access or add credentials, click menu:Info[Secure Credentials Vault] in the t
 
 === Metadata expressions
 
-You can access SCV entries from metadata using the `scv` context.
+You can access secure credentials vault entries from metadata using the `scv` context.
 
-.Example metadata expressions for accessing SCV entries
-[options="header, autowidth" cols="1,2"]
+[caption=]
+.Example metadata expressions for accessing secure credentials vault entries
+[options="autowidth"]
 |===
-| Expression
-| Description
+| Expression    | Description
 
 | ${scv:juniper-vm:username}
 | Accesses the username from the `juniper-vm` alias.
@@ -55,15 +53,12 @@ To do so, follow the instructions below:
 . Open an SSH session:
 +
 [source, console]
-----
 ssh -p 8101 admin@localhost
-----
 
-. Access or update SCV entries using the shell.
+. Access or update secure credentials vault entries using the shell.
 ** Use the following command to set credentials:
 +
 [source, karaf]
-.Set SCV entries
 ----
 admin@opennms()> scv-set --help
 DESCRIPTION
@@ -86,10 +81,9 @@ ARGUMENTS
                 (required)
 ----
 
-** Use the following command to access SCV entries:
+** Use the following command to access secure credentials vault entries:
 +
 [source, karaf]
-.Get SCV entries
 ----
 admin@opennms()> scv-get --help
 DESCRIPTION
