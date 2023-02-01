@@ -8,11 +8,11 @@ You can also configure these charts to be displayed on the {page-component-title
 To do this, modify the `org.opennms.web.console.centerUrl` parameter to include `/trend/trend-box.htm`.
 
 .Example of a trend chart
-image::webui/trend/trend-chart.png[]
+image::webui/trend/trend-chart.png["{page-component-title} UI displaying an example trend chart", 700]
 
 You can define and configure trend charts in `$\{OPENNMS_HOME}/etc/trend-configuration.xml`.
 
-The following code defines a Trend chart that displays nodes that are experiencing ongoing outages:
+The following code defines a trend chart that displays nodes that are experiencing ongoing outages:
 
 [source, xml]
 ----
@@ -60,10 +60,9 @@ The following code defines a Trend chart that displays nodes that are experienci
     </query>
 </trend-definition>
 ----
-
-<1> The title of the Trend chart.
+<1> The title of the trend chart.
 See below for supported variable substitutions.
-<2> Subtitle of the Trend chart.
+<2> Subtitle of the trend chart.
 See below for supported variable substitutions.
 <3> The visible flag.
 This defines whether the chart is visible by default.
@@ -82,11 +81,9 @@ Setting the query to fetch an unlimited number of results can increase its run t
 You can use individual or aggregated values in the title, subtitle, and description fields.
 The following table describes available variable substitutions:
 
-[options="header, autowidth" cols="1,3,1"]
+[options="autowidth"]
 |===
-| Name
-| Description
-| Type
+| Name  | Description   | Type
 
 | $\{intmax}
 | Integer maximum value
@@ -121,19 +118,19 @@ The following table describes available variable substitutions:
 | Double
 
 | ${intValue[]}
-| An array of integer result values for the given SQL query
+| An array of integer result values for the given SQL query.
 | Integer array
 
 | {doubleValue[]}
-| An array of double result values for the given SQL query
+| An array of double result values for the given SQL query.
 | Double array
 
 | ${intValueChange[]}
-| An array of integer value changes for the given SQL query
+| An array of integer value changes for the given SQL query.
 | Integer array
 
 | ${doubleValueChange[]}
-| An array of double value changes for the given SQL query
+| An array of double value changes for the given SQL query.
 | Double array
 
 | $\{intlastvalue}
@@ -145,17 +142,17 @@ The following table describes available variable substitutions:
 | Double
 
 | $\{intlastvaluechange}
-| The last integer value change
+| The last integer value change.
 | Integer
 
 | $\{doublelastvaluechange}
-| The last double value change
+| The last double value change.
 | Double
 |===
 
 You can also display a single graph in your JSP files by including `/trend/single-trend-box.jsp` and specifying the `name` parameter.
 
-.Sample JSP snippet: include a single Trend chart named 'example'
+.Sample JSP snippet: include a single trend chart named `example`
 [source, xml]
 ----
 <jsp:include page="/trend/single-trend-box.jsp" flush="false">

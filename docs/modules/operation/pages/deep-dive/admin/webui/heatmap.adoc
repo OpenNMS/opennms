@@ -1,5 +1,4 @@
 
-[[heatmap]]
 = Heatmap
 
 The heatmap visualization displays either unacknowledged alarms or ongoing outages, depending on its configuration.
@@ -10,30 +9,28 @@ Thus, a node with fewer services is displayed as a smaller box than one with mor
 
 The heatmap feature is deactivated by default, and is configured in `opennms.properties`.
 
-.Heatmap visualization of outages; the smallest entity reports an ongoing outage
-image::webui/heatmap/heatmap.png[]
+.Heatmap visualization of outages
+image::webui/heatmap/heatmap.png[{page-component-title} UI displaying an outage heatmap. The smallest entity reports an ongoing outage."]
 
 == Configuration properties
 
-[options="header"]
+[caption=]
+.Heatmap visualization configuration properties
 [cols="2,3,1,1"]
 |===
-| Name
-| Description
-| Type
-| Default
+| Name  | Description   | Type  | Default Value
 
 | org.opennms.heatmap.defaultMode
 | The default visualization mode for the heatmap.
-There are two options: `alarms` and `outages.`
+There are two options: `alarms` and `outages`.
 | String
-| `alarms`
+| alarms
 
 | org.opennms.heatmap.defaultHeatmap
 | The default category for the heatmap.
 There are three options: `categories`, `foreignSources`, and `monitoredServices`.
 | String
-| `categories`
+| categories
 
 | org.opennms.heatmap.categoryFilter
 | The category filter for the heatmap.
@@ -60,13 +57,13 @@ By default, all services are displayed.
 | Controls the scope of alarms to be taken into account when generating the alarms heatmap.
 By default, only unacknowledged alarms are evaluated.
 | Boolean
-| `false`
+| false
 
 | org.opennms.web.console.centerUrl
 | Defines the URL for the heatmap.
 You can place the heatmap on the landing page by setting this parameter to `/heatmap/heatmap-box.jsp`.
 | String
-| `/surveillance-box.jsp`
+| /surveillance-box.jsp
 |===
 
 TIP: You can use negative lookahead expressions to exclude categories from the heatmap.
