@@ -9,7 +9,7 @@ You may have to configure the <<tftp-port-configure, TFTP port>> before {page-co
 == Configure TFTP port
 
 By default, the TFTP server uses non-privileged port `6969` on Minions and {page-component-title}.
-Follow the steps below to configure the TFTP port:
+Follow the steps below to configure the TFTP port if you want to use a different port:
 
 .Connect to Karaf shell on {page-component-title}
 [source, console]
