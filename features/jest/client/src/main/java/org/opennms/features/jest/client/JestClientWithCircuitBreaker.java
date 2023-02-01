@@ -38,6 +38,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.action.Action;
@@ -45,7 +49,7 @@ import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 
-public class JestClientWithCircuitBreaker implements JestClient {
+public class JestClientWithCircuitBreaker implements JestClient, ApplicationContextAware, InitializingBean {
     public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
     private static final Logger LOG = LoggerFactory.getLogger(JestClientWithCircuitBreaker.class);
 
@@ -53,11 +57,35 @@ public class JestClientWithCircuitBreaker implements JestClient {
     private final CircuitBreaker circuitBreaker;
 
     private EventForwarder eventForwarder = null;
+    private ApplicationContext context;
 
-    public JestClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker, EventForwarder eventForwarder) {
-        this.client = Objects.requireNonNull(client);
-        this.circuitBreaker = Objects.requireNonNull(circuitBreaker);
-        this.eventForwarder = Objects.requireNonNull(eventForwarder);
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            eventForwarder = context.getBean(EventForwarder.class);
+            circuitBreaker.getEventPublisher()
+                    .onStateTransition(e -> {
+                        final String from = e.getStateTransition().getFromState().toString();
+                        final String to = e.getStateTransition().getToState().toString();
+                        LOG.info("CircuitBreaker with name {} changed state from {} to {}", circuitBreaker.getName(), from, to);
+                        // Send an event when the circuit breaker's state changes (only when eventForwarder has been initialized)
+                        if (this.eventForwarder != null) {
+                            final Event event = new EventBuilder(CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI, JestClientWithCircuitBreaker.class.getCanonicalName())
+                                    .addParam("name", circuitBreaker.getName())
+                                    .addParam("fromState", from)
+                                    .addParam("toState", to)
+                                    .getEvent();
+                            this.eventForwarder.sendNow(event);
+                        }
+                    });
+        } catch (BeansException e) {
+            LOG.error("Cannot get an EventForwarder in JestClientWithCircuitBreaker", e);
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 
     public JestClientWithCircuitBreaker(JestClient client, CircuitBreaker circuitBreaker) {
@@ -69,24 +97,6 @@ public class JestClientWithCircuitBreaker implements JestClient {
     //to brake it EventForwarder will be initialized later
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
-    }
-
-    public void init() {
-        circuitBreaker.getEventPublisher()
-                .onStateTransition(e -> {
-                    final String from = e.getStateTransition().getFromState().toString();
-                    final String to = e.getStateTransition().getToState().toString();
-                    LOG.info("CircuitBreaker with name {} changed state from {} to {}", circuitBreaker.getName(), from, to);
-                    // Send an event when the circuit breaker's state changes (only when eventForwarder has been initialized)
-                    if (this.eventForwarder != null) {
-                        final Event event = new EventBuilder(CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI, JestClientWithCircuitBreaker.class.getCanonicalName())
-                                .addParam("name", circuitBreaker.getName())
-                                .addParam("fromState", from)
-                                .addParam("toState", to)
-                                .getEvent();
-                        this.eventForwarder.sendNow(event);
-                    }
-                });
     }
 
     @Override
