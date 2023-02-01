@@ -226,6 +226,7 @@ public class ThresholdingIT {
                                                  this.databasePopulator.getDistPollerDao(),
                                                  this.databasePopulator.getSnmpInterfaceDao(),
                                                  Mockito.mock(FilterDao.class),
+                                                 new MockSessionUtils(),
                                                  filterService,
                                                  classificationRuleProvider,
                                                  classificationEngine);
