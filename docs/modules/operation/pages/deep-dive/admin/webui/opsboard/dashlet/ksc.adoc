@@ -1,31 +1,34 @@
+
 [[ksc]]
 = KSC Reports
 
-This dashlet shows an existing KSC report.
+The KSC Reports dashlet shows an existing KSC report.
 KSC Reports provide a way to generate prefabricated graphical views of collected data.
 
-This dashlet displays data from an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the xref:deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config[Ops Board].
-The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
+This dashlet displays data from an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The view is the same as the KSC report in terms of order, columns, and time spans.
 Key SNMP Customized (KSC) reports shows SNMP performance data using prefabricated graph types.
 
+[caption=]
 .KSC dashlet configuration options
-[options="header,autowidth", cols="1,2"]
+[options="autowidth"]
 |===
-|Field
-|Description
+| Field       | Description
 
 | Boost support
-| not available
+| _Not available_
 
 | KSC-Report
 | Name of the KSC report to show in this dashlet.
 |===
 
-== KSC Report Configuration
+== Configuration
 
-Configure KSC reports through the UI in *Reports -> KSC Reports*. 
+You can configure KSC reports in the {page-component-title} web UI.
+To do so, click menu:Reports[KSC Reports] in the top menu bar.
 
-Here is an example report entry that uses a custom index and graphs:
+The following is an example report entry that uses a custom index and graphs:
+
 [source, xml]
 ----
 <Report id="7" title="GlassFish JVM Stats" show_timespan_button="true"
@@ -41,7 +44,7 @@ Here is an example report entry that uses a custom index and graphs:
 </Report>
 ----
 
-Valid options for timespan are: (See org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS)
+Valid options for `timespan` are as follows:
 
 [source, console]
 ----
@@ -53,9 +56,10 @@ Valid options for timespan are: (See org.opennms.netmgt.config.KSC_PerformanceRe
   "Last Year"
 ----
 
-Be sure to keep each `id` unique for each `<Report>`.`
+For more information, see `org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS`.
 
-== Using KSC Reports
+NOTE: Make sure that each report's `id` is unique.
 
-The *KSC Reports* area on the right side of the main page of OpenNMS includes a drop-down menu where you can select the KSC reports you have configured.
+== Use KSC reports
 
+The *KSC Reports* section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.
