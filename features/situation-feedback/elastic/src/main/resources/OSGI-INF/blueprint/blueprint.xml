@@ -93,7 +93,7 @@
     <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker" init-method="init">
         <argument ref="jestClient"/>
         <argument ref="circuitBreaker"/>
-        <argument ref="eventForwarder"/>
+        <property name="eventForwarder" ref="eventForwarder"/>
     </bean>
 
     <bean id="indexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
