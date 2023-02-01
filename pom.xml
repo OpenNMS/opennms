@@ -4316,7 +4316,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-      <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
         <version>1.6.7</version>
