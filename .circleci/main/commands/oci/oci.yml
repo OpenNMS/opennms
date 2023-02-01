@@ -93,27 +93,31 @@ commands:
       - run:
          name: download ALEC Plugin
          command: |
-            echo opennms-container/<< parameters.container_dir >>/rpms 
-            if [ -d opennms-container/<< parameters.container_dir >>/rpms ] && [ "core" == "<< parameters.container_dir >>" ]
+            if [ -d opennms-container/<< parameters.container_dir >>/plugins ]
             then 
+              if  [ "core" == "<< parameters.container_dir >>" ]
+              then 
+               export product=opennms
+              elif [ "sentinel" == "<< parameters.container_dir >>" ]
+               export product=sentinel
+              fi
+             
              cd opennms-container/<< parameters.container_dir >>/rpms
-             urls=$(cloudsmith list packages --query='opennms-alec-plugin tag:latest' opennms/common -F json  | jq -r '.data[].cdn_url')
+             urls=$(cloudsmith list packages --query="$product-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
              for url in $urls; do
                wget $url
              done
              pwd
              ls -l .
-             dpkg-deb -R opennms-alec-plugin_*_all.deb ./
-             cp usr/share/opennms/deploy/*.kar ../plugins
-             #var/lib/sentinel/deploy/opennms-alec-plugin.kar
-             rm *.rpm *.deb 
+             dpkg-deb -R *-alec-plugin_*_all.deb ./
+             find . -name '*.kar' -exec mv {} ../plugins \;
+             #cp usr/share/opennms/deploy/*.kar ../plugins
+             rm *.rpm *.deb
              rm -r usr DEBIAN
             fi
       - run:
          name: download Cortex Plugin
          command: |
-            export tarLocation="$(pwd)/<< parameters.tarball_path >>"
-            echo opennms-container/<< parameters.container_dir >>/rpms 
             if [ -d opennms-container/<< parameters.container_dir >>/plugins ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
              cd opennms-container/<< parameters.container_dir >>/plugins
