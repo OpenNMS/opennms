@@ -89,7 +89,6 @@ retry sudo apt update && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
                 adoptopenjdk-8-hotspot \
-                nsis \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -122,7 +121,6 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
-           -Dnsis.makensis.bin="$(which makensis)" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            --also-make \
@@ -140,7 +138,6 @@ echo "#### Executing tests"
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
-           -Dnsis.makensis.bin="$(which makensis)" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \

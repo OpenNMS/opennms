@@ -675,27 +675,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.0.2</version>
-        <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -801,19 +780,6 @@
                 </pluginExecutionFilter>
                 <action>
                   <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>webstart-maven-plugin</artifactId>
-                  <versionRange>[0.9,)</versionRange>
-                  <goals>
-                    <goal>jnlp-download-servlet</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -1069,12 +1035,6 @@
               <groupId>com.google.code.gson</groupId>
               <artifactId>gson</artifactId>
               <version>2.8.5</version> <!-- smoke-tests -->
-              <repositoryType>MAIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>javax.samples.jnlp</groupId>
-              <artifactId>jnlp-servlet</artifactId>
-              <version>1.6.0</version>
               <repositoryType>MAIN</repositoryType>
             </DynamicDependency>
           </dynamicDependencies>
@@ -1615,20 +1575,6 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-
-    <!-- code signing properties - used in opennms-webstart -->
-    <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
-    <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
-    <webstart.keypass>opennms</webstart.keypass>
-    <webstart.storepass>opennms</webstart.storepass>
-    <webstart.keyalias>opennms-webstart-key</webstart.keyalias>
-    <webstart.keystore.delete>true</webstart.keystore.delete>
-    <webstart.keygen>true</webstart.keygen>
-    <webstart.dnameCn>${user.name}</webstart.dnameCn>
-    <webstart.dnameL/>
-    <webstart.dnameSt/>
-    <webstart.dnameC/>
-
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>${webstart.storepass}</test.storepass>
     <test.keyalias>${webstart.keyalias}</test.keyalias>
@@ -1808,7 +1754,6 @@
     <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
     <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
-    <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.11.0</frontendPluginVersion>
@@ -1834,7 +1779,6 @@
       <properties>
         <runPingTests>true</runPingTests>
         <skipPdfGeneration>false</skipPdfGeneration>
-        <skipSignJar>false</skipSignJar>
       </properties>
       <build>
         <plugins>
@@ -1962,7 +1906,6 @@
       <id>run-expensive-tasks</id>
       <properties>
         <skipPdfGeneration>false</skipPdfGeneration>
-        <skipSignJar>false</skipSignJar>
       </properties>
     </profile>
     <profile>
@@ -2894,12 +2837,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jnlp-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3261,11 +3198,6 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -4154,11 +4086,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>javax.jnlp</groupId>
-        <artifactId>jnlp</artifactId>
-        <version>1.5.0</version>
-      </dependency>
-      <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4.5</version>
@@ -4173,11 +4100,6 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
         <version>4.1.0.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.samples.jnlp</groupId>
-        <artifactId>jnlp-servlet</artifactId>
-        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -4669,11 +4591,6 @@
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.tuckey</groupId>
-        <artifactId>urlrewritefilter</artifactId>
-        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>

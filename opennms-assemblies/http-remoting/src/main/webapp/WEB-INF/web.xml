@@ -48,12 +48,6 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- servlet for java webstart -->
-  <servlet>
-    <servlet-name>JnlpDownloadServlet</servlet-name>
-    <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
-  </servlet>
-
   <servlet-mapping>
     <servlet-name>pollerBackEnd</servlet-name>
     <url-pattern>/pollerBackEnd</url-pattern>
@@ -61,10 +55,6 @@
   <servlet-mapping>
     <servlet-name>serviceRegistryExporter</servlet-name>
     <url-pattern>/serviceRegistry</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>JnlpDownloadServlet</servlet-name>
-    <url-pattern>/webstart/*</url-pattern>
   </servlet-mapping>
 
 </web-app>

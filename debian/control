@@ -2,7 +2,7 @@ Source: opennms
 Section: contrib/net
 Priority: optional
 Maintainer: Jeff Gehlbach <jeffg@opennms.org>
-Build-Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | temurin-8-jdk | java8-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync, nsis
+Build-Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | temurin-8-jdk | java8-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync
 Standards-Version: 3.7.3
 
 Package: opennms
@@ -123,7 +123,7 @@ Architecture: all
 Depends: opennms-webapp-jetty (=${binary:Version})
 Replaces: opennms-webapp-jetty (<< 19.0.0)
 Breaks: opennms-webapp-jetty (<< 19.0.0)
-Description: Enterprise-grade Open-source Network Management Platform (Remote Poller JNLP webapp)
+Description: Enterprise-grade Open-source Network Management Platform (Remote Poller webapp)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
  OpenNMS can monitor various network services to determine status and service
@@ -132,7 +132,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Remote Po
  and notification system handles both internally and externally generated
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
- This webapp contains the JNLP application that provides the Remote Poller.
+ This is the webapp for the remote poller.
 
 Package: opennms-webapp-hawtio
 Architecture: all

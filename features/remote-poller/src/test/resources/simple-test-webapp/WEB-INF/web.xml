@@ -24,7 +24,6 @@
     <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  <!-- servlet for java webstart -->
 
   <servlet-mapping>
     <servlet-name>simpleBackEnd</servlet-name>
