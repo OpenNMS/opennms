@@ -133,7 +133,12 @@ RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d
 
 # Copy plugins to the deploy folder
 COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
-RUN cd /usr/share/opennms/deploy && apt install ./*.deb && rm ./*.deb
+RUN cd /usr/share/opennms/deploy \
+    if [ $(ls -1q *.deb | wc -l) -gt 0 ] \
+    then \
+     apt install -y ./*.deb \
+     rm ./*.deb \
+    fi
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
