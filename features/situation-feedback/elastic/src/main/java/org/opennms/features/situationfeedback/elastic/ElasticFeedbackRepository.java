@@ -36,20 +36,20 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import org.opennms.features.situationfeedback.api.AlarmFeedback;
-import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
-import org.opennms.features.situationfeedback.api.FeedbackException;
-import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedbackListener;
+import org.opennms.features.situationfeedback.api.FeedbackException;
+import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -68,7 +68,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private final ElasticFeedbackRepositoryInitializer initializer;
 
-    private final JestClient client;
+    private final JestClientWithCircuitBreaker client;
 
     private final int bulkRetryCount;
 
@@ -81,7 +81,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
      */
     private final Collection<AlarmFeedbackListener> alarmFeedbackListeners = new CopyOnWriteArrayList<>();
 
-    public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
+    public ElasticFeedbackRepository(JestClientWithCircuitBreaker jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
         this.indexStrategy = indexStrategy;
         this.bulkRetryCount = bulkRetryCount;
