@@ -45,12 +45,24 @@ public class CircuitBreakerProvider {
 
     public CircuitBreaker getCircuitBreaker(String name) {
         final CircuitBreakerConfig.Builder builder = CircuitBreakerConfig.custom();
-        if (failureRateThreshold != null) {builder.failureRateThreshold(failureRateThreshold);}
-        if (waitDurationInOpenStateInMills != null) {builder.waitDurationInOpenState(Duration.ofMillis(waitDurationInOpenStateInMills));}
-        if (ringBufferSizeInHalfOpenState != null) {builder.ringBufferSizeInHalfOpenState(ringBufferSizeInHalfOpenState);}
-        if (ringBufferSizeInClosedState != null) {builder.ringBufferSizeInClosedState(ringBufferSizeInClosedState);}
-        if (recordExceptions != null) {builder.recordExceptions(recordExceptions);}
-        if (ignoreExceptions != null) {builder.ignoreExceptions(ignoreExceptions);}
+        if (failureRateThreshold != null) {
+            builder.failureRateThreshold(failureRateThreshold);
+        }
+        if (waitDurationInOpenStateInMills != null) {
+            builder.waitDurationInOpenState(Duration.ofMillis(waitDurationInOpenStateInMills));
+        }
+        if (ringBufferSizeInHalfOpenState != null) {
+            builder.ringBufferSizeInHalfOpenState(ringBufferSizeInHalfOpenState);
+        }
+        if (ringBufferSizeInClosedState != null) {
+            builder.ringBufferSizeInClosedState(ringBufferSizeInClosedState);
+        }
+        if (recordExceptions != null) {
+            builder.recordExceptions(recordExceptions);
+        }
+        if (ignoreExceptions != null) {
+            builder.ignoreExceptions(ignoreExceptions);
+        }
         return CircuitBreakerRegistry.of(builder.build()).circuitBreaker(name);
     }
 
