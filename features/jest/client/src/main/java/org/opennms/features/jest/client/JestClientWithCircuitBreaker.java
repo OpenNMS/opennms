@@ -112,14 +112,8 @@ public class JestClientWithCircuitBreaker implements JestClient, ApplicationCont
 
     @Override
     public <T extends JestResult> void executeAsync(final Action<T> clientRequest, final JestResultHandler<? super T> jestResultHandler) {
-        try {
-            circuitBreaker.acquirePermission();
-        } catch (CallNotPermittedException e) {
-            try {
-                jestResultHandler.failed(e);
-            } catch (RuntimeException ignored) {
-                //ignored
-            }
+        if(!circuitBreaker.tryAcquirePermission()) {
+            jestResultHandler.failed(new CallNotPermittedException(circuitBreaker));
             return;
         }
         long start = System.nanoTime();
