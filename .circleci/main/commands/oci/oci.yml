@@ -66,7 +66,7 @@ commands:
           name: download tarball dependency to << parameters.tarball_path >>
           command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       - run:
-         name: download Cloud Plugin
+         name: download/install Cloud Plugin
          command: |
             if [ -d opennms-container/<< parameters.container_dir >>/plugins ]
             then 
@@ -78,18 +78,18 @@ commands:
                export product=sentinel
               fi
              
-             cd opennms-container/<< parameters.container_dir >>/rpms
-             urls=$(cloudsmith list packages --query="$product-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
-             for url in $urls; do
-               wget $url
-             done
-             dpkg-deb -R *-plugin-cloud_*_all.deb ./
-             find . -name '*.kar' -exec mv {} ../plugins \;
-             rm *.rpm *.deb
-             rm -r usr DEBIAN
+              cd opennms-container/<< parameters.container_dir >>/rpms
+              urls=$(cloudsmith list packages --query="$product-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
+              for url in $urls; do
+                wget $url
+              done
+              dpkg-deb -R *-plugin-cloud_*_all.deb ./
+              find . -name '*.kar' -exec mv {} ../plugins \;
+              rm *.rpm *.deb
+              rm -r usr DEBIAN
             fi
       - run:
-         name: download ALEC Plugin
+         name: download/install ALEC Plugin
          command: |
             if [ -d opennms-container/<< parameters.container_dir >>/plugins ]
             then 
@@ -101,18 +101,21 @@ commands:
                export product=sentinel
               fi
              
-             cd opennms-container/<< parameters.container_dir >>/rpms
-             urls=$(cloudsmith list packages --query="$product-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
-             for url in $urls; do
-               wget $url
-             done
-             dpkg-deb -R *-alec-plugin_*_all.deb ./
-             find . -name '*.kar' -exec mv {} ../plugins \;
-             rm *.rpm *.deb
-             rm -r usr DEBIAN
+              cd opennms-container/<< parameters.container_dir >>/rpms
+              urls=$(cloudsmith list packages --query="$product-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
+              for url in $urls; do
+                wget $url
+              done
+              dpkg-deb -R *-alec-plugin_*_all.deb ./
+              ls 
+              find . -name '*.kar' 
+              find . -name '*.kar' -exec mv {} ../plugins \;
+              ls ../plugins
+              rm *.rpm *.deb
+              rm -r usr DEBIAN
             fi
       - run:
-         name: download Cortex Plugin
+         name: download/install Cortex TSS Plugin
          command: |
             if [ -d opennms-container/<< parameters.container_dir >>/plugins ] && [ "core" == "<< parameters.container_dir >>" ]
             then 
@@ -121,6 +124,7 @@ commands:
              for url in $urls; do
                wget $url
              done
+             ls
             fi
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
