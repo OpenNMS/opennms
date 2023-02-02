@@ -32,6 +32,8 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
 
 == Example
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <!-- Test HTTPS service on port 8443 -->
@@ -42,5 +44,5 @@ This monitor implements <<reference:service-assurance/introduction.adoc#ref-serv
   <parameter key="url" value="/"/>
 </service>
 
-<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" /> 
 ----

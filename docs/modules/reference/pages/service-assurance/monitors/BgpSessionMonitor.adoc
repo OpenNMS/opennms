@@ -110,7 +110,11 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-To monitor the session state `Established`, add a service to your poller configuration in `$OPENNMS_HOME/etc/poller-configuration.xml`.
+To monitor the session state `Established`, add a service to your poller configuration in `$\{OPENNMS_HOME}/etc/poller-configuration.xml`.
+
+
+Note that you must include the `monitor` section for each service in your definition.
+
 For example:
 
 [source, xml]

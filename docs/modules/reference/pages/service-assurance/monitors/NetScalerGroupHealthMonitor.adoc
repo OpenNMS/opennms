@@ -49,10 +49,13 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-The following example checks a server group called central_webfront_http.
+The following example checks a server group called `central_webfront_http`.
 If at least 70% of the servers are active, the service is up.
 If less then 70% of the servers are active, the service is down.
-Use a configuration like the following in `poller-configuration.xml`:
+
+Use a configuration like the following in `poller-configuration.xml`.
+
+Note that you must include the `monitor` section in your definition.
 
 [source, xml]
 ----
@@ -61,7 +64,7 @@ Use a configuration like the following in `poller-configuration.xml`:
    <parameter key="group-health" value="70" />
 </service>
 
-<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" /> 
 ----
 
 == Details about the used SNMP checks

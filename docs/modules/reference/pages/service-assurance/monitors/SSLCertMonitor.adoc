@@ -87,7 +87,10 @@ It is not known if the same approach will prove useful for other use cases, like
 The following examples show how to monitor SSL certificates on services like IMAPS, SMTPS, and HTTPS, as well as an sample use of the STARTTLS feature for XMPP.
 If the certificates expire within 30 days, the service goes down and indicates this issue in the reason of the monitor.
 In this example, the monitoring interval is reduced to test the certificate every two hours (7,200,000 ms).
-Configuration in poller-configuration.xml is as follows:
+
+Note that you must include the `monitor` section for each service in your definition.
+
+Configuration in `poller-configuration.xml` is as follows:
 
 [source, xml]
 ----
@@ -121,8 +124,9 @@ Configuration in poller-configuration.xml is as follows:
     <parameter key="starttls-start-response" value="^.*starttls.*$"/>
 </service>
 
-<monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="SSL-Cert-SMTPS-465" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+<monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
+<monitor service="SSL-Cert-SMTPS-465" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
+<monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
+<monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <1>
 ----
+<1> Required *monitor* section for each service monitor.

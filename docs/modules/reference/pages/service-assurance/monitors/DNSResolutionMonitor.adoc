@@ -11,7 +11,7 @@ Assigning the DNS resolution monitor on the IP interface tests if `www.google.co
 If the DNS server responds with either an A or AAAA record, the service is determined to be up.
 The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assigned.
 
-== DNSResolutionMonitor vs. DnsMonitor
+== DNSResolutionMonitor versus DnsMonitor
 
 The DNSResolutionMonitor measures the availability and record outages of a name resolution from a client perspective.
 Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
@@ -69,9 +69,12 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-The following example shows the possibilities for monitoring IPv4 and/or IPv6 for the service configuration.
+The following example shows the possibilities for monitoring IPv4 or IPv6 for the service configuration.
 
-Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+Note that you must include the `monitor` section for each service in your definition.
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -147,13 +150,14 @@ Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd
     <parameter key="ds-name" value="dns-res-cname-mx"/>
 </service>
 
-<monitor service="DNS-Resolution-v4" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-v4-lookup" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-Sub" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-v4-and-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
-<monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-v4-lookup" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-Sub" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-v4-and-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
+<monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <1>
 ----
+<1> Required *monitor* section for each service.
 
-To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (dns-res-v4, dns-res-v6, dns-res-both, dns-res-either, dns-res-cname-mx) in $OPENNMS_HOME/etc/response-graph.properties.
+To have response time graphs for the name resolution, you must configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in `$\{OPENNMS_HOME}/etc/response-graph.properties`.
