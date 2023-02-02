@@ -118,6 +118,7 @@ commands:
               then 
                export product=opennms
               elif [ "sentinel" == "<< parameters.container_dir >>" ]
+              then
                export product=sentinel
               fi
              
