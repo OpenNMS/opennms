@@ -109,7 +109,7 @@ STOPSIGNAL SIGTERM
 CMD [ "-f" ]
 
 # Copy plugins to the deploy folder
-COPY ./plugins/ /var/lib/sentinel/deploy
+COPY ./plugins/*.kar /var/lib/sentinel/deploy
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
