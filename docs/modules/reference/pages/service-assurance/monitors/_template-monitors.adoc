@@ -68,8 +68,10 @@ Some example configuration how to configure the monitor in the `poller-configura
 <parameter key="args" value="http://${variable1}/${variable2}/static"/>
 ----
 
-.This section is optional and gives specific hints
-== SystemExecuteMonitor vs. GpMonitor
+_(Comment that monitor section is required.)_
+You must include the `monitor` section in your configuration.
+
+== (Optional) SystemExecuteMonitor versus GpMonitor
 
 The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
 
