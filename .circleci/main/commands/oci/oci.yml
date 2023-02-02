@@ -107,10 +107,7 @@ commands:
                 wget $url
               done
               dpkg-deb -R *-alec-plugin_*_all.deb ./
-              ls 
-              find . -name '*.kar' 
               find . -name '*.kar' -exec mv {} ../plugins \;
-              ls ../plugins
               rm *.rpm *.deb
               rm -r usr DEBIAN
             fi
