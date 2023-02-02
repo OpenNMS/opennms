@@ -103,6 +103,8 @@ It is possible to refer to WMI objects from other namespaces such as root/Micros
 
 The following example shows how to enable monitoring that already discovered WMI services are still running.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
     <service name="WMI" interval="300000" user-defined="false" status="on">

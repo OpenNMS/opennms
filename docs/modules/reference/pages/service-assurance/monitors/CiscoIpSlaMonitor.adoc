@@ -84,10 +84,12 @@ ip sla schedule 1 life forever start-time now
 ----
 
 WARNING: It's not possible to reconfigure an IP SLA entry.
-         To change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
-         Back up your Cisco configuration manually or take a look at http://www.shrubbery.net/rancid/[RANCID].
+To change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
+Back up your Cisco configuration manually, or see http://www.shrubbery.net/rancid/[RANCID].
 
-To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries:
+To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries.
+
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----

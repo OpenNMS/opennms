@@ -63,6 +63,8 @@ The <variable> name is arbitrary.
 
 == Examples
 
+Note that you must include the `monitor` section in your definition.
+
 .Test if a JMX connection can be established
 [source, xml]
 ----
@@ -71,6 +73,7 @@ The <variable> name is arbitrary.
     <parameter key="timeout" value="3000"/>
     <parameter key="port" value="18980"/>
 </service>
+
 <monitor service="JMX-Connection-Test" class-name="org.opennms.netmgt.poller.monitors.JmxMonitor"/>
 ----
 
@@ -84,7 +87,8 @@ The <variable> name is arbitrary.
     <parameter key="beans.connected" value="org.opennms.workflow:name=client.onms.connected"/>
     <parameter key="tests.isConnected" value="connected.get(&quot;Value&quot;) == true"/>
 </service>
+
 <monitor service="JMX-BeanValue-Test" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
 ----
 
-CAUTION: You must escape reserved XML characters like *>*, *<*, *"*.
+IMPORTANT: You must escape reserved XML characters like `>`, `<`, and `"`.

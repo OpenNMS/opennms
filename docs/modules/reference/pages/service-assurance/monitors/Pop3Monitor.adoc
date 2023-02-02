@@ -60,6 +60,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="POP3" interval="300000" user-defined="false" status="on">
@@ -69,5 +71,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="rrd-base-name" value="pop3"/>
   <parameter key="ds-name" value="pop3"/>
 </service>
+
 <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
 ----

@@ -52,6 +52,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#<ref
 == Examples
 
 Example configuration on how to configure the monitor in `poller-configuration.xml`.
+
+Note that you must include the `monitor` section for each monitor in your definition.
+
 [source, xml]
 ----
 <service name="FTP" interval="300000" user-defined="false" status="on">
@@ -78,7 +81,8 @@ Example configuration on how to configure the monitor in `poller-configuration.x
   <parameter key="password" value="MySecretPassword"/>
 </service>
 
-<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <1>
+<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <1>
+<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <1>
 ----
+<1> Required *monitor* component for each service.
