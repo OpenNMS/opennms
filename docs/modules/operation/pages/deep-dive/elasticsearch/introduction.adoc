@@ -185,6 +185,9 @@ NOTE: Credentials are globally defined and will be used by all features that con
 
 == Circuit breaker
 
-In the case when Elasticsearch is unavailable, a circuit breaker is used to reduce the amount of blocked threads. After a defined number of errors, requests to the server will not be sent for defined time. Instead, the requests are aborted immediately with an error. To configure the circuit breaker, use the parameters that begin with `circuitbreaker.`.
+When Elasticsearch is unavailable, a circuit breaker is used to reduce the number of blocked threads.
+After a defined number of errors, requests to the server will not be sent for the defined period of time.
+Instead, the requests are cancelled immediately with an error.
+To configure the circuit breaker, use the parameters that begin with `circuitbreaker.`.
 
 Further documentation can be found at link:https://resilience4j.readme.io/docs/circuitbreaker[here]
