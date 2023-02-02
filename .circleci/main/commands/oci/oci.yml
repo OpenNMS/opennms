@@ -78,37 +78,16 @@ commands:
                export product=sentinel
               fi
              
-             cd opennms-container/<< parameters.container_dir >>/plugins
+             cd opennms-container/<< parameters.container_dir >>/rpms
              urls=$(cloudsmith list packages --query="$product-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
              for url in $urls; do
                wget $url
              done
+             dpkg-deb -R *-plugin-cloud_*_all.deb ./
+             find . -name '*.kar' -exec mv {} ../plugins \;
+             rm *.rpm *.deb
+             rm -r usr DEBIAN
             fi
-      #- run:
-      #   name: download Cloud Plugin
-      #   command: |
-      #      if [ -d opennms-container/<< parameters.container_dir >>/plugins ]
-      #      then 
-      #        if  [ "core" == "<< parameters.container_dir >>" ]
-      #        then 
-      #         export product=opennms
-      #        elif [ "sentinel" == "<< parameters.container_dir >>" ]
-      #         export product=sentinel
-      #        fi
-      #       
-      #       cd opennms-container/<< parameters.container_dir >>/rpms
-      #       urls=$(cloudsmith list packages --query="$product-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
-      #       for url in $urls; do
-      #         wget $url
-      #       done
-      #       pwd
-      #       ls -l .
-      #       dpkg-deb -R *-plugin-cloud_*_all.deb ./
-      #       find . -name '*.kar' -exec mv {} ../plugins \;
-      #       #cp usr/share/opennms/deploy/*.kar ../plugins
-      #       rm *.rpm *.deb
-      #       rm -r usr DEBIAN
-      #      fi
       - run:
          name: download ALEC Plugin
          command: |
@@ -127,11 +106,8 @@ commands:
              for url in $urls; do
                wget $url
              done
-             pwd
-             ls -l .
              dpkg-deb -R *-alec-plugin_*_all.deb ./
              find . -name '*.kar' -exec mv {} ../plugins \;
-             #cp usr/share/opennms/deploy/*.kar ../plugins
              rm *.rpm *.deb
              rm -r usr DEBIAN
             fi
