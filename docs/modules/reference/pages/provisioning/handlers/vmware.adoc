@@ -19,14 +19,15 @@ You can either create a new local user within your vCenter server or use an acco
 . Select the built-in "Read Only" role.
 . Select the option to clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
 . Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
-. Click OK to save the role.
+. Click *OK* to save the role.
 
-Once the role is setup, you will need to assign the role to the user account.
-You can either create a new user to assign the role or assign the role to a user from an external authentication directory that is setup on your vCenter.
+Once the role is set up, you will need to assign it to the user account.
+You can either create a new user for the role or assign the role to a user from an external authentication directory on your vCenter.
 
-=== Assign OpenNMS user permissions to access vCenter objects:
-. Navigate to menu:Home[Inventory > Hosts and Clusters] within your vCenter.
-. Right click on the container to apply the permission.
+=== Assign user permissions to access vCenter objects
+
+. In your vCenter, navigate to menu:Home[Inventory > Hosts and Clusters].
+. Right-click on the container to apply the permission.
 ..If you want {page-component-title} to import all entities, this would be the root vCenter level.
 ..To import only a subset of nodes, select a specific data center, cluster, or host.
 . Select the Add Permission option from the right-click menu.
