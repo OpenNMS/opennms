@@ -135,6 +135,7 @@ commands:
 
             export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_dir >>
+            ls -l ./plugins
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             make DOCKER_ARCH="<< parameters.architecture >>" \
