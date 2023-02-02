@@ -31,7 +31,6 @@ package org.opennms.features.jest.client;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -43,6 +42,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -111,12 +111,31 @@ public class JestClientWithCircuitBreaker implements JestClient, ApplicationCont
     }
 
     @Override
-    public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<? super T> jestResultHandler) {
-        CompletableFuture.runAsync(() -> {
+    public <T extends JestResult> void executeAsync(final Action<T> clientRequest, final JestResultHandler<? super T> jestResultHandler) {
+        try {
+            circuitBreaker.acquirePermission();
+        } catch (CallNotPermittedException e) {
             try {
-                jestResultHandler.completed(execute(clientRequest));
-            } catch (IOException e) {
                 jestResultHandler.failed(e);
+            } catch (RuntimeException ignored) {
+                //ignored
+            }
+            return;
+        }
+        long start = System.nanoTime();
+        this.client.executeAsync(clientRequest, new JestResultHandler<>() {
+            @Override
+            public void completed(T result) {
+                long durationInNanos = System.nanoTime() - start;
+                circuitBreaker.onSuccess(durationInNanos);
+                jestResultHandler.completed(result);
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                long durationInNanos = System.nanoTime() - start;
+                circuitBreaker.onError(durationInNanos, ex);
+                jestResultHandler.failed(ex);
             }
         });
     }
