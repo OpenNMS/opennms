@@ -1727,7 +1727,7 @@
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <smackVersion>4.0.6</smackVersion>
+    <smackVersion>4.4.6</smackVersion>
     <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
