@@ -19,14 +19,18 @@ You can either create a new local user within your vCenter server or use an acco
 . Select the built-in "Read Only" role.
 . Select the option to clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
 . Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
-. Click OK to save the role.
+. Click *OK* to save the role.
 
-=== Assign OpenNMS user permissions to access vCenter objects:
-. Navigate to menu:Home[Inventory > Hosts and Clusters] within your vCenter.
-. Right click on the container to apply the permission.
-..If you want {page-component-title} to import all entities, this would be the root vCenter level.
-..To import only a subset of nodes, select a specific data center, cluster, or host.
-. Select the Add Permission option from the right-click menu.
+Once the role is set up, you will need to assign it to the user account.
+You can either create a new user for the role or assign the role to a user from an external authentication directory on your vCenter.
+
+=== Assign user permissions to access vCenter objects
+
+. In your vCenter, navigate to menu:Home[Inventory > Hosts and Clusters].
+. Right-click on the container to apply the permission.
+** If you want {page-component-title} to import all entities, this would be the root vCenter level.
+** To import only a subset of nodes, select a specific data center, cluster, or host.
+. Select *Add Permission* from the right-click menu.
 . Enter the name of the user account to use to connect to vCenter during the import process.
 . Select the "OpenNMS-Access" role (or whatever you called it in the previous step).
 . Save the role assignment and make sure to propagate to child objects, if prompted.
@@ -41,9 +45,11 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 ----
 <?xml version="1.0"?>
 <vmware-config>
-    <vmware-server hostname="vcenter.mydomain.org" username="OpenNMS" password="secret"/>
+    <vmware-server hostname="vcenter.mydomain.org" username="domain\username" password="secret"/>
 </vmware-config>
 ----
+
+NOTE: When specifying the username, make sure to fully qualify it with the appropriate domain name for your directory.
 
 == Configure VMware requisition
 
@@ -141,6 +147,7 @@ Cannot be true if `importHostOnly` is true.
 
 | timeout
 | VMware connection timeout, in milliseconds.
+If you receive a "read timeout" error, increase this value.
 | 3000
 
 | topologyDatastores
