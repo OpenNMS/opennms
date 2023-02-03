@@ -65,6 +65,7 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
+# When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
 ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
@@ -75,5 +76,4 @@ fi
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \
-  -Pcoverage \
   install verify
