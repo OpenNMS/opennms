@@ -24,6 +24,10 @@
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
     </feature>
 
+    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
+        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
+    </feature>
+
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
@@ -91,5 +95,11 @@
         <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk15on/1.70</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk15on/1.70</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+    </feature>
+
+    <feature name="health-api" version="${project.version}" description="Health API">
+        <feature version="${commonsLang3Version}">commons-lang3</feature>
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
     </feature>
 </features>
