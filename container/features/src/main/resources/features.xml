@@ -126,9 +126,7 @@
     <feature name="commons-lang" version="${commonsLangVersion}" description="Apache :: commons-lang">
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
-    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
-        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
-    </feature>
+    <!-- commons-lang3 is in features-core.xml -->
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
