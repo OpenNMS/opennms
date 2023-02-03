@@ -28,9 +28,9 @@ You can either create a new user for the role or assign the role to a user from 
 
 . In your vCenter, navigate to menu:Home[Inventory > Hosts and Clusters].
 . Right-click on the container to apply the permission.
-..If you want {page-component-title} to import all entities, this would be the root vCenter level.
-..To import only a subset of nodes, select a specific data center, cluster, or host.
-. Select the Add Permission option from the right-click menu.
+** If you want {page-component-title} to import all entities, this would be the root vCenter level.
+** To import only a subset of nodes, select a specific data center, cluster, or host.
+. Select *Add Permission* from the right-click menu.
 . Enter the name of the user account to use to connect to vCenter during the import process.
 . Select the "OpenNMS-Access" role (or whatever you called it in the previous step).
 . Save the role assignment and make sure to propagate to child objects, if prompted.
