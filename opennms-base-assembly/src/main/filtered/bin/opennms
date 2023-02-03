@@ -62,6 +62,9 @@ RUNJAVA_OPTIONS=""
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
+# Whether to include a thread dump before we start shutting down
+THREAD_DUMP=1
+
 # Whether to enable the Pyroscope agent
 [ -z "$PYROSCOPE_AGENT_ENABLED" ] && PYROSCOPE_AGENT_ENABLED=0
 
@@ -116,7 +119,7 @@ show_help () {
 	cat <<END
 Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] [-s] <command> [<service>]
 
-  command options: start|stop|restart|status|ssh|check|pause|resume|kill
+  command options: start|stop|restart|status|ssh|check|pause|resume|kill|restart-fast
 
   service options: all|<a service id from the etc/service-configuration.xml>
       defaults to all
@@ -561,7 +564,9 @@ doStop() {
 	fi
 
 	PID="$(getPid)"
-	if [ "$PID" -gt 0 ]; then
+	if [ -z "$THREAD_DUMP" ] || [ "$THREAD_DUMP" -eq 0 ]; then
+		echo "=== Skipping Complimentary Thread Dump ===" >> "$REDIRECT"
+	elif [ "$PID" -gt 0 ]; then
 		echo "=== ${install.package.description} Complimentary Thread Dump ===" >> "$REDIRECT"
 		kill -3 "$PID" >> "$REDIRECT" 2>&1
 	else
@@ -1118,6 +1123,26 @@ case "$COMMAND" in
 			__opennms_cmd+=("-f")
 		fi
 		"${__opennms_cmd[@]}" "stop" && \
+		"${__opennms_cmd[@]}" "start"
+		;;
+
+	restart-fast)
+		## Kill the service and regardless of whether it was
+		## running or not, start it again.
+		__opennms_cmd=("$OPENNMS_HOME/bin/opennms");
+		if [ "$BIGTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-T")
+		fi
+		if [ "$SMALLTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-t")
+		fi
+		if [ "$NOEXECUTE" -eq 1 ]; then
+			__opennms_cmd+=("-n")
+		fi
+		if [ "$BACKGROUND" -eq 0 ]; then
+			__opennms_cmd+=("-f")
+		fi
+		"${__opennms_cmd[@]}" "kill" && \
 		"${__opennms_cmd[@]}" "start"
 		;;
 
