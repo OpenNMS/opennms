@@ -2,52 +2,13 @@
 = Operational Status
 
 Every business service maintains an operational status that represents its overall status.
-The overall status is calculated from the edges, using the map and reduce functions, and uses the severities from associated events and alarms.
-
-[caption=]
-.Operational status representations
-[cols="1,3,1"]
-|===
-| Name  | Description   | Numerical Code
-
-| Critical
-| Indicates a severe service-affecting event has occurred.
-| 7
-
-| Major
-| Indicates serious disruption or malfunction of a service or system.
-| 6
-
-| Minor
-| Used for troubles that have no immediate effect on service or system performance.
-| 5
-
-| Warning
-| An event has occurred that may require action.
-This severity indicates a condition that should be logged, but does not require immediate action.
-| 4
-
-| Normal
-| Informational message.
-No action required.
-| 3
-
-| Cleared
-| Reserved for use in alarms to indicate that they describe self-clearing error conditions that have been corrected, and service is restored.
-Never use this severity in event definitions.
-Use "Normal" severity for events that clear an alarm.
-| 2
-
-| Indeterminate
-| No severity could be associated with this event.
-| 1
-|===
+The overall status is calculated from the edges, using the map and reduce functions, and uses the <<deep-dive/events/event-configuration.adoc#severities, severities>> from associated events and alarms.
 
 If a business service changes its operational status, a `uei.opennms.org/bsm/serviceOperationalStatusChanged` event is generated.
-In cases where the operational status changed from Normal to a higher severity, a `uei.opennms.org/bsm/serviceProblem` event is generated and is assigned the same severity as the business service.
-When the business service returns to Normal severity, a `uei.opennms.org/bsm/serviceProblemResolved` event is generated.
+In cases where the operational status changes severity to a state other than `Normal`, a `uei.opennms.org/bsm/serviceProblem` event is generated and is assigned the same severity as the business service.
+When the business service returns to `Normal` severity, a `uei.opennms.org/bsm/serviceProblemResolved` event is generated.
 
-NOTE: Use the `serviceProblem` and `serviceProblemResolved` events for notifications or ticketing integration.
+TIP: You can use the `serviceProblem` and `serviceProblemResolved` events for notifications or ticketing integration.
 
 Event log messages have the following information:
 

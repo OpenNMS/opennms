@@ -87,6 +87,7 @@
             <!-- Don't specify argLine here or it will override the argLine property value -->
             <systemPropertyVariables>
               <seleniarm.version>${seleniarm.version}</seleniarm.version>
+              <coverage>${coverage}</coverage>
             </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
@@ -337,6 +338,15 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+          <value>true</value>
+        </property>
+      </activation>
     </profile>
   </profiles>
   <dependencyManagement>
