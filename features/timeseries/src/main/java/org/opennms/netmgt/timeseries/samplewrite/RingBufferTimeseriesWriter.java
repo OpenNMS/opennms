@@ -32,7 +32,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -109,6 +108,7 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
      */
     private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
     private final AtomicBoolean readyToRockAndRoll = new AtomicBoolean(false);
+    private final AtomicBoolean thePartyIsOver = new AtomicBoolean(false);
 
     @Inject
     public RingBufferTimeseriesWriter(final TimeseriesStorageManager storage,
@@ -187,7 +187,8 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
                 }
                 if (numEntriesOnRingBuffer.get() != 0) {
                     LOG.warn("destroy(): WorkerPool does not want to cooperate, forcing cooperation");
-                    executor.shutdownNow();
+                    thePartyIsOver.set(true); // prevents new calls to onEvent from doing any work
+                    executor.shutdownNow(); // will make any BlockingServiceLookup calls return immediately
                 }
             }, getClass().getSimpleName() + "-destroy-status");
             destroyStatusThread.start();
@@ -233,6 +234,9 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
 
     @Override
     public void onEvent(SampleBatchEvent event) {
+        if (thePartyIsOver.get()) {
+            return;
+        }
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
             var start =  Instant.now();
             var timeSeriesStorage = this.storage.get();
