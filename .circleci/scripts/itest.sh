@@ -42,6 +42,7 @@ find_tests()
 REFERENCE_BRANCH="$(get_reference_branch || echo "develop")"
 
 echo "#### Making sure git is up-to-date"
+git remote prune origin || :
 git fetch origin "${REFERENCE_BRANCH}"
 
 echo "#### Determining tests to run"
