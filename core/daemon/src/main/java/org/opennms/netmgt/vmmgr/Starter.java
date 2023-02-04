@@ -173,7 +173,7 @@ public class Starter {
                 result.getThrowable().printStackTrace();
 
                 Manager manager = new Manager();
-                manager.stop();
+                manager.stop(1);
                 manager.doSystemExit();
 
                 // Shouldn't get here
