@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import java.net.URISyntaxException;
 import java.net.URL;

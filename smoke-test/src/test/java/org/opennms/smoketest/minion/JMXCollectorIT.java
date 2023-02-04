@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.containsString;

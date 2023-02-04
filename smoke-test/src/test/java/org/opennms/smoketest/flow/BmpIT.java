@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.flow;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static java.util.concurrent.TimeUnit.MINUTES;

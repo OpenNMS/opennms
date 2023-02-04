@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,6 +41,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,8 +93,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.jayway.awaitility.Duration;
 
 /**
  * Test class for <a href="http://issues.opennms.org/browse/NMS-6226">NMS-6226</a>
@@ -317,14 +316,11 @@ public class DuplicatePrimaryAddressIT {
     private void verify() throws Exception {
         int successfulCollections = 5; // At least 5 collections must be performed for the above wait time.
 
-        await().atMost(Duration.ONE_MINUTE).pollInterval(Duration.ONE_HUNDRED_MILLISECONDS).until(new Runnable() {
-            @Override
-            public void run() {
+        await().atMost(Duration.ofMinutes(1)).pollInterval(Duration.ofMillis(100)).untilAsserted(() -> {
                 Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/1/192.168.1.1/SNMP"));
                 Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/1/192.168.1.1/SNMP"));
                 Assert.assertTrue(successfulCollections <= countMessages("collector.collect: begin:testPackage/3/192.168.1.1/SNMP"));
                 Assert.assertTrue(successfulCollections <= countMessages("collector.collect: end:testPackage/3/192.168.1.1/SNMP"));                
-            }
         });
 
         m_collectd.stop();

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.*;
 import static org.junit.Assert.*;
 
