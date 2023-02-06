@@ -5,6 +5,11 @@ ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
 FROM ${BASE_IMAGE} as core-tarball
 
+RUN curl -1sLf \
+  'https://packages.opennms.com/public/stable/setup.deb.sh' \
+  | sudo -E bash && apt-get install -y opennms-alec-plugin opennms-plugin-cloud 
+
+
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
     chmod -R g=u \
