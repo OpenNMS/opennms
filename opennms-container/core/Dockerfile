@@ -24,10 +24,6 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 
 FROM ${BASE_IMAGE} as core-base
 
-# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
-# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
-COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
-
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
 ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
@@ -84,6 +80,10 @@ RUN groupadd \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
+
+# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
 ##
 # Install and setup OpenNMS RPMS
@@ -151,7 +151,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${BASE_IMAGE}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
