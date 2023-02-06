@@ -75,9 +75,11 @@ public class RrdSummaryController {
     /** {@inheritDoc} */
     @RequestMapping(method={ RequestMethod.GET, RequestMethod.POST })
     public ModelAndView processFormSubmission(final HttpServletResponse response, final SummarySpecification command) {
-        final ModelAndView summary = getSummary((SummarySpecification)command);
-        response.setContentType(summary.getView().getContentType());
-        return summary;
+        synchronized (this) {
+            final ModelAndView summary = getSummary((SummarySpecification) command);
+            response.setContentType(summary.getView().getContentType());
+            return summary;
+        }
     }
 
     public void setRrdSummaryService(RrdSummaryService rrdSummaryService) {
