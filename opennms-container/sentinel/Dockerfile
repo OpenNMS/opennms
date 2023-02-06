@@ -91,7 +91,7 @@ RUN install -d -o 10001 -g 0 -m 775 \
 COPY ./container-fs/* /
 
 # Copy plugins to the deploy folder
-COPY --chown=10001:0 ./plugins/*.kar /usr/share/opennms/deploy
+COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
