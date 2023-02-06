@@ -2,8 +2,8 @@
 [[config-rest-api]]
 = Config Management
 
-Use the Config Management REST API to manage configurations for OpenNMS.
-Configurations modified will take effect instantly.
+Use the Config Management REST API to manage {page-component-title} configurations.
+Modifications take effect immediately.
 
 == GETs (reading data)
 
@@ -90,6 +90,30 @@ Returns 400 when the `pathToParent` parameter has a wrong format, specifies a no
 404 Return: {"MESSAGE": "<ERROR_MESSAGE>"} +
 400 Return: {"MESSAGE": "<ERROR_MESSAGE>"} +
 |===
+
+=== Examples
+
+The following example payload multiplies each thread pool size by a factor of 10, and empties the external requisitions list of entries (if any exist):
+
+[source, json]
+----
+{
+    "rescanThreads": 100,
+    "requistion-dir": "/opt/opennms/etc/imports",
+    "importThreads": 80,
+    "scanThreads": 100,
+    "writeThreads": 80,
+    "foreign-source-dir": "/opt/opennms/etc/foreign-sources",
+    "requisition-def": []
+}
+----
+
+NOTE: The `requisition-dir` and `foreign-source-dir` elements should not be changed unless recommended by OpenNMS support.
+
+You can also target a single element using a cURL command:
+
+[source]
+curl -X PUT -u 'admin:admin' https://opennms.example.com/opennms/rest/cm/provisiond/default -H 'Content-type: application/json' --data '{ "rescanThreads": 150 }'
 
 == DELETEs (removing data)
 
