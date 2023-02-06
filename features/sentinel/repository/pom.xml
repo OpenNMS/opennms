@@ -41,6 +41,7 @@
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
                                 <!-- OpenNMS features -->
+                                <feature>opennms-alarm-history-elastic</feature>
                                 <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>

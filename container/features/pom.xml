@@ -169,6 +169,7 @@
                           <feature>minion-api-layer</feature>
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
+                          <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-timseries-api</feature>
                           <feature>opennms-newts</feature>
                       </features>

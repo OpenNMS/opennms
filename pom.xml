@@ -4268,11 +4268,6 @@
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${jbossLoggingVersion}</version>
-      </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
         <groupId>com.sun.istack</groupId>
