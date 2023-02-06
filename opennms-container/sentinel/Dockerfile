@@ -35,7 +35,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # import keys & install required debs
 RUN apt-get update && \
     apt-get --no-install-recommends install -yq gnupg ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    curl -fsSL ${REPO_KEY_URL} | tee /etc/apt/trusted.gpg.d/opennms.asc && \
     apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
     apt-get -y autoclean && \
     apt-get -y clean && \

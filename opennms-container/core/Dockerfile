@@ -41,7 +41,7 @@ RUN apt-get update && \
         install \
             gnupg \
             ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    curl -fsSL ${REPO_KEY_URL} | tee /etc/apt/trusted.gpg.d/opennms.asc && \
     echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
     apt-get update && \
     apt-get \

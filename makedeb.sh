@@ -146,7 +146,7 @@ for BIN in $BINARIES; do
     EXECUTABLE=`which $BIN 2>/dev/null || :`
     if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
         echo "ERROR: $BIN not found"
-        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect po-debconf'"
+        echo "       try 'sudo apt install debhelper devscripts dpkg-dev dpkg-sig expect po-debconf'"
         exit 1
     fi
 done
