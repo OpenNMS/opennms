@@ -22,11 +22,15 @@ commands:
             if [ ! -x /usr/local/bin/download-artifacts.pl ]; then
               do_sudo wget https://raw.githubusercontent.com/OpenNMS/opennms-repo/master/script/download-artifacts.pl -O /usr/local/bin/download-artifacts.pl
               do_sudo chmod a+x /usr/local/bin/download-artifacts.pl
+
+              # wget -O - http://cpanmin.us | do_sudo perl - --self-upgrade
+              # cpanm --notests DateTime::Format::ISO8601 File::Path HTTP::Request JSON::PP LWP LWP::Protocol::https URI::Escape
+
+              do_sudo apt-get -y --allow-releaseinfo-change update && \
+                do_sudo apt-get -y -q --no-install-recommends install \
+                  libdatetime-format-iso8601-perl \
+                  libjson-pp-perl \
+                  libwww-perl \
+                  liblwp-protocol-https-perl
             fi
 
-            do_sudo apt-get -y --allow-releaseinfo-change update && \
-              do_sudo apt-get -y -q --no-install-recommends install \
-                libdatetime-format-iso8601-perl \
-                libjson-pp-perl \
-                libwww-perl \
-                liblwp-protocol-https-perl
