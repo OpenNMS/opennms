@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.trapd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.net.InetAddress;

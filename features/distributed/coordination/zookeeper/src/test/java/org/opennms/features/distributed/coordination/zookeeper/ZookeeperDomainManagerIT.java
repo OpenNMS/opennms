@@ -28,7 +28,7 @@
 
 package org.opennms.features.distributed.coordination.zookeeper;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -48,7 +48,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
 
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import org.awaitility.core.ConditionTimeoutException;
 
 /**
  * Integration tests for {@link ZookeeperDomainManager}.
