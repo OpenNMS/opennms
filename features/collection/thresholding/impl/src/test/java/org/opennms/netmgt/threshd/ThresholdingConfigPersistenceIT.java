@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import java.util.concurrent.TimeUnit;
 

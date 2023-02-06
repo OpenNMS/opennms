@@ -28,7 +28,7 @@
 
 package org.opennms.features.distributed.kvstore.blob.inmemory;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import java.util.Optional;
 import java.util.OptionalLong;

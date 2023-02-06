@@ -122,6 +122,10 @@ if [ ! -s /tmp/this_node_it_tests ]; then
   MAVEN_ARGS+=("-DskipFailsafe=true")
 fi
 
+if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
+fi
+
 MAVEN_COMMANDS=("install")
 
 echo "#### Building Assembly Dependencies"
@@ -134,7 +138,7 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            --also-make \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
@@ -151,7 +155,7 @@ echo "#### Executing tests"
            -DskipITs=false \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Djava.security.egd=file:/dev/./urandom \

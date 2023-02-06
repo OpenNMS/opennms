@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.opennms.netmgt.events.api.EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI;

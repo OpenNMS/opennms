@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.itests;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;

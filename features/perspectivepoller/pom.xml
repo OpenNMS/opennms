@@ -90,7 +90,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
