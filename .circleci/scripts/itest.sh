@@ -123,7 +123,7 @@ if [ ! -s /tmp/this_node_it_tests ]; then
 fi
 
 if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
-  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1)"
+  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
 fi
 
 MAVEN_COMMANDS=("install")
