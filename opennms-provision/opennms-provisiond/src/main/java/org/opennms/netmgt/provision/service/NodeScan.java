@@ -50,8 +50,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.codahale.metrics.Timer;
-import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
@@ -393,8 +391,12 @@ public class NodeScan implements Scan {
             }
         };
 
-        return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(),
-                schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+        if (schedule.getScanInterval().getMillis() == 0) {
+            return executor.schedule(r, schedule.getInitialDelay().getMillis(), TimeUnit.MILLISECONDS);
+        } else {
+            return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(),
+                    schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+        }
     }
 
     private void sendScheduledNodeScanStartedEvent() {
