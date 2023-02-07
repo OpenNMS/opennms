@@ -2006,9 +2006,9 @@
     </feature>
     
     <feature name="inmemory-timeseries-plugin" description="FOR TESTING ONLY" version="${project.version}">
-        <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/${re2jVersion}</bundle>
-        <bundle dependency="true">mvn:org.opennms.features/inmemory-timeseries-plugin/${project.version}</bundle>
         <feature>opennms-timeseries-api</feature>
+        <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/${re2jVersion}</bundle>
+        <bundle >mvn:org.opennms.features/inmemory-timeseries-plugin/${project.version}</bundle>
     </feature>
 
 

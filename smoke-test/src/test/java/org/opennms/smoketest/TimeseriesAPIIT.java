@@ -29,9 +29,10 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
+import static com.jayway.awaitility.Awaitility.await;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -51,9 +52,6 @@ public class TimeseriesAPIIT {
 
     private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
-    public static final String CORTEX_PLUGIN_RELEASE = "https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases/download/v2.0.1/opennms-cortex-tss-plugin.kar";
-    public static final Path CORTEX_PLUGIN_KAR = Path.of("target", "opennms-cortex-tss-plugin.kar");
-
     @Before
     public void setUp() throws IOException, InterruptedException {
         // Make sure the Karaf shell is healthy before we start
@@ -72,7 +70,8 @@ public class TimeseriesAPIIT {
         assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
         assertTrue(karafShell.runCommandOnce("feature:install inmemory-timeseries-plugin", output -> !output.toLowerCase().contains("error"), false));
         KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
-
-
+        await().atMost(5, TimeUnit.MINUTES)
+                .pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> karafShell.runCommandOnce("opennms:get-tss-plugin-metrics", output -> !output.isEmpty(), false));
     }
 }
