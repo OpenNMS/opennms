@@ -1,3 +1,15 @@
+opennms (31.0.4-1) stable; urgency=medium
+
+  * Minor release which  brings a handful of containerization improvements,
+    fixes several security vulnerabilities, upgrades many potentially
+    vulnerable dependency libraries, fixes one bug in the BSM daemon, and
+    fixes many non-security bugs.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Feb 2023 16:23:03 -0500
+
 opennms-sentinel (31.0.3-1) stable; urgency=medium
 
   * Minor release which fixes a number of UI and backend bugs, brings one
