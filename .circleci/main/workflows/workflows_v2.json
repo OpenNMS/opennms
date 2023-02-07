@@ -106,7 +106,7 @@
         },
         "experimental": {
             "extends": [
-                "build-publish"
+                "empty"
             ]
         }
     },
@@ -510,7 +510,6 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "jira/NMS-15341-cosign-sbom",
                         "develop",
                         "/^master-.*/",
                         "/^release-.*/",
