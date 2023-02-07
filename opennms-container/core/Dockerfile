@@ -7,7 +7,7 @@ FROM ${BASE_IMAGE} as core-tarball
 
 RUN curl -1sLf \
   'https://packages.opennms.com/public/stable/setup.deb.sh' \
-  | sudo -E bash 
+  | bash 
 #&& apt-get install -y opennms-alec-plugin opennms-plugin-cloud 
 
 
