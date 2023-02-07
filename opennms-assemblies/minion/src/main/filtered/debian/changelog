@@ -1,4 +1,4 @@
-opennms (31.0.4-1) stable; urgency=medium
+opennms-minion (31.0.4-1) stable; urgency=medium
 
   * Minor release which  brings a handful of containerization improvements,
     fixes several security vulnerabilities, upgrades many potentially
