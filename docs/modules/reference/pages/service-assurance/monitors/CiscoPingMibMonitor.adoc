@@ -155,8 +155,6 @@ Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we
 NOTE: Examples use CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-Note that you must include the `monitor` section for each service in your definition.
-
 [source, xml]
 ----
 <package name="ciscoping-foo-pos">
@@ -170,11 +168,11 @@ Note that you must include the `monitor` section for each service in your defini
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="FooPOS" interval="300000" user-defined="false" status="on">
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-    <parameter key="rrd-base-name" value="ciscoping" />
-    <parameter key="ds-name" value="ciscoping" />
-    <parameter key="proxy-ip-addr" value="$\{ipaddr}" />
-    <parameter key="target-ip-addr" value="192.168.255.1" />
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <1>
+    <parameter key="rrd-base-name" value="ciscoping" /> <2>
+    <parameter key="ds-name" value="ciscoping" /> <3>
+    <parameter key="proxy-ip-addr" value="$\{ipaddr}" /> <4>
+    <parameter key="target-ip-addr" value="192.168.255.1" /> <5>
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
   <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -182,9 +180,14 @@ Note that you must include the `monitor` section for each service in your defini
   <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
 </package>
 
-<monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
+<monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
-<1> Required *monitor* section.
+<1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<2> The file name of the RRD file (minus the .rrd or .jrb file extension)
+<3> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
+<4> IP address of the interface that this service should use as its proxy.
+<5> IP address that the remote IOS device should ping.
+<6> Required *monitor* section.
 
 == Example: Ping from a single IOS device routable address of each router of customer Bar
 
@@ -214,11 +217,11 @@ Example `poller-configuration.xml` additions:
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="BarCentral" interval="300000" user-defined="false" status="on">
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-    <parameter key="rrd-base-name" value="ciscoping" />
-    <parameter key="ds-name" value="ciscoping" />
-    <parameter key="proxy-ip-addr" value="20.11.5.11" />
-    <parameter key="target-ip-addr" value="$\{ipaddr}" />
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <1>
+    <parameter key="rrd-base-name" value="ciscoping" /> <2>
+    <parameter key="ds-name" value="ciscoping" /> <3>
+    <parameter key="proxy-ip-addr" value="20.11.5.11" /> <4>
+    <parameter key="target-ip-addr" value="$\{ipaddr}" /> <5>
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
   <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -226,6 +229,11 @@ Example `poller-configuration.xml` additions:
   <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
 </package>
 
-<monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <1>
+<monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
-<1> Required *monitor* section.
+<1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<2> The file name of the RRD file (minus the .rrd or .jrb file extension)
+<3> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
+<4> IP address of the interface that this service should use as its proxy.
+<5> IP address that the remote IOS device should ping.
+<6> Required *monitor* section.

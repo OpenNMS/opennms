@@ -75,17 +75,18 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 === Exit status example
 
-Note that you must include the `monitor` section for each service in your definition.
-
 [source, xml]
 ----
 <service name="Script_Example" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
-  <parameter key="timeout" value="5000"/>
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/> <1>
+  <parameter key="timeout" value="5000"/> <2>
 </service>
 
-<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/> <3>
 ----
+<1> The system call to run.
+<2> Timeout for the isReachable method, in milliseconds.
+<3> Required *monitor* section.
 
 [source, bash]
 ----
@@ -109,13 +110,17 @@ fi
 [source, xml]
 ----
 <service name="Script_Example" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
-  <parameter key="banner" value="PASSED"/>
-  <parameter key="timeout" value="5000"/>
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/> <1>
+  <parameter key="banner" value="PASSED"/> <2>
+  <parameter key="timeout" value="5000"/> <3>
 </service>
 
-<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/> <4>
 ----
+<1> The system call to run.
+<2> A string that is matched against the output of the system-call.
+<3> Timeout for the isReachable method, in milliseconds.
+<4> Required *monitor* section.
 
 [source, bash]
 ----
