@@ -2,6 +2,114 @@
 [[release-31-changelog]]
 = Changelog
 
+[[releasenotes-changelog-31.0.4]]
+
+==== Release 31.0.4
+
+Release 31.0.4 introduces **one breaking change** (see below). It also brings a handful of containerization improvements, fixes several security vulnerabilities, upgrades many potentially vulnerable dependency libraries, fixes one bug in the BSM daemon, and fixes many non-security bugs.
+
+=== Breaking changes
+
+* The `GpDetector` and `ScriptPolicy` now require that their scripts be located beneath `$OPENNMS_HOME` and beneath `$OPENNMS_HOME/etc/script-policies`, respectively. If you are using either of these classes in your foreign-source definitions, please address this requirement before upgrading to this release.
+
+=== Known issues
+
+The following known issues impact Horizon 31.0.4; we expect all to be fixed in the next micro-version release:
+
+* Regular users are unable to acknowledge or clear alarms from the geographical map's integrated alarm browser. Until we identify a fix, it is possible to work around this problem by adding `ROLE_REST` to a user's set of assigned roles. See https://issues.opennms.org/browse/NMS-15080[NMS-15080] for details. Thanks to Ricardo Monteiro for bringing this problem to our attention.
+* On systems where dual-write time series persisting is enabled, an intermittent startup problem may cause either a delay in data starting to be persisted, or a hard failure necessitating a restarting of the core. See https://issues.opennms.org/browse/NMS-15326[NMS-15326] for details.
+* The ALEC plugin currently cannot be successfully installed on a Sentinel node. At release time, it is unclear whether the problem lies in Sentinel or in ALEC. Some details are captured in https://issues.opennms.org/browse/NMS-15396[NMS-15396].
+
+=== Shout-outs and errata
+
+* Thanks to researcher Baharuddin Zulkifli of https://www.netbytesec.com[NetbyteSEC] for reporting https://issues.opennms.org/browse/NMS-14854[several cross-site scripting vulnerabilities].
+* Thanks to researcher Stefan Schiller of https://www.sonarsource.com/[SonarSource] for reporting https://issues.opennms.org/browse/NMS-14878[a pair of authenticated command-injection vulnerabilities].
+* Thanks to Ricardo Monteiro for bringing the geo-map alarms problem https://issues.opennms.org/browse/NMS-15080[NMS-15080] to our attention.
+* The release notes for 31.0.3 incorrectly stated that https://issues.opennms.org/browse/NMS-15124[NMS-15124] was fixed in that release. In actual fact, the fix is in this release (31.0.4).
+
+===== Story
+
+* Add search term highlight functionality in documentation (Issue https://issues.opennms.org/browse/NMS-13540[NMS-13540])
+* Geo Map node groups should split into individual markers (Issue https://issues.opennms.org/browse/NMS-15150[NMS-15150])
+* Meridian container images are signed (Issue https://issues.opennms.org/browse/NMS-15341[NMS-15341])
+
+The codename for Horizon 31.0.4 is https://wikipedia.org/wiki/$$Otap_(food)$$[_Otap_].
+
+===== Enhancement
+
+* remove image related defaults from Docker container makefile (Issue https://issues.opennms.org/browse/NMS-13583[NMS-13583])
+* Add documentation for SELinux as a requirement to run OpenNMS (Issue https://issues.opennms.org/browse/NMS-14210[NMS-14210])
+* No way to know the alarm type (as type 1, 2 or 3) from web UI (Issue https://issues.opennms.org/browse/NMS-14578[NMS-14578])
+* Deploy Release Jars to Maven Central (Issue https://issues.opennms.org/browse/NMS-14727[NMS-14727])
+* Make the cloud connect plugin available in container images (Issue https://issues.opennms.org/browse/NMS-15012[NMS-15012])
+* Data collection and graph definitions for provisiond performance (Issue https://issues.opennms.org/browse/NMS-15018[NMS-15018])
+* DOC: Configuration Manager API for External Requisitions is not documented (Issue https://issues.opennms.org/browse/NMS-15019[NMS-15019])
+* Update docs with steps to activate Path Outage feature (Issue https://issues.opennms.org/browse/NMS-15218[NMS-15218])
+* Container: output some details when we copy files into the container in entrypoint.sh (Issue https://issues.opennms.org/browse/NMS-15226[NMS-15226])
+* Update VMware provisiond handler docs (Issue https://issues.opennms.org/browse/NMS-15270[NMS-15270])
+* Make the ALEC plugin available in container images (Issue https://issues.opennms.org/browse/NMS-15349[NMS-15349])
+* Make the Cortex TSS plugin available in container images (Issue https://issues.opennms.org/browse/NMS-15350[NMS-15350])
+* Smoke test improvements and small tweaks to help developers (Issue https://issues.opennms.org/browse/NMS-15387[NMS-15387])
+
+===== Bug
+
+* Multiple stored and reflected XSS in webapp (Issue https://issues.opennms.org/browse/NMS-14854[NMS-14854])
+* Authenticated Command Injection in GpDetector and ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-14878[NMS-14878])
+* Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured (Issue https://issues.opennms.org/browse/NMS-14936[NMS-14936])
+* reloading BSM daemon causes the state of serviceProblem alarm to be reset (Issue https://issues.opennms.org/browse/NMS-15124[NMS-15124])
+* Notification number doesn't show more than 2 digits (Issue https://issues.opennms.org/browse/NMS-15172[NMS-15172])
+* Jetty context startup failures are not clearly communicated to the user  (Issue https://issues.opennms.org/browse/NMS-15179[NMS-15179])
+* CVE-2017-7504 for javassist 3.18.2-ga and 3.19.0-ga (Issue https://issues.opennms.org/browse/NMS-15191[NMS-15191])
+* CVE-2017-7504 for jboss-logging 3.1.0.cr2 (Issue https://issues.opennms.org/browse/NMS-15192[NMS-15192])
+* CVE-2014-2228 for org.restlet 1.1.10 (Issue https://issues.opennms.org/browse/NMS-15193[NMS-15193])
+* CVE-2019-13990 for quartz 2.2.3 (Issue https://issues.opennms.org/browse/NMS-15194[NMS-15194])
+* CVE-2022-45047 for sshd-sftp 2.5.1 (Issue https://issues.opennms.org/browse/NMS-15195[NMS-15195])
+* CVE-2021-21342 and 7 others for xstream 1.4.11.1 (Issue https://issues.opennms.org/browse/NMS-15196[NMS-15196])
+* CVE-2014-9970 for jasypt 1.9.0 (Issue https://issues.opennms.org/browse/NMS-15197[NMS-15197])
+* CVE-2021-33813 for jdom2 2.0.6 (Issue https://issues.opennms.org/browse/NMS-15198[NMS-15198])
+* CVE-2022-40149 and CVE-2022-40150 for jettison 1.3.8 (Issue https://issues.opennms.org/browse/NMS-15199[NMS-15199])
+* CVE-2016-5725 for jsch 0.1.51 (Issue https://issues.opennms.org/browse/NMS-15200[NMS-15200])
+* CVE-2022-3171 for protobuf-java 3.16.1 (Issue https://issues.opennms.org/browse/NMS-15201[NMS-15201])
+* CVE-2018-17187 for proton-j 0.14.0 (Issue https://issues.opennms.org/browse/NMS-15202[NMS-15202])
+* CVE-2017-15288 and CVE-2020-7907 for scala-library 2.11.0 and 2.12.12 (Issue https://issues.opennms.org/browse/NMS-15203[NMS-15203])
+* CVE-2020-13936 for velocity 1.7 (Issue https://issues.opennms.org/browse/NMS-15204[NMS-15204])
+* CVE-2020-11988 for xmlgraphics-commons 1.4 (Issue https://issues.opennms.org/browse/NMS-15205[NMS-15205])
+* rescanExisting does not trigger a nodeScan for newly added nodes when scan-interval is 0 in foreignSource definition (Issue https://issues.opennms.org/browse/NMS-15208[NMS-15208])
+* Update docs TOC to include missing notification commands file (Issue https://issues.opennms.org/browse/NMS-15266[NMS-15266])
+* CircleCI: integration-test job isn't reporting test results (Issue https://issues.opennms.org/browse/NMS-15271[NMS-15271])
+* NPE in karaf.log when parallel TSDB writes enabled (Issue https://issues.opennms.org/browse/NMS-15282[NMS-15282])
+* Sanitize request parameters in outage/list.htm (Issue https://issues.opennms.org/browse/NMS-15294[NMS-15294])
+* Plaintext Password Present in the Web logs (Issue https://issues.opennms.org/browse/NMS-15305[NMS-15305])
+* Upgrade Apache Kafka Dependency Beyond 3.2.0 (Issue https://issues.opennms.org/browse/NMS-15317[NMS-15317])
+* RingBufferTimeseriesWriter.destroy can take a long time or hang due to BlockingServiceLookup.lookup in WorkProcessors (Issue https://issues.opennms.org/browse/NMS-15324[NMS-15324])
+* Dead transaction in flow thresholding on sentinel (Issue https://issues.opennms.org/browse/NMS-15340[NMS-15340])
+* Regular requisition editor empty state incorrectly names external requisitions (Issue https://issues.opennms.org/browse/NMS-15347[NMS-15347])
+* When we fail to startup, we don't exit with a non-zero exit code so failures cannot be properly reflected in containers (Issue https://issues.opennms.org/browse/NMS-15386[NMS-15386])
+* ALEC plugin dependency update (Issue https://issues.opennms.org/browse/NMS-15391[NMS-15391])
+
+===== Task
+
+* CVE in Jolokia 1.3.3 dependency (Issue https://issues.opennms.org/browse/NMS-15068[NMS-15068])
+* CVE-2021-37714 for jsoup (multiple versions) (Issue https://issues.opennms.org/browse/NMS-15069[NMS-15069])
+* vulnerable Junit dependency (Issue https://issues.opennms.org/browse/NMS-15074[NMS-15074])
+* RHEL9 installation documentation tab (Issue https://issues.opennms.org/browse/NMS-15079[NMS-15079])
+* Document deviceconfig tftp maximumReceiveSize (Issue https://issues.opennms.org/browse/NMS-15121[NMS-15121])
+* JAVA_KEYALIAS Variable needs to be updated (Issue https://issues.opennms.org/browse/NMS-15239[NMS-15239])
+* JAVA_KEYSTORE Variable needs to be updated (Issue https://issues.opennms.org/browse/NMS-15240[NMS-15240])
+* JAVA_STOREPASS Variable needs to be updated (Issue https://issues.opennms.org/browse/NMS-15241[NMS-15241])
+* Document the breaking changes done as part of Limit script file locations for GpDetector and ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-15288[NMS-15288])
+* Release notes / wart: ALEC not installable on M2023.1.0 / H31.0.4 Sentinel (Issue https://issues.opennms.org/browse/NMS-15403[NMS-15403])
+* Release notes / wart: dual-write TS delay on startup (Issue https://issues.opennms.org/browse/NMS-15404[NMS-15404])
+* Release notes / wart: Geo map alarms and ROLE_REST (thank Ricardo Monteiro for the report) (Issue https://issues.opennms.org/browse/NMS-15406[NMS-15406])
+
+===== Epic
+
+* Publish container images to a container registry other than DockerHub (Issue https://issues.opennms.org/browse/NMS-15091[NMS-15091])
+
+===== Unexpected Behavior
+
+* Link on Netflow9 to main Netflow doc is broken (Issue https://issues.opennms.org/browse/NMS-15144[NMS-15144])
+
 [[releasenotes-changelog-31.0.3]]
 
 == Release 31.0.3
