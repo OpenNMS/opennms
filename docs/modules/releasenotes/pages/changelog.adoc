@@ -4,7 +4,7 @@
 
 [[releasenotes-changelog-31.0.4]]
 
-==== Release 31.0.4
+== Release 31.0.4
 
 Release 31.0.4 introduces **one breaking change** (see below). It also brings a handful of containerization improvements, fixes several security vulnerabilities, upgrades many potentially vulnerable dependency libraries, fixes one bug in the BSM daemon, and fixes many non-security bugs.
 
