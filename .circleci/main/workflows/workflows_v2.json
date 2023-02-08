@@ -107,7 +107,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "publish-maven"
             ]
         }
     },
@@ -524,7 +524,8 @@
         "publish-maven": {
             "context": [
                 "CircleCI",
-                "gpg-signing"
+                "gpg-signing",
+                "OSSRH Principal"
             ],
             "requires": [
                 "build"
@@ -534,7 +535,8 @@
                     "only": [
                         "develop",
                         "/^master-.*/",
-                        "/^release-.*/"
+                        "/^release-.*/",
+                        "/^.*NMS-14727.*$/"
                     ]
                 },
                 "user_overridable": false

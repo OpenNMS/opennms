@@ -71,7 +71,7 @@ jobs:
             export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             # release branches should enable extra "production" stuff like license indexing
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|"develop")
+              "master-"*|"release-"*|"develop"|*NMS-14727*)
                 # allow these branches to pass through, everything else should skip
                 ;;
               *)
@@ -81,6 +81,7 @@ jobs:
             esac
             cd deploy
             ../compile.pl \
+              -s settings.xml \
               -DskipTests=true \
               -DskipITs=true \
               -DskipSurefire=true \

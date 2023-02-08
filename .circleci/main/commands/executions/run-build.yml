@@ -35,7 +35,7 @@ commands:
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|"develop")
+              "master-"*|"release-"*|"develop"|*NMS-14727*)
                 # "production" build will also enable javadoc and such
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
