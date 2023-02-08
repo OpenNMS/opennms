@@ -585,11 +585,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.1</version>
+        <version>${maven.javadoc.plugin.version}</version>
         <configuration>
           <maxmemory>3g</maxmemory>
           <failOnError>true</failOnError>
-          <sourcepath>${project.basedir}/src;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath>
+          <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs</sourcepath>
+          <!-- <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath> -->
+          <!-- this will require touching a _lot_ of files <doclint>all</doclint> -->
+          <doclint>none</doclint>
+          <additionalOptions>
+            <!-- for GrafanaPanelDatasource -->
+            <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
+          </additionalOptions>
           <tags>
             <tag>
               <name>hibernate.class</name>
@@ -1303,22 +1310,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <executions>
-          <execution>
-            <id>aggregate</id>
-            <goals><goal>aggregate</goal></goals>
-            <phase>site</phase>
-            <configuration>
-              <use>false</use>
-              <aggregate>true</aggregate>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1465,6 +1456,7 @@
     <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
+    <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1804,6 +1796,18 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jar</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
