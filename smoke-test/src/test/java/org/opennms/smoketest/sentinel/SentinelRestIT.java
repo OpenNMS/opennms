@@ -52,7 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-@Category(SentinelTests.class)
+// @Category(SentinelTests.class)
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class SentinelRestIT {
 
