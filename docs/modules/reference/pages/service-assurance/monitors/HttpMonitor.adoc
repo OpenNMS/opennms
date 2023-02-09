@@ -155,14 +155,14 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 <monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
 <monitor service="OpenNMS-22" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
 ----
-<1> Number of attempts to test a service’s status
-<2> Timeout for the isReachable method, in milliseconds.
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
 <3> A list of TCP ports to try to connect to.
-<4> URL to retrieve via the HTTP GET command.
+<4> URL to retrieve via the HTTP `GET` command.
 <5> Specifies the user ID to use.
 <6> Specifies the password to use.
 <7> Text to look for in the response body.
-<8> Authentication credentials to perform basic authentication
+<8> Authentication credentials to perform basic authentication.
 <9> A comma-separated list of acceptable HTTP response code ranges.
 <10> Required *monitor* section for each service.
 
@@ -194,8 +194,8 @@ To test this behavior, configure the HttpMonitor as follows:
 <monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <6>
 <monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <6>
 ----
-<1> Number of attempts to test a service’s status
-<2> Timeout for the isReachable method, in milliseconds.
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
 <3> A list of TCP ports to try to connect to.
 <4> URL to retrieve via the HTTP GET command.
 <5> A comma-separated list of acceptable HTTP response code ranges.

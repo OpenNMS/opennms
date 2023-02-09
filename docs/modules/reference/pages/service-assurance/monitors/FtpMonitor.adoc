@@ -83,9 +83,9 @@ Example configuration on how to configure the monitor in `poller-configuration.x
 <monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <6>
 <monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <6>
 ----
-<1> Number of attempts to test a service’s status
-<2> Timeout for the isReachable method, in milliseconds.
-<3> A list of TCP ports to which connection shall be tried.
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
+<3> A list of TCP ports to try to connect to.
 <4> Specifies the user ID to use.
 <5> Specifies the password to use.
 <6> Required *monitor* component for each service.

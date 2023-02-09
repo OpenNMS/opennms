@@ -93,13 +93,14 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <8>
 ----
-<1> Number of attempts to test a service’s status
-<2> Timeout for the isReachable method, in milliseconds.
-<3> Puts the poller in relay mode.
-<4> When extendedMode is false, the DHCP poller sends a DISCOVER. When extendedMode is true, the DHCP poller sends a DISCOVER.
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
+<3> Sets the poller's relay mode.
+<4> When extendedMode is false, the DHCP poller sends a DISCOVER.
+When extendedMode is true, the DHCP poller sends a DISCOVER.
 <5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<6> The file name of the RRD file (minus the .rrd or .jrb file extension)
-<7> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
+<6> The file name of the RRD file (minus the .rrd or .jrb file extension).
+<7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <8> Required *monitor* section.
 
 == Example: testing DHCP server in a different subnet in extended mode
@@ -122,14 +123,15 @@ You can use the same monitor in `poller-configuration.xml` as in the above examp
 
 <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <9>
 ----
-<1> Number of attempts to test a service’s status
-<2> Timeout for the isReachable method, in milliseconds.
-<3> Puts the poller in relay mode.
-<4> When extendedMode is false, the DHCP poller sends a DISCOVER. When extendedMode is true, the DHCP poller sends a DISCOVER.
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
+<3> Sets the poller's relay mode.
+<4> When extendedMode is false, the DHCP poller sends a DISCOVER.
+When extendedMode is true, the DHCP poller sends a DISCOVER.
 <5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<6> The file name of the RRD file (minus the .rrd or .jrb file extension)
-<7> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
-<8> If relayMode is set to true, this parameter will usually be set to the IP address of the Horizon server.
+<6> The file name of the RRD file (minus the .rrd or .jrb file extension).
+<7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<8> If `relayMode` is set to `true`, this parameter will usually be set to the IP address of the {page-component-title} server.
 <9> Required *monitor* section.
 
 NOTE: If in `extendedMode`, the time required to complete the poll for an unresponsive node increases by a factor of three.

@@ -118,12 +118,12 @@ Note that you must include the `monitor` section for each service in your defini
 </package>
 <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <9>
 ----
-<1> Range of IP addresses to include - begin/end
-<2> Number of attempts to test a service’s status
-<3> Timeout for the isReachable method, in milliseconds.
+<1> Range of IP addresses to include - begin and end.
+<2> Number of attempts to test a service’s status.
+<3> Timeout for the `isReachable` method, in milliseconds.
 <4> The number of pings to attempt each interval.
 <5> The number of pings that need to fail for the service to be considered down.
-<6> Time in milliseconds to wait between each ICMP echo-request packet.
+<6> Time, in milliseconds, to wait between each ICMP echo-request packet.
 <7> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<8> The file name of the RRD file
+<8> The file name of the RRD file.
 <9> Required *monitor* section.

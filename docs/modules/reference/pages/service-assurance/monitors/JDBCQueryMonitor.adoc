@@ -165,8 +165,8 @@ Note that you must include the `monitor` section in your definition.
 ----
 <1> JDBC driver class to use.
 <2> JDBC URL to connect to.
-<3> Database user
-<4> Database password
+<3> Database user.
+<4> Database password.
 <5> The SQL query to run.
 <6> The evaluation action to perform.
 <7> The operand to compare against the SQL query result.
@@ -198,11 +198,11 @@ Note that you must include the `monitor` section in your definition.
 <monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <11>
 ----
 <1> JDBC driver class to use.
-<2> Database user
+<2> Database user.
 <3> Database password
 <4> JDBC URL to connect to.
 <5> The SQL query to run.
-<6> The result column to evaluate against when using compare_string method.
+<6> The result column to evaluate against when using `compare_string` method.
 <7> The evaluation action to perform.
 <8> Operator to use for the evaluation.
 <9> The operand to compare against the SQL query result.

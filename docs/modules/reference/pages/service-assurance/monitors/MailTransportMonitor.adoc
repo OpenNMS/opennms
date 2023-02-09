@@ -318,17 +318,17 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="MTM" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <25>
 ----
-<1> Interval in milliseconds between send attempts.
-<2> Whether to use authentication, in the event it is required.
+<1> Interval, in milliseconds, between send attempts.
+<2> Whether to use authentication, in the event that it is required.
 <3> Use the JavaMail Mail Transport Agent.
 <4> Show additional debug output.
 <5> The SMTP server address for sending mail.
 <6> The SMTP server port.
-<7> Use smtpsend or an alternate mailer.
+<7> Use `smtpsend` or an alternate mailer.
 <8> The destination address.
 <9> The message subject.
 <10> The body of the message.
-<11> The user name for SMTP, POP, or IMAP authentication.
+<11> The username for SMTP, POP, or IMAP authentication.
 <12> The password for SMTP, POP, or IMAP authentication.
 <13> Attempt to read email after this many milliseconds have passed; also used for retry interval.
 <14> Substring match in email subjects when looking for a specific email.
@@ -337,10 +337,10 @@ Note that you must include the `monitor` section in your definition.
 <17> The target host for reading mail.
 <18> The appropriate port for the protocol.
 <19> Whether to enable SSL for the connection.
-<20> Use the STARTTLS command
-<21> The transport protocol to use: pop3, pop3s, imap, or imaps.
+<20> Use the STARTTLS command.
+<21> The transport protocol to use: `pop3`, `pop3s`, `imap`, or `imaps`.
 <22> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<23> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
+<23> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <24> Number of attempts to test a service’s status
 <25> Required *monitor* section.
 
@@ -373,16 +373,16 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 
 <monitor service="MTM-Readmail" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" /> <13>
 ----
-<1> Interval in milliseconds between send attempts.
+<1> Interval, in milliseconds, between send attempts.
 <2> The folder or IMAP label to check for mail.
 <3> Show additional debug output.
 <4> The SMTP server address for sending mail.
 <5> The SMTP server port.
 <6> Whether to enable SSL for the connection.
-<7> Use the STARTTLS command
-<8> The transport protocol to use: pop3, pop3s, imap, or imaps.
-<9> The user name for SMTP, POP, or IMAP authentication.
+<7> Use the STARTTLS command.
+<8> The transport protocol to use: `pop3`, `pop3s`, `imap`, or `imaps`.
+<9> The username for SMTP, POP, or IMAP authentication.
 <10> The password for SMTP, POP, or IMAP authentication.
 <11> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<12> Name of the RRD data source (DS) name in which to store this service monitor’s response-time samples.
+<12> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <13> Required *monitor* section.
