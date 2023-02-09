@@ -46,10 +46,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.drools.compiler.compiler.DroolsParserException;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.core.util.DroolsStreamUtils;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -312,7 +310,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         sendEvent(reloadEventBldr.getEvent());
     }
 
-    private void loadRules(final KieFileSystem kfs) throws DroolsParserException, IOException {
+    private void loadRules(final KieFileSystem kfs) throws IOException {
         int k = 0;
         for (final Resource rulesFile : m_rules) {
             try (InputStream is = rulesFile.getInputStream()) {
