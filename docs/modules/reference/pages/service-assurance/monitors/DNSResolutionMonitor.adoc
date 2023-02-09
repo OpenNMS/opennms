@@ -159,7 +159,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" /> <10>
 ----
 <1> Number of attempts to test a service’s status.
-<2> Timeout for the `isReachable` method, in milliseconds.
+<2> Timeout for the *isReachable* method, in milliseconds.
 <3> resolution-type: v4, v6, both (v4 and v6), either (v4 or v6).
 <4> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
 <5> The file name of the RRD file (minus the .rrd or .jrb file extension).
@@ -169,4 +169,4 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <9> Alternate DNS record types to search for (comma separated): A, AAAA, CNAME, NS, MX, PTR, SOA, SRV, or TXT.
 <10> Required *monitor* section for each service.
 
-To have response time graphs for the name resolution, you must configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in `$\{OPENNMS_HOME}/etc/response-graph.properties`.
+To have response time graphs for the name resolution, you must configure RRD graphs for the given ds-names (*dns-res-v4*, *dns-res-v6*, *dns-res-both*, *dns-res-either*, *dns-res-cname-mx*) in *$\{OPENNMS_HOME}/etc/response-graph.properties*.

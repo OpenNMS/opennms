@@ -195,7 +195,7 @@ To test this behavior, configure the HttpMonitor as follows:
 <monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <6>
 ----
 <1> Number of attempts to test a service’s status.
-<2> Timeout for the `isReachable` method, in milliseconds.
+<2> Timeout for the *isReachable* method, in milliseconds.
 <3> A list of TCP ports to try to connect to.
 <4> URL to retrieve via the HTTP GET command.
 <5> A comma-separated list of acceptable HTTP response code ranges.

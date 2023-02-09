@@ -85,7 +85,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 <monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/> <3>
 ----
 <1> The system call to run.
-<2> Timeout for the `isReachable` method, in milliseconds.
+<2> Timeout for the *isReachable* method, in milliseconds.
 <3> Required *monitor* section.
 
 [source, bash]
@@ -119,7 +119,7 @@ fi
 ----
 <1> The system call to run.
 <2> A string that is matched against the output of the system-call.
-<3> Timeout for the `isReachable` method, in milliseconds.
+<3> Timeout for the *isReachable* method, in milliseconds.
 <4> Required *monitor* section.
 
 [source, bash]

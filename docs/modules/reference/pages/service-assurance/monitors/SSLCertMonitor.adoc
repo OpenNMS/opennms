@@ -138,7 +138,7 @@ Configuration in `poller-configuration.xml` is as follows:
 <4> Number of days before the certificate expires that we mark the service as failed.
 <5> The DNS hostname to send as part of the TLS negotiation.
 <6> Preliminary message to send to the server prior to STARTTLS command.
-<7> Regular expression that must match response to preliminary message sent to server prior to `STARTTLS` command.
-<8> `STARTTLS` command.
-<9> Regular expression that must match response to `STARTTLS` command sent to server.
+<7> Regular expression that must match response to preliminary message sent to server prior to *STARTTLS* command.
+<8> *STARTTLS* command.
+<9> Regular expression that must match response to *STARTTLS* command sent to server.
 <10> Required *monitor* section for each service monitor.

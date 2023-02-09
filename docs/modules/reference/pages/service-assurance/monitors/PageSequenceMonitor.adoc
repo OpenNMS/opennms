@@ -323,13 +323,13 @@ Note that you must include the `monitor` section for each service in your defini
 
 <monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <11>
 ----
-<1> Define the URL scheme as `http` or `https`.
+<1> Define the URL scheme as *http* or *https*.
 <2> Set host field in HTTP header.
 <3> Host port number to use when connecting.
 <4> The relative URL to call in the request.
 <5> Set the virtual host field in the HTTP header.
 <6> Text to look for in the response body.
-<7> Timeout for the `isReachable` method, in milliseconds.
+<7> Timeout for the *isReachable* method, in milliseconds.
 <8> HTTP protocol version (0.9, 1.0, or 1.1).
 <9> HTTP method (GET or POST).
 <10> The failure message constructs the reason code.
@@ -385,7 +385,7 @@ Note that you must include the `monitor` section for each service in your defini
 <3> Host port number to use when connecting.
 <4> Set the virtual host field in the HTTP header.
 <5> Text to look for in the response body.
-<6> HTTP method (GET or POST).
+<6> HTTP method (*GET* or *POST*).
 <7> Text to look for in the response body.
 <8> The failure message constructs the reason code.
 <9> Required *monitor* section.
@@ -427,7 +427,7 @@ Note that you must include the `monitor` section for each service in your defini
 <4> Text to look for in the response body.
 <5> Assign the value of a regex match group to a session variable.
 <6> Assign the value of a regex match group to a session variable. In this case, password.
-<7> HTTP method (GET or POST).
+<7> HTTP method (*GET* or *POST*).
 <8> Required *monitor* section.
 
 .Example with per-page response times

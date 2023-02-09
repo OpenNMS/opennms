@@ -202,7 +202,7 @@ Note that you must include the `monitor` section in your definition.
 <3> Database password
 <4> JDBC URL to connect to.
 <5> The SQL query to run.
-<6> The result column to evaluate against when using `compare_string` method.
+<6> The result column to evaluate against when using *compare_string* method.
 <7> The evaluation action to perform.
 <8> Operator to use for the evaluation.
 <9> The operand to compare against the SQL query result.
