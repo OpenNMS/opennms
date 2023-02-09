@@ -8,7 +8,6 @@ import org.opennms.netmgt.correlation.drools.Cause.Type;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.drools.core.spi.KnowledgeHelper;
 import org.opennms.netmgt.model.events.EventUtils;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
