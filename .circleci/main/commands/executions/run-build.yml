@@ -32,7 +32,7 @@ commands:
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|"develop")
+              "master-"*|"release-"*|"develop"|*NMS-14644*)
                 # "production" build will also enable javadoc and such
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS site"
                 ;;
@@ -58,7 +58,7 @@ commands:
           name: Check if we have generated apidocs
           command: |
             case "${CIRCLE_BRANCH}" in
-              "master-"*|"release-"*|"develop")
+              "master-"*|"release-"*|"develop"|*NMS-14644*)
                 if [ ! -d target/site/apidocs ]; then
                   echo 'no apidocs directory, but we expect javadoc generation in this branch!'
                   exit 1
