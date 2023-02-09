@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,7 +49,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * 1. Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  * 2. Verifies that special characters can be used in scheduled outage names. See LTS-234.
  */
-@Ignore("flapping")
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     @Before
