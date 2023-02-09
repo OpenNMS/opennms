@@ -48,6 +48,8 @@ You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc
 * Resource
 * Custom
 
+NOTE: Only users who can access the data in their Time Series DB (for example, via Cortex or InfluxDB) can configure custom tags.
+
 Below are examples of tag definitions:
 
 [source, properties]
