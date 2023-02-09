@@ -22,7 +22,7 @@ There are four steps to set up the Time Series DB for your system:
 
 === Update Cloud Services Connector files
 
-The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the {page-component-title}-hosted cloud service.
+The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
 The packages for this extension are installed by default in Horizon 31 and later, but do need to be configured and activated.
 You can use `yum` or `apt` to make sure the `opennms-cloud-plugin` package is up to date with the most current version of the plugin.
 
@@ -39,13 +39,13 @@ If you are running Horizon 31 or later, copy the example `timeseries.properties`
 [source, console]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 
-The following tags can be configured in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
+You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 
 * Asset
 * Interface
 * Node
 * Service
-* Resources
+* Resource
 * Custom
 
 Below are examples of tag definitions:
