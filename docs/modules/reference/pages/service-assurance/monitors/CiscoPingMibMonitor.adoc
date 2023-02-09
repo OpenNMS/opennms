@@ -152,7 +152,7 @@ One approach to this requirement is to configure all of Foo Corporation's premis
 We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
 Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we statically list that value for the `target-ip-addr` address.
 
-NOTE: Examples use CentOS/RHEL path name.
+NOTE: Examples use the CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
