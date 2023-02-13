@@ -21,8 +21,20 @@ jobs:
               download-artifacts.pl \
                 --vault-layout \
                 --include-failed \
+                --ci \
+                --token="${CIRCLE_TOKEN}" \
                 --workflow="${CIRCLE_WORKFLOW_ID}" \
                "${TYPE}" \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --ci \
+                --token="${CIRCLE_TOKEN}" \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+                --match="sbom" \
+               xml \
                "${CIRCLE_BRANCH}" \
                /tmp/artifacts
             done

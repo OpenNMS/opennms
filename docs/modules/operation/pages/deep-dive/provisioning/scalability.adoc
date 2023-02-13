@@ -84,3 +84,7 @@ Don't forget, for the new scan interval to take effect, you will need to import/
 
 For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.
 {page-component-title} will not attempt to rescan the nodes in the requisition unless you trigger a manual rescan through the web UI or Provisioning REST API.
+
+NOTE: Even if `scan-interval` is set to `0`, new nodes added to a requisition are scanned during import.
+You can also disable this scan by setting `scan-interval` to `-1`.
+

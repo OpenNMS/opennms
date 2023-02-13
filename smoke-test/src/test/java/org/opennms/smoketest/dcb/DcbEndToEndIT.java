@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.dcb;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonArray;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonBoolean;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonInt;

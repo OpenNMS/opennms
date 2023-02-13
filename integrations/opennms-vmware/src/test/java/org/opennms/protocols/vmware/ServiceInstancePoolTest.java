@@ -28,7 +28,7 @@
 
 package org.opennms.protocols.vmware;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import java.net.MalformedURLException;
 import java.net.URL;

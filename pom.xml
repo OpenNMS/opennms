@@ -1686,7 +1686,7 @@
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <minaVersion>2.1.6</minaVersion>
-    <mockitoVersion>3.4.6</mockitoVersion>
+    <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.78.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
@@ -4527,12 +4527,6 @@
         <groupId>com.spotify</groupId>
         <artifactId>hamcrest-pojo</artifactId>
         <version>1.2.0</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.jayway.awaitility</groupId>
-        <artifactId>awaitility</artifactId>
-        <version>1.7.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>

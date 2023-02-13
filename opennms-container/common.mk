@@ -98,7 +98,22 @@ test: $(TARBALL)
 	$(info Ready to go, let's light this candle!)
 	@true
 
+# We do a sanity check first to make sure the assembly was built with
+# the proper opennms.home path, otherwise the build can succeed but
+# people get really weird startup errors from runjava because it can't
+# find find-java.sh.
 $(README): $(TARBALL) Dockerfile $(shell find container-fs -type f)
+	@echo "Sanity checking OPENNMS_HOME path in **/fix-permissions script..."
+	@fix_permissions_file=`tar -t -z -f $< | grep '/fix-permissions$$'` || exit 1 ; \
+	  fix_permissions_opennms_home=`tar -x -z -f $< -O "$$fix_permissions_file" | \
+	    egrep "^\\s*OPENNMS_HOME='" | sed "s/^.*OPENNMS_HOME='//;s/'//"` || exit 1 ; \
+          expectation="/opt/opennms" ; \
+	  if [ "$$fix_permissions_opennms_home" != "$$expectation" ]; then \
+	    echo "OPENNMS_HOME in bin/fix-permissions from $< was not $$expectation" >&2 ; \
+	    echo "OPENNMS_HOME was $$fix_permissions_opennms_home -- make sure -Dopennms.home=$$expectation is passed when assemble.pl is run" >&2 ; \
+	    echo "Go to the top-level and run this: $(ASSEMBLE_COMMAND)" >&2 ; \
+	    exit 1 ; \
+	  fi
 	@echo "Unpacking tarball for Docker context..."
 	rm -rf tarball-root
 	mkdir -p tarball-root

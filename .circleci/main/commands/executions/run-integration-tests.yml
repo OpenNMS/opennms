@@ -5,7 +5,7 @@ commands:
         default: 0
         type: integer
       failure-option:
-        default: -fae
+        default: --fail-fast
         type: string
       changes-only:
         default: true

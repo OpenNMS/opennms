@@ -567,6 +567,7 @@
             "context": [
                 "CircleCI",
                 "cloudsmith-publish-account",
+                "cosign-signing",
                 "docker-content-trust",
                 "docker-publish-account",
                 "azure-sp-dct"

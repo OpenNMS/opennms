@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.common;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,7 +67,7 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.offheap.DispatchQueueServiceLoader;
 import org.opennms.core.ipc.sink.offheap.QueueFileOffHeapDispatchQueueFactory;
 
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import org.awaitility.core.ConditionTimeoutException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AsyncDispatcherTest {

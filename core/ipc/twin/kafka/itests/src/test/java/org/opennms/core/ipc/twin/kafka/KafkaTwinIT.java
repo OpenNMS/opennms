@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.twin.kafka;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 
 import java.util.Properties;

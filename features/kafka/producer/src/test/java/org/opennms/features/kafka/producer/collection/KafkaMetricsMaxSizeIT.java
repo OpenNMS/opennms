@@ -28,7 +28,7 @@
 
 package org.opennms.features.kafka.producer.collection;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;

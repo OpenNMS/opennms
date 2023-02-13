@@ -42,6 +42,7 @@ import org.opennms.smoketest.utils.KarafShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssPluginIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(CortexTssPluginIT.class);
