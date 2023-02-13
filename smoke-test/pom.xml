@@ -37,7 +37,7 @@
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
+    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>

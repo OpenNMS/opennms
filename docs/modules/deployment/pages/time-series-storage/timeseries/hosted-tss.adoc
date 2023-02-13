@@ -1,7 +1,7 @@
 
 = OpenNMS Time Series DB
 
-The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from the devices it monitors.
+The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from the devices that it monitors.
 
 == Requirements
 
@@ -20,7 +20,7 @@ There are four steps to set up the Time Series DB for your system:
 . Obtain an activation key for the Cloud Services Connector.
 . Enable cloud services connectivity.
 
-=== Update OpenNMS Cloud Services Connector files
+=== Update Cloud Services Connector files
 
 The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
 The packages for this extension are installed by default in Horizon 31 and later, but do need to be configured and activated.
@@ -29,27 +29,42 @@ You can use `yum` or `apt` to make sure the `opennms-cloud-plugin` package is up
 To ensure that the feature is activated on service restarts, add the feature to a file in `featuresBoot.d`:
 
 [source, console]
-----
 echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/plugin-cloud.boot
-----
 
-=== Configure OpenNMS Cloud Services settings
+=== Configure Cloud Services
 
 You will need to add settings to tell your {page-component-title} instance to load the plugin on service start and to direct storage to the cloud service.
-
 If you are running Horizon 31 or later, copy the example `timeseries.properties` file to your working directory:
 
 [source, console]
-----
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
+
+You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
+
+* Asset
+* Interface
+* Node
+* Service
+* Resource
+* Metadata
+
+NOTE: Only users who can access the data in their Time Series DB (for example, via Cortex or InfluxDB) can configure custom tags.
+
+Below are examples of tag definitions:
+
+[source, properties]
+----
+org.opennms.timeseries.tin.metatags.tag.node=${node:label}
+org.opennms.timeseries.tin.metatags.tag.location=${node:location}
+org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
+org.opennms.timeseries.tin.metatags.tag.ifDescr=${ipInterface:if-description}
+org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
 
 After the plugin is installed and configured, restart the {page-component-title} service:
 
 [source, console]
-----
 systemctl restart opennms
-----
 
 === Obtain an activation key
 
@@ -81,7 +96,7 @@ To install the activation key on your {page-component-title} instance, follow th
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
-For more information on how to view this information, see <<view-time-series-data,View Time Series Summary Data>>.
+For more information on how to view this information, see <<view-time-series-data, View time series summary data>>.
 To change the data collection frequency, see xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
 
 == Troubleshooting
