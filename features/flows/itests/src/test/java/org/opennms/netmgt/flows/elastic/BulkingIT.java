@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertTrue;
