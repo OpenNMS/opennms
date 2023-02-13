@@ -6,6 +6,11 @@ Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to confi
 [source, properties]
 org.opennms.timeseries.strategy=integration
 
+NOTE: If using a container, it is preferred to set this as an environment variable in your container config instead of as a property file. +
+
+[source, properties]
+OPENNMS_TIMESERIES_STRATEGY=integration
+
 After activating the Time Series Integration Layer, you must implement it; this is done via the Karaf shell:
 
 [source, console]

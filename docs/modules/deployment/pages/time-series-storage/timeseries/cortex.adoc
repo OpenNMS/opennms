@@ -32,15 +32,24 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 +
 [source, properties]
 ----
-org.opennms.timeseries.strategy=integration
-org.opennms.timeseries.tin.metatags.tag.node=${node:label}
+org.opennms.timeseries.strategy=integration<1>
+org.opennms.timeseries.tin.metatags.tag.node=${node:label}<2>
 org.opennms.timeseries.tin.metatags.tag.location=${node:location}
 org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
 org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
 org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
+<1> If you are enabling the xref:time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration[dual write plugin] on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.
+<2> See the xref:time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags[time series integration] section for more info on defining metatags.
 +
-NOTE: Make sure that the `org.opennms.timeseries.strategy` property is not set in `$\{OPENNMS_HOME}/etc/opennms.properties` or any other file within the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+NOTE: If you are deploying to a container, instead of setting the `org.opennms.timeseries.strategy` via a properties file, update the environment variables of your container config:
++
+[source, yaml]
+    environment:
+        OPENNMS_TIMESERIES_STRATEGY=integration
++
+IMPORTANT: Make sure that the `org.opennms.timeseries.strategy` property is not set in `$\{OPENNMS_HOME}/etc/opennms.properties` or any other file within the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+
 
 . Configure the Cortex Time Series plugin in {page-component-title}.
 +

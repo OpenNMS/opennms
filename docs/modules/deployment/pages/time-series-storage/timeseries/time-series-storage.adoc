@@ -45,13 +45,16 @@ You cannot prevent data loss when you switch from one database type to another.
 
 == Run two time series writes in parallel
 
-The default time series strategy (RRD, Newts, Integration Plugin) is used for both read and write by default.
-You can add another time series write in parallel to the default strategy.
-This additional time series database may be used for validation purposes or as a backup time series before moving from one time series to another.
+The default time series strategy (RRD, Newts, Integration Plugin) is used for both read and write operations.
+You can add another time series to write in parallel to the default strategy.
+This additional time series database may be used for validation purposes or for staging metrics before moving from one time series to another.
+If you plan to migrate to a new storage strategy, you can set the new strategy as a write destination while keeping reads on your current storage.
+Once you have written enough data to the new storage, you can then flip the reads over to the new system.
 
-== Write to Newts in parallel
+[[ga-dual-write-newts]]
+=== Write to Newts in parallel
 
-You can enable writing to Newts without it being the default time series strategy.
+You can enable writing to Newts without it being the default time series strategy by configuring Newts but not setting it was the `org.opennms.timeseries.strategy`.
 
 .Create a file to load the `opennms-newts` feature:
 [source, console]
@@ -65,9 +68,11 @@ opennms-newts
 [source, console]
 sudo systemctl restart opennms
 
-== Write to Time Series Integration Plugin in parallel
+[[ga-dual-write-integration]]
+=== Write to Time Series Integration Plugin in parallel
 
-You can enable writing to any time series integration plugin in parallel without having integration as the default time series strategy.
+You can enable writing to any time series integration plugin in parallel without having integration as the default time series strategy by enabling the `opennms-timeseries-api` feature.
+This will direct writes to both your `org.opennms.timeseries.strategy` destination and any installed timeseries integration plugin.
 
 .Create a file to load the `opennms-timeseries-api` feature:
 [source, console]
