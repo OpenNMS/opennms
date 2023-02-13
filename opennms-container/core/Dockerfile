@@ -8,7 +8,7 @@ FROM ${BASE_IMAGE} as core-tarball
 RUN curl -1sLf \
   'https://packages.opennms.com/public/stable/setup.deb.sh' \
   | bash
-RUN apt-get update && apt-get install -y --nodeps opennms-alec-plugin opennms-plugin-cloud 
+RUN apt-get update && apt-get install -y python3-pip && pip3 install --upgrade cloudsmith-cli
 
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
