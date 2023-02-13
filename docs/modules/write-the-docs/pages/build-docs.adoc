@@ -32,7 +32,7 @@ Transform the Antora repository into a documentation site using the `make docs` 
 Antora creates an archive of the documentation in `build/site.zip`, and an extracted version in `public/index.html`.
 You can open the latter directly in your browser.
 
-The generic path to a given version of the docs is `<docs_repo_dir>/build/site/<distro>/<branch_dir_name>`.
+The generic path to a given version of the documentation is `<docs_repo_dir>/build/site/<distro>/<branch_dir_name>`.
 
 == Run Antora in Docker
 
