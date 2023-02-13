@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -104,7 +104,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
