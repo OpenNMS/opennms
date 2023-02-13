@@ -27,14 +27,14 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 RUN apt-get update && apt-get install -y python3-pip wget curl && pip3 install --upgrade cloudsmith-cli
 
 # ALEC
-RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') \
+RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') && \
     for url in $urls; do \
         wget $url \
     done \
     dpkg-deb -R *-alec-plugin_*_all.deb ./ \
     find . -name '*.kar' -exec mv {} /opt/usr-share/opennms/deploy \;
 # Cloud Plugin
-RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') \
+RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') && \
     for url in $urls; do \
         wget $url \
     done \
@@ -42,7 +42,7 @@ RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-plugin-cloud tag
     find . -name '*.kar' -exec mv {} /opt/usr-share/opennms/deploy \;
 
 # Cortex Plugin
-RUN cd /opt/usr-share/opennms/deploy && urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url') \
+RUN cd /opt/usr-share/opennms/deploy && urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url') && \
     for url in $urls; do \
         wget $url \
     done
