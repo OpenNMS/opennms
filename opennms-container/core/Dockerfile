@@ -5,10 +5,6 @@ ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
 FROM ${BASE_IMAGE} as core-tarball
 
-RUN curl -1sLf \
-  'https://packages.opennms.com/public/stable/setup.deb.sh' \
-  | bash
-RUN apt-get update && apt-get install -y python3-pip && pip3 install --upgrade cloudsmith-cli
 
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
@@ -27,6 +23,30 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/logs \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
+
+RUN apt-get update && apt-get install -y python3-pip wget curl && pip3 install --upgrade cloudsmith-cli
+
+# ALEC
+RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') \
+    for url in $urls; do \
+        wget $url \
+    done \
+    dpkg-deb -R *-alec-plugin_*_all.deb ./ \
+    find . -name '*.kar' -exec mv {} /opt/usr-share/opennms/deploy \;
+# Cloud Plugin
+RUN cd /tmp && urls=$(cloudsmith list packages --query="opennms-plugin-cloud tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url') \
+    for url in $urls; do \
+        wget $url \
+    done \
+    dpkg-deb -R *-plugin-cloud_*_all.deb ./ \
+    find . -name '*.kar' -exec mv {} /opt/usr-share/opennms/deploy \;
+
+# Cortex Plugin
+RUN cd /opt/usr-share/opennms/deploy && urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url') \
+    for url in $urls; do \
+        wget $url \
+    done
+
 
 FROM ${BASE_IMAGE} as core-base
 
