@@ -217,11 +217,6 @@ function build_opennms()
         dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
     fi
 
-    # prime the local ~/.m2/repository
-    if [ -d core/build ]; then
-        nice ./compile.pl -Dbuild.skip.tarball=true --projects :org.opennms.core.build --also-make install || die "unable to prime build tools"
-    fi
-
     if [ -f "${HOME}/.m2/settings.xml" ]; then
         export OPENNMS_SETTINGS_XML="${HOME}/.m2/settings.xml"
     fi
