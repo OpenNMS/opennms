@@ -46,12 +46,6 @@ if (not grep { $_ =~ /^[^-]/ } @ARGS) {
 
 my @command = ($MVN, @ARGS);
 
-my $corebuilddir = File::Spec->catdir($PREFIX, 'core', 'build');
-info("building in $corebuilddir");
-chdir($corebuilddir);
-info("running:", @command);
-handle_errors(system(@command));
-
 my $containerdir = File::Spec->catdir($PREFIX, 'container', 'features');
 info("building in $containerdir");
 chdir($containerdir);
