@@ -6,8 +6,8 @@ Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to confi
 [source, properties]
 org.opennms.timeseries.strategy=integration
 
-NOTE: If using a container, you can set this as an environment variable in your container config instead of as a property file. +
-
+NOTE: If you are using a container, you can set this as an environment variable in your container's configuration settings instead of creating or modifying a property file:
++
 [source, properties]
 OPENNMS_TIMESERIES_STRATEGY=integration
 

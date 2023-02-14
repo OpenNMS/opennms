@@ -9,7 +9,7 @@ Access the configuration files in `$\{OPENNMS_HOME}/etc`.
 
 The priority for Java system properties is as follows:
 
-. Those set via the _Java_ command line i.e., in `opennms.conf` via `ADDITIONAL_MANAGER_OPTIONS`
+. Those set via the Java command line (for example, in `opennms.conf` via `ADDITIONAL_MANAGER_OPTIONS`).
 . `opennms.properties.d/*.properties` +
 Files in this directory are loaded alphabetically.
 . `opennms.properties`
@@ -19,5 +19,5 @@ Files in this directory are loaded alphabetically.
 
 
 TIP: To avoid conflicts with customized configurations, you can add all custom properties to one or more files in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
-We recommend not to modify default OpenNMS properties.
+We recommend that you do not modify default OpenNMS properties.
 Create dedicated files with your customized properties in `opennms.properties.d/`.
