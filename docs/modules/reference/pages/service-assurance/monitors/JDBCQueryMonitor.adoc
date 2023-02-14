@@ -199,7 +199,7 @@ Note that you must include the `monitor` section in your definition.
 ----
 <1> JDBC driver class to use.
 <2> Database user.
-<3> Database password
+<3> Database password.
 <4> JDBC URL to connect to.
 <5> The SQL query to run.
 <6> The result column to evaluate against when using *compare_string* method.

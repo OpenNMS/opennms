@@ -48,7 +48,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Examples use CentOS/RHEL path names.
+Examples use the CentOS/RHEL path names.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
