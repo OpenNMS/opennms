@@ -51,7 +51,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#<ref
 
 == Examples
 
-Example configuration on how to configure the monitor in `poller-configuration.xml`.
+This example demonstrates how to configure the monitor in `poller-configuration.xml`:
 
 [source, xml]
 ----

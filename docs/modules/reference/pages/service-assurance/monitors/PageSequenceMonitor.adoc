@@ -265,7 +265,7 @@ Note that you must include the `monitor` section for each service in your defini
 <1> The relative URL to call in the request.
 <2> Host port number to use when connecting.
 <3> Text to look for in the response body.
-<4> HTTP method (`GET` or `POST`).
+<4> HTTP method (*GET* or *POST*).
 <5> Range for allowed HTTP error codes from the response.
 <6> The relative URL that must be located for the request to be successful.
 <7> Required *monitor* section.
@@ -331,7 +331,7 @@ Note that you must include the `monitor` section for each service in your defini
 <6> Text to look for in the response body.
 <7> Timeout for the *isReachable* method, in milliseconds.
 <8> HTTP protocol version (0.9, 1.0, or 1.1).
-<9> HTTP method (GET or POST).
+<9> HTTP method (*GET* or *POST*).
 <10> The failure message constructs the reason code.
 <11> Required *monitor* section.
 
@@ -426,7 +426,7 @@ Note that you must include the `monitor` section for each service in your defini
 <3> Set the virtual host field in the HTTP header.
 <4> Text to look for in the response body.
 <5> Assign the value of a regex match group to a session variable.
-<6> Assign the value of a regex match group to a session variable. In this case, password.
+<6> Assign the value of a regex match group to a session variable (in this case, *password*).
 <7> HTTP method (*GET* or *POST*).
 <8> Required *monitor* section.
 

@@ -118,7 +118,7 @@ Note that you must include the `monitor` section for each service in your defini
 </package>
 <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <9>
 ----
-<1> Range of IP addresses to include - begin and end.
+<1> Range of IP addresses to include--beginning and end.
 <2> Number of attempts to test a service’s status.
 <3> Timeout for the *isReachable* method, in milliseconds.
 <4> The number of pings to attempt each interval.

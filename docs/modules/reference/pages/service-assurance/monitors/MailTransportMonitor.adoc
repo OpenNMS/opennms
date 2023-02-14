@@ -337,7 +337,7 @@ Note that you must include the `monitor` section in your definition.
 <17> The target host for reading mail.
 <18> The appropriate port for the protocol.
 <19> Whether to enable SSL for the connection.
-<20> Use the STARTTLS command.
+<20> Use the *STARTTLS* command.
 <21> The transport protocol to use: *pop3*, *pop3s*, *imap*, or *imaps*.
 <22> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
 <23> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
@@ -379,7 +379,7 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 <4> The SMTP server address for sending mail.
 <5> The SMTP server port.
 <6> Whether to enable SSL for the connection.
-<7> Use the STARTTLS command.
+<7> Use the *STARTTLS* command.
 <8> The transport protocol to use: *pop3*, *pop3s*, *imap*, or *imaps*.
 <9> The username for SMTP, POP, or IMAP authentication.
 <10> The password for SMTP, POP, or IMAP authentication.

@@ -133,11 +133,11 @@ Configuration in `poller-configuration.xml` is as follows:
 <monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <10>
 ----
 <1> Number of attempts to test a service’s status.
-<2> Timeout for the isReachable method, in milliseconds.
+<2> Timeout for the *isReachable* method, in milliseconds.
 <3> TCP port for the service with SSL certificate.
 <4> Number of days before the certificate expires that we mark the service as failed.
 <5> The DNS hostname to send as part of the TLS negotiation.
-<6> Preliminary message to send to the server prior to STARTTLS command.
+<6> Preliminary message to send to the server prior to *STARTTLS* command.
 <7> Regular expression that must match response to preliminary message sent to server prior to *STARTTLS* command.
 <8> *STARTTLS* command.
 <9> Regular expression that must match response to *STARTTLS* command sent to server.
