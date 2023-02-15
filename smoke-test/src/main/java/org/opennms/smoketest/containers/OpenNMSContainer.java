@@ -138,7 +138,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
-    private boolean afterTestCalled = false;
+    private Exception afterTestCalled = null;
+    private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super(IMAGE);
@@ -532,11 +533,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
-        if (afterTestCalled) {
-            LOG.warn("afterTest has already been called, not running on subsequent calls");
+        var pid = ProcessHandle.current().pid();
+        if (afterTestCalled != null) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
+            LOG.warn("original call location of afterTest", afterTestCalled);
             return;
         }
-        afterTestCalled = true;
+        afterTestCalled = new Exception("exception placeholder for stacktrace -- original call location of afterTest; PID: " + pid);
         if (COLLECT_COVERAGE) {
             KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         }
