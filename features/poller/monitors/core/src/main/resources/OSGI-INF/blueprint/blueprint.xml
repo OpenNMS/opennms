@@ -271,6 +271,13 @@
 		</service-properties>
 	</service>
 
+	<bean id="minaSshMonitor" class="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
+	<service ref="minaSshMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
+		</service-properties>
+	</service>
+
 	<bean id="netScalerGroupHealthMonitor"
 		class="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
 	<service ref="netScalerGroupHealthMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
