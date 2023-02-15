@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -37,7 +38,6 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssTimeseriesPluginIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(
@@ -56,7 +56,7 @@ public class CortexTssTimeseriesPluginIT {
 
     @Test
     public void everythingHappy() throws Exception {
-        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started");
-        karafShell.checkFeature("opennms-timeseries-api", "Started|Uninstalled"); // NMS-15329
+        karafShell.checkFeature("opennms-timeseries-api", "Started|Uninstalled", Duration.ofSeconds(30)); // NMS-15329
+        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started", Duration.ofSeconds(30));
     }
 }
