@@ -175,6 +175,12 @@
             <groupId>org.opennms</groupId>
             <artifactId>jasper-extensions</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.opennms.dependencies</groupId>
+                <artifactId>camel-dependencies</artifactId>
+              </exclusion>
+            </exclusions>
           </dependency>
           <dependency>
             <groupId>org.postgresql</groupId>
