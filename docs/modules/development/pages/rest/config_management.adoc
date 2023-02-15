@@ -108,7 +108,7 @@ The following example payload multiplies each thread pool size by a factor of 10
 }
 ----
 
-NOTE: The `requisition-dir` and `foreign-source-dir` elements should not be changed unless recommended by OpenNMS support.
+NOTE: Do not change the `requisition-dir` and `foreign-source-dir` elements unless OpenNMS support tells you to do so.
 
 You can also target a single element using a cURL command:
 
