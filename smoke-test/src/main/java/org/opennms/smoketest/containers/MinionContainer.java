@@ -372,7 +372,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         Path targetLogFolder = Paths.get("target", "logs", prefix, "minion");
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        LOG.info("Gathering thread dump...");
         var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
 
         LOG.info("Gathering logs...");
