@@ -1,11 +1,16 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
+
 test -d repository || (echo "This command must be ran from the features/minion directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
-export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
-export CONTAINERDIR="${MYDIR}/../container/minion"
+PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+CONTAINERDIR="${MYDIR}/../container/minion"
+JAVA_OPTS="-Xmx2g"
+
+export PATH CONTAINERDIR JAVA_OPTS
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -34,8 +39,8 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/minion-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  mvn clean install && \
-    (cd "${CONTAINERDIR}"; mvn clean install)
+  compile.pl -DskipTests clean install && \
+    (cd "${CONTAINERDIR}"; compile.pl -DskipTests clean install)
 }
 
 set_instance_specific_configuration() {
@@ -122,18 +127,19 @@ spawn_minion() {
 
   # Extract the core repository
   pushd core/repository/target > /dev/null
-  mkdir -p "$MINION_HOME/system"
-  tar zxvf core-repository-*-repo.tar.gz -C "$MINION_HOME/system" > /dev/null
+  mkdir -p "$MINION_HOME/repositories/core"
+  tar zxvf core-repository-*-repo.tar.gz -C "$MINION_HOME/repositories/core" > /dev/null
   popd > /dev/null
 
   # Extract the default repository
   pushd repository/target > /dev/null
-  tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/system" > /dev/null
+  mkdir -p "$MINION_HOME/repositories/default"
+  tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/repositories/default" > /dev/null
   popd > /dev/null
 
   echo "Updating configuration for Minion #$idx..."
   # Enable Hawtio
-  echo 'hawtio-offline' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
+  # echo 'hawtio' > "$MINION_HOME/etc/featuresBoot.d/hawtio.boot"
 
   # Instance specific configuration
   set_instance_specific_configuration "$MINION_HOME" "$idx"
