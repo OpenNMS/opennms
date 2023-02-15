@@ -62,9 +62,9 @@ commands:
       ##   command: | 
       ##     sudo apt install -y python3 python3-pip 
       ##- cloudsmith/install-cli
-      ##- run:
-      ##    name: download tarball dependency to << parameters.tarball_path >>
-      ##    command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       ##- run:
       ##   name: download/install Cloud Plugin
       ##   command: |
