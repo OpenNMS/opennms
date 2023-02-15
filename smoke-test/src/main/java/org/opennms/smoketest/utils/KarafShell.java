@@ -28,13 +28,13 @@
 
 package org.opennms.smoketest.utils;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertTrue;
+import static org.awaitility.Awaitility.await;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -158,9 +158,12 @@ public class KarafShell {
         return this;
     }
 
-    public void checkFeature(String feature, String regex) {
-        assertTrue(String.format("feature '%s' is expected to be installed in state matching regex '%s'", feature, regex),
-                runCommandOnce("feature:list | grep " + feature,
-                        output -> output.matches("(?ms).*?\\|\\s*(" + regex + ")\\s*\\|.*"), false));
+    public void checkFeature(String feature, String regex, Duration wait) {
+        await(String.format("waiting for feature %s state to match regex '%s'", feature, regex))
+                .atMost(wait)
+                .until(() ->
+                        runCommandOnce("feature:list | grep " + feature,
+                                output -> output.matches("(?ms).*?\\|\\s*(" + regex + ")\\s*\\|.*"), false)
+                );
     }
 }
