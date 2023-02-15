@@ -129,6 +129,16 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.sshd</groupId>
+      <artifactId>sshd-core</artifactId>
+      <version>${minaSshdVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>mina-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
       <scope>compile</scope>
