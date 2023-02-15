@@ -31,6 +31,7 @@ package org.opennms.smoketest;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.Duration;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -40,7 +41,6 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssPluginIT {
     public static final String CORTEX_PLUGIN_RELEASE = "https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases/download/v2.0.1/opennms-cortex-tss-plugin.kar";
     public static final Path CORTEX_PLUGIN_KAR = Path.of("target", "opennms-cortex-tss-plugin.kar");
@@ -72,6 +72,6 @@ public class CortexTssPluginIT {
 
     @Test
     public void everythingHappy() throws Exception {
-        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started");
+        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started", Duration.ofSeconds(30));
     }
 }
