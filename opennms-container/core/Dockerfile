@@ -87,6 +87,9 @@ RUN groupadd \
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
+#COPY plugins.sh /tmp/plugins.sh 
+#RUN apt-get update && apt-get install -y python3-pip wget curl jq && pip3 install --upgrade cloudsmith-cli && chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh && apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list
+
 ##
 # Install and setup OpenNMS RPMS
 ##
@@ -134,9 +137,7 @@ RUN chmod -R g=u /usr/share/opennms/etc
 RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Copy plugins to the deploy folder
-COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
-COPY plugins.sh /tmp/plugins.sh 
-RUN apt-get update && apt-get install -y python3-pip wget curl jq && pip3 install --upgrade cloudsmith-cli && chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh && apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list
+#COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
