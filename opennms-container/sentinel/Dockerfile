@@ -57,6 +57,9 @@ FROM sentinel-base
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
+COPY plugins.sh /tmp/plugins.sh 
+RUN apt-get update && apt-get install -y python3-pip wget curl jq && pip3 install --upgrade cloudsmith-cli && chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh && apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list
+
 SHELL ["/bin/bash", "-c"]
 
 # Create Sentinel user with a specific group ID
@@ -91,7 +94,7 @@ RUN install -d -o 10001 -g 0 -m 775 \
 COPY ./container-fs/* /
 
 # Copy plugins to the deploy folder
-COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
+#COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
