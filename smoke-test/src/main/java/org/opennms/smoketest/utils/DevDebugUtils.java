@@ -139,12 +139,21 @@ public class DevDebugUtils {
             return null;
         }
 
+        LOG.info("kill -3 -1 ...");
         try {
-            LIMITER.callWithTimeout(() -> {
-                LOG.info("kill -3 -1");
-                container.execInContainer("kill", "-3", "1");
-                return null;
-            }, 1, TimeUnit.MINUTES);
+            // We've been having tests hang, and I suspect it's in this code.
+            // The LIMITER interrupts the thread running the callable, but I
+            // suspect the command isn't reacting to the interrupt.
+            await("send kill to process in container")
+                    .atMost(Duration.ofSeconds(65))
+                    .untilAsserted(
+                        () ->
+                            LIMITER.callWithTimeout(() -> {
+                                LOG.info("kill -3 -1");
+                                container.execInContainer("kill", "-3", "1");
+                                return null;
+                            }, 1, TimeUnit.MINUTES)
+                    );
         } catch (Exception e) {
             LOG.warn("Sending SIGQUIT to JVM in container failed. Thread dump may not be available.", e);
         }
@@ -156,6 +165,7 @@ public class DevDebugUtils {
             threadDumpCallable = container::getLogs;
         }
 
+        LOG.info("waiting for thread dump to complete ...");
         try {
             await("waiting for thread dump to complete")
                     .atMost(Duration.ofSeconds(5))
