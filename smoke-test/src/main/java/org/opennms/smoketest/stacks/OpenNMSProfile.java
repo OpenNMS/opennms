@@ -179,10 +179,10 @@ public class OpenNMSProfile {
         public Builder withInstallFeature(final String feature) {
             return withInstallFeature(feature, null, null);
         }
-        public Builder withInstallFeature(final String feature, final Path karFile) {
-            return withInstallFeature(feature, karFile, null);
+        public Builder withInstallFeature(final String feature, final String waitForKar) {
+            return withInstallFeature(feature, waitForKar, null);
         }
-        public Builder withInstallFeature(final String feature, final Path karFile, final String waitForKar) {
+        public Builder withInstallFeature(final String feature, final String waitForKar, final Path karFile) {
             if (waitForKar != null) {
                 installFeatures.put(String.format("%s wait-for-kar=%s", feature, waitForKar), karFile);
             } else {

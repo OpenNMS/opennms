@@ -29,11 +29,8 @@
 package org.opennms.smoketest;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.time.Duration;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -42,25 +39,10 @@ import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 
 public class CortexTssPluginIT {
-    public static final String CORTEX_PLUGIN_RELEASE = "https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases/download/v2.0.1/opennms-cortex-tss-plugin.kar";
-    public static final Path CORTEX_PLUGIN_KAR = Path.of("target", "opennms-cortex-tss-plugin.kar");
-
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(
-            b -> b.withInstallFeature("opennms-plugins-cortex-tss", CortexTssPluginIT.downloadPlugin(),
-                    "opennms-cortex-tss-plugin")
+            b -> b.withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin")
     );
-
-    protected static Path downloadPlugin() {
-        if (!CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile().exists()) {
-            try {
-                FileUtils.copyURLToFile(new URL(CortexTssPluginIT.CORTEX_PLUGIN_RELEASE), CortexTssPluginIT.CORTEX_PLUGIN_KAR.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return CortexTssPluginIT.CORTEX_PLUGIN_KAR;
-    }
 
     protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
