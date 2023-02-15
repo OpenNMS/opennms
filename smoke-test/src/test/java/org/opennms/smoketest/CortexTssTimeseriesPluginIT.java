@@ -41,9 +41,8 @@ import org.opennms.smoketest.utils.KarafShellUtils;
 public class CortexTssTimeseriesPluginIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(
-            b -> b.withInstallFeature("opennms-plugins-cortex-tss", CortexTssPluginIT.downloadPlugin(),
-                    "opennms-cortex-tss-plugin"),
-            b -> b.withInstallFeature("opennms-timeseries-api")
+            b -> b.withInstallFeature("opennms-timeseries-api"),
+            b -> b.withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin")
     );
 
     protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
