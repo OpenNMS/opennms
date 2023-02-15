@@ -133,6 +133,8 @@ public class DevDebugUtils {
      * @return path to thread dump file if one was stored, null otherwise.
      */
     public static Path gatherThreadDump(Container container, Path targetLogFolder, Path outputLog) {
+        LOG.info("Gathering thread dump...");
+
         if (!container.isRunning()) {
             LOG.warn("gatherThreadDump can only be used on a running container. Container [{}] is not running",
                     container.getDockerImageName());

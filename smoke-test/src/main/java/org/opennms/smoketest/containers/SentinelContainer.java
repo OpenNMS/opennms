@@ -352,7 +352,6 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        LOG.info("Gathering thread dump...");
         var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
 
         LOG.info("Gathering logs...");
