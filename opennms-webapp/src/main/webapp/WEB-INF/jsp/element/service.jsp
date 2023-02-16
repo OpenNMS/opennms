@@ -91,6 +91,7 @@
             }
             for (org.opennms.netmgt.config.collectd.Service collectdSvc : pkg.getServices()) {
                 if (collectdSvc.getName().equals(serviceName)) {
+                    pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
                     for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
                         if (p.getKey().toLowerCase().contains("password")) {
                             continue; // Hide passwords for security reasons
@@ -98,7 +99,7 @@
                             collectdParameters.put(p.getKey(), p.getValue());
                         }
                     }
-                            pageContext.setAttribute("collectdParameters", collectdParameters);
+                    pageContext.setAttribute("collectdParameters", collectdParameters);
                 }
             }
         }
@@ -329,6 +330,13 @@ function doDelete() {
                       <td>${pkg}</td>
                   </tr>
               </c:forEach>
+             <tr>
+               <th>Collection Interval</th>
+               <c:choose>
+               <c:when test="${collectdInterval != null}"><td>${collectdInterval}</td></c:when>
+                   <c:otherwise><td>Unknown</td></c:otherwise>
+               </c:choose>
+             </tr>
              <tr>
                <th>Collector Class</th>
                <c:choose>
