@@ -58,7 +58,17 @@ FROM sentinel-base
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
 COPY plugins.sh /tmp/plugins.sh 
-RUN apt-get update && apt-get install -y python3-pip wget curl jq && pip3 install --upgrade cloudsmith-cli && chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh && apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list && rm -rf ~/.cache/pip
+RUN apt-get update && \
+    apt-get install -y python3-pip wget curl jq && \
+    pip3 install --upgrade cloudsmith-cli && \
+    chmod +x /tmp/plugins.sh && \
+    cd /tmp && \
+    ./plugins.sh && \
+    rm ./plugins.sh && \
+    apt-get remove -y python3-pip wget curl jq && \
+    apt-get clean && \
+    rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list && \
+    rm -rf ~/.cache/pip
 
 SHELL ["/bin/bash", "-c"]
 
@@ -92,9 +102,6 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./container-fs/* /
-
-# Copy plugins to the deploy folder
-COPY --chown=10001:0 ./plugins/*.kar /usr/share/opennms/deploy
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
