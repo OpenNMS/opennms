@@ -85,9 +85,123 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <version>${karafVersion}</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>verify</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <distribution>org.apache.karaf:apache-karaf</distribution>
+              <javase>11</javase>
+              <framework>
+                <feature>framework</feature>
+              </framework>
+              <descriptors>
+                <!-- Karaf standard features -->
+                <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
+
+                <!-- OpenNMS overridden Spring features -->
+                <descriptor>file:${project.build.outputDirectory}/spring-legacy.xml</descriptor>
+
+                <!-- OpenNMS features files that contain features which should be validated -->
+                <descriptor>file:${project.build.outputDirectory}/features-core.xml</descriptor>
+                <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
+                <!--
+                <descriptor>file:${project.build.outputDirectory}/features-minion.xml</descriptor>
+                <descriptor>file:${project.build.outputDirectory}/features-sentinel.xml</descriptor>
+                -->
+              </descriptors>
+              <features>
+                <!-- features-core.xml -->
+                <feature>cassandra-driver</feature>
+                <feature>commons-codec</feature>
+                <feature>commons-httpclient4</feature>
+                <feature>commons-httpclient4-async</feature>
+                <feature>commons-httpclient4-extras</feature>
+                <feature>gson</feature>
+                <feature>guava</feature>
+                <feature>guava17</feature>
+                <feature>guava21</feature>
+                <feature>jline</feature>
+                <feature>netty4</feature>
+                <feature>scv-api</feature>
+                <feature>scv-shell</feature>
+                <feature>scv-jceks-impl</feature>
+                <feature>ssh/4.3.9</feature>
+                <feature>zookeeper-dependencies</feature>
+
+                <!-- features.xml -->
+                <feature>opennms-amqp-event-forwarder</feature>
+                <feature>opennms-camel-amqp</feature>
+                <feature>opennms-core-camel</feature>
+                <!--
+                <feature>opennms-amqp-event-receiver</feature>
+                <feature>opennms-core-ipc-jms</feature>
+                <feature>opennms-core-ipc-kafka</feature>
+                <feature>opennms-core-ipc-sink-camel</feature>
+                <feature>opennms-core-ipc-sink-camel-server</feature>
+                <feature>opennms-core-ipc-sink-kafka</feature>
+                <feature>opennms-core-ipc-sink-kafka-server</feature>
+                <feature>opennms-core-ipc-twin-jms</feature>
+                <feature>opennms-core-ipc-twin-kafka</feature>
+                <feature>opennms-events-api</feature>
+                <feature>opennms-poller-monitors-core</feature>
+                <feature>opennms-syslogd-listener-javanet</feature>
+                <feature>opennms-syslogd-listener-camel-netty</feature>
+                <feature>opennms-telemetry-daemon</feature>
+                <feature>opennms-trapd</feature>
+                <feature>eif-adapter</feature>
+                -->
+              </features>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
+    <!--
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karafVersion}</version>
+      <type>kar</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.apache.karaf</groupId>
+      <artifactId>apache-karaf</artifactId>
+      <version>${karafVersion}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.opennms.osgi</groupId>
       <artifactId>opennms-osgi-core-rest</artifactId>

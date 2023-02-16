@@ -109,7 +109,6 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>${jestGsonVersion}</version>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>

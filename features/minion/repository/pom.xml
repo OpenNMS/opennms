@@ -24,57 +24,65 @@
                         <goals>
                             <goal>features-add-to-repository</goal>
                         </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <!-- Add OpenNMS features -->
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
-                                <!-- Add Minion features -->
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
-                                <!-- Additional tools -->
-                                <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-                            </descriptors>
-                            <!-- To ensure that all JAR files for a feature
-                                are included in the repository tar.gz file, add the feature to this list. -->
-                            <features>
-                                <feature>opennms-core-ipc-jms</feature>
-                                <feature>opennms-core-ipc-kafka</feature>
-                                <feature>opennms-core-ipc-twin-shell</feature>
-                                <feature>opennms-core-ipc-sink-offheap</feature>
-                                <feature>opennms-syslogd-listener-javanet</feature>
-                                <feature>opennms-syslogd-listener-camel-netty</feature>
-                                <feature>opennms-trapd-listener</feature>
-                                <feature>opennms-send-event-command</feature>
-                                <feature>opennms-events-sink-dispatcher</feature>
-                                <feature>minion-shell</feature>
-                                <feature>minion-heartbeat-producer</feature>
-                                <feature>minion-snmp-proxy</feature>
-                                <feature>minion-provisiond-detectors</feature>
-                                <feature>minion-provisiond-requisitions</feature>
-                                <feature>minion-poller</feature>
-                                <feature>minion-collection</feature>
-                                <feature>minion-icmp-proxy</feature>
-                                <feature>minion-telemetryd-receivers</feature>
-                                <feature>hawtio</feature>
-                                <feature>cxf-commands/${cxfVersion}</feature>
-                                <feature>opennms-core-tracing-jaeger</feature>
-                                <feature>opennms-dnsresolver-shell</feature>
-                                <feature>opennms-dnsresolver-netty</feature>
-                                <feature>opennms-core-ipc-grpc-client</feature>
-                                <feature>opennms-distributed-core-impl</feature>
-                                <feature>scv-api</feature>
-                                <feature>scv-shell</feature>
-                                <feature>scv-jceks-impl</feature>
-                                <feature>dominion-grpc-client</feature>
-                                <feature>dominion-secure-credentials-vault</feature>
-                                <featue>minion-rest-service</featue>
-                                <feature>minion-health-check</feature>
-                            </features>
-                            <repository>${project.build.directory}/maven-repo</repository>
-                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <javase>11</javase>
+                    <descriptors>
+                        <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                        <!-- Add OpenNMS features -->
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
+                        <!-- Add Minion features -->
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
+                        <!-- Additional tools -->
+                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
+                    </descriptors>
+                    <!-- To ensure that all JAR files for a feature
+                        are included in the repository tar.gz file, add the feature to this list. -->
+                    <features>
+                        <feature>opennms-core-ipc-jms</feature>
+                        <feature>opennms-core-ipc-kafka</feature>
+                        <feature>opennms-core-ipc-twin-shell</feature>
+                        <feature>opennms-core-ipc-sink-offheap</feature>
+                        <feature>opennms-syslogd-listener-javanet</feature>
+                        <feature>opennms-syslogd-listener-camel-netty</feature>
+                        <feature>opennms-trapd-listener</feature>
+                        <feature>opennms-send-event-command</feature>
+                        <feature>opennms-events-sink-dispatcher</feature>
+                        <feature>minion-shell</feature>
+                        <feature>minion-heartbeat-producer</feature>
+                        <feature>minion-snmp-proxy</feature>
+                        <feature>minion-provisiond-detectors</feature>
+                        <feature>minion-provisiond-requisitions</feature>
+                        <feature>minion-poller</feature>
+                        <feature>minion-collection</feature>
+                        <feature>minion-icmp-proxy</feature>
+                        <feature>minion-telemetryd-receivers</feature>
+                        <feature>hawtio</feature>
+                        <feature>cxf-commands/${cxfVersion}</feature>
+                        <feature>opennms-core-tracing-jaeger</feature>
+                        <feature>opennms-dnsresolver-shell</feature>
+                        <feature>opennms-dnsresolver-netty</feature>
+                        <feature>opennms-core-ipc-grpc-client</feature>
+                        <feature>opennms-distributed-core-impl</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-shell</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>dominion-grpc-client</feature>
+                        <feature>dominion-secure-credentials-vault</feature>
+                        <featue>minion-rest-service</featue>
+                        <feature>minion-health-check</feature>
+                    </features>
+                    <repository>${project.build.directory}/maven-repo</repository>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

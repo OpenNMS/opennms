@@ -42,7 +42,6 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>${jestGsonVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

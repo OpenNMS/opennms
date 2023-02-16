@@ -10,6 +10,8 @@
          Note that _any_ bundle dependency that has classes exported in `custom.properties` must
          have `dependency="true"` set, so that it won't try to re-load those classes on the
          Karaf side.
+
+         If you add a feature here, make sure it's also in the `verify` section of the pom.xml!
     -->
  
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
@@ -24,8 +26,34 @@
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
     </feature>
 
+    <feature name="commons-codec" version="${commonsCodecVersion}" description="Apache :: commons-codec">
+        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+    </feature>
+
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
+    </feature>
+
+    <feature name="commons-httpclient4" version="${httpclientVersion}" description="Apache :: HTTP Client 4.x">
+        <feature>commons-codec</feature>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+    </feature>
+
+    <feature name="commons-httpclient4-async" version="${httpclientVersion}" description="Apache :: HTTP Async Client 4.x">
+        <feature>commons-httpclient4</feature>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
+    </feature>
+
+    <feature name="commons-httpclient4-extras" version="${httpclientVersion}" description="Apache :: HTTP Client 4.x Extras">
+        <feature prerequisite="true">wrap</feature>
+        <feature>commons-httpclient4</feature>
+        <feature>commons-httpclient4-async</feature>
+        <bundle dependency="true">wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
+    </feature>
+
+    <feature name="gson" version="${gsonVersion}" description="Google :: GSON">
+        <bundle dependency="true">mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
     </feature>
 
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
@@ -38,13 +66,19 @@
     </feature>
  
     <feature name="guava17" version="17.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/17.0</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/17.0</bundle>
     </feature>
  
     <feature name="guava21" version="21.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/21.0</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/21.0</bundle>
     </feature>
  
+    <!-- updated version from newer Karaf -->
+    <feature name="jline" version="3.21.0" hidden="true">
+        <bundle dependency="true" start-level="30">mvn:org.fusesource.jansi/jansi/2.4.0</bundle>
+        <bundle start-level="30">mvn:org.jline/jline/3.21.0</bundle>
+    </feature>
+
     <feature name="netty4" version="${netty4Version}" description="Netty">
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
@@ -69,31 +103,33 @@
     </feature>
  
     <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
     </feature>
  
     <feature name="scv-shell" version="${project.version}" description="Secure Credentials Vault Shell">
         <feature>scv-api</feature>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
  
     <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
+        <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
-        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>
 
     <!-- override the default Karaf ssh with a version from a newer release -->
     <feature name="ssh" description="Provide a SSHd server on Karaf" version="4.3.9">
         <feature>shell</feature>
         <feature>jaas</feature>
+        <feature>jline</feature>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/2.9.2</bundle>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/2.9.2</bundle>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/2.9.2</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk15on/1.70</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk15on/1.70</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk15on/1.70</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/4.3.9</bundle>
     </feature>
 
     <feature name="health-api" version="${project.version}" description="Health API">

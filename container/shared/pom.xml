@@ -40,6 +40,22 @@
                 <artifactId>karaf-maven-plugin</artifactId>
                 <version>${karafVersion}</version>
                 <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                          <descriptors>
+                            <descriptor>
+                          </descriptors>
+                          <features>
+                          </features>
+                        </configuration>
+                    </execution>
+                </executions>
                 <configuration>
                     <blacklistedRepositories>
                         <!-- make sure the custom opennms karaf repo doesn't make it in -->
@@ -118,7 +134,8 @@
                         <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
                         <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <distribution>org.apache.karaf.features:framework</distribution>
+                    <javase>11</javase>
                 </configuration>
             </plugin>
             <plugin>

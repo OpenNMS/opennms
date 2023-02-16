@@ -31,7 +31,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${jestGsonVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

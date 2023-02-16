@@ -39,6 +39,18 @@
                 <artifactId>karaf-maven-plugin</artifactId>
                 <version>${karafVersion}</version>
                 <extensions>true</extensions>
+                <executions>
+                  <execution>
+                    <id>verify</id>
+                    <phase>process-resources</phase>
+                    <goals><goal>verify</goal></goals>
+                    <configuration>
+                      <framework>
+                        <feature></feature>
+                      </framework>
+                    </configuration>
+                  </execution>
+                </executions>
                 <configuration>
                     <bootRepositories>
                         <!--Karaf standard features-->
@@ -121,7 +133,7 @@
                         <!-- OPENNMS: Add our custom branding JAR -->
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <javase>11</javase>
                 </configuration>
             </plugin>
             <plugin>

@@ -1657,7 +1657,6 @@
     <jettisonVersion>1.4.1</jettisonVersion>
     <jettyVersion>9.4.44.v20210927</jettyVersion>
     <jestVersion>5.3.4</jestVersion>
-    <jestGsonVersion>2.9.1</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jicmpVersion>3.0.4</jicmpVersion>
     <jicmp6Version>3.0.4</jicmp6Version>
@@ -3978,6 +3977,11 @@
         <groupId>com.googlecode.concurrent-locks</groupId>
         <artifactId>concurrent-locks</artifactId>
         <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gsonVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>

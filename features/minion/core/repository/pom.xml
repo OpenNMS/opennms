@@ -24,30 +24,42 @@
                         <goals>
                             <goal>features-add-to-repository</goal>
                         </goals>
-                        <configuration>
-                            <descriptors>
-                                <!-- Default repositories -->
-                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
-                                <!-- Add the OpenNMS Karaf extensions feature repository -->
-                                <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
-                                <!-- Add Minion features -->
-                                <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
-                                <!-- Add OpenNMS features -->
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
-                            </descriptors>
-                            <!-- To ensure that all JAR files for a feature 
-                                are included in the repository tar.gz file, add the feature to this list. -->
-                            <features>
-                                <!-- Minion Core Features -->
-                                <feature>minion-core</feature>
-                                <feature>minion-jms</feature>
-                                <feature>minion-core-shell</feature>
-                            </features>
-                            <repository>${project.build.directory}/maven-repo</repository>
-                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <distribution>org.opennms.container:org.opennms.container.shared</distribution>
+                    <javase>11</javase>
+                    <framework>
+                        <feature>framework</feature>
+                    </framework>
+                    <descriptors>
+                        <!-- Default repositories -->
+                        <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
+                        <!-- Add the OpenNMS Karaf extensions feature repository -->
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <!-- Add Minion features -->
+                        <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
+                        <!-- Add OpenNMS features -->
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                    </descriptors>
+                    <!-- To ensure that all JAR files for a feature 
+                        are included in the repository tar.gz file, add the feature to this list. -->
+                    <features>
+                        <!-- Minion Core Features -->
+                        <feature>minion-core</feature>
+                        <feature>minion-jms</feature>
+                        <feature>minion-core-shell</feature>
+                    </features>
+                    <repository>${project.build.directory}/maven-repo</repository>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -158,6 +170,12 @@
             <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>org.opennms.container.shared</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
     </dependencies>
 
