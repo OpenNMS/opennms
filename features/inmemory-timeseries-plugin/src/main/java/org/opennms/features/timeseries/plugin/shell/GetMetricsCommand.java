@@ -29,25 +29,18 @@
 package org.opennms.features.timeseries.plugin.shell;
 
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.features.timeseries.plugin.InMemoryStorage;
-import org.opennms.integration.api.v1.timeseries.DataPoint;
-import org.opennms.integration.api.v1.timeseries.Metric;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Simple diagnostic for looking at timeseries data
  *
  */
-@Command(scope = "opennms", name="get-tss-plugin-metrics", description = "This is the description")
+@Command(scope = "opennms", name="get-tss-plugin-metrics", description = "Print all collected metrics")
 @Service
 public class GetMetricsCommand implements Action {
 
@@ -56,11 +49,13 @@ public class GetMetricsCommand implements Action {
 
     @Override
     public Object execute() {
-        for (Map.Entry<Metric, Collection<DataPoint>> entry: ((InMemoryStorage)storage).getAllMetrics().entrySet()) {
+        ((InMemoryStorage)storage).getAllMetrics().entrySet().forEach(entry -> {
             System.out.println(String.format("Metric <%s> has %d data points",
-                                             entry.getKey().getKey(),
-                                             entry.getValue().size()));
-        }
+                    entry.getKey().getKey(),
+                    entry.getValue().size()));
+            entry.getValue().stream().forEach(dataPoint ->
+                System.out.println(String.format("\t%d:%f", dataPoint.getTime().toEpochMilli(), dataPoint.getValue())));
+        });
         return null;
     }
 

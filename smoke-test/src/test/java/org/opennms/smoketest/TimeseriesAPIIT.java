@@ -31,21 +31,22 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertTrue;
 import static com.jayway.awaitility.Awaitility.await;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Base64;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
+import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,59 +77,61 @@ public class TimeseriesAPIIT {
         assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
         assertTrue(karafShell.runCommandOnce("feature:install inmemory-timeseries-plugin", output -> !output.toLowerCase().contains("error"), false));
         KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
-        printSummary();
-        long start = System.currentTimeMillis();
-        await().atMost(10, TimeUnit.MINUTES)
-                .pollInterval(5, TimeUnit.SECONDS)
-                .until(() -> karafShell.runCommandOnce("opennms:get-tss-plugin-metrics", output -> output.contains("data points"), false));
-        String summaryUrl = String.format(
-                "http://0.0.0.0:%d/opennms/summary/results.htm?filterRule=ipaddr+iplike+*.*.*.*&startTime=%d&endTime=%d&attributeSieve=.*",
-                stack.opennms().getWebPort(),
-                0,
-                System.currentTimeMillis());
-        Thread.sleep(120000);
+
+        final Set<String> originalRrdFiles = getRrdFiles();
+
+        // Take a peek
+        System.out.println("<RRD FILES>");
+        originalRrdFiles.stream().forEach(r -> System.out.println(r));
+        System.out.println("</RRD FILES>");
+
+        //Wait for data
+        await().atMost(5, TimeUnit.MINUTES)
+                .pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> karafShell.runCommandOnce("opennms:get-tss-plugin-metrics",
+                        output -> Arrays.stream(output.split("\n"))
+                                   .filter(line -> line.contains("data points"))
+                                   .count() >= originalRrdFiles.size(),
+                        false));
+
+        // Collect metrics from plugin
         System.out.println("<KARAF OUT>");
-        karafShell.runCommandOnce("opennms:get-tss-plugin-metrics", output -> {
-            System.out.println(output);
-            return !output.isEmpty();
-        }
-        , false);
+        List<String> karafMetrics = new ArrayList<>();
+        karafShell.runCommandOnce(
+                "opennms:get-tss-plugin-metrics",
+                output -> {
+                    Arrays.stream(output.split("\n"))
+                           .filter(line -> line.contains("data points"))
+                           .forEach(line -> {
+                               System.out.println(line);
+                               karafMetrics.add(line);
+                           });
+                    return !karafMetrics.isEmpty();
+                }
+                , false);
         System.out.println("</KARAF OUT>");
-        System.out.println("SUMMARY URL: " + summaryUrl);
-        URL summary = new URL(summaryUrl);
-        URLConnection connection = summary.openConnection();
-        String userpass = String.format("%s:%s", OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
-        String basicAuth = new String(Base64.getEncoder().encode(userpass.getBytes()));
-        connection.setRequestProperty("Authorization", "Basic " + basicAuth);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String input;
-        System.out.println("<SUMMARY CONTENTS>");
-        while ((input = reader.readLine()) != null) {
-            System.out.println(input);
-        }
-        System.out.println("</SUMMARY CONTENTS>");
+
+        Set<String> rrdFiles = getRrdFiles();
+
+        // Take a peek
+        System.out.println("<RRD FILES>");
+        rrdFiles.stream().forEach(r -> System.out.println(r));
+        System.out.println("</RRD FILES>");
+
+        // Make sure all RRD files have corresponding entries stored in the plugin
+        rrdFiles.stream().forEach(rrdFile -> {
+            String metricName = rrdFile.substring(0, rrdFile.length() - 4);
+            assertTrue(karafMetrics.stream().anyMatch(x -> x.contains(metricName)));
+        });
     }
 
-    private void printSummary() throws Exception {
-
-        String summaryUrl = String.format(
-                "http://0.0.0.0:%d/opennms/summary/results.htm?filterRule=ipaddr+iplike+*.*.*.*&startTime=%d&endTime=%d&attributeSieve=.*",
-                stack.opennms().getWebPort(),
-                0,
-                System.currentTimeMillis());
-        URL summary = new URL(summaryUrl);
-        URLConnection connection = summary.openConnection();
-        String userpass = String.format("%s:%s", OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
-        String basicAuth = new String(Base64.getEncoder().encode(userpass.getBytes()));
-        connection.setRequestProperty("Authorization", "Basic " + basicAuth);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String input;
-        System.out.println("<SUMMARY CONTENTS>");
-        while ((input = reader.readLine()) != null) {
-            System.out.println(input);
-        }
-        System.out.println("</SUMMARY CONTENTS>");
-
+    Set<String> getRrdFiles() {
+        // Use resources to get RRD files
+        final RestClient client = stack.opennms().getRestClient();
+        final ResourceDTO resources = client.getResourcesForNode("selfmonitor:1");
+        return resources.getChildren().getObjects().stream()
+                .flatMap(r -> r.getRrdGraphAttributes().values().stream())
+                .map(e -> e.getRrdFile())
+                .collect(Collectors.toSet());
     }
-
 }
