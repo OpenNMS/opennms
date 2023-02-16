@@ -177,7 +177,6 @@ public final class MinaSshMonitor extends AbstractServiceMonitor {
                 keys = Collections.emptySet();
             }
             if (Strings.isNullOrEmpty(password) && keys.isEmpty()) {
-                // 
                 throw new IllegalArgumentException("Both password and identity-files are not defined");
             }
 
@@ -200,10 +199,6 @@ public final class MinaSshMonitor extends AbstractServiceMonitor {
                         .getSession()) {
                     LOG.info("mina-ssh client session started: session={}", session);
 
-                    /*
-                     * 1. authenticate?
-                     * 2. run a command?
-                     */
                     if (!Strings.isNullOrEmpty(password)) {
                         session.addPasswordIdentity(password);
                     }
