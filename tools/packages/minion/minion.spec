@@ -192,8 +192,9 @@ find %{buildroot}%{minioninstprefix}/etc ! -type d | \
     sed -e "s|^%{buildroot}|%attr(644,minion,minion) %config(noreplace) |" | \
     sort >> %{_tmppath}/files.minion
 
-# all other etc files should replace by default (and create .rpmsave files)
+# most other etc files should replace by default, but create .rpmsave files
 find %{buildroot}%{minioninstprefix}/etc ! -type d | \
+    grep -v -E 'etc/(blacklisted|config|custom|jre|overrides|startup|system).properties$' | \
     grep -v etc/org.opennms. | \
     grep -v etc/org.apache.karaf.features.cfg | \
     grep -v etc/org.ops4j.pax.logging.cfg | \
@@ -220,6 +221,16 @@ rm -rf %{buildroot}
 %attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
+
+# Karaf "config" files that should always be overwritten
+%attr(644,minion,minion) %{minioninstprefix}/etc/blacklisted.properties
+%attr(644,minion,minion) %{minioninstprefix}/etc/custom.properties
+%attr(644,minion,minion) %{minioninstprefix}/etc/jre.properties
+%attr(644,minion,minion) %{minioninstprefix}/etc/overrides.properties
+%attr(644,minion,minion) %{minioninstprefix}/etc/startup.properties
+# Karaf "config" files that could conceivably be edited, but probably weren't, so replace them by default
+%attr(644,minion,minion) %config %{minioninstprefix}/etc/config.properties
+%attr(644,minion,minion) %config %{minioninstprefix}/etc/system.properties
 
 %files container
 

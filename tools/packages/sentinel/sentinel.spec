@@ -150,8 +150,9 @@ find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) %config(noreplace) |" | \
     sort >> %{_tmppath}/files.sentinel
 
-# all other etc files should replace by default (and create .rpmsave files)
+# most other etc files should replace by default, but create .rpmsave files
 find %{buildroot}%{sentinelinstprefix}/etc ! -type d | \
+    grep -v -E 'etc/(blacklisted|config|custom|jre|overrides|startup|system).properties$' | \
     grep -v etc/org.apache.karaf.features.cfg | \
     grep -v etc/org.ops4j.pax.logging.cfg | \
     grep -v etc/featuresBoot.d | \
@@ -177,6 +178,16 @@ rm -rf %{buildroot}
 %attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
+
+# Karaf "config" files that should always be overwritten
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/blacklisted.properties
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/custom.properties
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/jre.properties
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/overrides.properties
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/startup.properties
+# Karaf "config" files that could conceivably be edited, but probably weren't, so replace them by default
+%attr(644,sentinel,sentinel) %config %{sentinelinstprefix}/etc/config.properties
+%attr(644,sentinel,sentinel) %config %{sentinelinstprefix}/etc/system.properties
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

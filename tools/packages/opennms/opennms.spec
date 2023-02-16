@@ -681,7 +681,13 @@ cd %{buildroot}
 find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v -E 'etc/.*.cfg$' | \
+	grep -v 'etc/blacklisted.properties' | \
+	grep -v 'etc/config.properties' | \
 	grep -v 'etc/custom.properties' | \
+	grep -v 'etc/jre.properties' | \
+	grep -v 'etc/overrides.properties' | \
+	grep -v 'etc/startup.properties' | \
+	grep -v 'etc/system.properties' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'jira.properties' | \
@@ -809,10 +815,19 @@ rm -rf %{buildroot}
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
 %attr(644,root,root)    %{_unitdir}/opennms.service
-                        %config %{instprefix}/etc/custom.properties
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
+
+# Karaf "config" files that should always be overwritten
+%attr(644,root,root)    %{instprefix}/etc/blacklisted.properties
+%attr(644,root,root)    %{instprefix}/etc/custom.properties
+%attr(644,root,root)    %{instprefix}/etc/jre.properties
+%attr(644,root,root)    %{instprefix}/etc/overrides.properties
+%attr(644,root,root)    %{instprefix}/etc/startup.properties
+# Karaf "config" files that could conceivably be edited, but probably weren't, so replace them by default
+%attr(644,root,root)    %config %{instprefix}/etc/config.properties
+%attr(644,root,root)    %config %{instprefix}/etc/system.properties
 
 %files docs
 %defattr(644 root root 755)
