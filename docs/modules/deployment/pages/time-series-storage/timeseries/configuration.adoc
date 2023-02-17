@@ -6,32 +6,27 @@ Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to confi
 [source, properties]
 org.opennms.timeseries.strategy=integration
 
-NOTE: If you are using a container, you can set this as an environment variable in your container's configuration settings instead of creating or modifying a property file:
-+
+[NOTE]
+====
+If you are using a container, you can set this as an environment variable in your container's configuration settings instead of creating or modifying a property file:
+
 [source, properties]
 OPENNMS_TIMESERIES_STRATEGY=integration
+====
 
-After activating the Time Series Integration Layer, you must implement it; this is done via the Karaf shell:
-
-[source, console]
-----
-clone & build:
-> git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
-> mvn install
-
-in Karaf shell:
-> bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
-----
-
-For specific instructions, check your plugin description.
-
+[TIP]
+====
 We also highly recommend that you reference resources stored in the Time Series Integration Layer by their foreign source and foreign ID, as opposed to their database ID.
 To this end, set the following property in the same file:
 
 [source, properties]
 org.opennms.rrd.storeByForeignSource=true
+====
 
-With these set, {page-component-title} begins persisting metrics using the Time Series Integration Layer upon restart.
+After activating the Time Series Integration Layer, you must configure the plugin.
+For specific instructions, check your plugin's documentation.
+
+Enabling and/or configuring the Time Series Integration Layer requires a restart of the {page-component-title} service.
 
 == Additional configuration options
 
