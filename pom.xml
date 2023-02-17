@@ -1691,7 +1691,7 @@
     <paxWebVersion>7.2.10</paxWebVersion>
     <protobufVersion>3.16.1</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.2.18</postgresqlVersion>
+    <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.7</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
