@@ -71,9 +71,9 @@ opennms-newts
 sudo systemctl restart opennms
 
 [[ga-dual-write-integration]]
-=== Write to Time Series Integration Plugin in parallel
+=== Write to time series integration plugin in parallel
 
-You can enable writing to any Time Series Integration plugin in parallel to RRD or Newts by enabling the `opennms-timeseries-api` feature and not setting the strategy to `integration`.
+You can enable writing to any time series integration plugin in parallel to RRD or Newts by enabling the `opennms-timeseries-api` feature and not setting the strategy to `integration`.
 This will direct writes to both your `org.opennms.timeseries.strategy` destination and any installed timeseries integration plugin.
 
 .Create a file to load the `opennms-timeseries-api` feature:

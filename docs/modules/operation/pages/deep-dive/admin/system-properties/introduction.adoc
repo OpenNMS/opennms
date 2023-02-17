@@ -20,4 +20,4 @@ Files in this directory are loaded alphabetically.
 
 TIP: To avoid conflicts with customized configurations, you can add all custom properties to one or more files in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
 We recommend that you do not modify default OpenNMS properties.
-Create dedicated files with your customized properties in `opennms.properties.d/`.
+Instead, create dedicated files with your customized properties in `opennms.properties.d/`.

@@ -32,16 +32,16 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 +
 [source, properties]
 ----
-org.opennms.timeseries.strategy=integration <1><2>
+org.opennms.timeseries.strategy=integration <1> <2>
 org.opennms.timeseries.tin.metatags.tag.node=${node:label} <3>
 org.opennms.timeseries.tin.metatags.tag.location=${node:location}
 org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
 org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
 org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
-<1> Make sure that the `org.opennms.timeseries.strategy` property is not set in `$\{OPENNMS_HOME}/etc/opennms.properties` or any other file within the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+<1> Make sure that the `org.opennms.timeseries.strategy` property is not set in `$\{OPENNMS_HOME}/etc/opennms.properties` or any other file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
 <2> If you are enabling the xref:time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration[dual write plugin] on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.
-<3> See the xref:time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags[time series integration] section for more info on defining metatags.
+<3> See the xref:time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags[time series integration] section for more information on defining metatags.
 +
 
 NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
