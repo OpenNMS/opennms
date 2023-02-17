@@ -1,45 +1,44 @@
 
 = Scheduled Outages
 
-Scheduled Outages allow for suppressing notifications and pausing Status Polling, Threshold Checking, and Data Collection in {page-component-title}.
-{page-component-title} supports many configurable options for when scheduled outages need to occur.
+Scheduled outages let you suppress notifications and pause status polling, threshold checking, and data collection during a specified time period.
+To configure scheduled outages in {page-component-title}, click the *gear* symbol at the top-right of the page and, under Service Monitoring, select *Configure Scheduled Outages*.
 
-Scheduled Outages is located under Admin -> Service Monitoring -> Configure Scheduled Outages
+== Create a scheduled outage
 
-== Components of a Scheduled Outage
-A Scheduled Outage definition requires the following:
+When you define a scheduled outage, you must set the following options:
 
-. Schedule Outage Name
-. Nodes to include in the scheduled outage
-. Interfaces on a node to include in the scheduled outage
-. Outage type Specific/Daily/Weekly/Monthly
-. Date/Time the outage occurs
-. Suppression of the following
-** All Notifications
-** Status Polling
-** Threshold Checking
-** Data Collection
+. Name.
+. Nodes to include.
+. Node interfaces to include.
+. Outage type (daily, weekly, monthly, custom).
+. Date and time for the outage.
+. Suppression settings (all notifications, status polling, threshold checking, data collection).
 
-When an outage is scheduled, any nodes and/or interfaces matching the outage definition will be suppressed.
+During the scheduled outage, any nodes and interfaces matching the outage definition are suppressed.
 
 == Editing Outage
 
-To enable or configure the geocoder service, use the web-based configuration tool:
+You can create a scheduled outage in the {page-component-title} web UI:
 
-. In the {page-component-title} web UI, enter a name for the Schedule Outage and click the *plus* symbol in the top-right of the page.
-. Under Node Labels, click the rectangular box, select a node to include in the scheduled outage, and click *Add*
-. Under Interfaces, click the rectangular box, select a node interface to include in the scheduled outage, and click *Add*
-** Alternatively, `Select all nodes and interfaces` can be clicked to include all nodes/interface
-. Under Outage Type, select Specific, Daily, Weekly, or Monthly
-. Set a Date/Time for the outage
-** Depending on the outage type, the Date/Time setting will change based on the outage type
-*** Specific - To/From Date/Time
-*** Daily - Time only, repeated daily
-*** Weekly - Day of week and Time To/From
-*** Monthly - Day Number of the Month and Time To/From
-. Once Outage Type/Time is set, click *Add Outage*
-. Under Applies To, select from the following:
-** Notifications - All Notifications - Suppresses all notifications
-** Status Polling - Select All/Unselect All - Include/Exclude specific systems from status polling during the outage
-** Threshold Checking - Select All/Unselect All - Include/Exclude specific systems from threshold checking during the outage
-** Data Collection -  Select All/Unselect All - Include/Exclude specific systems from collection during the outage
+. Click the *gear* symbol at the top-right of the page.
+. Under Service Monitoring, select *Configure Scheduled Outages*.
+. Type a name for the outage in the *New Name* box and click the *add* symbol.
+. Under Node Labels, select a node to include in the scheduled outage and click *Add*.
+. Under Interfaces, select a node interface to include in the scheduled outage and click *Add*.
+** Alternatively, you can click *Select All Nodes and Interfaces* to include all nodes and interfaces in your monitored environment.
+. Under Outage Type, select a recurrence schedule (*Specific*, *Daily*, *Weekly*, *Monthly*).
+. Set a date and time for the outage.
+The available date and time settings depend on the recurrence schedule you choose:
+** *Specific:* Set a specific date and time period.
+This type of scheduled outage occurs only once during the specified period of time.
+** *Daily:* Set a time period during which a daily outage will occur.
+** *Weekly:* Set the day of the week and the time period during which a weekly outage will occur.
+** *Monthly:* Set the day of the month and the time period during which a monthly outage will occur.
+. Click *Add Outage*.
+. Under Applies To, select the functions that the outage will suppress:
+** *Notifications:* Suppress all or no notifications.
+** *Status Polling:* Include or exclude specific systems from status polling during the outage.
+** *Threshold Checking:* Include or exclude specific systems from threshold checking during the outage.
+** *Data Collection:* Include or exclude specific systems from data collection during the outage.
+. Click *Save*.
