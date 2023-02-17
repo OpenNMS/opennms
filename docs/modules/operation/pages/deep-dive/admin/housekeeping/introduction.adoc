@@ -1,14 +1,14 @@
 
-[[housekeeping]]
 = Housekeeping Tasks
 
-There are a number of housekeeping tasks you may want to do regularly to ensure optimum system performance.
+There are a number of housekeeping tasks that you may want to do regularly to ensure optimum system performance.
 We also recommend you complete some of these housekeeping tasks before upgrading {page-component-title}.
 
 == Prior to upgrading
 
 [[prune-events]]
 === Prune unneeded events
+
 Use vacuumd or cron to regularly prune unneeded events.
 This helps to clean up your events table, and reduces the amount of data in your backups.
 We also recommend doing this before you begin the {page-component-title} upgrade process.
@@ -27,20 +27,18 @@ SELECT eventid FROM notifications WHERE eventid = events.eventid)
 AND eventtime < now() - interval '6 weeks';
 ----
 
-== After Upgrading
+== After upgrading
 
-[[delete-cache-folder]]
 === Delete cache folder
+
 Run the Fix Karaf script to delete cached items so that your system is cleaned up.
 We recommend doing this after an upgrade.
-This script tries to fix Karaf configuration problems by pruning `opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
+This script tries to fix Karaf configuration problems by pruning `/opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
 
 NOTE: Back up `/opt/opennms/etc` before running the script.
 
 [source, console]
-----
 /opt/opennms/bin/fix-karaf-setup.sh
-----
 
 [[ga-data-collection]]
 == Data collection
@@ -58,11 +56,11 @@ Usage statistics include the following data points:
 * Number of available processors (CPU).
 * Amount of free physical memory.
 * Total amount of physical memory.
-* Number of alarms in the alarms table.
-* Number of situations in the alarms table.
-* Number of events in the events table.
-* Number of IP interfaces in the ipinterface table.
-* Number of nodes in the node table.
+* Number of alarms in the `alarms` table.
+* Number of situations in the `alarms` table.
+* Number of events in the `events` table.
+* Number of IP interfaces in the `ipinterface` table.
+* Number of nodes in the `node` table.
 * Number of nodes, grouped by system OID.
 * Number of locations.
 * Number of Minions.
@@ -85,5 +83,5 @@ Usage statistics include the following data points:
 [[disable-data-collection]]
 === Enable or disable usage statistics collection
 
-Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the menu:gear icon[Additional Tools, Data Choices] and selecting *Opt-in* or *Opt-out*.
-
+Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the *gear* symbol, and choosing menu:Additional Tools[Data Choices].
+From this page, you can select *Opt-In* or *Opt-Out*, as desired.
