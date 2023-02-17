@@ -52,5 +52,5 @@ Does not exist by default.
 Also includes service detection and policy results.
 
 | GeoIpProvisioningAdapter.log
-| Logs related to the GeoIp provisioning plugin.
+| Logs related to the xref:reference:provisioning/adapters/geoip[GeoIP provisioning plugin].
 |===
