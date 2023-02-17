@@ -5,12 +5,12 @@
 = Import Handlers
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
-OpenNMS does this through external requisitions you specify in the External Requisitions and Thread Pools UI or configure via the xref:development:rest/config_management.adoc#config-rest-api[config management REST API].
-
+This is done through external requisitions that you specify in the External Requisitions and Thread Pools screen, or that you configure via the xref:development:rest/config_management.adoc[configuration management API].
 ifeval::["{page-component-title}" == "Horizon"]
-NOTE: Prior to {page-component-title} 30, you set external requisitions in the `provisiond-configuration.xml` file.
-This file is no longer available, and moved to the `/etc_archive` folder upon upgrade to {page-component-title} 30.
-Your existing configurations were also migrated and appear in the UI as existing external requisitions.
+
+NOTE: Prior to {page-component-title} 30, you could create external requisitions in `provisiond-configuration.xml`.
+This file is no longer available, and is automatically moved to `/etc_archive` when you upgrade to {page-component-title} 30.
+Your existing configurations are migrated and appear in the web UI as existing external requisitions.
 endif::[]
 
 An external requisition enables periodic inventory synchronization from external sources.
@@ -23,22 +23,20 @@ In addition to the standard protocols Java supports, we provide a series of cust
 
 == Generic handler
 
-The generic handler uses URLs in the form `requisition://type?param=1;param=2`
-
+The generic handler uses URLs in the form `requisition://type?param=1;param=2`.
 Use these URLs to invoke handlers, both locally and via a Minion.
+
 In addition to type-specific parameters, all handlers support the following parameters:
 
+[caption=]
 .Optional parameters
-[options="header, autowidth"]
-[cols="1,4,1"]
+[options="autowidth"]
 |===
-| Parameter
-| Description
-| Default
+| Parameter | Description   | Default Value
 
 | location
 | The name of the location at which the handler should run.
-| Default
+| _Default_
 
 | ttl
 | The maximum number of milliseconds to wait for the handler when run remotely.
@@ -48,12 +46,9 @@ In addition to type-specific parameters, all handlers support the following para
 Use the `opennms:show-import` command, available via the Karaf shell, to show the results of an import without persisting or triggering the import:
 
 [source, console]
-----
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
-----
 
-[[threadpools]]
-== Thread Pools
+== Thread pools
 
 Thread pool sizes impact the performance of the provisioning subsystem.
 Larger systems may require larger values.
