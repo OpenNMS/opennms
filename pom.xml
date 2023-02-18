@@ -4963,6 +4963,11 @@
         <version>${hikaricpVersion}</version>
       </dependency>
       <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP-java7</artifactId>
+        <version>9999.use-HikariCP-not-HikariCP-java7</version>
+      </dependency>
+      <dependency>
         <groupId>net.agkn</groupId>
         <artifactId>hll</artifactId>
         <version>${hllVersion}</version>
