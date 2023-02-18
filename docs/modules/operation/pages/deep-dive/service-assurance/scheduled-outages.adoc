@@ -2,6 +2,15 @@
 = Scheduled Outages
 
 Scheduled outages let you suppress notifications and pause status polling, threshold checking, and data collection during a specified time period.
+
+== Some examples for why you would want to schedule an outage:
+** Updating components, scheduled reboots
+** Planned decommissioning of nodes
+** Outside influences like, power-, internet-, or other unplanned maintenance
+** Avoid excessive notifications to on-call staff
+** Scheduled infrastructure testing
+** Other events where thresholds could be reached or cause outages which could be considered normal
+
 To configure scheduled outages in {page-component-title}, click the *gear* symbol at the top-right of the page and, under Service Monitoring, select *Configure Scheduled Outages*.
 
 == Create a scheduled outage
@@ -11,13 +20,38 @@ When you define a scheduled outage, you must set the following options:
 . Name.
 . Nodes to include.
 . Node interfaces to include.
-. Outage type (daily, weekly, monthly, custom).
+. Outage type (specific, daily, weekly, monthly).
 . Date and time for the outage.
 . Suppression settings (all notifications, status polling, threshold checking, data collection).
 
+== Parameters for a Scheduled Outage
+[options="header"]
+[cols="2,2,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| Node Labels
+| Nodes to include in the scheduled outage.
+| None - At least one node is required
+
+| Outage Type
+| Specific, Daily, Weekly, Monthly
+| Specific
+
+| Interfaces
+| Interfaces to include in the scheduled outage.
+| None - At least one interface is required
+
+| What is suppressed during the outage
+| Notifications, Status Polling, Threshold Checking, Data Collection
+| None
+|===
+
 During the scheduled outage, any nodes and interfaces matching the outage definition are suppressed.
 
-== Editing Outage
+== Creating a Scheduled Outage
 
 You can create a scheduled outage in the {page-component-title} web UI:
 
@@ -42,3 +76,11 @@ This type of scheduled outage occurs only once during the specified period of ti
 ** *Threshold Checking:* Include or exclude specific systems from threshold checking during the outage.
 ** *Data Collection:* Include or exclude specific systems from data collection during the outage.
 . Click *Save*.
+
+== Creating a Scheduled Outage for a specific node
+
+After navigating to the page for the node, click *Schedule Outage*, this will take you to a outage creation page for this specific node named after the node.  You can then choose whatever parameters are needed to schedule an outage for this node using the instructions from above.
+
+Note - Scheduled Outages can tie into <<reference:service-assurance/path-outages.adoc#ga-service-assurance-path-outage, Path Outages>>.
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
