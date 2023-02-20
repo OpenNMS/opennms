@@ -81,6 +81,6 @@ This type of scheduled outage occurs only once during the specified period of ti
 
 After navigating to the page for the node, click *Schedule Outage*, this will take you to a outage creation page for this specific node named after the node.  You can then choose whatever parameters are needed to schedule an outage for this node using the instructions from above.
 
-Note - Scheduled Outages can tie into <<reference:service-assurance/path-outages.adoc#ga-service-assurance-path-outage, Path Outages>>.
+Note - Scheduled Outages can tie into <<deep-dive/service-assurance/path-outages.adoc#ga-service-assurance-path-outage, Path Outages>>.
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+#This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
