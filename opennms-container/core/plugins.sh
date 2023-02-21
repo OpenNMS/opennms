@@ -32,7 +32,7 @@ find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
 cd ..
 rm -r test
 
-cd /usr/share/opennms/deploy || exit 
+cd $DEPLOY_FOLDER || exit 
 if [ $CORTEX_VERSION == "latest" ]
 then
  urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
