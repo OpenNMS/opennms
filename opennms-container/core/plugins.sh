@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+apt-get update
+apt-get install -y python3-pip wget curl jq
+pip3 install --upgrade cloudsmith-cli \
+
 mkdir ~/test
 cd ~/test || exit
 urls=$(cloudsmith list packages --query="opennms-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
@@ -25,3 +30,5 @@ urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plu
 for url in $urls; do
     wget "$url"
 done
+
+apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list
