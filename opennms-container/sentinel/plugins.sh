@@ -1,5 +1,9 @@
 #!/bin/bash
 
+. ../common.sh
+
+installCloudSmith
+
 mkdir ~/test
 cd ~/test || exit
 urls=$(cloudsmith list packages --query="sentinel-alec-plugin tag:latest" opennms/common -F json  | jq -r '.data[].cdn_url')
@@ -19,3 +23,5 @@ find . -name '*.kar' -exec mv {} /usr/share/opennms/deploy \;
 
 cd ..
 rm -r test
+
+cleanUp

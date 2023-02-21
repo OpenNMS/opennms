@@ -1,9 +1,8 @@
 #!/bin/bash
 
+. ../common.sh
 
-apt-get update
-apt-get install -y python3-pip wget curl jq
-pip3 install --upgrade cloudsmith-cli \
+installCloudSmith
 
 mkdir ~/test
 cd ~/test || exit
@@ -31,4 +30,4 @@ for url in $urls; do
     wget "$url"
 done
 
-apt-get remove -y python3-pip wget curl jq && apt-get clean && rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list
+cleanUp
