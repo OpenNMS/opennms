@@ -58,17 +58,10 @@ FROM sentinel-base
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
 COPY plugins.sh /tmp/plugins.sh 
-RUN apt-get update && \
-    apt-get install -y python3-pip wget curl jq && \
-    pip3 install --upgrade cloudsmith-cli && \
-    chmod +x /tmp/plugins.sh && \
+RUN chmod +x /tmp/plugins.sh && \
     cd /tmp && \
     ./plugins.sh && \
-    rm ./plugins.sh && \
-    apt-get remove -y python3-pip wget curl jq && \
-    apt-get clean && \
-    rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list && \
-    rm -rf ~/.cache/pip
+    rm ./plugins.sh
 
 SHELL ["/bin/bash", "-c"]
 
