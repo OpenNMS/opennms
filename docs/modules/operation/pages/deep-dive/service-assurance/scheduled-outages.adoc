@@ -2,14 +2,14 @@
 = Scheduled Outages
 
 Scheduled outages let you suppress notifications and pause status polling, threshold checking, and data collection during a specified time period.
+You might want to schedule an outage for any of the following reasons:
 
-== Some examples for why you would want to schedule an outage:
-** Updating components, scheduled reboots
-** Planned decommissioning of nodes
-** Outside influences like, power-, internet-, or other unplanned maintenance
-** Avoid excessive notifications to on-call staff
-** Scheduled infrastructure testing
-** Other events where thresholds could be reached or cause outages which could be considered normal
+* Updating components.
+* Completing scheduled reboots.
+* Planned decommissioning of nodes.
+* Preventing excessive notifications to on-call staff.
+* Completing scheduled infrastructure testing.
+* Other situations where thresholds may be reached or outages may be caused.
 
 To configure scheduled outages in {page-component-title}, click the *gear* symbol at the top-right of the page and, under Service Monitoring, select *Configure Scheduled Outages*.
 
@@ -24,34 +24,37 @@ When you define a scheduled outage, you must set the following options:
 . Date and time for the outage.
 . Suppression settings (all notifications, status polling, threshold checking, data collection).
 
-== Parameters for a Scheduled Outage
-[options="header"]
-[cols="2,2,2"]
+[caption=]
+.Scheduled outage parameters
+[options="autowidth"]
 |===
-| Parameter
-| Description
-| Default
+| Parameter    | Description    | Default Value
 
 | Node Labels
 | Nodes to include in the scheduled outage.
-| None - At least one node is required
+At least one node is required to schedule an outage.
+| _Blank_
 
 | Outage Type
-| Specific, Daily, Weekly, Monthly
+| The outage's recurrence schedule.
+An outage can be either a one-time occurrence (`Specific`) or a recurring event (`Daily`, `Weekly`, `Monthly`).
 | Specific
 
 | Interfaces
 | Interfaces to include in the scheduled outage.
-| None - At least one interface is required
+At least one interface is required to schedule an outage.
+| _Blank_
 
-| What is suppressed during the outage
-| Notifications, Status Polling, Threshold Checking, Data Collection
-| None
+| Applies To
+| {page-component-title} services that will be suppressed during the outage (notifications, status polling, threshold checking, data collection).
+You can specify items for each service, or choose *Select All*.
+| _Blank_
 |===
 
-During the scheduled outage, any nodes and interfaces matching the outage definition are suppressed.
+During the scheduled outage, any nodes and interfaces that match the outage definition are suppressed.
 
-== Creating a Scheduled Outage
+[[scheduled-outage-create]]
+== Create a scheduled outage
 
 You can create a scheduled outage in the {page-component-title} web UI:
 
@@ -77,8 +80,12 @@ This type of scheduled outage occurs only once during the specified period of ti
 ** *Data Collection:* Include or exclude specific systems from data collection during the outage.
 . Click *Save*.
 
-== Creating a Scheduled Outage for a specific node
+=== Schedule an outage for a node
 
-After navigating to the page for the node, click *Schedule Outage*, this will take you to a outage creation page for this specific node named after the node.  You can then choose whatever parameters are needed to schedule an outage for this node using the instructions from above.
+You can create a scheduled outage for a specific node in {page-component-title}:
 
-Note - Scheduled Outages can tie into <<deep-dive/service-assurance/path-outages.adoc#ga-service-assurance-path-outage, Path Outages>>.
+. Click menu:Info[Nodes] in the top menu bar.
+. Click *Schedule Outage*.
+. <<scheduled-outage-create, Create an outage>> for the node.
+
+NOTE: You can also use scheduled outages with xref:deep-dive/service-assurance/path-outages.adoc[path outages].
