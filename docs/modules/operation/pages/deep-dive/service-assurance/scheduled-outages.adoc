@@ -9,9 +9,7 @@ You might want to schedule an outage for any of the following reasons:
 * Planned decommissioning of nodes.
 * Preventing excessive notifications to on-call staff.
 * Completing scheduled infrastructure testing.
-* Other situations where thresholds may be reached or outages may be caused.
-
-
+* Other situations where known outages may be caused or thresholds may be reached
 
 When you define a scheduled outage, you must set the following options:
 
@@ -84,7 +82,8 @@ This type of scheduled outage occurs only once during the specified period of ti
 You can create a scheduled outage for a specific node in {page-component-title}:
 
 . Click menu:Info[Nodes] in the top menu bar.
+. Click on the Node that needs a scheduled outage.
 . Click *Schedule Outage*.
-. <<scheduled-outage-create, Create an outage>> for the node.
+. <<scheduled-outage-create, Create an outage>> for the node [starting at step 5 since any outage created within a node will be named after the node]
 
-NOTE: You can also use scheduled outages with xref:deep-dive/service-assurance/path-outages.adoc[path outages].
+NOTE: You can also configure outages based on device dependencies with xref:deep-dive/service-assurance/path-outages.adoc[path outages].
