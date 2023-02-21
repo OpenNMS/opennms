@@ -23,10 +23,10 @@ To this end, set the following property in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ====
 
-After activating the Time Series Integration Layer, you must configure the plugin.
+After you activate the Time Series Integration Layer, you must configure the plugin.
 For specific instructions, check your plugin's documentation.
 
-Enabling and/or configuring the Time Series Integration Layer requires a restart of the {page-component-title} service.
+Enabling and configuring the Time Series Integration Layer requires a restart of the {page-component-title} service.
 
 == Additional configuration options
 
