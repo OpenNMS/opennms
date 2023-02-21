@@ -88,7 +88,6 @@ RUN groupadd \
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
 COPY plugins.sh /tmp/plugins.sh 
-COPY ../common.sh /tmp/common.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##

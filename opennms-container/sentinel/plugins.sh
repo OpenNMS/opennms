@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. ../common.sh
-
-installCloudSmith
+apt-get update
+apt-get install -y python3-pip wget curl jq
+pip3 install --upgrade cloudsmith-cli 
 
 mkdir ~/test
 cd ~/test || exit
@@ -24,4 +24,7 @@ find . -name '*.kar' -exec mv {} /usr/share/opennms/deploy \;
 cd ..
 rm -r test
 
-cleanUp
+apt-get remove -y python3-pip wget curl jq 
+apt-get clean
+rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list 
+rm -rf ~/.cache/pip
