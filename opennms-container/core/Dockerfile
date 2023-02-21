@@ -22,6 +22,15 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
+##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as core-plugins
+
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+
 FROM ${BASE_IMAGE} as core-base
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
@@ -85,10 +94,7 @@ RUN groupadd \
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
-COPY plugins.sh /tmp/plugins.sh 
-RUN cd /tmp && \
-    ./plugins.sh && \
-    rm ./plugins.sh
+COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
@@ -135,6 +141,9 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /usr/share/opennms/etc
 RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
+
+# Copy plugins to the deploy folder
+#COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
 
 # Arguments for labels should not invalidate caches
 ARG VERSION

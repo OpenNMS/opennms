@@ -49,6 +49,14 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 ##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as sentinel-plugins
+
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+##
 # Install and setup OpenNMS Sentinel
 ##
 FROM sentinel-base
@@ -57,11 +65,7 @@ FROM sentinel-base
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh && \
-    cd /tmp && \
-    ./plugins.sh && \
-    rm ./plugins.sh
+COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
