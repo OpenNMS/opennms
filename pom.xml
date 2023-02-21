@@ -69,9 +69,6 @@
     <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
-    <!-- build -->
-    <module>checkstyle</module>
-
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
@@ -1055,6 +1052,25 @@
   </pluginManagement>
    <plugins>
      <plugin>
+       <groupId>org.commonjava.maven.plugins</groupId>
+       <artifactId>directory-maven-plugin</artifactId>
+       <version>1.0</version>
+       <executions>
+         <execution>
+           <id>directories</id>
+             <goals><goal>directory-of</goal></goals>
+             <phase>initialize</phase>
+             <configuration>
+               <property>opennms.build.basedir</property>
+               <project>
+                 <groupId>org.opennms</groupId>
+                 <artifactId>opennms</artifactId>
+               </project>
+             </configuration>
+           </execution>
+         </executions>
+     </plugin>
+     <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-enforcer-plugin</artifactId>
        <executions>
@@ -1218,10 +1234,6 @@
                 </condition>
                 <fail unless="java.versionokay">You must use Java 1.8 to build!</fail>
                 <echo message="update policy is ${updatePolicy}"/>
-              </target>
-              <target>
-                <property name="opennms.build.basedir" location="." />
-                <echo message="base directory is ${opennms.build.basedir}" />
               </target>
             </configuration>
             <goals>
@@ -1970,30 +1982,19 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>2.17</version>
+            <version>3.2.1</version>
             <dependencies>
               <dependency>
-                <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle</artifactId>
-                <version>7.6</version>
-              </dependency>
-              <dependency>
-                <groupId>org.opennms</groupId>
-                <artifactId>org.opennms.checkstyle</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-              <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
-                <artifactId>sevntu-checkstyle-maven-plugin</artifactId>
-                <version>1.25.0</version>
+                <artifactId>sevntu-checks</artifactId>
+                <version>1.41.0</version>
               </dependency>
             </dependencies>
             <configuration>
-              <configLocation>nms_checks.xml</configLocation>
-              <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-              <!-- <sourceDirectory> is needed so that checkstyle ignores the
-                   generated sources directory -->
-              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <configLocation>${opennms.build.basedir}/src/main/resources/nms_checks.xml</configLocation>
+              <suppressionsLocation>${opennms.build.basedir}/src/main/resources/checkstyle-suppressions.xml</suppressionsLocation>
+              <!-- <sourceDirectory> is needed so that checkstyle ignores the generated sources directory -->
+              <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
               <includeResources>true</includeResources>
               <includeTestSourceDirectory>true</includeTestSourceDirectory>
               <includeTestResources>true</includeTestResources>
@@ -2006,15 +2007,15 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
-                <phase>process-sources</phase>
+                <phase>process-resources</phase>
                 <configuration>
-                  <configLocation>check-license.xml</configLocation>
-                  <suppressionsLocation>license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>AGPL-LICENSE.regexp.txt</headerLocation>
+                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
+                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
+                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
                   <includeResources>false</includeResources>
                   <includeTestSourceDirectory>true</includeTestSourceDirectory>
                   <includeTestResources>false</includeTestResources>
-                  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
                   <failsOnError>false</failsOnError>
                   <consoleOutput>true</consoleOutput>
                 </configuration>
@@ -2024,7 +2025,7 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
-                <phase>process-sources</phase>
+                <phase>process-resources</phase>
               </execution>
             </executions>
           </plugin>
@@ -2167,11 +2168,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-ackd</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.checkstyle</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
