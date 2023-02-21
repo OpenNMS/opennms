@@ -13,7 +13,7 @@ Use vacuumd or cron to regularly prune unneeded events.
 This helps to clean up your events table, and reduces the amount of data in your backups.
 We also recommend doing this before you begin the {page-component-title} upgrade process.
 
-For example, run the following to delete events older than six weeks that have no associated outages:
+For example, run the following code to delete events older than six weeks that have no associated outages:
 
 [source, sql]
 ----
@@ -29,16 +29,15 @@ AND eventtime < now() - interval '6 weeks';
 
 == After upgrading
 
-=== Delete cache folder
+=== Troubleshooting
 
-Run the Fix Karaf script to delete cached items so that your system is cleaned up.
-We recommend doing this after an upgrade.
-This script tries to fix Karaf configuration problems by pruning `/opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
-
-NOTE: Back up `/opt/opennms/etc` before running the script.
+If your {page-component-title} instance fails to start after upgrading, you can run the Fix Karaf script to delete cached items.
+The script tries to fix configuration problems by pruning `/opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
 
 [source, console]
 /opt/opennms/bin/fix-karaf-setup.sh
+
+IMPORTANT: The Fix Karaf script can be destructive to files that may contain user-specific configuration settings.
 
 [[ga-data-collection]]
 == Data collection
