@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ../common.sh
+. common.sh
 
 installCloudSmith
 
