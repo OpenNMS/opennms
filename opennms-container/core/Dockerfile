@@ -142,9 +142,6 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 RUN chmod -R g=u /usr/share/opennms/etc
 RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
-# Copy plugins to the deploy folder
-#COPY --chown=10001:0 ./plugins/ /usr/share/opennms/deploy
-
 # Arguments for labels should not invalidate caches
 ARG VERSION
 ARG SOURCE
