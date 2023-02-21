@@ -9,7 +9,18 @@ commands:
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
-              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+              git clone --no-checkout --depth 20 "${CIRCLE_REPOSITORY_URL}" .
+              if [ -n "${CIRCLE_TAG}" ]; then
+                git fetch --force --tags origin
+              else
+                git fetch --force origin "+refs/${CIRCLE_BRANCH}/head:refs/remotes/origin/${CIRCLE_BRANCH}"
+              fi
+              if [ -n "$CIRCLE_TAG" ]; then
+                git checkout --force "${CIRCLE_TAG}"
+                git reset --hard "${CIRCLE_SHA1}"
+              else
+                git checkout --force -B "${CIRCLE_BRANCH}" "${CIRCLE_SHA1}"
+              fi
   cached-checkout:
       description: "Checkout with caching"
       steps:
