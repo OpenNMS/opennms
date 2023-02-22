@@ -23,29 +23,25 @@ When you define a scheduled outage, you must set the following options:
 [caption=]
 .Scheduled outage parameters
 [options="autowidth"]
-[cols="2,3,1"]
+[cols="2,3"]
 |===
-| Parameter    | Description    | Default Value
+| Parameter    | Description
 
 | Node Labels
 | Nodes to include in the scheduled outage.
 At least one node is required to schedule an outage.
-| _Blank_
 
 | Outage Type
 | The outage's recurrence schedule.
 An outage can be either a one-time occurrence (`Specific`) or a recurring event (`Daily`, `Weekly`, `Monthly`).
-| Specific
 
 | Interfaces
 | Interfaces to include in the scheduled outage.
 At least one interface is required to schedule an outage.
-| _Blank_
 
 | Applies To
 | {page-component-title} services that will be suppressed during the outage (notifications, status polling, threshold checking, data collection).
 You can specify items for each service, or choose *Select All*.
-| _Blank_
 |===
 
 During the scheduled outage, any nodes and interfaces that match the outage definition are suppressed.
