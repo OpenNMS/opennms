@@ -223,7 +223,7 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     @Override
     public void setMinPool(final int minPool) {
-        LOG.debug("Hikari has no equivalent to setMinPool(). Ignoring.");
+        m_pool.setMinimumIdle(minPool);
     }
 
     /* (non-Javadoc)
