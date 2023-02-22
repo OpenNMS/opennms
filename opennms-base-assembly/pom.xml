@@ -33,6 +33,13 @@
         </includes>
       </resource>
     </resources>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${osMavenPluginVersion}</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
