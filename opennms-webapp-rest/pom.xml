@@ -179,6 +179,12 @@
       <artifactId>cxf-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>jaxen</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -226,14 +232,17 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${gsonVersion}</version>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator-annotation-processor</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
 
     <!-- Discovery -->
@@ -385,7 +394,6 @@
       <!--  Expose the test context for poller DAOs  -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

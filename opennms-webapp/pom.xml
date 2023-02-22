@@ -415,6 +415,13 @@
       <groupId>org.eclipse.jetty.websocket</groupId>
       <artifactId>websocket-servlet</artifactId>
       <version>${jettyVersion}</version>
+      <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -659,6 +666,11 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -705,6 +717,11 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.config-dao.thresholding.api</artifactId>
       <version>${project.version}</version>
@@ -727,6 +744,10 @@
         <exclusion>
           <groupId>jdom</groupId>
           <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jdom</groupId>
+          <artifactId>jdom2</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -760,23 +781,34 @@
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-api</artifactId>
+        <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-graph-impl</artifactId>
+        <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-algorithms</artifactId>
+        <scope>${onmsLibScope}</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>concurrent</groupId>
+                <artifactId>concurrent</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
+        <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
@@ -787,6 +819,12 @@
       <groupId>org.owasp.encoder</groupId>
       <artifactId>encoder-jsp</artifactId>
       <version>${owaspEncoderVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+      <version>${owaspEncoderVersion}</version>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
