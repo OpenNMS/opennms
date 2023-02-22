@@ -492,7 +492,7 @@ doStart(){
 
 	if [ "$START_TIMEOUT" -eq 0 ]; then
 		# don't wait for startup
-		$opennms_echo "(not waiting for startup) \\c"
+		printf "(not waiting for startup) "
 		return 0
 	fi
 
@@ -761,19 +761,6 @@ else
 	done
 fi
 
-if [ "$(echo "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="echo"
-elif [ "$(echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="echo -e"
-elif [ "$(/bin/echo "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="/bin/echo"
-elif [ "$(/bin/echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="/bin/echo -e"
-else
-	echo "ERROR: could not get 'echo' to emit just a null character" >&2
-	exit 1
-fi
-
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
 if [ "$(uname)" = "Darwin" ]; then
@@ -1034,7 +1021,7 @@ fi
 
 case "$COMMAND" in
 	start|spawn)
-		$opennms_echo "Starting ${install.package.description}: \\c"
+		printf 'Starting %s: ' "${install.package.description}"
 
 		doStart "$@"
 		__ret="$?"
@@ -1063,7 +1050,7 @@ case "$COMMAND" in
 		;;
 
 	stop)
-		$opennms_echo "Stopping ${install.package.description}: \\c"
+		printf 'Stopping %s: ' "${install.package.description}"
 
 		doStop "$@"
 		__ret="$?"
@@ -1117,7 +1104,7 @@ case "$COMMAND" in
 
 	status)
 		if [ -f /etc/SuSE-release ]; then
-			$opennms_echo "Checking for ${install.package.description}: \\c"
+			printf 'Checking for %s: ' "${install.package.description}"
 			if [ "$VERBOSE" -gt 0 ]; then
 				echo ""
 			fi
@@ -1149,7 +1136,7 @@ case "$COMMAND" in
 		;;
 
 	configtest)
-		$opennms_echo "Validating XML files: \\c"
+		printf "Validating XML files: "
 		if checkXmlFiles; then
 			echo "PASSED"
 		fi
@@ -1158,7 +1145,7 @@ case "$COMMAND" in
 	ssh)
 		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2)"
 		karafUser="$(grep "^karaf.local.user" "${OPENNMS_HOME}/etc/system.properties" | cut -d= -f2 | tr -d "[:blank:]")"
-		$opennms_echo "Trying to establish SSH connection to OpenNMS Karaf Shell ($karafUser@localhost:$karafSshPort)..."
+		printf 'Trying to establish SSH connection to OpenNMS Karaf Shell (%s@localhost:%s)... ' "$karafUser" "$karafSshPort"
 		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l "$karafUser" -p "$karafSshPort" localhost
 		;;
 
