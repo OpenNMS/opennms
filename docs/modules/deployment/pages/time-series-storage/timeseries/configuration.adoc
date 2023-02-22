@@ -1,7 +1,7 @@
 
 = Enable Time Series Integration Layer
 
-Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d\timeseries.properties` to configure {page-component-title} to use the Time Series Integration Layer:
+Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 
 [source, properties]
 org.opennms.timeseries.strategy=integration
