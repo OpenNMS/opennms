@@ -37,7 +37,7 @@ The script tries to fix configuration problems by pruning `/opt/opennms/data` an
 [source, console]
 /opt/opennms/bin/fix-karaf-setup.sh
 
-IMPORTANT: The Fix Karaf script can be destructive to files that may contain user-specific configuration settings.
+WARNING: The Fix Karaf script can be destructive to files that may contain user-specific configuration settings.
 
 [[ga-data-collection]]
 == Data collection
