@@ -170,5 +170,22 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.bundle</groupId>
+      <artifactId>org.apache.karaf.bundle.core</artifactId>
+      <version>${karafVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <version>${karafVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

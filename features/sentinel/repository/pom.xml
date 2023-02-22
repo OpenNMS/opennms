@@ -39,6 +39,9 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
+                                <feature>karaf-extender</feature>
+                                <feature>scv</feature>
+
                                 <!-- OpenNMS features -->
                                 <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
