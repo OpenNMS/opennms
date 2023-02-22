@@ -28,8 +28,3 @@ find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
 
 cd ..
 rm -r test
-
-apt-get remove -y python3-pip wget curl jq 
-apt-get clean
-rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list 
-rm -rf ~/.cache/pip

@@ -42,8 +42,3 @@ fi
 for url in $urls; do
     wget "$url"
 done
-
-apt-get remove -y python3-pip wget curl jq 
-apt-get clean
-rm -rf /var/cache/apt /var/lib/apt/lists/* /tmp/security.sources.list 
-rm -rf ~/.cache/pip
