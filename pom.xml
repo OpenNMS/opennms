@@ -1602,7 +1602,7 @@
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
-    <cxfVersion>3.2.8</cxfVersion>
+    <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
@@ -2769,6 +2769,11 @@
         <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
