@@ -11,6 +11,10 @@
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
 
+    <!-- ActiveMQ service features -->
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
+    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
     <!-- Required by sentinel-jms -->
     <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>

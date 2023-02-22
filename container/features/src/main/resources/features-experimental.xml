@@ -17,6 +17,8 @@
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
     <!-- ActiveMQ service features -->
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
+    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
     <feature name="opennms-activemq-dispatcher-config" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker Config" version="${project.version}">
       <!-- This broker configuration will configure a broker to talk to a remote OpenNMS machine -->

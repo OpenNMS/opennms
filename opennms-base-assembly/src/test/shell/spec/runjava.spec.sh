@@ -46,7 +46,9 @@ testHelp() {
 }
 
 testSearchWithJavaHome() {
-  export JAVA_HOME="$FAKE_JAVA_HOME" PATH="$JAVA_HOME/bin:$REAL_PATH"
+  JAVA_HOME="$FAKE_JAVA_HOME"
+  PATH="$JAVA_HOME/bin:$REAL_PATH"
+  export JAVA_HOME PATH
   # shellcheck disable=SC2154
   javaconf_dir="$TESTDIR/${_shunit_test_}"
   mkdir -p "$javaconf_dir"
@@ -73,7 +75,8 @@ testSearchWithJavaHomeUnset() {
 }
 
 testPrint() {
-  export JAVA_HOME="$FAKE_JAVA_HOME" PATH="$JAVA_HOME/bin:$REAL_PATH"
+  JAVA_HOME="$FAKE_JAVA_HOME" PATH="$JAVA_HOME/bin:$REAL_PATH"
+  export JAVA_HOME PATH
   javaconf_dir="$TESTDIR/${_shunit_test_}"
   mkdir -p "$javaconf_dir"
   runRunjava -j "$javaconf_dir" -s >/dev/null 2>&1

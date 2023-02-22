@@ -7,6 +7,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
