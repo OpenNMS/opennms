@@ -11,7 +11,7 @@ sudo dnf info postgresql-server
 ----
 
 NOTE: These procedures use a specific PostgreSQL version.
-Make sure you reference your current PosgreSQL version.
+Make sure you reference your current PostgreSQL version.
 
 .Install PostgreSQL client and server
 [source, console]
