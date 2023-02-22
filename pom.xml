@@ -1586,7 +1586,7 @@
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <curatorTestVersion>2.9.1</curatorTestVersion>
-    <cxfVersion>3.5.1</cxfVersion>
+    <cxfVersion>3.5.5</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
