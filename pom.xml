@@ -1616,7 +1616,7 @@
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hikaricpVersion>2.5.1</hikaricpVersion>
+    <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
@@ -1688,7 +1688,7 @@
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.4.3</postgresqlVersion>
+    <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
@@ -4964,6 +4964,11 @@
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>${hikaricpVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP-java7</artifactId>
+        <version>9999.use-HikariCP-not-HikariCP-java7</version>
       </dependency>
       <dependency>
         <groupId>net.agkn</groupId>

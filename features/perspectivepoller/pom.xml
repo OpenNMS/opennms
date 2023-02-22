@@ -50,9 +50,9 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.quartz-scheduler</groupId>
-      <artifactId>quartz</artifactId>
-      <version>${quartzVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>

@@ -253,7 +253,16 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             // NMS-8911: Reduce the max connection lifetime so that HikariCP recycles 
             // connections more aggressively during tests
             pool.setMaxLifetime(500);
+            // Only create connections as needed
+            pool.setMinPool(0);
 
+            // Close the existing datasource, if set
+            if (DataSourceFactory.isDefaultDsLoaded()) {
+                DataSource existingDataSource = DataSourceFactory.getInstance();
+                if (existingDataSource instanceof HikariCPConnectionFactory) {
+                    ((HikariCPConnectionFactory)existingDataSource).close();
+                }
+            }
             DataSourceFactory.setInstance(pool);
         } else {
             DataSourceFactory.setInstance(m_database);
