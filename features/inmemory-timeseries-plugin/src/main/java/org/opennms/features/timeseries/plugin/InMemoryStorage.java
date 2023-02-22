@@ -29,6 +29,7 @@
 package org.opennms.features.timeseries.plugin;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -60,14 +61,10 @@ import com.google.re2j.Pattern;
  */
 public class InMemoryStorage implements TimeSeriesStorage {
 
-    private final Map<Metric, Collection<DataPoint>> data;
-
-    public InMemoryStorage () {
-        data = new ConcurrentHashMap<>();
-    }
+    private final Map<Metric, Collection<DataPoint>> data = new ConcurrentHashMap<>();
 
     public final Map<Metric, Collection<DataPoint>> getAllMetrics() {
-        return data;
+        return Collections.unmodifiableMap(data);
     }
 
     @Override
@@ -92,19 +89,19 @@ public class InMemoryStorage implements TimeSeriesStorage {
     }
 
     /** Each matcher must be matched by at least one tag. */
-    private boolean matches(final Collection<TagMatcher> matchers, final Metric metric) {
+    private static boolean matches(final Collection<TagMatcher> matchers, final Metric metric) {
         final Set<Tag> searchableTags = new HashSet<>(metric.getIntrinsicTags());
         searchableTags.addAll(metric.getMetaTags());
 
         for(TagMatcher matcher : matchers) {
-            if(searchableTags.stream().noneMatch(t -> this.matches(matcher, t))) {
+            if(searchableTags.stream().noneMatch(t -> matches(matcher, t))) {
                 return false; // this TagMatcher didn't find any matching tag => this Metric is not part of search result;
             }
         }
         return true; // all matched
     }
 
-    private boolean matches(final TagMatcher matcher, final Tag tag) {
+    private static boolean matches(final TagMatcher matcher, final Tag tag) {
 
         if(!matcher.getKey().equals(tag.getKey())) {
             return false; // not even the key matches => we are done.
@@ -165,10 +162,5 @@ public class InMemoryStorage implements TimeSeriesStorage {
     @Override
     public String toString() {
         return this.getClass().getName();
-    }
-
-    /** Exposes the internal data, for validation in tests. */
-    public Map<Metric, Collection<DataPoint>> getData() {
-        return data;
     }
 }

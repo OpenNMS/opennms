@@ -54,7 +54,7 @@ public class GetMetricsCommand implements Action {
                     entry.getKey().getKey(),
                     entry.getValue().size()));
             entry.getValue().stream().forEach(dataPoint ->
-                System.out.println(String.format("\t%d:%f", dataPoint.getTime().toEpochMilli(), dataPoint.getValue())));
+                System.out.printf("\t%d:%f\n", dataPoint.getTime().toEpochMilli(), dataPoint.getValue()));
         });
         return null;
     }
