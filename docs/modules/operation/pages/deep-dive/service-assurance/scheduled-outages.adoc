@@ -5,7 +5,7 @@ Scheduled outages let you suppress notifications and pause status polling, thres
 You might want to schedule an outage for any of the following reasons:
 
 * Updating components.
-* Completing scheduled reboots.
+* Performing scheduled reboots.
 * Planned decommissioning of nodes.
 * Preventing excessive notifications to on-call staff.
 * Completing scheduled infrastructure testing.
