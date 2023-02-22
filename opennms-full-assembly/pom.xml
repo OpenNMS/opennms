@@ -273,8 +273,6 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
-                <feature>spring/3.1.4.RELEASE</feature>
-                <feature>spring/3.2.18.RELEASE_1</feature>
                 <feature>spring/4.0.9.RELEASE_1</feature>
                 <feature>spring-jms/4.0.9.RELEASE_1</feature>
                 <feature>spring/4.1.9.RELEASE_1</feature>
@@ -323,6 +321,7 @@
                 <feature>management</feature>
                 <feature>minimal</feature>
                 <feature>obr</feature>
+                <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
                 <feature>profile</feature>
                 <feature>scheduler</feature>

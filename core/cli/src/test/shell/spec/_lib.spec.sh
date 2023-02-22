@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# ignore "Command appears to be unreachable." warnings
+# shellcheck disable=SC2317
+
 # shellcheck disable=SC2034
 OVERRIDEABLE_ARRAYS=(TEST_FOO TEST_BAR TEST_BAZ TEST_ADDITIONAL_OPTIONS)
 

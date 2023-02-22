@@ -9,8 +9,13 @@ cd "${MYDIR}"
 test -d repository || (echo "No 'repository' directory in $(pwd) -- are we in the right place (which is container/minion if you are curious)?" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
-export PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
-export CONTAINERDIR="${MYDIR}/../container/minion"
+MYDIR=$(dirname "$0")
+MYDIR=$(cd "$MYDIR"; pwd)
+PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+CONTAINERDIR="${MYDIR}/../container/minion"
+JAVA_OPTS="-Xmx2g"
+
+export PATH CONTAINERDIR JAVA_OPTS
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -39,8 +44,8 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/minion-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  compile.pl clean install && \
-    (cd "${CONTAINERDIR}"; compile.pl clean install)
+  compile.pl -DskipTests clean install && \
+    (cd "${CONTAINERDIR}"; compile.pl -DskipTests clean install)
 }
 
 set_instance_specific_configuration() {
