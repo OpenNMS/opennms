@@ -1,3 +1,4 @@
+
 .Operation
 * xref:overview/overview.adoc[]
 
@@ -198,7 +199,7 @@
 **** xref:deep-dive/admin/webui/dashboard.adoc[]
 **** xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[]
 **** xref:deep-dive/admin/webui/heatmap.adoc[]
-**** xref:deep-dive/admin/webui/search.adoc[]
+**** xref:deep-dive/admin/webui/log-reader.adoc[]
 **** xref:deep-dive/admin/webui/jmx-config-generator/introduction.adoc[]
 ***** xref:deep-dive/admin/webui/jmx-config-generator/webui.adoc[]
 ***** xref:deep-dive/admin/webui/jmx-config-generator/cli.adoc[]
@@ -218,10 +219,9 @@
 ***** xref:deep-dive/admin/webui/opsboard/dashlet/url.adoc[]
 ***** xref:deep-dive/admin/webui/opsboard/boosting-behavior.adoc[]
 ****** xref:deep-dive/admin/webui/opsboard/criteria-builder.adoc[]
-**** xref:deep-dive/admin/webui/mib.adoc[]
+**** xref:deep-dive/admin/webui/search.adoc[]
 **** xref:deep-dive/admin/webui/surveillance-view.adoc[]
 **** xref:deep-dive/admin/webui/trends.adoc[]
-**** xref:deep-dive/admin/webui/log-reader.adoc[]
 *** xref:deep-dive/admin/system-properties/introduction.adoc[]
 **** xref:deep-dive/admin/system-properties/system-proxies.adoc[]
 *** xref:deep-dive/admin/config-tester.adoc[]
@@ -232,6 +232,7 @@
 **** xref:deep-dive/admin/https/https-server.adoc[]
 **** xref:deep-dive/admin/https/https-client.adoc[]
 *** xref:deep-dive/admin/request-logging.adoc[]
+*** xref:deep-dive/admin/mib.adoc[]
 *** xref:deep-dive/admin/restart.adoc[]
 *** xref:deep-dive/admin/daemon-config-files.adoc[]
 *** xref:deep-dive/admin/logging/introduction.adoc[]

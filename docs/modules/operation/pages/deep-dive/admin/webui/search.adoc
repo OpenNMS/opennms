@@ -1,30 +1,27 @@
 
 = Search
 
-You can search in the {page-component-title} web UI using either the search bar or the Search view.
+You can search your {page-component-title} data in the web UI using either the search bar at the top of each page or the Search view.
 
 == Search bar
 
-The search bar uses keywords to return nodes that match the keywords, and a list of actions that you can perform related to the keywords.
+The search bar uses keywords to return related nodes and a list of actions that you can perform.
 Press kbd:[Shift] twice or click in the search bar to activate it, then type your search terms.
 
 .Sample search results
 image::search/search-sample.png["{page-component-title} UI showing two examples of search results. The first shows related nodes and actions, and the second shows only related actions."]
 
-Note that the search results for nodes also display any nodes with xref:deep-dive/meta-data.adoc[metadata] that match the keywords, such as labels, locations, admin users, and so on.
-For example, if you search for "foo" and get a node match of "foobar", the result displays no metadata.
+NOTE: Search results for nodes also display any nodes with xref:deep-dive/meta-data.adoc[metadata] that match the keywords, such as labels, locations, admin users, and so on (for example, if you search for "foo" and get a node match of "foobar," the result displays no metadata).
 However, if you search for "foo" and a match is found in a node's metadata `customkey='somefoo'` (even if the node name does not contain "foo"), the results display the name of the node (for example, `node1`) and the "foo" metadata associated with it.
 See <<search-customize, Customize search results>> for more information.
 
-From the search results, you can click on a node to navigate to its page, or click on one of the actions to navigate to the page that lets you complete said action.
+From the search results, you can select a node to navigate to its page, or select one of the actions to navigate to the page that lets you complete said action.
 For example, clicking *Edit Requisition 'Test'* takes you to the page where you can edit the requisition named Test.
 
 == Search view
 
 The Search view provides a number of search options for nodes.
 To access the Search view, click *Search* in the top menu bar.
-
-=== Quick-search links
 
 The Search view includes three quick-search links: *All Nodes*, *All Nodes and Their Interfaces*, and *All Nodes with Asset Info*.
 Click any of them to quickly search for associated information.
@@ -40,7 +37,7 @@ You can use an underscore (`_`) as a single-character wildcard, or a percent cha
 When you search for a node by TCP or IP address, it uses a flexible format that lets you separate the four (or eight, in the case of IPv6) fields of an IP address into specific searches.
 Include an asterisk (`*`) in place of any octet to match any value for that octet.
 Separate two numbers with a dash (`-`) to indicate a range.
-Use a comma to demarcate a list.
+Use a comma (`,`) to demarcate a list.
 
 For example, the following search fields are all valid and each creates the same result set (all IP addresses from `192.168.0.0` through `192.168.255.255`):
 
@@ -50,13 +47,13 @@ For example, the following search fields are all valid and each creates the same
 * `2001:6a8:3c80:8000-8fff:*:*:*:*`
 * `fc00,fe80:*:*:*:*:*:*:*`
 
-=== System or interface search
+=== System/interface search
 
 A system or interface attribute search finds nodes with systems or interfaces that match a defined search string.
 The `contains` modifier provides a case-insensitive, inclusive search similar to the <<search-view-name-search, name search>>.
 The `equals` modifier requires the search to find an exact match.
 
-=== Location or service search
+=== Location/service search
 
 Select a location or service to search for using the appropriate drop-down list.
 
@@ -74,11 +71,11 @@ You can use an underscore (`_`) as a single-character wildcard, or a percent cha
 
 Find nodes with or without associated flows data.
 
-=== Enhanced linkd topology search
+=== Enlinkd topology search
 
 Find nodes whose CDP or LLDP data match the defined search string.
 
-=== Category or field search
+=== Category/field search
 
 Search for nodes with assets that are associated with a particular category or field.
 
@@ -91,6 +88,7 @@ You can use an underscore (`_`) as a single-character wildcard, or a percent cha
 
 You can customize search results to show additional metadata.
 To do so, create a new file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` and specify a value for `org.opennms.netmgt.search.info`.
+
 The following example displays nodes' `sys-contact` metadata and the associated department:
 
 [source, properties]

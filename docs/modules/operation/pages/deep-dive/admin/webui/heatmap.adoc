@@ -2,17 +2,19 @@
 = Heatmap
 
 The heatmap visualization displays either unacknowledged alarms or ongoing outages, depending on its configuration.
-You can apply each of these visualizations to categories, foreign sources, or node services.
+You can apply the visualization to categories, foreign sources, or node services.
 
 The size of an entity is calculated by counting the services inside of the entity.
 Thus, a node with fewer services is displayed as a smaller box than one with more services.
 
-The heatmap feature is deactivated by default, and is configured in `opennms.properties`.
-
 .Heatmap visualization of outages
 image::webui/heatmap/heatmap.png[{page-component-title} UI displaying an outage heatmap. The smallest entity reports an ongoing outage."]
 
+NOTE: The heatmap visualization is deactivated by default.
+
 == Configuration properties
+
+The heatmap is configured in `opennms.properties`.
 
 [caption=]
 .Heatmap visualization configuration properties

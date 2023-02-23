@@ -1,4 +1,63 @@
 
-= Administrative Web Interface
+= Admin UI Customization
 
-This section describes the main sections of the {page-component-title} web UI.
+This section describes how to customize the main components of the {page-component-title} web UI.
+
+== Dashboard
+
+A dashboard is an at-a-glance overview of your monitored network; it can be used as a starting point for more detailed diagnoses of issues.
+You can customize your dashboard using its predefined components.
+
+For more information, see xref:deep-dive/admin/webui/dashboard.adoc[].
+
+== Grafana Dashboard Box
+
+The Grafana Dashboard Box uses Grafana to generate visualizations.
+By default, it shows a set of dashboards related to {page-component-title} and your monitored environment.
+You can filter the displayed information and configure the Dashboard Box as desired.
+
+For more information, see xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[].
+
+== Heatmap
+
+The heatmap displays unacknowledged alarms or ongoing outages.
+
+For more information, see xref:deep-dive/admin/webui/heatmap.adoc[].
+
+== Instrumentation log reader
+
+The instrumentation log reader provides data collection statistics for each node in your monitored network.
+
+For more information, see xref:deep-dive/admin/webui/log-reader.adoc[].
+
+== JMX Configuration Generator tools
+
+{page-component-title} includes JMX Configuration Generator tools that help generate complex data collection configurations and RRD graph definitions.
+
+For more information, see the xref:deep-dive/admin/webui/jmx-config-generator/introduction.adoc[JMX Configuration Generator section].
+
+== Operator board
+
+The operator board lets you customize and arrange dashlets to display different types of information.
+
+For more information, see the xref:deep-dive/admin/webui/opsboard/introduction.adoc[Operator Board section].
+
+== Search
+
+You can search your {page-component-title} data using either the search bar or the Search view.
+
+For more information, see xref:deep-dive/admin/webui/search.adoc[].
+
+== Surveillance view
+
+The surveillance view lets you visualize an overview of your monitored network's status.
+You can filter the data displayed as desired.
+
+For more information, see xref:deep-dive/admin/webui/surveillance-view.adoc[].
+
+== Trend
+
+The trend visualization displays small charts of database-related statistics.
+You can configure them to be displayed on the {page-component-title} home page.
+
+For more information, see xref:deep-dive/admin/webui/trends.adoc[].

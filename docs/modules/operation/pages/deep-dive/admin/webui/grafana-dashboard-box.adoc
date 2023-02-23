@@ -1,9 +1,7 @@
 
 = Grafana Dashboard Box
 
-http://grafana.org/[Grafana] provides an API key that lets third-party applications access it.
-{page-component-title} uses Grafana to generate visualizations, including the Grafana Dashboard Box on the home page.
-By default, it shows a set of dashboards related to {page-component-title} and your monitored environment.
+{page-component-title} uses Grafana to generate visualizations, including those displayed in the Grafana Dashboard Box.
 
 .Grafana dashboards on the {page-component-title} home page
 image::webui/startpage/01_grafana-box.png["{page-component-title} home page displaying Grafana dashboard components"]
@@ -13,7 +11,7 @@ image::webui/startpage/01_grafana-box.png["{page-component-title} home page disp
 To filter for relevant dashboards, you can use a dashboard's tag (defined by the `org.opennms.grafanaBox.tag` property) and make it accessible.
 If no tag is provided, all Grafana dashboards are shown.
 
-You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties`.
+You can configure this feature by creating or editing `$\{OPENNMS_HOME}/etc/opennms.properties.d/grafana.properties` and setting the configuration properties.
 
 [caption=]
 .Grafana Dashboard Box configuration properties

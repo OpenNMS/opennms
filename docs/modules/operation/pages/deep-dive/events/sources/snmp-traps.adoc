@@ -9,6 +9,7 @@ It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.
 {page-component-title} includes trap definitions from many major manufacturers by default, and you can create your own event definitions.
 
 == Before you begin
+
 There are a few tasks you must complete before your server can receive SNMP traps:
 
 . Configure the port on which to receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP traps/informs]).
@@ -25,8 +26,8 @@ These traps are transformed into events only when the conditions you define are 
 There are several ways to configure {page-component-title} to customize the events you receive and see:
 
 * Determine what problem you are trying to solve (for example, "I want to know X about my Cisco router").
-* Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:deep-dive/events/event-debugging.adoc#send-event[Manually send events]).
-* Import event definitions with the xref:operation:deep-dive/admin/webui/mib.adoc[SNMP MIB compiler].
+* Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:deep-dive/events/event-debugging.adoc#send-event[Manually send events]).
+* Import event definitions with the xref:deep-dive/admin/mib.adoc[SNMP MIB compiler].
 * Configure the event to meet your requirements, if required.
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event.
 ** <<varbind-filter, Filter on variable bindings>> for further granularity on the conditions for creating an event.

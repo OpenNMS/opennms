@@ -1,16 +1,16 @@
 
 = Trend
 
-The Trend feature lets you display small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
+The Trend feature visualizes small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
 Click menu:Status[Trend] in the top menu bar to view them.
-
-You can also configure these charts to be displayed on the {page-component-title} home page.
-To do this, modify the `org.opennms.web.console.centerUrl` parameter to include `/trend/trend-box.htm`.
 
 .Example of a trend chart
 image::webui/trend/trend-chart.png["{page-component-title} UI displaying an example trend chart", 700]
 
 You can define and configure trend charts in `$\{OPENNMS_HOME}/etc/trend-configuration.xml`.
+
+You can set trend charts to be displayed on the {page-component-title} home page.
+To do this, modify the `org.opennms.web.console.centerUrl` parameter to include `/trend/trend-box.htm`.
 
 The following code defines a trend chart that displays nodes that are experiencing ongoing outages:
 
@@ -75,8 +75,8 @@ See http://omnipotent.net/jquery.sparkline/#common[jQuery Sparklines] for option
 See below for supported variable substitutions.
 <8> The SQL statement that queries the chart's values.
 +
-IMPORTANT: Don't forget to limit the SQL query's return values!
-Setting the query to fetch an unlimited number of results can increase its run time significantly.
+IMPORTANT: We recommend that you set a limit for the SQL query's return values.
+Allowing the query to fetch an unlimited number of results can increase its run time significantly.
 
 You can use individual or aggregated values in the title, subtitle, and description fields.
 The following table describes available variable substitutions:

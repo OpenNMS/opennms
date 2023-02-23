@@ -1,9 +1,8 @@
 
-[[jmx-config-generator]]
 = JMX Configuration Generator
 
 {page-component-title} implements the JMX protocol to collect long-term performance data for Java applications.
-There are a huge variety of metrics available, and administrators have to select which information should be collected.
-The JMX Configuration Generator Tools are built to help generate valid complex JMX data collection configuration and RRD graph definitions for {page-component-title}.
+There are a large variety of metrics available, and administrators have to select which information should be collected.
 
-This tool is available as a CLI- and web-based version.
+The JMX Configuration Generator tools help to generate valid complex JMX data collection configuration and RRD graph definitions for {page-component-title}.
+They are available as both a xref:deep-dive/admin/webui/jmx-config-generator/webui.adoc[web-based] and xref:deep-dive/admin/webui/jmx-config-generator/cli.adoc[CLI-based] utility.
