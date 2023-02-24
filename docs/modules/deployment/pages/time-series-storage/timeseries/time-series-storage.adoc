@@ -51,7 +51,7 @@ This additional time series database may be used for validation purposes or for 
 If you plan to migrate to a new storage strategy, you can set the new strategy as a write destination while keeping reads on your current storage.
 Once you have written enough data to the new storage, you can then flip the reads over to the new system.
 
-In order for the dual write plugin to work, you must install a time series feature (either Newts or an integration plugin) and set `org.opennms.timeseries.strategy` to `rrd`.
+In order for the dual write plugin to work, you must install a time series feature (either Newts or an integration plugin) and leave `org.opennms.timeseries.strategy` at your current value.
 This will allow writing to both the strategy and the time series database.
 
 [[ga-dual-write-newts]]
