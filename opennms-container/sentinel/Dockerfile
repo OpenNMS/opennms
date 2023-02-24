@@ -49,6 +49,14 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 ##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as sentinel-plugins
+
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+##
 # Install and setup OpenNMS Sentinel
 ##
 FROM sentinel-base
@@ -56,6 +64,8 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
+
+COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
@@ -89,9 +99,6 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./container-fs/* /
-
-# Copy plugins to the deploy folder
-COPY --chown=10001:0 ./plugins/*.kar /usr/share/opennms/deploy
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
