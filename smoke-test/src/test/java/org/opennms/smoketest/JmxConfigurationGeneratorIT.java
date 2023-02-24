@@ -103,7 +103,6 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
      * Verifies that selected CompMembers do show up in the generated jmx-datacollection-config.xml snippet.
      */
     @Test
-    @org.junit.Ignore
     public void verifyCompMemberSelection() throws Exception {
         configureJMXConnection(false);
 
