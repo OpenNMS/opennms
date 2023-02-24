@@ -10,7 +10,7 @@ By default, it displays pending situations and problems, ongoing outages, 24-hou
 
 By default, the visualizations on the home page are not filtered.
 You can apply filters to the data using the sections on the right side of the screen (Resource Graphs, KSC Reports, and Quick Search).
-For more information, see xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
+For more information, see xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] in the Deep Dive section.
 
 [[qs-visualize-dashboard]]
 == Dashboard
@@ -29,20 +29,20 @@ The rest of the dashboard updates dynamically.
 * *Outages:* Shows all ongoing network outages.
 * *Resource graphs:* Shows time series reports for performance diagnosis.
 
-For more information on each of the components, see xref:deep-dive/admin/webui/dashboard.adoc[Dashboard] in the Deep Dive section.
+For more information on each of the components, see xref:deep-dive/visualizations/dashboard.adoc[] in the Deep Dive section.
 
 == Surveillance View
 
-The Surveillance View is similar to its component of the same name in the <<#qs-visualize-dashboard, dashboard>>.
+The Surveillance View is similar to its component of the same name in the <<qs-visualize-dashboard, dashboard>>.
 Click menu:Status[Surveillance] in the top menu bar to view it.
 
 Just like in the Dashboard, you can select rows, columns, and cells to narrow your data focus.
 
-For more information, see xref:deep-dive/admin/webui/surveillance-view.adoc[Surveillance View] in the Deep Dive section.
+For more information, see xref:deep-dive/visualizations/surveillance-view.adoc[] in the Deep Dive section.
 
 === Visualize data using surveillance categories
 
-The Surveillance View and its corresponding dashboard component visualize all routers, switches, and servers in your production, test, and development environments by default (see <<deep-dive/admin/webui/surveillance-view.adoc#surveillance-view-default-config, Default configuration>>).
+The Surveillance View and its corresponding dashboard component visualize all routers, switches, and servers in your production, test, and development environments by default (see <<deep-dive/visualizations/surveillance-view.adoc#surveillance-view-default-config, Default configuration>>).
 You can create custom surveillance categories to define specific data that you want to visualize in the Surveillance View.
 
 Follow these steps to create a surveillance category that monitors the `localhost` node:
@@ -83,18 +83,18 @@ You can use the heatmap to display either unacknowledged alarms or ongoing node 
 Each visualization can be applied to categories, foreign sources, or node services.
 Click menu:Status[Heatmap] in the top menu bar to view the heatmap.
 
-For more information, see xref:deep-dive/admin/webui/heatmap.adoc[Heatmap] in the Deep Dive section.
+For more information, see xref:deep-dive/visualizations/heatmap.adoc[] in the Deep Dive section.
 
 == Trend
 
 The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
 Click menu:Status[Trend] in the top menu bar to view it.
 
-For more information, see xref:deep-dive/admin/webui/trends.adoc[Trend] in the Deep Dive section.
+For more information, see xref:deep-dive/visualizations/trends.adoc[] in the Deep Dive section.
 
 == Beyond Quick Start
 
-Refer to xref:deep-dive/admin/webui/introduction.adoc[Administrative Web Interface] in the Deep Dive section for more information on visualizations, including the following:
+Refer to Visualizations in the Deep Dive section for more information on visualizations, including the following:
 
-* xref:deep-dive/admin/webui/opsboard/introduction.adoc[Operator boards and configuration settings].
-* xref:deep-dive/admin/webui/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].
+* xref:deep-dive/visualizations/opsboard/introduction.adoc[Operator boards and configuration settings].
+* xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[Filtering dashlet information using the Criteria Builder].

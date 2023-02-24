@@ -1,7 +1,7 @@
 
 = Map
 
-The Map dashlet displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Map dashlet displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map] in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
 [caption=]
 .Map dashlet configuration options

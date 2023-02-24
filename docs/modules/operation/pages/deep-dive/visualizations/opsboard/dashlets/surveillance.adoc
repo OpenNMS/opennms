@@ -1,7 +1,7 @@
 
 = Surveillance
 
-The Surveillance dashlet shows a given xref:deep-dive/admin/webui/surveillance-view.adoc[] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Surveillance dashlet shows a given xref:deep-dive/visualizations/surveillance-view.adoc[] in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
 [caption=]
 .Surveillance dashlet configuration options

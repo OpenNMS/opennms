@@ -1,7 +1,7 @@
 
 = Image
 
-The Image dashlet displays an image by a given URL in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Image dashlet displays an image by a given URL in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 
 [caption=]
 .Image dashlet configuration options

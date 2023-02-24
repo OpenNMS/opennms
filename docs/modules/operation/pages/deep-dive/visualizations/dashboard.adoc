@@ -10,7 +10,7 @@ Each dashboard should show only the information pertaining to a specific monitor
 Operators need to customize and filter information on the dashboard to create focused data sets.
 
 .Dashboard with configured surveillance view and current outage
-image::dashboard/01_dashboard-overall.png["{page-component-title} UI showing a dashboard with a configured surveillance view. It displays an ongoing outage."]
+image::visualizations/dashboard/01_dashboard-overall.png["{page-component-title} UI showing a dashboard with a configured surveillance view. It displays an ongoing outage."]
 
 TIP: You can hide the upper navigation bar on any page by adding `?quiet=true;` to the end of any {page-component-title} URL.
 This is useful when viewing dashboards on a large screen.
@@ -39,10 +39,10 @@ The surveillance view component has multiple functions:
 * It lets you limit the information displayed in the rest of the dashboard dynamically by manually selecting rows, columns, and cells.
 
 By default, all entries in a surveillance view are selected.
-For more information on configuring the surveillance view component, see xref:deep-dive/admin/webui/surveillance-view.adoc[].
+For more information on configuring the surveillance view component, see xref:deep-dive/visualizations/surveillance-view.adoc[].
 
 .A surveillance view component in its default state (all entries selected)
-image::dashboard/02_dashboard-surveillance-view.png["{page-component-title} UI displaying a surveillance view in its default state. It displays an ongoing outage."]
+image::visualizations/dashboard/02_dashboard-surveillance-view.png["{page-component-title} UI displaying a surveillance view in its default state. It displays an ongoing outage."]
 
 === Alarms
 
@@ -54,7 +54,7 @@ Acknowledged alarms are removed from the operator's responsibility and, therefor
 The component displays the following information:
 
 .An alarms component displaying three alarms--two of Minor severity, and one of Warning severity
-image::dashboard/03_dashboard-alarms.png["{page-component-title} UI displaying an alarms component with three active alarms"]
+image::visualizations/dashboard/03_dashboard-alarms.png["{page-component-title} UI displaying an alarms component with three active alarms"]
 
 * *Node:* The label of the node associated with the alarm.
 * *Severity:* Alarm severity.
@@ -78,7 +78,7 @@ This provides an overview of the monitored network and gives an opportunity for 
 The following information is shown in the component:
 
 .A notifications component displaying three notifications
-image::dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications"]
+image::visualizations/dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications"]
 
 * *Node:* The label of the node associated with the notification.
 * *Service:* The name of the service associated with the notification.
@@ -93,7 +93,7 @@ The outages component shows all ongoing network outages.
 An acknowledged alarm doesn't necessarily mean that an outage has been solved; for this reason, the outages component works alongside the alarms component to provide a holistic overview of the network.
 
 .An outages component displaying five nodes and their availability stats
-image::dashboard/05_dashboard-outages.png["{page-component-title} UI displaying an outages component. Five nodes are listed, along with their availability statistics."]
+image::visualizations/dashboard/05_dashboard-outages.png["{page-component-title} UI displaying an outages component. Five nodes are listed, along with their availability statistics."]
 
 * *Node:* The label of the node associated with the outage.
 * *Current Outages:* The number of services on the node experiencing outages.
@@ -109,13 +109,13 @@ The component filters nodes based on the surveillance view context.
 It shows only one graph report at a time, and lets you navigate sequentially through the data.
 
 .A resource graph component displaying ICMP response time data
-image::dashboard/06_dashboard-resource-graphs.png["{page-component-title} UI displaying a resource graphs component, showing ICMP response time data from 11:00 a.m. to 12:00 p.m."]
+image::visualizations/dashboard/06_dashboard-resource-graphs.png["{page-component-title} UI displaying a resource graphs component, showing ICMP response time data from 11:00 a.m. to 12:00 p.m."]
 
 == Advanced configuration
 
 The surveillance view component lets you model views for different monitoring contexts.
 Use it to create a special view as an example for network or server operators.
-The dashboard displays only one configured xref:deep-dive/admin/webui/surveillance-view.adoc[surveillance view].
+The dashboard displays only one configured xref:deep-dive/visualizations/surveillance-view.adoc[surveillance view].
 You can, however, let certain users define their surveillance view to fit their requirements by mapping their account to a configured surveillance view component.
 
 Any nodes selected in the surveillance view are also aware of the https://opennms.discourse.group/t/user-restriction-filters-webacls/1021[User Restriction Filter].
@@ -219,7 +219,7 @@ If they try to do so, they receive an access denied error.
 
 You can modify the security framework configuration files to allow access to one or more dashboards without requiring a user to log in:
 
-. Create users and configure surveillance views as shown in <<#ga-dashboard-dashboard-role, Dashboard role>>.
+. Create users and configure surveillance views as shown in <<ga-dashboard-dashboard-role, Dashboard role>>.
 For this example, we will create two dashboards and two users: `dashboard1` and `dashboard2`.
 . Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml` to create aliases for the dashboards.
 Add the following code just before the first `<servlet-mapping>` tag:

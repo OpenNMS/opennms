@@ -10,7 +10,7 @@ Thus, a node with fewer services is displayed as a smaller box than one with mor
 The heatmap feature is deactivated by default, and is configured in `opennms.properties`.
 
 .Heatmap visualization of outages
-image::webui/heatmap/heatmap.png[{page-component-title} UI displaying an outage heatmap. The smallest entity reports an ongoing outage."]
+image::visualizations/heatmap.png[{page-component-title} UI displaying an outage heatmap. The smallest entity reports an ongoing outage."]
 
 == Configuration properties
 

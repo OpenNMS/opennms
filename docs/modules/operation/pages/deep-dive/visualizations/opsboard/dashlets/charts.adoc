@@ -1,7 +1,7 @@
 
 = Charts
 
-The Charts dashlet displays predefined bar graphs in the Charts UI (menu:Reports[Charts]) and the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Charts dashlet displays predefined bar graphs in the Charts UI (menu:Reports[Charts]) and the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 You can also <<custom-chart, create custom charts>> in `charts-configuration.xml`.
 
 [caption=]

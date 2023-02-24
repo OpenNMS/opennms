@@ -84,7 +84,7 @@ Alternatively, you can provide this information in the `userAgent` property.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+Configure the system proxy settings in <<deep-dive/admin/configuration/system-properties.adoc#ga-opennms-system-properties, system properties>>.
 | Boolean
 | false
 |===
@@ -93,7 +93,7 @@ NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.feature
 
 === Google
 
-The Google geocoder API is a service that provides geocoding and reverse geocoding of addresses. 
+The Google geocoder API is a service that provides geocoding and reverse geocoding of addresses.
 The Google geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
 For more details, see the https://developers.google.com/maps/documentation/javascript/get-api-key[official Google documentation].
 
@@ -131,7 +131,7 @@ Required only if `useEnterpriseCredentials` is true.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+Configure the system proxy settings in <<deep-dive/admin/configuration/system-properties.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 
@@ -173,7 +173,7 @@ The `apikey` and `query` strings are substituted before making the request.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+Configure the system proxy settings in <<deep-dive/admin/configuration/system-properties.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 |===

@@ -32,7 +32,7 @@ The Surveillance View also shows nodes rather than services--an important thing 
 When monitoring your network, you want to know how many servers or services are experiencing issues.
 
 .Surveillance view displaying three categories
-image::surveillance-view/01_surveillance-view.png["{page-component-title} UI displaying a surveillance view, which shows three categories. One category is experiencing an outage."]
+image::visualizations/01_surveillance-view.png["{page-component-title} UI displaying a surveillance view, which shows three categories. One category is experiencing an outage."]
 
 The following defines the visual status indicators:
 
@@ -40,7 +40,7 @@ The following defines the visual status indicators:
 * *Yellow:* One service down.
 * *Red:* More than one service down.
 
-The surveillance view also serves as the foundation of the xref:deep-dive/admin/webui/dashboard.adoc[].
+The surveillance view also serves as the foundation of the xref:deep-dive/visualizations/dashboard.adoc[].
 
 [[surveillance-view-default-config]]
 == Default configuration
@@ -103,13 +103,13 @@ The page displays an overview of configured Surveillance Views and lets you edit
 You can also select a default Surveillance View by selecting the Default box beside its name.
 
 .Surveillance view configuration page
-image::surveillance-view/02_surveillance-view-config-ui.png["{page-component-title} UI displaying the surveillance view configuration page. Three entries are listed, and the `default` configuration is designated as the default view."]
+image::visualizations/02_surveillance-view-config-ui.png["{page-component-title} UI displaying the surveillance view configuration page. Three entries are listed, and the `default` configuration is designated as the default view."]
 
 When you configure a surveillance view, you must define its title and the time (in seconds) between refreshes.
 You can also add and delete columns and rows, and reorder them as appropriate by clicking the *Up Arrow* and *Down Arrow* symbols.
 
 .Surveillance view configuration page
-image::surveillance-view/03_surveillance-view-config-ui-edit.png["Surveillance view configuration page showing a list of rows and columns that can be added to the View"]
+image::visualizations/03_surveillance-view-config-ui-edit.png["Surveillance view configuration page showing a list of rows and columns that can be added to the View"]
 
 Editing row or column definitions requires you to choose a unique label and at least one {page-component-title} category.
 

@@ -5,7 +5,7 @@
 The KSC Reports dashlet shows an existing KSC report.
 KSC Reports provide a way to generate prefabricated graphical views of collected data.
 
-This dashlet displays data from an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+This dashlet displays data from an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 The view is the same as the KSC report in terms of order, columns, and time spans.
 Key SNMP Customized (KSC) reports shows SNMP performance data using prefabricated graph types.
 
@@ -62,4 +62,4 @@ NOTE: Make sure that each report's `id` is unique.
 
 == Use KSC reports
 
-The *KSC Reports* section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.
+The KSC Reports section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.

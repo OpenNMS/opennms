@@ -1,7 +1,7 @@
 
 = Topology
 
-The Topology dashlet shows a xref:deep-dive/topology/topology.adoc[topology map] in the <<deep-dive/admin/webui/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Topology dashlet shows a xref:deep-dive/topology/topology.adoc[topology map] in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
 Configure the topology map with the following parameters.
 
 [caption=]
