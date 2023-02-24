@@ -219,6 +219,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
         final String deselectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='deselect']";
         final String selectXpath = "//div[@id='PID_VAADIN_CM']//div[text()='select']";
 
+        scrollToElement(By.xpath(treeNodeXpath));
         clickElement(By.xpath(treeNodeXpath));
 
         // F**king Vaadin redraws the *entire* tree with new DOM so it turns out the new
@@ -227,6 +228,9 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
         // a new one. And guess what? You can't clear the cache.
         // So, ugh.  Sleep.  :/
         Thread.sleep(5000);
+
+        // things can shift around a bit, make sure the element is back in view so we can right-click on it
+        scrollToElement(By.xpath(treeNodeXpath));
 
         new Actions(driver).contextClick(findElementByXpath(treeNodeXpath)).perform(); // right click
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(deselectXpath)));
