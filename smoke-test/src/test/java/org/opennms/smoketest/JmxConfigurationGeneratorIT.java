@@ -134,6 +134,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
         if (selected != skipDefaultVM) {
             clickElement(By.xpath(skipDefaultVMxpath));
         }
+        wait.until(driver -> skipDefaultVM == waitForElement(By.xpath(skipDefaultVMxpath)).isSelected());
 
         // configure authentication
         final WebElement authenticateElement = waitForElement(By.id("authenticate"));
