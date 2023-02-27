@@ -127,7 +127,7 @@
 </script>
 
 <form method="post" name="deleteAll" action="admin/deleteSelNodes">
-
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 <%
   int midNodeIndex = 1;
   
