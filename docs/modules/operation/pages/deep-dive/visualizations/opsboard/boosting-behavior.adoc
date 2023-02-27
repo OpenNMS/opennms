@@ -1,6 +1,5 @@
 
-[[webui-opsboard-dashlet-boosting]]
-= Boosting Dashlet
+= Boost Configuration
 
 There are two options to increase how often dashlets that show critical monitoring information (alarms, summaries of alarms) appear in the ops board rotation:
 

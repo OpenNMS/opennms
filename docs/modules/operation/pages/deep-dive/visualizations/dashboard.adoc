@@ -1,5 +1,5 @@
 
-= Dashboard
+= {page-component-title} Dashboard
 
 In Network Operations Centers (NOCs), an overview of issues occurring in the network is important.
 This information is often presented in customized dashboards, as appropriate for the monitored environment.

@@ -1,6 +1,5 @@
 
-[[ga-operation-request-logging]]
-= Request Logging
+= Enable Request Logs
 
 Enable HTTP requests logs for Jetty by uncommenting the following snippet in `etc/jetty.xml`:
 

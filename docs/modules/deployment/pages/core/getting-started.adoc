@@ -279,10 +279,10 @@ We do not share it with third parties, and we will not use it for sales purposes
 .Data sources collection permission prompt
 image::deployment/core/data-sources.png["Data sources collection permission prompt displaying opt-in and opt-out buttons", 500]
 
-Click *Show Me What is Being Sent* to see xref:operation:deep-dive/admin/housekeeping.adoc#ga-data-collection[what information we collect].
+Click *Show Me What is Being Sent* to see xref:operation:deep-dive/admin/configuration/data-collection.adoc[what information we collect].
 Statistics collection and publication happen only if an admin user opts in.
 
-NOTE: Admin users can xref:operation:deep-dive/admin/housekeeping.adoc#disable-data-collection[enable or disable statistics collection] at any time.
+NOTE: Admin users can xref:operation:deep-dive/admin/configuration/data-collection.adoc#disable-data-collection[enable or disable statistics collection] at any time.
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.

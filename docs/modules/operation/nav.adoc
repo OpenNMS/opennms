@@ -195,14 +195,14 @@
 ** xref:deep-dive/search.adoc[]
 ** xref:deep-dive/snmp-poller/concepts.adoc[]
 
-** Visualizations
+** xref:deep-dive/visualizations/introduction.adoc[]
 *** xref:deep-dive/visualizations/dashboard.adoc[]
 *** xref:deep-dive/visualizations/grafana-dashboard-box.adoc[]
 *** xref:deep-dive/visualizations/heatmap.adoc[]
 *** xref:deep-dive/visualizations/opsboard/introduction.adoc[]
 **** xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[]
 **** xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[]
-**** Dashlets
+**** xref:deep-dive/visualizations/opsboard/dashlets/introduction.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/alarm-detail.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/alarms.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/charts.adoc[]
@@ -213,15 +213,17 @@
 ***** xref:deep-dive/visualizations/opsboard/dashlets/rrd.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/rtc.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/summary.adoc[]
+***** xref:deep-dive/visualizations/opsboard/dashlets/surveillance.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/topology.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/url.adoc[]
 *** xref:deep-dive/visualizations/surveillance-view.adoc[]
 *** xref:deep-dive/visualizations/trends.adoc[]
 
 ** {page-component-title} Administration
-*** Configuration
+*** xref:deep-dive/admin/configuration/introduction.adoc[]
 **** xref:deep-dive/admin/configuration/config-tester.adoc[]
 **** xref:deep-dive/admin/configuration/daemon-config-files.adoc[]
+**** xref:deep-dive/admin/configuration/data-collection.adoc[]
 **** xref:deep-dive/admin/configuration/rmi.adoc[]
 **** xref:deep-dive/admin/configuration/external-auth.adoc[]
 **** xref:deep-dive/admin/configuration/geocoder.adoc[]
