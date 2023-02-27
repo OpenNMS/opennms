@@ -6,7 +6,7 @@ http://grafana.org/[Grafana] provides an API key that lets third-party applicati
 By default, it shows a set of dashboards related to {page-component-title} and your monitored environment.
 
 .Grafana dashboards on the {page-component-title} home page
-image::visualizations/01_grafana-box.png["{page-component-title} home page displaying Grafana dashboard components"]
+image::visualizations/01_grafana-box.png["{page-component-title} home page displaying Grafana dashboard components."]
 
 == Filter dashboards
 

@@ -8,7 +8,7 @@ You can also configure these charts to be displayed on the {page-component-title
 To do this, modify the `org.opennms.web.console.centerUrl` parameter to include `/trend/trend-box.htm`.
 
 .Example of a trend chart
-image::visualizations/trend-chart.png["{page-component-title} UI displaying an example trend chart", 700]
+image::visualizations/trend-chart.png["{page-component-title} UI displaying an example trend chart.", 700]
 
 You can define and configure trend charts in `$\{OPENNMS_HOME}/etc/trend-configuration.xml`.
 

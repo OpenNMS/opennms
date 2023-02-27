@@ -109,7 +109,7 @@ When you configure a surveillance view, you must define its title and the time (
 You can also add and delete columns and rows, and reorder them as appropriate by clicking the *Up Arrow* and *Down Arrow* symbols.
 
 .Surveillance view configuration page
-image::visualizations/03_surveillance-view-config-ui-edit.png["Surveillance view configuration page showing a list of rows and columns that can be added to the View"]
+image::visualizations/03_surveillance-view-config-ui-edit.png["Surveillance view configuration page showing a list of rows and columns that can be added to the view."]
 
 Editing row or column definitions requires you to choose a unique label and at least one {page-component-title} category.
 

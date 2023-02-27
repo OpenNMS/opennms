@@ -54,7 +54,7 @@ Acknowledged alarms are removed from the operator's responsibility and, therefor
 The component displays the following information:
 
 .An alarms component displaying three alarms--two of Minor severity, and one of Warning severity
-image::visualizations/dashboard/03_dashboard-alarms.png["{page-component-title} UI displaying an alarms component with three active alarms"]
+image::visualizations/dashboard/03_dashboard-alarms.png["{page-component-title} UI displaying an alarms component with three active alarms."]
 
 * *Node:* The label of the node associated with the alarm.
 * *Severity:* Alarm severity.
@@ -78,7 +78,7 @@ This provides an overview of the monitored network and gives an opportunity for 
 The following information is shown in the component:
 
 .A notifications component displaying three notifications
-image::visualizations/dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications"]
+image::visualizations/dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications."]
 
 * *Node:* The label of the node associated with the notification.
 * *Service:* The name of the service associated with the notification.

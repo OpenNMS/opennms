@@ -10,7 +10,7 @@ The Summary dashlet shows a trend of incoming alarms in a given time frame in th
 | Field | Description
 
 | Boost support
-| Change priority of the dashlet on an ops board, depending on alarm level severity (see xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[Boosted Severity]).
+| Change priority of the dashlet on an ops board, depending on alarm level severity (see xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[]).
 
 | timeslot
 | Time slot, in seconds, to evaluate the trend for alarms by severity and UEI.

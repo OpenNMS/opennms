@@ -120,7 +120,7 @@ For example, to match all Cisco events, you could use the following:
 ----
 
 The order in which events are listed in the `eventconf.xml` file is extremely important.
-The search will stop with the first event definition that matches the given event (see xref:deep-dive/events/event-configuration.adoc[eventconf.xml]).
+The search stops with the first event definition that matches the given event (see xref:deep-dive/events/event-configuration.adoc[eventconf.xml]).
 As such, if the code with the wildcard is listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event will never be generated.
 
 Also note that the wildcard is simply a substring match.
