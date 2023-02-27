@@ -57,7 +57,7 @@ elasticIndexStrategy=daily
 ----
 <1> Replace with comma-separated list of Elasticsearch nodes.
 
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
+See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of options.
 
 == Enable protocols
 
@@ -88,7 +88,7 @@ ${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/int
 ----
 
 This opens a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages are forwarded.
-(Also see xref:operation:deep-dive/admin/daemon-config-files.adoc#daemon-reload[Reload daemons by CLI].)
+(Also see <<deep-dive/admin/configuration/daemon-config-files.adoc#daemon-reload, Reload daemons by CLI>>.)
 
 === Multi-port listener
 
@@ -140,6 +140,6 @@ You may want to do the following:
 Create rules to override the default classifications, to customize for your preference.
 See xref:deep-dive/flows/classification-engine.adoc#ga-flow-support-classification-engine[Application Classification].
 
-* xref:operation:deep-dive/flows/distributed.adoc#flows-remote[Enable remote flows data collection]
-* xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
+* xref:deep-dive/flows/distributed.adoc#flows-remote[Enable remote flows data collection]
+* xref:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[Scale to manage large volumes of flows data]
 * Add the OpenNMS streaming analytics tool for aggregation and streaming analytics (see the streaming analytics tool documentation)

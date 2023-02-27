@@ -50,13 +50,13 @@ Attributes are extracted from the HTTP responses using a regular expression.
 
 | use-system-proxy
 | Should the system-wide proxy settings be used? Configure system proxy settings
-via <<operation:deep-dive/admin/system-properties/introduction.adoc#system-properties, system properties>>.
+via <<operation:deep-dive/admin/configuration/system-properties.adoc#system-properties, system properties>>.
 | false
 |===
 
 == HTTP collection configuration
 
-Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files.
 
 Define HTTP Collections in `etc/http-datacollection-config.xml`.
 

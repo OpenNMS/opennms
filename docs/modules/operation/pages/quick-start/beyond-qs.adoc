@@ -9,7 +9,7 @@ This section includes suggested topics that supplement the guide.
 
 == User management
 
-We covered creating and setting up an admin user account in xref:quick-start/users.adoc[Step 1: First-Time Login].
+We covered creating and setting up an admin user account in xref:quick-start/users.adoc[].
 You may want to create and set up additional user accounts with different permissions.
 These topics expand on those covered in the Quick Start guide:
 
@@ -19,7 +19,7 @@ These topics expand on those covered in the Quick Start guide:
 
 == Provision inventory
 
-We covered initial inventory provisioning in xref:quick-start/inventory.adoc[Step 3: Provision Inventory].
+We covered initial inventory provisioning in xref:quick-start/inventory.adoc[].
 You may want to provision new nodes and iterate on the work that you did in the Quick Start guide.
 These topics serve as starting points for more information:
 
@@ -29,7 +29,7 @@ These topics serve as starting points for more information:
 
 == Performance management
 
-In xref:quick-start/performance-data.adoc[Step 4: Set Up Performance Data Collection], we covered how to set up your {page-component-title} environment for basic performance data collection.
+In xref:quick-start/performance-data.adoc[], we covered how to set up your {page-component-title} environment for basic performance data collection.
 You may want to collect more data to help you better understand what is happening in your network and create more representative visualizations.
 You can look through these topics to learn more:
 
@@ -39,7 +39,7 @@ You can look through these topics to learn more:
 
 == Thresholding
 
-xref:quick-start/thresholding.adoc[Step 5: Set up a Threshold] covered how to set up event thresholds in your {page-component-title} instance.
+xref:quick-start/thresholding.adoc[] covered how to set up event thresholds in your {page-component-title} instance.
 For more information and concepts that extend the Quick Start guide, see the following pages:
 
 * xref:deep-dive/thresholds/datasource.adoc[Thresholding tasks].
@@ -48,7 +48,7 @@ For more information and concepts that extend the Quick Start guide, see the fol
 
 == Service availability
 
-In xref:quick-start/service-assurance.adoc[Step 7: Determine Service Availability], we covered how to track the availability of your services with pollerd.
+In xref:quick-start/service-assurance.adoc[], we covered how to track the availability of your services with pollerd.
 The following topics are starting points for establishing more complex monitoring environments:
 
 * xref:deep-dive/service-assurance/configuration.adoc[Configure and modify pollerd behavior].
@@ -58,17 +58,17 @@ The following topics are starting points for establishing more complex monitorin
 
 == Notifications
 
-We covered how to configure notifications in xref:quick-start/notifications.adoc[Step 2: Turn on Default Notifications] and xref:quick-start/notification-config.adoc[Step 8: Configure Notifications].
+We covered how to configure notifications in xref:quick-start/notifications.adoc[] and xref:quick-start/notification-config.adoc[].
 Beyond that, you can review the xref:deep-dive/notifications/bonus-strategies.adoc[bonus notification strategies] to set up routing to Slack and Mattermost.
 
 == Customize {page-component-title} home page
 
-We covered visualizations in xref:quick-start/visualize-data.adoc[Step 9: Visualize Data], but you can do much more to display your data--including customizing your {page-component-title} home page.
-For more information, see xref:deep-dive/admin/webui/grafana-dashboard-box.adoc[Grafana Dashboard Box] in the Deep Dive section.
+We covered visualizations in xref:quick-start/visualize-data.adoc[], but you can do much more to display your data--including customizing your {page-component-title} home page.
+For more information, see xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] in the Deep Dive section.
 
 == Explore the Deep Dive section
 
-To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding documentation in the xref:deep-dive/introduction.adoc[Deep Dive] section.
+To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding documentation in the xref:deep-dive/introduction.adoc[] section.
 Deep Dive topics are referenced in each of the Quick Start pages; they can provide a starting point.
 
 == Explore the Reference section
