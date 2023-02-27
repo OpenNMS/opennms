@@ -69,9 +69,6 @@
     <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
-    <!-- build -->
-    <module>checkstyle</module>
-
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
@@ -734,11 +731,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>native-maven-plugin</artifactId>
-        <version>1.0-alpha-7</version>
-      </plugin>
-      <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
@@ -1044,6 +1036,25 @@
   </pluginManagement>
    <plugins>
      <plugin>
+       <groupId>org.commonjava.maven.plugins</groupId>
+       <artifactId>directory-maven-plugin</artifactId>
+       <version>1.0</version>
+       <executions>
+         <execution>
+           <id>directories</id>
+             <goals><goal>directory-of</goal></goals>
+             <phase>initialize</phase>
+             <configuration>
+               <property>opennms.build.basedir</property>
+               <project>
+                 <groupId>org.opennms</groupId>
+                 <artifactId>opennms</artifactId>
+               </project>
+             </configuration>
+           </execution>
+         </executions>
+     </plugin>
+     <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-enforcer-plugin</artifactId>
        <executions>
@@ -1192,26 +1203,6 @@
           </delimiters>
           <useDefaultDelimiters>false</useDefaultDelimiters>
        </configuration>
-     </plugin>
-     <plugin>
-        <inherited>false</inherited>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven.antrun.plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <configuration>
-              <target>
-                <property name="opennms.build.basedir" location="." />
-                <echo message="base directory is ${opennms.build.basedir}" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
      </plugin>
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1563,7 +1554,7 @@
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
-    <activemqVersion>5.14.5</activemqVersion>
+    <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.16</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
@@ -1597,7 +1588,7 @@
     <curatorTestVersion>2.9.1</curatorTestVersion>
     <cxfVersion>3.5.1</cxfVersion>
     <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
-    <cxfXjcVersion>3.3.0</cxfXjcVersion>
+    <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dom4jVersion>2.1.3</dom4jVersion>
@@ -1626,7 +1617,7 @@
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hikaricpVersion>2.5.1</hikaricpVersion>
+    <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
@@ -1698,7 +1689,7 @@
     <pktsVersion>3.0.0</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
-    <postgresqlVersion>42.4.3</postgresqlVersion>
+    <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
@@ -1711,6 +1702,7 @@
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
+    <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
@@ -2083,30 +2075,19 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>2.17</version>
+            <version>3.2.1</version>
             <dependencies>
               <dependency>
-                <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle</artifactId>
-                <version>7.6</version>
-              </dependency>
-              <dependency>
-                <groupId>org.opennms</groupId>
-                <artifactId>org.opennms.checkstyle</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-              <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
-                <artifactId>sevntu-checkstyle-maven-plugin</artifactId>
-                <version>1.35.0</version>
+                <artifactId>sevntu-checks</artifactId>
+                <version>1.41.0</version>
               </dependency>
             </dependencies>
             <configuration>
-              <configLocation>nms_checks.xml</configLocation>
-              <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-              <!-- <sourceDirectory> is needed so that checkstyle ignores the
-                   generated sources directory -->
-              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <configLocation>${opennms.build.basedir}/src/main/resources/nms_checks.xml</configLocation>
+              <suppressionsLocation>${opennms.build.basedir}/src/main/resources/checkstyle-suppressions.xml</suppressionsLocation>
+              <!-- <sourceDirectory> is needed so that checkstyle ignores the generated sources directory -->
+              <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
               <includeResources>true</includeResources>
               <includeTestSourceDirectory>true</includeTestSourceDirectory>
               <includeTestResources>true</includeTestResources>
@@ -2119,15 +2100,15 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
-                <phase>process-sources</phase>
+                <phase>process-resources</phase>
                 <configuration>
-                  <configLocation>check-license.xml</configLocation>
-                  <suppressionsLocation>license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>AGPL-LICENSE.regexp.txt</headerLocation>
+                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
+                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
+                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
                   <includeResources>false</includeResources>
                   <includeTestSourceDirectory>true</includeTestSourceDirectory>
                   <includeTestResources>false</includeTestResources>
-                  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
                   <failsOnError>false</failsOnError>
                   <consoleOutput>true</consoleOutput>
                 </configuration>
@@ -2137,7 +2118,7 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
-                <phase>process-sources</phase>
+                <phase>process-resources</phase>
               </execution>
             </executions>
           </plugin>
@@ -2176,11 +2157,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-ackd</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>org.opennms.checkstyle</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3503,6 +3479,56 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-jms</artifactId>
         <version>${camelVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-core</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-client</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-extension-providers</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-extension-search</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-local</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-ws-addr</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-ws-mex</artifactId>
+        <version>${cxfVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -4961,6 +4987,11 @@
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>${hikaricpVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP-java7</artifactId>
+        <version>9999.use-HikariCP-not-HikariCP-java7</version>
       </dependency>
       <dependency>
         <groupId>net.agkn</groupId>

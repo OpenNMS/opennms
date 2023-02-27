@@ -723,7 +723,6 @@ body {
 }
 
 .banner .header {
-
   .logo-link.home {
     padding-left: 0;
     margin-right: 1rem;
@@ -735,7 +734,6 @@ body {
   .body-large.formatted-time {
     margin-right: 1rem;
   }
-
 }
 
 body .feather-menu .feather-menu-dropdown {
@@ -767,8 +765,12 @@ body .feather-menu .feather-menu-dropdown {
   }
 }
 
-.feather-dropdown {
+// remove elevation from menubar
+.header-wrapper.feather-app-bar-wrapper .header {
+  box-shadow: none;
+}
 
+.feather-dropdown {
   .feather-list-item {
     height: auto;
     padding: 0;
@@ -834,6 +836,7 @@ body .feather-menu .feather-menu-dropdown {
 a.top-menu-icon svg.feather-icon {
   color: #FFF;
 }
+
 .feather-menu {
   &.menubar-dropdown {
     margin-left:0;
@@ -842,6 +845,7 @@ a.top-menu-icon svg.feather-icon {
     padding: 0 7px;
   }
 }
+
 .header-content {
   .right.center-horiz {
     margin-right:2px;

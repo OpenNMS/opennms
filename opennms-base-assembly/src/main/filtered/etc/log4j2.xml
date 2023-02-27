@@ -167,6 +167,9 @@
     <logger name="org.eclipse.jetty.server.HttpInput" additivity="false" level="INFO">
      <appender-ref ref="RoutingAppender"/>
     </logger>
+   <logger name="com.zaxxer.hikari.pool.ProxyConnection" additivity="false" level="ERROR">
+     <appender-ref ref="RoutingAppender"/>
+    </logger>
 
 
     <!-- Allow any message to pass through the root logger -->
