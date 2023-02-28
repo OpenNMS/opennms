@@ -21,6 +21,10 @@ parameters:
     description: whether to enable running flaky smoke tests
     type: boolean
     default: false
+  is_pr:
+    description: whether this build is a pull request (only valid in non-setup workflows)
+    type: boolean
+    default: false
 
 setup: true
 
