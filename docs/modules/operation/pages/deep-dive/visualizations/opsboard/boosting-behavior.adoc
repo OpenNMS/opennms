@@ -1,10 +1,9 @@
 
 = Boost Configuration
 
-There are two options to increase how often dashlets that show critical monitoring information (alarms, summaries of alarms) appear in the ops board rotation:
+You can increase the frequency of certain dashlets in an xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] by modifying the following settings:
 
-* Boost Priority: Absolute priority of the dashlet with critical monitoring information.
-* Boost Duration: Absolute duration in seconds of the dashlet with critical monitoring information.
-
-With the "boost priority" option, the lower the number, the higher the priority, and the more often the dashlet appears in the rotation.
-One (1) is the highest priority, so a dashlet with this number appears most frequently.
+* *Boost Priority:* The absolute priority of the dashlet.
+Lower numbers indicate a higher priority; this results in the dashlet being displayed more often in the rotation.
+One is the highest priority, so a dashlet assigned it appears the most frequently.
+* *Boost Duration:* The absolute display duration (in seconds) of the dashlet.
