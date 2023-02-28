@@ -1,3 +1,4 @@
+import os
 import re
 import json
 
@@ -216,10 +217,12 @@ class workflow:
                     self._common_library.create_space(leading_space + 4)
                     + "post-steps:"
                 )
-                tmp_output.append(
-                    self._common_library.create_space(leading_space + 6)
-                    + "- jira/notify"
-                )
+                pr_number = os.environ.get("CIRCLE_PR_NUMBER")
+                if (not pr_number):
+                    tmp_output.append(
+                        self._common_library.create_space(leading_space + 6)
+                        + "- jira/notify"
+                    )
 
         return tmp_output
 
