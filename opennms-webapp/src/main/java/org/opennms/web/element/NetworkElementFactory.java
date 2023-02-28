@@ -102,7 +102,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 
 
 /**

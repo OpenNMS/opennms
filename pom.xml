@@ -579,6 +579,31 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${maven.javadoc.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>javadoc</id>
+            <goals>
+              <goal>javadoc-no-fork</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>aggregate</id>
+            <inherited>false</inherited>
+            <goals>
+              <goal>aggregate-no-fork</goal>
+            </goals>
+            <configuration>
+              <quiet>false</quiet>
+              <verbose>true</verbose>
+            </configuration>
+          </execution>
+        </executions>
         <configuration>
           <maxmemory>3g</maxmemory>
           <failOnError>true</failOnError>
@@ -587,87 +612,8 @@
           <!-- this will require touching a _lot_ of files <doclint>all</doclint> -->
           <doclint>none</doclint>
           <quiet>true</quiet>
-          <additionalJOptions>
-            <!-- for GrafanaPanelDatasource -->
-            <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
-          </additionalJOptions>
-          <tags>
-            <tag>
-              <name>hibernate.class</name>
-              <placement>a</placement>
-              <head>Hibernate class:</head>
-            </tag>
-            <tag>
-              <name>hibernate.column</name>
-              <placement>a</placement>
-              <head>Hibernate column:</head>
-            </tag>
-            <tag>
-              <name>hibernate.component</name>
-              <placement>a</placement>
-              <head>Hibernate component:</head>
-            </tag>
-            <tag>
-              <name>hibernate.composite-element</name>
-              <placement>a</placement>
-              <head>Hibernate composite-element:</head>
-            </tag>
-            <tag>
-              <name>hibernate.id</name>
-              <placement>a</placement>
-              <head>Hibernate id:</head>
-            </tag>
-            <tag>
-              <name>hibernate.key</name>
-              <placement>a</placement>
-              <head>Hibernate key:</head>
-            </tag>
-            <tag>
-              <name>hibernate.list</name>
-              <placement>a</placement>
-              <head>Hibernate list:</head>
-            </tag>
-            <tag>
-              <name>hibernate.list-index</name>
-              <placement>a</placement>
-              <head>Hibernate list-index:</head>
-            </tag>
-            <tag>
-              <name>hibernate.many-to-many</name>
-              <placement>a</placement>
-              <head>Hibernate many-to-many:</head>
-            </tag>
-            <tag>
-              <name>hibernate.many-to-one</name>
-              <placement>a</placement>
-              <head>Hibernate many-to-one:</head>
-            </tag>
-            <tag>
-              <name>hibernate.mapping</name>
-              <placement>a</placement>
-              <head>Hibernate mapping:</head>
-            </tag>
-            <tag>
-              <name>hibernate.one-to-many</name>
-              <placement>a</placement>
-              <head>Hibernate one-to-many:</head>
-            </tag>
-            <tag>
-              <name>hibernate.property</name>
-              <placement>a</placement>
-              <head>Hibernate property:</head>
-            </tag>
-            <tag>
-              <name>hibernate.set</name>
-              <placement>a</placement>
-              <head>Hibernate set:</head>
-            </tag>
-            <tag>
-              <name>hibernate.version</name>
-              <placement>a</placement>
-              <head>Hibernate version:</head>
-            </tag>
-          </tags>
+          <skip>${maven.javadoc.skip}</skip>
+          <skipDeploy>${maven.javadoc.skip}</skipDeploy>
         </configuration>
       </plugin>
       <plugin>
@@ -1210,8 +1156,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>${maven.compiler.release}</source>
+          <target>${maven.compiler.release}</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1223,7 +1169,7 @@
         <executions>
           <execution>
             <goals>
-              <goal>jar</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
@@ -1326,6 +1272,9 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
+    <maven.compiler.release>11</maven.compiler.release>
+    <maven.javadoc.skip>false</maven.javadoc.skip>
 
     <!--
       Surefire forked JVM arguments
@@ -1700,47 +1649,9 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jar</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>
-      <reporting>
-        <excludeDefaults>true</excludeDefaults>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>${maven.javadoc.plugin.version}</version>
-            <reportSets>
-              <reportSet>
-                <id>aggregate</id>
-                <inherited>false</inherited>
-                <reports>
-                  <report>aggregate-no-fork</report>
-                </reports>
-              </reportSet>
-              <reportSet>
-                <reports>
-                  <report>javadoc-no-fork</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-            <configuration>
-              <additionalJOptions>
-                <!-- for GrafanaPanelDatasource -->
-                <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
-              </additionalJOptions>
-            </configuration>
-          </plugin>
-        </plugins>
-      </reporting>
     </profile>
     <profile>
       <id>coverage</id>
@@ -1998,6 +1909,15 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>root-dir</id>
+      <activation>
+        <file><exists>${basedir}/src/main/resources/nms_checks.xml</exists></file>
+      </activation>
+      <properties>
+        <project.root.path>${project.basedir}</project.root.path>
+      </properties>
     </profile>
     <profile>
       <id>checkstyle</id>
@@ -4065,11 +3985,6 @@
             <artifactId>standard</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${jbossLoggingVersion}</version>
       </dependency>
       <!--
 
