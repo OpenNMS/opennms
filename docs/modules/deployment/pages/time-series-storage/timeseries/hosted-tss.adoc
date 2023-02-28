@@ -27,6 +27,9 @@ Follow these steps to set up the Time Series DB in your environment:
 ** TCP `auth.access.onms-dp-prod.production.prod.dataservice.opennms.com:443`
 ** TCP `gateway.onms-dp-prod.production.prod.dataservice.opennms.com:443`
 
+NOTE: You should ensure that your firewall allows access to the gateways above.
+If they are blocked, you cannot enable the Cloud Services.
+
 === Update Cloud Services Connector files
 
 The OpenNMS Cloud Services Connector is an extension that lets your {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
