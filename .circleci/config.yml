@@ -501,16 +501,12 @@ workflows:
             - "SonarCloud"
           requires:
             - build
-          post-steps:
-            - jira/notify
       - code-coverage:
           context:
             - "CircleCI"
             - "SonarCloud"
           requires:
             - integration-test-with-coverage
-          post-steps:
-            - jira/notify
   build-minimal:
     <<: *defaults
     when:
@@ -519,8 +515,6 @@ workflows:
       - build:
           context:
             - "CircleCI"
-          post-steps:
-            - jira/notify
       - create-merge-foundation-branch:
           requires:
             - build
@@ -560,16 +554,12 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
-          post-steps:
-            - jira/notify
       - tarball-assembly:
           context:
             - "CircleCI"
             - "docker-publish-account"
           requires:
             - build
-          post-steps:
-            - jira/notify
       - horizon-rpm-build:
           context:
             - "CircleCI"
@@ -582,8 +572,6 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
-          post-steps:
-            - jira/notify
       - minion-rpm-build:
           context:
             - "CircleCI"
@@ -596,8 +584,6 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
-          post-steps:
-            - jira/notify
       - sentinel-rpm-build:
           context:
             - "CircleCI"
@@ -610,8 +596,6 @@ workflows:
                 - /^release-.*/
                 - develop
                 - /.*smoke.*/
-          post-steps:
-            - jira/notify
       - integration-test:
           context:
             - "CircleCI"
@@ -621,8 +605,6 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-          post-steps:
-            - jira/notify
       - smoke-test-core:
           context:
             - "CircleCI"
@@ -641,8 +623,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-          post-steps:
-            - jira/notify
       - smoke-test-flaky:
           context:
             - "CircleCI"
@@ -661,8 +641,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-          post-steps:
-            - jira/notify
       - smoke-test-minion:
           context:
             - "CircleCI"
@@ -681,8 +659,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-          post-steps:
-            - jira/notify
       - smoke-test-sentinel:
           context:
             - "CircleCI"
@@ -701,8 +677,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-          post-steps:
-            - jira/notify
       - horizon-publish-oci:
           context:
             - "CircleCI"
@@ -722,8 +696,6 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-          post-steps:
-            - jira/notify
       - sentinel-publish-oci:
           context:
             - "CircleCI"
@@ -743,8 +715,6 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-          post-steps:
-            - jira/notify
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -762,8 +732,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
-          post-steps:
-            - jira/notify
       - minion-deb-build:
           context:
             - "CircleCI"
@@ -779,8 +747,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
-          post-steps:
-            - jira/notify
       - sentinel-deb-build:
           context:
             - "CircleCI"
@@ -796,8 +762,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /.*debian.*/
-          post-steps:
-            - jira/notify
       - create-merge-foundation-branch:
           context:
             - "CircleCI"
@@ -874,8 +838,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
-          post-steps:
-            - jira/notify
 
 jobs:
   build:
