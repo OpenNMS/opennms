@@ -73,6 +73,10 @@ parameters:
     description: whether to enable running flaky smoke tests
     type: boolean
     default: false
+  is_pr:
+    description: whether this build is a pull request (only valid in non-setup workflows)
+    type: boolean
+    default: false
 
 setup: << pipeline.parameters.trigger-setup >>
 
@@ -648,24 +652,18 @@ workflows:
       - build:
           context:
             - "CircleCI"
-          post-steps:
-            - jira/notify
       - integration-test-with-coverage:
           context:
             - "CircleCI"
             - "SonarCloud"
           requires:
             - build
-          post-steps:
-            - jira/notify
       - code-coverage:
           context:
             - "CircleCI"
             - "SonarCloud"
           requires:
             - integration-test-with-coverage
-          post-steps:
-            - jira/notify
   build-minimal:
     when:
       and:
@@ -677,7 +675,12 @@ workflows:
           context:
             - "CircleCI"
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - create-merge-foundation-branch:
           requires:
             - build
@@ -720,7 +723,12 @@ workflows:
               ignore:
                 - /^from-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
   build-deploy:
     when:
       and:
@@ -736,7 +744,12 @@ workflows:
               ignore:
                 - /^from-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - tarball-assembly:
           context:
             - "CircleCI"
@@ -745,7 +758,12 @@ workflows:
           requires:
             - build
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - minion-image-single-arch:
           matrix:
             parameters:
@@ -770,7 +788,12 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - minion-image-multi-arch:
           context:
             - "CircleCI"
@@ -785,7 +808,12 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - horizon-rpm-build:
           context:
             - "CircleCI"
@@ -803,7 +831,12 @@ workflows:
                 - /.*rpm.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - minion-rpm-build:
           context:
             - "CircleCI"
@@ -821,7 +854,12 @@ workflows:
                 - /.*rpm.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - sentinel-rpm-build:
           context:
             - "CircleCI"
@@ -839,7 +877,12 @@ workflows:
                 - /.*rpm.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - integration-test:
           context:
             - "CircleCI"
@@ -851,7 +894,12 @@ workflows:
                 - /^.*sonar.*/
                 - /^merge-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - integration-test-with-coverage:
           context:
             - "CircleCI"
@@ -863,7 +911,12 @@ workflows:
               only:
                 - /^.*sonar.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - code-coverage:
           context:
             - "CircleCI"
@@ -871,7 +924,12 @@ workflows:
           requires:
             - integration-test-with-coverage
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - smoke-test-core:
           context:
             - "CircleCI"
@@ -890,7 +948,12 @@ workflows:
                 - /^release-.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - smoke-test-flaky:
           context:
             - "CircleCI"
@@ -909,7 +972,12 @@ workflows:
                 - /^release-.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - smoke-test-minion:
           context:
             - "CircleCI"
@@ -928,7 +996,12 @@ workflows:
                 - /^release-.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - smoke-test-sentinel:
           context:
             - "CircleCI"
@@ -947,7 +1020,12 @@ workflows:
                 - /^release-.*/
                 - /.*smoke.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - horizon-publish-oci:
           context:
             - "CircleCI"
@@ -970,7 +1048,12 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - sentinel-publish-oci:
           context:
             - "CircleCI"
@@ -993,7 +1076,12 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       # These don't actually require `integration-test`/`code-coverage` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -1007,7 +1095,12 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - minion-deb-build:
           context:
             - "CircleCI"
@@ -1019,7 +1112,12 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - sentinel-deb-build:
           context:
             - "CircleCI"
@@ -1031,7 +1129,12 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
       - create-merge-foundation-branch:
           context:
             - "CircleCI"
@@ -1113,7 +1216,12 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
           post-steps:
-            - jira/notify
+            - when:
+                condition:
+                  not:
+                    equal: [ true, << pipeline.parameters.is_pr >> ]
+                steps:
+                  - jira/notify
 
 jobs:
   trigger-path-filtering:
@@ -1222,12 +1330,18 @@ jobs:
               fp.write(json.dumps(mappings))
 
       - run:
-          name: check for empty trigger config
+          name: post-process the trigger config
           command: |
             if [ "$(grep -c trigger-setup /tmp/pipeline-parameters.json)" -eq 0 ]; then
               # this can happen in the case of merges or other similar "empty" commits
               echo '{ "trigger-setup": false, "trigger-build": true }' > /tmp/pipeline-parameters.json
             fi
+            IS_PR=false
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              IS_PR=true
+            fi
+            cat /tmp/pipeline-parameters.json | jq ".is_pr=${IS_PR}" > /tmp/$$.json
+            mv /tmp/$$.json /tmp/pipeline-parameters.json
       - store_artifacts:
           path: /tmp/pipeline-parameters.json
           destination: pipeline-parameters.json
