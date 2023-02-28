@@ -449,13 +449,6 @@
           </dependency>
         </dependencies>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>ch.elca.el4j.maven.plugins</groupId>
-        <artifactId>maven-depgraph-plugin</artifactId>
-        <version>1.9</version>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
@@ -464,7 +457,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.12.1</version>
       </plugin>
       <plugin>
         <groupId>net.nicoulaj.maven.plugins</groupId>
@@ -566,12 +559,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
+        <version>3.0.0</version>
         <configuration>
           <deployAtEnd>false</deployAtEnd>
           <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
@@ -580,16 +573,24 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.10</version>
+        <version>3.5.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.1</version>
+        <version>${maven.javadoc.plugin.version}</version>
         <configuration>
           <maxmemory>3g</maxmemory>
           <failOnError>true</failOnError>
-          <sourcepath>${project.basedir}/src;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath>
+          <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs</sourcepath>
+          <!-- <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath> -->
+          <!-- this will require touching a _lot_ of files <doclint>all</doclint> -->
+          <doclint>none</doclint>
+          <quiet>true</quiet>
+          <additionalJOptions>
+            <!-- for GrafanaPanelDatasource -->
+            <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
+          </additionalJOptions>
           <tags>
             <tag>
               <name>hibernate.class</name>
@@ -677,7 +678,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1025,7 +1026,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
-        <version>3.0.0-M3</version>
+        <version>3.2.1</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -1303,22 +1304,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <executions>
-          <execution>
-            <id>aggregate</id>
-            <goals><goal>aggregate</goal></goals>
-            <phase>site</phase>
-            <configuration>
-              <use>false</use>
-              <aggregate>true</aggregate>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1335,98 +1320,6 @@
       </plugin>
     </plugins>
  </build>
-
-
- <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${maven.surefire.report.plugin.version}</version>
-        <reportSets>
-          <reportSet>
-            <id>unit-tests</id>
-            <reports>
-              <report>report-only</report>
-            </reports>
-          </reportSet>
-          <reportSet>
-            <id>integration-tests</id>
-            <reports>
-              <report>failsafe-report-only</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.4</version>
-        <configuration>
-            <targetJdk>1.8</targetJdk>
-            <rulesets>
-               <!--
-               <ruleset>/rulesets/basic-jsf.xml</ruleset>
-               <ruleset>/rulesets/basic-jsp.xml</ruleset>
-               -->
-               <ruleset>/rulesets/basic.xml</ruleset>
-               <!--
-               <ruleset>/rulesets/braces.xml</ruleset>
-               <ruleset>/rulesets/clone.xml</ruleset>
-               <ruleset>/rulesets/codesize.xml</ruleset>
-               -->
-               <ruleset>/rulesets/controversial.xml</ruleset>
-               <!--
-               <ruleset>/rulesets/coupling.xml</ruleset>
-               <ruleset>/rulesets/design.xml</ruleset>
-               <ruleset>/rulesets/favorites.xml</ruleset>
-               <ruleset>/rulesets/finalizers.xml</ruleset>
-               <ruleset>/rulesets/imports.xml</ruleset>
-               <ruleset>/rulesets/j2ee.xml</ruleset>
-               <ruleset>/rulesets/javabeans.xml</ruleset>
-               <ruleset>/rulesets/junit.xml</ruleset>
-               <ruleset>/rulesets/logging-jakarta-commons.xml</ruleset>
-               <ruleset>/rulesets/logging-java.xml</ruleset>
-               <ruleset>/rulesets/migrating.xml</ruleset>
-               <ruleset>/rulesets/migrating_to_13.xml</ruleset>
-               <ruleset>/rulesets/migrating_to_14.xml</ruleset>
-               <ruleset>/rulesets/migrating_to_15.xml</ruleset>
-               <ruleset>/rulesets/naming.xml</ruleset>
-               <ruleset>/rulesets/optimizations.xml</ruleset>
-               <ruleset>/rulesets/scratchpad.xml</ruleset>
-               <ruleset>/rulesets/strictexception.xml</ruleset>
-               <ruleset>/rulesets/strings.xml</ruleset>
-               <ruleset>/rulesets/sunsecure.xml</ruleset>
-               <ruleset>/rulesets/typeresolution.xml</ruleset>
-               <ruleset>/rulesets/unusedcode.xml</ruleset>
-               -->
-            </rulesets>
-            <format>xml</format>
-            <linkXref>true</linkXref>
-            <sourceEncoding>utf-8</sourceEncoding>
-            <minimumTokens>100</minimumTokens>
-         </configuration>
-      </plugin>
-<!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-      </plugin>
--->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
-      </plugin>
-<!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.0</version>
-      </plugin>
--->
-    </plugins>
-  </reporting>
 
   <properties>
     <enforcer-skip-maven>false</enforcer-skip-maven>
@@ -1459,12 +1352,13 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.0.0-M8</maven.testing.plugin.version>
     <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
     <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
     <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
+    <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1803,8 +1697,50 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jar</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
+      <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven.javadoc.plugin.version}</version>
+            <reportSets>
+              <reportSet>
+                <id>aggregate</id>
+                <inherited>false</inherited>
+                <reports>
+                  <report>aggregate-no-fork</report>
+                </reports>
+              </reportSet>
+              <reportSet>
+                <reports>
+                  <report>javadoc-no-fork</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+            <configuration>
+              <additionalJOptions>
+                <!-- for GrafanaPanelDatasource -->
+                <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
+              </additionalJOptions>
+            </configuration>
+          </plugin>
+        </plugins>
+      </reporting>
     </profile>
     <profile>
       <id>coverage</id>

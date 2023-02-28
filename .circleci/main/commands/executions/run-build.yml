@@ -33,7 +33,8 @@ commands:
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
               "master-"*|"release-"*|"develop")
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
+                # "production" build will also enable javadoc and such
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS site"
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
@@ -56,11 +57,16 @@ commands:
       - run:
           name: Check if we have generated apidocs
           command: |
-            if [ -d target/site/apidocs ]; then
-              pushd target/site/apidocs
-                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-              popd
-            fi
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|"develop")
+                if [ ! -d target/site/apidocs ]; then
+                  echo 'no apidocs directory, but we expect javadoc generation in this branch!'
+                  exit 1
+                fi
+                pushd target/site/apidocs
+                  tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+                popd
+            esac
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
