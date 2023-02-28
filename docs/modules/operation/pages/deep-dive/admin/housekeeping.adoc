@@ -38,4 +38,4 @@ The script tries to fix configuration problems by pruning `/opt/opennms/data` an
 /opt/opennms/bin/fix-karaf-setup.sh
 
 WARNING: The Fix Karaf script can be destructive to files that may contain user-specific configuration settings.
-It is recommended that you back up `/opt/opennms/etc` before running the script.
+We recommend that you back up `/opt/opennms/etc` before running the script.
