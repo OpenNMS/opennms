@@ -1,5 +1,5 @@
 
-= Shutdown and Restart
+= Shutdown and Restart {page-component-title}
 
 This section provides an example of the order to follow when shutting down and restarting a sample {page-component-title} system: {page-component-title} core layer, persistence and messaging layer, and database layer.
 
