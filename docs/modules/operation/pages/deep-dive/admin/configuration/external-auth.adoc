@@ -1,24 +1,24 @@
 
-[[ga-admin-external-auth]]
 = External Authentication
 
 If you have an existing directory for authenticating users, you can configure {page-component-title} to use that system to grant users access to log in, in addition to allowing log in from users defined directly within your {page-component-title} server.
 
-== Configuring external authentication
+== Configure external authentication
 
-The {page-component-title} webapp uses link:https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
-Configuring external authentication requires configuring Spring Security correctly for your own environment.
-
+The {page-component-title} webapp uses https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
 
 The Spring Security configuration files are located in at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`.
 Only one authentication service can be enabled in the `spring-security.d` subdirectory.
 
 The following files are used for external authentication:
 
-applicationContext-spring-security.xml::
-The main Spring Security context configuration file for the OpenNMS webapp.
-The `authentication-provider` setting must be uncommented to switch on external authentication.
+[cols="1,3a"]
+|===
+| File  | Description
 
+| applicationContext-spring-security.xml
+| The main Spring Security context configuration file for the OpenNMS webapp.
+The `authentication-provider` parameter must be uncommented to enable external authentication: +
 [source, xml]
 ----
     <!-- To enable external (e.g. LDAP, RADIUS) authentication, uncomment the following.
@@ -27,14 +27,15 @@ The `authentication-provider` setting must be uncommented to switch on external 
     <authentication-provider ref="externalAuthenticationProvider" />
 ----
 
-spring-security.d::
-Directory containing example files for common use cases.
-You must copy one of these files to a name of your own choosing, as long as it ends in `.xml`, and edit its details as outlined below.
-There cannot be more than one non-disabled xml file in this directory.
+| spring-security.d/*
+| Directory containing example files for common use cases.
+You must copy one of these files, rename it, and edit its details.
+There cannot be more than one active `.xml` file in this directory.
 
-*.xml.disabled::
-Skeleton files to use as a starter for your configuration.
-The "disabled" files are ignored when Spring Security loads.
+| *.xml.disabled
+| Skeleton files included with {page-component-title} as starting files for your configuration.
+The `.disabled` files are ignored when Spring Security loads.
+|===
 
 == Anatomy of an LDAP configuration
 
