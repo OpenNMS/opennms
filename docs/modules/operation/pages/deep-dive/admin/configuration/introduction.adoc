@@ -1,0 +1,4 @@
+
+= {page-component-title} Configuration
+
+This section explains the configuration options available for various {page-component-title} components.

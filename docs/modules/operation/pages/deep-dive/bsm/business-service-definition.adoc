@@ -5,11 +5,11 @@ The status of service monitors and any kind of alarm can be used to drive the op
 A business service is defined with the following components:
 
 * Business service name: a unique name used to identify the business service
-* xref:operation:deep-dive/bsm/edges.adoc[Edges]: a set of elements on which this business service relies, which can include other business services or reduction keys.
-* xref:operation:deep-dive/bsm/reduce-functions.adoc[Reduce function]: function used to aggregate the operational status from all the edges.
+* xref:deep-dive/bsm/edges.adoc[Edges]: a set of elements on which this business service relies, which can include other business services or reduction keys.
+* xref:deep-dive/bsm/reduce-functions.adoc[Reduce function]: function used to aggregate the operational status from all the edges.
 Specific functions may take additional parameters.
 * Attributes: optional key/value pairs to tag or enrich the business service with additional information.
 These are used to identify or tag the business service and may be referenced in other workflows.
 These attributes do not affect the dependencies or the status calculation of the business service.
 
-TIP: You can use attributes to filter business services in xref:operation:deep-dive/admin/webui/opsboard/introduction.adoc[Ops Board dashlets].
+TIP: You can use attributes to filter business services in xref:deep-dive/visualizations/opsboard/introduction.adoc[Ops Board dashlets].

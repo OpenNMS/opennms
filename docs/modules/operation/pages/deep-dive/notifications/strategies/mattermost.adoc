@@ -65,7 +65,7 @@ The following table lists optional properties that you may use in `mattermost.pr
 
 | org.opennms.netmgt.notifd.mattermost.useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings via <<deep-dive/admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+Configure the system proxy settings via <<deep-dive/admin/configuration/system-properties.adoc#ga-opennms-system-properties, system properties>>.
 | true
 | true
 |===

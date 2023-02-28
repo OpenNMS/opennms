@@ -126,7 +126,7 @@ The following key is available under this context:
 [[ga-metadata-scv]]
 === Secure credentials vault
 
-The special context `scv` provides access to values stored in the xref:deep-dive/admin/scv-configuration.adoc[secure credentials vault].
+The special context `scv` provides access to values stored in the xref:deep-dive/admin/configuration/scv-configuration.adoc[secure credentials vault].
 The key used in this context must consist of the alias and the attribute of the credential, separated by a colon (for example, `${scv:mydevice:password}` will access the `password` attribute of a credential named `mydevice`).
 
 [[ga-metadata-webui]]

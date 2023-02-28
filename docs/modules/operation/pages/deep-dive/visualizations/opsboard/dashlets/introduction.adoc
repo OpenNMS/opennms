@@ -1,0 +1,4 @@
+
+= Operator Board Dashlets
+
+This section lists the dashlets available for use in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] and their configuration options.

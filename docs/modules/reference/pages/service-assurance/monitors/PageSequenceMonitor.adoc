@@ -1,3 +1,4 @@
+
 [[pagesequencemonitor]]
 = PageSequenceMonitor
 
@@ -70,11 +71,11 @@ With `strict-timeout = false` the next attempt starts right after a failure.
 
 | use-system-proxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings via <<operation:deep-dive/admin/system-properties/introduction.adoc#system-properties, system properties>>.
+Configure the system proxy settings via <<operation:deep-dive/admin/configuration/system-properties.adoc#system-properties, system properties>>.
 | false
 |===
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Page parameters
 [options="header"]

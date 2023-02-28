@@ -42,8 +42,8 @@ In other cases, you may need to reload a daemon or restart your instance.
 
 The following documentation provides more information on configuration files:
 
-* xref:operation:deep-dive/admin/daemon-config-files.adoc[Daemon Config Files]
-* xref:reference:daemons/introduction.adoc#ga-daemons[Daemon reference] (overview of all daemons, related configuration files, and which daemons can be reloaded without restarting {page-component-title})
+* xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[].
+* xref:reference:daemons/introduction.adoc#ga-daemons[Daemon reference] (overview of all daemons, related configuration files, and which daemons can be reloaded without restarting {page-component-title}).
 
 == Add and delete files
 
