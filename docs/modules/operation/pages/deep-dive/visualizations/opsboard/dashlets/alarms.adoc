@@ -1,7 +1,7 @@
 
 = Alarms
 
-The Alarms dashlet displays a table with a short descriptions of alarms in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+The Alarms dashlet displays a table with short descriptions of alarms in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 
 [caption=]
 .Alarm information displayed in dashlet

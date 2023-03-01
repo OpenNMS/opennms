@@ -14,7 +14,7 @@ NOTE: The heatmap visualization is deactivated by default.
 
 == Configuration properties
 
-The heatmap visualization is configured in `opennms.properties`.
+You can configure the heatmap visualization in `opennms.properties`.
 
 [caption=]
 .Heatmap visualization configuration properties
@@ -25,7 +25,7 @@ The heatmap visualization is configured in `opennms.properties`.
 3+|*Boolean property*
 
 | org.opennms.heatmap.onlyUnacknowledged
-| Controls the scope of alarms to be taken into account when generating the alarms heatmap.
+| Controls the scope of alarms to take into account when generating the alarms heatmap.
 By default, only unacknowledged alarms are evaluated.
 | false
 

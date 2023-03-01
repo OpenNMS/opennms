@@ -62,7 +62,7 @@ When a notification is acknowledged, it is removed from the component.
 .A notifications component displaying three notifications
 image::visualizations/dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications."]
 
-The following information is shown in the notifications component:
+The notifications component shows the following information:
 
 * *Node:* The label of the node associated with the notification.
 * *Service:* The name of the service associated with the notification.

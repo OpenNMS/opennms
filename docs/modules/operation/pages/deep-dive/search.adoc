@@ -1,7 +1,7 @@
 
 = Search
 
-You can search your {page-component-title} data in the web UI using either the search bar at the top of each page or the Search view.
+You can search in the {page-component-title} web UI using either the search bar at the top of each page or the Search view.
 
 == Search bar
 
