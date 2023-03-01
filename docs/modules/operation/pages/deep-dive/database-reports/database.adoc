@@ -358,7 +358,7 @@ The Measurement Datasource includes a helper method that allows easy access to t
 === Connect to Measurements API
 
 To establish a secure connection to the Measurements API, you must import your {page-component-title} instance's public certificate to the Java Truststore and configure {page-component-title} to use the Java Truststore.
-See <<deep-dive/admin/https/https-client.adoc#ga-operation-ssl-opennms-trust-store, Configure {page-component-title} to use the defined Java Truststore>> for setup instructions.
+See <<deep-dive/admin/configuration/https/https-client.adoc#ga-operation-ssl-opennms-trust-store, Configure {page-component-title} to use the defined Java Truststore>> for setup instructions.
 
 You must also set `org.opennms.netmgt.jasper.measurement.ssl.enable` to `true` in `$\{OPENNMS_HOME}/etc/opennms.properties` to ensure that only secure connections are established.
 
