@@ -1,82 +1,75 @@
 
 = Enable RMI
 
-By default, the RMI port in the {page-component-title} server is disabled, for security reasons.
-To enable it so that you can access {page-component-title} through jconsole or remote-manage {page-component-title}, you must add some settings to the default {page-component-title} install.
+By default, the {page-component-title} server's RMI port is disabled for security reasons.
+When enabled, it lets you access {page-component-title} via `jconsole` and remotely manage your instance.
 
-To enable the RMI port in {page-component-title}, add the following to the `$\{OPENNMS_HOME}/etc/opennms.conf` file.
-If you do not have an `opennms.conf` file, you can create it.
+To enable RMI, you must add some settings to the default {page-component-title} installation.
+Add the following code to `$\{OPENNMS_HOME}/etc/opennms.conf`:
 
-[source, properties, options="nowrap"]
+[source, properties]
 ----
 # Configure remote JMX
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980" <1>
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
 
 # Listen on all interfaces
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0" <2>
 # Accept remote RMI connections on this interface
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>" <3>
 ----
+<1> Configures {page-component-title} to listen for RMI on port `18980`.
+<2> Configures {page-component-title} to listen for RMI on all interfaces.
+Note that originally, RMI was used only for the legacy remote poller; despite this property name mentioning the "OpenNMS poller server," it applies to RMI as a whole.
+<3> Allows {page-component-title} to accept and complete RMI connections.
+You must include this option, otherwise {page-component-title} will accept connections but will not be able to complete a valid connection.
 
-This tells {page-component-title} to listen for RMI on port `18980`, and to listen on all interfaces.
-(Originally, RMI was used only for the legacy remote poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)
-Note that you must include the `-Djava.rmi.server.hostname=` option, otherwise {page-component-title} will accept connections on the RMI port but not be able to complete a valid connection.
+NOTE: If `$\{OPENNMS_HOME}/etc/opennms.conf` does not exist in your install, you can create it and add the code above.
 
-Authentication is allowed only for users who are assigned the `admin` role (`ROLE_ADMIN`) or the `jmx` role (`ROLE_JMX`).
-To make a user an admin, add only the `ROLE_ADMIN` role to the user in `users.xml`.
-To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`.
-If the `ROLE_USER` role is required to provide access to the web UI, add it to the user as well (see <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign User Permissions>>).
+== Allow user authentication
 
-Make sure `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate settings:
+Authentication is allowed only for users who are assigned the `admin` or `jmx` roles (`ROLE_ADMIN`, `ROLE_JMX`).
+To assign the `admin` role to a user, add `ROLE_ADMIN` to their entry in `users.xml`.
+Similarly, to assign the `jmx` role to a user, add `ROLE_JMX` to their entry in `users.xml`.
 
-[source, options="nowrap"]
+If the `ROLE_USER` role is required to allow access to the web UI, ensure that the user's account has it as well (see xref:deep-dive/user-management/security-roles.adoc[]).
+
+You should also ensure that `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate access settings for each role:
+
+[source, properties]
 ----
 admin   readwrite
 jmx     readonly
 ----
 
-The possible types of access are:
+The possible types of access are as follows:
 
-readwrite:: Lets you retrieve JMX metrics as well as executing MBeans.
-readonly:: Lets you retrieve JMX metrics but does not allow executing MBeans, even if they just return simple values.
+* `readwrite`: Lets a user retrieve JMX metrics and run MBeans.
+* `readonly`: Lets a user retrieve JMX metrics, but does not allow them to run MBeans.
 
-== Enabling SSL
+== Enable SSL
 
-To enable SSL on the RMI port, you need an existing keystore for the {page-component-title} server.
-For information on configuring a keystore, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to setup SSL with Jetty].
+To enable SSL on the RMI port, you need an existing keystore for your {page-component-title} server.
+For information on configuring a keystore, see xref:deep-dive/admin/configuration/https/https-server.adoc[].
 
-You must change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {page-component-title} where your keystore is.
+After your keystore is set up and configured, you must change the `com.sun.management.jmxremote.ssl` to `true` and tell {page-component-title} where your keystore is:
 
-[source, properties, options="nowrap"]
+[source, properties]
 ----
-# Configure remote JMX
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=true"
-
 # Configure SSL Keystore
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djavax.net.ssl.keyStore=/opt/opennms/etc/opennms.keystore"
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djavax.net.ssl.keyStorePassword=changeit"
-
-# Listen on all interfaces
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
-# Accept remote RMI connections on this interface
-ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
 ----
 
-== Connecting to RMI over SSL
+=== Connect to RMI over SSL
 
-Note that if you use a self-signed or otherwise untrusted certificate, you must configure a truststore on the client side when you attempt to connect over SSL-enabled RMI.
-To create a truststore, follow the example in the <<deep-dive/admin/configuration/https/http-ssl.adoc#ga-operation-https-client, HTTPS client instructions>>.
-You may then use the truststore to connect to your {page-component-title} RMI server.
+Note that if you use a self-signed or otherwise untrusted certificate, you must configure a client-side truststore when you try to connect over SSL-enabled RMI.
+For information on creating and configuring a truststore, see xref:deep-dive/admin/configuration/https/https-server.adoc[].
 
-For example, when using `jconsole` to connect to the {page-component-title} RMI interface to get JVM statistics, run:
+After you set up a truststore, you may use it to connect to your {page-component-title} RMI server.
+For example, when using `jconsole` to connect to the {page-component-title} RMI interface, run the following command to retrieve JVM statistics:
 
-[source, console, options="nowrap"]
-----
+[source, console]
 jconsole -J-Djavax.net.ssl.trustStore=/path/to/opennms.truststore -J-Djavax.net.ssl.trustStorePassword=changeit
-----

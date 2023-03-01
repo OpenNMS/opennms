@@ -1,7 +1,7 @@
 
 = Daemon Configuration Files
 
-This section explains how to implement changes to daemon configuration files, and which daemons require you to restart OpenNMS to load configuration updates.
+This section explains how to implement changes to daemon configuration files, and which daemons require you to restart {page-component-title} to load configuration updates.
 
 NOTE: Check the xref:reference:daemons/introduction#ga-daemons[daemon reference section] for an overview of all daemons, their related configuration files, and which ones you can reload without restarting OpenNMS.
 
@@ -9,7 +9,7 @@ NOTE: Check the xref:reference:daemons/introduction#ga-daemons[daemon reference 
 == Reload daemons with CLI
 
 You can prompt some daemons to load configuration changes by running a CLI command.
-To use the reload commands in the CLI, follow the steps below:
+To use the reload commands in the CLI, follow these steps:
 
 . Log in to the Karaf shell on your system:
 +
@@ -21,7 +21,7 @@ ssh -p 8101 admin@localhost
 [source, karaf]
 opennms:reload-daemon NAME
 
-NOTE: To see a list of reloadable daemons, press `tab` after the `reload-daemon` command.
+NOTE: To see a list of reloadable daemons, press kbd:[Tab] after the `reload-daemon` command.
 
 == Reload daemons with a reload event
 

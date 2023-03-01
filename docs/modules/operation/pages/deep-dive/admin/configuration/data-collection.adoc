@@ -1,7 +1,7 @@
 
 = Data Collection
 
-When enabled, the `Data Choices` module collects anonymous use statistics.
+When enabled, the Data Choices module collects anonymous use statistics.
 It publishes them on system startup and every 24 hours after.
 Usage statistics include the following data points:
 
