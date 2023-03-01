@@ -159,17 +159,19 @@ echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minio
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 # fix the init script for RedHat/CentOS layout
-mkdir -p "%{buildroot}%{_initrddir}"
+install -d -m 755 "%{buildroot}%{minioninstprefix}/bin"
 sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
 	-e 's,^PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 	-e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" \
 	"%{buildroot}%{minioninstprefix}/etc/minion.init" \
-	> "%{buildroot}%{_initrddir}"/minion
-chmod 755 "%{buildroot}%{_initrddir}"/minion
+	> "%{buildroot}%{minioninstprefix}"/bin/minion
+chmod 755 "%{buildroot}%{minioninstprefix}"/bin/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
 mkdir -p "%{buildroot}%{_unitdir}"
-install -c -m 644 "%{buildroot}%{minioninstprefix}/etc/minion.service" "%{buildroot}%{_unitdir}/minion.service"
+sed -e "s,^/etc/init.d,%{minioninstprefix}/bin," "%{buildroot}%{minioninstprefix}/etc/minion.service" > "%{buildroot}%{_unitdir}/minion.service"
+rm -f "%{buildroot}%{minioninstprefix}/etc/minion.service"
+chmod 644 "%{buildroot}%{_unitdir}/minion.service"
 
 # move minion.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
@@ -225,7 +227,6 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
-%attr(755,minion,minion) %{_initrddir}/minion
 %attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
