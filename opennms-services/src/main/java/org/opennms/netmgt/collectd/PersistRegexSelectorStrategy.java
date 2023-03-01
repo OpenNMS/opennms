@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,89 +28,12 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.List;
-
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.Parameter;
-import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
-import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
 /**
- * PersistRegexSelectorStrategy
+ * A shim class to provide compatibility with existing installs using the PersistRegexSelectorStrategy.
  * 
- * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
+ * @deprecated use {@link org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy} instead
  */
-/* 
- * TODO Implement "match-strategy" (allow/deny)
- * TODO Implement "match-behavior" (any/all)
- */
-public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(PersistRegexSelectorStrategy.class);
-    
-    public static final String MATCH_EXPRESSION = "match-expression";
-    public static final String MATCH_STRATEGY = "match-strategy";
-    public static final String MATCH_BEHAVIOR = "match-behavior";
-
-    private List<Parameter> m_parameterCollection;
-
-    protected static final class EvaluatorContextVisitor extends AbstractCollectionSetVisitor {
-        private StandardEvaluationContext context;
-
-        public EvaluatorContextVisitor() {
-            context = new StandardEvaluationContext();
-        }
-
-        @Override
-        public void visitAttribute(CollectionAttribute attribute) {
-            if (!attribute.getType().isNumeric()) {
-                context.setVariable(attribute.getName(), attribute.getStringValue());
-            }
-        }
-
-        public StandardEvaluationContext getEvaluationContext() {
-            return context;
-        }
-    }
-
-    @Override
-    public boolean shouldPersist(CollectionResource resource) {
-        LOG.debug("shouldPersist: checking resource {}", resource);
-        if (m_parameterCollection == null) {
-            LOG.warn("shouldPersist: no parameters defined; the resource will be persisted.");
-            return true;
-        }
-        EvaluatorContextVisitor visitor = new EvaluatorContextVisitor();
-        resource.visit(visitor);
-        visitor.getEvaluationContext().setVariable("instance", resource.getInstance());
-        ExpressionParser parser = new SpelExpressionParser();
-        for (Parameter param : m_parameterCollection) {
-            if (param.getKey().equals(MATCH_EXPRESSION)) {
-                Expression exp = parser.parseExpression(param.getValue());
-                boolean shouldPersist = false;
-                try {
-                    shouldPersist = (Boolean)exp.getValue(visitor.getEvaluationContext(), Boolean.class);
-                } catch (Exception e) {
-                    LOG.warn("shouldPersist: can't evaluate expression {} for resource {} because: {}", param.getValue(), resource, e.getMessage());
-                }
-                LOG.debug("shouldPersist: checking {} ? {}", param.getValue(), shouldPersist);
-                if (shouldPersist)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void setParameters(List<Parameter> parameterCollection) {
-        m_parameterCollection = parameterCollection;
-    }
-
+@Deprecated
+@SuppressWarnings("java:S2176")
+public class PersistRegexSelectorStrategy extends org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy {
 }
