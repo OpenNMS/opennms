@@ -817,6 +817,7 @@ workflows:
       - horizon-rpm-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
           requires:
             - build
           filters:
@@ -840,6 +841,7 @@ workflows:
       - minion-rpm-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
             - "docker-content-trust"
             - "docker-publish-account"
           requires:
@@ -863,6 +865,7 @@ workflows:
       - sentinel-rpm-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
           requires:
             - build
           filters:
@@ -1087,6 +1090,7 @@ workflows:
       - horizon-deb-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
           requires:
             - integration-test
             - code-coverage
@@ -1104,6 +1108,7 @@ workflows:
       - minion-deb-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
           requires:
             - integration-test
             - code-coverage
@@ -1121,6 +1126,7 @@ workflows:
       - sentinel-deb-build:
           context:
             - "CircleCI"
+            - "gpg-signing"
           requires:
             - integration-test
             - code-coverage
