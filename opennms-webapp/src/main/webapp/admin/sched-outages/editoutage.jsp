@@ -313,7 +313,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Collectd outages config *********
 	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+	for (Package thisPackage : collectdConfig.getPackages()) {
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());

@@ -368,7 +368,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             jmxResourceDirectories = new ArrayList<>();
             CollectdConfiguration config;
             try {
-                config = new CollectdConfigFactory().getCollectdConfig();
+                config = new CollectdConfigFactory().getLocalCollectdConfig();
             } catch (Exception e) {
                 throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
             }

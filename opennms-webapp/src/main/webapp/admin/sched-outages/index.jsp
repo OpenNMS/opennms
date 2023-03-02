@@ -85,7 +85,7 @@
 			}
 
 			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+			for (Package thisPackage : collectdConfig.getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
@@ -175,7 +175,7 @@
 			
 					List<String> collectionOutages = new ArrayList<>();
 					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+					for (Package thisPackage : collectdConfig.getPackages()) {
 						collectionOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
