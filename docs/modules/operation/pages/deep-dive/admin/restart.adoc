@@ -4,14 +4,14 @@
 This section provides an example of the order to follow when shutting down and restarting a sample {page-component-title} system: {page-component-title} core layer, persistence and messaging layer, and database layer.
 
 .{page-component-title} restart process
-image::admin/restart-process.png["Diagram displaying {page-component-title} components and the order in which to restart them"]
+image::admin/restart-process.png["Diagram displaying {page-component-title} components and the order in which to restart them."]
 
 Note that restarting the whole stack is rare.
-Usually, restarting the {page-component-title} core happens for reconfiguration or to run upgrades.
-A core restart takes between 2-5 minutes depending on memory configuration.
+Usually, the {page-component-title} core is restarted only to apply configuration changes, or to run upgrades.
+A core restart takes between 2-5 minutes, depending on memory configuration.
 The Minion and Sentinel components restart more quickly.
 
-Keep in mind that when shutting down the {page-component-title} core, there will be no notifications, alarms, outage detection, performance data collection, thresholding, or flows.
+IMPORTANT: When shutting down the {page-component-title} core, there will be no notifications, alarms, outage detection, performance data collection, thresholding, or flows.
 After restarting, there will be gaps in your performance graphs spanning the shutdown time.
 
 Restarting components in the persistence and messaging layer normally happens only for upgrades or catastrophic failures.
@@ -37,8 +37,8 @@ systemctl stop kibana
 . The {page-component-title} core application (core, Sentinel, Minion), in any order.
 ** Turn off notifications:
 ... Log in to the {page-component-title} web UI.
-... Click the *gear* symbol in the top-right of the page.
-... Under Event Management, turn off *Notification Status* and click *Update*.
+... Click the *gear* symbol at the top-right of the page.
+... Under Event Management, turn toggle Notification Status *Off* and click *Update*.
 ** Access the {page-component-title} system via CLI (putty, SecureCRT, and so on).
 ** Use the `sudo su -` command to become a root user.
 ** Type the following commands:
@@ -87,8 +87,8 @@ systemctl start sentinel
 
 ** Turn on notifications:
 ... Log in to the {page-component-title} web UI.
-... Click the *gear* symbol in the top-right of the page.
-... Under Event Management, turn on *Notification Status* and click *Update*.
+... Click the *gear* symbol at the top-right of the page.
+... Under Event Management, turn toggle Notification Status *On* and click *Update*.
 . Dashboard applications (Grafana, Kibana, and so on):
 +
 [source, console]

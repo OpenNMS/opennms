@@ -1,10 +1,10 @@
 
 = Housekeeping Tasks
 
-There are a number of housekeeping tasks that you may want to do regularly to ensure optimum system performance.
-We also recommend you complete some of these housekeeping tasks before upgrading {page-component-title}.
+This section describes housekeeping tasks that you may want to perform to ensure optimum system performance.
+We recommend that you complete some of these tasks before upgrading your {page-component-title} instance.
 
-== Prior to upgrading
+== Before upgrading
 
 [[prune-events]]
 === Prune unneeded events
@@ -17,7 +17,6 @@ For example, run the following to delete events older than six weeks that have n
 
 [source, sql]
 ----
---# this deletes any events that are not associated with outages
 DELETE FROM events WHERE NOT EXISTS
 (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid
 UNION
