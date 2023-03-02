@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.ResourcePath;
 public interface CollectionResource extends ResourceIdentifier, CollectionVisitable, Persistable {
 
     public static final String RESOURCE_TYPE_NODE = "node";
-    public static final String RESOURCE_TYPE_IF = "if";
+    public static final String RESOURCE_TYPE_IF = "ifIndex";
     public static final String RESOURCE_TYPE_LATENCY = "latency";
 
     /**
