@@ -160,7 +160,8 @@ public class DuplicatePrimaryAddressIT {
         verify();
 
         Mockito.verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
-        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
         Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
         Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
@@ -201,7 +202,8 @@ public class DuplicatePrimaryAddressIT {
         verify();
 
         Mockito.verify(m_filterDao, times(3)).flushActiveIpAddressListCache();
-        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
         Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
         Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
@@ -241,7 +243,8 @@ public class DuplicatePrimaryAddressIT {
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
         m_collectdConfiguration = mock(CollectdConfiguration.class);
-        when(m_collectdConfigFactory.getCollectdConfig()).thenReturn(m_collectdConfiguration);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(m_collectdConfiguration.getCollectors());
+        when(m_collectdConfigFactory.getPackages()).thenReturn(m_collectdConfiguration.getPackages());
         when(m_collectdConfiguration.getCollectors()).thenReturn(Collections.singletonList(collector));
         when(m_collectdConfiguration.getThreads()).thenReturn(2);
 

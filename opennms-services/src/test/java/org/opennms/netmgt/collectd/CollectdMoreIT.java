@@ -115,7 +115,6 @@ public class CollectdMoreIT {
     private EventIpcManager m_eventIpcManager;
     private Collectd m_collectd;
     private CollectdConfigFactory m_collectdConfigFactory;
-    private CollectdConfiguration m_collectdConfiguration;
     private String m_key;
     private MockServiceCollector m_serviceCollector;
 
@@ -165,10 +164,8 @@ public class CollectdMoreIT {
         collector.addParameter(param);
         
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        m_collectdConfiguration = mock(CollectdConfiguration.class);
-        when(m_collectdConfigFactory.getCollectdConfig()).thenReturn(m_collectdConfiguration);
-        when(m_collectdConfiguration.getCollectors()).thenReturn(Collections.singletonList(collector));
-        when(m_collectdConfiguration.getThreads()).thenReturn(1);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getThreads()).thenReturn(1);
         
         m_ifaceDao = mock(IpInterfaceDao.class);
         m_nodeDao = mock(NodeDao.class);
@@ -245,7 +242,6 @@ public class CollectdMoreIT {
     public void tearDown() {
         verifyNoMoreInteractions(m_filterDao);
         verifyNoMoreInteractions(m_collectdConfigFactory);
-        verifyNoMoreInteractions(m_collectdConfiguration);
         verifyNoMoreInteractions(m_ifaceDao);
         verifyNoMoreInteractions(m_nodeDao);
 
@@ -270,11 +266,12 @@ public class CollectdMoreIT {
         assertEquals(1, m_serviceCollector.getCollectCount());
 
         verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
-        verify(m_collectdConfigFactory, atLeastOnce()).getCollectdConfig();
+        verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
+        verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
         verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
-        verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
-        verify(m_collectdConfiguration, atLeastOnce()).getPackages();
-        verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
+        verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
+        verify(m_collectdConfigFactory, atLeastOnce()).getThreads();
         verify(m_ifaceDao, atLeastOnce()).findByServiceType("SNMP");
         verify(m_ifaceDao, atLeastOnce()).load(anyInt());
         verify(m_nodeDao, atLeastOnce()).load(anyInt());
@@ -302,7 +299,7 @@ public class CollectdMoreIT {
         
         pkg.addService(collector);
         
-        when(m_collectdConfiguration.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
         when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 
