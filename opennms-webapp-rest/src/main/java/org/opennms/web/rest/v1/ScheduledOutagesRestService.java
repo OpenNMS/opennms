@@ -349,7 +349,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (Package pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
+            for (Package pkg : m_collectdConfigFactory.getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

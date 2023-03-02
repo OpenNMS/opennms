@@ -116,7 +116,6 @@ public class CollectdIT {
     private FilterDao m_filterDao;
     private Collectd m_collectd;
     private MockScheduler m_scheduler;
-    private CollectdConfiguration m_collectdConfig;
     private CollectdConfigFactory m_collectdConfigFactory;
     
     private EventIpcManager m_eventIpcManager;
@@ -314,7 +313,7 @@ public class CollectdIT {
         setupInterface(iface);
         setupTransactionManager();
   
-        when(m_collectdConfig.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
         when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
 
         // Mock Thresholding
@@ -365,7 +364,7 @@ public class CollectdIT {
         setupInterface(iface);
         setupTransactionManager();
 
-        when(m_collectdConfig.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
         when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
 
         assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
@@ -437,10 +436,8 @@ public class CollectdIT {
         collector.setClassName(MockServiceCollector.class.getName());
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        m_collectdConfig = mock(CollectdConfiguration.class);
-        when(m_collectdConfigFactory.getCollectdConfig()).thenReturn(m_collectdConfig);
-        when(m_collectdConfig.getCollectors()).thenReturn(Collections.singletonList(collector));
-        when(m_collectdConfig.getThreads()).thenReturn(1);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getThreads()).thenReturn(1);
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
     }

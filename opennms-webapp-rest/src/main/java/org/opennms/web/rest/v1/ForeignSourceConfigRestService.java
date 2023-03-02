@@ -340,7 +340,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getServices(@PathParam("groupName") String groupName) {
         ElementList elements = new ElementList(m_pollerConfig.getServiceMonitorNames());
-        m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
+        m_collectdConfigFactory.getCollectors().forEach(c -> {
             if (!elements.contains(c.getService())) {
                 elements.add(c.getService());
             }

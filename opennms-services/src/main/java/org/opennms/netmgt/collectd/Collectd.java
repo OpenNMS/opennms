@@ -62,7 +62,6 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
@@ -314,7 +313,7 @@ public class Collectd extends AbstractServiceDaemon implements
             // Create a scheduler
             try {
                 LOG.debug("init: Creating collectd scheduler");
-                setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
+                setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getThreads()));
             } catch (final RuntimeException e) {
                 LOG.error("init: Failed to create collectd scheduler", e);
                 throw e;
@@ -364,7 +363,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Collection<OnmsIpInterface> ifsWithServices = findInterfacesWithService(svcName);
         for (OnmsIpInterface iface : ifsWithServices) {
-            scheduleInterface(iface, svcName, true);
+            scheduleInterface(iface, svcName);
         }
         } finally {
             instrumentation().endScheduleInterfacesWithService(svcName);
@@ -387,19 +386,13 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * This method is responsible for scheduling the specified
      * node/address/svcname tuple for data collection.
-     * 
-     * @param nodeId
-     *            Node id
-     * @param ipAddress
-     *            IP address
-     * @param svcName
-     *            Service name
-     * @param existing
-     *            True if called by scheduleExistingInterfaces(), false
-     *            otheriwse
+     *
+     * @param nodeId    Node id
+     * @param ipAddress IP address
+     * @param svcName   Service name
      */
     private void scheduleInterface(int nodeId, String ipAddress,
-            String svcName, boolean existing) {
+            String svcName) {
         
         OnmsIpInterface iface = getIpInterface(nodeId, ipAddress);
         if (iface == null) {
@@ -413,17 +406,17 @@ public class Collectd extends AbstractServiceDaemon implements
             return;
         }
         
-        scheduleInterface(iface, svc.getServiceType().getName(),
-                          existing);
+        scheduleInterface(iface, svc.getServiceType().getName()
+        );
     }
     
-	private void scheduleNode(final int nodeId, final boolean existing) {
+	private void scheduleNode(final int nodeId) {
 		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
 		node.visit(new AbstractEntityVisitor() {
 
 			@Override
 			public void visitMonitoredService(OnmsMonitoredService monSvc) {
-				scheduleInterface(monSvc.getIpInterface(), monSvc.getServiceName(), existing);
+				scheduleInterface(monSvc.getIpInterface(), monSvc.getServiceName());
 			}
 			
 		});
@@ -434,7 +427,7 @@ public class Collectd extends AbstractServiceDaemon implements
 		return node.getIpInterfaceByIpAddress(ipAddress);
 	}
 
-    private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
+    private void scheduleInterface(OnmsIpInterface iface, String svcName) {
         
         final String ipAddress = str(iface.getIpAddress());
         if (ipAddress == null) {
@@ -451,19 +444,9 @@ public class Collectd extends AbstractServiceDaemon implements
         LOG.debug("scheduleInterface: found {} matching specs for interface: {}", matchingSpecs.size(), iface);
 
         for (CollectionSpecification spec : matchingSpecs) {
-
-            if (existing == false) {
-                /*
-                 * It is possible that both a nodeGainedService and a
-                 * primarySnmpInterfaceChanged event are generated for an
-                 * interface during a rescan. To handle this scenario we must
-                 * verify that the ipAddress/pkg pair identified by this event
-                 * does not already exist in the collectable services list.
-                 */
-                if (alreadyScheduled(iface, spec)) {
-                    LOG.debug("scheduleInterface: svc/pkgName {}/{} already in collectable service list, skipping.", iface, spec);
-                    continue;
-                }
+            if (alreadyScheduled(iface, spec)) {
+                LOG.debug("scheduleInterface: svc/pkgName {}/{} already in collectable service list, skipping.", iface, spec);
+                continue;
             }
 
             try {
@@ -534,14 +517,12 @@ public class Collectd extends AbstractServiceDaemon implements
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
         Collection<CollectionSpecification> matchingPkgs = new LinkedList<>();
 
-        CollectdConfiguration collectdConfig = m_collectdConfigFactory.getCollectdConfig();
-
         /*
          * Compare interface/service pair against each collectd package
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        for(Package wpkg : collectdConfig.getPackages()) {
+        for(Package wpkg : m_collectdConfigFactory.getPackages()) {
             /*
              * Make certain the the current service is in the package
              * and enabled!
@@ -564,7 +545,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
-            String className = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null).getClassName();
+            String className = m_collectdConfigFactory.getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null).getClassName();
             if(className != null) {
                 matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
             } else {
@@ -958,7 +939,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
 
-        scheduleNode(nodeId.intValue(), true);
+        scheduleNode(nodeId.intValue());
     }
 
     /**
@@ -977,7 +958,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         LOG.debug("nodeLocationChanged: unscheduling nodeid {} completed.", nodeId);
 
-        scheduleNode(nodeId.intValue(), true);
+        scheduleNode(nodeId.intValue());
     }
 
     private void rebuildScheduler() {
@@ -988,9 +969,20 @@ public class Collectd extends AbstractServiceDaemon implements
             unscheduleNodeAndMarkForDeletion(Long.valueOf(nodeId));
         }
        //Remove unused collectors if necessary
-        Set<String> newConfigured = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream().map(c->c.getService()).collect(Collectors.toSet());
-        List<String> removedList = getCollectorNames().stream().filter(name-> !newConfigured.contains(name)).collect(Collectors.toList());
-        removedList.forEach(name -> m_collectors.remove(name));
+        Set<String> newConfigured = m_collectdConfigFactory.getCollectors().stream().map(Collector::getService).collect(Collectors.toSet());
+        Set<String> removed = getCollectorNames().stream().filter(name-> !newConfigured.contains(name)).collect(Collectors.toSet());
+        removed.forEach(m_collectors::remove);
+
+        // Remove all services using a removed collector
+        final var liter = m_collectableServices.listIterator();
+        while (liter.hasNext()) {
+            final var svc = liter.next();
+            if (removed.contains(svc.getServiceName())) {
+                svc.getCollectorUpdates().markForDeletion();
+                liter.remove();
+            }
+        }
+
         //Re-instantiate collectors
         instantiateCollectors();
     }
@@ -1118,7 +1110,7 @@ public class Collectd extends AbstractServiceDaemon implements
         m_filterDao.flushActiveIpAddressListCache();
 
         scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
-                          event.getService(), false);
+                          event.getService());
     }
 
     /**
@@ -1467,7 +1459,7 @@ public class Collectd extends AbstractServiceDaemon implements
          * so that the event processor will have them for
          * new incoming events to create collectable service objects.
          */
-        Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
+        Collection<Collector> collectors = m_collectdConfigFactory.getCollectors();
 
         final int currentSessionID = sessionID.incrementAndGet();
 

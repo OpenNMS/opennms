@@ -38,13 +38,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -70,10 +75,15 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
     private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
     public static final String SELECT_METHOD_MIN = "min";
 
-    private CollectdConfiguration m_collectdConfig;
+    private CollectdConfiguration localCollectdConfig;
     private final Object m_collectdConfigMutex = new Object();
 
     private final String m_fileName;
+
+    private List<Package> extendedPackages = Collections.emptyList();
+    private List<Package> mergedPackages = Collections.emptyList();
+    private List<Collector> extendedCollectors = Collections.emptyList();
+    private List<Collector> mergedCollectors = Collections.emptyList();
 
     public CollectdConfigFactory() throws IOException {
         m_fileName = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME).getPath();
@@ -105,10 +115,19 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
             isr = new InputStreamReader(stream);
             CollectdConfiguration config = JaxbUtils.unmarshal(CollectdConfiguration.class, isr);
             synchronized (m_collectdConfigMutex) {
-                m_collectdConfig = config;
+                this.localCollectdConfig = config;
             }
         } finally {
             IOUtils.closeQuietly(isr);
+        }
+
+        this.setUpInternalData();
+    }
+
+    private void setUpInternalData() {
+        synchronized (this.m_collectdConfigMutex) {
+            this.mergedCollectors = ListUtils.union(localCollectdConfig.getCollectors(), this.extendedCollectors);
+            this.mergedPackages = ListUtils.union(localCollectdConfig.getPackages(), this.extendedPackages);
         }
     }
 
@@ -133,7 +152,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
 
         CollectdConfiguration config = null;
         synchronized (m_collectdConfigMutex) {
-            config = m_collectdConfig;
+            config = localCollectdConfig;
         }
 
         FileWriter writer = null;
@@ -152,10 +171,15 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      *
      * @return a {@link org.opennms.netmgt.config.collectd.CollectdConfiguration} object.
      */
-    public CollectdConfiguration getCollectdConfig() {
+    public CollectdConfiguration getLocalCollectdConfig() {
         synchronized (m_collectdConfigMutex) {
-            return m_collectdConfig;
+            return localCollectdConfig;
         }
+    }
+
+    @Override
+    public Integer getThreads() {
+        return this.localCollectdConfig.getThreads();
     }
 
     /**
@@ -167,7 +191,12 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      */
     public boolean packageExists(String name) {
         synchronized (m_collectdConfigMutex) {
-            return m_collectdConfig.getPackage(name) != null;
+            for (final Package pkg : this.mergedPackages) {
+                if (pkg.getName().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -179,13 +208,23 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      */
     public Package getPackage(final String name) {
         synchronized (m_collectdConfigMutex) {
-            for (Package pkg : m_collectdConfig.getPackages()) {
+            for (Package pkg : this.mergedPackages) {
                 if (pkg.getName().equals(name)) {
                     return pkg;
                 }
             }
             return null;
         }
+    }
+
+    @Override
+    public List<Package> getPackages() {
+        return this.mergedPackages;
+    }
+
+    @Override
+    public List<Collector> getCollectors() {
+        return this.mergedCollectors;
     }
 
     /**
@@ -197,7 +236,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      */
     public boolean domainExists(final String name) {
         synchronized (m_collectdConfigMutex) {
-            for (Package pkg : m_collectdConfig.getPackages()) {
+            for (Package pkg : this.mergedPackages) {
                 if ((pkg.getIfAliasDomain() != null)
                         && pkg.getIfAliasDomain().equals(name)) {
                     return true;
@@ -234,7 +273,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      *         specified interface and has the specified service enabled.
      */
     public boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName) {
-        for (Package wpkg : m_collectdConfig.getPackages()) {
+        for (Package wpkg : this.mergedPackages) {
 
             // Does the package include the interface?
             if (interfaceInPackage(iface, wpkg)) {
@@ -269,7 +308,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      */
     public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
         synchronized (m_collectdConfigMutex) {
-            for (Package wpkg : m_collectdConfig.getPackages()) {
+            for (Package wpkg : this.mergedPackages) {
 
                 // Does the package include the interface?
                 //
@@ -376,5 +415,15 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      */
     public boolean interfaceInPackage(final OnmsIpInterface iface, Package pkg) {
         return interfaceInPackage(iface.getIpAddressAsString(), pkg);
+    }
+
+    @Override
+    public void setExternalData(final List<Package> packages, final List<Collector> collectors) {
+        synchronized (this.m_collectdConfigMutex) {
+            this.extendedPackages = packages;
+            this.extendedCollectors = collectors;
+
+            this.setUpInternalData();
+        }
     }
 }

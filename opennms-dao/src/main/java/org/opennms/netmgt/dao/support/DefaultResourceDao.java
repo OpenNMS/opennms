@@ -396,7 +396,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * return true if a package uses the domain types, and false otherwise.
      */
     private boolean isDomainResourceTypeUsed() {
-        for (Package pkg : m_collectdConfig.getCollectdConfig().getPackages()) {
+        for (Package pkg : m_collectdConfig.getPackages()) {
             if ("true".equalsIgnoreCase(pkg.getStoreByIfAlias())) {
                 return true;
             }
