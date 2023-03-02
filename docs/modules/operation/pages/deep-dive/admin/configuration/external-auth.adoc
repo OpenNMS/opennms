@@ -5,7 +5,7 @@ If you have an existing directory for authenticating users, you can configure {p
 
 == Configure external authentication
 
-The {page-component-title} webapp uses https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
+The {page-component-title} web app uses https://spring.io/projects/spring-security[Spring Security] for its user authentication, authorization, and accounting (AAA) concerns.
 
 The Spring Security configuration files are located in at `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`.
 Only one authentication service can be enabled in the `spring-security.d` subdirectory.
@@ -17,11 +17,11 @@ The following files are used for external authentication:
 | File  | Description
 
 | applicationContext-spring-security.xml
-| The main Spring Security context configuration file for the OpenNMS webapp.
+| The main Spring Security context configuration file for the OpenNMS web app.
 The `authentication-provider` parameter must be uncommented to enable external authentication: +
 [source, xml]
 ----
-<!-- To enable external (e.g. LDAP, RADIUS) authentication, uncomment the following.
+<!-- To enable external (for example, LDAP, RADIUS) authentication, uncomment the following.
 You must also rename and customize exactly ONE of the example files in the
 spring-security.d subdirectory.-->
 <authentication-provider ref="externalAuthenticationProvider" />
@@ -42,7 +42,7 @@ The `.disabled` files are ignored when Spring Security loads.
 Whether the authentication source is an Active Directory, a Novell eDirectory, or some other LDAP-enabled directory, the basic components (expressed as "beans" in Spring Framework lingo) that need to exist and be configured are the same.
 
 While Active Directory and OpenLDAP (and others) implement the same LDAP protocol, their schemas are substantially different.
-The biggest difference is the `memberOf` attribute, which is not supported by default LDAP v3 specification and is not present in common OpenLDAP installs, but comes standard with AD.
+The biggest difference is the `memberOf` attribute, which is not supported by the default LDAP v3 specification and is not present in common OpenLDAP installs, but comes standard with AD.
 This has a significant implication in that you cannot filter a user search by nested group membership, and most installs tend not to be fully hierarchical.
 You can either create dedicated per-role LDAP groups or map existing groups to roles by selecting and configuring the appropriate `userGroupLdapAuthoritiesPopulator`.
 
@@ -76,7 +76,7 @@ Before doing this, we recommend you make sure that your changes have not led to 
 [source, console]
 xmllint --noout applicationContext-spring-security.xml spring-security.d/*.xml
 
-If this command produces no output, then the `.xml` files are well-formed.
+If this command produces no output, then the `.xml` files are well formed.
 
 If your configuration is set correctly, you will be able to log in to the {page-component-title} web UI using your directory credentials after restarting OpenNMS.
 

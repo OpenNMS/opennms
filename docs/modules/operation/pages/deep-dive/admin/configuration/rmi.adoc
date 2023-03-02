@@ -44,7 +44,7 @@ admin   readwrite
 jmx     readonly
 ----
 
-The possible types of access are as follows:
+The following types of access are available in {page-component-title}:
 
 * `readwrite`: Lets a user retrieve JMX metrics and run MBeans.
 * `readonly`: Lets a user retrieve JMX metrics, but does not allow them to run MBeans.
