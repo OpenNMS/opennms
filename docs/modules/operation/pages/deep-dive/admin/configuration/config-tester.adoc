@@ -2,7 +2,7 @@
 = Configuration Tester
 
 To identify configuration problems, use the configuration tester located in `$\{OPENNMS_HOME}/bin/`.
-You can use the tool while {page-component-title} is running.
+You can use the tool when {page-component-title} is either running or stopped.
 
 Use the `config-tester` command to check configuration files.
 The tool prints issues to `output.log`.

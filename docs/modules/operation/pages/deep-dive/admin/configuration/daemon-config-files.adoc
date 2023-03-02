@@ -6,9 +6,9 @@ This section explains how to implement changes to daemon configuration files, an
 NOTE: Check the xref:reference:daemons/introduction#ga-daemons[daemon reference section] for an overview of all daemons, their related configuration files, and which ones you can reload without restarting OpenNMS.
 
 [[daemon-reload]]
-== Reload daemons with CLI
+== Reload daemons with the Karaf CLI
 
-You can prompt some daemons to load configuration changes by running a CLI command.
+You can prompt some daemons to load configuration changes by running a Karaf command.
 To use the reload commands in the CLI, follow these steps:
 
 . Log in to the Karaf shell on your system:
