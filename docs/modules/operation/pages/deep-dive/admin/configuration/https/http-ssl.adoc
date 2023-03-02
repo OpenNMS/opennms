@@ -1,5 +1,0 @@
-
-= HTTPS/SSL
-
-This section covers ways to configure {page-component-title} to protect web sessions with HTTPS.
-It also explains how to configure {page-component-title} to establish secure connections with other systems.

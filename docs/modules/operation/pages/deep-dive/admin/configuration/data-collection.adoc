@@ -38,6 +38,14 @@ Usage statistics include the following data points:
 * Number of queued updates completed.
 * Number of virtual appliances, Mini appliances, and 1U appliances that are connected to the system.
 
+For more details, navigate to the Help Improve OpenNMS dialog:
+
+. Click the *gear* symbol in the top-right of the page.
+. Under Additional Tools, select *Data Choices*.
+. Click *Show me What is Being Sent*.
+
+You can view the aggregated statistics from all participating users on the https://stats.opennms.com/[OpenNMS Usage Report].
+
 [[disable-data-collection]]
 == Enable or disable usage statistics collection
 
