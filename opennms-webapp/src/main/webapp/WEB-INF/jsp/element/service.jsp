@@ -33,9 +33,9 @@
 	contentType="text/html"
 	session="true"
 	import="
-        java.util.Map,
-        java.util.TreeMap,
-        java.util.Enumeration,
+        java.util.*,
+        org.opennms.netmgt.config.CollectdConfigFactory,
+        org.opennms.netmgt.config.collectd.Collector,
         org.opennms.netmgt.config.PollerConfigFactory,
         org.opennms.netmgt.config.PollerConfig,
         org.opennms.netmgt.config.poller.Package,
@@ -72,6 +72,42 @@
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
 
+    //Collectd
+    Boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
+    CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
+    List<String> collectdPackageNames = new ArrayList<String>();
+    Map<String,String> collectdParameters = new TreeMap<String,String>();
+
+    if (isServiceCollectionEnabled) { // Service exists in any collection package and is enabled
+        for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfigFactory.getPackages()) {
+            if (pkg.serviceInPackageAndEnabled(serviceName)) {
+                collectdPackageNames.add(pkg.getName()); //there should be at least one, right?
+            }
+            for (org.opennms.netmgt.config.collectd.Service collectdSvc : pkg.getServices()) {
+                if (collectdSvc.getName().equals(serviceName)) {
+		    pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
+                    for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
+                        if (p.getKey().toLowerCase().contains("password")) {
+                            continue; // Hide passwords for security reasons
+                        } else {
+                            collectdParameters.put(p.getKey(), p.getValue());
+                        }
+                    }
+                    pageContext.setAttribute("collectdParameters", collectdParameters);
+                }
+            }
+        }
+        String collectorClassName = null;
+        for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
+            if (collectdCollector.getService().equals(serviceName)) {
+                pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
+                break;
+            }
+        }
+        pageContext.setAttribute("collectdPackageNames", collectdPackageNames);
+    }
+
+    // Pollerd
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
