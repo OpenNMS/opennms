@@ -38,7 +38,7 @@ systemctl stop kibana
 ** Turn off notifications:
 ... Log in to the {page-component-title} web UI.
 ... Click the *gear* symbol at the top-right of the page.
-... Under Event Management, turn toggle Notification Status *Off* and click *Update*.
+... Under Event Management, toggle Notification Status *Off* and click *Update*.
 ** Access the {page-component-title} system via CLI (putty, SecureCRT, and so on).
 ** Use the `sudo su -` command to become a root user.
 ** Type the following commands:
@@ -88,7 +88,7 @@ systemctl start sentinel
 ** Turn on notifications:
 ... Log in to the {page-component-title} web UI.
 ... Click the *gear* symbol at the top-right of the page.
-... Under Event Management, turn toggle Notification Status *On* and click *Update*.
+... Under Event Management, toggle Notification Status *On* and click *Update*.
 . Dashboard applications (Grafana, Kibana, and so on):
 +
 [source, console]

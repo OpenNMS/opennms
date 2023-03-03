@@ -53,9 +53,9 @@ $ ./jmx-config-generator
 
 TIP: When invoked without parameters, the tool's usage and help information is displayed.
 
-The JMX Configuration Generator uses sub-commands for different configuration generation tasks.
-Each of these sub-commands provides different options and parameters.
-The command line tool accepts the following sub-commands:
+The JMX Configuration Generator uses subcommands for different configuration generation tasks.
+Each of these subcommands provides different options and parameters.
+The command line tool accepts the following subcommands:
 
 [options="autowidth"]
 |===
