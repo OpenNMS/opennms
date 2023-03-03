@@ -129,6 +129,10 @@ public class LateAggregationParams {
 
             // Use the given heartbeat if specified, fall back to the default
             long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
+            // make sure heartbeat will never smaller than step
+            if (effectiveHeartbeat < effectiveStep) {
+                effectiveHeartbeat = effectiveStep;
+            }
             if (effectiveInterval < effectiveHeartbeat) {
                 if (effectiveHeartbeat % effectiveInterval != 0) {
                     effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);
