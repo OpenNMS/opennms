@@ -88,6 +88,12 @@ Used when no heartbeat is specified.
 Should generally be 1.5x your largest collection interval.
 | 450000
 
+| org.opennms.timeseries.query.heartbeat.multiplier
+| Multiplier
+Used when heartbeat is smaller than step. It will set heartbeat by step times multiplier.
+Should generally be 1.5x to step.
+| 1.5
+
 | org.opennms.timeseries.query.parallelism
 | Maximum number of threads that can be used to compute aggregates.
 Defaults to the number of available cores.
