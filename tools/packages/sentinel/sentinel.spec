@@ -125,13 +125,15 @@ $TAR -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentine
 rm -rf %{buildroot}%{sentinelinstprefix}/{data,debian,demos}
 
 # fix the init script for RedHat/CentOS layout
-mkdir -p "%{buildroot}%{_initrddir}"
-sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^SENTINEL_HOME[ \t]*=.*$,SENTINEL_HOME=%{sentinelinstprefix},g" "%{buildroot}%{sentinelinstprefix}/etc/sentinel.init" > "%{buildroot}%{_initrddir}"/sentinel
-chmod 755 "%{buildroot}%{_initrddir}"/sentinel
+install -d -m 755 "%{buildroot}%{sentinelinstprefix}/bin"
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^SENTINEL_HOME[ \t]*=.*$,SENTINEL_HOME=%{sentinelinstprefix},g" "%{buildroot}%{sentinelinstprefix}/etc/sentinel.init" > "%{buildroot}%{sentinelinstprefix}"/bin/sentinel
+chmod 755 "%{buildroot}%{sentinelinstprefix}"/bin/sentinel
 rm -f '%{buildroot}%{sentinelinstprefix}/etc/sentinel.init'
 
 mkdir -p "%{buildroot}%{_unitdir}"
-install -c -m 644 "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" "%{buildroot}%{_unitdir}/sentinel.service"
+sed -e "s,^/etc/init.d,%{sentinelinstprefix}/bin," "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" > "%{buildroot}%{_unitdir}/sentinel.service"
+rm -f "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service"
+chmod 644 "%{buildroot}%{_unitdir}/sentinel.service"
 
 # move sentinel.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
@@ -182,7 +184,6 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/files.sentinel
 %defattr(664 sentinel sentinel 775)
-%attr(755,sentinel,sentinel) %{_initrddir}/sentinel
 %attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme

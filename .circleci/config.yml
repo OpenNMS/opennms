@@ -21,12 +21,16 @@ parameters:
     description: whether to enable running flaky smoke tests
     type: boolean
     default: false
+  is_pr:
+    description: whether this build is a pull request (only valid in non-setup workflows)
+    type: boolean
+    default: false
 
 setup: true
 
 commands:
   shallow-clone:
-      description: "Quick shallow checkout"
+      description: "Quick shallow checkout (if possible)"
       steps:
         - run:
             name: git clone
@@ -35,7 +39,13 @@ commands:
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
-              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+              git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
+              if [ -n "${CIRCLE_TAG}" ]; then
+                git checkout --force "${CIRCLE_TAG}"
+                git reset --hard "${CIRCLE_SHA1}"
+              else
+                git checkout --force -B "${CIRCLE_BRANCH}" "${CIRCLE_SHA1}"
+              fi
   verify-config:
     description: "Verify generated main.yml file"
     steps:

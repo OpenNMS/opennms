@@ -11,15 +11,13 @@
   <name>OpenNMS :: Features :: Telemetry :: Protocols :: JTI :: Adapter</name>
   <packaging>bundle</packaging>
   <build>
-    <!-- Enable below extension and plugin when you need to generate java source files from proto -->
-
-<!--          <extensions>
-            <extension>
-              <groupId>kr.motd.maven</groupId>
-              <artifactId>os-maven-plugin</artifactId>
-              <version>1.7.0</version>
-            </extension>
-          </extensions>-->
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${osMavenPluginVersion}</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -33,6 +31,7 @@
           </instructions>
         </configuration>
       </plugin>
+    <!-- Enable when you need to generate java source files from proto -->
 <!--                  <plugin>
               <groupId>org.xolstice.maven.plugins</groupId>
               <artifactId>protobuf-maven-plugin</artifactId>

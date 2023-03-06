@@ -8,6 +8,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
@@ -307,6 +308,8 @@
     </feature>
     <feature name="quartz" version="${quartzVersion}" description="quartz">
         <feature>c3p0</feature>
+        <!-- Quartz needs HikariCP [2,3) - so we use the latest 2.x here -->
+        <bundle>mvn:com.zaxxer/HikariCP/2.7.9</bundle>
         <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
