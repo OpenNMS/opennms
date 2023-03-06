@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,10 +34,25 @@ import static junit.framework.TestCase.assertNull;
 import org.junit.Test;
 import org.opennms.core.sysprops.SystemProperties;
 
+import java.math.BigDecimal;
+
 
 public class SystemPropertiesTest {
 
     private final static String KEY = SystemProperties.class.getName();
+
+    @Test
+    public void shouldResolveBigDecimalValues() {
+        BigDecimal defaultValue = new BigDecimal(1.5);
+
+        System.clearProperty(KEY);
+        assertNull(SystemProperties.getBigDecimal(KEY));
+        assertEquals(defaultValue, SystemProperties.getBigDecimal(KEY, defaultValue));
+
+        System.setProperty(KEY, "2");
+        assertEquals(new BigDecimal(2), SystemProperties.getBigDecimal(KEY));
+        assertEquals(new BigDecimal(2), SystemProperties.getBigDecimal(KEY, defaultValue));
+    }
 
     @Test
     public void shouldResolveLongValues(){
