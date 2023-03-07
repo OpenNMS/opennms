@@ -89,9 +89,9 @@ Should generally be 1.5x your largest collection interval.
 | 450000
 
 | org.opennms.timeseries.query.heartbeat.multiplier
-| Multiplier
-Used when heartbeat is smaller than step. It will set heartbeat by step times multiplier.
-Should generally be 1.5x to step.
+| Multiplier: use when heartbeat is smaller than step size.
+It will set heartbeat by step size times multiplier.
+Should generally be 1.5 times step size.
 | 1.5
 
 | org.opennms.timeseries.query.parallelism
