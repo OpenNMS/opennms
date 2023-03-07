@@ -117,9 +117,6 @@ public class DuplicatePrimaryAddressIT {
     /** The Collectd configuration factory instance. */
     private CollectdConfigFactory m_collectdConfigFactory;
 
-    /** The Collectd configuration instance. */
-    private CollectdConfiguration m_collectdConfiguration;
-
     /** The IP Interface DAO instance. */
     private IpInterfaceDao m_ifaceDao;
 
@@ -142,7 +139,6 @@ public class DuplicatePrimaryAddressIT {
     @After
     public void tearDown() {
         verifyNoMoreInteractions(m_filterDao);
-        verifyNoMoreInteractions(m_collectdConfiguration);
         verifyNoMoreInteractions(m_collectdConfigFactory);
         verifyNoMoreInteractions(m_nodeDao);
         verifyNoMoreInteractions(m_ifaceDao);
@@ -163,9 +159,7 @@ public class DuplicatePrimaryAddressIT {
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getThreads();
         Mockito.verify(m_ifaceDao, atLeastOnce()).findByServiceType(anyString());
         Mockito.verify(m_ifaceDao, atLeastOnce()).load(anyInt());
     }
@@ -205,9 +199,7 @@ public class DuplicatePrimaryAddressIT {
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getCollectors();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getPackages();
         Mockito.verify(m_collectdConfigFactory, atLeastOnce()).interfaceInPackage(any(OnmsIpInterface.class), any(Package.class));
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getCollectors();
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getPackages();
-        Mockito.verify(m_collectdConfiguration, atLeastOnce()).getThreads();
+        Mockito.verify(m_collectdConfigFactory, atLeastOnce()).getThreads();
         Mockito.verify(m_ifaceDao, atLeastOnce()).findByServiceType(anyString());
         Mockito.verify(m_ifaceDao, atLeastOnce()).load(anyInt());
         Mockito.verify(m_nodeDao, atLeastOnce()).load(anyInt());
@@ -242,11 +234,8 @@ public class DuplicatePrimaryAddressIT {
         collector.setClassName(MockServiceCollector.class.getName());
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        m_collectdConfiguration = mock(CollectdConfiguration.class);
-        when(m_collectdConfigFactory.getCollectors()).thenReturn(m_collectdConfiguration.getCollectors());
-        when(m_collectdConfigFactory.getPackages()).thenReturn(m_collectdConfiguration.getPackages());
-        when(m_collectdConfiguration.getCollectors()).thenReturn(Collections.singletonList(collector));
-        when(m_collectdConfiguration.getThreads()).thenReturn(2);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getThreads()).thenReturn(2);
 
         m_ifaceDao = mock(IpInterfaceDao.class);
         m_nodeDao = mock(NodeDao.class);
@@ -359,7 +348,7 @@ public class DuplicatePrimaryAddressIT {
         collector.addParameter("thresholding-enabled", "false");
         pkg.addService(collector);
 
-        when(m_collectdConfiguration.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
         when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 
