@@ -83,7 +83,7 @@
         <span>Enter IP Address</span>
       </div>
       <div class="card-body">
-        <form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
+        <form method="post" name="newIpForm" onsubmit="return verifyIpAddress();" action="admin/addNewInterface">
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <c:if test="${param.action == 'redo'}">
               <p class="text-danger">
