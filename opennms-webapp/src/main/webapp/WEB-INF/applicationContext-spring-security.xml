@@ -171,6 +171,22 @@
           <beans:constructor-arg name="pattern" value="/notification/browse"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
+
+        <!-- see NMS-14865 -->
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/addNewInterface"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/deleteSelNodes"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/manageNodes"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
       </util:list>
     </beans:constructor-arg>
   </beans:bean>
