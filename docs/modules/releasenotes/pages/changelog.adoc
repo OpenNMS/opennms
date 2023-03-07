@@ -4,18 +4,18 @@
 
 [[releasenotes-changelog-31.0.5]]
 
-==== Release 31.0.5
+== Release 31.0.5
 
 Release 31.0.5 is a bugfix release that also incorporates several documentation improvements, upgrades a couple of library dependencies, improves how plugins are included in the container images, and adds one small enhancement to the web UI.
 
 The codename for Horizon 31.0.5 is https://wikipedia.org/wiki/$$Macaron$$[_Macaron_].
 
-===== Story
+=== Story
 
 * Upgrade ActiveMQ to 5.15 (Issue https://issues.opennms.org/browse/NMS-12089[NMS-12089])
 * Add documentation for using Scheduled Outages (Issue https://issues.opennms.org/browse/NMS-12621[NMS-12621])
 
-===== Enhancement
+=== Enhancement
 
 * Replace wiki links across all codebase (Issue https://issues.opennms.org/browse/NMS-13912[NMS-13912])
 * dependabot: mockito 3.4.6 to 4.6.1 (Issue https://issues.opennms.org/browse/NMS-14586[NMS-14586])
@@ -25,7 +25,7 @@ The codename for Horizon 31.0.5 is https://wikipedia.org/wiki/$$Macaron$$[_Macar
 * Add collection package information to web UI (Issue https://issues.opennms.org/browse/NMS-15429[NMS-15429])
 * PersistRegexSelectorStrategy is not where the docs say it should be (Issue https://issues.opennms.org/browse/NMS-15461[NMS-15461])
 
-===== Bug
+=== Bug
 
 * Minion on Ubuntu fails to start (Issue https://issues.opennms.org/browse/NMS-15160[NMS-15160])
 * Upgrade HikariCP to 5.x (Issue https://issues.opennms.org/browse/NMS-15171[NMS-15171])
@@ -36,7 +36,7 @@ The codename for Horizon 31.0.5 is https://wikipedia.org/wiki/$$Macaron$$[_Macar
 * Add Jdbc graph definitions for default collection set (Issue https://issues.opennms.org/browse/NMS-15419[NMS-15419])
 * Invalid syntax due to typo in provisiond snmp graph (Issue https://issues.opennms.org/browse/NMS-15434[NMS-15434])
 
-===== Task
+=== Task
 
 * Number examples in service monitor chapters (Issue https://issues.opennms.org/browse/NMS-15215[NMS-15215])
 * Document the breaking changes done as part of Limit script file locations for GpDetector and ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-15288[NMS-15288])
