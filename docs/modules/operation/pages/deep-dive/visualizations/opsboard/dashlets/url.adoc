@@ -1,7 +1,7 @@
 
 = URL
 
-The URL dashlet shows the content of a web page or other web application in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>> (for example, other monitoring systems by a given URL).
+The URL dashlet shows the content of a web page or other web application in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] (for example, another monitoring system or web application).
 
 [caption=]
 .URL dashlet configuration options

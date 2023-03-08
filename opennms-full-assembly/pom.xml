@@ -519,6 +519,8 @@
                 <feature>opennms-deviceconfig-service</feature>
                 <feature>opennms-deviceconfig-monitor</feature>
                 <feature>opennms-timeseries-api</feature>
+                
+                <feature>inmemory-timeseries-plugin</feature>
 
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>

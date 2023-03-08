@@ -1,7 +1,7 @@
 
 = Alarm Details
 
-The Alarm Details dashlet displays a table with alarms and details about them in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
+The Alarm Details dashlet displays a table with alarms and details about them in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 
 [caption=]
 .Alarm information displayed in dashlet
@@ -21,22 +21,22 @@ The Alarm Details dashlet displays a table with alarms and details about them in
 | Alarm count
 | Alarm count, based on reduction key, for deduplication.
 
-| Last Event Time
+| Last event time
 | Last time the alarm occurred.
 
-| Log Message
+| Log message
 | Reason and detailed log message of the alarm.
 |===
 
 [caption=]
 .Alarm Details dashlet configuration options
-[cols="2,3"]
+[cols="1,3"]
 |===
-s| Boost Support
-| Change priority of the dashlet on an ops board depending on the alarm level (see xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[Boosted severity]).
+s| Boost support
+| Change the priority of the dashlet on an operator board depending on the alarm level (see xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[]).
 
-s| Properties: Boosted Severity
-| Specify the alarm severity that boosts the dashlet to a higher priority on the ops board.
+s| Properties: Boosted severity
+| Specify the alarm severity that boosts the dashlet to a higher priority on the operator board.
 
 s| Properties: Criteria
 | Specify criteria on which to filter alarms (see xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[]).

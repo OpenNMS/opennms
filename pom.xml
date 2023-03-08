@@ -1779,6 +1779,8 @@
     <!-- configuration manager -->
     <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
+    <re2jVersion>1.7</re2jVersion>
+
     <!-- CI Settings -->
     <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
     <!-- Limit ITs to 30 minutes by default -->
