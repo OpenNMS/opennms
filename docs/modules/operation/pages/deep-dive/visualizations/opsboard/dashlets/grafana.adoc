@@ -1,8 +1,8 @@
 
 = Grafana
 
-The Grafana dashlet displays a Grafana dashboard for a given time range in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
-The xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] configuration is used to access the Grafana instance.
+The Grafana dashlet displays a Grafana dashboard in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] with data spanning a defined time range.
+The xref:deep-dive/visualizations/grafana-dashboard-box.adoc[Grafana Dashboard Box] configuration is used to access the Grafana instance.
 
 [caption=]
 .Grafana dashlet configuration options
@@ -16,12 +16,12 @@ The xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] configuration is 
 | Properties: Title
 | Title of the Grafana dashboard to display.
 
-| Properties: uri
+| Properties: URI
 | URI to the Grafana Dashboard to display.
 
-| Properties: from
+| Properties: From
 | Start of time range.
 
-| Properties: to
+| Properties: To
 | End of time range.
 |===

@@ -1,9 +1,10 @@
 
 = RRD
 
-The RRD dashlet shows one or multiple RRD graphs in the <<deep-dive/visualizations/opsboard/introduction.adoc#opsboard-config, ops board>>.
-It is possible to arrange and order the RRD graphs in multiple columns and rows.
-All RRD graphs are normalized with a given width and height.
+The RRD dashlet shows one or more RRD graphs in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+If you choose to display more than one graph, you can arrange and order them in multiple columns and rows.
+
+All displayed graphs are normalized with a predefined width and height.
 
 [caption=]
 .RRD dashlet configuration options
@@ -20,13 +21,13 @@ All RRD graphs are normalized with a given width and height.
 | Rows
 | Number of rows in the dashlet.
 
-| KSC Report
+| KSC report
 | Import RRD graphs from an existing KSC report and rearrange them.
 
-| Graph Width
+| Graph width
 | Generic width for all RRD graphs in this dashlet.
 
-| Graph Height
+| Graph height
 | Generic height for all RRD graphs in this dashlet.
 
 | Timeframe value
