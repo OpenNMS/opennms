@@ -186,5 +186,7 @@
 
     <!-- Usage Analytics -->
     <module>usageanalytics</module>
+    
+    <module>inmemory-timeseries-plugin</module>
   </modules>
 </project>
