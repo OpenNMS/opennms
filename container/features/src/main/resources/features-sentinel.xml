@@ -319,5 +319,6 @@
     <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
         <feature>sentinel-persistence</feature>
         <feature>opennms-timeseries-api</feature>
+        <feature>fst</feature>
     </feature>
 </features>
