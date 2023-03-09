@@ -34,9 +34,11 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.admin.nodeManagement.*
+		org.opennms.web.admin.nodeManagement.*,
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%!
     int interfaceIndex;
@@ -236,7 +238,7 @@
 	  row.append(nodeid);
           row.append("</td>\n");
           row.append("<td class=\"standard\" width=\"10%\" align=\"left\">");
-	  row.append(nodelabel);
+	  row.append(WebSecurityUtils.sanitizeString(nodelabel));
           row.append("</td>\n");
           row.append("</tr>\n");
           } /* end i for */
