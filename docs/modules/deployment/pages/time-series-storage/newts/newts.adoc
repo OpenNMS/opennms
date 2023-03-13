@@ -21,7 +21,7 @@ org.opennms.rrd.storeByForeignSource=true <1>
 org.opennms.timeseries.strategy=newts <2>
 ----
 <1> Associate time series data using the foreign source and ID instead of the database-generated node ID.
-<2> Set time series strategy to use `newts`.
+<2> Set time series strategy to use Newts.
 If you are enabling the xref:time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-newts[dual write plugin] on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `newts` until you have written enough data to expire any collected data prior to enabling the dual write feature.
 
 . Configure the Newts time series storage connection:
