@@ -43,7 +43,7 @@
   <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
   <reference id="secureCredentialsVaultInternal" interface="org.opennms.features.scv.api.SecureCredentialsVault" /><!-- Reference to internal (opennms) SCV-->
   <reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig" />
-  <reference id="collectdConfig" interface="org.opennms.netmgt.config.CollectdConfigFactory" />
+  <reference id="collectdConfig" interface="org.opennms.netmgt.config.api.CollectdConfigFactory" />
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
