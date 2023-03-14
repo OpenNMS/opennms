@@ -137,7 +137,7 @@
 
 
 <form method="post" name="manageAll" action="admin/manageNodes">
-
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 <%
   int halfway = 0;
   int midCount = 0;
