@@ -26,7 +26,7 @@ To avoid pushing a new document every time a new event is reduced to an existing
 * The associated sticky or journal memos have changed.
 * The state of the associated ticket has changed.
 * The alarm has been associated with or removed from a situation.
-* A related alarm has been added to or removed from the situation.
+* A related alarm has been added to or removed from a situation.
 
 NOTE: To change this behavior and push a new document for every change, set `indexAllUpdates` to `true`.
 
