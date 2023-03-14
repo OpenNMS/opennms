@@ -12,7 +12,7 @@ You can also generate data collection definitions from `OBJECT-TYPE` symbols def
 You can use the `mib2opennms` command line utility to help create event definitions from MIB definitions.
 Using the UI editor achieves similar results to using `mib2events`.
 
-NOTE: We do not recommend using using `mib2opennms`, as it produces more bus errors than event definitions.
+NOTE: We do not recommend using `mib2opennms`, as it produces more bus errors than event definitions.
 
 [[mib-import]]
 == Import MIB and create event definitions
@@ -28,7 +28,7 @@ The MIB file does not need to be accessible by the server.
 . Right-click the file and choose *Compile MIB*.
 . If the log area displays an error (usually a missing dependency), you must correct the error to compile the MIB file successfully.
 ** Determine the type of error (dependency, file syntax).
-** Google the name of the missing content, save it as a text file, upload it, and compile again.
+** Search the internet for the name of the missing content, save it as a text file, upload it, and compile again.
 +
 OR
 

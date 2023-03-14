@@ -8,7 +8,7 @@ image::admin/restart-process.png["Diagram displaying {page-component-title} comp
 
 Note that restarting the whole stack is rare.
 Usually, the {page-component-title} core is restarted only to apply configuration changes, or to run upgrades.
-A core restart takes between 2-5 minutes, depending on memory configuration.
+A core restart usually takes less than 5 minutes, but can take longer depending on the configuration.
 The Minion and Sentinel components restart more quickly.
 
 IMPORTANT: When shutting down the {page-component-title} core, there will be no notifications, alarms, outage detection, performance data collection, thresholding, or flows.
