@@ -1,9 +1,9 @@
 
 = Web-Based Utility
 
-Complex JMX data collection configurations can be generated from a web-based tool.
-The JMX Configuration Generator collects all available MBean attributes or composite data attributes from a JMX-enabled Java application.
+Complex JMX data collection configurations can be generated using the web-based tool.
 
+The JMX Configuration Generator collects all available MBean attributes or composite data attributes from a JMX-enabled Java application.
 The tool follows this series of steps:
 
 . Connect to an MBean server provided by a Java application using JMX or the JMX Messaging Protocol.
@@ -17,14 +17,17 @@ The JMX Configuration Generator supports the following collection settings:
 * Authentication credentials for the JMX connection.
 * (Optional) JMX Messaging Protocol connection.
 
-You can access the web-based configuration tool from the {page-component-title} web UI: in the top menu bar, select menu:Admin[JMX Configuration Generator].
+You can access the web-based configuration tool from the {page-component-title} web UI:
+
+. Click the *gear* symbol at the top-right of the page.
+. Under Additional Tools, select *JMX Configuration Generator*.
 
 == Configure JMX connection
 
 As part of the setup process, you must configure the tool's JMX connection settings.
 
 .JMX connection configuration page
-image::operation/jmx-config-generator/01-webui-connection.png["JMX connection configuration page with example configuration settings"]
+image::operation/jmx-config-generator/01-webui-connection.png["JMX connection configuration page with example configuration settings."]
 
 * *Service Name:* The name of the service to bind JMX data collection for collectd.
 * *Host:* The IP address or FQDN connecting to the MBean server to load MBeans and composite data into the generation tool.
@@ -75,6 +78,6 @@ Finally, you must generate the following configuration files for {page-component
 * `jmx-datacollection-config.xml`: Generated JMX data collection configuration with the selected MBeans and composite data.
 * `snmp-graph.properties`: Generated default RRD graph definition files for all selected metrics.
 
-You can copy and paste the contents of the configuration files , or download them as a `.zip` archive.
+You can copy and paste the contents of the configuration files, or download them as a `.zip` archive.
 
 NOTE: If a configuration file exceeds 2,500 lines, you can only download it as a `.zip` archive.
