@@ -2,16 +2,18 @@
 = Secure Credentials Vault
 
 The secure credentials vault lets you encrypt credentials that {page-component-title} uses.
-It stores credentials in the Java keystore (JKS) format.
+It stores them in the Java keystore (JKS) format.
+
 The secure credentials vault is enabled by default.
 
-== Configure secure credentials vault password
+== Configure password
 
-A custom secure credentials vault password is defined by the `org.opennms.features.scv.jceks.key` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
-The secure credentials vault keystore file is located in `$\{OPENNMS_HOME}/etc/scv.jce`.
+You can configure a custom password for the secure credentials vault by editing `org.opennms.features.scv.jceks.key` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
 
-IMPORTANT: You cannot change the secure credentials vault password once credentials have been stored.
+IMPORTANT: You cannot change the secure credentials vault password after credentials have been stored.
 You must delete `$\{OPENNMS_HOME}/etc/scv.jce` and manually re-add any credentials if you want to change the password after the file has been created.
+
+The secure credentials vault keystore file is located in `$\{OPENNMS_HOME}/etc/scv.jce`.
 
 == Store credentials
 
@@ -24,10 +26,10 @@ To access or add credentials, click menu:Info[Secure Credentials Vault] in the t
 
 === Metadata expressions
 
-You can access secure credentials vault entries from metadata using the `scv` context.
+You can access entries in the secure credentials vault from metadata using the `scv` context.
 
 [caption=]
-.Example metadata expressions for accessing secure credentials vault entries
+.Example metadata expressions
 [options="autowidth"]
 |===
 | Expression    | Description
@@ -47,8 +49,8 @@ You can access secure credentials vault entries from metadata using the `scv` co
 
 === Karaf commands
 
-You can access and update SCV entries from the Karaf shell.
-To do so, follow the instructions below:
+You can access and update entries in the secure credentials vault from the Karaf shell.
+To do so, follow these steps:
 
 . Open an SSH session:
 +
@@ -56,7 +58,7 @@ To do so, follow the instructions below:
 ssh -p 8101 admin@localhost
 
 . Access or update secure credentials vault entries using the shell.
-** Use the following command to set credentials:
+** Set credentials:
 +
 [source, karaf]
 ----
@@ -81,7 +83,7 @@ ARGUMENTS
                 (required)
 ----
 
-** Use the following command to access secure credentials vault entries:
+** Access secure credentials vault entries:
 +
 [source, karaf]
 ----

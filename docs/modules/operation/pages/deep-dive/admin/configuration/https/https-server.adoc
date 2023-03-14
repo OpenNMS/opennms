@@ -1,7 +1,7 @@
 
 = Secure Jetty with HTTPS
 
-If users access the {page-component-title} web UI via untrusted networks, it is best practice to protect incoming web sessions using HTTPS.
+If you access the {page-component-title} web UI via untrusted networks, it is best practice to use HTTPS to protect incoming web sessions.
 This section explains how to configure {page-component-title}'s built-in Jetty web server to support HTTPS.
 
 TIP: It is typically easier to leave the Jetty config as default and use NGINX or Apache as a reverse proxy.
@@ -9,27 +9,30 @@ See https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms
 
 == Customize jetty.xml
 
-By default, no Jetty configuration file is included in {page-component-title}, but there is a sample `jetty.xml` file in `$\{OPENNMS_HOME}/etc/examples` that you can use as a template.
-Copy the file to `$\{OPENNMS_HOME}/etc`, open it in a text editor, and remove the comment tags for the "Add HTTPS Support" section.
+By default, no Jetty configuration file is included in {page-component-title}.
+There is, however, a sample `jetty.xml` file in `$\{OPENNMS_HOME}/etc/examples` that you can use as a template.
+Copy the file to `$\{OPENNMS_HOME}/etc`, open it in a text editor, and remove the comment tags from the "Add HTTPS Support" section.
 
 == Create a new Java keystore
 
 Open the keytool utility that ships in `$\{JAVA_HOME}/bin/keytool` with most Java distributions, and create a new keystore.
-Populate it with a new key and, for the first question ("What is your first and last name?"), enter the fully-qualified domain name by which users will access your {page-component-title} web UI.
-Type this name correctly; you will have to start this process over if it ever needs to be changed.
+Populate it with a new key and, for the first question ("What is your first and last name?"), enter the fully-qualified domain name by which users will access the {page-component-title} web UI.
+
+IMPORTANT: Type this name correctly; you will have to start this process over if it ever needs to be changed.
+
 Answer the remaining questions according to the specifics of your organization and location.
 
 NOTE: Make sure that you specify an appropriate number of days for the `validity` parameter.
 After the defined number of days elapses, the key will expire and you may no longer be able to use it to create new certificates.
 The example below specifies 731 days, which makes the key valid for two years (accounting for a possible leap year).
 
-It is important that you choose secure passwords for the keystore and for the key itself.
-These passwords may be the same as or different to each other.
-Using different passwords protects your server's private key in the event the keystore file falls into the wrong hands.
+It is important that you choose secure passwords for the keystore, and for the key itself.
+These passwords may be the same as or different from each other.
+Using different passwords protects your server's private key in the event that the keystore file falls into the wrong hands.
 You should take precautions to keep this from happening, including setting filesystem user and group permissions so that unauthorized individuals with accounts on the {page-component-title} server will not have read or write access to the keystore.
 
-By default, the keytool will create DSA keys, but Jetty requires an RSA key.
-Make sure that you pass the `-keyalg RSA` option to keytool:
+By default, the keytool creates DSA keys, but Jetty requires an RSA key.
+Make sure that you pass the `-keyalg RSA` option to the keytool to generate an RSA key:
 
 [source, console]
 ----
@@ -68,7 +71,7 @@ org.opennms.netmgt.jetty.https-cert-alias = opennms-jetty
 The process of configuring {page-component-title} to start a Jetty HTTPS listener on port 8443 does not include disabling the plain-HTTP listener that is present by default on port 8980.
 This listener must be present so the {page-component-title} real-time console can update availability statistics shown in the web UI.
 
-After you have enabled HTTPS, you likely do not want users using HTTP; to control this, you need to restrict access to the plain-HTTP listener.
+After you have enabled HTTPS, you likely do not want users using HTTP; to control this, you must restrict access to the plain-HTTP listener.
 There are two methods to accomplish this:
 
 * Set the plain-HTTP listener to bind only to an interface that is not accessible from untrusted networks.
@@ -85,7 +88,8 @@ Configuring these rules is beyond the scope of this section.
 == Restrict access to the HTTPS listener
 
 Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the {page-component-title} Jetty HTTPS listener can be reached.
-By default, the listener is bound to all interfaces (`0.0.0.0`); to bind it to a single interface, set the `jetty.https-host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
+By default, the listener is bound to all interfaces (`0.0.0.0`).
+To bind it to a single interface, set the `jetty.https-host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
 
 [source, properties]
 org.opennms.netmgt.jetty.https-host = 10.11.12.13
@@ -97,7 +101,7 @@ You could also use one of the built-in Java system properties to configure SSL:
 
 [cols="1,3"]
 |===
-| System Property Name  | Description
+| Property Name  | Description
 
 | javax.net.ssl.keyStore
 | Location of the keystore file that contains the application process's certificate and private key.

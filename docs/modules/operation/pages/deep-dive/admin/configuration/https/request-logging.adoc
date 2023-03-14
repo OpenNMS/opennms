@@ -1,7 +1,7 @@
 
 = Enable Request Logs
 
-Enable HTTP requests logs for Jetty by uncommenting the following snippet in `etc/jetty.xml`:
+You can enable HTTP request logs for Jetty by removing the comment tags from the following snippet in `etc/jetty.xml`:
 
 [source, xml]
 ----
@@ -22,7 +22,7 @@ Enable HTTP requests logs for Jetty by uncommenting the following snippet in `et
 -->
 ----
 
-NOTE: If you do not have a `jetty.xml` in the `etc` directory, you can start by copying the example from `etc/examples/jetty.xml`.
+NOTE: If `jetty.xml` does not exist in your `etc` directory, you can start by copying the example from `etc/examples/jetty.xml`.
 
 To include the user names associated with the requests in the log file, you must also uncomment the following snippet in `jetty-webapps/opennms/WEB-INF/web.xml`:
 
@@ -36,8 +36,9 @@ To include the user names associated with the requests in the log file, you must
 -->
 ----
 
-After restarting {page-component-title}, requests logs of the following form should be available in `logs/jetty-requests-*.log`:
+After restarting {page-component-title}, request logs should be available in `logs/jetty-requests-*.log`.
 
+.Example: Jetty request log
 [source, log]
 ----
 127.0.0.1 - - [02/Jun/2017:09:16:38 -0500] "GET / HTTP/1.1" 302 0 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/5
