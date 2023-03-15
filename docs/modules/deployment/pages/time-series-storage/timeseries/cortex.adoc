@@ -96,7 +96,7 @@ Create or update the `$\{OPENNMS-HOME}/etc/featuresBoot.d/cortex.boot` file to i
 +
 [source]
 opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
-n
+
 . Restart the {page-component-title} service.
 
 == Cortex tips
