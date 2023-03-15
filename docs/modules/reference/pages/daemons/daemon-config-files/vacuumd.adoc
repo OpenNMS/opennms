@@ -64,7 +64,6 @@ Vacuumd's automation settings are made up of triggers and action statements that
 === Triggers
 
 An automation trigger is defined with three attributes and a SQL statement.
-The statement is designed to be an SQL DQL select statement.
 The results of a statement are received and processed by the action statement.
 
 Triggers are not required to create an automation for vacuumd.
@@ -91,10 +90,10 @@ An automation action is designed to be a DML statement that can run against the 
 You can also set it to run independently.
 
 Actions that process trigger results will usually require access to the data stored in the columns referenced by the trigger's DQL statement.
-To let an action access this column data, use the  the `${<column name>}` format to specify the column.
+To let an action access this column data, use the `$\{<column name>}` format to specify the column.
 For example, this action updates the severity of all alarms returned as the result of an escalation trigger:
 
-[source, ]
+[source, sql]
 ----
 UPDATE alarms SET severity = least(7, severity+1)
  WHERE alarmid = ${alarmid}
