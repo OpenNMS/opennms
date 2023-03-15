@@ -1,7 +1,7 @@
 
 = CLI-Based Utility
 
-The command line (CLI)-based tool is not installed by default.
+The JMX Configuration Generator command line-based (CLI) tool is not installed by default.
 ifeval::["{page-component-name}" == "meridian"]
 It is available as an RPM package in the official repositories.
 endif::[]
@@ -38,12 +38,9 @@ A file named `jmxconfiggenerator-<VERSION>-onejar.jar` is created in the new `ta
 Use the following command to invoke the file:
 
 [source, console]
-[subs="verbatim,attributes"]
-----
 java -jar target/jmxconfiggenerator-{full-display-version}-onejar.jar
-----
 
-== Use
+== How to use
 
 After you install the JMC Config Generator, its wrapper script is available in `$\{OPENNMS_HOME}/bin`.
 Navigate to the directory and invoke the script:
@@ -54,15 +51,15 @@ $ cd /path/to/opennms/bin
 $ ./jmx-config-generator
 ----
 
-TIP: When invoked without parameters, the tool's usage and help information is printed.
+TIP: When invoked without parameters, the tool's usage and help information is displayed.
 
-The JMX Config Generator uses sub-commands for different configuration generation tasks.
-Each of these sub-commands provides different options and parameters.
-The command line tool accepts the following sub-commands:
+The JMX Configuration Generator uses subcommands for different configuration generation tasks.
+Each of these subcommands provides different options and parameters.
 
+.JMX Configuration Generator subcommands
 [options="autowidth"]
 |===
-| Sub-Command	| Description
+| Subcommand	| Description
 
 | query
 | Queries an MBean Server for certain MBeans and attributes.
@@ -74,24 +71,24 @@ The command line tool accepts the following sub-commands:
 | Generates an RRD graph definition file with matching graph definitions for a given `jmx-datacollection-config.xml`.
 |===
 
-The following global options are available in each of the tool's sub-commands:
+The following global options are available in each of the tool's subcommands:
 
 [options="autowidth"]
 |===
-| Option/Argument	| Description	| Default Value
+| Option	| Description	| Default Value
 
-| -h (--help)
+| -h, --help
 | Show help and usage information.
 | false
 
-| -v (--verbose)
+| -v, --verbose
 | Enable verbose mode for debugging purposes.
 | false
 |===
 
 === query
 
-The `query` sub-command is used to query an MBean server for its available MBean objects.
+The `query` subcommand is used to query an MBean server for its available MBean objects.
 The following example queries `myserver` with the credentials `myusername`/`mypassword` on port 7199.
 It searches for MBean objects in the `java.lang` domain:
 
@@ -120,11 +117,11 @@ java.lang:type=ClassLoading
 <output omitted>
 ----
 
-The following command line options are available for the `query` sub-command:
+The following command line options are available for the `query` subcommand:
 
 [cols="1,3,1"]
 |===
-| Option/Argument	| Description	| Default Value
+| Option	| Description	| Default Value
 
 | <filter criteria>
 | A filter criteria to query the MBean server for.
@@ -184,18 +181,18 @@ Where multiple `<filter criteria>` are provided, they are `OR` concatenated.
 | Username for JMX authentication.
 | _Empty_
 
-| -h (--help)
+| -h, --help
 | Show help and usage information.
 | false
 
-| -v (--verbose)
+| -v, --verbose
 | Enables verbose mode for debugging purposes.
 | false
 |===
 
 === generate-conf
 
-You can use the `generate-conf` sub-command to generate a valid `jmx-datacollection-config.xml` file for a given set of MBean objects queried from an MBean server.
+You can use the `generate-conf` subcommand to generate a valid `jmx-datacollection-config.xml` file for a given set of MBean objects queried from an MBean server.
 The following example generates a `myconfig.xml` file for MBean objects in the `java.lang` domain of `myserver`, on port 7199.
 It uses the `myusername`/`mypassword` credentials for access:
 
@@ -207,11 +204,11 @@ Dictionary entries loaded: '18'
 
 NOTE: You must define either a URL or a hostname and port to connect to a JMX server.
 
-The following command line options are available for the `generate-conf` sub-command:
+The following command line options are available for the `generate-conf` subcommand:
 
 [cols="1,3,1"]
 |===
-| Option/Argument	| Description	| Default Value
+| Option	| Description	| Default Value
 
 | <attribute id>
 | A list of attribute IDs to include in the new configuration file.
@@ -244,7 +241,7 @@ Each line in the file must include a replacement definition (for example, `Auxil
 
 | --print-dictionary
 | Prints the used dictionary to STDOUT.
-May be used with `--dictionary`
+May be used with `--dictionary`.
 | false
 
 | --service <value>
@@ -273,11 +270,11 @@ If not set, the generated configuration file will include the MBeans provided by
 | Username for JMX authentication.
 | _Empty_
 
-| -h (--help)
+| -h, --help
 | Show help and usage information.
 | false
 
-| -v (--verbose)
+| -v, --verbose
 | Enables verbose mode for debugging purposes.
 | false
 |===
@@ -287,7 +284,7 @@ These errors are marked with `NAME_CRASH_AS_19_CHAR_VALUE`.
 
 === generate-graph
 
-The `generate-graph` sub-command generates an RRD graph definition file for a defined configuration file.
+The `generate-graph` subcommand generates an RRD graph definition file for a defined configuration file.
 The following example generates the `mygraph.properties` graph definition using the configuration settings in `myconfig.xml`:
 
 [source, console]
@@ -301,11 +298,11 @@ java.lang.Compilation.MBeanReport, \
 <output omitted>
 ----
 
-The following command line options are available for the `generate-graph` sub-command:
+The following command line options are available for the `generate-graph` subcommand:
 
 [cols="2,4,1"]
 |===
-| Option/Argument	| Description	| Default Value
+| Option	| Description	| Default Value
 
 | --input <jmx-datacollection.xml>
 | Configuration file to use as the input when generating the graph properties file.
@@ -324,20 +321,20 @@ The following command line options are available for the `generate-graph` sub-co
 The file must use the http://velocity.apache.org[Apache Velocity] template engine.
 | _Empty_
 
-| -h (--help)
+| -h, --help
 | Show help and usage information.
 | false
 
-| -v (--verbose)
+| -v, --verbose
 | Enables verbose mode for debugging purposes.
 | false
 |===
 
 == Graph templates
 
-The JMX Config Generator uses a template file to generate graphs.
-It is possible to use a user-defined template.
-The `--template` option, followed by a file name, lets the JMX Config Generator use an external template file as the base for graph generation.
+The JMX Configuration Generator uses a template file to generate graphs.
+As such, you can set it to use a custom template.
+The `--template` option, followed by a file name, lets the JMX Configuration Generator use an external template file as the base for graph generation.
 
 The following example shows how the custom `mytemplate.vm` file is used to generate the `mygraph.properties` graph definition file, using the configuration settings defined in `myconfig.xml`:
 
@@ -346,7 +343,7 @@ The following example shows how the custom `mytemplate.vm` file is used to gener
 ./jmx-config-generator generate-graph --input myconfig.xml --output mygraph.properties --template mytemplate.vm
 ----
 
-The template file must be an http://velocity.apache.org[Apache Velocity] template.
+The template file must be in the http://velocity.apache.org[Apache Velocity] format.
 The following sample represents the template that is used by default:
 
 [source, properties]
@@ -378,11 +375,11 @@ report.${report.id}.command=--title="${report.title}" \
 #end
 ----
 
-The JMX Config Generator generates different types of graphs from `jmx-datacollection-config.xml`:
+The JMX Configuration Generator generates different types of graphs from `jmx-datacollection-config.xml`:
 
 [options="autowidth"]
 |===
-| Type	| Description
+| Graph Type	| Description
 
 | AttributeReport
 | A graph is generated for each attribute of any MBean.
