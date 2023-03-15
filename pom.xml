@@ -4586,11 +4586,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>3.17</version>
-      </dependency>
-      <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresqlVersion}</version>
