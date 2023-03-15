@@ -107,7 +107,7 @@
         },
         "experimental": {
             "extends": [
-                "publish-maven"
+                "empty"
             ]
         }
     },
@@ -535,8 +535,7 @@
                     "only": [
                         "develop",
                         "/^master-.*/",
-                        "/^release-.*/",
-                        "/^.*NMS-14727.*$/"
+                        "/^release-.*/"
                     ]
                 },
                 "user_overridable": false
