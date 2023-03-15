@@ -80,7 +80,8 @@
                 "oci",
                 "smoke",
                 "merge",
-                "publish"
+                "publish",
+                "publish-maven"
             ]
         },
         "merge": {
@@ -106,7 +107,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "publish-maven"
             ]
         }
     },
@@ -123,7 +124,8 @@
         },
         "build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "filters": {
                 "branches": {
@@ -514,6 +516,27 @@
                         "/^master-.*/",
                         "/^release-.*/",
                         "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "publish-maven": {
+            "context": [
+                "CircleCI",
+                "gpg-signing",
+                "OSSRH Principal"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/",
+                        "/^.*NMS-14727.*$/"
                     ]
                 },
                 "user_overridable": false
