@@ -275,24 +275,23 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             if (request.getParameter("save") != null) {
-                String roleName = WebSecurityUtils.sanitizeString(request.getParameter("role"));
+                String roleName = request.getParameter("role");
                 WebRole role = getRoleManager().getRole(roleName);
                 if (role == null) {
                     // this is a new role so create a new on and add it to the roleManager
                     role = getRoleManager().createRole();
                 }
-                role.setName(WebSecurityUtils.sanitizeString(request.getParameter("roleName")));
+                role.setName(request.getParameter("roleName"));
                 role.setDefaultUser(getUserManager().getUser(request.getParameter("roleUser")));
                 role.setMembershipGroup(getGroupManager().getGroup(request.getParameter("roleGroup")));
                 role.setDescription(request.getParameter("roleDescr"));
                 getRoleManager().saveRole(role);
-                request.setAttribute("role", getRoleManager().getRole(WebSecurityUtils.sanitizeString(request.getParameter("roleName"))));
+                request.setAttribute("role", getRoleManager().getRole(request.getParameter("roleName")));
                 return new ViewAction().execute(request, response);
             } else {
                 return new ListAction().execute(request, response);
             }
         }
-        
     }
     
     /**
