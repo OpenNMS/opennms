@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.timeseries;
 
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 
 /**
  * Responsible for retrieving the TimeseriesStorage that was exposed via osgi.
  */
 public interface TimeseriesStorageManager {
-    TimeSeriesStorage get();
+    TimeSeriesStorage get() throws StorageException;
 }

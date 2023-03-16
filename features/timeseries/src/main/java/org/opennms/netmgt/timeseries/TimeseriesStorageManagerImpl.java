@@ -30,12 +30,14 @@ package org.opennms.netmgt.timeseries;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +64,7 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
         LOOKUP = Objects.requireNonNull(lookup);
     }
 
-    public TimeSeriesStorage get() {
+    public TimeSeriesStorage get() throws StorageException {
         if(this.stackOfStorages.isEmpty()) {
             TimeSeriesStorage storage = LOOKUP.lookup(TimeSeriesStorage.class, null);
             if(storage != null) {
@@ -72,19 +74,19 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
                         " Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
             }
         }
-        return getOrNull();
+        return getOrNull().orElseThrow(() -> new StorageException("No timeseries storage implementation found"));
     }
 
-    private TimeSeriesStorage getOrNull() {
-        return this.stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
+    private Optional<TimeSeriesStorage> getOrNull() {
+        return Optional.ofNullable(stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1));
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized void onBind(final TimeSeriesStorage storage, final Map properties) {
         LOG.debug("Bind called with {}: {}", storage, properties);
-        TimeSeriesStorage currentStorage = getOrNull();
+        Optional<TimeSeriesStorage> currentStorage = getOrNull();
         if (storage != null && this.stackOfStorages.addIfAbsent(storage)) {
-            LOG.info("Found new TimeSeriesStorage {}, will replace the existing one: {}", storage, currentStorage);
+            LOG.info("Found new TimeSeriesStorage {}, will replace the existing one: {}", storage, currentStorage.get());
         }
     }
 
@@ -92,8 +94,8 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
     public synchronized void onUnbind(final TimeSeriesStorage storage, Map properties) {
         LOG.debug("Unbind called with {}: {}", storage, properties);
         if (storage != null && this.stackOfStorages.remove(storage)) {
-            TimeSeriesStorage currentStorage = getOrNull();
-            LOG.info("Remove TimeSeriesStorage {}, it will be replaced by: {}", storage, currentStorage);
+            Optional<TimeSeriesStorage> currentStorage = getOrNull();
+            LOG.info("Remove TimeSeriesStorage {}, it will be replaced by: {}", storage, currentStorage.get());
         }
     }
 }
