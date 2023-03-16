@@ -72,3 +72,4 @@ The biggest addition is a new Quick Start Guide that provides simple steps to se
 == Breaking Changes
 
 * support for the XML Management Protocol (XMP) has been removed
+* security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`

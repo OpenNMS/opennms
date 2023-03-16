@@ -178,7 +178,7 @@
     <filter-name>Strict-Transport-Security-Filter</filter-name>
     <filter-class>org.opennms.web.servlet.AddStrictTransportSecurityHeaderFilter</filter-class>
     <init-param>
-      <description>Sets the max age.</description>
+      <description>This defines how long in seconds a browser should default to access the OpenNMS Web-UI via HTTPS.</description>
       <param-name>maxAge</param-name>
       <param-value>63072000</param-value>
     </init-param>
