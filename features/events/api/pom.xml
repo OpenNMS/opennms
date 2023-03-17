@@ -26,6 +26,7 @@
               org.opennms.netmgt.events.api.support.*;version="${project.version}",
               org.opennms.netmgt.xml.event.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -72,6 +73,11 @@
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

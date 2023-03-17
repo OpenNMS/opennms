@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Top-level element for the opennms-database.xml configuration
@@ -333,12 +335,13 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vParam
      * @throws IndexOutOfBoundsException if the index given is outside
      * the bounds of the collection
      */
+    @Hidden
     public void setParam(final int index, final org.opennms.netmgt.config.opennmsDataSources.Param vParam) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this.paramList.size()) {
@@ -350,9 +353,10 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vParamArray
      */
+    @Hidden
     public void setParam(final org.opennms.netmgt.config.opennmsDataSources.Param[] vParamArray) {
         //-- copy array
         paramList.clear();
@@ -382,6 +386,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * 
      * @param paramList the Vector to set.
      */
+    @Hidden
     public void setParamCollection(final java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList) {
         this.paramList = paramList;
     }
