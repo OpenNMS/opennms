@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 import com.codahale.metrics.MetricRegistry;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 
 /**
@@ -219,12 +221,13 @@ public class EngineConfiguration implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vRuleSet
      * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
+    @Hidden
     public void setRuleSet(final int index, final RuleSet vRuleSet) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._ruleSetList.size()) {
@@ -236,9 +239,10 @@ public class EngineConfiguration implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vRuleSetArray
      */
+    @Hidden
     public void setRuleSet(final RuleSet[] vRuleSetArray) {
     	this.setRuleSet(Arrays.asList(vRuleSetArray));
     }
@@ -263,6 +267,7 @@ public class EngineConfiguration implements Serializable {
      * 
      * @param ruleSetList the Vector to set.
      */
+    @Hidden
     public void setRuleSetCollection(final List<RuleSet> ruleSetList) {
         this._ruleSetList = ruleSetList;
     }
