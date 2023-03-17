@@ -49,9 +49,9 @@ public class TimeseriesStorageManagerImplTest {
         // test for null values
         TimeseriesStorageManagerImpl manager = new TimeseriesStorageManagerImpl(lookup);
         manager.onUnbind(null, null); // should be ignored
-        assertThrows(StorageException.class, () -> manager.get());
+        assertThrows(StorageException.class, manager::get);
         manager.onUnbind(storage1, null); // should be ignored
-        assertThrows(StorageException.class, () -> manager.get());
+        assertThrows(StorageException.class, manager::get);
 
         // add multiple storages, the last added should be given back
         manager.onBind(storage1, null);
@@ -69,6 +69,6 @@ public class TimeseriesStorageManagerImplTest {
         // remove all storage
         manager.onUnbind(storage1, null);
         manager.onUnbind(storage2, null);
-        assertThrows(StorageException.class, () -> manager.get());
+        assertThrows(StorageException.class, manager::get);
     }
 }

@@ -74,19 +74,19 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
                         " Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
             }
         }
-        return getOrNull().orElseThrow(() -> new StorageException("No timeseries storage implementation found"));
+        return Optional.ofNullable(getOrNull()).orElseThrow(() -> new StorageException("No timeseries storage implementation found"));
     }
 
-    private Optional<TimeSeriesStorage> getOrNull() {
-        return Optional.ofNullable(stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1));
+    private TimeSeriesStorage getOrNull() {
+        return stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized void onBind(final TimeSeriesStorage storage, final Map properties) {
         LOG.debug("Bind called with {}: {}", storage, properties);
-        Optional<TimeSeriesStorage> currentStorage = getOrNull();
+        TimeSeriesStorage currentStorage = getOrNull();
         if (storage != null && this.stackOfStorages.addIfAbsent(storage)) {
-            LOG.info("Found new TimeSeriesStorage {}, will replace the existing one: {}", storage, currentStorage.get());
+            LOG.info("Found new TimeSeriesStorage {}, will replace the existing one: {}", storage, currentStorage);
         }
     }
 
@@ -94,8 +94,8 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
     public synchronized void onUnbind(final TimeSeriesStorage storage, Map properties) {
         LOG.debug("Unbind called with {}: {}", storage, properties);
         if (storage != null && this.stackOfStorages.remove(storage)) {
-            Optional<TimeSeriesStorage> currentStorage = getOrNull();
-            LOG.info("Remove TimeSeriesStorage {}, it will be replaced by: {}", storage, currentStorage.get());
+            TimeSeriesStorage currentStorage = getOrNull();
+            LOG.info("Remove TimeSeriesStorage {}, it will be replaced by: {}", storage, currentStorage);
         }
     }
 }
