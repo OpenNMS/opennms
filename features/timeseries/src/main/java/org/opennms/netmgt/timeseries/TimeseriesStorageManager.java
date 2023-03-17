@@ -35,5 +35,9 @@ import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
  * Responsible for retrieving the TimeseriesStorage that was exposed via osgi.
  */
 public interface TimeseriesStorageManager {
+    /**
+     * @return The currently loaded TimeseriesStorage implementation
+     * @throws StorageException If no implementations are loaded.
+     */
     TimeSeriesStorage get() throws StorageException;
 }
