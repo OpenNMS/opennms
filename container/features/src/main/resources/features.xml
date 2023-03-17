@@ -1241,8 +1241,8 @@
     <feature name="opennms-jaas-login-module" version="${project.version}" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}</bundle>
-        <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/${karafVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${karafVersion}</bundle>
     </feature>
     <feature name="jmxconfiggenerator" version="${project.version}" description="OpenNMS JMX Configuration Generator">
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1284,7 +1284,7 @@
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
     </feature>
     <feature name="vaadin-adminpage" version="${project.version}" description="OpenNMS :: Features :: BSM :: Vaadin Adminpage">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1561,8 +1561,8 @@
         <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
         <bundle>mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
