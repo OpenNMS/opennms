@@ -216,16 +216,6 @@
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
     </feature>
-    <feature name="jackson-core" version="${jacksonVersion}" description="Jackson :: Core">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-    </feature>
-    <feature name="jackson-dataformat-yaml" version="${jacksonVersion}" description="Jackson :: Data Format :: YAML">
-        <feature>jackson-core</feature>
-        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
-    </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bcprov</feature>
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
@@ -459,6 +449,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
@@ -1810,9 +1801,7 @@
     </feature>
 
     <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
