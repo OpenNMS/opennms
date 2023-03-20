@@ -8,6 +8,15 @@ This section explains some other errors when {page-component-title} won't start 
 == XML configuration errors preventing Startup
 
 Changes were made to an XML file in `$OPENNMS_HOME/etc/events/` and a value wasn't set properly in a XML configuration file and when startiong {page-component-title}, there is an error.
+
+A snippet of the output from `systemctl status opennms`
+[source,shell]
+Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: Starting OpenNMS:
+Mar 20 14:41:53 rhel9h.totusmel.com opennms[130823]: ERROR: XML validation failed: /opt/opennms/etc/events/VMWare.events.xml
+Mar 20 14:41:53 rhel9h.totusmel.com opennms[130823]:            run '/usr/bin/xmllint /opt/opennms/etc/events/VMWare.events.xml' for details
+Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: Validation failed on 1 XML files.  Exiting.
+Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: failed
+
 Running the diagnotic tool `confi-tester -a`, an error is produce right after the config for `Drools Northbounder` is loaded.
 
 Below is a snippet of the error:
