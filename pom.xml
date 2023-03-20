@@ -1616,7 +1616,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.14.1</jackson2Version>
+    <jackson2Version>2.14.2</jackson2Version>
     <snakeyamlVersion>1.33</snakeyamlVersion>
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -1652,7 +1652,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.6</jschVersion>
-    <jsonVersion>20171018</jsonVersion>
+    <jsonVersion>20230227</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
@@ -2806,6 +2806,17 @@
         <artifactId>jackson1-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jackson2-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${jsonVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
