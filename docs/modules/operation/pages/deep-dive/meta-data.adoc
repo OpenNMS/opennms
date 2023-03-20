@@ -148,7 +148,7 @@ image::metadata/metadata_add.png["{page-component-title} UI displaying the Meta-
 [[ga-metadata-passwords]]
 == Hidden passwords in metadata
 
-Metadata's values of key names that includes a substring match of `password`, `Password`, `secret` or `Secret` will be hidden by default for non administrator users.
+Metadata values for key names that include a substring match of `password`, `Password`, `secret`, or `Secret` will be hidden by default for non-administrator users.
 Users with `ROLE_ADMIN` permissions can read these values in the web UI.
 
 [[ga-meta-data-dsl]]
