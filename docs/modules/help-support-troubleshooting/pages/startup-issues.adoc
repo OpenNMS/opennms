@@ -1,0 +1,101 @@
+
+[[getting-started-core]]
+= {page-component-title} won't start
+
+This section explains how to troubleshoot when {page-component-title} won't start properly.
+[[java-errors]]
+== Java Errors on Startup
+
+Was `runjava -s` run to verify and identify that a compatible version of java is installed?
+
+Below is a snippet of the output of running `systemctl start opennms` with Java not configured properly.
+[source,shell]
+Mar 19 09:10:51 rhel9.opennms.com opennms[80542]: Starting OpenNMS:
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava: Error: configured JVM not found.
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava: "/usr/lib/jvm/java-11-openjdk-11.0.17.0.8-1.el9_1.x86_64/bin/java" does not exist or is not executab>
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava: Run "/opt/opennms/bin/runjava -s" to set up the java.conf file.
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava:
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava: You can install a JVM by downloading one from Oracle, or by running something like
+Mar 19 09:10:51 rhel9.opennms.com opennms[81178]: runjava: 'apt-get install openjdk-11-jdk' or 'yum install java-11-openjdk-devel'.
+Mar 19 09:10:51 rhel9.opennms.com opennms[80542]: OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml.
+Mar 19 09:10:51 rhel9.opennms.com opennms[80542]: failed
+Mar 19 09:10:51 rhel9.opennms.com systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+
+NOTE: Software compatibility requirements, including what version of java is supported, can be found at xref:deployment:core/getting-started.adoc#install-core-instance[install-core-instance].
+
+[[startup-errors]]
+== Configuration Errors on Startup
+
+Was `install -dis` run to install/upgrade the {page-component-title} software?
+
+Below is a snippet of the output of running `systemctl start opennms` without running `install -dis`.
+[source,shell]
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]: /opt/opennms/etc/configured does not exist.
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]: You need to run the installer to set up the database.  In most
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]: cases, it is enough to run:
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]:   /opt/opennms/bin/install -dis
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]: For details, see the install guide at:
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119337]: http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+Mar 20 09:54:33 rhel9h.totusmel.com opennms[119134]: failed
+Mar 20 09:54:33 rhel9h.totusmel.com systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+Mar 20 09:54:33 rhel9h.totusmel.com systemd[1]: opennms.service: Failed with result 'exit-code'.
+Mar 20 09:54:33 rhel9h.totusmel.com systemd[1]: Failed to start OpenNMS server.
+
+NOTE: The program `config-tester -a` can also be run to generally check the formatting of your configuration information. If configuration passes, you will see `Test is finished, found no problems.` displayed.
+
+[[database-errors]]
+== Database Errors on Startup
+
+Did startup fail because database access wasn't configured properly?
+
+[source,shell]
+Mar 20 14:08:08 rocky9.totusmel.com systemd[1]: Starting OpenNMS server...
+Mar 20 14:08:11 rocky9.totusmel.com opennms[133961]: Starting OpenNMS:
+Mar 20 14:08:11 rocky9.totusmel.com opennms[134703]: error invoking "check" operation: Data source 'opennms' failed.
+Mar 20 14:08:11 rocky9.totusmel.com opennms[133961]: OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml.
+Mar 20 14:08:11 rocky9.totusmel.com opennms[133961]: failed
+Mar 20 14:08:11 rocky9.totusmel.com systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+Mar 20 14:08:11 rocky9.totusmel.com systemd[1]: opennms.service: Failed with result 'exit-code'.
+Mar 20 14:08:11 rocky9.totusmel.com systemd[1]: Failed to start OpenNMS server.
+
+NOTE: Steps to install PostgreSQL can be found at xref:deployment:core/getting-started.adoc#setup-postgresql[setup-postgresql] and configuration at xref:deployment:core/getting-started.adoc#install-core-instance[install-core-instance].
+
+[[upgrade-errors]]
+== Errors on Startup related to an `rpm`/`yum`/`dnf` upgrade
+
+Did startup fail because there are RHEL related `.rpmnew` or `.rpmsave` files somewhere in `$OPENNMS_HOME`?
+
+When checking the status of the {page-component-title} software, the either of the below error might be display:
+[source,shell]
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: OPENNMS_HOME (/opt/opennms) directory.
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: The format of the original files may have changed since
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: you modified them before installing a new version.
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: Please double-check that your configuration files are
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: up-to-date and delete any leftover .rpmnew files or
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8728]: OpenNMS will not start.
+Mar 18 13:35:42 rocky9.totusmel.com opennms[8011]: failed
+Mar 18 13:35:42 rocky9.totusmel.com systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+Mar 18 13:35:42 rocky9.totusmel.com systemd[1]: opennms.service: Failed with result 'exit-code'.
+Mar 18 13:35:42 rocky9.totusmel.com systemd[1]: Failed to start OpenNMS server.
+
+or
+
+[source,shell]
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: OPENNMS_HOME (/opt/opennms) directory.
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: The format of the original files may have changed since
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: you modified them before installing a new version.
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: Please double-check that your configuration files are
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: up-to-date and delete any leftover .rpmsave files or
+Mar 20 13:48:17 rocky9.totusmel.com opennms[133068]: OpenNMS will not start.
+Mar 20 13:48:17 rocky9.totusmel.com opennms[132345]: failed
+Mar 20 13:48:17 rocky9.totusmel.com systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+Mar 20 13:48:17 rocky9.totusmel.com systemd[1]: opennms.service: Failed with result 'exit-code'.
+Mar 20 13:48:17 rocky9.totusmel.com systemd[1]: Failed to start OpenNMS server.
+
+NOTE: When dealing with `.rpmnew` or `.rpmsave` files, evaluate the file against the originally named file to determine which to keep.  Delete one of the files and remove the `.rpmnew` or `.rpmsave` file extension and start the {page-component-title} software.
+
+TIP: To quickly identify any `.rpmnew` or `.rpmsave` files, run the following to search for file extensions that have `rpm` in them in `$OPENNMS_HOME`
+[source,shell]
+[uquevedo@rocky9 ~]$ sudo find $OPENNMS_HOME -name *.rpm* -exec ls -la {} \;
+-rw-r--r-- 1 root root 15305 Mar 20 14:12 /opt/opennms/etc/eventconf.xml.rpmnew
+-rw-r--r-- 1 root root 102861 Mar 20 14:23 /opt/opennms/lib/activemq-mqtt-5.15.5.jar.rpmsave
