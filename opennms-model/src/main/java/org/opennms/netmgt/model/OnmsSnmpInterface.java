@@ -771,4 +771,27 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OnmsSnmpInterface)) {
+            return false;
+        }
+        OnmsSnmpInterface that = (OnmsSnmpInterface)o;
+        if (!this.getId().equals(that.getId())) {
+            return false;
+        }
+        if (!this.getPhysAddr().equals(that.getPhysAddr())) {
+            return false;
+        }
+        if (!this.getIfIndex().equals(that.getIfIndex())) {
+            return false;
+        }
+        if (!this.getNodeId().equals(that.getNodeId())) {
+            return false;
+        }
+        return true;
+    }
 }
