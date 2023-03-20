@@ -1,25 +1,36 @@
 .Configure PostgreSQL database access
+
+It is possible to store the PostgreSQL credentials in the secure credentials vault.
+To achieve this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`.
+
+.Create encrypted credentials for PostgreSQL database connections:
 [source, console]
+----
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password <1>
+sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
+----
+<1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
+
 ----
 sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 ----
 
-.Set credentials to access the PostgreSQL database
+.Set encrypted credentials to access the PostgreSQL database
 [source, xml]
 ----
 <jdbc-data-source name="opennms"
                     database-name="opennms"<1>
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/opennms"
-                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
-                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+                    user-name="${scv:postgres:username}"<2>
+                    password="${scv:postgres:password}" /><3>
 
 <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="postgres"<4>
-                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+                    user-name="${scv:postgres-admin:username}"<4>
+                    password="${scv:postgres-admin:password}" /><5>
 ----
 
 <1> Set the database name {page-component-title} should use.
@@ -45,7 +56,7 @@ sudo /opt/opennms/bin/install -dis
 {page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
 If you run on an older kernel, and are unable to upgrade your OS, you need to assign CAP_NET_RAW capabilities:
 
-Run `systemctl edit --full opennms.service` and add the following line to the `[Service]` section:
+Run `systemctl edit opennms.service` and add the following line to the `[Service]` section:
 
 [source, properties]
 ----
