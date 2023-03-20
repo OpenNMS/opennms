@@ -17,7 +17,7 @@ Mar 20 14:41:53 rhel9h.totusmel.com opennms[130823]:            run '/usr/bin/xm
 Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: Validation failed on 1 XML files.  Exiting.
 Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: failed
 
-Running the diagnotic tool `confi-tester -a`, an error is produce right after the config for `Drools Northbounder` is loaded.
+Running the diagnotic tool `config-tester -a`, an error is produced right after the config for `Drools Northbounder` is loaded.
 
 Below is a snippet of the error:
 
