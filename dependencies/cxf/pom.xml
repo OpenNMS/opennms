@@ -44,11 +44,19 @@
       <version>${cxfVersion}</version>
     </dependency>
 
-    <!-- Jackson JSON -->
+    <!-- cxf-jackson -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jackson1-dependencies</artifactId>
+      <artifactId>jackson2-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
     <!-- Abdera Atom -->

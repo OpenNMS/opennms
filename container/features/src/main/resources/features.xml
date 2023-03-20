@@ -221,6 +221,40 @@
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
     </feature>
+    <feature name="jackson-core" version="${jackson2Version}" description="Jackson 2 :: Base">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-dataformat-xml" version="${jackson2Version}" description="Jackson 2 :: XML Data Format">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>snakeyaml</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-dataformat-yaml" version="${jackson2Version}" description="Jackson 2 :: YAML Data Format">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>snakeyaml</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-datatype-jdk8" version="${jackson2Version}" description="Jackson 2 :: JDK8 Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-datatype-json" version="${jackson2Version}" description="Jackson 2 :: JSON Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>org.json</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/${jackson2Version}</bundle>
+    </feature>
+    <feature name="jackson-datatype-jsr310" version="${jackson2Version}" description="Jackson 2 :: JSR 310 Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
+    </feature>
+    <feature name="org.json" version="${jsonVersion}" description="org.json">
+        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Export-Package=org.json</bundle>
+    </feature>
+    <feature name="snakeyaml" version="${snakeyamlVersion}" description="SnakeYAML">
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
+    </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bcprov</feature>
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
@@ -449,6 +483,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
@@ -475,11 +510,9 @@
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
+        <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
@@ -487,12 +520,10 @@
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
     </feature>
     <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
+        <feature>jackson-core</feature>
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-sqs/${awsSdkVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.amazonaws/amazon-sqs-java-messaging-lib/${awsSqsMessagingVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: API">
         <feature>dropwizard-metrics</feature>
@@ -955,7 +986,7 @@
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback">
@@ -985,6 +1016,10 @@
     </feature>
 
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaVersion}">
+        <!-- This is only needed for servicemix implementation of kafka streams -->
+        <!--
+        <feature>jackson-core</feature>
+        -->
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
         <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
@@ -994,12 +1029,6 @@
         <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
         <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
-        <!-- These are only needed for  servicemix implementation of kafka streams -->
-        <!--
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        -->
         <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-kafka-producer" version="${project.version}" description="OpenNMS :: Kafka :: Producer">
