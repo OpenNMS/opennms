@@ -356,6 +356,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -370,7 +372,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         Path targetLogFolder = Paths.get("target", "logs", prefix, "minion");
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        LOG.info("Gathering thread dump...");
         var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
 
         LOG.info("Gathering logs...");

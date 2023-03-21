@@ -97,7 +97,7 @@ public class TimeseriesFetchStrategyTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws StorageException {
         resourceDao = mock(ResourceDao.class);
         this.timeSeriesStorage = Mockito.mock(TimeSeriesStorage.class);
         when(timeSeriesStorage.supportsAggregation(Aggregation.AVERAGE)).thenReturn(true);
