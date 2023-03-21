@@ -38,6 +38,8 @@ The optional xref:deployment:time-series-storage/newts/introduction.adoc[Newts s
 categories:: Custom collections of entities on {page-component-title}-monitored networks.
 They let you define a matrix for aggregating monitoring results (see xref:operation:deep-dive/visualizations/surveillance-view.adoc#categorize-nodes[Categorize nodes]).
 
+CI/CD:: The practice of continuous integration (frequently merging small changes into a repository's main branch) and continuous delivery (short software development cycles with repeatable deployment processes).
+
 https://circleci.com/[CircleCI]:: A continuous integration and delivery platform that hosts The OpenNMS Group's CI/CD environment.
 It integrates with and monitors the OpenNMS GitHub repositories, and automatically launches and tests a new build when it detects a commit.
 
