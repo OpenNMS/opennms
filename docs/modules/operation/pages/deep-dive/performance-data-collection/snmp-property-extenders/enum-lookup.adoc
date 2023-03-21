@@ -64,6 +64,7 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
     </property>
     <property instance="dot1dStpPortEntry" alias="dot1dStpPortEnableText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender"> <4>
       <!-- Note absence of parenthetical numeric values; they are entirely optional -->
+      <parameter key="enum-attribute" value="dot1dStpPortEnable"/>
       <parameter key="1" value="enabled"/>
       <parameter key="2" value="disabled"/>
     </property>
