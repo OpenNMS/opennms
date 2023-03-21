@@ -1,16 +1,16 @@
 
 = SameSite Cookie Attribute
 
-The SameSite Cookie Attribute was introduced to control access to cookies and helps to prevent various XSS- and CSRF-attacks.
-This attribute tells browsers how to handle first- or third-party cookies and identifies whether or not to allow a cookie to be accessed.
+The SameSite Cookie attribute controls access to cookies and helps prevent various cross-site scripting (XSS) and cross-site request forgery (CSRF) attacks.
+This attribute tells browsers how to handle first- or third-party cookies and identifies whether to allow a cookie to be accessed.
 
-OpenNMS ships with the most secure configuration *strict* for its session cookie.
-This means, that the session cookie will not be sent for any cross-site request.
-There may be environments where a user want to relax this enforcement by setting the SameSite attribute to *lax*.
+OpenNMS ships with the most secure configuration, *strict*, for its session cookie.
+This means that the session cookie will not be sent for any cross-site request.
+There may be environments where a user wants to relax this enforcement by setting the SameSite attribute to *lax*.
 
-== Relaxing the SameSite Attribute enforcement policy
+== Relax the SameSite attribute enforcement policy
 
-In order to change the enforcement policy, you need to alter the file `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`.
+To change the enforcement policy, you need to alter the `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml` file.
 
 [source, xml]
 ----
