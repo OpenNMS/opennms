@@ -4,7 +4,7 @@
 
 == A
 
-ActiveMQ:: Java-based open-source message broker supported by the Apache community (see xref:deployment:core/setup-message-broker.adoc[]).
+ActiveMQ:: Java-based, open-source message broker supported by the Apache community (see xref:deployment:core/setup-message-broker.adoc[]).
 
 alarms:: Indicators for problems occurring on entities that {page-component-title} monitors (see xref:operation:deep-dive/alarms/introduction.adoc[]).
 
@@ -39,7 +39,7 @@ categories:: Custom collections of entities on {page-component-title}-monitored 
 They let you define a matrix for aggregating monitoring results (see xref:operation:deep-dive/visualizations/surveillance-view.adoc#categorize-nodes[Categorize nodes]).
 
 https://circleci.com/[CircleCI]:: A continuous integration and delivery platform that hosts The OpenNMS Group's CI/CD environment.
-It integrates with and monitors the OpenNMS GitHub repositories, and automatically launches and tests a new build when a commit is detected.
+It integrates with and monitors the OpenNMS GitHub repositories, and automatically launches and tests a new build when it detects a commit.
 
 command line interface (CLI):: A program that lets you run commands for various operating system functions (for example, compiling code).
 
@@ -87,7 +87,7 @@ https://grafana.com/[Grafana]:: An open-source analysis and visualization web ap
 
 == H
 
-https://docs.opennms.com/helm/latest[HELM]:: An OpenNMS application that lets you create flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
+https://docs.opennms.com/helm/latest[HELM]:: An Grafana plugin that lets you create flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
 HELM works with Grafana to customize the data that you can view. +
 Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
 
@@ -135,7 +135,8 @@ Originally designed by Google, the Cloud Native Computing Foundation now maintai
 https://www.opennms.com/meridian/[Meridian]:: A subscription-based, optimized, and stable version of the OpenNMS Horizon platform that includes only the most stable and secure Horizon features.
 It is distributed via annual release with monthly security patches.
 
-message broker:: When using Minions and Sentinels, a message broker is required for communication between servers.
+message broker:: An asynchronous service that enables communication between an application's distributed components.
+When using Minions and Sentinels, a message broker is required for communication between servers.
 {page-component-title} has an embedded ActiveMQ server available for smaller deployments.
 You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafka cluster to provide scalability and load balancing.
 
@@ -158,6 +159,7 @@ You can use it as an alternative persistence strategy (instead of JRobin or RRDt
 
 node:: A device or application that sends communications over a network (for example, a server).
 They can be provisioned to and monitored by {page-component-title}.
+A node must include at least one IP interface, otherwise it is removed from your {page-component-title} inventory.
 
 node availability:: The percentage of time that a node is detected as being accessible.
 A node is considered "down" when its critical path is inaccessible.
