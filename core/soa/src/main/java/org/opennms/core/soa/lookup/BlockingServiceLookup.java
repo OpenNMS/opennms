@@ -71,7 +71,7 @@ public class BlockingServiceLookup<C, F> implements ServiceLookup<C, F> {
             try {
                 Thread.sleep(this.lookupDelayMs);
             } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting for service with search criteria " + criteria + " to become available in the service registry. Aborting.");
+                LOG.error("Interrupted while waiting for service with search criteria '{}' to become available in the service registry. Aborting.", criteria);
                 return null;
             }
             service = delegate.lookup(criteria, filter);
@@ -81,6 +81,7 @@ public class BlockingServiceLookup<C, F> implements ServiceLookup<C, F> {
         }
 
         // Couldn't find a service within the defined time
+        LOG.error("Timed out while waiting for service with search criteria '{}' to become available in the service registry. Aborting.", criteria);
         return null;
     }
 

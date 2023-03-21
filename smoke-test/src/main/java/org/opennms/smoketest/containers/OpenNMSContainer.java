@@ -33,7 +33,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -67,6 +66,7 @@ import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
@@ -139,7 +139,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
-    private boolean afterTestCalled = false;
+    private Exception afterTestCalled = null;
     private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
@@ -213,9 +213,18 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
-                .addFileSystemBind(overlay.toString(),
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
+
+        addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            if (installFeature.getValue() != null) {
+                addFileSystemBind(installFeature.getValue().toString(),
+                        "/opt/opennms/deploy/" + installFeature.getValue().getFileName(),
+                        BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            }
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
@@ -330,6 +339,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
     }
 
+    public URL getWebUrl() {
+        return getBaseUrlExternal();
+    }
+
     public RestClient getRestClient() {
         try {
             return new RestClient(new URL(getBaseUrlExternal() + "opennms"));
@@ -397,6 +410,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            featuresOnBoot.add(installFeature.getKey());
+        }
+
         if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("opennms-core-ipc-grpc-server");
         }
@@ -523,16 +541,21 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
-            // Defer the health-check (if we do run it) until the system has completely started
+            // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
-            // Only wait for the health-check if Elasticsearch is enabled, since it's
-            // currently required to pass.
-            if (container.getModel().isElasticsearchEnabled()) {
-                LOG.info("Waiting for OpenNMS health check...");
-                awaitHealthCheckSucceeded(container);
-                LOG.info("Health check passed.");
-            }
+            LOG.info("Waiting for OpenNMS health check...");
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
+
     }
 
     public int getGeneratedUserId() {
@@ -541,11 +564,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
-        if (afterTestCalled) {
-            LOG.warn("afterTest has already been called, not running on subsequent calls");
+        var pid = ProcessHandle.current().pid();
+        if (afterTestCalled != null) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
+            LOG.warn("original call location of afterTest", afterTestCalled);
             return;
         }
-        afterTestCalled = true;
+        afterTestCalled = new Exception("exception placeholder for stacktrace -- original call location of afterTest; PID: " + pid);
         if (COLLECT_COVERAGE) {
             KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         }
@@ -563,6 +588,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 "manager.log",
                 "poller.log",
                 "provisiond.log",
+                "telemetryd.log",
                 "trapd.log",
                 "web.log"
         );
@@ -570,9 +596,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        LOG.info("Gathering thread dump...");
-        final var threadDump = DevDebugUtils.gatherThreadDump(this,
-                targetLogFolder, CONTAINER_LOG_DIR.resolve("output.log"));
+        final var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
 
         LOG.info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
