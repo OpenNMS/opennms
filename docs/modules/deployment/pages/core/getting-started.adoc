@@ -30,7 +30,7 @@ endif::[]
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
-* If in usage: A SELinux policy that permits binding to the ICMP service.
+* If in use: A SELinux policy that permits binding to the ICMP service.
 +
 Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see xref:reference:configuration/selinux.adoc[SElinux and ICMP permissions]).
 ifeval::["{page-component-title}" == "Horizon"]
