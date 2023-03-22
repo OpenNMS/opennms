@@ -967,7 +967,7 @@
     </feature>
 
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaVersion}">
-        <!-- This is only needed for  servicemix implementation of kafka streams -->
+        <!-- This is only needed for servicemix implementation of kafka streams -->
         <!--
         <feature>jackson-core</feature>
         -->

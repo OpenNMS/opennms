@@ -67,12 +67,6 @@
       <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
-    <!-- cxf-rs-description-openapi-v3 -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
-
     <!-- Abdera Atom -->
     <dependency>
       <groupId>org.apache.abdera</groupId>
