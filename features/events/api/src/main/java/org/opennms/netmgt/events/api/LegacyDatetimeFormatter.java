@@ -31,6 +31,8 @@ package org.opennms.netmgt.events.api;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -109,7 +111,17 @@ public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
             try {
                 return FORMATTER_CUSTOM.get().parse(dateString);
             } catch (final ParseException pe) {
-                return FORMATTER_FULL.get().parse(dateString);
+                try {
+                    return FORMATTER_FULL.get().parse(dateString);
+                } catch (final Exception fpe) {
+                    try {
+                        return Date.from(ZonedDateTime.parse(dateString).toInstant());
+                    } catch (final DateTimeParseException dtpe) {
+                        throw new ParseException("failed to parse " + dateString + " as an ISO date; giving up", dtpe.getErrorIndex());
+                    } catch (final Exception isoe) {
+                        throw new ParseException("failed to parse " + dateString + " as an ISO date; giving up", 0);
+                    }
+                }
             }
         }
     }
