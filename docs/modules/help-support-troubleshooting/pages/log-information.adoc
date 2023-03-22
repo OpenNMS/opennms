@@ -1,18 +1,20 @@
 
-[[getting-started-core]]
-= {page-component-title} logs and what to look for
+= Trace {page-component-title} Logs
 
-This section explains where log files are located and what to look for in them for troubleshooting
+This section describes the log files that {page-component-title} creates, and what to look for in them when troubleshooting.
 
 [[manager.log]]
 == manager.log
 
-manager.log is located in `$OPENNMS_HOME/logs/` and conains information relating to manager server events and the specifics for how the {page-component-title} services start and stop.
+`$OPENNMS_HOME/logs/manager.log` contains information relating to manager server events and the start and stop processes for {page-component-title} services.
 
-The below is an example of a problem with connecting to the PostgreSQL database server:
-[source,shell]
+Below is an example of a log that describes a problem connecting to the PostgreSQL database server:
+
+[source, shell]
+----
 2023-03-20 14:08:11,256 INFO  [Main] o.o.f.s.j.JCEKSSecureCredentialsVault: No existing keystore found at: /opt/opennms/etc/scv.jce. Using empty keystore.
 2023-03-20 14:08:11,257 ERROR [Main] o.o.n.v.DatabaseChecker: Unable to connect to data source 'opennms' at URL 'jdbc:postgresql://localhost:5432/opennms' with username 'opennms', check opennms-datasources.xml and your database permissions.
 2023-03-20 14:08:11,258 ERROR [Main] o.o.n.v.Controller: error invoking "check" operation: Data source 'opennms' failed.
 org.opennms.netmgt.vmmgr.InvalidDataSourceException: Data source 'opennms' failed.
+----
 
