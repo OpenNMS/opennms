@@ -766,6 +766,10 @@
       <artifactId>rome</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.jdom</groupId>
           <artifactId>jdom2</artifactId>
         </exclusion>
