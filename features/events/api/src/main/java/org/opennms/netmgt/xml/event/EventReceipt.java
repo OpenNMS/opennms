@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Class EventReceipt.
@@ -215,12 +217,13 @@ public class EventReceipt implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vUuid
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
+    @Hidden
     public void setUuid(
             final int index,
             final java.lang.String vUuid)
@@ -235,9 +238,10 @@ public class EventReceipt implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vUuidArray
      */
+    @Hidden
     public void setUuid(
             final java.lang.String[] vUuidArray) {
         //-- copy array
@@ -269,6 +273,7 @@ public class EventReceipt implements Serializable {
      * 
      * @param uuidList the Vector to set.
      */
+    @Hidden
     public void setUuidCollection(
             final java.util.List<java.lang.String> uuidList) {
         this._uuidList = uuidList;

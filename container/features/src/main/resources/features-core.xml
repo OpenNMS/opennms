@@ -14,13 +14,11 @@
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
         <feature version="[${netty4Version},5)">netty4</feature>
         <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
         <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
         <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
     </feature>
 
@@ -41,6 +39,40 @@
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
+    <feature name="jackson-core" version="${jackson2Version}" description="Jackson 2 :: Base">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-dataformat-xml" version="${jackson2Version}" description="Jackson 2 :: XML Data Format">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>snakeyaml</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-dataformat-yaml" version="${jackson2Version}" description="Jackson 2 :: YAML Data Format">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>snakeyaml</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-datatype-jdk8" version="${jackson2Version}" description="Jackson 2 :: JDK8 Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-datatype-json" version="${jackson2Version}" description="Jackson 2 :: JSON Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>org.json</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/${jackson2Version}</bundle>
+    </feature>
+
+    <feature name="jackson-datatype-jsr310" version="${jackson2Version}" description="Jackson 2 :: JSR 310 Data Type">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
+    </feature>
+
     <feature name="netty4" version="${netty4Version}" description="Netty">
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
@@ -54,12 +86,19 @@
         <bundle dependency="true">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
     </feature>
 
+    <feature name="org.json" version="${jsonVersion}" description="org.json">
+        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Export-Package=org.json</bundle>
+    </feature>
+
+    <feature name="snakeyaml" version="${snakeyamlVersion}" description="SnakeYAML">
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
+    </feature>
+
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
         <feature prerequisite="true">wrap</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
