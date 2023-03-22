@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,15 +67,15 @@ public class TimeseriesAPIIT {
 
     @Test
     public void canLoadTimeseriesFeature() throws Exception {
-        assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
+        assertTrue("no errors installing opennms-timeseries-api", karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
 
         KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
     }
 
     @Test
     public void testDualWrites() throws Exception {
-        assertTrue(karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
-        assertTrue(karafShell.runCommandOnce("feature:install inmemory-timeseries-plugin", output -> !output.toLowerCase().contains("error"), false));
+        assertTrue("no errors installing opennms-timeseries-api", karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
+        assertTrue("no errors installing inmemory-timeseries-plugin", karafShell.runCommandOnce("feature:install inmemory-timeseries-plugin", output -> !output.toLowerCase().contains("error"), false));
         KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
 
         final Set<String> originalRrdFiles = getRrdFiles();
@@ -121,7 +121,7 @@ public class TimeseriesAPIIT {
         // Make sure all RRD files have corresponding entries stored in the plugin
         rrdFiles.stream().forEach(rrdFile -> {
             String metricName = rrdFile.substring(0, rrdFile.length() - 4);
-            assertTrue(karafMetrics.stream().anyMatch(x -> x.contains(metricName)));
+            assertTrue(metricName + " must contain a match in the kafka stream", karafMetrics.stream().anyMatch(x -> x.contains(metricName)));
         });
     }
 

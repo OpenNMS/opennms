@@ -23,6 +23,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!org.opennms.features.scv.jceks;org.opennms.netmgt.config.opennmsDataSources.*;org.opennms.core.db.*;version="${project.version}"</Export-Package>
             <Private-Package>org.opennms.features.scv.jceks</Private-Package>
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -87,6 +88,11 @@
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
     </dependency>
   </dependencies>
 </project>
