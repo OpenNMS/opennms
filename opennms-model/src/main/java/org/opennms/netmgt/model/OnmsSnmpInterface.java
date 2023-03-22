@@ -774,7 +774,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_physAddr, m_ifIndex, m_node);
+        return Objects.hash(m_id, m_physAddr, m_ifIndex, getNodeId());
     }
 
     @Override
