@@ -79,7 +79,7 @@ public class OffheapTimeseriesWriterTest {
      * are used to concurrently insert samples into the SampleRepository.
      */
     @Test
-    public void canWriteToSampleRepositoryUsingMultipleThreads() throws IOException {
+    public void canWriteToSampleRepositoryUsingMultipleThreads() throws Exception {
         TimeseriesWriterConfig config = new TimeseriesWriterConfig();
         config.setBufferSize(1024);
         config.setNumWriterThreads(8);

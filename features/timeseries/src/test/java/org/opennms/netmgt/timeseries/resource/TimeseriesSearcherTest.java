@@ -62,7 +62,7 @@ public class TimeseriesSearcherTest {
     TimeseriesSearcher searcher;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         TimeseriesStorageManager storageManager = Mockito.mock(TimeseriesStorageManager.class);
         when(storageManager.get()).thenReturn(storage);
         CacheConfig cacheConfig = new CacheConfigBuilder().withName(TimeseriesSearcherTest.class.getSimpleName()).build();

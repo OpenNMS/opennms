@@ -1,0 +1,136 @@
+
+= Vacuumd
+
+The vacuum daemon runs daily cleanup tasks for the PostgreSQL database.
+You can create automations for vacuumd by setting triggers and actions in `vacuumd-configuration.xml`.
+
+[caption=]
+.Vacuumd configuration file overview
+[options="autowidth"]
+|===
+| File  | Description   | Reload Event  | Restart Required
+
+| vacuumd-configuration.xml
+| Configures generic behavior of vacuumd and defines automation triggers and actions.
+| Yes
+| No
+|===
+
+[caption=]
+.Vacuumd log file overview
+[options="autowidth"]
+|===
+| File  | Description
+
+| vacuumd.log
+| Logs relating to vacuumd events.
+|===
+
+== Automation
+
+Vacuumd's automation settings are made up of triggers and action statements that can query and update tables in the {page-component-title} database.
+
+[caption=]
+.Vacuumd automation attributes
+[options="autowidth"]
+|===
+| Attribute | Description   | Type
+
+3+| *Required*
+
+| name
+| Name of the automation.
+| String
+
+| interval
+| How often to run the automation, in milliseconds.
+| Integer
+
+| action-name
+| References an action by its `name` attribute.
+| String
+
+3+| *Optional*
+
+| trigger-name
+| References a trigger by its `name` attribute.
+| String
+
+| action-event
+| References an action event by its `name` attribute.
+| String
+|===
+
+=== Triggers
+
+An automation trigger is defined with three attributes and a SQL statement.
+The results of a statement are received and processed by the action statement.
+
+Triggers are not required to create an automation for vacuumd.
+
+[caption=]
+.Vacuumd trigger attributes
+[options="autowidth"]
+|===
+| Attribute | Description
+
+| name
+| Name of the trigger.
+
+| row-count
+| Used with the `operator` attribute to determine if the action should run.
+
+| operator
+| Used with the `row-count` attribute to determine if the action should run.
+|===
+
+=== Actions
+
+An automation action is designed to be a DML statement that can run against the result set of an automation trigger.
+You can also set it to run independently.
+
+Actions that process trigger results will usually require access to the data stored in the columns referenced by the trigger's DQL statement.
+To let an action access this column data, use the `${<column name>}` format to specify the column.
+For example, this action updates the severity of all alarms returned as the result of an escalation trigger:
+
+[source, sql]
+----
+UPDATE alarms SET severity = least(7, severity+1)
+ WHERE alarmid = ${alarmid}
+   AND alarmAckUser is NULL
+----
+
+[caption=]
+.Vacuumd action event attributes
+[options="autowidth"]
+|===
+| Attribute | Description   | Type
+
+| name
+| Name of the trigger referenced by the `action-event` attribute.
+| String
+
+| for-each-result
+| Controls whether the event is produced for every original event, or only once.
+Default value is `false`.
+| Boolean
+|===
+
+[caption=]
+.Vacuumd action event assignments
+[options="autowidth"]
+|===
+| Assignment    | Description   | Type
+
+| type
+| Defines the type of data to modify (either `field` or `parameter`).
+| String
+
+| name
+| Name of the field or parameter to be modified.
+| String
+
+| value
+| The value for the field or parameter.
+| String
+|===

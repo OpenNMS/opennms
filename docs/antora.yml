@@ -14,6 +14,7 @@ asciidoc:
     compatible-rhel9: '9.x'
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
+    compatible-rocky-linux: '9.x'
     compatible-opennms-helm: '7+'
     compatible-oia: '0.6.x'
     compatible-cassandra: '3.11.x'

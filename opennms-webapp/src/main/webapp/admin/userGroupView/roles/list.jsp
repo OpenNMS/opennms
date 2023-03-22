@@ -61,6 +61,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="On-Call Role Configuration" />
@@ -126,7 +127,7 @@
 				
 				<tr>
 				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
-				<td><a href="${viewUrl}">${role.name}</a></td>
+				<td><a href="${viewUrl}">${fn:escapeXml(role.name)}</a></td>
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>
 				  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
