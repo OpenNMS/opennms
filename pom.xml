@@ -797,6 +797,19 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
+                  <groupId>org.commonjava.maven.plugins</groupId>
+                  <artifactId>directory-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>directory-of</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
                   <groupId>com.sun.tools.jxc.maven2</groupId>
                   <artifactId>maven-jaxb-schemagen-plugin</artifactId>
                   <versionRange>[1.2,2.0)</versionRange>
@@ -1578,8 +1591,7 @@
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <curatorTestVersion>2.9.1</curatorTestVersion>
-    <cxfVersion>3.5.1</cxfVersion>
-    <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
+    <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
@@ -1616,7 +1628,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.14.1</jackson2Version>
+    <jackson2Version>2.14.2</jackson2Version>
     <snakeyamlVersion>1.33</snakeyamlVersion>
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -1652,7 +1664,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.6</jschVersion>
-    <jsonVersion>20171018</jsonVersion>
+    <jsonVersion>20230227</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
@@ -1718,8 +1730,8 @@
     <sonarVersion>3.7.0.1746</sonarVersion>
     <spockVersion>1.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
-    <swaggerVersion>2.1.5</swaggerVersion>
-    <swaggerParserVersion>2.0.24</swaggerParserVersion>
+    <swaggerVersion>2.1.12</swaggerVersion>
+    <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.15.1</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
@@ -2809,6 +2821,17 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jackson2-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${jsonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2834,6 +2857,11 @@
         <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -3539,6 +3567,11 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-extension-search</artifactId>
+        <version>${cxfVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
         <version>${cxfVersion}</version>
       </dependency>
       <dependency>
@@ -4267,6 +4300,11 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
@@ -4283,6 +4321,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-json-org</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
@@ -4324,11 +4367,6 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${jbossLoggingVersion}</version>
       </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
@@ -4917,6 +4955,36 @@
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${swaggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>${swaggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-integration</artifactId>
+        <version>${swaggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2</artifactId>
+        <version>${swaggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-models</artifactId>
+        <version>${swaggerVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.parser.v3</groupId>
+        <artifactId>swagger-parser</artifactId>
+        <version>${swaggerVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>

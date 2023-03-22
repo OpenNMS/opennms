@@ -35,6 +35,8 @@
         <entry key="org.apache.cxf.jaxrs.resource.context.provider" value-ref="springResourceContextProvider"/>
         <!-- NMS-7866: Don't replace 127.0.0.1 with localhost -->
         <entry key="replace.loopback.address.with.localhost" value="false"/>
+        <!-- see https://issues.apache.org/jira/browse/CXF-8684 -->
+        <entry key="default.wae.mapper.least.specific" value="false"/>
       </jaxrs:properties>
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />

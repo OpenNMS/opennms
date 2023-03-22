@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * The Mask for event configuration: The mask contains one
@@ -238,11 +240,13 @@ public class Mask implements Serializable {
     /**
      * 
      * 
+     * @deprecated
      * @param index
      * @param vMaskelement
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
+    @Hidden
     public void setMaskelement(
             final int index,
             final org.opennms.netmgt.xml.event.Maskelement vMaskelement)
@@ -257,9 +261,10 @@ public class Mask implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vMaskelementArray
      */
+    @Hidden
     public void setMaskelement(
             final org.opennms.netmgt.xml.event.Maskelement[] vMaskelementArray) {
         //-- copy array
@@ -291,6 +296,7 @@ public class Mask implements Serializable {
      * 
      * @param maskelementList the Vector to set.
      */
+    @Hidden
     public void setMaskelementCollection(
             final java.util.List<org.opennms.netmgt.xml.event.Maskelement> maskelementList) {
         this._maskelementList = maskelementList;
