@@ -1,7 +1,7 @@
 
 = Trace {page-component-title} Logs
 
-This section describes the log files that {page-component-title} creates, and what to look for in them when troubleshooting.
+This section describes common log files to look at when troubleshooting.
 
 [[manager.log]]
 == manager.log

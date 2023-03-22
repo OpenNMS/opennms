@@ -37,7 +37,7 @@ If you encounter a configuration error when starting {page-component-title}, you
 [source, console]
 install -dis
 
-If you run `systemctl start opennms` and {page-component-title} is not installed or up-to-date, the output displays error messages:
+If you run `systemctl start opennms` and {page-component-title} is not installed or up to date, the output displays error messages:
 
 [source, shell]
 ----
