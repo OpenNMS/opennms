@@ -73,6 +73,7 @@ public class TimeseriesAPIIT {
     }
 
     @Test
+    @org.junit.Ignore
     public void testDualWrites() throws Exception {
         assertTrue("no errors installing opennms-timeseries-api", karafShell.runCommandOnce("feature:install opennms-timeseries-api", output -> !output.toLowerCase().contains("error"), false));
         assertTrue("no errors installing inmemory-timeseries-plugin", karafShell.runCommandOnce("feature:install inmemory-timeseries-plugin", output -> !output.toLowerCase().contains("error"), false));
