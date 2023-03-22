@@ -41,7 +41,7 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.xml.bind.JAXB;
+import jakarta.xml.bind.JAXB;
 
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
