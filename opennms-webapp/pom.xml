@@ -738,7 +738,7 @@
     <!-- these should all be <scope>compile</scope> -->
 
     <dependency>
-      <groupId>org.apache.poi</groupId>
+      <groupId>poi</groupId>
       <artifactId>poi</artifactId>
       <exclusions>
         <exclusion>
