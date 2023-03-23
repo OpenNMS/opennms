@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,9 +30,6 @@ package org.opennms.netmgt.events.api;
 
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.opennms.core.utils.Base64;
@@ -1065,30 +1062,35 @@ public abstract class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
-    /**
-     * An utility method to parse a string into a 'Date' instance. Note that the
-     * string should be in the locale-specific DateFormat.LONG style for both
-     * the date and time, although DateFormat.FULL will be accepted as well.
-     *
-     * @see java.text.DateFormat
-     * @param timeString a {@link java.lang.String} object.
-     * @return a {@link java.util.Date} object.
-     * @throws java.text.ParseException if any.
-     */
-    public static final Date parseToDate(final String timeString) throws ParseException {
-        return Date.from(ZonedDateTime.parse(timeString).toInstant());
+    protected static EventDatetimeFormatter m_eventDatetimeFormatter;
+
+    static {
+        if (Boolean.parseBoolean("org.opennms.events.legacyFormatter")) {
+            m_eventDatetimeFormatter = new LegacyDatetimeFormatter();
+        } else {
+            m_eventDatetimeFormatter = new ISODatetimeFormatter();
+        }
     }
 
     /**
-     * A utility method to format a 'Date' into a string in the locale-specific
-     * LONG DateFormat style for both the date and time.
+     * A utility method to parse a string into a 'Date' instance.
      *
-     * @see java.text.DateFormat
-     * @param date a {@link java.util.Date} object.
-     * @return a {@link java.lang.String} object.
+     * @param timeString a {@link java.lang.String} object
+     * @return a {@link java.util.Date} object
+     * @throws java.text.ParseException if any
+     */
+    public static final Date parseToDate(final String timeString) throws ParseException {
+        return m_eventDatetimeFormatter.parse(timeString);
+    }
+
+    /**
+     * A utility method to format a 'Date' into a string.
+     *
+     * @param date a {@link java.util.Date} object
+     * @return a {@link java.lang.String} object
      */
     public static final String formatToString(final Date date) {
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toInstant().atZone(ZoneId.systemDefault()));
+        return m_eventDatetimeFormatter.format(date);
     }
 
 	/**
