@@ -10,7 +10,7 @@ There may be environments where a user wants to relax this enforcement by settin
 
 == Relax enforcement policy
 
-To change the enforcement policy, you must alter `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`:
+To change the enforcement policy, you must edit `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`:
 +
 [source, xml]
 ----
