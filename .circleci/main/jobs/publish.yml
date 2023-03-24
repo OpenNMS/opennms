@@ -22,7 +22,6 @@ jobs:
                 --vault-layout \
                 --include-failed \
                 --ci \
-                --token="${CIRCLE_TOKEN}" \
                 --workflow="${CIRCLE_WORKFLOW_ID}" \
                "${TYPE}" \
                "${CIRCLE_BRANCH}" \
@@ -31,7 +30,6 @@ jobs:
                 --vault-layout \
                 --include-failed \
                 --ci \
-                --token="${CIRCLE_TOKEN}" \
                 --workflow="${CIRCLE_WORKFLOW_ID}" \
                 --match="sbom" \
                xml \

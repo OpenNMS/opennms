@@ -10,9 +10,9 @@ commands:
           name: restore OCI files matching "<< parameters.match >>"
           command: |
             if [ -n "<< parameters.match >>" ]; then
-              download-artifacts.pl --include-failed --ci --token="${CIRCLE_TOKEN}" --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
             else
-              download-artifacts.pl --include-failed --ci --token="${CIRCLE_TOKEN}" --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
             fi
 
             cd /tmp/oci-artifacts
@@ -59,7 +59,7 @@ commands:
       - download-download-artifacts
       - run:
           name: download tarball dependency to << parameters.tarball_path >>
-          command: download-artifacts.pl --include-failed --ci --token="${CIRCLE_TOKEN}" --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+          command: download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
