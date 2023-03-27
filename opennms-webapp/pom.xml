@@ -370,15 +370,9 @@
                 <version>${project.version}</version>
               </dependency>
               <dependency>
-                <groupId>org.extremecomponents</groupId>
+                <groupId>org.opennms.extremecomponents</groupId>
                 <artifactId>extremecomponents</artifactId>
-                <version>1.0.1</version>
-                <exclusions>
-                  <exclusion>
-                    <groupId>taglibs</groupId>
-                    <artifactId>standard</artifactId>
-                  </exclusion>
-                </exclusions>
+                <version>2.0.2</version>
               </dependency>
               <dependency>
                 <groupId>org.opennms.dependencies</groupId>
@@ -738,8 +732,9 @@
     <!-- these should all be <scope>compile</scope> -->
 
     <dependency>
-      <groupId>poi</groupId>
+      <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
+      <version>5.2.3</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -772,26 +767,48 @@
       <version>1.1_4</version>
     </dependency>
     <dependency>
-      <groupId>org.extremecomponents</groupId>
+      <groupId>org.opennms.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
+      <version>2.0.2</version>
       <exclusions>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-collections4</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-text</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.taglibs</groupId>
+          <artifactId>taglibs-standard-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.taglibs</groupId>
+          <artifactId>taglibs-standard-spec</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
-    <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-    <dependency>
-      <groupId>org.jmesa</groupId>
-      <artifactId>jmesa</artifactId>
-    </dependency>
-    -->
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-api</artifactId>
