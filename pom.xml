@@ -4964,9 +4964,9 @@
         <version>${swaggerVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.poi</groupId>
+        <groupId>poi</groupId>
         <artifactId>poi</artifactId>
-        <version>3.17</version>
+        <version>2.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
