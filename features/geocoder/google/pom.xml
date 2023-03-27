@@ -35,6 +35,7 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
               dalvik.system;resolution:=optional,
+              android.app;resolution:=optional,
               android.net.http;resolution:=optional,
               android.os;resolution:=optional,
               android.security;resolution:=optional,
@@ -61,7 +62,7 @@
     <dependency>
       <groupId>com.google.maps</groupId>
       <artifactId>google-maps-services</artifactId>
-      <version>0.9.3</version>
+      <version>2.1.2</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
