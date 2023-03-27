@@ -5,7 +5,7 @@
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
               http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
   
@@ -35,7 +35,10 @@
   </http>
 
   <!-- Only use BASIC auth for the RESTful APIs -->
-  <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never">
+  <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE,ROLE_FILESYSTEM_EDITOR"/>
 
@@ -51,8 +54,8 @@
     <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
 
-    <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
-    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
+    <!-- SNMP config is _only_ allowed for the provision or admin roles -->
+    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
     <!-- Allow users to POST to the Measurements API, which is read-only -->
     <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
@@ -108,7 +111,10 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
-  <http pattern="/nrt/**" realm="OpenNMS Realm">
+  <http pattern="/nrt/**" realm="OpenNMS Realm" use-expressions="false">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/nrt/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
@@ -116,7 +122,7 @@
     <intercept-url pattern="/nrt/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
     <intercept-url pattern="/nrt/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
 
-    <http-basic />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
@@ -124,7 +130,9 @@
   </http>
 
   <!-- Only use BASIC auth for the RESTful API v2 -->
-  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never">
+  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="false">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
@@ -151,22 +159,31 @@
   </http>
 
   <!-- Only use BASIC auth for the RSS URL -->
-  <http pattern="/rss.jsp*" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm">
+  <http pattern="/rss.jsp*" realm="OpenNMS Realm" use-expressions="false">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <access-denied-handler error-page="/accessDenied.jsp" />
     <intercept-url pattern="/rss.jsp*" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
-    <http-basic />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <http pattern="/admin/userGroupView/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+  <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
-    <csrf />
+    <csrf request-matcher-ref="csrfMatcher"/>
+
+    <access-denied-handler error-page="/accessDenied.jsp" />
     <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
-    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
-    <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareLoginUrlAuthEntryPoint" />
+
+    <!-- should this have a custom logout? <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/> -->
+
     <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
@@ -241,8 +258,11 @@
   </beans:bean>
 
   <!-- Only one <http> section can match the implicit '/**' pattern -->
-  <http pattern="/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+  <http pattern="/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <access-denied-handler error-page="/accessDenied.jsp" />
     <csrf request-matcher-ref="csrfMatcher"/>
+    <headers defaults-disabled="true" />
+
     <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/favicon.ico" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/apple-touch-icon.png" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
@@ -262,7 +282,6 @@
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
-    <intercept-url pattern="/rest/snmpConfig/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/admin-*" access="hasAnyRole('ROLE_ADMIN')" />
@@ -290,18 +309,34 @@
     <!-- NrtCollection -->
     <intercept-url pattern="/amq/*" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
-    <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
-    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+    <http-basic entry-point-ref="xRequestedWithAwareLoginUrlAuthEntryPoint" />
+
+    <form-login login-page="/login.jsp"
+                username-parameter="j_username"
+                password-parameter="j_password"
+                login-processing-url="/j_spring_security_check"
+                authentication-failure-url="/login.jsp?login_error=1"
+    />
     <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/>
 
-      <!-- added for custom authentication filter -->
-    <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
+    <!-- added for custom authentication filter -->
+    <custom-filter before="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
+  <http-firewall ref="httpFirewall" />
+
+  <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall" />
+
+  <!-- FIXME: try this
+  <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
+    <beans:property name="allowSemicolon" value="true" />
+  </beans:bean>
+  -->
+
   <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
   <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
     <beans:property name="filterManager" ref="filterManager" />
@@ -324,7 +359,7 @@
     </beans:bean>
 
     <beans:bean id="loginUrlAuthenticationEntryPoint" class="org.opennms.web.springframework.security.OpenNMSLoginUrlAuthEntryPoint">
-        <beans:property name="loginFormUrl" value="/login.jsp" />
+        <beans:constructor-arg value="/login.jsp" />
     </beans:bean>
     <beans:bean id="openNMSlLogoutSuccessHandler" class="org.opennms.web.springframework.security.OpenNMSlLogoutSuccessHandler" />
 
@@ -401,6 +436,11 @@
   </beans:bean>
 
   <beans:bean id="xRequestedWithAwareBasicAuthEntryPoint" class="org.opennms.web.springframework.security.XRequestedWithAwareBasicAuthEntryPoint">
+    <beans:property name="realmName" value="OpenNMS Realm" />
+  </beans:bean>
+
+  <beans:bean id="xRequestedWithAwareLoginUrlAuthEntryPoint" class="org.opennms.web.springframework.security.XRequestedWithAwareLoginUrlAuthEntryPoint">
+    <beans:constructor-arg value="/login.jsp" />
     <beans:property name="realmName" value="OpenNMS Realm" />
   </beans:bean>
 
