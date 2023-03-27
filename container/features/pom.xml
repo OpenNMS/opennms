@@ -131,7 +131,8 @@
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karafVersion}</version>
+          <!-- Use a newer version of the karaf-maven-plugin for better error handling -->
+          <version>4.4.3</version>
           <extensions>true</extensions>
           <configuration>
             <skip>${skipTests}</skip>
@@ -169,8 +170,13 @@
                           <feature>minion-api-layer</feature>
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
+                          <feature>sentinel-newts</feature>
                           <feature>opennms-timseries-api</feature>
                           <feature>opennms-newts</feature>
+                          <feature>cassandra-driver</feature>
+                          <feature>netty4</feature>
+                          <feature>bouncycastle</feature>
+                          <feature>dropwizard-metrics</feature>
                       </features>
                       <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
                   </configuration>
@@ -817,4 +823,12 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+        <id>oss.sonatype.org-snapshot</id>
+        <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
 </project>

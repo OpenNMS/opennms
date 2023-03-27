@@ -76,7 +76,7 @@ public class MinionRestIT {
         given().get("/jolokia/read/java.lang:type=Memory/HeapMemoryUsage")
                 .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
 
-        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
+        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch,type=timers")
                 .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
 

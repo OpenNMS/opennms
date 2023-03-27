@@ -46,7 +46,7 @@
         </onmsgi:service-properties>
     </onmsgi:service>
 
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <constructor-arg ref="kafkaTwinMetricRegistry"/>
     </bean>
 
@@ -77,7 +77,7 @@
         </onmsgi:service-properties>
     </onmsgi:service>
 
-    <bean id="localMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="localMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <constructor-arg ref="localTwinMetricRegistry"/>
     </bean>
 

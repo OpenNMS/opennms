@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,11 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.newts.cassandra.Schema;
 import org.opennms.newts.cassandra.SchemaManager;
 
+import javax.inject.Named;
+
 public class Init implements Command {
 
-    private static ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);
+    private static final ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);
 
     @Option(name="-h", aliases={ "--help" }, help=true)
     boolean showHelp = false;
@@ -58,16 +60,18 @@ public class Init implements Command {
             return;
         }
 
+        String datacenter = System.getProperty("org.opennms.newts.config.datacenter", "datacenter1");
         String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         String hostname = System.getProperty("org.opennms.newts.config.hostname", "localhost");
         int port = SystemProperties.getInteger("org.opennms.newts.config.port", 9042);
         String username = System.getProperty("org.opennms.newts.config.username");
         String password = System.getProperty("org.opennms.newts.config.password");
         boolean ssl = Boolean.getBoolean("org.opennms.newts.config.ssl");
+        String driverSettingsFile = System.getProperty("org.opennms.newts.config.driver-settings-file");
 
-        System.out.println(String.format("Initializing the '%s' keyspaces on %s:%d", keyspace, hostname, port));
-
-        try (SchemaManager m = new SchemaManager(keyspace, hostname, port, username, password, ssl)) {
+        System.out.printf("Initializing the '%s' keyspace on %s:%d%n", keyspace, hostname, port);
+        try (SchemaManager m = new SchemaManager(datacenter, keyspace,
+                hostname, port, username, password, ssl, driverSettingsFile)) {
             m.setReplicationFactor(replicationFactor);
             for (Schema s : s_schemas) {
                 m.create(s, true, printOnly);
@@ -75,7 +79,7 @@ public class Init implements Command {
         }
 
         if (!printOnly) {
-            System.out.println("The keyspace was succesfully created.");
+            System.out.println("The keyspace was successfully created.");
         }
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,30 +28,31 @@
 
 package org.opennms.features.distributed.cassandra.api;
 
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.Statement;
+
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.RegularStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Statement;
-
 /**
- * A thin facade on top of Cassandra's {@link com.datastax.driver.core.Session session}.
+ * A thin facade on top of Cassandra's {@link com.datastax.oss.driver.api.core.session.Session session}.
  * 
- * The purpose of using this interface rather than Cassandra's {@link com.datastax.driver.core.Session} directly is
+ * The purpose of using this interface rather than Cassandra's {@link com.datastax.oss.driver.api.core.session.Session} directly is
  * because Newts wraps the session in a similar interface and does not expose the session directly. So rather than
  * depending on the newts version of the interface in OpenNMS we have this one and proxy between them in
  * NewtsCassandraSessionFactory. The implication being that any future implementations that may expose a
- * {@link com.datastax.driver.core.Session} directly will have to wrap it with this interface, but that should be
+ * {@link com.datastax.oss.driver.api.core.session.Session} directly will have to wrap it with this interface, but that should be
  * trivial.
  */
 public interface CassandraSession {
     PreparedStatement prepare(String statement);
 
-    PreparedStatement prepare(RegularStatement statement);
+    PreparedStatement prepare(SimpleStatement statement);
 
-    ResultSetFuture executeAsync(Statement statement);
+    CompletionStage<AsyncResultSet> executeAsync(Statement statement);
 
     ResultSet execute(Statement statement);
 
