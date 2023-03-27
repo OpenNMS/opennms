@@ -38,6 +38,12 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-webapp</artifactId>
             <scope>provided</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>poi</groupId>
+                <artifactId>poi</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
