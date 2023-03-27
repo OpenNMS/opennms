@@ -1590,6 +1590,7 @@
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
+    <commonsCollections4Version>4.4</commonsCollections4Version>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
@@ -1598,7 +1599,7 @@
     <commonsIoVersion>2.8.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
-    <commonsMath3Version>3.5</commonsMath3Version>
+    <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.8.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
@@ -3605,6 +3606,11 @@
         <version>${commonsCodecVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>${commonsCollections4Version}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>${commonsCollectionsVersion}</version>
@@ -3708,6 +3714,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commonsLang3Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>${commonsMath3Version}</version>
       </dependency>
       <dependency>
         <groupId>commons-net</groupId>
@@ -3950,46 +3961,6 @@
         <version>1.8.0</version>
         <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>org.extremecomponents</groupId>
-        <artifactId>extremecomponents</artifactId>
-        <version>1.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-      <dependency>
-        <groupId>org.jmesa</groupId>
-        <artifactId>jmesa</artifactId>
-        <version>3.0.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc-portlet</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      -->
       <dependency>
         <groupId>com.caucho</groupId>
         <artifactId>hessian</artifactId>
@@ -4617,11 +4588,6 @@
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>2.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
