@@ -3,7 +3,7 @@
 
 The XmlCollector collects and extracts metrics from XML and JSON documents.
 
-== Configuration and use
+== Collector facts
 
 [options="autowidth"]
 |===
