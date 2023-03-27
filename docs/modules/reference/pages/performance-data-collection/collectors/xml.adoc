@@ -18,7 +18,6 @@ The XmlCollector collects and extracts metrics from XML and JSON documents.
 
 The following handlers are not currently supported on Minion:
 
-* DefaultJsonCollectionHandler
 * Sftp3gppXmlCollectionHandler
 * Sftp3gppVTDXmlCollectionHandler
 
