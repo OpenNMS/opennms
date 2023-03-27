@@ -67,7 +67,7 @@ Understanding <<operation:deep-dive/performance-data-collection/resource-types.a
 
 The collector service in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` should reference the collection defined in `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml` and `$\{OPENNMS_HOME}/etc/xml-datacollection/`.
 
-This snippet provides a collection service example:
+.Service example from `$\{OPENNMS_HOME}/etc/collectd-configuration.xml`
 [source, xml]
 ----
     <service name="OpenNMS_Nodes" interval="300000" user-defined="false" status="on">
@@ -80,6 +80,7 @@ This snippet provides a collection service example:
 
 This snippet provides a collection definition named `xml-opennms-nodes`:
 
+.Collection example from `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml`
 [source, xml]
 ----
 <xml-collection name="xml-opennms-nodes">
