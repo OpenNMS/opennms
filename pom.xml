@@ -4200,6 +4200,7 @@
         <artifactId>jboss-logging</artifactId>
         <version>${jbossLoggingVersion}</version>
       </dependency>
+      <dependency>
         <groupId>com.caucho</groupId>
         <artifactId>hessian</artifactId>
         <version>3.1.5</version>
