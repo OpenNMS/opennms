@@ -189,6 +189,7 @@ public class Executor {
                 try {
                     ScriptdConfigFactory.reload();
                     m_config = ScriptdConfigFactory.getInstance();
+                    registerEventProcessor();
                     loadConfig();
 
                     for (final ReloadScript script : m_config.getReloadScripts()) {
@@ -367,16 +368,24 @@ public class Executor {
         // Start the thread pool
         m_executorService = Executors.newFixedThreadPool(1, new LogPreservingThreadFactory("Scriptd-Executor", 1));
 
-        // Register the event listener after the thread pool has been
-        // started
+        registerEventProcessor();
+
+        LOG.debug("Scriptd executor started");
+    }
+
+    protected void registerEventProcessor() {
+        if (m_broadcastEventProcessor != null) {
+            // if there's an existing processor, close it, just in case
+            m_broadcastEventProcessor.close();
+        }
+
+        // Register the event listener after the thread pool has been started
         try {
             m_broadcastEventProcessor = new BroadcastEventProcessor(this);
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             LOG.error("Failed to setup event reader", e);
             throw new UndeclaredThrowableException(e);
         }
-
-        LOG.debug("Scriptd executor started");
     }
 
     public synchronized void stop() {
