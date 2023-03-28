@@ -227,7 +227,7 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
+		nameParam = request.getParameter("newName");
 		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
@@ -765,7 +765,7 @@ function updateOutageTypeDisplay(selectElement) {
     }
 %>
 
-<h3>Editing Outage: <%=theOutage.getName()%></h3>
+<h3>Editing Outage: <%=WebSecurityUtils.sanitizeString(theOutage.getName())%></h3>
 
 		<label>Nodes and Interfaces:</label>
 			<table class="table table-sm table-borderless">
@@ -807,7 +807,7 @@ function updateOutageTypeDisplay(selectElement) {
 																	out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
 																	OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 																	if (thisNode != null) {
-																		out.println(thisNode.getLabel());
+																		out.println(WebSecurityUtils.sanitizeString(thisNode.getLabel()));
 																	} else {
 																		out.println("Node " + nodeId + " is null");
 																	}
