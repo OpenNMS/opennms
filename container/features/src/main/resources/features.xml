@@ -346,6 +346,7 @@
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
         <feature>commons-jexl</feature>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
@@ -357,6 +358,7 @@
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
         <feature>opennms-util</feature>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
         <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
