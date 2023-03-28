@@ -191,30 +191,30 @@
             <a id="<%= "users("+sanitizedUserId+").doDetails" %>" href="javascript:detailUser('<%=sanitizedUserId%>')"><%=sanitizedUserId%></a>
           </td>
           <td>
-           <div id="<%= "users("+sanitizedUserId+").fullName" %>">
+           <div id="<%= "users("+sanitizedUserId+").fullName" %>" ng-non-bindable>
 		    <%= (curUser.getFullName().orElse("")) %>
 	      </div>
           </td>
           <td>
-            <div id="<%= "users("+sanitizedUserId+").email" %>">
+            <div id="<%= "users("+sanitizedUserId+").email" %>" ng-non-bindable>
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
             </div>
           </td>
           <td>
-           <div id="<%= "users("+sanitizedUserId+").pagerEmail" %>">
+           <div id="<%= "users("+sanitizedUserId+").pagerEmail" %>" ng-non-bindable>
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
             </div>
           </td>
           <td>
-           <div id="<%= "users("+sanitizedUserId+").xmppAddress" %>">
+           <div id="<%= "users("+sanitizedUserId+").xmppAddress" %>" ng-non-bindable>
             <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
            </div>
           </td>
           </tr>
           <tr>
             <td colspan="5">
-             <div id="<%= "users("+sanitizedUserId+").userComments" %>">
-             <%= (curUser.getUserComments().orElse("No Comments")) %>
+             <div id="<%= "users("+sanitizedUserId+").userComments" %>" ng-non-bindable>
+             <%= WebSecurityUtils.sanitizeString(curUser.getUserComments().orElse("No Comments")) %>
 	        </div>
             </td>
           </tr>
