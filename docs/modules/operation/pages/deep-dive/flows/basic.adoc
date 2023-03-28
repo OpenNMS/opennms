@@ -93,11 +93,11 @@ Normally, if you are monitoring multiple flow protocols, you must set up a liste
 By default, {page-component-title} allows a multi-port listener option; this monitors multiple protocols on a single UDP port (`9999`).
 You can edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number and add or remove protocols.
 
-IMPORTANT: Make sure your firewall Allow list includes the ports that you have configured to receive flow data.
+IMPORTANT: Make sure your firewall allow list includes the ports that you have configured to receive flow data.
 
 == Enable flows on your devices
 
-Refer to your device's manufacturer documentation to learn more about configuring them to send flows.
+Refer to your device's manufacturer documentation to learn more about configuring it to send flows.
 
 NOTE: You may need to set up the flow receiver (in this case, {page-component-title}) and allow sending flows per interface on your firewall.
 

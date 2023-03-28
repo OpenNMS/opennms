@@ -150,6 +150,7 @@ Observability:: The ability to measure the internal state of a system by examini
 If the system's state can be estimated using only its output, it is considered "observable".
 
 https://docs.opennms.com/helm/latest[OpenNMS plugin for Grafana]:: A Grafana plugin for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
+Previously known as Helm.
 
 xref:operation:deep-dive/visualizations/opsboard/introduction.adoc[Operator board]:: Customizable dashboard to visualize monitoring information.
 
