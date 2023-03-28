@@ -95,7 +95,7 @@
         <span>Capability Rescan</span>
       </div>
       <div class="card-body">
-        <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
+        <p>Are you sure you want to rescan the <nobr><%=WebSecurityUtils.sanitizeString(nodeLabel)%></nobr>
           <% if( ipAddr==null ) { %>
             node?
           <% } else { %>
