@@ -28,8 +28,11 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -38,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -112,4 +116,22 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         }
     }
 
+    private String getSessionId() {
+        final Set<Cookie> cookies = driver.manage().getCookies();
+        for (final Cookie cookie : cookies) {
+            if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                return cookie.getValue().replaceAll(";.*$","");
+            }
+        }
+        return null;
+    }
+
+    @Test
+    public void testSessionFixation_NMS15310() {
+        logout();
+        final String preLoginSessionId = getSessionId();
+        login();
+        final String postLoginSessionId = getSessionId();
+        assertNotEquals(preLoginSessionId, postLoginSessionId);
+    }
 }
