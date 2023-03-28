@@ -81,7 +81,7 @@
           <th>
             Full Name:
           </th>
-          <td width="75%">
+          <td width="75%" ng-non-bindable>
             <%=user.getFullName().orElse("")%>
           </td>
         </tr>
@@ -89,7 +89,7 @@
           <th>
             Security Roles:
           </th>
-          <td width="75%">
+          <td width="75%" ng-non-bindable>
             <%=org.apache.commons.lang.StringUtils.join(user.getRoles().toArray(new String[user.getRoles().size()]), "<br/>")%>
           </td>
         </tr>
@@ -97,8 +97,8 @@
           <th>
             Comments:
           </th>
-          <td width="75%">
-            <%=user.getUserComments().orElse("")%>
+          <td width="75%" ng-non-bindable>
+            <%=WebSecurityUtils.sanitizeString(user.getUserComments().orElse(""))%>
           </td>
         </tr>
       </table>
@@ -117,7 +117,7 @@
                      <th>
                        Email:
                      </th>
-                      <td width="75%">
+                      <td width="75%" ng-non-bindable>
                         <%=userFactory.getEmail(userID)%>
                       </td>
                     </tr>
@@ -126,7 +126,7 @@
                       <th>
                         Pager Email:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getPagerEmail(userID)%>
                       </td>
                     </tr>
@@ -135,7 +135,7 @@
                       <th>
                         XMPP Address:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getXMPPAddress(userID)%>
                       </td>
                     </tr>
@@ -144,7 +144,7 @@
                       <th>
                         Numerical Service:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getNumericPage(userID)%>
                       </td>
                     </tr>
@@ -153,7 +153,7 @@
                       <th>
                         Numerical Pin:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getNumericPin(userID)%>
                       </td>
                     </tr>
@@ -162,7 +162,7 @@
                       <th>
                         Text Service:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getTextPage(userID)%>
                       </td>
                     </tr>
@@ -171,7 +171,7 @@
                       <th>
                         Text Pin:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getTextPin(userID)%>
                       </td>
                     </tr>
@@ -180,7 +180,7 @@
                       <th>
                         Work Phone:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getWorkPhone(userID)%>
                       </td>
                     </tr>
@@ -189,7 +189,7 @@
                       <th>
                         Mobile Phone:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getMobilePhone(userID)%>
                       </td>
                     </tr>
@@ -198,7 +198,7 @@
                       <th>
                         Home Phone:
                       </th>
-                      <td>
+                      <td ng-non-bindable>
                         <%=userFactory.getHomePhone(userID)%>
                       </td>
                     </tr>
