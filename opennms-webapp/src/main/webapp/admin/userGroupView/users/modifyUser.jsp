@@ -330,7 +330,7 @@
             }
             fullName = user.getFullName().orElse(null);
             comments = user.getUserComments().orElse(null);
-            tuiPin = user.getTuiPin().orElse(null);
+            tuiPin = user.getTuiPin().orElse("");
             timeZoneId = user.getTimeZoneId().orElse(null);
 
             configuredRoles = user.getRoles();
@@ -345,14 +345,14 @@
 	<div class="form-row form-group">
           <label for="fullName" class="col-sm-2 col-form-label">Full Name</label>
           <div class="col-sm-10">
-            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" />
+            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="userComments" class="col-sm-2 col-form-label">Comments</label>
           <div class="col-sm-10">
-            <textarea class="form-control" rows="5" id="userComments" name="userComments"><%= (comments == null? "" : comments) %></textarea>
+            <textarea class="form-control" rows="5" id="userComments" name="userComments" ng-non-bindable><%= (comments == null? "" : comments) %></textarea>
           </div>
         </div>
 
@@ -378,84 +378,84 @@
 	<div class="form-row form-group">
           <label for="email" class="col-sm-2 col-form-label">Email</label>
           <div class="col-sm-10">
-            <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>'/>
+            <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="pemail" class="col-sm-2 col-form-label">Pager Email</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
+            <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address</label>
           <div class="col-sm-10">
-            <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
+            <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="microblog" class="col-sm-2 col-form-label">Microblog Username</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
+            <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="numericalService" class="col-sm-2 col-form-label">Numeric Service</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
+            <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="numericalPin" class="col-sm-2 col-form-label">Numeric PIN</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
+            <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="textService" class="col-sm-2 col-form-label">Text Service</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
+            <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="textPin" class="col-sm-2 col-form-label">Text PIN</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
+            <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="workPhone" class="col-sm-2 col-form-label">Work Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
+            <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="mobilePhone" class="col-sm-2 col-form-label">Mobile Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
+            <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>' ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="homePhone" class="col-sm-2 col-form-label">Home Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
+            <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>' ng-non-bindable/>
           </div>
         </div>
 
     <div class="form-row form-group">
           <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
           <div class="col-sm-10">
-              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
+              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= WebSecurityUtils.sanitizeString(tuiPin) %>" ng-non-bindable/>
           </div>
     </div>
 
