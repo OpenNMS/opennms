@@ -85,13 +85,8 @@ foreign source definition:: A custom set of service detectors and provisioning p
 geolocation:: The actual physical location of a node monitored by {page-component-title}, represented by its latitude and longitude.
 Nodes can be manually assigned a location, or the location can be automatically determined using the xref:reference:provisioning/adapters/geoip.adoc[GeoIP Provisioning Adapter].
 
-https://grafana.com/[Grafana]:: An open-source analysis and visualization web application that connects to data sources and generates dashboards with charts, graphs, and alerts.
-
-== H
-
-https://docs.opennms.com/helm/latest[HELM]:: An Grafana plugin that lets you create flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
-HELM works with Grafana to customize the data that you can view. +
-Not to be confused with the https://helm.sh/[Kubernetes Helm] package manager.
+https://grafana.com/[Grafana]:: An open-source analysis and visualization web application.
+It connects to data sources and generates dashboards with charts, graphs, and alerts.
 
 https://www.opennms.com/horizon/[Horizon]:: An open-source solution from The OpenNMS Group that lets you visualize and monitor everything on your local and remote networks.
 The free, community-driven project includes the latest technology and features and is delivered through a rapid release cycle.
@@ -173,6 +168,11 @@ notifications:: Messages delivered to a set of recipients.
 {page-component-title} notifications inform you about events in their monitored networks without forcing you to sign in and look at the UI (see xref:operation:deep-dive/notifications/introduction.adoc[]).
 
 == O
+
+https://docs.opennms.com/helm/latest[OpenNMS plugin for Grafana]:: A Grafana plugin for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
+Previously known as Helm.
+
+xref:operation:deep-dive/visualizations/opsboard/introduction.adoc[Operator board]:: Customizable dashboard to visualize monitoring information.
 
 observability:: The ability to measure the internal state of a system by examining its output.
 If the system's state can be estimated using only its output, it is considered "observable."
