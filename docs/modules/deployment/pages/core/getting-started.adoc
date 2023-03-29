@@ -32,7 +32,7 @@ endif::[]
 * A system user with administrative permissions (`sudo`) to perform installation.
 * If in use: A SELinux policy that permits binding to the ICMP service.
 +
-Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting OpenNMS (see xref:reference:configuration/selinux.adoc[SElinux and ICMP permissions]).
+Note that failure to include the appropriate SELinux policy may generate an ICMP permission error when starting {page-component-title} (see xref:reference:configuration/selinux.adoc[]).
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
