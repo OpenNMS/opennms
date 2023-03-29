@@ -215,12 +215,5 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>spring-31-dependencies</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

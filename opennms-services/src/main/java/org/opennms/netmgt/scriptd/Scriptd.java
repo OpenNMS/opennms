@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,10 @@ import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -50,6 +54,7 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  */
+@EventListener(name = Scriptd.NAME)
 public final class Scriptd extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Scriptd.class);
@@ -139,5 +144,12 @@ public final class Scriptd extends AbstractServiceDaemon {
      */
     public static Scriptd getInstance() {
         return m_singleton;
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(final IEvent event) {
+        if (Executor.isReloadConfigEvent(event)) {
+            m_executor.doReload();
+        }
     }
 }
