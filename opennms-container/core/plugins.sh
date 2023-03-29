@@ -22,6 +22,10 @@ done
 dpkg-deb -R *-alec-plugin_*_all.deb ./
 find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
 
+cd ~/ || exit
+rm -rf test
+mkdir ~/test
+cd ~/test || exit
 
 urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
 for url in $urls; do
