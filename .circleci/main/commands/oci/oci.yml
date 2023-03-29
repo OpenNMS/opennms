@@ -89,7 +89,9 @@ commands:
     steps:
       - run:
           name: install Syft
-          command: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "${HOME}/bin"
+          command: |
+            set -o pipefail
+            curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "${HOME}/bin"
       - run:
           name: generate SBOM
           command: |
