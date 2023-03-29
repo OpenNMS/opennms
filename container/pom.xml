@@ -18,7 +18,6 @@
     <module>jaas-login-module</module>
     <module>extender</module>
     <module>spring-extender</module>
-    <module>spring-31-dependencies</module>
     <module>shared</module>
   </modules>
 </project>
