@@ -44,7 +44,7 @@ then
 else
  curls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
 fi
-if [ -v "$curls" ]; then
+if [ -z "$curls" ]; then
  for url in $curls; do
     wget "$url"
  done
@@ -57,7 +57,7 @@ then
 else
  vurls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
 fi
-if [ -v vurls ]; then
+if [ -z "$vurls"  ]; then
  for url in $vurls; do
     wget "$url"
  done
