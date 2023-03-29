@@ -1,0 +1,17 @@
+
+= Map
+
+The Map dashlet displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+
+[caption=]
+.Map dashlet configuration options
+[options="autowidth"]
+|===
+| Field | Description
+
+| Boost support
+| _Not available_
+
+| Search
+| Predefined https://opennms.discourse.group/t/geographical-maps/2212#searching-3[search] for a subset of nodes shown in the geographical map in this dashlet.
+|===

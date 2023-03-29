@@ -1,21 +1,23 @@
 
-[[gs-situation-feedback]]
-
 = Situation Feedback
 
 Situation feedback is an optional feature for the management of user-contributed feedback regarding correlation of alarms.
 
 It is a simple API for the submission and retrieval of correlation feedback.
 
-== GETs (Reading Data)
+== GET (reading data)
 
-[options="header, autowidth", cols="1,10"]
+[caption=]
+.Situation Feedback API GET function
+[options="autowidth"]
 |===
-| Parameter                             | Description
-| `/situation-feedback/\{situationid}`  | Get situation feedback for the situation with AlarmId = \{situationid}.
+| Parameter | Description
+
+| /situation-feedback/\{situationid}
+| Get situation feedback for the situation with `AlarmId` = `\{situationid}`.
 |===
 
-NOTE: situationId is the same as the AlarmId for the situation.
+NOTE: `situationId` is the same as the `AlarmId` for the situation.
 
 == Use examples with cURL
 
@@ -51,17 +53,20 @@ curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
 
 ----
 
+== POST (adding data)
 
-== POSTs (Adding Data)
-
-POST requires using application/json as a Content-Type.
+POST requires using `application/json` as a `Content-Type`.
 
 On a successful request, the feedback will be persisted.
 
-[options="header, autowidth", cols="5,10"]
+[caption=]
+.Situation Feedback API POST function
+[options="autowidth"]
 |===
-| Resource                              | Description
-| `/situation-feedback/\{situationid}`  | Submits feedback for the situation identified with AlarmId = \{situationid}.
+| Resource  | Description
+
+| /situation-feedback/\{situationid}
+| Submits feedback for the situation identified with `AlarmId` = `\{situationid}`.
 |===
 
 == Use examples with cURL

@@ -1,0 +1,23 @@
+
+= Image
+
+The Image dashlet displays a custom image in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+
+[caption=]
+.Image dashlet configuration options
+[options="autowidth"]
+|===
+| Field | Description
+
+| Boost support
+| _Not available_
+
+| imageUrl
+| URL with the location of the image to show in this dashlet.
+
+| maximizeHeight
+| Rescale the image to fill display width.
+
+| maximizeWidth
+| Rescale the image to fill display height.
+|===

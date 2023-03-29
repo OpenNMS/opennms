@@ -104,6 +104,8 @@ The following example shows a configuration in `poller-configuration.xml`.
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section in your definition.
+
 [source, xml]
 ----
 <service name="Memcached" interval="300000" user-defined="false" status="on">

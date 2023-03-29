@@ -59,7 +59,6 @@ These minimum configuration parameters are available in all monitors and describ
 | false
 |===
 
-
 NOTE: * If RRD properties are provided, the pollerd service will persist response times for the monitored service.
 
 TIP: If the monitor uses SNMP, the default configuration for timeout and retry are taken from the SNMP configuration (`snmp-config.xml`).
@@ -112,3 +111,17 @@ The supported properties are:
 * all node asset record fields (for example: username, password)
 
 Parameters that support placeholder substitution have a kbd:[{}] icon beside them in the *Configuration and use* section of the monitor documentation.
+
+== Example service definition
+
+The following shows the basic format of a sample service definition.
+Note that all service definitions must include the `monitor` section.
+
+[source, xml]
+----
+<service name="SomeServiceName" interval="300000" user-defined="false" status="on"> <parameter key="key1" value="1" /> <parameter key="key2" value="2" /> <parameter key="key3" value="3" /> </service>
+
+<monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
+----
+<1> Required *monitor* section.
+

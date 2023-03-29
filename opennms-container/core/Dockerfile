@@ -22,11 +22,16 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as core-base
+##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as core-plugins
 
-# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
-# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
-COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+
+FROM ${BASE_IMAGE} as core-base
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
@@ -84,6 +89,12 @@ RUN groupadd \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
+
+# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
+
+COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
@@ -148,7 +159,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${BASE_IMAGE}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"

@@ -139,9 +139,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
-  <!-- Allow anonymous access to the webstart portion of the app -->
-  <http pattern="/webstart/**" security="none"/>
-
   <http pattern="/admin/userGroupView/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
     <csrf />
@@ -199,6 +196,22 @@
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
           <beans:constructor-arg name="pattern" value="/notification/browse"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <!-- see NMS-14865 -->
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/addNewInterface"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/deleteSelNodes"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/manageNodes"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
       </util:list>

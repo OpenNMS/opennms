@@ -1,0 +1,135 @@
+
+= Secure Jetty with HTTPS
+
+If you access the {page-component-title} web UI via untrusted networks, it is best practice to use HTTPS to protect incoming web sessions.
+This section explains how to configure {page-component-title}'s built-in Jetty web server to support HTTPS.
+
+TIP: It is typically easier to leave the Jetty config as default and use NGINX or Apache as a reverse proxy.
+See https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[How to use NGINX as an SSL proxy with OpenNMS Horizon] on Discourse for an example of using a reverse proxy.
+
+== Customize jetty.xml
+
+By default, no Jetty configuration file is included in {page-component-title}.
+There is, however, a sample `jetty.xml` file in `$\{OPENNMS_HOME}/etc/examples` that you can use as a template.
+Copy the file to `$\{OPENNMS_HOME}/etc`, open it in a text editor, and remove the comment tags from the "Add HTTPS Support" section.
+
+== Create a new Java keystore
+
+Open the keytool utility that ships in `$\{JAVA_HOME}/bin/keytool` with most Java distributions, and create a new keystore.
+Populate it with a new key and, for the first question ("What is your first and last name?"), enter the fully-qualified domain name by which users will access the {page-component-title} web UI.
+
+IMPORTANT: Type this name correctly; you will have to start this process over if it ever needs to be changed.
+
+Answer the remaining questions according to the specifics of your organization and location.
+
+NOTE: Make sure that you specify an appropriate number of days for the `validity` parameter.
+After the defined number of days elapses, the key will expire and you may no longer be able to use it to create new certificates.
+The example below specifies 731 days, which makes the key valid for two years (accounting for a possible leap year).
+
+It is important that you choose secure passwords for the keystore, and for the key itself.
+These passwords may be the same as or different from each other.
+Using different passwords protects your server's private key in the event that the keystore file falls into the wrong hands.
+You should take precautions to keep this from happening, including setting filesystem user and group permissions so that unauthorized individuals with accounts on the {page-component-title} server will not have read or write access to the keystore.
+
+By default, the keytool creates DSA keys, but Jetty requires an RSA key.
+Make sure that you pass the `-keyalg RSA` option to the keytool to generate an RSA key:
+
+[source, console]
+----
+keytool -alias opennms-jetty -genkeypair -keyalg RSA -keysize 2048 -validity 731 -keystore /tmp/propercert/proper.keystore
+Enter keystore password:  aGoodStrongKeystorePassword
+What is your first and last name?
+  [Unknown]:  opennms.example.org
+What is the name of your organizational unit?
+  [Unknown]:  Network Management Division
+What is the name of your organization?
+  [Unknown]:  The Example Organization
+What is the name of your City or Locality?
+  [Unknown]:  Marina del Rey
+What is the name of your State or Province?
+  [Unknown]:  California
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=opennms.example.org, OU=Network Management Division, O=The Example Organization, L=Marina del Rey, ST=California, C=US correct?
+  [no]:  yes
+----
+
+Create or edit `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties` to set the Jetty certificate information.
+Adjust the values based on the values set when using the `keytool` command to create the keystore and certificate.
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-port = 8443
+org.opennms.netmgt.jetty.https-keystore = /opt/opennms/etc/opennms.keystore
+org.opennms.netmgt.jetty.https-keystorepassword = keystore-password
+org.opennms.netmgt.jetty.https-keypassword = key-password
+org.opennms.netmgt.jetty.https-cert-alias = opennms-jetty
+----
+
+== Restrict access to the plain-HTTP listener
+
+The process of configuring {page-component-title} to start a Jetty HTTPS listener on port 8443 does not include disabling the plain-HTTP listener that is present by default on port 8980.
+This listener must be present so the {page-component-title} real-time console can update availability statistics shown in the web UI.
+
+After you have enabled HTTPS, you likely do not want users using HTTP; to control this, you must restrict access to the plain-HTTP listener.
+There are two methods to accomplish this:
+
+* Set the plain-HTTP listener to bind only to an interface that is not accessible from untrusted networks.
+In an environment where the {page-component-title} web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
+You can set the listener to bind only to the `localhost` interface by setting the `jetty.host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
++
+[source, properties]
+org.opennms.netmgt.jetty.host = 127.0.0.1
+
+* Use firewall rules to limit access.
+The rules may be local to the {page-component-title} web UI server (`iptables`, firewalld, or `ufw`), or they may be configured in a discrete external firewall that stands between the web UI and the rest of the network.
+Configuring these rules is beyond the scope of this section.
+
+== Restrict access to the HTTPS listener
+
+Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the {page-component-title} Jetty HTTPS listener can be reached.
+By default, the listener is bound to all interfaces (`0.0.0.0`).
+To bind it to a single interface, set the `jetty.https-host` property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`:
+
+[source, properties]
+org.opennms.netmgt.jetty.https-host = 10.11.12.13
+
+== Debugging/properties
+
+If you encounter issues while using SSL, it might be useful to enable debug logging.
+You could also use one of the built-in Java system properties to configure SSL:
+
+[cols="1,3"]
+|===
+| Property Name  | Description
+
+| javax.net.ssl.keyStore
+| Location of the keystore file that contains the application process's certificate and private key.
+
+| javax.net.ssl.keyStorePassword
+| Password to access the private key from the keystore file specified by `javax.net.ssl.keyStore`.
+This password is used twice: once to unlock the keystore file (store password), and once to decrypt the private key stored in the keystore (key password).
+The JSSE framework requires these passwords to be identical.
+
+| javax.net.ssl.keyStoreType
+| (Optional) Keystore type.
+Defaults to `jks`.
+
+| javax.net.ssl.trustStore
+| Location of the truststore file that contains the CA certificates that the application process trusts.
+If this property does not specify a truststore location, the Java implementation searches for and uses a keystore file from the following locations, in order: +
+* `$\{JAVA_HOME}/lib/security/jssecacerts`
+* `$\{JAVA_HOME}/lib/security/cacerts`
+
+| javax.net.ssl.trustStorePassword
+| Password to unlock the truststore file.
+
+| javax.net.ssl.trustStoreType
+| (Optional) Truststore type.
+Defaults to `jks`.
+
+| javax.net.debug
+| (Optional) Controls logging for the SSL/TLS layer.
+To enable, set this property to `ssl`. +
+For more details about possible values, see https://docs.oracle.com/en/java/javase/11/security/java-secure-socket-extension-jsse-reference-guide.html#GUID-31B7E142-B874-46E9-8DD0-4E18EC0EB2CF[debugging utilities] in the official Oracle documentation.
+|===

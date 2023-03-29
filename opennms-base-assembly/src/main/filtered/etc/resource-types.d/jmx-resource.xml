@@ -80,17 +80,26 @@
       </storageStrategy>
    </resourceType>
 
-   <resourceType name="ALECgraph" label="ALEC Graph Stats" resourceLabel="${name}">
+   <resourceType name="ALECgraph" label="ALEC Graph Stats" resourceLabel="\${name}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
          <parameter key="sibling-column-name" value="name" />
       </storageStrategy>
    </resourceType>
 
-   <resourceType name="Eventlogs" label="Eventd Processing Stats" resourceLabel="${name}">
+   <resourceType name="Eventlogs" label="Eventd Processing Stats" resourceLabel="\${name}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
          <parameter key="sibling-column-name" value="name" />
+      </storageStrategy>
+   </resourceType>
+
+   <!-- provisiond requisition metrics -->
+   <resourceType name="requisitionMetrics" label="Requisition Metrics" resourceLabel="Requisition ${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="name" />
+         <parameter key="replace-all" value="s/\&quot;//"/>
       </storageStrategy>
    </resourceType>
 

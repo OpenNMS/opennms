@@ -27,7 +27,7 @@ if [ -n "${CIRCLE_BRANCH}" ]; then
     "release-"*)
       # Create a tag for the snapshot version, as well as floating "release-candidate".
       # Don't create a release-*.x tag; it's redundant.
-      DOCKER_TAGS=("${OPENNMS_POM_VERSION}" "release-candidate")
+      DOCKER_TAGS=("${OPENNMS_POM_VERSION}" "release-candidate-${OPENNMS_MAJOR_VERSION}" "release-candidate")
       ;;
     "develop")
       # Create a tag for the snapshot version, as well as floating "bleeding".

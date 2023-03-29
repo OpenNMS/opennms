@@ -72,6 +72,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <!-- Make sure there's at least 5% of free space available on storages ending with "/home" -->

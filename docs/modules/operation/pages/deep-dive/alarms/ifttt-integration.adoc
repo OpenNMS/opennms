@@ -3,77 +3,96 @@
 
 The IFTTT service lets you combine web applications using simple conditional instructions.
 Each supported service has several triggers that you can use to trigger the actions of other services.
-This lets you, for example, change brightness and color of a smart bulb, and send messages or date to IoT devices.
+This lets you, for example, change the brightness and color of a smart bulb, and send messages or date information to IoT devices.
 
-The {page-component-title} integration uses the Webhooks service, that lets you trigger actions when a specific web request is received.
-The basic operation is as follows: {page-component-title} polls for alarms and matches the alarm reduction key against a given filter and the alarm's associated nodes against a given category filter.
-For the resulting alarm, set the maximum severity and the total count is computed.
-If one of these values has changed compared to the last poll, one or more events specified for the computed maximum severity will be sent to IFTTT.
+The {page-component-title} integration uses the Webhooks service, and lets you trigger actions when it receives a specific web request.
+It operates as follows: {page-component-title} polls for alarms and matches the alarm reduction key against a given filter, and the alarm's associated nodes against a given category filter.
+For the resulting alarm, the maximum severity is set and the total count is computed.
+If one of these values has changed since the last poll, one or more events specified for the computed maximum severity will be sent to IFTTT.
 
 == IFTTT configuration
 
-To use the IFTTT integration in {page-component-title} you need an IFTTT account.
-With this account you can create applets that combine a trigger with an action.
-In our case, we use the Webhooks service as the trigger and define the event name `OpenNMS`.
-After this step you can combine this trigger with any of the possible supported services and their actions.
+To use the IFTTT integration in {page-component-title}, you must have an IFTTT account.
+The account lets you create applets that combine a trigger with an action.
+For example, you can use the Webhooks service as the trigger, and define the event name "OpenNMS".
+You can combine this trigger with any supported service and its actions.
 
-[[ga-ifttt-trigger-definition]]
 .Webhooks service trigger definition
-image::alarms/trigger-definition-small.png[]
+image::alarms/trigger-definition-small.png["IFTT page displaying an example Webhooks trigger definition", 800]
 
-In your account service settings for the Webhooks service you find your key in the given service URL.
-In the following example this key is `X71dfUZsH4Wkl6cjsLjdV`.
+To find your key, navigate to the settings for the Webhooks service and copy the service URL.
+In this example, the key is `X71dfUZsH4Wkl6cjsLjdV`:
 
-[[ga-ifttt-webhooks-settings]]
 .Webhooks service settings
-image::alarms/webhooks-settings-small.png[]
+image::alarms/webhooks-settings-small.png["IFTT page displaying Webhooks service settings", 800]
 
-On the side of {page-component-title}, you need a configuration that defines which event names to send on an alarm count or severity change.
-The configuration file `ifttt-config.xml` contains trigger packages.
+In {page-component-title}, you must have a configuration that defines which event names are sent on an alarm count or a severity change.
+`ifttt-config.xml` contains trigger packages.
+By default, trigger packages are evaluated as follows:
 
-The operation is as follows:
-. {page-component-title} retrieves all alarms that have a node associated.
+. {page-component-title} retrieves all alarms with associated nodes.
 . Each trigger package defines whether to take into account only acknowledged alarms.
-. Compute the maximum severity and alarm count for each trigger package's category filter and reduction key filter.
-. Trigger all events defined in the corresponding trigger sets for the computed maximum severity.
+. It computes maximum severity and alarm count for each trigger package's category filter and reduction key filter.
+. It triggers all events defined in the corresponding trigger sets for the computed maximum severity.
 
-The category and reduction key filter accepts Java regular expressions.
+The category and reduction key filters accept Java regular expressions.
 Using an empty category filter will use all unacknowledged alarms regardless of whether these alarms have nodes assigned.
 
-Each trigger inside a trigger set defines the event name to be triggered and three additional values.
-Use these values to set additional attributes for the corresponding IFTTT applet action.
+Each trigger in a set defines the event name to trigger and three additional values.
+You can use these values to set additional attributes for the corresponding IFTTT applet action.
+
 You can define the following trigger sets:
 
-[options="header"]
-[cols="1,3"]
+[options="autowidth"]
 |===
-| Name     | Execution
-| ON       | on start of the IFTTT alarm polling daemon to switch on a device
-| OFF      | on stop of the IFTTT alarm polling daemon to switch off a device
-| NORMAL   | if severity is NORMAL
-| WARNING  | if severity is WARNING
-| MINOR    | if severity is MINOR
-| MAJOR    | if severity is MAJOR
-| CRITICAL | if severity is CRITICAL
+| Name     | Behavior
+
+| ON
+| Turn a device on when the IFTTT alarm polling daemon starts.
+
+| OFF
+| Turn a device off when the IFTTT alarm polling daemon stops.
+
+| NORMAL
+| If severity is NORMAL.
+
+| WARNING
+| If severity is WARNING.
+
+| MINOR
+| If severity is MINOR.
+
+| MAJOR
+| If severity is MAJOR.
+
+| CRITICAL
+| If severity is CRITICAL.
 |===
 
-You can use the ON and OFF events when initializing devices or powering them up/down.
+You can use the `ON` and `OFF` events when initializing devices or powering them up or down.
 
-== OpenNMS configuration
+== {page-component-title} configuration
 
-IFTTT alarm polling will be enabled by setting the attribute `enabled` to `true` in the `ifttt-config.xml` file.
-It is also possible to configure the polling interval.
-The following trigger package defines the trigger sets which themselves define a sequence of events to be triggered at IFTTT.
-Each trigger defines the eventName and an additional delay.
-This lets you defer the execution of the next trigger in a trigger set.
+Enable IFTTT alarm polling by setting `enabled` to `true` in `ifttt-config.xml`.
+You can also configure the polling interval.
+
+The trigger package in `ifttt-config.xml` defines the trigger sets, which themselves define sequences of events to be triggered at IFTTT.
+Each trigger defines the `eventName` and an additional delay.
+This lets you defer the next trigger in a set.
 
 == Example
 
-The following example shows the configuration file for a WiFi light bulb controlled via IFTTT.
-The defined applets use `value1` for setting the color and `value2` for setting the brightness.
-The third value demonstrates the use of placeholders.
+The following example shows the configuration file for a Wi-Fi light bulb that is controlled via IFTTT.
+The defined applets use `value1` to set the color temperature and `value2` to set the brightness.
+The third value demonstrates how placeholders are used.
+
 For the severity-based trigger sets, you can use the following placeholders in the three value fields:
-`%os%`/`%oldSeverity` for old severity, `%ns%`/`%newSeverity%` for new severity, `%oc%`/`%oldCount` for old alarm count and `%nc%`/`%newCount% for new alarm count.
+
+* `%os%`/`%oldSeverity`: Old severity
+* `%ns%`/`%newSeverity%`: New severity
+* `%oc%`/`%oldCount`: Old alarm count
+* `%nc%`/`%newCount%`: New alarm count
+
 This is useful for sending messages or operating LED displays via IFTTT.
 
 [source, xml]

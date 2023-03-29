@@ -77,7 +77,7 @@ public class RingBufferTimeseriesWriterTest {
      * are used to concurrently insert samples into the SampleRepository.
      */
     @Test
-    public void canWriteToSampleRepositoryUsingMultipleThreads() {
+    public void canWriteToSampleRepositoryUsingMultipleThreads() throws Exception {
         int ringBufferSize = 1024;
         int numWriterThreads = 8;
 

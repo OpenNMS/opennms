@@ -374,14 +374,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Not part of the standard build?
-     */
-    public void testRancidConfiguration() {
-        ignoreConfigFile("rancid-configuration.xml");
-    }
-
-    @Test
     public void testReportdConfiguration() {
         testConfigFile("reportd-configuration.xml");
     }
@@ -409,11 +401,6 @@ public class ConfigTesterTest {
     @Test
     public void testRtcConfiguration() {
         testConfigFile("rtc-configuration.xml");
-    }
-
-    @Test
-    public void testRwsConfiguration() {
-        testConfigFile("rws-configuration.xml");
     }
 
     @Test

@@ -1,0 +1,38 @@
+
+= RRD
+
+The RRD dashlet shows one or more RRD graphs in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+If you choose to display more than one graph, you can arrange and order them in multiple columns and rows.
+
+All displayed graphs are normalized with a predefined width and height.
+
+[caption=]
+.RRD dashlet configuration options
+[options="autowidth"]
+|===
+| Field | Description
+
+| Boost support
+| _Not available_
+
+| Columns
+| Number of columns in the dashlet.
+
+| Rows
+| Number of rows in the dashlet.
+
+| KSC report
+| Import RRD graphs from an existing KSC report and rearrange them.
+
+| Graph width
+| Generic width for all RRD graphs in this dashlet.
+
+| Graph height
+| Generic height for all RRD graphs in this dashlet.
+
+| Timeframe value
+| Number of the given `Timeframe type`.
+
+| Timeframe type
+| Minute, hour, day, week, month, and year for all RRD graphs.
+|===

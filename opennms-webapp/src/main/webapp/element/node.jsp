@@ -164,7 +164,7 @@
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
-    nodeModel.put("label", WebSecurityUtils.sanitizeString(node_db.getLabel()));
+    nodeModel.put("label", node_db.getLabel());
     nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
     nodeModel.put("location", node_db.getLocation().getLocationName());
@@ -215,7 +215,6 @@
     }
     
     nodeModel.put("status", getStatusStringWithDefault(node_db));
-    nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
     nodeModel.put("sysName", WebSecurityUtils.sanitizeString(node_db.getSysName()));
@@ -311,10 +310,10 @@ function confirmAssetEdit() {
 
 <h5>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs badge badge-secondary " title="Requisition: ${fn:escapeXml(model.foreignSource)}"><i class="fa fa-list-alt"></i>&nbsp;${fn:escapeXml(model.foreignSource)}</span>&nbsp;<span class="NPfid badge badge-secondary " title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span> <c:if test="${model.node.hasFlows}"><span class="NPflows badge badge-secondary " title="Flows: flow data available"><i class="fa fa-exchange"></i> flow data</span></c:if></div>
+    <div class="NPnode">Node: <strong>${fn:escapeXml(model.label)}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs badge badge-secondary " title="Requisition: ${fn:escapeXml(model.foreignSource)}"><i class="fa fa-list-alt"></i>&nbsp;${fn:escapeXml(model.foreignSource)}</span>&nbsp;<span class="NPfid badge badge-secondary " title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span> <c:if test="${model.node.hasFlows}"><span class="NPflows badge badge-secondary " title="Flows: flow data available"><i class="fa fa-exchange"></i> flow data</span></c:if></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span> <c:if test="${model.node.hasFlows}"><span class="NPflows badge badge-secondary " title="Flows: flow data available"><i class="fa fa-exchange"></i> flow data</span></c:if></div>
+    <div class="NPnode">Node: <strong>${fn:escapeXml(model.label)}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid badge badge-secondary " title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc badge badge-secondary " title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span> <c:if test="${model.node.hasFlows}"><span class="NPflows badge badge-secondary " title="Flows: flow data available"><i class="fa fa-exchange"></i> flow data</span></c:if></div>
   </c:if>
 </h5>
 
@@ -642,14 +641,6 @@ function confirmAssetEdit() {
     </div>
   <div class="card-body">
     <ul class="list-unstyled mb-0">
-      <c:if test="${model.showRancid}">
-        <c:url var="rancidLink" value="inventory/rancid.htm">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li class="list-inline-item">
-          <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
-        </li>
-      </c:if>
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>

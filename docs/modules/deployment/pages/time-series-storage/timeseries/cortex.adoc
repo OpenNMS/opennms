@@ -28,19 +28,23 @@ If your aim is to get up to speed quickly in a test environment, you can use Doc
 
 . Download the plugin's `.kar` file from GitHub (https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases).
 . Copy the file into `$\{OPENNMS_HOME}/deploy`.
-. Enable and configure time series database plugins in {page-component-title}:
+. Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 +
 [source, properties]
 ----
-org.opennms.timeseries.strategy=integration
-org.opennms.timeseries.tin.metatags.tag.node=${node:label}
+org.opennms.timeseries.strategy=integration <1> <2>
+org.opennms.timeseries.tin.metatags.tag.node=${node:label} <3>
 org.opennms.timeseries.tin.metatags.tag.location=${node:location}
 org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
 org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
 org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
+<1> Make sure that the `org.opennms.timeseries.strategy` property is set only once so you don't have conflicting values in multiple `properties` files.
+<2> If you are enabling the <<time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration, dual write plugin>> on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.
+<3> See the <,time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags, time series integration section>> for more information on defining metatags.
 +
-NOTE: Make sure that the `org.opennms.timeseries.strategy` property is not set in `$\{OPENNMS_HOME}/etc/opennms.properties` or any other file within the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+
+NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
 
 . Configure the Cortex Time Series plugin in {page-component-title}.
 +
@@ -86,9 +90,9 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 ----
 ====
 
-. Configure the plugin to remain installed after a restart of {page-component-title}:
+. Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` to configure the plugin to remain installed after a restart of {page-component-title}:
 +
-[source]
+[source, properties]
 opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
 
 . Restart the {page-component-title} service.

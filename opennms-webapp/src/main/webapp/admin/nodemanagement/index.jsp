@@ -89,7 +89,7 @@
   <input name="node" value="<%=nodeId%>" type="hidden"/>
 </form>
 
-<h4>Node: <%=node_db.getLabel()%> (ID: <%=node_db.getId()%>)</h4>
+<h4>Node: <%=WebSecurityUtils.sanitizeString(node_db.getLabel())%> (ID: <%=node_db.getId()%>)</h4>
 <% if (isRequisitioned) { %>
 <h4><em>Created via requisition <strong><%=node_db.getForeignSource()%></strong> (foreignId: <strong><%=node_db.getForeignId()%></strong>)</em></h4>
 <% } else { %>
@@ -115,7 +115,7 @@
   </p>
 
   <p>
-    <a href="admin/snmpInterfaces.jsp?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">
+    <a href="admin/snmpInterfaces.jsp?node=<%=nodeId%>&nodelabel=<%=java.net.URLEncoder.encode(node_db.getLabel(), "UTF-8")%>">
     Configure SNMP Data Collection per Interface</a>
   </p>
 
@@ -131,19 +131,6 @@
     Configure Path Outage</a>
   </p>
   
-      <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
-  <p>
-    <a href="admin/rancid/rancidAdmin.htm?node=<%=nodeId%>">
-    Configure Rancid Integration</a>
-  
-  </p>
-
-  <p>
-    <a href="admin/storage/storageAdmin.htm?node=<%=nodeId%>">
-    Configure Software Images</a>
-  </p>
-
-  <% } %>
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -204,17 +191,6 @@
   </p>
   <% } %>
   
-        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
-  <p>
-    <b>Configure Rancid</b> Configure RANCID group router.db files and rancid cloginrc
-     authentication data.
-  </p>
-
-  <p>
-    <b>Configure Software Images</b> Add and Delete software images.
-  </p>
-
-  <% } %>
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

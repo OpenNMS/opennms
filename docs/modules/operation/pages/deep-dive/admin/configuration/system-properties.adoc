@@ -1,0 +1,22 @@
+
+[[system-properties]]
+= Configure System Properties
+
+Properties files let you configure {page-component-title}'s global behavior settings.
+They are stored in `$\{OPENNMS_HOME}/etc`.
+
+NOTE: Your configuration settings can also affect the Java virtual machine on which {page-component-title} runs.
+
+After making configuration changes, you must restart {page-component-title} for them to take effect.
+
+The evaluation priorities for Java system properties are as follows:
+
+. Those set via the Java command line (for example, in `opennms.conf` via `ADDITIONAL_MANAGER_OPTIONS`).
+. `opennms.properties.d/*.properties`.
+. `opennms.properties`.
+. `libraries.properties`.
+. `rrd-configuration.properties`.
+. `bootstrap.properties`.
+
+TIP: To avoid conflicts with customized configurations, you can add all custom properties to one or more files in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`.
+We recommend that you do not modify default OpenNMS configurations; instead, you can create files with your customized property settings in `opennms.properties.d/`.

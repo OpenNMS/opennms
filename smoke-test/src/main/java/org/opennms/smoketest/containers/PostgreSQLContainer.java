@@ -29,6 +29,7 @@
 package org.opennms.smoketest.containers;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
@@ -45,12 +46,11 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer implements TestLifecycleAware {
+public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer<PostgreSQLContainer> implements TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLContainer.class);
 
     private LoadingCache<Integer, HibernateDaoFactory> daoFactoryCache = CacheBuilder.newBuilder()
@@ -69,10 +69,7 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
         super("postgres:10.7-alpine");
         withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.DB_ALIAS)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                });
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
     }
 
     @Override
@@ -111,18 +108,16 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
         if (!succeeded) {
             LOG.info("Gathering logs...");
-            copyLogs(this, prefix);
+            Path targetLogFolder = Paths.get("target", "logs", prefix, "postgresql");
+            DevDebugUtils.clearLogs(targetLogFolder);
+            DevDebugUtils.copyLogs(this,
+                    // dest
+                    targetLogFolder,
+                    // source folder
+                    Paths.get("/var", "lib", "postgresql", "data"),
+                    // no log files to copy, everything is available via the container logs
+                    Collections.emptyList());
         }
-    }
-
-    private static void copyLogs(PostgreSQLContainer container, String prefix) {
-        DevDebugUtils.copyLogs(container,
-                // dest
-                Paths.get("target", "logs", prefix, "postgresql"),
-                // source folder
-                Paths.get("/var", "lib", "postgresql", "data"),
-                // no log files to copy, everything is available via the container logs
-                Collections.emptyList());
     }
 
 }

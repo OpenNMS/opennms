@@ -1,3 +1,4 @@
+
 [[upgrade]]
 = Upgrade {page-component-title}
 
@@ -26,11 +27,11 @@ Please check the branches on https://github.com/OpenNMS/opennms/releases[GitHub]
 endif::[]
 
 * Stop the OpenNMS and PostgreSQL services.
-* xref:operation:deep-dive/admin/housekeeping/introduction.adoc#prune-events[Prune unneeded events].
+* xref:operation:deep-dive/admin/housekeeping.adoc#prune-events[Prune unneeded events].
 * Back up your database. (same day/state)
 * Back up RRD files. (same day/state)
 * Back up the `$\{OPENNMS_HOME}/etc` directory. (same day/state)
-* <<deep-dive/events-table,Assess the events table size>>.
+* <<events-table, Assess the events table size>>.
 This is especially important if you have a particularly large network with lots of events.
 * xref:deployment:upgrade/diff.adoc#run_diff[Identify any configuration files] you have changed to determine what needs to be migrated as part of an upgrade.
 ** You can also xref:deployment:upgrade/git-diff.adoc[manage configuration changes using Git].
@@ -38,7 +39,7 @@ This is especially important if you have a particularly large network with lots 
 [[events-table]]
 == Assess Events Table size
 
-If, after xref:operation:deep-dive/admin/housekeeping/introduction.adoc#prune-events[pruning unneeded events], you still have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
+If, after xref:operation:deep-dive/admin/housekeeping.adoc#prune-events[pruning unneeded events], you still have a large number of events, you may need to increase the amount of memory passed to the OpenNMS install tool.
 For example, if you have 250,000 events, you will need almost 600MB of heap.
 When you upgrade and have the available memory, choose a large value to pass to the install:
 

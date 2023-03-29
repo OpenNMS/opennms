@@ -138,7 +138,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 | $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service appears.
 |===
 
-== Example: Ping the same non-routable address from all routers of customer Foo
+== Example 1
 
 A service provider's client, Foo Corporation, has network service at multiple locations.
 At each Foo location, a point-of-sale system is statically configured at IPv4 address `192.168.255.1`.
@@ -152,7 +152,7 @@ One approach to this requirement is to configure all of Foo Corporation's premis
 We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
 Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we statically list that value for the `target-ip-addr` address.
 
-NOTE: Examples use CentOS/RHEL path name.
+NOTE: Examples use the CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
@@ -168,11 +168,11 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="FooPOS" interval="300000" user-defined="false" status="on">
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-    <parameter key="rrd-base-name" value="ciscoping" />
-    <parameter key="ds-name" value="ciscoping" />
-    <parameter key="proxy-ip-addr" value="$\{ipaddr}" />
-    <parameter key="target-ip-addr" value="192.168.255.1" />
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <1>
+    <parameter key="rrd-base-name" value="ciscoping" /> <2>
+    <parameter key="ds-name" value="ciscoping" /> <3>
+    <parameter key="proxy-ip-addr" value="$\{ipaddr}" /> <4>
+    <parameter key="target-ip-addr" value="192.168.255.1" /> <5>
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
   <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -180,10 +180,16 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
 </package>
 
-<monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+<monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
+<1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<2> The name of the RRD file (minus the .rrd or .jrb file extension).
+<3> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<4> IP address of the interface that this service should use as its proxy.
+<5> IP address that the remote IOS device should ping.
+<6> Required *monitor* section.
 
-== Example: Ping from a single IOS device routable address of each router of customer Bar
+== Example 2
 
 A service provider's client, Bar Limited, has network service at multiple locations.
 While {page-component-title}'s service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations is unreachable from the perspective of an IOS device in Bar's main data center.
@@ -192,7 +198,10 @@ Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scen
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the node tags Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 
 In this case, we use the special value `$\{ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
-Since we want the same IOS device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
+Since we want the same IOS device `20.11.5.11` to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
+
+Note that you must include the `monitor` section for each service in your definition.
+
 Example `poller-configuration.xml` additions:
 
 [source, xml]
@@ -208,11 +217,11 @@ Example `poller-configuration.xml` additions:
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="BarCentral" interval="300000" user-defined="false" status="on">
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-    <parameter key="rrd-base-name" value="ciscoping" />
-    <parameter key="ds-name" value="ciscoping" />
-    <parameter key="proxy-ip-addr" value="20.11.5.11" />
-    <parameter key="target-ip-addr" value="$\{ipaddr}" />
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <1>
+    <parameter key="rrd-base-name" value="ciscoping" /> <2>
+    <parameter key="ds-name" value="ciscoping" /> <3>
+    <parameter key="proxy-ip-addr" value="20.11.5.11" /> <4>
+    <parameter key="target-ip-addr" value="$\{ipaddr}" /> <5>
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
   <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -220,5 +229,11 @@ Example `poller-configuration.xml` additions:
   <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
 </package>
 
-<monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+<monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
+<1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<2> The name of the RRD file (minus the .rrd or .jrb file extension).
+<3> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<4> IP address of the interface that this service should use as its proxy.
+<5> IP address that the remote IOS device should ping.
+<6> Required *monitor* section.

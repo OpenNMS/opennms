@@ -6,6 +6,44 @@
   <artifactId>smoke-test</artifactId>
   <version>32.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
+  <url>http://opennms.org/</url>
+  <description>Smoke Test APIs for OpenNMS</description>
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License</name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
+      <comments>
+        This Maven metadata is provided for informational purposes only. For specific licensing
+        questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
+      </comments>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Jira</system>
+    <url>http://issues.opennms.org/</url>
+ </issueManagement>
+  <ciManagement>
+    <system>CircleCI</system>
+    <url>https://app.circleci.com/pipelines/github/OpenNMS/opennms</url>
+  </ciManagement>
+  <developers>
+    <developer>
+      <id>rangerrick</id>
+      <name>Benjamin Reed</name>
+      <email>ranger@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Developer</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
+    <url>https://github.com/OpenNMS/opennms</url>
+  </scm>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
@@ -13,9 +51,9 @@
     <camelVersion>2.19.1</camelVersion>
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
-    <groovyVersion>2.5.16</groovyVersion>
+    <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.14.1</jackson2Version>
+    <jackson2Version>2.14.2</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.6</karafVersion>
     <selenium.version>4.6.0</selenium.version>
@@ -37,7 +75,7 @@
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
+    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -87,6 +125,7 @@
             <!-- Don't specify argLine here or it will override the argLine property value -->
             <systemPropertyVariables>
               <seleniarm.version>${seleniarm.version}</seleniarm.version>
+              <coverage>${coverage}</coverage>
             </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
@@ -162,6 +201,35 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <failOnError>true</failOnError>
+          <doclint>none</doclint>
+        </configuration>
+      </plugin>
       <plugin>
          <inherited>false</inherited>
          <groupId>org.apache.maven.plugins</groupId>
@@ -334,6 +402,40 @@
             <configuration>
               <groups>org.opennms.smoketest.junit.SentinelTests</groups>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+          <value>true</value>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.simplify4u.plugins</groupId>
+            <artifactId>sign-maven-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <skipNoKey>false</skipNoKey>
+                  <keyId>701E145FE26283F8C073BAAE697677243260D071</keyId>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
@@ -732,9 +834,9 @@
       <version>1.15.3</version>
     </dependency>
     <dependency>
-      <groupId>com.jcraft</groupId>
+      <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.55</version>
+      <version>0.2.6</version>
     </dependency>
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
@@ -884,4 +986,15 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 </project>

@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -59,7 +59,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import org.awaitility.core.ConditionTimeoutException;
 
 public class QueueFileOffHeapDispatchQueueTest {
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,11 +96,9 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
-import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
@@ -245,11 +243,9 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
         // moved to CmWillItUnmarshalIT
         //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
-        addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, true, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
-        addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, false, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, false, null);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, true, null);
@@ -310,8 +306,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, false, null);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, false, null);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);

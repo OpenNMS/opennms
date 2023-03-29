@@ -67,6 +67,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section in your definition.
+
 [source, xml]
 ----
 <!-- OpenNMS.org -->
@@ -81,5 +83,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="rrd-base-name" value="ldap"/>
   <parameter key="ds-name" value="ldap"/>
 </service>
+
 <monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
 ----

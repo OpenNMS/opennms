@@ -9,7 +9,13 @@ commands:
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
-              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+              git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
+              if [ -n "${CIRCLE_TAG}" ]; then
+                git checkout --force "${CIRCLE_TAG}"
+                git reset --hard "${CIRCLE_SHA1}"
+              else
+                git checkout --force -B "${CIRCLE_BRANCH}" "${CIRCLE_SHA1}"
+              fi
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -23,7 +29,9 @@ commands:
             command: git config merge.renameLimit 999999
         - run:
             name: git fetch origin
-            command: git fetch origin
+            command: |
+              git remote prune origin || :
+              git fetch origin
   save-cached-checkout:
       description: "Cache a checkout"
       steps:
@@ -31,13 +39,13 @@ commands:
             key: source-v4-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
-  cached-checkout-for-pushing:
+  checkout-for-pushing:
       description: "Configure a cached checkout that can push upstream"
       steps:
         - add_ssh_keys:
             fingerprints:
               - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
-        - cached-checkout
+        - checkout
         - run:
             name: Create git identity
             command: |

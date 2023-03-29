@@ -371,11 +371,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rancid-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>twitter4j-dependencies</artifactId>
       <type>pom</type>
     </dependency>
@@ -472,7 +467,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
@@ -500,5 +495,9 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-provisiond</artifactId>
+      </dependency>
   </dependencies>
 </project>

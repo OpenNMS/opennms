@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -65,10 +63,10 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
@@ -81,9 +79,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
-import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 
@@ -95,7 +91,8 @@ import com.google.common.collect.ImmutableMap;
  * @author jwhite
  */
 @SuppressWarnings("java:S2068")
-public class OpenNMSContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> implements KarafContainer<OpenNMSContainer>, TestLifecycleAware {
+    public static final String IMAGE = "opennms/horizon";
     public static final String ALIAS = "opennms";
     public static final String DB_ALIAS = "db";
     public static final String KAFKA_ALIAS = "kafka";
@@ -104,6 +101,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public static final String ADMIN_USER = "admin";
     public static final String ADMIN_PASSWORD = "admin";
+    public static final Path CONTAINER_LOG_DIR = Paths.get("/opt", ALIAS, "logs");
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
@@ -120,7 +118,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
 
-    private static final boolean COLLECT_COVERAGE = true;
+    private static final boolean COLLECT_COVERAGE = "true".equals(System.getProperty("coverage", "false"));
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
@@ -141,11 +139,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
-    private boolean afterTestCalled = false;
+    private Exception afterTestCalled = null;
     private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
-        super("opennms/horizon");
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 
@@ -187,8 +185,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
 
         withExposedPorts(exposedPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
@@ -216,27 +213,21 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
-                .addFileSystemBind(overlay.toString(),
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
+
+        addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            if (installFeature.getValue() != null) {
+                addFileSystemBind(installFeature.getValue().toString(),
+                        "/opt/opennms/deploy/" + installFeature.getValue().getFileName(),
+                        BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            }
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
-    }
-
-    public void installFeature(String feature, Path kar) {
-        if (kar != null) {
-            copyFileToContainer(MountableFile.forHostPath(kar),
-                    "/usr/share/opennms/deploy/" + kar.getFileName().toString());
-        }
-
-        var karafShell = new KarafShell(getSshAddress());
-        karafShell.runCommand("feature:list | grep " + feature,
-                output -> output.contains(feature),false);
-
-        // Note that the feature name doesn't always match the KAR name
-        assertTrue(karafShell.runCommandOnce("feature:install " + feature,
-                output -> !output.toLowerCase().contains("error"), false));
     }
 
     @SuppressWarnings("java:S5443")
@@ -348,6 +339,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
     }
 
+    public URL getWebUrl() {
+        return getBaseUrlExternal();
+    }
+
     public RestClient getRestClient() {
         try {
             return new RestClient(new URL(getBaseUrlExternal() + "opennms"));
@@ -356,6 +351,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         }
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(OPENNMS_SSH_PORT));
     }
@@ -363,6 +359,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/opennms"); // I'm not sure if this is right-enough for OpenNMS Karaf?
     }
 
     public int getWebPort() {
@@ -399,7 +400,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         if (model.isJaegerEnabled()) {
             props.put("org.opennms.core.tracer", "jaeger");
-            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+            props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures
@@ -409,6 +410,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            featuresOnBoot.add(installFeature.getKey());
+        }
+
         if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("opennms-core-ipc-grpc-server");
         }
@@ -489,7 +495,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 var logs =
                         "\n\t\t----------------------------------------------------------\n"
                                 + container.getLogs()
-                                .replaceFirst("(?ms)(.*?)(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*", "$2\n")
+                                .replaceFirst(
+                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*",
+                                        "$1\n")
                                 .replaceAll("(?m)^", "\t\t")
                                 + "\t\t----------------------------------------------------------";
 
@@ -501,7 +509,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
-            final Path managerLog = Paths.get("/opt", ALIAS, "logs", "manager.log");
+            final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
                     .atMost(3, MINUTES)
                     .failFast("container is no longer running", () -> !container.isRunning())
@@ -533,16 +541,21 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                             containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
-            // Defer the health-check (if we do run it) until the system has completely started
+            // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
-            // Only wait for the health-check if Elasticsearch is enabled, since it's
-            // currently required to pass.
-            if (container.getModel().isElasticsearchEnabled()) {
-                LOG.info("Waiting for OpenNMS health check...");
-                awaitHealthCheckSucceeded(container);
-                LOG.info("Health check passed.");
-            }
+            LOG.info("Waiting for OpenNMS health check...");
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
+
     }
 
     public int getGeneratedUserId() {
@@ -551,11 +564,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
-        if (afterTestCalled) {
-            LOG.warn("afterTest has already been called, not running on subsequent calls");
+        var pid = ProcessHandle.current().pid();
+        if (afterTestCalled != null) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
+            LOG.warn("original call location of afterTest", afterTestCalled);
             return;
         }
-        afterTestCalled = true;
+        afterTestCalled = new Exception("exception placeholder for stacktrace -- original call location of afterTest; PID: " + pid);
         if (COLLECT_COVERAGE) {
             KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         }
@@ -563,17 +578,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        var logs = copyLogs(this, prefix);
-        LOG.info("Logs: {}", logs.toUri());
-        LOG.info("Console log: {}", logs.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-    }
-
-    private static Path copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("alarmd.log",
+        final List<String> logFiles = Arrays.asList(
+                "alarmd.log",
                 "collectd.log",
                 "eventd.log",
                 "jetty-server.log",
@@ -581,17 +588,30 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 "manager.log",
                 "poller.log",
                 "provisiond.log",
+                "telemetryd.log",
                 "trapd.log",
-                "web.log");
+                "web.log"
+        );
+
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.clearLogs(targetLogFolder);
+
+        final var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+
+        LOG.info("Gathering logs...");
+        DevDebugUtils.copyLogs(this,
                 // dest
                 targetLogFolder,
                 // source folder
-                Paths.get("/opt", ALIAS, "logs"),
+                CONTAINER_LOG_DIR,
                 // log files
                 logFiles);
-        return targetLogFolder;
-    }
 
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
+    }
 }

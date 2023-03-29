@@ -63,10 +63,13 @@ See the ignoreStandBy parameter below on how to change the state.
 | false
 |===
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, common configuration parameters>>.
 
 == Examples
+
 Example configuration on how to configure the monitor in `poller-configuration.xml`.
+
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----

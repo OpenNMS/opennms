@@ -1,0 +1,9 @@
+
+= Boost Configuration
+
+You can increase the frequency of certain dashlets in an xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] by modifying the following settings:
+
+* *Boost Priority:* The absolute priority of the dashlet.
+Lower numbers indicate a higher priority; this results in the dashlet being displayed more often in the rotation.
+One is the highest priority, so a dashlet assigned it appears the most frequently.
+* *Boost Duration:* The absolute display duration (in seconds) of the dashlet.

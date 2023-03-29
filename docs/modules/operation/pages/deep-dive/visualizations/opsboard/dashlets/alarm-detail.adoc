@@ -1,0 +1,43 @@
+
+= Alarm Details
+
+The Alarm Details dashlet displays a table with alarms and details about them in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+
+[caption=]
+.Alarm information displayed in dashlet
+[options="autowidth"]
+|===
+| Field | Description
+
+| Alarm ID
+| {page-component-title} ID for the alarm.
+
+| Severity
+| Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical).
+
+| Node label
+| Label of the node where the alarm occurred.
+
+| Alarm count
+| Alarm count, based on reduction key, for deduplication.
+
+| Last event time
+| Last time the alarm occurred.
+
+| Log message
+| Reason and detailed log message of the alarm.
+|===
+
+[caption=]
+.Alarm Details dashlet configuration options
+[cols="1,3"]
+|===
+s| Boost support
+| Change the priority of the dashlet on an operator board depending on the alarm level (see xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[]).
+
+s| Properties: Boosted severity
+| Specify the alarm severity that boosts the dashlet to a higher priority on the operator board.
+
+s| Properties: Criteria
+| Specify criteria on which to filter alarms (see xref:deep-dive/visualizations/opsboard/criteria-builder.adoc[]).
+|===

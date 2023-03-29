@@ -51,34 +51,41 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#<ref
 
 == Examples
 
-Example configuration on how to configure the monitor in `poller-configuration.xml`.
+This example demonstrates how to configure the monitor in `poller-configuration.xml`:
+
 [source, xml]
 ----
 <service name="FTP" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="21"/>
-  <parameter key="userid" value=""/>
-  <parameter key="password" value=""/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="21"/> <3>
+  <parameter key="userid" value=""/> <4>
+  <parameter key="password" value=""/> <5>
 </service>
 
 <service name="FTP-With-Auth-From-Asset" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="21"/>
-  <parameter key="userid" value="{username}"/>
-  <parameter key="password" value="{password}"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="21"/> <3>
+  <parameter key="userid" value="{username}"/> <4>
+  <parameter key="password" value="{password}"/> <5>
 </service>
 
 <service name="FTP-Customer" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="21"/>
-  <parameter key="userid" value="Customer"/>
-  <parameter key="password" value="MySecretPassword"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="21"/> <3>
+  <parameter key="userid" value="Customer"/> <4>
+  <parameter key="password" value="MySecretPassword"/> <5>
 </service>
 
-<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <6>
+<monitor service="FTP-With-Auth-From-Asset" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <6>
+<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/> <6>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> A list of TCP ports to try to connect to.
+<4> Specifies the user ID to use.
+<5> Specifies the password to use.
+<6> Required *monitor* component for each service.

@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionOverallMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,7 @@ public class NewSuspectScan implements Scan {
 	private String m_foreignSource;
     private Span m_span;
     private ProvisionMonitor monitor;
+    private ProvisionOverallMonitor overallMonitor;
 	
     /**
      * <p>Constructor for NewSuspectScan.</p>
@@ -79,7 +81,7 @@ public class NewSuspectScan implements Scan {
      * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object. (optional)
      */
-    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location, final ProvisionMonitor monitor) {
+    public NewSuspectScan(final InetAddress ipAddress, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator, String foreignSource, final String location, final ProvisionMonitor monitor, final ProvisionOverallMonitor overallMonitor) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
@@ -88,6 +90,7 @@ public class NewSuspectScan implements Scan {
         m_foreignSource = foreignSource;
         m_location = location;
         this.monitor = monitor;
+        this.overallMonitor = overallMonitor;
     }
     
     @Override
@@ -121,7 +124,7 @@ public class NewSuspectScan implements Scan {
         	phase.getBuilder().addSequence(
         			new NodeInfoScan(node, m_ipAddress, null, node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, null, m_span),
         			new IpInterfaceScan(node.getId(), m_ipAddress, m_foreignSource, node.getLocation(), m_provisionService, m_span),
-				new NodeScan(node.getId(), m_foreignSource, node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span, monitor),
+				new NodeScan(node.getId(), m_foreignSource, node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span, monitor, overallMonitor),
 				new RunInBatch() {
 					@Override
 					public void run(BatchTask batch) {

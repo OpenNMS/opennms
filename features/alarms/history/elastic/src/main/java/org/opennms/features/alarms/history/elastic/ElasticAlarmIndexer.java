@@ -65,9 +65,7 @@ import org.opennms.features.alarms.history.elastic.tasks.BulkDeleteTask;
 import org.opennms.features.alarms.history.elastic.tasks.IndexAlarmsTask;
 import org.opennms.features.alarms.history.elastic.tasks.Task;
 import org.opennms.features.alarms.history.elastic.tasks.TaskVisitor;
-import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
-import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
@@ -76,6 +74,9 @@ import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.jest.client.template.TemplateInitializer;
+import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
+import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -111,7 +111,7 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
     private final QueryProvider queryProvider = new QueryProvider();
 
-    private final JestClient client;
+    private final JestClientWithCircuitBreaker client;
     private final TemplateInitializer templateInitializer;
     private final LinkedBlockingDeque<Task> taskQueue;
     private final IndexStrategy indexStrategy;
@@ -149,11 +149,11 @@ public class ElasticAlarmIndexer implements AlarmLifecycleListener, Runnable {
 
     private final IndexSettings indexSettings;
 
-    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer) {
+    public ElasticAlarmIndexer(MetricRegistry metrics, JestClientWithCircuitBreaker client, TemplateInitializer templateInitializer) {
         this(metrics, client, templateInitializer, new CacheConfig("nodes-for-alarms-in-es"), DEFAULT_TASK_QUEUE_CAPACITY, IndexStrategy.MONTHLY, new IndexSettings());
     }
 
-    public ElasticAlarmIndexer(MetricRegistry metrics, JestClient client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy, IndexSettings indexSettings) {
+    public ElasticAlarmIndexer(MetricRegistry metrics, JestClientWithCircuitBreaker client, TemplateInitializer templateInitializer, CacheConfig nodeCacheConfig, int taskQueueCapacity, IndexStrategy indexStrategy, IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(client);
         this.templateInitializer = Objects.requireNonNull(templateInitializer);
         //noinspection unchecked

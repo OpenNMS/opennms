@@ -129,7 +129,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.jayway.awaitility</groupId>
+            <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
@@ -307,6 +307,13 @@
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
             <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- used by test runtime SSL bits -->
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>${snappyJavaVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

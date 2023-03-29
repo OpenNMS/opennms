@@ -77,10 +77,9 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.collect.ImmutableMap;
 
-public class SentinelContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class SentinelContainer extends GenericContainer<SentinelContainer> implements KarafContainer<SentinelContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
@@ -115,15 +114,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
                 .waitingFor(new WaitForSentinel(this))
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                })
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits)
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -257,6 +253,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         return props;
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(SENTINEL_SSH_PORT));
     }
@@ -264,6 +261,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/sentinel");
     }
 
     public URL getWebUrl() {
@@ -280,7 +282,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
     /**
      * Workaround exception details that are lost from waitUntilReady due to
-     * https://github.com/testcontainers/testcontainers-java/pull/6167
+     * <a href="https://github.com/testcontainers/testcontainers-java/pull/6167">this issue</a>.
      */
     @Override
     protected void doStart() {
@@ -334,6 +336,8 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -345,21 +349,27 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
-    }
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
+        DevDebugUtils.clearLogs(targetLogFolder);
 
-    private static void copyLogs(SentinelContainer container, String prefix) {
+        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+
+        LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.copyLogs(this,
                 // dest
-                Paths.get("target", "logs", prefix, ALIAS),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", ALIAS, "data", "log"),
                 // log files
                 logFiles);
+
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
     }
+
 }

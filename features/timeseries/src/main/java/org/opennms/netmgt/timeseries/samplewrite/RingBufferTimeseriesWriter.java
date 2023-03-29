@@ -29,18 +29,19 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
@@ -80,8 +80,13 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
+    private static final Duration STORAGE_GET_WARNING_DURATION = Duration.ofSeconds(5);
+
+    private static final Duration DESTROY_GRACE_PERIOD = Duration.ofSeconds(30);
 
     private WorkerPool<SampleBatchEvent> workerPool;
+
+    private ExecutorService executor;
 
     private RingBuffer<SampleBatchEvent> ringBuffer;
 
@@ -102,6 +107,8 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
     private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
+    private final AtomicBoolean readyToRockAndRoll = new AtomicBoolean(false);
+    private final AtomicBoolean thePartyIsOver = new AtomicBoolean(false);
 
     @Inject
     public RingBufferTimeseriesWriter(final TimeseriesStorageManager storage,
@@ -137,7 +144,7 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         // Executor that will be used to construct new threads for consumers
         final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("TimeseriesWriter-Consumer-%d").build();
-        final Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
+        executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         @SuppressWarnings("unchecked")
         final WorkHandler<SampleBatchEvent>[] handlers = new WorkHandler[numWriterThreads];
@@ -154,55 +161,105 @@ public class RingBufferTimeseriesWriter implements TimeseriesWriter, WorkHandler
         ringBuffer.addGatingSequences(workerPool.getWorkerSequences());
 
         workerPool.start(executor);
+
+        readyToRockAndRoll.set(true);
     }
 
     @Override
     public void destroy() {
+        readyToRockAndRoll.set(false);
         if (workerPool != null) {
+            var start = Instant.now();
+            LOG.info("destroy(): Draining and halting the time series worker pool. Entries in ring buffer: {}",
+                    numEntriesOnRingBuffer.get());
+            var destroyStatusThread = new Thread(() -> {
+                while (numEntriesOnRingBuffer.get() != 0 &&
+                        Duration.between(start, Instant.now()).compareTo(DESTROY_GRACE_PERIOD) < 0) {
+                    LOG.info("destroy() in progress. Entries left in ring buffer to drain: {}",
+                            numEntriesOnRingBuffer.get());
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        LOG.info("Apparently my work is done here. Entries in ring buffer: {}",
+                                numEntriesOnRingBuffer.get());
+                        break;
+                    }
+                }
+                if (numEntriesOnRingBuffer.get() != 0) {
+                    LOG.warn("destroy(): WorkerPool does not want to cooperate, forcing cooperation");
+                    thePartyIsOver.set(true); // prevents new calls to onEvent from doing any work
+                    executor.shutdownNow(); // will make any BlockingServiceLookup calls return immediately
+                }
+            }, getClass().getSimpleName() + "-destroy-status");
+            destroyStatusThread.start();
             workerPool.drainAndHalt();
+            LOG.info("Completed draining ring buffer entries (current size {}). Worker pool is halted. Took {}.",
+                    numEntriesOnRingBuffer.get(),
+                    Duration.between(start, Instant.now()));
+            destroyStatusThread.interrupt();
         }
     }
 
     @Override
     public void insert(List<Sample> samples) {
+        if (!readyToRockAndRoll.get()) {
+            insertDrop(samples, "We are not ready to rock and roll");
+            return;
+        }
 
         // Add the samples to the ring buffer
         if (!ringBuffer.tryPublishEvent(TRANSLATOR, samples)) {
-            RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
-                    samples.size(), new Object() {
-                        @Override
-                        public String toString() {
-                            // We wrap this in a toString() method to avoid build the string
-                            // unless the log message is actually printed
-                            return samples.stream()
-                                    .map(s -> s.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue())
-                                    .distinct()
-                                    .collect(Collectors.joining(", "));
-                        }
-                    });
-            droppedSamples.mark(samples.size());
+            insertDrop(samples, "The ring buffer is full");
             return;
         }
         // Increase our entry counter
         numEntriesOnRingBuffer.incrementAndGet();
     }
 
+    private void insertDrop(List<Sample> samples, String message) {
+        RATE_LIMITED_LOGGER.error(message + ". {} samples associated with resource ids {} will be dropped.",
+                samples.size(), new Object() {
+                    @Override
+                    public String toString() {
+                        // We wrap this in a toString() method to avoid build the string
+                        // unless the log message is actually printed
+                        return samples.stream()
+                                .map(s -> s.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue())
+                                .distinct()
+                                .collect(Collectors.joining(", "));
+                    }
+                });
+        droppedSamples.mark(samples.size());
+    }
+
     @Override
     public void onEvent(SampleBatchEvent event) {
-        // We'd expect the logs from this thread to be in collectd.log
-        Logging.putPrefix("collectd");
-
-        // Decrement our entry counter
-        numEntriesOnRingBuffer.decrementAndGet();
-
+        if (thePartyIsOver.get()) {
+            return;
+        }
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
-            this.storage.get().store(event.getSamples());
-            this.stats.record(event.getSamples());
+            var start =  Instant.now();
+            var timeSeriesStorage = this.storage.get();
+            var getDuration = Duration.between(start, Instant.now());
+
+            if (getDuration.compareTo(STORAGE_GET_WARNING_DURATION) > 0) {
+                RATE_LIMITED_LOGGER.warn("storage.get() took an excessive amount of time, {}, and returned: {}", getDuration, timeSeriesStorage);
+            }
+
+            if (timeSeriesStorage == null) {
+                RATE_LIMITED_LOGGER.error("There is no available TimeSeriesStorage implementation. {} samples will be lost.", event.getSamples().size());
+            } else {
+                timeSeriesStorage.store(event.getSamples());
+                this.stats.record(event.getSamples());
+            }
         } catch (Throwable t) {
-            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
+            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Up to {} samples may be lost: {}: {}", event.getSamples().size(), t.getClass().getSimpleName(), t.getMessage(), t);
         } finally {
             event.setSamples(null); // free sample reference for garbage collection
         }
+
+        // Decrement our entry counter
+        numEntriesOnRingBuffer.decrementAndGet();
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR = (event, sequence, samples) -> event.setSamples(samples);

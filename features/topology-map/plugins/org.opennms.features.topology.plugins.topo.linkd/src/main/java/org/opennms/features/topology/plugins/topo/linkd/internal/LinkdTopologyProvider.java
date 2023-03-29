@@ -106,4 +106,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         LOG.info("refresh: {}: Found {} edges", getNamespace(), graph.getEdges().size());
     }
 
+    public Set<ProtocolSupported> getProtocolSupported() {
+        return m_supportedSet;
+    }
+
 }

@@ -26,15 +26,18 @@ commands:
           name: Compile OpenNMS
           command: |
             ulimit -n 65536 || :
+            mkdir -p ~/.m2
+            echo "${GPG_SECRET_KEY}" | base64 -d > ~/.m2/sign-key.asc
+            export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            .circleci/scripts/configure-signing.sh
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
               "master-"*|"release-"*|"develop")
-                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS javadoc:aggregate"
+                # "production" build will also enable javadoc and such
+                MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
@@ -57,7 +60,7 @@ commands:
       - run:
           name: Check if we have generated apidocs
           command: |
-            if [ -d target/site/apidocs ]; then
+            if [ -d target/site/apidocs ] && [ "$(find target/site/apidocs -name \*.html | wc -l)" -gt 1 ]; then
               pushd target/site/apidocs
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd

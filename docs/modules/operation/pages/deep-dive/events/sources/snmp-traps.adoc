@@ -26,7 +26,7 @@ There are several ways to configure {page-component-title} to customize the even
 
 * Determine what problem you are trying to solve (for example, "I want to know X about my Cisco router").
 * Manually send the corresponding event to the {page-component-title} server and see how the event is handled (see xref:operation:deep-dive/events/event-debugging.adoc#send-event[Manually send events]).
-* Import event definitions with the xref:operation:deep-dive/admin/webui/mib.adoc[SNMP MIB compiler].
+* Import event definitions with the xref:deep-dive/admin/mib.adoc[SNMP MIB compiler].
 * Configure the event to meet your requirements, if required.
 ** <<trap-def-create, Create trap definitions>> to specify criteria for when {page-component-title} creates an event.
 ** <<varbind-filter, Filter on variable bindings>> for further granularity on the conditions for creating an event.
@@ -36,7 +36,7 @@ There are several ways to configure {page-component-title} to customize the even
 
 {page-component-title} includes event definitions for traps from many vendors' equipment.
 Use the `mask` tag to match SNMP traps in `eventconf.xml`.
-See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
+See xref:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
 
 The following example shows a Cisco Systems event for their C3800 device.
 Parts of it look similar to internally generated events, with the main difference being the `mask` block.
@@ -120,7 +120,7 @@ For example, to match all Cisco events, you could use the following:
 ----
 
 The order in which events are listed in the `eventconf.xml` file is extremely important.
-The search will stop with the first event definition that matches the given event (see xref:operation:deep-dive/events/event-configuration.adoc[eventconf.xml]).
+The search stops with the first event definition that matches the given event (see xref:deep-dive/events/event-configuration.adoc[eventconf.xml]).
 As such, if the code with the wildcard is listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event will never be generated.
 
 Also note that the wildcard is simply a substring match.
@@ -137,7 +137,7 @@ Each parameter consists of a name and a value.
 For example, the `ciscoC3800SysAggregateStatusChange` event description lists out each of the parameters.
 Thus the second parameter, the `sysName`, is printed using `%parm[#2]%`.
 
-See xref:operation:deep-dive/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
+See xref:deep-dive/events/event-tokens.adoc#parameter-tokens[Parameter tokens] for more information.
 
 [[varbind-filter]]
 == Filter on varbinds

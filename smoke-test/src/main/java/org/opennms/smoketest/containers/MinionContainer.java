@@ -71,10 +71,9 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.base.Strings;
 
-public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
@@ -122,8 +121,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         };
 
         withExposedPorts(tcpPorts)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
@@ -132,7 +130,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
@@ -216,7 +214,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             String jaeger = "{\n" +
                     "\t\"system\": {\n" +
                     "\t\t\"properties\": {\n" +
-                    "\t\t\t\"JAEGER_ENDPOINT\": \"http://jaeger:14268/api/traces\"\n" +
+                    "\t\t\t\"JAEGER_ENDPOINT\": \"" + JaegerContainer.getThriftHttpURL() + "\"\n" +
                     "\t\t}\n" +
                     "\t}\n" +
                     "}";
@@ -247,12 +245,20 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         return new InetSocketAddress(getContainerIpAddress(), TestContainerUtils.getMappedUdpPort(this, MINION_SYSLOG_PORT));
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(MINION_SSH_PORT));
     }
 
+    @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/minion");
     }
 
     public URL getWebUrl() {
@@ -350,6 +356,8 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -361,22 +369,27 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
-    }
+        Path targetLogFolder = Paths.get("target", "logs", prefix, "minion");
+        DevDebugUtils.clearLogs(targetLogFolder);
 
-    private static void copyLogs(MinionContainer container, String prefix) {
+        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+
+        LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.copyLogs(this,
                 // dest
-                Paths.get("target", "logs", prefix, "minion"),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", "minion", "data", "log"),
                 // log files
                 logFiles);
+
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
     }
 
     public String getId() {

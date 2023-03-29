@@ -122,9 +122,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson2Version}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jackson2-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
@@ -158,7 +158,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.jayway.awaitility</groupId>
+            <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>

@@ -1,26 +1,40 @@
 
 = KSC Reports
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.KSC Reports API GET functions
+[options="autowidth"]
 |===
-| Resource            | Description
-| `/ksc`              | Get a list of all KSC reports, including ID and label.
-| `/ksc/\{reportid}`  | Get a specific KSC report, by ID.
-| `/ksc/count`        | Get a count of all KSC reports.
+| Resource  | Description
+
+| /ksc
+| Get a list of all KSC reports, including ID and label.
+
+| /ksc/\{reportid}
+| Get a specific KSC report, by ID.
+
+| /ksc/count
+| Get a count of all KSC reports.
 |===
 
-== PUTs (Modifying Data)
+== PUT (modifying data)
 
-[options="header", cols="5,10"]
+[caption=]
+.KSC Reports API PUT function
+[options="autowidth"]
 |===
-| Resource            | Description
-| `/ksc/\{reportid}`  | Modify a report with the given ID.
+| Resource  | Description
+
+| /ksc/\{reportid}
+| Modify a report with the given ID.
 |===
 
-== POSTs (Creating Data)
+== POSTs (creating data)
+
 Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
+
 Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].

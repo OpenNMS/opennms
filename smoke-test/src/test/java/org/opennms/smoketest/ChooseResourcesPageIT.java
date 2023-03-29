@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,14 @@
 
 package org.opennms.smoketest;
 
+import java.time.Duration;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,17 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(ChooseResourcesPageIT.class);
+
+    @Test
+    public void testNMS15292() {
+        final String[] parameters = {"zoom=true", "generatedId=4ab5197d-7435-30d5-85ea-437432ff8e44", "nodeCriteria=42", "reports=all"};
+        final String scriptTag = "%22%3E%3Cscript%3Ealert(%27Failed!%27)%3B%3C%2Fscript%3E";
+
+        for (final String parameter : parameters) {
+            getDriver().get(getBaseUrlInternal() + "opennms/graph/results.htm?" + parameter + scriptTag);
+            new WebDriverWait(getDriver(), Duration.ofSeconds(5)).until(pageContainsText("The OpenNMS Group"));
+        }
+    }
 
     @Test
     public void verifyShowsNoResourcesBanner() throws Exception {

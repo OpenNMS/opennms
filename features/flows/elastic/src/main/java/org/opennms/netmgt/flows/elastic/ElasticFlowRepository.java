@@ -28,20 +28,20 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimerTask;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
@@ -53,15 +53,17 @@ import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimerTask;
-import java.util.concurrent.locks.ReentrantLock;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 
 public class ElasticFlowRepository implements FlowRepository {
 
@@ -71,7 +73,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final String INDEX_NAME = "netflow";
 
-    private final JestClient client;
+    private final JestClientWithCircuitBreaker client;
 
     private final IndexStrategy indexStrategy;
 
@@ -111,7 +113,7 @@ public class ElasticFlowRepository implements FlowRepository {
     private java.util.Timer flushTimer;
 
     public ElasticFlowRepository(final MetricRegistry metricRegistry,
-                                 final JestClient jestClient,
+                                 final JestClientWithCircuitBreaker jestClient,
                                  final IndexStrategy indexStrategy,
                                  final Identity identity,
                                  final TracerRegistry tracerRegistry,
@@ -129,7 +131,7 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     public ElasticFlowRepository(final MetricRegistry metricRegistry,
-                                 final JestClient jestClient,
+                                 final JestClientWithCircuitBreaker jestClient,
                                  final IndexStrategy indexStrategy,
                                  final Identity identity,
                                  final TracerRegistry tracerRegistry,

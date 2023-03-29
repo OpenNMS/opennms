@@ -79,6 +79,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -105,6 +106,11 @@
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
       <version>${dropwizardMetricsVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -188,7 +194,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>

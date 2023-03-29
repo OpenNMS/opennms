@@ -1,3 +1,4 @@
+
 [[nodes-rest]]
 = Nodes
 
@@ -7,74 +8,141 @@ To get all results, use limit=0 as a parameter on the URL (GET /nodes?limit=0).
 
 Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (GET /nodes/fs:fid).
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Nodes API GET functions
+[options="autowidth"]
 |===
-| Resource                                                      | Description
-| `/nodes`                                                      | Get a list of nodes. This includes the ID and node label.
-| `/nodes/\{id}`                                                | Get a specific node, by ID.
-| `/nodes/\{id}/ipinterfaces`                                   | Get the list of IP interfaces associated with the given node.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                      | Get the IP interface for the given node and IP address.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`             | Get the list of services associated with the given node and IP interface.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}`  | Get the requested service associated with the given node, IP interface, and service name.
-| `/nodes/\{id}/snmpinterfaces`                                 | Get the list of SNMP interfaces associated with the given node.
-| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                      | Get the specific interface associated with the given node and ifIndex.
-| `/nodes/\{id}/categories`                                     | Get the list of categories associated with the given node.
-| `/nodes/\{id}/categories/\{categoryname}`                     | Get the category associated with the given node and category name.
-| `/nodes/\{id}/assetRecord`                                    | Get the asset record associated with the given node.
-| `/nodes/\{id}/hardwareInventory`                              | Get the hardware inventory information collected by the xref:reference:provisioning/adapters/hardware-inventory.adoc[hardware inventory plugin].
-| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`          | Get a specific entity from the hardware inventory information.
+| Resource  | Description
+
+| /nodes
+| Get a list of nodes.
+This includes the ID and node label.
+
+| /nodes/\{id}
+| Get a specific node, by ID.
+
+| /nodes/\{id}/ipinterfaces
+| Get the list of IP interfaces associated with the given node.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}
+| Get the IP interface for the given node and IP address.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}/services
+| Get the list of services associated with the given node and IP interface.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}
+| Get the requested service associated with the given node, IP interface, and service name.
+
+| /nodes/\{id}/snmpinterfaces
+| Get the list of SNMP interfaces associated with the given node.
+
+| /nodes/\{id}/snmpinterfaces/\{ifindex}
+| Get the specific interface associated with the given node and `ifIndex`.
+
+| /nodes/\{id}/categories
+| Get the list of categories associated with the given node.
+
+| /nodes/\{id}/categories/\{categoryname}
+| Get the category associated with the given node and category name.
+
+| /nodes/\{id}/assetRecord
+| Get the asset record associated with the given node.
+
+| /nodes/\{id}/hardwareInventory
+| Get the hardware inventory information collected by the xref:reference:provisioning/adapters/hardware-inventory.adoc[hardware inventory plugin].
+
+| /nodes/\{id}/hardwareInventory/\{entPhysicalIndex}
+| Get a specific entity from the hardware inventory information.
 |===
 
-== POSTs (Adding Data)
+== POSTs (adding data)
 
-POST requires XML using application/xml as its Content-Type.
+POST requires XML using `application/xml` as its `Content-Type`.
 
-[options="header", cols="5,10"]
+[caption=]
+.Nodes API POST functions
+[options="autowidth"]
 |===
-| Resource                                             | Description
-| `/nodes`                                             | Add a node.
-| `/nodes/\{id}/rescan`                                | Rescan the node for new interfaces.
-| `/nodes/\{id}/ipinterfaces`                          | Add an IP interface to the node.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`    | Add a service to the interface for the given node.
-| `/nodes/\{id}/snmpinterfaces`                        | Add an SNMP interface to the node.
-| `/nodes/\{id}/categories`                            | Add a category association to the node.
-| `/nodes/\{id}/hardwareInventory`                     | Add entire hardware inventory to the node.
-| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}` | Add specific entity to node's hardware inventory.
+| Resource  | Description
+
+| /nodes
+| Add a node.
+
+| /nodes/\{id}/rescan
+| Rescan the node for new interfaces.
+
+| /nodes/\{id}/ipinterfaces
+| Add an IP interface to the node.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}/services
+| Add a service to the interface for the given node.
+
+| /nodes/\{id}/snmpinterfaces
+| Add an SNMP interface to the node.
+
+| /nodes/\{id}/categories
+| Add a category association to the node.
+
+| /nodes/\{id}/hardwareInventory
+| Add entire hardware inventory to the node.
+
+| /nodes/\{id}/hardwareInventory/\{entPhysicalIndex}
+| Add specific entity to node's hardware inventory.
 |===
 
 [[rest-api-nodes-put]]
-== PUTs (Modifying Data)
+== PUTs (modifying data)
 
 PUT requires form data using `application/x-www-form-urlencoded` as a content type.
 
-[options="header", cols="5,10"]
+[caption=]
+.Nodes API PUT functions
+[cols="2,3"]
 |===
-| Resource                                                     | Description
-| `/nodes/\{id}`                                               | Modify a node with the given ID.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                     | Modify the IP interface with the given node ID and IP address.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}` | Modify the service with the given node ID, IP address, and service name.
-| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                     | Modify the SNMP interface with the given node ID and ifIndex.
-| `/nodes/\{id}/categories/\{categoryname}`                    | Modify the category with the given node ID and name.
-| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`         | Modify the hardware inventory entity for given node ID and index.
-                                                                 It is possible to use this endpoint to add custom attributes.
+| Resource  | Description
+
+| /nodes/\{id}
+| Modify a node with the given ID.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}
+| Modify the IP interface with the given node ID and IP address.
+
+| /nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}
+| Modify the service with the given node ID, IP address, and service name.
+
+| /nodes/\{id}/snmpinterfaces/\{ifindex}
+| Modify the SNMP interface with the given node ID and `ifIndex`.
+
+| /nodes/\{id}/categories/\{categoryname}
+| Modify the category with the given node ID and name.
+
+| /nodes/\{id}/hardwareInventory/\{entPhysicalIndex}
+| Modify the hardware inventory entity for given node ID and index.
+It is possible to use this endpoint to add custom attributes.
 |===
 
-== DELETEs (Removing Data)
+== DELETEs (removing data)
 
 Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
 
-[options="header", cols="5,10"]
+[caption=]
+.Nodes API DELETE functions
+[cols="2,3"]
 |===
-| Resource                                                     | Description
-| `/nodes/\{id}`                                               | Delete a node with the given ID.
-| `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`         | Delete a specific entity from the node's hardware inventory.
-                                                                 If you provide the `entPhysicalIndex` of the root entity, all the hardware inventory will be removed.
+| Resource  | Description
+
+| /nodes/\{id}
+| Delete a node with the given ID.
+
+| /nodes/\{id}/hardwareInventory/\{entPhysicalIndex}
+| Delete a specific entity from the node's hardware inventory.
+If you provide the `entPhysicalIndex` of the root entity, all the hardware inventory will be removed.
 |===
 
-NOTE: Deletion of nodes, ipinterfaces, and services is asynchronous so it will return 202 (ACCEPTED).
-Deletion of snmpinterfaces and categories is synchronous calls so will return 204 (NO_CONTENT) on success.
+NOTE: Deletion of nodes, `ipinterfaces`, and services is asynchronous so it will return 202 (ACCEPTED).
+Deletion of `snmpinterfaces` and categories is synchronous calls so will return 204 (NO_CONTENT) on success.
 
 == Example hardware inventory
 

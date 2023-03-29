@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.kafka.itests.offset;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.ArrayList;

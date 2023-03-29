@@ -87,42 +87,58 @@ It is not known if the same approach will prove useful for other use cases, like
 The following examples show how to monitor SSL certificates on services like IMAPS, SMTPS, and HTTPS, as well as an sample use of the STARTTLS feature for XMPP.
 If the certificates expire within 30 days, the service goes down and indicates this issue in the reason of the monitor.
 In this example, the monitoring interval is reduced to test the certificate every two hours (7,200,000 ms).
-Configuration in poller-configuration.xml is as follows:
+
+Note that you must include the `monitor` section for each service in your definition.
+
+Configuration in `poller-configuration.xml` is as follows:
 
 [source, xml]
 ----
 <service name="SSL-Cert-IMAPS-993" interval="7200000" user-defined="false" status="on">
-    <parameter key="retry" value="2"/>
-    <parameter key="timeout" value="2000"/>
-    <parameter key="port" value="993"/>
-    <parameter key="days" value="30"/>
-</service>
-<service name="SSL-Cert-SMTPS-465" interval="7200000" user-defined="false" status="on">
-    <parameter key="retry" value="2"/>
-    <parameter key="timeout" value="2000"/>
-    <parameter key="port" value="465"/>
-    <parameter key="days" value="30"/>
-</service>
-<service name="SSL-Cert-HTTPS-443" interval="7200000" user-defined="false" status="on">
-    <parameter key="retry" value="2"/>
-    <parameter key="timeout" value="3000"/>
-    <parameter key="port" value="443"/>
-    <parameter key="days" value="30"/>
-    <parameter key="server-name" value="${nodelabel}.example.com"/>
-</service>
-<service name="XMPP-STARTTLS-5222" interval="7200000" user-defined="false" status="on">
-    <parameter key="retry" value="2"/>
-    <parameter key="timeout" value="3000"/>
-    <parameter key="port" value="5222"/>
-    <parameter key="days" value="30"/>
-    <parameter key="starttls-preamble" value="<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='{ipAddr}' version='1.0'>"/>
-    <parameter key="starttls-preamble-response" value="^.*starttls.*$"/>
-    <parameter key="starttls-start" value="<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"/>
-    <parameter key="starttls-start-response" value="^.*starttls.*$"/>
+    <parameter key="retry" value="2"/> <1>
+    <parameter key="timeout" value="2000"/> <2>
+    <parameter key="port" value="993"/> <3>
+    <parameter key="days" value="30"/> <4>
 </service>
 
-<monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="SSL-Cert-SMTPS-465" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
-<monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+<service name="SSL-Cert-SMTPS-465" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/> <1>
+    <parameter key="timeout" value="2000"/> <2>
+    <parameter key="port" value="465"/> <3>
+    <parameter key="days" value="30"/> <4>
+</service>
+
+<service name="SSL-Cert-HTTPS-443" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/> <1>
+    <parameter key="timeout" value="3000"/> <2>
+    <parameter key="port" value="443"/> <3>
+    <parameter key="days" value="30"/> <4>
+    <parameter key="server-name" value="${nodelabel}.example.com"/> <5>
+</service>
+
+<service name="XMPP-STARTTLS-5222" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/> <1>
+    <parameter key="timeout" value="3000"/> <2>
+    <parameter key="port" value="5222"/> <3>
+    <parameter key="days" value="30"/> <4>
+    <parameter key="starttls-preamble" value="<stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='{ipAddr}' version='1.0'>"/> <6>
+    <parameter key="starttls-preamble-response" value="^.*starttls.*$"/> <7>
+    <parameter key="starttls-start" value="<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"/> <8>
+    <parameter key="starttls-start-response" value="^.*starttls.*$"/> <9>
+</service>
+
+<monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <10>
+<monitor service="SSL-Cert-SMTPS-465" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <10>
+<monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <10>
+<monitor service="XMPP-STARTTLS-5222" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" /> <10>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> TCP port for the service with SSL certificate.
+<4> Number of days before the certificate expires that we mark the service as failed.
+<5> The DNS hostname to send as part of the TLS negotiation.
+<6> Preliminary message to send to the server prior to *STARTTLS* command.
+<7> Regular expression that must match response to preliminary message sent to server prior to *STARTTLS* command.
+<8> *STARTTLS* command.
+<9> Regular expression that must match response to *STARTTLS* command sent to server.
+<10> Required *monitor* section for each service monitor.

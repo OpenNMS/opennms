@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -61,7 +62,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
         @Override
         public String toString() {
-            return "Invalid User ["+getName()+"]";
+            return "Invalid User ["+ WebSecurityUtils.sanitizeString(getName())+"]";
         }
         
     }
@@ -75,7 +76,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
         @Override
         public String toString() {
-            return "Invalid Group ["+getName()+"]";
+            return "Invalid Group ["+WebSecurityUtils.sanitizeString(getName())+"]";
         }
         
     }

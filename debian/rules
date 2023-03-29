@@ -90,23 +90,21 @@ install: build
 	##
 	## Setup the provision adapter packages
 	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,reverse-dns,snmp-asset,snmp-hardware-inventory,wsman-asset}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,reverse-dns,snmp-asset,snmp-hardware-inventory,wsman-asset}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory,wsman-asset}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory,wsman-asset}/var/lib/opennms/etc-pristine
-	mv debian/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
-	mv debian/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
-	mv debian/lib/opennms-wsman-asset-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-wsman-asset/usr/share/java/opennms/
-	mv debian/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
-	mv debian/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
-	mv debian/etc/wsman-asset-adapter-configuration.xml                 debian/opennms-plugin-provisioning-wsman-asset/etc/opennms/
-	#find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
+	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-wsman-asset-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-wsman-asset/usr/share/java/opennms/
+	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
+	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
+	mv debian/temp/etc/wsman-asset-adapter-configuration.xml                 debian/opennms-plugin-provisioning-wsman-asset/etc/opennms/
+	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-dns.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-link,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-link.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-map,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-map.postinst
-	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-rancid,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-rancid.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-reverse-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-reverse-dns.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-snmp-asset,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-snmp-asset.postinst
 	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-snmp-hardware-inventory,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-snmp-hardware-inventory.postinst

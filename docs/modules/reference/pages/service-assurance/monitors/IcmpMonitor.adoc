@@ -48,33 +48,51 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Examples use CentOS/RHEL path names.
+Examples use the CentOS/RHEL path names.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
 <service name="ICMP" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="2"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-  <parameter key="rrd-base-name" value="icmp"/>
-  <parameter key="ds-name" value="icmp"/>
+  <parameter key="retry" value="2"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/> <3>
+  <parameter key="rrd-base-name" value="icmp"/> <4>
+  <parameter key="ds-name" value="icmp"/> <5>
 </service>
-<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+
+<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/> <6>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<4> The name of the RRD file (minus the .rrd or .jrb file extension).
+<5> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<6> Required *monitor* section.
 
 [source, xml]
 ----
 <!-- Advanced example: set DSCP bits and send a large packet with allow-fragmentation=false -->
 <service name="ICMP" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="2"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="dscp" value="0x1C"/> <!-- AF32: Class 3, Medium drop probability -->
-  <parameter key="allow-fragmentation" value="false"/>
-  <parameter key="packet-size" value="2048"/>
-  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-  <parameter key="rrd-base-name" value="icmp"/>
-  <parameter key="ds-name" value="icmp"/>
+  <parameter key="retry" value="2"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="dscp" value="0x1C"/> <!-- AF32: Class 3, Medium drop probability --> <3>
+  <parameter key="allow-fragmentation" value="false"/> <4>
+  <parameter key="packet-size" value="2048"/> <5>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/> <6>
+  <parameter key="rrd-base-name" value="icmp"/> <7>
+  <parameter key="ds-name" value="icmp"/> <8>
 </service>
-<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+
+<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/> <9>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> DSCP traffic-control value.
+<4> Whether to set the "Don’t Fragment" bit on outgoing packets.
+<5> Number of bytes of the ICMP packet to send.
+<6> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<7> The file name of the RRD file (minus the .rrd or .jrb file extension).
+<8> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<9> Required *monitor* section.
+

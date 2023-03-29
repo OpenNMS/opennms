@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -49,8 +50,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.codahale.metrics.Timer;
-import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.ProvisionOverallMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
@@ -100,6 +100,7 @@ public class NodeScan implements Scan {
     private Span m_span;
     private final Span m_parentSpan;
     private ProvisionMonitor monitor;
+    private ProvisionOverallMonitor overallMonitor;
 
     /**
      * <p>
@@ -130,7 +131,8 @@ public class NodeScan implements Scan {
     public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId,
             final OnmsMonitoringLocation location, final ProvisionService provisionService,
             final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory,
-            final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor) {
+            final TaskCoordinator taskCoordinator, final Span span, final ProvisionMonitor monitor,
+            final ProvisionOverallMonitor overallMonitor) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -142,6 +144,7 @@ public class NodeScan implements Scan {
         m_taskCoordinator = taskCoordinator;
         m_parentSpan = span;
         this.monitor = monitor;
+        this.overallMonitor = overallMonitor;
     }
 
     /**
@@ -305,6 +308,9 @@ public class NodeScan implements Scan {
         if (monitor != null) {
             monitor.beginScanning(this);
         }
+        if(!Objects.isNull(overallMonitor)){
+            overallMonitor.startNodeScan();
+        }
         reset();
         if (m_parentSpan != null) {
             m_span = getProvisionService().buildAndStartSpan("NodeScan", m_parentSpan.context());
@@ -385,8 +391,12 @@ public class NodeScan implements Scan {
             }
         };
 
-        return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(),
-                schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+        if (schedule.getScanInterval().getMillis() == 0) {
+            return executor.schedule(r, schedule.getInitialDelay().getMillis(), TimeUnit.MILLISECONDS);
+        } else {
+            return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(),
+                    schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+        }
     }
 
     private void sendScheduledNodeScanStartedEvent() {
@@ -1124,6 +1134,9 @@ public class NodeScan implements Scan {
         }
         if (monitor != null) {
             monitor.finishScanning(this);
+        }
+        if(!Objects.isNull(overallMonitor)){
+            overallMonitor.endNodeScan();
         }
     }
 }

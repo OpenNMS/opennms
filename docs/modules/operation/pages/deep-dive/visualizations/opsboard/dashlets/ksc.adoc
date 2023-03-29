@@ -1,0 +1,63 @@
+
+[[ksc]]
+= KSC Reports
+
+The KSC Reports dashlet displays an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+KSC reports provide a way to generate prefabricated graphical views of collected data.
+
+The dashlet displays the report's data in the report's defined order (columns, rows, and so on).
+
+[caption=]
+.KSC dashlet configuration options
+[options="autowidth"]
+|===
+| Field       | Description
+
+| Boost support
+| _Not available_
+
+| KSC-Report
+| Name of the KSC report to display.
+|===
+
+== Configuration
+
+You can configure KSC reports in the {page-component-title} web UI.
+To do so, click menu:Reports[KSC Reports] in the top menu bar.
+
+The following is an example report entry that uses a custom index and graphs:
+
+[source, xml]
+----
+<Report id="7" title="GlassFish JVM Stats" show_timespan_button="true"
+        show_graphtype_button="true" graphs_per_line="2">
+  <Graph title="Instance1 Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance1 Non-Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+  <Graph title="Instance2 Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance2 Non-Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+</Report>
+----
+
+Valid options for `timespan` are as follows:
+
+[source, console]
+----
+  "1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour",
+  "1_day", "2_day", "7_day", "1_month", "3_month", "6_month",
+  "1_year", "Today", "Yesterday", "Yesterday 9am-5pm",
+  "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month",
+  "Last Month", "This Quarter", "Last Quarter", "This Year",
+  "Last Year"
+----
+
+For more information, see `org.opennms.netmgt.config.KSC_PerformanceReportFactory.java:TIMESPAN_OPTIONS`.
+
+NOTE: Make sure that each report's `id` is unique.
+
+== Use KSC reports
+
+The KSC Reports section on the {page-component-title} home page includes a drop-down list from which you can select configured KSC reports.

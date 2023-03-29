@@ -56,8 +56,6 @@
 
                         <!-- OPENNMS: Add Spring features that we need in the base container -->
                         <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
-                        <feature>spring/3.1.4.RELEASE</feature>
-                        <feature>spring/3.2.18.RELEASE_1</feature>
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
                         <feature>spring/4.2.9.RELEASE_1</feature>
@@ -105,6 +103,10 @@
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
 
                         <bundle>mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1</bundle>
+                        <bundle>mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
                     </installedBundles>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
@@ -186,13 +188,6 @@
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>spring-31-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
             <scope>provided</scope>

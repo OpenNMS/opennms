@@ -436,7 +436,7 @@ public abstract class Util extends Object {
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
                 for (int i = 0; i < values.length; i++) {
                     buffer.append("&");
-                    buffer.append(name);
+                    buffer.append(Util.encode(name));
                     buffer.append("=");
                     buffer.append(Util.encode(values[i]));
                 }

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd.common;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -42,7 +41,6 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.enlinkd.service.api.Topology;
 import org.opennms.netmgt.enlinkd.service.api.TopologyService;
-import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.scheduler.Schedulable;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
@@ -157,15 +155,19 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     }
 
     public void setDefaultVertex() {
+        if (m_topology.getVertices().isEmpty()) {
+            LOG.info("setDefaultVertex: {}: topology is empty", getName());
+            return;
+        }
         NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
         if (defaultFocusPoint != null) {
             OnmsTopologyVertex dv = create(defaultFocusPoint,getIpPrimaryMap().get(defaultFocusPoint.getId()));
             if (m_topology.hasVertex(dv.getId())) {
                 m_topology.setDefaultVertex(dv);
-                LOG.info("setDefaultVertex: set default: {}", dv.getLabel());
-            } else  if (!m_topology.getVertices().isEmpty()) {
+                LOG.info("setDefaultVertex: {}: set default: {}", getName(), dv.getLabel());
+            } else  {
                 m_topology.setDefaultVertex(m_topology.getVertices().iterator().next());
-                LOG.info("setDefaultVertex: set first item: {}", m_topology.getDefaultVertex().getLabel());
+                LOG.info("setDefaultVertex: {}: set first item: {}",getName(), m_topology.getDefaultVertex().getLabel());
             }
         }
     }
