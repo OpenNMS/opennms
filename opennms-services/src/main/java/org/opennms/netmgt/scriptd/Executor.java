@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.scriptd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -184,29 +185,9 @@ public class Executor {
         @Override
         public void run() {
 
-            // check for reload event
             if (isReloadConfigEvent(m_event)) {
-                try {
-                    ScriptdConfigFactory.reload();
-                    m_config = ScriptdConfigFactory.getInstance();
-                    loadConfig();
-
-                    for (final ReloadScript script : m_config.getReloadScripts()) {
-                        if (script.getContent().isPresent()) {
-                            try {
-                                m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent().get());
-                            } catch (BSFException e) {
-                                LOG.error("Reload script[{}] failed.", script, e);
-                            }
-                        } else {
-                            LOG.warn("Reload Script does not have script contents: " + script);
-                        }
-                    }
-
-                    LOG.debug("Scriptd configuration reloaded");
-                } catch (Throwable e) {
-                    LOG.error("Unable to reload Scriptd configuration: ", e);
-                }
+                // reloads are handled by Scriptd#handleReloadConfigEvent
+                return;
             }
 
             if (m_config.getTransactional()) {
@@ -219,6 +200,32 @@ public class Executor {
             }
 
         } // end run
+    }
+
+    protected void doReload() {
+        try {
+            ScriptdConfigFactory.reload();
+            m_config = ScriptdConfigFactory.getInstance();
+            registerEventProcessor();
+            loadConfig();
+
+            for (final ReloadScript script : m_config.getReloadScripts()) {
+                final Optional<String> scriptContent = script.getContent();
+                if (scriptContent.isPresent()) {
+                    try {
+                        m_scriptManager.exec(script.getLanguage(), "", 0, 0, scriptContent.get());
+                    } catch (BSFException e) {
+                        LOG.error("Reload script[{}] failed.", script, e);
+                    }
+                } else {
+                    LOG.warn("Reload Script does not have script contents: {}", script);
+                }
+            }
+
+            LOG.debug("Scriptd configuration reloaded");
+        } catch (final Exception e) {
+            LOG.error("Unable to reload Scriptd configuration", e);
+        }
     }
 
     private void executeEventScripts(IEvent m_event) {
@@ -305,14 +312,14 @@ public class Executor {
     }
 
 
-    private static boolean isReloadConfigEvent(IEvent event) {
+    protected static boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
             List<IParm> parmCollection = event.getParmCollection();
             
             for (IParm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Scriptd".equalsIgnoreCase(parm.getValue().getContent())) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && Scriptd.NAME.equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
                     break;
                 }
@@ -367,16 +374,24 @@ public class Executor {
         // Start the thread pool
         m_executorService = Executors.newFixedThreadPool(1, new LogPreservingThreadFactory("Scriptd-Executor", 1));
 
-        // Register the event listener after the thread pool has been
-        // started
+        registerEventProcessor();
+
+        LOG.debug("Scriptd executor started");
+    }
+
+    protected void registerEventProcessor() {
+        if (m_broadcastEventProcessor != null) {
+            // if there's an existing processor, close it, just in case
+            m_broadcastEventProcessor.close();
+        }
+
+        // Register the event listener after the thread pool has been started
         try {
             m_broadcastEventProcessor = new BroadcastEventProcessor(this);
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             LOG.error("Failed to setup event reader", e);
             throw new UndeclaredThrowableException(e);
         }
-
-        LOG.debug("Scriptd executor started");
     }
 
     public synchronized void stop() {
