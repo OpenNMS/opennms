@@ -3,6 +3,7 @@
 export ALEC_VERSION="latest"
 export CLOUD_VERSION="latest"
 export CORTEX_VERSION="latest"
+export VELOCLOUD_VERSION="latest"
 #export DEPLOY_FOLDER="/usr/share/opennms/deploy" 
 export DEPLOY_FOLDER="/opt/usr-plugins"
 
@@ -37,7 +38,18 @@ if [ $CORTEX_VERSION == "latest" ]
 then
  urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
 else
- urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_TAG") | .assets[0].browser_download_url')
+ urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
+fi
+for url in $urls; do
+    wget "$url"
+done
+
+cd $DEPLOY_FOLDER || exit 
+if [ $VELOCLOUD_VERSION == "latest" ]
+then
+ urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+else
+ urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
 fi
 for url in $urls; do
     wget "$url"
