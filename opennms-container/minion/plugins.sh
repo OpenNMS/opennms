@@ -16,7 +16,7 @@ then
 else
  urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
 fi
-if [ -v "$urls" ]; then
+if [ -v urls ]; then
  for url in $urls; do
     wget "$url"
  done
