@@ -1,12 +1,12 @@
 [[selinux-icmp]]
-=== SELinux and ICMP permissions
+= SELinux and ICMP permissions
 
-If you have SELinux enabled on your {page-component-title} server, there must be a policy configured to allow {page-component-title} to bind to the ICMP service.
+If you have SELinux enabled on your {page-component-title} server, you must also configure a policy that allows {page-component-title} to bind to the ICMP service.
 
 NOTE: The steps in this section apply specifically to CentOS 8.
 
 To verify that you have SELinux running and enabled, use the `sestatus` console command.
-If it is enabled, you should see the following:
+If it is enabled, the output should be similar to the following example:
 
 [source, console]
 ----
@@ -71,6 +71,9 @@ semodule -i JniPing.pp
 getenforce
 ----
 
-You can verify the package with the following command: `semodule --list-modules | grep JniPing`.
+You can verify the package with the following command:
+
+[source, console]
+semodule --list-modules | grep JniPing
 
 Note that this command is based on the `audit2allow` command on a CentOS 8 system.

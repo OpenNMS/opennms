@@ -1,10 +1,9 @@
 .Enable Masquerade to allow port forwarding
 [source, console]
-----
 sudo vi /etc/ufw/before.rules
-----
 
-.For SNMP Trap forwarding, add the following lines at the top before the `*filter` section
+To enable SNMP trap forwarding, add the following code to the top of the file before the `*filter` section:
+
 [source, console]
 ----
 *nat
