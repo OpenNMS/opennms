@@ -6,14 +6,6 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} as core-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
-
 FROM ${BASE_IMAGE} as minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
@@ -31,6 +23,14 @@ RUN chmod -R g-w /opt/minion && \
         /opt/minion/system \
         /opt/minion/repositories \
         -type d -print0 | xargs -0 chmod 2775
+
+##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as core-plugins
+
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Prod image with minimal image size
