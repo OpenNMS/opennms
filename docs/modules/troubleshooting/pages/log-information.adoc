@@ -21,9 +21,9 @@ org.opennms.netmgt.vmmgr.InvalidDataSourceException: Data source 'opennms' faile
 [[karafStartupMonitor.log]]
 == karafStartupMonitor.log
 
-`$OPENNMS_HOME/logs/karafStartupMonitor.log` contains information relating to server events and the start and stop processes for {page-component-title} karaf related services.
+`$OPENNMS_HOME/logs/karafStartupMonitor.log` contains information relating to startup of the [Karaf container](https://karaf.apache.org/) embedded within {page-component-title}, and of functionality that is implemented as Karaf features.
 
-Below is an example of a log that describes a problem with the startup of karaf and steps to take to troubleshoot the error:
+Below is an example of a log that describes a problem with the startup of Karaf and steps to take to troubleshoot the error:
 
 [source, shell]
 ----

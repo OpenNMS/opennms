@@ -32,10 +32,11 @@ See xref:deployment:core/system-requirements.adoc[] for software compatibility r
 [[startup-errors]]
 == Configuration errors
 
-If you encounter a configuration error when starting {page-component-title}, you should ensure that {page-component-title} is installed and updated to the latest version:
+If you encounter a configuration error when starting {page-component-title}, you may need to run the {page-component-title} database installer, which updates the relational database schema to the latest version and applies any required changes to the configuration files:
 
 [source, console]
 install -dis
+NOTE: Running or re-running the database installer is generally safe, provided you stop {page-component-title} first.
 
 If you run `systemctl start opennms` and {page-component-title} is not installed or up to date, the output displays error messages:
 
@@ -118,4 +119,4 @@ Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (
 You can run the following command to identify any `.rpmnew` or `.rpmsave` files in your environment:
 
 [source, shell]
-$ sudo find $OPENNMS_HOME -name *.rpm* -exec ls -la {} \;
+$ sudo find $OPENNMS_HOME -name '*.rpm*' -exec ls -la {} \;
