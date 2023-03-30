@@ -1,82 +1,78 @@
-[[flows-troubleshoot]]
+
 = Flows Troubleshooting
 
-This section describes ways to troubleshoot flows when the feature does not work or performs suboptimally.
+This section describes troubleshooting methods for flows and associated features.
 
-== Troubleshoot telemetryd
+== Telemetryd
 
-<<deep-dive/telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on {page-component-title}, so you can run the following checks to determine that it works as expected:
+You can run the following checks to determine that telemetryd is working as expected:
 
-* Telemetryd availability
-* Are routers sending data?
-* Docker networking
-* Minion health check
-* OpenNMS health check
-* Are sink consumer graphs populated?
-* Is SNMP available on the routers that provide Netflow?
-* Review OpenNMS and Minion logs
+* Check telemetryd availability.
+* Verify that routers are sending data.
+* Check Docker networking configuration.
+* Perform a Minion health check.
+* Perform a {page-component-title} health check.
+* Verify that sink consumer graphs are populated.
+* Verify that SNMP is available on routers that provide Netflow.
+* Review {page-component-title} and Minion logs.
 
-The https://opennms.discourse.group/t/troubleshoot-telemetryd/1739[Troubleshoot Telemetryd] article on Discourse provides details on how to run these checks.
+The https://opennms.discourse.group/t/troubleshoot-telemetryd/1739[Troubleshoot Telemetryd] Discourse article describes how to run these checks.
 
 == No data or incorrect data
 
-In a scenario where you see no data or incorrect data, you should view the state and parameters of telemetry listeners, and whether they are processing data and information with the following command: `opennms:telemetry-listeners`
+In a scenario where you see no data or incorrect data, you should view the state and parameters of telemetry listeners:
+
+[source, console]
+opennms:telemetry-listeners
 
 == Check Elasticsearch persistence
 
-If you store flows in Elasticsearch, you can use Kibana to check if flow documents (raw and/or aggregated) are written to Elasticsearch.
-You must know your endpoint address and API key.
+If you store flows in Elasticsearch, you can use Kibana to check if flow documents (raw and aggregated) are written to Elasticsearch.
 
-Run the following curl command:
+NOTE: You must know your endpoint address and API key.
+
+To check Elasticsearch persistence, run this command:
 
 [source, console]
-----
 curl "https://your-es-server.hostname:9200/_cat/indices?v&apikey=Your-API-Key"
-----
 
 The query returns a list of indices.
-Those that start with a `.` are system indices.
-All others are regular indices.
+Those that start with a `.` are system indices; all others are regular indices.
 Regular indices appear only when Elasticsearch is receiving flows.
+If no regular indices are displayed, check `etc/telemetryd-configuration.xml` and verify that Netflow listeners are enabled.
 
-=== No Elasticsearch persistence
+For more information on troubleshooting Elasticsearch, refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html[official Elasticsearch documentation].
 
-If you do not see regular indices, in OpenNMS check `etc/telemetryd-configuration.xml`.
-You must enable Netflow listeners.
+== Persisted flows do not appear in OpenNMS plugin for Grafana
 
-== Persisted flows do not appear in Helm
-
-If you have persisted flows but they do not appear in Helm, check the configuration in `etc/org.opennms.features.flows.persistence.elastic.cfg`, in particular, the `elasticUrl` property.
-If you are using aggregated flows, make sure your `aggregate.elasticIndexStrategy` matches the index strategy you configured in the streaming analytics tool.
-To persist only raw flows or only aggregated flows in Elasticsearch, you must set `alwaysUseRawForQueries` or `alwaysUseAggForQueries` appropriately.
-
-(For more information on troubleshooting Elasticsearch, refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html[Elasticsearch documentation].)
+If your persisted flows are not displayed in the OpenNMS plugin for Grafana, check the `elasticUrl` property in `etc/org.opennms.features.flows.persistence.elastic.cfg`.
+If you are using aggregated flows, ensure that your `aggregate.elasticIndexStrategy` matches the index strategy that you configured in the streaming analytics tool.
+To persist only raw flows or only aggregated flows, set either `alwaysUseRawForQueries` or `alwaysUseAggForQueries`, as appropriate.
 
 == Verify flows by device
-In the UI, use the Nodes page to determine flows performance for specific devices.
-(Choose *Info>Nodes* to view nodes.)
-The flows indicator icon shows flows data for each device, with SNMP details and flows direction.
 
-== Replay flows from a packet capture
+To verify flows by device, click menu:Info[Nodes] in the web UI's top menu bar.
+The *flows indicator* symbol on the Nodes page shows flows data for each device, with SNMP details and the direction of flows.
 
-To help debug flow processing, use the following Karaf shell commands to replay flows from a packet capture:
+== Replay flows from packet capture
 
-List the available listeners and parsers:
+You can replay flows from a package capture to help debug flow processing:
+
+. List the available listeners and parsers:
++
 [source, karaf]
-----
 opennms:telemetry-listeners
-----
 
-Replay the packet capture (.pcap) to the target parser from the output above:
+. Replay the package capture to the target parser (obtained from the previous step):
++
 [source, karaf]
-----
 opennms:telemetry-replay-pcap <listener> <parser> <path-to-pcap-file>
-----
 
-Here's an example that replays a .pcap with Netflow 9 flows to the Netflow 9 parser:
+This example is the result of replaying a package capture with Netflow 9 flows to the Netflow 9 parser:
+
 [source, karaf]
 ----
-admin@opennms()> opennms:telemetry-listeners 
+admin@opennms()> opennms:telemetry-listeners
 Name = Multi-UDP-9999
 Description = UDP *:9999
 Properties:
@@ -95,8 +91,31 @@ Processing packet #300.
 Processing packet #400
 Processing packet #500.
 Done processing 515 packets.
-admin@opennms()> 
+admin@opennms()>
 ----
 
-Flows will be ingested using the same ingest and processing pipeline as they would if received directly from the devices.
-Nodes with interfaces that match the IP addresses in the .pcap must exist in order to associate the results with a node.
+Flows are ingested using the same pipeline that they would if received directly from the devices.
+Nodes with interfaces that match the IP addresses in the package capture must exist to associate the results with a node.
+
+== Correct clock skew
+
+Flow analyses use timestamps that are exposed by the underlying flow management protocol.
+The timestamps are set depending on the exporting router's clock settings.
+If the router's clock differs from the actual time, the skew is reflected in the received flows; this can subsequently impact further analysis and aggregation.
+
+{page-component-title} can correct skewed flow timestamps.
+To do so, it compares the exporting device's current time with the actual time that the packet is received.
+If the times differ significantly, the time that the flow was received is considered more correct and all timestamps associated with the flow are updated.
+
+To enable clock correction, configure a threshold for the maximum allowed delta, in milliseconds.
+Note that setting the threshold to `0` disables the correction mechanism.
+
+.Enable clock correction and set maximum delta
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms()> config:property-set clockSkewCorrectionThreshold 5000
+admin@opennms()> config:update
+----
