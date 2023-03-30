@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpCollectionSet;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
@@ -94,7 +95,13 @@ public class SnmpPropertyExtenderProcessor {
             // Apply MIB Properties
             collectionSet.getResources().forEach(r -> {
                 mibObjProperties.forEach(p -> {
-                    if (p.getInstance().equals(r.getResourceTypeName())) {
+                    // Property extenders should be able to index by ifIndex similar to how other mibObjs do. See
+                    // NMS-15342.
+                    String resourceName = r.getResourceTypeName();
+                    if (resourceName.equals(CollectionResource.RESOURCE_TYPE_IF)) {
+                        resourceName = "ifIndex";
+                    }
+                    if (p.getInstance().equals(resourceName)) {
                         updateCollectionResource(stringAttributes, (SnmpCollectionResource) r, p);
                     }
                 });
