@@ -6,7 +6,7 @@ This section describes other errors that you may encounter when {page-component-
 [[xml-errors]]
 == XML configuration errors
 
-XML errors can occur when an XML file in the `$OPENNMS_HOME/etc/` hierarchy contains errors that cause it not to be a well-formed XML document, or that lead to an invalid configuration according to the XML file's schema:
+XML errors can occur when an XML file in the `$\{OPENNMS_HOME}/etc/` hierarchy contains errors that cause it not to be a well-formed XML document, or that lead to an invalid configuration according to the XML file's schema:
 
 [source, shell]
 ----
@@ -73,10 +73,10 @@ If you run `xmllint` again, the file should validate properly:
 
 {page-component-title} should now start properly.
 
-TIP: You can run `xmllint` on all files in `$OPENNMS_HOME/etc/events`:
+TIP: You can run `xmllint` on all files in `$\{OPENNMS_HOME}/etc/events` with the following command:
 [source, shell]
 ----
-for x in $OPENNMS_HOME/etc/events/*;do xmllint --schema $OPENNMS_HOME/share/xsds/eventconf.xsd $x --noout;done
+for x in ${OPENNMS_HOME}/etc/events/*;do xmllint --schema ${OPENNMS_HOME}/share/xsds/eventconf.xsd $x --noout;done
 ----
 
 NOTE: The `xmllint` command can help pinpoint errors in XML syntax, and errors in content that violates the schema (with the `--schema` flag), but subtler errors may still cause problems even if the commands listed above indicate that the files are valid. The `config-tester` command is even more exhaustive, but it may not catch all kinds of errors that break startup.

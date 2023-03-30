@@ -6,7 +6,7 @@ This section describes common log files to look at when troubleshooting.
 [[manager.log]]
 == manager.log
 
-`$OPENNMS_HOME/logs/manager.log` contains information relating to manager server events and the start and stop processes for {page-component-title} services.
+`$\{OPENNMS_HOME}/logs/manager.log` contains information relating to manager server events and the start and stop processes for {page-component-title} services.
 
 Below is an example of a log that describes a problem connecting to the PostgreSQL database server:
 
@@ -21,7 +21,7 @@ org.opennms.netmgt.vmmgr.InvalidDataSourceException: Data source 'opennms' faile
 [[karafStartupMonitor.log]]
 == karafStartupMonitor.log
 
-`$OPENNMS_HOME/logs/karafStartupMonitor.log` contains information relating to startup of the [Karaf container](https://karaf.apache.org/) embedded within {page-component-title}, and of functionality that is implemented as Karaf features.
+`$\{OPENNMS_HOME}/logs/karafStartupMonitor.log` contains information relating to startup of the https://karaf.apache.org/[Karaf container] embedded within {page-component-title}, and of functionality that is implemented as Karaf features.
 
 Below is an example of a log that describes a problem with the startup of Karaf and steps to take to troubleshoot the error:
 
@@ -36,3 +36,4 @@ What can you do about this?
 3.) run the script bin/fix-karaf-setup.sh
 ----
 
+TIP: When doing a {page-component-title} upgrade or unexpected results occur when using Karaf, run `$\{OPENNMS_HOME}/bin/fix-karaf-setup.sh`

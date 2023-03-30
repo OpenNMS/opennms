@@ -36,6 +36,7 @@ If you encounter a configuration error when starting {page-component-title}, you
 
 [source, console]
 install -dis
+
 NOTE: Running or re-running the database installer is generally safe, provided you stop {page-component-title} first.
 
 If you run `systemctl start opennms` and {page-component-title} is not installed or up to date, the output displays error messages:
@@ -80,12 +81,13 @@ NOTE: See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up Post
 [[upgrade-errors]]
 == rpm, yum, dnf upgrade errors
 
-Sometimes, {page-component-title} startup may fail because there are RHEL-related `.rpmnew` or `.rpmsave` files located in `$OPENNMS_HOME`.
+Sometimes, {page-component-title} startup may fail because there are RHEL-related `.rpmnew` or `.rpmsave` files located in `$\{OPENNMS_HOME}`.
 When you check the status of your instance, one of the following errors might be displayed:
 
 .`.rpmnew` error
 [source, shell]
 ----
+opennms[8728]: WARNING!  You have files that end in .rpmnew in your
 opennms[8728]: OPENNMS_HOME (/opt/opennms) directory.
 opennms[8728]: The format of the original files may have changed since
 opennms[8728]: you modified them before installing a new version.
@@ -101,6 +103,7 @@ systemd[1]: Failed to start OpenNMS server.
 .`.rpmsave` error
 [source, shell]
 ----
+opennms[133068]: WARNING!  You have files that end in .rpmsave in your
 opennms[133068]: OPENNMS_HOME (/opt/opennms) directory.
 opennms[133068]: The format of the original files may have changed since
 opennms[133068]: you modified them before installing a new version.
@@ -119,4 +122,4 @@ Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (
 You can run the following command to identify any `.rpmnew` or `.rpmsave` files in your environment:
 
 [source, shell]
-$ sudo find $OPENNMS_HOME -name '*.rpm*' -exec ls -la {} \;
+$ sudo find ${OPENNMS_HOME} -name '*.rpm*' -exec ls -la {} \;
