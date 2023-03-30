@@ -100,7 +100,7 @@
                         <feature>scv</feature>
                     </bootFeatures>
                     <libraries>
-                        <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
+                        <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xercesVersion}_1;type:=endorsed;export:=true;delegate:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/2.9.0;type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.9.0;type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/2.9.0;type:=endorsed;export:=true</library>
