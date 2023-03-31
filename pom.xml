@@ -124,7 +124,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0.ONMS.1</version>
+        <version>2.0.0</version>
         <inherited>true</inherited>
         <executions>
           <execution>
@@ -136,6 +136,7 @@
           </execution>
         </executions>
         <configuration>
+          <verbose>true</verbose>
           <acceptPomPackaging>true</acceptPomPackaging>
           <errorRemedy>xmlOutput</errorRemedy>
           <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
@@ -392,6 +393,33 @@
             <spdx/>
           </licenseUrlFileNames>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-api</artifactId>
+            <version>${mavenResolverApiVersion}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -1667,6 +1695,8 @@
     <log4j2Version>2.17.1</log4j2Version>
     <logbackClassicVersion>1.2.10</logbackClassicVersion>
     <mapstructVersion>1.3.0.Final</mapstructVersion>
+    <mavenApiVersion>3.8.8</mavenApiVersion>
+    <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.5</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
@@ -1715,7 +1745,7 @@
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
-    <xercesVersion>2.9.1</xercesVersion>
+    <xercesVersion>2.12.2</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
@@ -1769,6 +1799,7 @@
         <runPingTests>true</runPingTests>
         <skipPdfGeneration>false</skipPdfGeneration>
       </properties>
+      <!--
       <build>
         <plugins>
           <plugin>
@@ -1777,6 +1808,7 @@
           </plugin>
         </plugins>
       </build>
+      -->
     </profile>
     <profile>
       <id>enable.license</id>
@@ -3507,6 +3539,31 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-spring</artifactId>
         <version>${camelVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${mavenResolverApiVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
