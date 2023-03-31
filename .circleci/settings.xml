@@ -10,4 +10,5 @@
    <url>https://maven.opennms.org/repository/everything/</url>
    <mirrorOf>*</mirrorOf>
   </mirror>
+ </mirrors>
 </settings>
