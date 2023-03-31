@@ -571,8 +571,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         DevDebugUtils.clearLogs(targetLogFolder);
 
         LOG.info("Gathering thread dump...");
-        final var threadDump = DevDebugUtils.gatherThreadDump(this,
-                targetLogFolder, CONTAINER_LOG_DIR.resolve("output.log"));
+        // final var threadDump = DevDebugUtils.gatherThreadDump(this,
+        //           targetLogFolder, CONTAINER_LOG_DIR.resolve("output.log"));
+        final Path threadDump = null;
 
         LOG.info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
