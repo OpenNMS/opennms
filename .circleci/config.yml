@@ -303,6 +303,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
+              -s .circleci/settings.xml \
               $MAVEN_ARGS || exit 1
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
@@ -318,6 +319,7 @@ commands:
                 -P'!jdk7+' \
                 -Prun-expensive-tasks \
                 --batch-mode \
+                -s ../.circleci/settings.xml \
                 install || exit 1
             popd
       - update-maven-cache
@@ -904,6 +906,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               --batch-mode \
+              -s .circleci/settings.xml \
               $MAVEN_ARGS
       - run:
           name: Collect Artifacts
