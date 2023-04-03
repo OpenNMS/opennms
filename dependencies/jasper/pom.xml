@@ -109,13 +109,10 @@
     </dependency>
   </dependencies>
   <repositories>
-    <repository>
-      <id>jasperreports</id>
-      <url>https://jasperreports.sourceforge.net/maven2/</url>
-    </repository>
+    <!-- jaspersoft's cert expired 2023-04-03, use our copy of the olap4j jar for now -->
     <repository>
       <id>jaspersoft-third-party</id>
-      <url>https://jaspersoft.jfrog.io/ui/native/third-party-ce-artifacts/</url>
+      <url>https://maven.opennms.org/repository/thirdparty/</url>
     </repository>
   </repositories>
 </project>
