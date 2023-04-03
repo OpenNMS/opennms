@@ -3,7 +3,8 @@
 export ALEC_VERSION="latest"
 export CLOUD_VERSION="latest"
 export CORTEX_VERSION="latest"
-#export DEPLOY_FOLDER="/usr/share/opennms/deploy" 
+export VELOCLOUD_VERSION="latest"
+
 export DEPLOY_FOLDER="/opt/usr-plugins"
 
 mkdir $DEPLOY_FOLDER 
@@ -14,16 +15,20 @@ pip3 install --upgrade cloudsmith-cli
 
 mkdir ~/test
 cd ~/test || exit
-urls=$(cloudsmith list packages --query="opennms-alec-plugin version:$ALEC_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
-for url in $urls; do 
+artifact_urls=$(cloudsmith list packages --query="opennms-alec-plugin version:$ALEC_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
+for url in $artifact_urls; do 
  wget "$url"
 done
 dpkg-deb -R *-alec-plugin_*_all.deb ./
 find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
 
+cd ~/ || exit
+rm -rf test
+mkdir ~/test
+cd ~/test || exit
 
-urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
-for url in $urls; do
+artifact_urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
+for url in $artifact_urls; do
     wget "$url"
 done
 dpkg-deb -R *-plugin-cloud_*_all.deb ./
@@ -35,10 +40,25 @@ rm -r test
 cd $DEPLOY_FOLDER || exit 
 if [ $CORTEX_VERSION == "latest" ]
 then
- urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+ artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
 else
- urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_TAG") | .assets[0].browser_download_url')
+ artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
 fi
-for url in $urls; do
+if [ -z "$artifact_urls" ]; then
+ for url in $artifact_urls; do
     wget "$url"
-done
+ done
+fi
+
+cd $DEPLOY_FOLDER || exit 
+if [ $VELOCLOUD_VERSION == "latest" ]
+then
+ artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+else
+ artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
+fi
+if [ -z "$artifact_urls"  ]; then
+ for url in $artifact_urls; do
+    wget "$url"
+ done
+fi

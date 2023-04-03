@@ -4,31 +4,30 @@
 This section describes how to configure {page-component-title} to provide real-time feedback on alarm correlation.
 
 [[ga-situation-feedback]]
-== Situation Feedback
+== Situation feedback
 
 Situation feedback lets operators provide real-time feedback on alarm correlation.
+You must have Elasticsearch installed to persist the feedback records.
 
-=== Installation
+=== Install feature
 
-Enable situation feedback by installing the feature from the Karaf shell:
+Follow these steps to install the situation feedback feature:
 
-`feature:install opennms-situation-feedback`
+. Install the package from the Karaf shell:
++
+[source, shell]
+feature:install opennms-situation-feedback
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-situation-feedback` to a file in `featuresBoot.d`:
+. Add `opennms-situation-feedback` to a `.boot` file in `featuresBoot.d` to configure the feature to remain installed after {page-component-title} restarts:
++
 [source, console]
-----
 echo "opennms-situation-feedback" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/opennms-situation-feedback.boot
-----
 
-=== Requirements
+=== Configure Elasticsearch persistence
 
-The feature requires Elasticsearch to persist the feedback records.
+Configure the situation feedback feature to use your Elasticsearch cluster from a Karaf shell in your {page-component-title} instance:
 
-==== Configure Elasticsearch Persistence
-
-From a Karaf shell on your {page-component-title} instance, start by configuring the situation feedback persistence to use your Elasticsearch cluster:
-
-[source]
+[source, shell]
 ----
 $ ssh -p 8101 admin@localhost
 ...
@@ -38,9 +37,7 @@ admin@opennms()> config:update
 ----
 
 NOTE: This configuration is stored in `$\{OPENNMS_HOME}/etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`.
-      See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration, Elasticsearch Integration>> for more information.
+See xref:deep-dive/elasticsearch/introduction.adoc[] for more information.
 
-Installing the feature exposes a REST endpoint that OpenNMS Helm uses to display and submit feedback.
-
-Find further information on the REST API in the xref:development:rest/situation-feedback.adoc[Developer Guide].
-
+Installing the situation feedback feature exposes a REST endpoint that the OpenNMS plugin for Grafana uses to display and submit feedback.
+You can find more information on the REST API in the xref:development:rest/situation-feedback.adoc[developer guide].

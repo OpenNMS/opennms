@@ -73,6 +73,7 @@ fi
   -Dtest.fork.count=0 \
   -Dit.test="$IT_TESTS" \
   --fail-fast \
+  --batch-mode \
   -Dfailsafe.skipAfterFailureCount=1 \
   -N \
   '-P!smoke.all' \

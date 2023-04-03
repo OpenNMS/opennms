@@ -354,7 +354,7 @@ public class AlarmdBlackboxIT {
         assertThat(results.getAlarms(3), hasSize(3)); // the situation is also an alarm, so it is counted here
         assertThat(results.getSituations(3), hasSize(1));
         assertThat(results.getSituation(3), hasSeverity(OnmsSeverity.CRITICAL)); // the situation should be escalated in severity
-        // t=4, situation should now have severity MINOR
+        // t=4, situation should now have severity MAJOR (interfaceDown alarm is still present and has severity=Minor)
         assertThat(results.getSituation(4), hasSeverity(OnmsSeverity.MAJOR));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));

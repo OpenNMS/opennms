@@ -288,6 +288,38 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         assertEquals("testDefaultValue", map.get("dot1dStpPortEnableText"));
     }
 
+    /**
+     * Test basic enum-lookup property extender with properties defined against standard ifTable entries
+     *
+     * @throws Exception
+     */
+    @Test
+    @JUnitCollector(
+            datacollectionType = "snmp",
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-NMS15342.xml",
+            anticipateFiles = {
+                    "1",
+                    "1/Fa0_0",
+                    "1/Fa0_0/strings.properties"
+            },
+            anticipateRrds = {
+                    "1/Fa0_0/ifOperStatus",
+                    "1/Fa0_0/ifAdminStatus"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    public void testPropertyExtenderIndexedByIf() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "Fa0_0"));
+        assertEquals("UP", map.get("ifAdminStatusTXT"));
+        assertEquals("UP", map.get("ifOperStatusTXT"));
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.core.test.TestContextAware#setTestContext(org.springframework.test.context.TestContext)
      */
