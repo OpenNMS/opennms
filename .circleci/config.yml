@@ -268,7 +268,6 @@ commands:
                 -Psmoke \
                 -Denable.license=true \
                 --batch-mode \
-                -s .circleci/settings.xml \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
@@ -442,7 +441,6 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              -s .circleci/settings.xml \
               $MAVEN_ARGS || exit 1
             if [ -d target/site/apidocs ]; then
               pushd target/site/apidocs
@@ -1430,7 +1428,6 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               --batch-mode \
-              -s .circleci/settings.xml \
               $MAVEN_ARGS
       - run:
           name: Build Minion OCI
