@@ -138,7 +138,6 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            --batch-mode \
-           -s .circleci/settings.xml \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
            --also-make \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
@@ -156,7 +155,6 @@ echo "#### Executing tests"
            -DskipITs=false \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
-           -s .circleci/settings.xml \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
