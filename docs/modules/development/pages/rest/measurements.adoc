@@ -166,8 +166,8 @@ The derived values are dumped into `report.json`, and resemble the following sni
     ]
 }
 ----
-<1> Indicates that the attribute is not included in the query output.
-<2> Indicates that the attribute is needed for query input.
+<1> Indicates that the attribute is needed for query input.
+<2> Indicates that the attribute is not included in the query's output.
 
 .Response example
 [source, json]
