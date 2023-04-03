@@ -17,6 +17,5 @@ commands:
                 -Psmoke \
                 -Denable.license=true \
                 --batch-mode \
-                -s .circleci/settings.xml \
                 dependency:resolve-plugins \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies

@@ -50,7 +50,6 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              -s .circleci/settings.xml \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
