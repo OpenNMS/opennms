@@ -74,7 +74,7 @@ fi
   -Dit.test="$IT_TESTS" \
   --fail-fast \
   --batch-mode \
-  -s .circleci/settings.xml \
+  -s ../.circleci/settings.xml \
   -Dfailsafe.skipAfterFailureCount=1 \
   -N \
   '-P!smoke.all' \
