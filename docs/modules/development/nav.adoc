@@ -21,7 +21,7 @@
 
 * xref:rest/rest-api.adoc[]
 ** xref:rest/osgi.adoc[]
-** xref:rest/implemented.adoc[]
+** xref:rest/implemented.adoc[Interfaces]
 *** xref:rest/acknowledgements.adoc[]
 *** xref:rest/alarm_statistics.adoc[]
 *** xref:rest/alarms.adoc[]

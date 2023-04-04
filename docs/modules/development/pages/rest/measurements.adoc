@@ -67,7 +67,7 @@ You can decrease this value by modifying `org.opennms.newts.query.minimum_step`.
 
 === cURL example
 
-The following example demonstrates how the GET function and its parameters can be used with cURL.
+The following example demonstrates how you can use the GET function and its parameters with cURL.
 
 This command retrieves CPU counter metrics for node 1, spanning the last two hours:
 
@@ -78,7 +78,6 @@ Its response resembles the following snippet:
 
 [source, xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <query-response end="1425588138256" start="1425580938256" step="300000">
   <columns>
     <values>159.5957271523179</values>
@@ -117,13 +116,11 @@ Its response resembles the following snippet:
 In this case, we use a POST function instead of a GET to retrieve the measurements.
 This lets you perform complex queries that are difficult to express in a query string.
 
-NOTE: These requests cannot be used to update or create new metrics.
-
-POST queries can return a `transient` value, indicating that the associated attribute is needed only as input for a query.
+NOTE: You cannot use these requests to update or create new metrics.
 
 === cURL example
 
-The following example demonstrates how the POST function can be used with cURL.
+The following example demonstrates how you can use the POST function with cURL.
 
 This command retrieves the bits in and bits out metrics for a specified interface.
 Calculations are then performed on the bits out metric and only the derived values are returned:
@@ -166,8 +163,11 @@ The derived values are dumped into `report.json`, and resemble the following sni
     ]
 }
 ----
-<1> Indicates that the attribute is needed for query input.
-<2> Indicates that the attribute is not included in the query's output.
+<1> Indicates that the attribute will be included in the response.
+<2> Indicates that the attribute will not be included in the response; the query returns only the calculated expression result.
+
+NOTE: All attributes referenced in an expression query must be requested individually by setting their `transient` value to `true` or `false`, as appropriate.
+This ensures that the query response includes only the attributes that you want to enumerate.
 
 .Response example
 [source, json]
@@ -183,8 +183,8 @@ The derived values are dumped into `report.json`, and resemble the following sni
         ...
     ],
     "labels": [
-        "ifHCInOctets",
-        "ifHCOutOctetsNeg"
+        "ifHCInOctets", <1>
+        "ifHCOutOctetsNeg" <1>
     ],
     "columns": [
         {
@@ -232,6 +232,7 @@ The derived values are dumped into `report.json`, and resemble the following sni
     }
 }
 ----
+<1> Attributes whose `transient` property is set to `false` in `report.json`.
 
 == Advanced expressions
 
@@ -267,7 +268,7 @@ Several constants and arrays are also predefined as references in the context:
 | Difference in time between subsequent values.
 
 | __i
-| Index into the samples array that the present calculation is referencing.
+| Index into the samples array that the present calculation references.
 
 | __AttributeName (where `AttributeName` is the searched-for attribute)
 | This returns the complete `double[]` array of samples for `AttributeName`.
@@ -281,7 +282,7 @@ They are referenced by `namespace:function`, and they all return a Java double v
 | Function  | Description   | Example
 
 | jexl:evaluate("_formula"):
-| Passes a string to the JEXL engine to be evaluated as if it were entered as a normal expression. +
+| Passes a string to the JEXL engine to evaluate as if it were entered as a normal expression. +
 Like normal expressions, expressions evaluated through this function return a Java double value.
 This lets you reference and evaluate a formula that has been stored in {page-component-title} as a string variable.
 Because of this, you can define and store a per-node and per-value correction formula that can normalize samples from different sample sources.
