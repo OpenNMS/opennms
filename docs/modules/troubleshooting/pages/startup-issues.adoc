@@ -8,7 +8,7 @@ This section describes troubleshooting steps for problems encountered while {pag
 
 If you encounter a Java error when starting {page-component-title}, you should verify that your Java version is compatible:
 
-[source, console]
+[source, shell]
 runjava -s
 
 If you run `systemctl start opennms` with a version of Java that is not compatible, the output displays error messages:
@@ -34,7 +34,7 @@ See xref:deployment:core/system-requirements.adoc[] for software compatibility r
 
 If you encounter a configuration error when starting {page-component-title}, you may need to run the {page-component-title} database installer, which updates the relational database schema to the latest version and applies any required changes to the configuration files:
 
-[source, console]
+[source, shell]
 install -dis
 
 NOTE: Running or re-running the database installer is generally safe, provided you stop {page-component-title} first.
@@ -65,7 +65,7 @@ If you encounter a database error when starting {page-component-title}, database
 In this case, error messages are displayed when you run `systemctl start opennms`:
 
 [source, shell]
----
+----
 systemd[1]: Starting OpenNMS server...
 opennms[133961]: Starting OpenNMS:
 opennms[134703]: error invoking "check" operation: Data source 'opennms' failed.
@@ -76,7 +76,7 @@ systemd[1]: opennms.service: Failed with result 'exit-code'.
 systemd[1]: Failed to start OpenNMS server.
 ----
 
-NOTE: See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL] for information on installing and setting up PostgreSQL.
+See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL] for information on installing and setting up PostgreSQL.
 
 [[upgrade-errors]]
 == rpm, yum, dnf upgrade errors

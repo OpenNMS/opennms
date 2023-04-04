@@ -1,13 +1,14 @@
 
 = Other Errors
 
-This section describes other errors that you may encounter when {page-component-title} will not start as expected.
+This section describes other errors that you may encounter when {page-component-title} does not start as expected.
 
 [[xml-errors]]
 == XML configuration errors
 
-XML errors can occur when an XML file in the `$\{OPENNMS_HOME}/etc/` hierarchy contains errors that cause it not to be a well-formed XML document, or that lead to an invalid configuration according to the XML file's schema:
+XML errors can occur when an XML file in the `$\{OPENNMS_HOME}/etc/` hierarchy contains errors that cause it not to be a well-formed XML document, or that lead to an invalid configuration according to the XML file's schema.
 
+.Example XML error log
 [source, shell]
 ----
 Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: Starting OpenNMS:
@@ -17,7 +18,7 @@ Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: Validation failed on 1 XML 
 Mar 20 14:41:53 rhel9h.totusmel.com opennms[130123]: failed
 ----
 
-If you run the `config-tester -a` command, it shows that an error is generated immediately after the Drools Northbounder configuration is loaded:
+If you run `config-tester -a`, the output shows that an error is generated immediately after the Drools Northbounder configuration is loaded:
 
 [source, shell]
 ----
@@ -35,7 +36,7 @@ You can use the `xmllint` tool to validate the XML files and more effectively id
 
 [source, shell]
 ----
-[root@rhel9h ~]# xmllint --schema /var/opennms/xsds/eventconf.xsd /opt/opennms/etc/events/VMWare.events.xml --noout
+# xmllint --schema /var/opennms/xsds/eventconf.xsd /opt/opennms/etc/events/VMWare.events.xml --noout
 /opt/opennms/etc/events/VMWare.events.xml:275: parser error : Opening and ending tag mismatch: logmsg line 273 and event
    </event>
            ^
@@ -48,7 +49,6 @@ You can use the `xmllint` tool to validate the XML files and more effectively id
 
 In this example, an unmatched tag in `/opt/opennms/etc/events/VMWare.events.xml` is the source of the issue:
 
-.Unmatched tags in `VMWare.events.xml`
 [source, xml]
 ----
 265      <logmsg dest="logndisplay">&lt;p>
@@ -67,16 +67,17 @@ If you run `xmllint` again, the file should validate properly:
 
 [source, shell]
 ----
-[root@rhel9h ~]# xmllint --schema /var/opennms/xsds/eventconf.xsd /opt/opennms/etc/events/VMWare.events.xml --noout
+# xmllint --schema /var/opennms/xsds/eventconf.xsd /opt/opennms/etc/events/VMWare.events.xml --noout
 /opt/opennms/etc/events/VMWare.events.xml validates
 ----
 
 {page-component-title} should now start properly.
 
-TIP: You can run `xmllint` on all files in `$\{OPENNMS_HOME}/etc/events` with the following command:
-[source, shell]
-----
-for x in ${OPENNMS_HOME}/etc/events/*;do xmllint --schema ${OPENNMS_HOME}/share/xsds/eventconf.xsd $x --noout;done
-----
+You can run `xmllint` on all files in `$\{OPENNMS_HOME}/etc/events` with the following command:
 
-NOTE: The `xmllint` command can help pinpoint errors in XML syntax, and errors in content that violates the schema (with the `--schema` flag), but subtler errors may still cause problems even if the commands listed above indicate that the files are valid. The `config-tester` command is even more exhaustive, but it may not catch all kinds of errors that break startup.
+[source, shell]
+for x in ${OPENNMS_HOME}/etc/events/*;do xmllint --schema ${OPENNMS_HOME}/share/xsds/eventconf.xsd $x --noout;done
+
+NOTE: `xmllint` can help pinpoint errors in XML syntax and in content that violates the schema (using the `--schema` flag).
+More subtle errors may cause problems, however, even if the output indicates that all files are valid.
+The `config-tester` command is even more exhaustive, but it may not catch all errors that break startup.
