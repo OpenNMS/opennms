@@ -139,7 +139,6 @@
           <verbose>true</verbose>
           <acceptPomPackaging>true</acceptPomPackaging>
           <errorRemedy>xmlOutput</errorRemedy>
-          <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
           <excludedScopes>system,test</excludedScopes>
           <deployMissingFile>true</deployMissingFile>
           <failOnBlacklist>true</failOnBlacklist>
