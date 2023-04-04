@@ -41,6 +41,9 @@
                 <exclude>etc/users.properties</exclude>
                 <exclude>etc/org.apache.karaf.features.cfg</exclude>
 
+                <!-- Exclude xerces and xalan so we can override them with the latest version -->
+                <exclude>lib/endorsed/*xalan*.jar</exclude>
+                <exclude>lib/endorsed/*xerces*.jar</exclude>
             </excludes>
         </fileSet>
 
@@ -101,5 +104,16 @@
             <outputDirectory>system/org/apache/mina/mina-core/${minaVersion}</outputDirectory>
         </file>
     </files>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib/endorsed</outputDirectory>
+            <includes>
+                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.xalan</include>
+                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.xalan-serializer</include>
+                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.xerces</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
