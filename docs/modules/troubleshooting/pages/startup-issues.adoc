@@ -58,6 +58,50 @@ systemd[1]: Failed to start OpenNMS server.
 NOTE: You can also run `config-tester -a` to verify your configuration settings.
 If the tests pass, a success message is displayed.
 
+Some older Linux distributions like Red Hat Enterprise Linux 7 and CentOS 7 are a bit more terse when a failure occurs when trying to start the {page-component-title} service and an additional diagnostic step can help reveal the problem.
+
+After installing the software and running `systemctl start opennms`, the process immediately exits with a brief error message:
+[source, shell]
+----
+# systemctl start opennms
+Job for opennms.service failed because the control process exited with error code.
+See "systemctl status opennms.service" and "journalctl -xe" for details.
+----
+
+Running `systemctl status opennms` produces the following output:
+[source, shell]
+----
+systemd[1]: Starting OpenNMS server...
+systemd[1]: opennms.service: control process exited, code=exited status=1
+systemd[1]: Failed to start OpenNMS server.
+systemd[1]: Unit opennms.service entered failed state.
+systemd[1]: opennms.service failed.
+----
+
+Another way of starting the {page-component-title} verbosely is with the command `$\{OPENNMS_HOME}/bin/opennms -v start` which will give some additional detail:
+[source, shell]
+----
+# $\{OPENNMS_HOME}/bin/opennms -v start
+WARNING: relaunching as opennms
+WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.
+You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.
+Starting OpenNMS: /opt/opennms/bin/opennms: OpenNMS not configured.
+/opt/opennms/etc/configured does not exist.
+
+You need to run the installer to set up the database.  In most
+cases, it is enough to run:
+
+  /opt/opennms/bin/install -dis
+
+For details, see the install guide at:
+
+http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+
+[FAILED]
+----
+
+In the above, `$\{OPENNMS_HOME}/bin/install -dis` had not been run which was causing startup to fail.
+
 [[database-errors]]
 == Database errors
 
