@@ -17,7 +17,7 @@ This documentation does not cover those features; it describes only reports usin
 The {page-component-title} Report Engine uses the JasperReport library to create reports in various formats.
 Each report template must be saved as a `*.jrxml` file.
 
-Every time a report is run, the Report Engine passes it a JDBC connection to the {page-component-title} database.
+Every time a report runs, the Report Engine passes it a JDBC connection to the {page-component-title} database.
 
 NOTE: Only a JDBC connection to the {page-component-title} database can be passed to the report.
 
@@ -144,7 +144,7 @@ To add a new report to your local {page-component-title} repository, follow thes
 <1> A unique identifier.
 <2> The name of the report.
 This name is displayed in the web UI.
-<3> Defines if this report can be executed on demand; otherwise, only scheduling is possible.
+<3> Defines if this report can run on demand; otherwise, only scheduling is possible.
 <4> The report service implementation to use.
 In most cases, this is `jasperReportService`.
 <5> A description of the report.
@@ -316,7 +316,7 @@ For more details, see <<ga-database-reports-interface-descriptor, Interface desc
 === Node source descriptors
 
 A node is addressed by a node source descriptor.
-The node source descriptor references a node using either its foreign source and foreign ID, or it node ID.
+The node source descriptor references a node using either its foreign source and foreign ID, or its node ID.
 If `storeByForeignSource` is enabled, you can address the node using only its foreign source and foreign ID (see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse).
 
 To make report creation easier, the Measurement Datasource includes a helper method that creates the node source descriptor:

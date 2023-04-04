@@ -24,8 +24,8 @@ You can view it from the *Persisted Reports* tab.
 Selecting *Schedule This Report* displays the following scheduling options:
 
 * *Daily*.
-* *Days per Week:* Specify days of the week on which the report will be run.
-* *Days per Month:* Specify days of the month on which the report will be run (for example, the third Sunday of each month).
+* *Days per Week:* Specify days of the week on which the report will run.
+* *Days per Month:* Specify days of the month on which the report will run (for example, the third Sunday of each month).
 * *Cron Expression*.
 
 NOTE: Each scheduling option has additional fields associated with it, such as *Days of the Week*, *Interval*, and *Specific Time*.
