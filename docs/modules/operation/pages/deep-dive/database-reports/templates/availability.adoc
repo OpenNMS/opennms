@@ -13,6 +13,8 @@ For each node tag, the report includes a table of average, minimum, and maximum 
 
 You can customize the report with a company logo (approximately 195px by 50px) in the header and footer.
 
+For an example of an availability report, see xref:deep-dive/database-reports/template-introduction.adoc[].
+
 == Parameters
 
 [caption=]

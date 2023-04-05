@@ -5,7 +5,7 @@
 You can use them as-is, modify them, or use them as examples on which to base your own custom report templates.
 
 .Example Node Availability report
-image::database-reports/report-example.png["Example of a Node Availability Report. Two surveillance categories are displayed, with statistics for each node.", 700]
+image::database-reports/node-availability-report.png["Example of a Node Availability report. Two surveillance categories are displayed, with statistics for each node.", 650]
 
 == Report scheduling and delivery
 

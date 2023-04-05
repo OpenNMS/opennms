@@ -14,6 +14,8 @@ It's a multi-page report that provides the following data for all router interfa
 
 This report can be customized with a company logo (approximately 195px by 50px) in both the header and footer.
 
+For an example of an availability report, see xref:deep-dive/database-reports/template-introduction.adoc[].
+
 == Parameters
 
 [caption=]
