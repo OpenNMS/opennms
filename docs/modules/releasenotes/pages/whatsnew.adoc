@@ -9,10 +9,60 @@
 
 == New features and improvements
 
-=== Nothing
+=== Newts: DataStax driver for Cassandra upgrade
 
+The DataStax driver for Cassandra was updated from version 3.x to 4.x which allowed us to introduce the following functionality:
+
+1. Set additional Cassandra driver settings using system properties
+
+For example, you can set `datastax-java-driver.basic.request.timeout="30 seconds"` to tune the connection timeout.
+
+See https://docs.datastax.com/en/developer/java-driver/4.0/manual/core/configuration/[DataStax Java Driver - Configuration] for details.
+
+2. Configure all driver settings use an external file
+
+
+Set the following system properties:
+```
+org.opennms.newts.config.keyspace=newts
+org.opennms.newts.config.driver_settings_file=/opt/opennms/etc/newts-on-cassandra.conf
+```
+
+A minimal version of `newts-on-cassandra.conf` would look like:
+```
+datastax-java-driver {
+  basic.contact-points = [ "127.0.0.1:9042" ]
+  session-name = "default"
+  session-keyspace = "newnewts"
+  basic.load-balancing-policy {
+    local-datacenter = datacenter1
+  }
+}
+```
+
+See https://github.com/datastax/java-driver/blob/4.0.1/core/src/main/resources/reference.conf[DataStax Java Driver - Configuration Reference] for a complete example.
+
+See bellow for a list of related breaking changes.
 
 == Breaking Changes
+
+=== Newts: DataStax driver for Cassandra upgrade
+
+The DataStax driver for Cassandra was updated from version 3.x to 4.x which required the following breaking changes:
+
+1. The `org.opennms.newts.config.datacenter` property is now required.
+Set this to the value of your local datacenter to get the best performance.
+
+2. The `org.opennms.newts.config.core-connections-per-host` and `org.opennms.newts.config.max-connections-per-host` properties have been removed.
+Use `org.opennms.newts.config.connections-per-host` instead if you would like to tune the number of connections per host.
+
+=== JMX MBean name changes
+
+Some JMX MBeans have changed object names due to an upgrade of the Dropwizard Metrics library.
+Built-in data-collection config have been updated to use the new object names and will continue to work as is.
+If you have additional collections, or are otherwise relying on the MBeans, you may need to adjust references as well.
+
+For example `org.opennms.newts:name=search.update,type=timers` is now refered to as `org.opennms.newts:name=search.update,type=timers`, with the `type` attribute being added.
 
 === Everything
 
