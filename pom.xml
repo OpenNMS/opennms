@@ -81,7 +81,6 @@
     <module>ui</module>
 
     <!-- old structure -->
-    <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
     <module>opennms-ackd</module>
@@ -1141,7 +1140,6 @@
 
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
-                   <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
@@ -1152,6 +1150,7 @@
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
+                   <exclude>org.opennms:opennms-util</exclude>       <!-- use: org.opennms.core:org.opennms.core.lib -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
                  </excludes>
                </bannedDependencies>
@@ -2269,6 +2268,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.cache</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.camel</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3380,11 +3384,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-util</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-version</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
@@ -3984,6 +3983,13 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commonsLangVersion}</version>
+      </dependency>
+      <!-- this marks everything <scope>provided</scope> but lets us redirect to jcl-over-slf4j -->
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

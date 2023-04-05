@@ -28,6 +28,12 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.sysprops</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
@@ -52,6 +58,12 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>${dropwizardMetricsVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

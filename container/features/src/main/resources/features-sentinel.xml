@@ -53,6 +53,7 @@
     </feature>
 
     <feature name="sentinel-core" description="OpenNMS :: Sentinel :: Core" version="${project.version}">
+        <feature>opennms-core-lib</feature>
         <feature>opennms-spring-extender</feature>
 
         <feature>camel-core</feature>
@@ -76,10 +77,6 @@
 
         <!-- Useful Commands -->
         <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
-
-        <!-- SystemProperties -->
-        <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">
@@ -107,11 +104,11 @@
 
         <feature>opennms-core-daemon</feature>
         <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-core-lib</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-dao</feature>
         <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
-        <feature>opennms-util</feature>
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 

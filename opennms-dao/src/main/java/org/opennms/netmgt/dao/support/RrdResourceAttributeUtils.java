@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.core.utils.PropertiesCache;
+import org.opennms.core.cache.properties.PropertiesCache;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;

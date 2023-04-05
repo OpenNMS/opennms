@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,21 +29,20 @@
 package org.opennms.core.utils;
 
 import java.io.BufferedReader;
-import java.io.Writer;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.lang.StringBuilder;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +51,11 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public abstract class SocketUtils {
-	
 	private static final Logger LOG = LoggerFactory.getLogger(SocketUtils.class);
 
-    public static Socket wrapSocketInSslContext(Socket socket) throws IOException {
+	private SocketUtils() {}
+
+	public static Socket wrapSocketInSslContext(Socket socket) throws IOException {
         return wrapSocketInSslContext(socket, null, null);
     }
 
@@ -98,9 +98,7 @@ public abstract class SocketUtils {
      */
     public static boolean validResponse(String request, String responsePattern, BufferedReader r, Writer wr) throws IOException {
         boolean validResponse = true;
-        if (!Strings.isNullOrEmpty(request) && !Strings.isNullOrEmpty(responsePattern)) {
-            String l = null;
-            validResponse = false;
+        if (!StringUtils.isNullOrEmpty(request) && !StringUtils.isNullOrEmpty(responsePattern)) {
             LOG.debug("writing {}, hoping response matches /{}/", request, responsePattern);
             wr.write(request);
             wr.flush();
@@ -112,7 +110,7 @@ public abstract class SocketUtils {
                     sb.append((char)i);
                 }
             } catch (InterruptedIOException e) {
-                LOG.debug("response was: {}", sb.toString());
+                LOG.debug("response was: {}", sb);
             }
             validResponse = p.matcher(sb.toString()).matches();
         }

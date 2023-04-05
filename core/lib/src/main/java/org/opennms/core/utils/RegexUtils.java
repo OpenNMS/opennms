@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,18 @@
 
 package org.opennms.core.utils;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Sets;
-
 /**
  * Utility functions for regular expression patterns.
  */
-public class RegexUtils {
+public abstract class RegexUtils {
     private static final Pattern NAMED_CAPTURE_GROUPS_REGEX = Pattern.compile("\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>");
+
+    private RegexUtils() {}
 
     /**
      * Extracts the names of the named capture groups found within a regex.
@@ -54,7 +55,7 @@ public class RegexUtils {
      * @return an ordered list of named capture group candidates
      */
     public static Set<String> getNamedCaptureGroupsFromPattern(String pattern) {
-        final Set<String> namedGroups = Sets.newLinkedHashSet();
+        final Set<String> namedGroups = new LinkedHashSet<>();
         final Matcher m = NAMED_CAPTURE_GROUPS_REGEX.matcher(pattern);
         while (m.find()) {
             namedGroups.add(m.group(1));

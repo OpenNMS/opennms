@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.PropertiesCache;
+import org.opennms.core.cache.properties.PropertiesCache;
 import org.opennms.netmgt.dao.support.RrdResourceAttributeUtils.AlphaNumericOnmsAttributeComparator;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;

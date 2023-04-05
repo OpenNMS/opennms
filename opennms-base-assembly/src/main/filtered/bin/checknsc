@@ -4,7 +4,7 @@ OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
 SERVICES_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep org.opennms.protocols.nsclient- | head -n 1`
-UTIL_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep opennms-util- | head -n 1`
+UTIL_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep org.opennms.core.lib- | head -n 1`
 LOG4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/log4j-*.jar | head -n 1`
 SLF4J_API_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-api*.jar | head -n 1`
 SLF4J_L4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/log4j-over-slf4j-*.jar | head -n 1`

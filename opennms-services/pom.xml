@@ -205,11 +205,6 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.api</artifactId>
     </dependency>

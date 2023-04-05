@@ -63,7 +63,7 @@
                                 <feature>opennms-dnsresolver-netty</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
                                 <feature>opennms-distributed-core-impl</feature>
-                                <feature>opennms-util</feature>
+                                <feature>opennms-core-lib</feature>
                                 <feature>scv-api</feature>
                                 <feature>scv-shell</feature>
                                 <feature>scv-jceks-impl</feature>
@@ -483,11 +483,6 @@
         <dependency>
             <groupId>org.opennms.features.device-config</groupId>
             <artifactId>org.opennms.features.device-config.monitor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

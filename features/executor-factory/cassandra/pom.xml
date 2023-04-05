@@ -28,8 +28,8 @@
   </build>
   <dependencies>
     <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-util</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <!-- Needed for Cassandra -->
     <dependency>

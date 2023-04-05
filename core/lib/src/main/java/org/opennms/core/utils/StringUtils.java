@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -50,50 +51,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-
 public abstract class StringUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
-
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
     private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
 
-    /**
-     * Convenience method for creating arrays of strings suitable for use as
-     * command-line parameters when executing an external process.
-     *
-     * <p>
-     * The default {@link Runtime#exec Runtime.exec}method will split a single
-     * string based on spaces, but it does not respect spaces within quotation
-     * marks, and it will leave the quotation marks in the resulting substrings.
-     * This method solves those problems by replacing all in-quote spaces with
-     * the given delimiter, removes the quotes, and then splits the resulting
-     * string by the remaining out-of-quote spaces. It then goes through each
-     * substring and replaces the delimiters with spaces.
-     * </p>
-     *
-     * <p>
-     * <em>Caveat:</em> This method does not respect escaped quotes! It will
-     * simply remove them and leave the stray escape characters.
-     * </p>
-     *
-     * @deprecated Use createCommandArray(String s) instead.
-     * @param s
-     *            the string to split
-     * @param delim
-     *            a char that does not already exist in <code>s</code>
-     * @return An array of strings split by spaces outside of quotes.
-     * @throws java.lang.IllegalArgumentException
-     *             If <code>s</code> is null or if <code>delim</code>
-     *             already exists in <code>s</code>.
-     */
-    public static String[] createCommandArray(String s, char delim) {
-        return createCommandArray(s);
-    }
+    private StringUtils() {}
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -228,6 +190,8 @@ public abstract class StringUtils {
         StringWriter out = new StringWriter();
 
         TransformerFactory transFactory = TransformerFactory.newInstance();
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         Transformer transformer  = transFactory.newTransformer();
 
         // Set options on the transformer so that it will indent the XML properly
@@ -314,13 +278,9 @@ public abstract class StringUtils {
             alen--;
         }
 
-        // If only whitespace characters remained on A, then we have a match
-        if (alen - i == 0) {
-            return true;
-        }
-
-        // There are extra characters at the tail of A, that don't show up in B
-        return false;
+        // If only whitespace characters remained on A, then we have a match, otherwise
+        // there are extra characters at the tail of A that don't show up in B
+        return alen - i == 0;
     }
 
     public static boolean isEmpty(final String text) {
@@ -367,7 +327,7 @@ public abstract class StringUtils {
     public static Integer parseDecimalInt(String value, boolean throwExceptions) {
         final int length = value.length();
 
-        if (value == null || length < 1) {
+        if (value.length() < 1) {
             if (throwExceptions) {
                 throw new NumberFormatException("Null or empty value");
             } else {
@@ -456,8 +416,12 @@ public abstract class StringUtils {
         }
     }
 
+    public static boolean isNullOrEmpty(final String value) {
+    	return value == null || value.isBlank();
+    }
+
     public static Integer parseInt(String value, Integer defaultValue) {
-        if(Strings.isNullOrEmpty(value)) {
+        if(isNullOrEmpty(value)) {
             return defaultValue;
         }
         try {
@@ -468,7 +432,7 @@ public abstract class StringUtils {
     }
 
     public static Long parseLong(String value, Long defaultValue) {
-        if (Strings.isNullOrEmpty(value)) {
+        if (isNullOrEmpty(value)) {
             return defaultValue;
         }
         try {
@@ -479,7 +443,7 @@ public abstract class StringUtils {
     }
 
     public static Double parseDouble(String value, Double defaultValue) {
-        if(Strings.isNullOrEmpty(value)) {
+        if(isNullOrEmpty(value)) {
             return defaultValue;
         }
         try {

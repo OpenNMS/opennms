@@ -69,11 +69,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
     </dependency>

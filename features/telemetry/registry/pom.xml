@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.soa</artifactId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -66,10 +66,6 @@
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
     </dependency>
   </dependencies>
 </project>

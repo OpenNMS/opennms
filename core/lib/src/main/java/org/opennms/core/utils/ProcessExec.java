@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,21 @@
 
 package org.opennms.core.utils;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>ProcessExec class.</p>
  */
 public class ProcessExec {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ProcessExec.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessExec.class);
+    
     private PrintStream m_out = null;
 
     private PrintStream m_err = null;
@@ -100,23 +98,17 @@ public class ProcessExec {
 
         @Override
         public void run() {
-            InputStreamReader isr = null;
-            BufferedReader in = null;
-
-            try {
-                isr = new InputStreamReader(m_inputStream);
-                in = new BufferedReader(isr);
+            try (
+                    final InputStreamReader isr = new InputStreamReader(m_inputStream);
+                    final BufferedReader in = new BufferedReader(isr);
+                ) {
                 String line;
 
                 while ((line = in.readLine()) != null) {
                     m_printStream.println(line);
                 }
             } catch (final Exception e) {
-            	LOG.warn("an error occurred while reading the input stream", e);
-            } finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(isr);
-                IOUtils.closeQuietly(m_inputStream);
+                LOG.warn("an error occurred while reading the input stream", e);
             }
         }
 

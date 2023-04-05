@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
@@ -45,17 +44,13 @@ public class PropertyOidContainer {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(PropertyOidContainer.class);
 	
-    private final NavigableMap<SnmpObjId,SnmpValue> m_tree = new TreeMap<SnmpObjId,SnmpValue>();
+    private final NavigableMap<SnmpObjId,SnmpValue> m_tree = new TreeMap<>();
 
     public PropertyOidContainer(final Resource resource) throws IOException {
     	MockSnmpValueFactory factory = new MockSnmpValueFactory();
         final Properties moProps = new Properties();
-        InputStream inStream = null;
-        try {
-            inStream = resource.getInputStream();
+        try (final InputStream inStream = resource.getInputStream()) {
             moProps.load( inStream );
-        } finally {
-            IOUtils.closeQuietly(inStream);
         }
 
         for (final Object obj : moProps.keySet()) {

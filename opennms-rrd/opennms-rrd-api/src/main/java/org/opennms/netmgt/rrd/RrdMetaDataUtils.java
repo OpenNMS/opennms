@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,9 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.utils.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.opennms.core.cache.properties.PropertiesCache;
 
 /**
  * Provides static methods for interacting with .meta files.
@@ -45,6 +46,8 @@ import org.slf4j.LoggerFactory;
 public abstract class RrdMetaDataUtils {
     private static final Logger LOG = LoggerFactory.getLogger(RrdMetaDataUtils.class);
     private static PropertiesCache s_cache = new PropertiesCache();
+
+    private RrdMetaDataUtils() {}
 
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
@@ -78,7 +81,7 @@ public abstract class RrdMetaDataUtils {
 
         try {
             final Properties props = s_cache.getProperties(metaFile);
-            final Map<String,String> ret = new HashMap<String,String>();
+            final Map<String,String> ret = new HashMap<>();
             for (final Map.Entry<Object,Object> entry : props.entrySet()) {
                 final Object value = entry.getValue();
                 ret.put(entry.getKey().toString(), value == null? null : value.toString());

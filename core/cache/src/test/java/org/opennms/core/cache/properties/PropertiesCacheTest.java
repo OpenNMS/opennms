@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.cache.properties;
 
 import java.io.File;
 import java.util.Properties;
@@ -42,6 +42,7 @@ import com.google.common.cache.CacheBuilder;
 public class PropertiesCacheTest {
     private final String FILE1 = "src/test/resources/share/rrd/snmp/1/strings.properties";
     private final String FILE2 = "src/test/resources/share/rrd/snmp/2/strings.properties";
+    private final String FILEBAD = "src/test/resources/share/rrd/snmp/2/nope.properties";
 
     static class FakeTicker extends Ticker {
         private final AtomicLong nanos = new AtomicLong();
@@ -62,6 +63,16 @@ public class PropertiesCacheTest {
         final Properties properties1 = propertiesCache.getProperties(new File(FILE1));
 
         Assert.assertEquals("1000", properties1.getProperty("ifSpeed"));
+        Assert.assertEquals(1L, propertiesCache.m_cache.size());
+    }
+
+    @Test
+    public void testFileDoesNotExist() throws Exception {
+        final PropertiesCache propertiesCache = new PropertiesCache();
+        Assert.assertEquals(0L, propertiesCache.m_cache.size());
+
+        final Properties properties1 = propertiesCache.getProperties(new File(FILEBAD));
+        Assert.assertNull(properties1.getProperty("ifSpeed"));
         Assert.assertEquals(1L, propertiesCache.m_cache.size());
     }
 

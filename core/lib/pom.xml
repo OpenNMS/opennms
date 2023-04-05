@@ -33,6 +33,14 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
     </dependency>

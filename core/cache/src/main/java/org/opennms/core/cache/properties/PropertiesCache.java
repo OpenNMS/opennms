@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.core.cache.properties;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,8 +57,8 @@ import com.google.common.cache.CacheBuilder;
  * @version $Id: $
  */
 public class PropertiesCache {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(PropertiesCache.class);
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesCache.class);
 
     public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
     public static final String CACHE_TIMEOUT = "org.opennms.utils.propertiesCache.cacheTimeout";
@@ -78,47 +78,26 @@ public class PropertiesCache {
         
         private Properties read() throws IOException {
             if (!m_file.canRead()) {
-                return null;
+                LOG.debug("Unable to read properties from file: {}", m_file);
+                return new Properties();
             }
 
-            InputStream in = null;
-            try {
-                in = new FileInputStream(m_file);
+            try (final InputStream in = new FileInputStream(m_file)) {
                 Properties prop = new Properties();
                 prop.load(in);
                 if (m_checkLastModify) {
                     m_lastModify = m_file.lastModified();
                 }
                 return prop;
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        // Ignore this exception
-                    }
-                }
             }
         }
         
         private void write() throws IOException {
-            if(!m_file.getParentFile().mkdirs()) {
-            	if(!m_file.getParentFile().exists()) {
-            		LOG.warn("Could not make directory: {}", m_file.getParentFile().getPath());
-            	}
+            if(!m_file.getParentFile().mkdirs() && !m_file.getParentFile().exists()) {
+                LOG.warn("Could not make directory: {}", m_file.getParentFile().getPath());
             }
-            OutputStream out = null;
-            try {
-                out = new FileOutputStream(m_file);
+            try (final OutputStream out = new FileOutputStream(m_file)) {
                 m_properties.store(out, null);
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        // Ignore this exception
-                    }
-                }
             }
         }
 
@@ -148,7 +127,7 @@ public class PropertiesCache {
             
             if (m_properties == null) {
                 m_properties = read();
-                if (m_properties == null) {
+                if (m_properties.isEmpty() && deflt != null) {
                     m_properties = deflt;
                 }
             }   

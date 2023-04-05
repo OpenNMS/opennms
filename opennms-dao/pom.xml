@@ -154,10 +154,6 @@
       <classifier>xsds</classifier>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-    </dependency>
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>commons-beanutils</groupId>

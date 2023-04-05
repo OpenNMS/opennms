@@ -100,11 +100,6 @@
       <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.soa</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-camel</artifactId>
       <version>${activemqVersion}</version>
