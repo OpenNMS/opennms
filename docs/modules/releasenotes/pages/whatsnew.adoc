@@ -1,75 +1,19 @@
 
-[[releasenotes-31]]
-= What's New in OpenNMS Horizon 31
+[[releasenotes-32]]
+= What's New in OpenNMS Horizon 32
 
 == System requirements
 
-* *Java 11*: OpenNMS Horizon 31 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 31 requires any supported version of PostgreSQL from 10 up to (and including) 15.
+* *Java 11 and 17*: OpenNMS Horizon 32 runs on JDKs 11 and 17.
+* *PostgreSQL 10 or higher*: Horizon 32 requires any supported version of PostgreSQL from 10 up to (and including) 15.
 
 == New features and improvements
 
-=== OpenNMS Plugins
+=== Nothing
 
-Horizon 31 supports plugins using the OpenNMS Plugin API version 1.0 through 1.2.
-
-Since 1.0, OPA has been improved to include time-series performance enhancements and off-heap support,
-APIs for flow persistence and poller configuration extensions, and enhanced event and monitored service metadata.
-
-==== Cloud Services Connector with Time Series DB Support
-
-Horizon 31 includes the https://issues.opennms.org/browse/NMS-14471[Cloud Services Connector] in its default RPM
-and DEB install, providing access to OpenNMS Time Series DB – a new hosted cloud service which enables scalable
-metrics storage without the administrative overhead.
-
-==== Cortex Time-Series Plugin
-
-Horizon 31.0.0 is the first new major Horizon release to support writing time-series data to a Cortex
-instance via the optional https://github.com/OpenNMS/opennms-cortex-tss-plugin[OpenNMS Cortex Plugin].
-
-=== UI Preview Integration
-
-The "UI Preview" that was separate from the main UI in Horizon 30 has been
-https://issues.opennms.org/browse/NMS-14730[integrated into the main web UI] where appropriate for Horizon 31.
-
-=== Topology Improvements
-
-Network topology discovery ("Enlinkd") has received https://issues.opennms.org/browse/NMS-14883[significant refactoring]
-to make it smarter and more performant.
-
-=== Containers
-
-==== Container Cleanup and Refactoring
-
-The work done in Horizon 30, cleaning up and standardizing how our container images are built, has been
-expanded in Horizon 31.
-All images (Horizon, Minion, and Sentinel) use the same core, and are now available in amd64, arm64, and arm7 varieties.
-
-==== OpenShift Support
-
-Horizon 30 was incompatible with OpenShift, and we have addressed these issues.
-If you see any weird permissions or ownership problems in an OpenShift environment, log an issue report in https://issues.opennms.com/[Jira].
-
-=== Collection and Thresholding
-
-* configurations have been added for thresholding on Collectd and Pollerd threads
-
-=== Device Configuration Backup
-
-The DCB feature has had a number of improvements, including debugging and script enhancements.
-
-=== REST API
-
-* The REST API endpoint for configuring external requisitions (aka `requisition-def`s) has been improved to
-  enable targeted updates rather than requiring whole posting of a new configuration.
-
-
-=== Documentation
-
-As usual, our documentation team has been doing tons of work cleaning up and improving the documentation.
-The biggest addition is a new Quick Start Guide that provides simple steps to set up basic monitoring with a minimal configuration of Horizon.
 
 == Breaking Changes
 
-* support for the XML Management Protocol (XMP) has been removed
-* security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`
+=== Everything
+
+Sorry!
