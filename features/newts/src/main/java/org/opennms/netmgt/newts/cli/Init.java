@@ -30,6 +30,7 @@ package org.opennms.netmgt.newts.cli;
 
 import java.util.ServiceLoader;
 
+import com.google.common.base.Strings;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.opennms.core.sysprops.SystemProperties;
@@ -69,7 +70,11 @@ public class Init implements Command {
         boolean ssl = Boolean.getBoolean("org.opennms.newts.config.ssl");
         String driverSettingsFile = System.getProperty("org.opennms.newts.config.driver-settings-file");
 
-        System.out.printf("Initializing the '%s' keyspace on %s:%d%n", keyspace, hostname, port);
+        if (!Strings.isNullOrEmpty(driverSettingsFile)) {
+            System.out.printf("Initializing the '%s' keyspace on %s:%d%n", keyspace, hostname, port);
+        } else {
+            System.out.printf("Initializing the '%s' keyspace with driver settings pull from: %s%n", keyspace, driverSettingsFile);
+        }
         try (SchemaManager m = new SchemaManager(datacenter, keyspace,
                 hostname, port, username, password, ssl, driverSettingsFile)) {
             m.setReplicationFactor(replicationFactor);
