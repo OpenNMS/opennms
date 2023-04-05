@@ -1701,7 +1701,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <junitVintageEngineVersion>5.6.3</junitVintageEngineVersion>
+    <junitVintageEngineVersion>5.9.2</junitVintageEngineVersion>
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
