@@ -124,7 +124,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.0.ONMS.1</version>
         <inherited>true</inherited>
         <executions>
           <execution>
@@ -139,7 +139,6 @@
           <verbose>true</verbose>
           <acceptPomPackaging>true</acceptPomPackaging>
           <errorRemedy>xmlOutput</errorRemedy>
-          <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
           <excludedScopes>system,test</excludedScopes>
           <deployMissingFile>true</deployMissingFile>
           <failOnBlacklist>true</failOnBlacklist>
@@ -149,6 +148,7 @@
           <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
           <useDefaultUrlReplacements>true</useDefaultUrlReplacements>
           <useMissingFile>true</useMissingFile>
+          <useRepositoryMissingFiles>false</useRepositoryMissingFiles>
           <!-- normalize license names for sanity -->
           <licenseMerges>
             <licenseMerge>
@@ -1800,16 +1800,6 @@
         <runPingTests>true</runPingTests>
         <skipPdfGeneration>false</skipPdfGeneration>
       </properties>
-      <!--
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-      -->
     </profile>
     <profile>
       <id>enable.license</id>
