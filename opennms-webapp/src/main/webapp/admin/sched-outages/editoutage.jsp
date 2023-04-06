@@ -454,6 +454,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				NotifdConfigFactory.getInstance().saveCurrent();
 				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
+				threshdDao.saveConfig();
 				sendOutagesChangedEvent();
 	
 				//forward the request for proper display
