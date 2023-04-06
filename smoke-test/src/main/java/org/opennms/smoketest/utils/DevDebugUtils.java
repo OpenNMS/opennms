@@ -151,7 +151,6 @@ public class DevDebugUtils {
                     .untilAsserted(
                         () ->
                             LIMITER.callWithTimeout(() -> {
-                                LOG.info("kill -3 -1");
                                 container.execInContainer("kill", "-3", "1");
                                 return null;
                             }, 1, TimeUnit.MINUTES)
@@ -159,6 +158,7 @@ public class DevDebugUtils {
         } catch (Exception e) {
             LOG.warn("Sending SIGQUIT to JVM in container failed. Thread dump may not be available.", e);
         }
+        LOG.info("kill sent");
 
         final Callable<String> threadDumpCallable;
         if (outputLog != null) {
@@ -179,6 +179,7 @@ public class DevDebugUtils {
                     outputLog != null ? outputLog : "console logs",
                     e);
         }
+        LOG.info("thread dump complete");
 
         if (targetLogFolder == null) {
             return null;
@@ -190,6 +191,7 @@ public class DevDebugUtils {
             throw new RuntimeException("Failed to create " + targetLogFolder, e);
         }
 
+        LOG.info("grabbing thread dump");
         var targetFile = targetLogFolder.resolve("threadDump.log");
         try {
             // Example:
@@ -223,6 +225,8 @@ public class DevDebugUtils {
         } catch (Exception e) {
             LOG.warn("Could not retrieve or store thread dump in file {}", targetFile, e);
             return null;
+        } finally {
+            LOG.info("grabbed thread dump");
         }
     }
 
