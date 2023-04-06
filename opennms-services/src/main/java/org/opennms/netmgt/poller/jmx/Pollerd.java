@@ -158,11 +158,16 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
             return 0L;
         }
     }
-    
+
+    @Override
+    public long getNumPollsInFlight() {
+        return getDaemon().getNetwork().getContext().getAsyncPollingEngine().getNumPollsInFlight();
+    }
+
     private ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
     }
-    
+
     private boolean getThreadPoolStatsStatus() {
         return (getDaemon().getScheduler() instanceof LegacyScheduler);
     }

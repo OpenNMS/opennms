@@ -434,6 +434,16 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return m_serviceUnresponsiveEnabled;
     }
 
+    @Override
+    public boolean isAsyncEngineEnabled() {
+        return false;
+    }
+
+    @Override
+    public int getMaxConcurrentAsyncPolls() {
+        return 0;
+    }
+
     public void setNextOutageIdSql(final String nextOutageIdSql) {
         m_nextOutageIdSql = nextOutageIdSql;
     }

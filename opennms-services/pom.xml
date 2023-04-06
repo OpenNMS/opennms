@@ -499,5 +499,14 @@
           <groupId>org.opennms</groupId>
           <artifactId>opennms-provisiond</artifactId>
       </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>io.github.resilience4j</groupId>
+          <artifactId>resilience4j-bulkhead</artifactId>
+          <version>${resilience4jVersion}</version>
+      </dependency>
   </dependencies>
 </project>

@@ -73,6 +73,8 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     private volatile PollStatus m_oldStatus;
     private volatile Schedule m_schedule;
     private volatile long m_statusChangeTime = 0L;
+    private volatile PollStatus m_preemptivePollStatus;
+
     /**
      * <p>Constructor for PollableService.</p>
      *
@@ -186,6 +188,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_pollConfig = pollConfig;
     }
 
+    public PollConfig getPollConfig() {
+        return m_pollConfig;
+    }
+
     /**
      * <p>poll</p>
      *
@@ -193,7 +199,12 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public PollStatus poll() {
-        PollStatus newStatus = m_pollConfig.poll();
+        PollStatus newStatus;
+        if (m_preemptivePollStatus != null) {
+            newStatus = m_preemptivePollStatus;
+        } else {
+            newStatus = m_pollConfig.poll();
+        }
         if (!newStatus.isUnknown()) { 
             updateStatus(newStatus);
         }
@@ -382,9 +393,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public void run() {
-        doRun(500);
+        if(getContext().isNodeProcessingEnabled() && getContext().isAsyncEngineEnabled()) {
+            getContext().getAsyncPollingEngine().triggerScheduledPollOnService(this);
+        } else {
+            doRun(500);
+        }
     }
-    
+
     /**
      * <p>doRun</p>
      *
@@ -392,6 +407,17 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     public PollStatus doRun() {
     	return doRun(0);
+    }
+
+    public void doRunWithPreemptivePollStatus(PollStatus pollStatus) {
+        withTreeLock(() -> {
+            m_preemptivePollStatus = pollStatus;
+            PollRunner r = new PollRunner();
+            r.run();
+            // Track the result of the poll, do this here since we short circuit PollableServiceConfig::poll
+            getContext().trackPoll(this, pollStatus);
+            m_preemptivePollStatus = null;
+        });
     }
 
     private PollStatus doRun(int timeout) {

@@ -32,6 +32,7 @@
             <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
             <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
+            <attrib name="NumPollsInFlight" alias="ONMSPollsInFlight" type="gauge"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=*.Lag,type=gauges">
