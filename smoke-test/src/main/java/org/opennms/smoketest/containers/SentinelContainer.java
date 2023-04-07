@@ -45,12 +45,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -352,7 +354,12 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
 
         LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
@@ -367,8 +374,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         LOG.info("Log directory: {}", targetLogFolder.toUri());
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-        if (threadDump != null) {
-            LOG.info("Thread dump: {}", threadDump.toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 
