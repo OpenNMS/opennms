@@ -37,6 +37,9 @@ import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -335,11 +338,21 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         DevDebugUtils.clearLogs(targetLogFolder);
 
         AtomicReference<Path> threadDump = new AtomicReference<>();
-        await("calling gatherThreadDump")
-                .atMost(Duration.ofSeconds(120))
-                .untilAsserted(
-                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
-                );
+        try {
+            await("calling gatherThreadDump")
+                    .atMost(Duration.ofSeconds(120))
+                    .untilAsserted(
+                            () -> {
+                                threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null));
+                            }
+                    );
+        } catch (Throwable t) {
+            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            for(ThreadInfo threadInfo : threadMXBean.dumpAllThreads(true, true)) {
+                System.err.println(threadInfo.toString());
+            }
+            throw t;
+        }
 
         LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container

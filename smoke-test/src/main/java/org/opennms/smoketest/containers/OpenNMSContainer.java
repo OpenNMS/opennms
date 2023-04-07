@@ -39,6 +39,9 @@ import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -567,11 +570,21 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         DevDebugUtils.clearLogs(targetLogFolder);
 
         AtomicReference<Path> threadDump = new AtomicReference<>();
-        await("calling gatherThreadDump")
-                .atMost(Duration.ofSeconds(120))
-                .untilAsserted(
-                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
-                );
+        try {
+            await("calling gatherThreadDump")
+                    .atMost(Duration.ofSeconds(120))
+                    .untilAsserted(
+                            () -> {
+                                threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null));
+                            }
+                    );
+        } catch (Throwable t) {
+            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            for(ThreadInfo threadInfo : threadMXBean.dumpAllThreads(true, true)) {
+                System.err.println(threadInfo.toString());
+            }
+            throw t;
+        }
 
         LOG.info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
