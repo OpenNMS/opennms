@@ -1,7 +1,7 @@
 
 = OSGi Integration
 
-{page-component-title} uses the https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] Container.
+{page-component-title} uses the https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] container.
 This section explains how to integrate a Maven module (OSGi bundle) in your {page-component-title} instance.
 
 == Add Maven module
@@ -35,7 +35,7 @@ After you create a Maven module, add this plugin to `pom.xml` to create the nece
     </build>
 ----
 <1> (Optional) Define packages that can be exported.
-<2> (Optional) Define packages to be imported from dependent modules.
+<2> (Optional) Define packages to import from dependent modules.
 <3> (Optional) Define private packages that should not be exported.
 <4> Include this only when the module is intended for adding Karaf commands.
 
@@ -43,7 +43,7 @@ After you create a Maven module, add this plugin to `pom.xml` to create the nece
 
 A feature is a set of bundles that can be installed in Karaf.
 For any given module, all of its dependencies must be specified in a feature.
-Sometimes, there are runtime dependencies that will be run only when you actually use the feature.
+Sometimes, there are runtime dependencies that will run only when you actually use the feature.
 
 .Example feature definition
 [source, xml]
