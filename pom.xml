@@ -1814,7 +1814,7 @@
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
-    <xmlschemaVersion>2.2.5</xmlschemaVersion>
+    <xmlschemaVersion>2.3.0</xmlschemaVersion>
 
     <re2jVersion>1.7</re2jVersion>
 
