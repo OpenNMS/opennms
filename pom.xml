@@ -1712,7 +1712,7 @@
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.8.8</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
-    <minaVersion>2.1.6</minaVersion>
+    <minaVersion>2.2.1</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.87.Final</netty4Version>
@@ -1782,7 +1782,7 @@
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.8.0</minaSshdVersion>
+    <minaSshdVersion>2.9.2</minaSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>

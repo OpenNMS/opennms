@@ -955,6 +955,7 @@
         <feature>json-simple</feature>
         <feature>jcifs</feature>
         <feature>bsf</feature>
+        <feature>ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dhcpd</feature>
@@ -1920,6 +1921,7 @@
     <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor" version="${project.version}">
         <feature>opennms-deviceconfig-tftp</feature>
         <feature>quartz</feature>
+        <feature>ssh</feature>
         <feature>opennms-util</feature>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/${project.version}</bundle>
