@@ -73,4 +73,11 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>opennms-thirdparty</id>
+      <url>https://maven.opennms.org/repository/thirdparty/</url>
+    </repository>
+  </repositories>
 </project>

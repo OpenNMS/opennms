@@ -73,6 +73,21 @@
       <artifactId>org.opennms.container.branding</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.xalan</artifactId>
+      <version>${xalanServicemixVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.xalan-serializer</artifactId>
+      <version>${xalanServicemixVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+      <version>${xercesVersion}_1</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -291,4 +306,10 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>opennms-thirdparty</id>
+      <url>https://maven.opennms.org/repository/thirdparty/</url>
+    </repository>
+  </repositories>
 </project>
