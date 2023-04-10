@@ -137,6 +137,7 @@ RUN rm -rf /usr/share/opennms/share/rrd \
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
+COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /usr/share/opennms/etc

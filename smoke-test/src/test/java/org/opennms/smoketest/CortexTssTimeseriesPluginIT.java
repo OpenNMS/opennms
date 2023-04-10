@@ -38,6 +38,7 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssTimeseriesPluginIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(

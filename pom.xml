@@ -141,9 +141,9 @@
           </execution>
         </executions>
         <configuration>
+          <verbose>true</verbose>
           <acceptPomPackaging>true</acceptPomPackaging>
           <errorRemedy>xmlOutput</errorRemedy>
-          <excludedArtifacts>^.*opennms.*$</excludedArtifacts>
           <excludedScopes>system,test</excludedScopes>
           <deployMissingFile>true</deployMissingFile>
           <failOnBlacklist>true</failOnBlacklist>
@@ -153,6 +153,7 @@
           <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
           <useDefaultUrlReplacements>true</useDefaultUrlReplacements>
           <useMissingFile>true</useMissingFile>
+          <useRepositoryMissingFiles>false</useRepositoryMissingFiles>
           <!-- normalize license names for sanity -->
           <licenseMerges>
             <licenseMerge>
@@ -397,6 +398,33 @@
             <spdx/>
           </licenseUrlFileNames>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${mavenApiVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-api</artifactId>
+            <version>${mavenResolverApiVersion}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -1672,7 +1700,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <junitVintageEngineVersion>5.6.3</junitVintageEngineVersion>
+    <junitVintageEngineVersion>5.9.2</junitVintageEngineVersion>
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
@@ -1682,6 +1710,8 @@
     <log4j2Version>2.18.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
+    <mavenApiVersion>3.8.8</mavenApiVersion>
+    <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
@@ -1698,8 +1728,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
-    <opennmsApiVersion>1.3.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.3.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.4.0-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1740,8 +1770,9 @@
     <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
-    <xalanVersion>2.7.2</xalanVersion>
-    <xercesVersion>2.9.1</xercesVersion>
+    <xalanVersion>2.7.3.ONMS.1</xalanVersion>
+    <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
+    <xercesVersion>2.12.2</xercesVersion>
     <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.8</xmlgraphicsCommonsVersion>
@@ -1806,10 +1837,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
@@ -1823,6 +1850,19 @@
           </plugin>
         </plugins>
       </build>
+      <repositories>
+        <!-- Disable snapshots for our own artifacts for release bulds -->
+        <repository>
+          <id>opennms-ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
     </profile>
     <profile>
       <id>coverage</id>
@@ -1920,6 +1960,16 @@
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Mega-Repository</name>
           <url>https://maven.opennms.org/repository/everything/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>opennms-ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -3639,6 +3689,31 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${mavenApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${mavenResolverApiVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
         <version>${batikVersion}</version>
@@ -5157,6 +5232,16 @@
       <url>https://maven.opennms.org/repository/everything/</url>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>

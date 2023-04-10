@@ -51,6 +51,10 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         SavedRequest savedRequest = this.requestCache.getRequest(request, response);
+
+        // changing JSESSIONID to prevent Session Fixation attacks, see NMS-15310
+        request.changeSessionId();
+
         if (savedRequest == null) {
             this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
             super.clearAuthenticationAttributes(request);

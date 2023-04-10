@@ -9,6 +9,31 @@
               http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
   
+  <http pattern="/rest/alarms/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS,','ROLE_REST,','ROLE_ADMIN,','ROLE_USER,','ROLE_MOBILE,','ROLE_FILESYSTEM_EDITOR')"/>
+
+    <!-- ack/unack/escalate/clear alarms -->
+    <intercept-url pattern="/rest/alarms/*\?ack=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <intercept-url pattern="/rest/alarms/*\?ack=false" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <intercept-url pattern="/rest/alarms/*\?escalate=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <intercept-url pattern="/rest/alarms/*\?clear=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/rest/alarms/**" method="GET" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN,','ROLE_MOBILE,','ROLE_USER')"/>
+    <intercept-url pattern="/rest/alarms/**" method="HEAD" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN,','ROLE_MOBILE,','ROLE_USER')"/>
+
+    <!-- read-write calls should be allowed for the REST and ADMIN roles -->
+    <intercept-url pattern="/rest/alarms/**" method="DELETE" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/alarms/**" method="POST" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN')"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never">
     <!-- OPTIONS pre-flight requests should always be accepted -->
@@ -16,9 +41,6 @@
 
     <!-- Calls to health/overview are always accepted -->
     <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
-
-    <!-- ack/unack/escalate/clear alarms -->
-    <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
 
     <!-- set/unset maintenance mode on services -->
     <intercept-url pattern="/rest/nodes/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />

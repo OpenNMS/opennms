@@ -1,7 +1,7 @@
 
 = Minimum System Requirements
 
-The following hardware specs are the minimum required to run {page-component-title}:
+Your system must meet the following minimum specifications to run {page-component-title}:
 
 [options="autowidth"]
 |===
@@ -53,19 +53,19 @@ endif::[]
 | {compatible-rocky-linux}
 |===
 
-NOTE: See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
+See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
 
 == Compatibility
 
 {page-component-title} {full-display-version} is compatible with the following components.
-Components marked with an asterisk are required.
+Components marked with an asterisk are required:
 
 [options="autowidth"]
 |===
 | Component | Version Compatibility
 
-| OpenNMS Helm
-| {compatible-opennms-helm}
+| OpenNMS plugin for Grafana
+| {compatible-opennms-plugin}
 
 | OpenNMS Plugin API
 | {compatible-oia}

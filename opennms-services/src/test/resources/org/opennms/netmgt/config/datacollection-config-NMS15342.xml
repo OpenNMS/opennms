@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+	<snmp-collection name="default" snmpStorageFlag="select">
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:1488</rra>
+			<rra>RRA:AVERAGE:0.5:288:366</rra>
+			<rra>RRA:MAX:0.5:288:366</rra>
+			<rra>RRA:MIN:0.5:288:366</rra>
+		</rrd>
+
+		<groups>
+            <group name="custom-group" ifType="ignore">
+            <mibObj oid=".1.3.6.1.2.1.2.2.1.7" instance="ifIndex" alias="ifAdminStatus" type="integer"/>
+            <mibObj oid=".1.3.6.1.2.1.2.2.1.8" instance="ifIndex" alias="ifOperStatus" type="integer"/>
+            <property instance="ifIndex" alias="ifAdminStatusTXT" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+               <parameter key="enum-attribute" value="ifAdminStatus"/>
+               <parameter key="default-value" value="DEFAULT"/>
+               <parameter key="1" value="UP"/>
+               <parameter key="2" value="DOWN"/>
+               <parameter key="3" value="TESTING"/>
+            </property>
+            <property instance="ifIndex" alias="ifOperStatusTXT" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+               <parameter key="enum-attribute" value="ifOperStatus"/>
+               <parameter key="default-value" value="DEFAULT"/>
+               <parameter key="1" value="UP"/>
+               <parameter key="2" value="DOWN"/>
+               <parameter key="3" value="TESTING"/>
+               <parameter key="4" value="UNKNOWN"/>
+               <parameter key="5" value="DORMANT"/>
+               <parameter key="6" value="NOT_PRESENT"/>
+               <parameter key="7" value="LOWER_LAYER_DOWN"/>
+            </property>
+          </group>
+        </groups>
+        <systems>
+            <systemDef name="system">
+                <sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+                <collect>
+                    <includeGroup>custom-group</includeGroup>
+                </collect>
+            </systemDef>
+        </systems>
+	</snmp-collection>
+</datacollection-config>
