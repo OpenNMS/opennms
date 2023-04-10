@@ -1715,7 +1715,7 @@
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jsonVersion>20230227</jsonVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsoupVersion>1.15.4</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <karafVersion>4.2.6</karafVersion>

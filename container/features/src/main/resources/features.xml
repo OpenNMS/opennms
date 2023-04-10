@@ -1333,7 +1333,7 @@
         <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
-        <bundle>mvn:org.jsoup/jsoup/1.11.2</bundle>
+        <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.json/json/${jsonVersion}</bundle>
         <!-- Vaadin -->
