@@ -1729,7 +1729,7 @@
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
     <opennmsApiVersion>v1.4.1-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
+    <opennmsApiVersionOsgi>1.4.1</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
