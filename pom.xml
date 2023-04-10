@@ -1778,8 +1778,9 @@
     <spockVersion>1.3-groovy-2.5</spockVersion>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
-    <xalanVersion>2.7.2</xalanVersion>
-    <xercesVersion>2.9.1</xercesVersion>
+    <xalanVersion>2.7.3.ONMS.1</xalanVersion>
+    <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
+    <xercesVersion>2.12.2</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
