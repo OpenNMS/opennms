@@ -1,3 +1,14 @@
+opennms-sentinel (31.0.6-1) stable; urgency=medium
+
+  * Minor release which fixes several bugs, including several security
+    vulnerabilities, and upgrades the embedded Drools library in the core
+    from v7 to v8.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Apr 2023 17:21:03 -0400
+
 opennms-sentinel (31.0.5-1) stable; urgency=medium
 
   * Minor release which fixes several bugs, incorporates several documentation
