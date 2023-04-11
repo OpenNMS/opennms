@@ -1621,7 +1621,7 @@
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <curatorTestVersion>2.9.1</curatorTestVersion>
-    <cxfVersion>3.5.5</cxfVersion>
+    <cxfVersion>4.0.0</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
