@@ -8,7 +8,7 @@
 Release 31.0.6 contains a bunch of bug fixes, along with fixes for several security vulnerabilities.
 It also upgrades the embedded Drools library from v7.x to v8.x, so be sure to test any custom rules that you depend on before moving to production.
 
-The codename for Horizon 31.0.5 is https://wikipedia.org/wiki/$$Macaron$$[_Macaron_].
+The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyotas_].
 
 ===== Bug
 
