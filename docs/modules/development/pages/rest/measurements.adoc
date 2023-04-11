@@ -1,7 +1,7 @@
 
 = Measurements API
 
-You can use the Measurements API to retrieve collected values stored in RRD or JRB files, and in Newts.
+You can use the Measurements API to retrieve collected values stored in RRD or JRB files, in Newts, and in other supported time series databases.
 
 NOTE: Unless otherwise specified, all units of time are expressed in milliseconds.
 
@@ -61,7 +61,7 @@ When using persistence strategies based on RRD, the available step sizes are lim
 The effective step size used is one that covers the requested period and is closest to the requested step size.
 For maximum accuracy, we recommend that you use a step size of `1`.
 
-When using Newts, you can set the step size arbitrarily; this is because the aggregation is performed at request time.
+When using Newts, you can set the step size to an arbitrary number; this is because the aggregation is performed at request time.
 To prevent large requests, {page-component-title} limits the step size to a maximum of 5 minutes (the default collection rate).
 You can decrease this value by modifying `org.opennms.newts.query.minimum_step`.
 
