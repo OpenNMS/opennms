@@ -25,8 +25,8 @@
         </rrd>
         <xml-source url="http://{ipaddr}:10342/junit/market.html">
             <xml-group name="market" resource-type="node" resource-xpath="div#cnnBody">
-                <xml-object name="dow" type="GAUGE" xpath="li.tickerDow span.posLast" />
-                <xml-object name="nasdaq" type="GAUGE" xpath="li.tickerNasdaq span.posLast" />
+                <xml-object name="dow" type="GAUGE" xpath="li.tickerDow//span.posLast" />
+                <xml-object name="nasdaq" type="GAUGE" xpath="li.tickerNasdaq//span.posLast" />
             </xml-group>
         </xml-source>
     </xml-collection>

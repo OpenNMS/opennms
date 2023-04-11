@@ -140,8 +140,9 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
+      <groupId>com.github.jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>net.sf.json-lib</groupId>

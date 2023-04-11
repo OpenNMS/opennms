@@ -64,8 +64,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -94,6 +92,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.tidy.Configuration;
+import org.w3c.tidy.Tidy;
 
 /**
  * The Abstract Class XML Collection Handler.
@@ -532,12 +532,27 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return is;
         }
         try {
-            org.jsoup.nodes.Document doc = Jsoup.parse(is, "ISO-8859-9", "/");
-            doc.outputSettings().escapeMode(EscapeMode.xhtml);
-            return new ByteArrayInputStream(doc.outerHtml().getBytes());
+        	final Tidy tidy = getTidy();
+        	final StringWriter sw = new StringWriter();
+        	tidy.parse(is, sw);
+            return new ByteArrayInputStream(sw.toString().getBytes());
+        } catch (final Exception e) {
+        	LOG.warn("failed to pre-parse using Jsoup", e);
+        	throw e;
         } finally {
             IOUtils.closeQuietly(is);
         }
     }
+
+	public Tidy getTidy() {
+		final Tidy tidy = new Tidy();
+		tidy.setDropProprietaryAttributes(false);
+		tidy.setDropProprietaryTags(false);
+		tidy.setHideComments(false);
+		tidy.setHideEndTags(false);
+		tidy.setQuiet(true);
+		tidy.setXHTML(true);
+		return tidy;
+	}
 
 }
