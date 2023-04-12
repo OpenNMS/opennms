@@ -1729,8 +1729,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
-    <opennmsApiVersion>1.3.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.3.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.4.0</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1852,6 +1852,19 @@
           </plugin>
         </plugins>
       </build>
+      <repositories>
+        <!-- Disable snapshots for our own artifacts for release bulds -->
+        <repository>
+          <id>opennms-ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
     </profile>
     <profile>
       <id>coverage</id>
@@ -1949,6 +1962,16 @@
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Mega-Repository</name>
           <url>https://maven.opennms.org/repository/everything/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>opennms-ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -5238,6 +5261,16 @@
       <url>https://maven.opennms.org/repository/everything/</url>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
