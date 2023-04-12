@@ -1735,7 +1735,7 @@
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
+    <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
