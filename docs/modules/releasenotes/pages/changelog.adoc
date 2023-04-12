@@ -2,6 +2,54 @@
 [[release-32-changelog]]
 
 = Changelog
+[[releasenotes-changelog-31.0.6]]
+
+==== Release 31.0.6
+
+Release 31.0.6 contains a bunch of bug fixes, along with fixes for several security vulnerabilities.
+It also upgrades the embedded Drools library from v7.x to v8.x, so be sure to test any custom rules that you depend on before moving to production.
+
+The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyotas_].
+
+===== Bug
+
+* DOC: Document Newts fetch step / heartbeat settings in opennms.properties (Issue https://issues.opennms.org/browse/NMS-10155[NMS-10155])
+* Document the function hiding Meta-Data values with keynames containing "password" or "secret" (Issue https://issues.opennms.org/browse/NMS-12808[NMS-12808])
+* Scriptd consumes CPU even when it does nothing (Issue https://issues.opennms.org/browse/NMS-13216[NMS-13216])
+* dependabot: upgrade Apache POI to at least 4.1.1 (CVE-2019-12415) (Issue https://issues.opennms.org/browse/NMS-14589[NMS-14589])
+* POW Arithmetic Operator Does not work with Backshift Graphing Engine (Issue https://issues.opennms.org/browse/NMS-14779[NMS-14779])
+* Form Can Be Manipulated with Cross-Site Request Forgery (CSRF) (Issue https://issues.opennms.org/browse/NMS-14865[NMS-14865])
+* Multiple CVEs for cxf 3.2.8 (Issue https://issues.opennms.org/browse/NMS-15065[NMS-15065])
+* The management of alarms (escalation, and acknowledge) on the new MAP UI does not work for user without ROLE_REST. (Issue https://issues.opennms.org/browse/NMS-15080[NMS-15080])
+* Concurrent requests to rrd summary endpoint fails (Issue https://issues.opennms.org/browse/NMS-15086[NMS-15086])
+* Statistics Reports -> Export Excel fails with exception (Issue https://issues.opennms.org/browse/NMS-15148[NMS-15148])
+* No health check for the OpenNMS Core container (Issue https://issues.opennms.org/browse/NMS-15291[NMS-15291])
+* Inconsistent expectations on TimeseriesStorageManager.get() with null return values (Issue https://issues.opennms.org/browse/NMS-15323[NMS-15323])
+* Polling and metrics storage can hard fail if opennms-timeseries-api is reloaded (Issue https://issues.opennms.org/browse/NMS-15325[NMS-15325])
+* Destroying container for blueprint bundle org.opennms.features.org.opennms.features.timeseries leads to downstream problems (Issue https://issues.opennms.org/browse/NMS-15326[NMS-15326])
+* The various SNMP extenders to not work with ifIndex-indexed resources (Issue https://issues.opennms.org/browse/NMS-15342[NMS-15342])
+* SNMP Interfaces Endpoint returns multiple values [duplicates] when there are multiple "IP Interfaces" pointing to same SNMP-IfIndex "ipAdEntIfIndex". (Issue https://issues.opennms.org/browse/NMS-15352[NMS-15352])
+* Missing XML Validation in Apache Xerces2 (Issue https://issues.opennms.org/browse/NMS-15373[NMS-15373])
+* Adding or editing a schedule outage doesn't reload the configuration for Threshd (Issue https://issues.opennms.org/browse/NMS-15420[NMS-15420])
+* M2022 Minions > 2022.1.8 Cannot use SCV credentials (Issue https://issues.opennms.org/browse/NMS-15450[NMS-15450])
+* Event Datetime element parsing changed between M2018 and M2021 (Issue https://issues.opennms.org/browse/NMS-15471[NMS-15471])
+* Minimum system requirements does not enumerate RHEL9 support (Issue https://issues.opennms.org/browse/NMS-15499[NMS-15499])
+* Cortex plugin has no LICENSE.md (Issue https://issues.opennms.org/browse/NMS-15521[NMS-15521])
+* upgrade Xalan to 2.7.3 (CVE-2022-34169) (Issue https://issues.opennms.org/browse/NMS-15578[NMS-15578])
+
+===== Enhancement
+
+* Deploy Release Jars to Maven Central (Issue https://issues.opennms.org/browse/NMS-14727[NMS-14727])
+* DOC: Create documentation for vacuumd (Issue https://issues.opennms.org/browse/NMS-15440[NMS-15440])
+* Upgrade Drools to 8.34.0.Final (from 7.31.0.Final) (Issue https://issues.opennms.org/browse/NMS-15459[NMS-15459])
+* Update docs to include RHEL9 and Rocky/Alma compatability (Issue https://issues.opennms.org/browse/NMS-15500[NMS-15500])
+* re-enable license maven plugin as a separate job (Issue https://issues.opennms.org/browse/NMS-15572[NMS-15572])
+
+===== Task
+
+* DOC: Update replacement tokens documentation (Issue https://issues.opennms.org/browse/NMS-15045[NMS-15045])
+* Vulnerable c3p0 0.9.1.1 packaged in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-15072[NMS-15072])
+* DOC: Restructure Alarm History documentation (Issue https://issues.opennms.org/browse/NMS-15287[NMS-15287])
 
 [[releasenotes-changelog-32.0.0]]
 
