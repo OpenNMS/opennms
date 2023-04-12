@@ -1620,7 +1620,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <curatorTestVersion>2.9.1</curatorTestVersion>
+    <curatorTestVersion>5.4.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
@@ -1735,7 +1735,7 @@
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
+    <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
