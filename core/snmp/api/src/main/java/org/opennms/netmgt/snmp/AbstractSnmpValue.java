@@ -28,7 +28,15 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.nio.charset.Charset;
+
+import org.apache.commons.lang.StringUtils;
+
 public abstract class AbstractSnmpValue implements SnmpValue {
+
+    public static boolean allBytesPlainAscii(final byte[] bytes) {
+        return StringUtils.isAsciiPrintable(new String(bytes, Charset.defaultCharset()));
+    }
 
     public static boolean allBytesDisplayable(final byte[] bytes) {
         if (allBytesUTF_8(bytes)) {
