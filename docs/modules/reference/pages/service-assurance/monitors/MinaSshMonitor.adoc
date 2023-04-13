@@ -37,7 +37,7 @@ Optionally, a remote command to execute can be provided and if that is successfu
 | n/a
 
 | remote-command
-| A command to execute after authentication is successful on the node. The output is ignored, and any execution errors will mark the service as down. 
+| A command to execute after authentication is successful on the node. The output is ignored, and any execution errors will mark the service as down.
 | n/a
 
 | port
