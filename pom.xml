@@ -1701,7 +1701,9 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <junitVintageEngineVersion>5.9.2</junitVintageEngineVersion>
+    <junit4Version>4.13.2</junit4Version>
+    <junit5Version>5.9.2</junit5Version>
+    <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
@@ -4679,7 +4681,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13.2</version>
+        <version>${junit4Version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -5195,9 +5197,21 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit5Version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-engine</artifactId>
+        <version>${junit5PlatformVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>${junitVintageEngineVersion}</version>
+        <version>${junit5Version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
