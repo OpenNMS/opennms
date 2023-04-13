@@ -98,8 +98,7 @@ To install the activation key on your {page-component-title} instance, follow th
 
 . Log in to {page-component-title}.
 . In the top menu bar, click menu:Plugins[Cloud Services].
-. Turn the *Cloud Services Deactivate* toggle on.
-. Paste the activation key in the *Enter Activation Key* box, and click *Activate*.
+. Paste the activation key in the *Enter Activation Key* box, and click *Activate Cloud Services*.
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
