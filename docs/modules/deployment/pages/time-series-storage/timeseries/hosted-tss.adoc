@@ -1,4 +1,5 @@
 
+ifeval::["{page-component-title}" == "Meridian"]
 = OpenNMS Time Series DB
 
 The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from monitored devices.
@@ -7,7 +8,7 @@ The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable ti
 
 You must have the following to use the Time Series DB:
 
-* Horizon 31+ (Meridian availability with the 2023 release).
+* Meridian 2023+.
 * A Time Series DB subscription.
 The subscription provides access to the https://portal.opennms.com[OpenNMS Portal], where you can retrieve your activation key and view Time Series DB metrics.
 Contact sales@opennms.com to sign up.
@@ -33,7 +34,7 @@ If they are blocked, you cannot enable the Cloud Services.
 === Update Cloud Services Connector files
 
 The OpenNMS Cloud Services Connector is an extension that lets your {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
-The packages for this extension are installed by default in Horizon 31 and later, but they do need to be configured and activated.
+The packages for this extension are installed by default, but they do need to be configured and activated.
 You can use `yum` or `apt` to make sure your `opennms-cloud-plugin` package is up to date.
 
 To ensure that the feature is activated on future service restarts, add the feature to a file in `featuresBoot.d`:
@@ -44,7 +45,7 @@ echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${
 === Configure Cloud Services
 
 You must configure your {page-component-title} instance to load the Cloud Services plugin on start, and to direct storage to the cloud service.
-If you are using Horizon 31 or later, copy the example `timeseries.properties` file to your working directory:
+To do so, copy the example `timeseries.properties` file to your working directory:
 
 [source, console]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
@@ -98,7 +99,8 @@ To install the activation key on your {page-component-title} instance, follow th
 
 . Log in to {page-component-title}.
 . In the top menu bar, click menu:Plugins[Cloud Services].
-. Paste the activation key in the *Enter Activation Key* box, and click *Activate Cloud Services*.
+. Turn the *Cloud Services Deactivate* toggle on.
+. Paste the activation key in the *Enter Activation Key* box, and click *Activate*.
 
 By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
@@ -140,3 +142,4 @@ You can filter to see data for a specific instance.
 . To see summary data for a specific instance, type an instance name in the *Search Instances* field.
 +
 The screen updates to display only that instance and its associated summary data.
+endif::[]
