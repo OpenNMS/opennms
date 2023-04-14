@@ -47,7 +47,7 @@ echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${
 You must configure your {page-component-title} instance to load the Cloud Services plugin on start, and to direct storage to the cloud service.
 To do so, copy the example `timeseries.properties` file to your working directory:
 
-[source, console]
+[source, shell]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 
 You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
