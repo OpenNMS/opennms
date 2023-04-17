@@ -1,0 +1,46 @@
+{
+  "metadata": [
+    {
+      "key": "systemId",
+      "name": "System tracking UUID",
+      "description": "Acts as a \"primary key\" for a system's data over time",
+      "datatype": "string"
+    },
+    {
+      "key": "packageName",
+      "name": "Product name",
+      "description": "Which core product (Horizon vs. Meridian) is in use?",
+      "datatype": "string"
+    },
+    {
+      "key": "version",
+      "name": "Product version",
+      "description": "Which version of the core product is in use?",
+      "datatype": "string"
+    },
+    {
+      "key": "osName",
+      "name": "OS name",
+      "description": "Which operating system is in use on the core system?",
+      "datatype": "string"
+    },
+    {
+      "key": "nodesBySysOid",
+      "name": "Top-twenty sysObjectIDs",
+      "description": "Which device types dominate the set of SNMP-enabled nodes?",
+      "datatype": "object"
+    },
+    {
+      "key": "services",
+      "name": "Services",
+      "description": "Which services are being used on the core system?",
+      "datatype": "object"
+    },
+    {
+      "key": "installedFeatures",
+      "name": "Installed Features",
+      "description": "Which features are installed on the core system?",
+      "datatype": "object"
+    }
+  ]
+}
