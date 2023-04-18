@@ -42,6 +42,7 @@ JAVA_EXPORTS=(
     "java.base/sun.net.www.content.text=ALL-UNNAMED" \
     "java.base/sun.security.ssl=ALL-UNNAMED" \
     "java.base/sun.security.x509=ALL-UNNAMED" \
+    "java.naming/com.sun.jndi.ldap=ALL-UNNAMED" \
     "jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED" \
     "jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED" \
     "java.rmi/sun.rmi.registry=ALL-UNNAMED" \

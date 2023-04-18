@@ -79,10 +79,15 @@
 	   <scope>provided</scope>
 	</dependency>
     <dependency>
-	   <groupId>org.osgi</groupId>
-	   <artifactId>osgi.cmpn</artifactId>
-	   <scope>provided</scope>
-	</dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.cm</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.blueprint</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.lib</artifactId>

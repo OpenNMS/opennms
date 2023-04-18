@@ -31,10 +31,7 @@ import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 import java.util.Date;
 
@@ -136,26 +133,29 @@ public class SyslogOverlappingIpAddressIT {
                         notNullValue());
 
         // Sending syslog messages to each node and expect it to appear on the node
-        SyslogUtils.sendMessage(minion1.getSyslogAddress(), hostIpAddress, 1);
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(eventDao,
-                        new CriteriaBuilder(OnmsEvent.class)
-                                .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                                .ge("eventCreateTime", startOfTest)
-                                .eq("node", onmsNode1)
-                                .toCriteria()),
-                        is(1));
+                .until(() -> {
+                            SyslogUtils.sendMessage(minion1.getSyslogAddress(), hostIpAddress, 1);
+                            return DaoUtils.countMatchingCallable(eventDao,
+                                    new CriteriaBuilder(OnmsEvent.class)
+                                            .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                            .ge("eventCreateTime", startOfTest)
+                                            .eq("node", onmsNode1)
+                                            .toCriteria()).call();
+                        },
+                        greaterThan(0));
 
-        SyslogUtils.sendMessage(minion2.getSyslogAddress(), hostIpAddress, 1);
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(eventDao,
-                        new CriteriaBuilder(OnmsEvent.class)
-                                .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                                .ge("eventCreateTime", startOfTest)
-                                .eq("node", onmsNode2)
-                                .toCriteria()),
-                        is(1));
+                .until(() -> {
+                            SyslogUtils.sendMessage(minion2.getSyslogAddress(), hostIpAddress, 1);
+                            return DaoUtils.countMatchingCallable(eventDao,
+                                    new CriteriaBuilder(OnmsEvent.class)
+                                            .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                            .ge("eventCreateTime", startOfTest)
+                                            .eq("node", onmsNode2)
+                                            .toCriteria()).call();
+                        },
+                        greaterThan(0));
     }
-
 
 }

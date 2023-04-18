@@ -24,14 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-            <version>${osgiVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
+            <artifactId>org.osgi.service.cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.graph</groupId>

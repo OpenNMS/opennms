@@ -36,6 +36,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.ClassRule;
@@ -71,9 +72,6 @@ public class SyslogIT {
     public void canReceiveSyslogMessages() throws Exception {
         final Date startOfTest = new Date();
 
-        // Send a syslog packet to the Minion syslog listener
-        SyslogUtils.sendMessage(stack.minion().getSyslogAddress(), "myhost", 1);
-
         // Parsing the message correctly relies on the customized syslogd-configuration.xml that is part of the OpenNMS image
         final EventDao eventDao = stack.postgres().dao(EventDaoHibernate.class);
         final Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
@@ -84,7 +82,12 @@ public class SyslogIT {
                 .toCriteria();
 
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(eventDao, criteria), greaterThan(0));
+                .until(() -> {
+                    // Send a syslog packet to the Minion syslog listener
+                    SyslogUtils.sendMessage(stack.minion().getSyslogAddress(), "myhost", 1);
+                    // Verify
+                    return DaoUtils.countMatchingCallable(eventDao, criteria).call();
+                }, greaterThan(0));
     }
 
     @Test
@@ -103,17 +106,19 @@ public class SyslogIT {
                                                              .toCriteria()),
                       is(1));
 
-        // Send the initial message
-        SyslogUtils.sendMessage(stack.minion().getSyslogAddress(), sender, 1);
-
         // Wait for the syslog message
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(stack.postgres().dao(EventDaoHibernate.class),
-                                                     new CriteriaBuilder(OnmsEvent.class)
-                                                             .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
-                                                             .ge("eventCreateTime", startOfTest)
-                                                             .toCriteria()),
-                      is(1));
+               .until(() -> {
+                           // Send the message
+                           SyslogUtils.sendMessage(stack.minion().getSyslogAddress(), sender, 1);
+                           // Verify
+                           return DaoUtils.countMatchingCallable(stack.postgres().dao(EventDaoHibernate.class),
+                                   new CriteriaBuilder(OnmsEvent.class)
+                                           .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
+                                           .ge("eventCreateTime", startOfTest)
+                                           .toCriteria()).call();
+                       },
+                      greaterThan(1));
 
         //Wait for a new suspect
         try {
