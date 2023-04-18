@@ -1394,7 +1394,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.20.0</version>
         <configuration>
             <targetJdk>1.8</targetJdk>
             <rulesets>
@@ -1586,7 +1586,7 @@
 
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
-    <args4jVersion>2.32</args4jVersion>
+    <args4jVersion>2.33</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
@@ -1654,7 +1654,7 @@
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
-    <httpclientVersion>4.5.13</httpclientVersion>
+    <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
