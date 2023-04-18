@@ -1674,7 +1674,7 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.48.v20220622</jettyVersion>
+    <jettyVersion>10.0.14</jettyVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
