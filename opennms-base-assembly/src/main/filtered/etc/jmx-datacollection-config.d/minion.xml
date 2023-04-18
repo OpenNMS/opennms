@@ -130,7 +130,7 @@
 
             <!-- Sink Producer Metrics -->
 
-            <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch">
+            <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch,type=timers">
                 <attrib name="50thPercentile" alias="Dispatch50" type="gauge"/>
                 <attrib name="75thPercentile" alias="Dispatch75" type="gauge"/>
                 <attrib name="95thPercentile" alias="Dispatch95" type="gauge"/>
@@ -143,28 +143,28 @@
             </mbean>
 
 
-            <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size">
+            <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size,type=gauges">
                 <attrib name="Value" alias="QueueSize" type="gauge"/>
             </mbean>
 
-            <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped">
+            <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped,type=counters">
                 <attrib name="Count" alias="DroppedCounter" type="counter"/>
             </mbean>
 
             <!-- Twin Subscriber Metrics -->
 
             <mbean name="org.opennms.core.ipc.twin.subscriber.requestSent" resource-type="twinMetrics"
-                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent">
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent,type=counters">
                 <attrib name="Count" alias="RequestSent" type="counter"/>
             </mbean>
 
             <mbean name="org.opennms.core.ipc.twin.subscriber.updateReceived" resource-type="twinMetrics"
-                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived">
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived,type=counters">
                 <attrib name="Count" alias="UpdateReceived" type="counter"/>
             </mbean>
 
             <mbean name="org.opennms.core.ipc.twin.subscriber.updateDropped" resource-type="twinMetrics"
-                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped">
+                   objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped,type=counters">
                 <attrib name="Count" alias="UpdateDropped" type="counter"/>
             </mbean>
 

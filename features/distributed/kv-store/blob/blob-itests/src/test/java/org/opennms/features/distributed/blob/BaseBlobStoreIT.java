@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
@@ -58,8 +59,15 @@ public abstract class BaseBlobStoreIT {
     public void setup() throws Exception {
         init();
     }
+
+    @After
+    public void tearDown() throws Exception {
+        destroy();
+    }
     
     protected abstract void init() throws Exception;
+
+    public void destroy() throws Exception {}
     
     @Test
     public void canPersistAndRetrieve() {
