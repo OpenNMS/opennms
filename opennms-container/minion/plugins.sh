@@ -1,13 +1,14 @@
 #!/bin/bash
 
+set -euo pipefail
+IFS=$'\n\t'
 
 export VELOCLOUD_VERSION="latest"
 export DEPLOY_FOLDER="/opt/usr-plugins"
 
 mkdir $DEPLOY_FOLDER 
 
-apt-get update
-apt-get install -y wget curl jq
+microdnf -y install jq
 
 cd $DEPLOY_FOLDER || exit 
 if [ $VELOCLOUD_VERSION == "latest" ]
@@ -18,6 +19,6 @@ else
 fi
 if [ -n "$artifact_urls" ]; then
  for url in $artifact_urls; do
-    wget "$url"
+    curl -L -O "$url"
  done
 fi

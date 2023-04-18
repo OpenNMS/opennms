@@ -1,7 +1,7 @@
 ##
-# Use Java base image and setup required DEBS as cacheable image.
+# Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b215-jre-11"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -22,31 +22,15 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
 
 FROM ${BASE_IMAGE} as sentinel-base
 
-ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime rsync"
-
-ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
+ARG REQUIRED_RPMS="hostname uuid"
 
 SHELL ["/bin/bash", "-c"]
 
-# Prevent prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Collect generic steps in a layer for caching
-# import keys & install required debs
-RUN apt-get update && \
-    apt-get --no-install-recommends install -yq gnupg ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
-    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /var/cache/apt
 
-# get any security updates for the base system
-RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
-    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
-    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
-    apt clean && \
-    rm -rf /var/cache/apt /etc/apt/security.sources.list
+# install required RPMs
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
 
 ##
 # Download plugins
