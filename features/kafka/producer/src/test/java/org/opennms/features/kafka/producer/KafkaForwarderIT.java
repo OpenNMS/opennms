@@ -188,6 +188,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private OnmsTopologyDao onmsTopologyDao;
     @Before
     public void setUp() throws IOException {
+        File karaf = tempFolder.newFolder("karaf");
+        System.setProperty("karaf.data", karaf.getAbsolutePath());
+
         File data = tempFolder.newFolder("data");
 
         eventdIpcMgr.setEventWriter(mockDatabase);

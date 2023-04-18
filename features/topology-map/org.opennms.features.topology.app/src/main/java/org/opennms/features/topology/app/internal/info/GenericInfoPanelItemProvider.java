@@ -75,7 +75,7 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(GenericInfoPanelItemProvider.class);
 
-    private final static Path DIR = Paths.get(System.getProperty("opennms.home"), "etc", "infopanel");
+    private final static Path DIR = Paths.get(System.getProperty("opennms.home", "."), "etc", "infopanel");
 
     // Workaround for OSGI-classloader-foo: Jinjava is using JUEL which
     // chooses the wrong classloader to load other dependencies. By

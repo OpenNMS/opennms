@@ -46,8 +46,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -178,12 +181,17 @@ public class WillItUnmarshalIT {
     public static final ArrayList<Object[]> FILES = new ArrayList<>();
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClazz() {
         XMLUnit.setIgnoreWhitespace(false);
         XMLUnit.setIgnoreAttributeOrder(false);
         XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(false);
         XMLUnit.setNormalize(false);
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        System.setProperty("opennms.home", temporaryFolder.newFolder().getAbsolutePath());
     }
 
     /**
@@ -384,6 +392,9 @@ public class WillItUnmarshalIT {
     public static Collection<Object[]> files() {
         return FILES;
     }
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private final Source source;
     private final String file;
