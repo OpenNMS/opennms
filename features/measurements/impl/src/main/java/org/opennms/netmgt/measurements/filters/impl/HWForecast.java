@@ -57,7 +57,6 @@ import com.google.common.collect.TreeBasedTable;
 @FilterInfo(name="HoltWinters", description="Performs Holt-Winters forecasting.", backend="R")
 public class HWForecast implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(HWForecast.class);
-    private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/holtWinters.R";
 
     @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
@@ -87,7 +86,7 @@ public class HWForecast implements Filter {
     }
 
     @Override
-    public void filter(RowSortedTable<Long, String, Double> table) throws RScriptException {
+    public void filter(RowSortedTable<Long, String, Double> table) {
         Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), String.format("Data source must have a '%s' column.", Filter.TIMESTAMP_COLUMN_NAME));
 
         // Determine the index of the first and last non-NaN values

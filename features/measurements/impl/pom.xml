@@ -23,18 +23,6 @@
       <artifactId>org.opennms.features.measurements.api</artifactId>
     </dependency>
 
-    <!-- R -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-R</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-    </dependency>
-
     <!-- RRD/JRobin -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -67,6 +55,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
     </dependency>
   </dependencies>
 </project>
