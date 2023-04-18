@@ -73,7 +73,7 @@ public class Init implements Command {
         if (!Strings.isNullOrEmpty(driverSettingsFile)) {
             System.out.printf("Initializing the '%s' keyspace on %s:%d%n", keyspace, hostname, port);
         } else {
-            System.out.printf("Initializing the '%s' keyspace with driver settings pull from: %s%n", keyspace, driverSettingsFile);
+            System.out.printf("Initializing the '%s' keyspace with driver settings from: %s%n", keyspace, driverSettingsFile);
         }
         try (SchemaManager m = new SchemaManager(datacenter, keyspace,
                 hostname, port, username, password, ssl, driverSettingsFile)) {
