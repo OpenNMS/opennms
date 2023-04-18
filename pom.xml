@@ -1717,8 +1717,8 @@
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.87.Final</netty4Version>
-    <newtsVersion>3.0.0-SNAPSHOT</newtsVersion>
-    <newtsOsgiVersion>3.0.0.SNAPSHOT</newtsOsgiVersion>
+    <newtsVersion>3.0.0</newtsVersion>
+    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
