@@ -167,7 +167,7 @@ public class MinaSshMonitorIT {
         ServiceMonitor sm = new MinaSshMonitor();
         MonitoredService svc = new MockMonitoredService(1, HOST_LOCALHOSTNAME, HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("user", "testuser");
+        parms.put("username", "testuser");
         //parms.put("password", "ZrgPjTtymUUTTlu0V7BAVp+5mfQ=");
         parms.put("password", "testuser");
         parms.put("port", port);
@@ -183,7 +183,7 @@ public class MinaSshMonitorIT {
         ServiceMonitor sm = new MinaSshMonitor();
         MonitoredService svc = new MockMonitoredService(1, HOST_LOCALHOSTNAME, HOST_TO_TEST, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("user", "testuser");
+        parms.put("username", "testuser");
         parms.put("identity-file", identityFilePath.toString());
         parms.put("port", port);
 
@@ -198,7 +198,7 @@ public class MinaSshMonitorIT {
         ServiceMonitor sm = new MinaSshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "InvalidHostIPAddress", InetAddressUtils.UNPINGABLE_ADDRESS, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("user", "testuser");
+        parms.put("username", "testuser");
         parms.put("password", "testuser");
         parms.put("port", port);
 
@@ -212,7 +212,7 @@ public class MinaSshMonitorIT {
         ServiceMonitor sm = new MinaSshMonitor();
         MonitoredService svc = new MockMonitoredService(1, "NoIpAddress", null, "SSH");
         Map<String, Object> parms = new HashMap<String, Object>();
-        parms.put("user", "testuser");
+        parms.put("username", "testuser");
         parms.put("password", "testuser");
         parms.put("port", port);
 
