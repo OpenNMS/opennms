@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.snmp;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -108,6 +109,14 @@ public class AbstractSnmpValueTest {
 
 		highIso8859Char = "FF"; // Lowercase y with umlaut
 		assertTrue(new String(hexStringToBytes(highIso8859Char), "ISO-8859-1"), AbstractSnmpValue.allBytesDisplayable(hexStringToBytes(highIso8859Char)));
+	}
+
+	@Test
+	public void testPlainAscii() {
+		for(char i = 0; i < 256; i++) {
+			final String string = "foo" + i + "bar";
+			assertEquals(i > 31 && i  < 127, AbstractSnmpValue.allBytesPlainAscii(string.getBytes()));
+		}
 	}
 
 	private static byte[] hexStringToBytes(String hexString) {
