@@ -67,6 +67,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setUsers(0);
         usageStatisticsReport.setGroups(0);
         usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
+        usageStatisticsReport.setInContainer(false);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
 
@@ -89,6 +90,7 @@ public class UsageStatisticsReportDTOTest {
             "\"events\":0," +
             "\"freePhysicalMemorySize\":null," +
             "\"groups\":0," +
+            "\"inContainer\":false," +
             "\"installedFeatures\":null," +
             "\"installedOIAPlugins\":null," +
             "\"ipInterfaces\":0," +
