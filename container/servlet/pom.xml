@@ -26,11 +26,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.soa</artifactId>
             <scope>provided</scope>

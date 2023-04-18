@@ -1644,7 +1644,7 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
+    <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
@@ -1720,7 +1720,8 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.6</karafVersion>
+    <junitVintageEngineVersion>5.6.3</junitVintageEngineVersion>
+    <karafVersion>4.4.3</karafVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
@@ -1738,9 +1739,9 @@
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
-    <paxLoggingVersion>2.0.14</paxLoggingVersion>
+    <paxLoggingVersion>2.2.0</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
-    <paxWebVersion>7.3.23</paxWebVersion>
+    <paxWebVersion>8.0.15</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
@@ -1750,10 +1751,8 @@
     <okioVersion>2.8.0</okioVersion>
     <opennmsApiVersion>1.4.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
-    <osgiVersion>7.0.0</osgiVersion>
-    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
-    <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
-    <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
+    <osgiVersion>8.0.0</osgiVersion>
+    <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
@@ -4709,18 +4708,23 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi.cmpn</artifactId>
-        <version>${osgiCompendiumVersion}</version>
+        <artifactId>org.osgi.service.blueprint</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.cm</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.component.annotations</artifactId>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi.annotation</artifactId>
         <version>${osgiAnnotationVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>osgi.enterprise</artifactId>
-        <version>${osgiEnterpriseVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.jolokia</groupId>

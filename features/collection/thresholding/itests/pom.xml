@@ -11,6 +11,10 @@
     <artifactId>org.opennms.features.collection.thresholding.itests</artifactId>
     <dependencies>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
             <version>${project.version}</version>

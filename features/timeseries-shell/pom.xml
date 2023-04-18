@@ -42,11 +42,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi.enterprise</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.timeseries</artifactId>
       <version>${project.version}</version>

@@ -27,10 +27,14 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
-            <version>${osgiCompendiumVersion}</version>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.eclipsesource.jaxrs</groupId>
             <artifactId>publisher-api</artifactId>
