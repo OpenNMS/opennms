@@ -128,7 +128,7 @@ public final class MinaSshMonitor extends AbstractServiceMonitor {
         }
 
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        String user = ParameterMap.getKeyedString(parameters, "user", null);
+        String userName = ParameterMap.getKeyedString(parameters, "username", null);
         final String password = ParameterMap.getKeyedString(parameters, "password", null);
         final String identifyFileName = ParameterMap.getKeyedString(parameters, "identity-file", null);
         final String remoteCommand = ParameterMap.getKeyedString(parameters, "remote-command", null);
@@ -186,7 +186,7 @@ public final class MinaSshMonitor extends AbstractServiceMonitor {
             HostConfigEntry hostConfig = new HostConfigEntry();
             hostConfig.setHost(hostAddress);
             hostConfig.setHostName(hostAddress);
-            hostConfig.setUsername(user);
+            hostConfig.setUsername(userName);
             hostConfig.setPort(port);
 
             TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
