@@ -308,15 +308,17 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
         usageStatisticsReport.setApplianceCounts(this.getApplianceCountByModel());
         // Container
-        usageStatisticsReport.setInContainer(this.isDockerized());
+        usageStatisticsReport.setInContainer(this.isContainerized());
 
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
     }
 
-    private boolean isDockerized() {
-        return new File("/.dockerenv").exists();
+    private boolean isContainerized() {
+        final boolean inPodman = new File("/run/.containerenv").exists();
+        final boolean inDocker = new File("/.dockerenv").exists();
+        return inPodman || inDocker;
     }
 
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
