@@ -2003,7 +2003,7 @@
     <feature name="fst" description="FST" version="${project.version}">
         <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
-        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/${objenesisVersion}</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 

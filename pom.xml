@@ -1646,7 +1646,9 @@
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
-    <fstVersion>2.47</fstVersion>
+    <fstVersion>2.57</fstVersion>
+    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
+    <objenesisVersion>2.5.1</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
