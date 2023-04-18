@@ -150,5 +150,7 @@ public class UsageStatisticsIT {
         assertThat((long) appliances.get("virtualAppliance"), is(2L));
         assertThat((long) appliances.get("applianceMini"), is(1L));
         assertThat((long) appliances.get("appliance1U"), is(0L));
+
+        assertThat((boolean) usageReport.get("inContainer"), is(true));
     }
 }
