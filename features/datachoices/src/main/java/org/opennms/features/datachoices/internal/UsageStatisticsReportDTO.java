@@ -101,6 +101,7 @@ public class UsageStatisticsReportDTO {
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
+    private boolean m_inContainer;
     public int getNotifications() {return notifications;}
 
     public void setNotifications(int notifications) {this.notifications = notifications;}
@@ -520,6 +521,14 @@ public class UsageStatisticsReportDTO {
 
     public Map<String, Long> getApplianceCounts() {
         return m_applianceCounts;
+    }
+
+    public void setInContainer(final boolean inContainer) {
+        m_inContainer = inContainer;
+    }
+
+    public boolean isInContainer() {
+        return m_inContainer;
     }
 
     public void setApplianceCounts(Map<String, Long> applianceCounts) {
