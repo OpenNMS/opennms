@@ -28,18 +28,19 @@
 
 package org.opennms.features.datachoices.web.internal;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-
 import org.opennms.features.datachoices.internal.StateManager;
+import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
+import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
 import org.opennms.features.datachoices.web.DataChoiceRestService;
-
-import com.google.common.base.Throwables;
 
 /** 
  * Rest-Endpoint mounted at /datachoices. Supported paths are:
@@ -47,6 +48,8 @@ import com.google.common.base.Throwables;
  * POST /opennms/rest/datachoices?action=enable
  * POST /opennms/rest/datachoices?action=disable
  * GET /opennms/rest/datachoices
+ * GET /opennms/rest/datachoices/status
+ * GET /opennms/rest/datachoices/meta
  *
  * @author jwhite
  * @author mvrueden
@@ -54,6 +57,8 @@ import com.google.common.base.Throwables;
 public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     private StateManager m_stateManager;
     private UsageStatisticsReporter m_usageStatisticsReporter;
+
+    private static final String METADATA_RESOURCE_PATH = "web/datachoicesMetadata.json";
 
     @Override
     public void updateCollectUsageStatisticFlag(HttpServletRequest request, String action) {
@@ -80,6 +85,33 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     @Override
     public UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException {
         return m_usageStatisticsReporter.generateReport();
+    }
+
+    @Override
+    public UsageStatisticsStatusDTO getStatus() throws ServletException, IOException {
+        UsageStatisticsStatusDTO dto = new UsageStatisticsStatusDTO();
+
+        try {
+            dto.setEnabled(m_stateManager.isEnabled());
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+
+        return dto;
+    }
+
+    @Override
+    public UsageStatisticsMetadataDTO getMetadata() {
+        UsageStatisticsMetadataDTO dto = null;
+
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(METADATA_RESOURCE_PATH)) {
+            ObjectMapper mapper = new ObjectMapper();
+            dto = mapper.readValue(inputStream, UsageStatisticsMetadataDTO.class);
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+
+        return dto;
     }
 
     public void setStateManager(StateManager stateManager) {
