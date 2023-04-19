@@ -84,7 +84,7 @@ import java.nio.file.Paths;
  * ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  *
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public final class MinaSshMonitor extends AbstractServiceMonitor {
