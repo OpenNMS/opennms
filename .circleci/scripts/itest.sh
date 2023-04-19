@@ -142,7 +142,6 @@ echo "#### Executing tests"
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)"
