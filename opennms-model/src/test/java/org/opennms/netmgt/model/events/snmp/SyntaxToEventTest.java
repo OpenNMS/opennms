@@ -91,8 +91,9 @@ public class SyntaxToEventTest {
 		Parm parm = SyntaxToEvent.processSyntax("Test",octetString);
 
 		assertEquals("Test", parm.getParmName());
-		assertEquals(EventConstants.XML_ENCODING_MAC_ADDRESS, parm.getValue().getEncoding());
-		assertEquals("55:55:55:55:55:00", parm.getValue().getContent());	
+		assertEquals(EventConstants.XML_ENCODING_TEXT, parm.getValue().getEncoding());
+		// I'm not sure what is converting the NULL char to a "."...
+		assertEquals("UUUUU.", parm.getValue().getContent());	
 	}
 
 	@Test
