@@ -1,9 +1,11 @@
 
-= Response Time by Node Report
+= Node Response Time Report
 
 This report lists the response times by nodes, filtered by specified node tags.
 
-This report has a table for each matching node tag that lists the devices, and a row for each IP interface with the minimum, average, and maximum ICMP latency of the period of the report.
+This report has a table for each matching node tag that lists the devices, and a row for each IP interface with the minimum, average, and maximum ICMP latency of the period of the report:
+
+image::database-reports/node-response-report.png["Example of a Node Response Time report. A table of nodes in the Cameras surveillance category is displayed, with response statistics.", 650]
 
 You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 

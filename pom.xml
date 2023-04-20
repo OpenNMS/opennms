@@ -1708,7 +1708,7 @@
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
-    <log4j2Version>2.18.0</log4j2Version>
+    <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.8.8</mavenApiVersion>

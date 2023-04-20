@@ -4,6 +4,8 @@
 This report provides a summary of the average and peak traffic rates for nodes whose category matches the specified node tag.
 The data is listed over a specified time period.
 
+image::database-reports/average-peak-traffic.png["Example of an Average and Peak Traffic report. A table of nodes and interfaces in the Devices surveillance group is displayed with bits per second statistics.", 650]
+
 You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters
