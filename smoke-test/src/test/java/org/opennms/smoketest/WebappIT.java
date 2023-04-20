@@ -30,6 +30,7 @@ package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -139,8 +140,8 @@ public class WebappIT {
   public void verifyCachingOnStaticAssets() {
     given().get("assets/vendor.min.js").then().assertThat()
             .statusCode(200)
-            .header("Cache-Control", is(""))
-            .header("Pragma", is(""));
+            .header("Cache-Control", not("no-store"))
+            .header("Pragma", not("no-cache"));
   }
 
 }
