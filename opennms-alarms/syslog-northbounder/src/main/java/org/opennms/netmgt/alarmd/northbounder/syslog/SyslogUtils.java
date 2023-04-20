@@ -62,7 +62,6 @@ public abstract class SyslogUtils {
         instanceConfiguration.setSendLocalName(destination.isSendLocalName());
         instanceConfiguration.setSendLocalTimestamp(destination.isSendLocalTime());
         instanceConfiguration.setTruncateMessage(destination.isTruncateMessage());
-        instanceConfiguration.setUseStructuredData(SyslogConstants.USE_STRUCTURED_DATA_DEFAULT);
 
         try {
             Syslog.createInstance(destination.getName(), instanceConfiguration);
