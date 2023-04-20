@@ -20,7 +20,8 @@ CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="${MINION_HOME}/cacerts"
 
-export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="-Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="$JAVA_OPTS $("${OPENNMS_HOME}/bin/_module_opts.sh")"
 
 # Error codes
 E_ILLEGAL_ARGS=126
