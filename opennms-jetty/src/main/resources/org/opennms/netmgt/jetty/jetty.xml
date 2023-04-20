@@ -137,16 +137,17 @@
           </New>
         </Item>
         <!-- Jira NMS-14947 Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured -->
+        <!-- no caching for everything in "/opennms/*" excluding static assets "/opennms/assets/*"  -->
         <Item>
-          <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
-            <Set name="pattern">*</Set>
+          <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderRegexRule">
+            <Set name="regex">/opennms/(?!assets/).*</Set>
             <Set name="name">Cache-control</Set>
             <Set name="value">no-store</Set>
           </New>
         </Item>
         <Item>
-          <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
-            <Set name="pattern">*</Set>
+          <New id="header" class="org.eclipse.jetty.rewrite.handler.HeaderRegexRule">
+            <Set name="regex">/opennms/(?!assets/).*</Set>
             <Set name="name">Pragma</Set>
             <Set name="value">no-cache</Set>
           </New>

@@ -135,4 +135,12 @@ public class WebappIT {
             .header("Pragma", is("no-cache"));
   }
 
+  @Test
+  public void verifyCachingOnStaticAssets() {
+    given().get("assets/vendor.min.js").then().assertThat()
+            .statusCode(200)
+            .header("Cache-Control", is(""))
+            .header("Pragma", is(""));
+  }
+
 }
