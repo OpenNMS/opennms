@@ -28,7 +28,33 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.nio.charset.Charset;
+
+import org.apache.commons.lang.CharUtils;
+
 public abstract class AbstractSnmpValue implements SnmpValue {
+
+    public static boolean allBytesPlainAscii(final byte[] bytes) {
+        if (bytes == null) {
+            return false;
+        }
+
+        final String str = new String(bytes, Charset.defaultCharset());
+        final int sz = str.length();
+
+        for(int i = 0; i < sz; ++i) {
+            // check whether character is between 31 and 127
+            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i));
+            // check for null terminated string
+            final boolean isNullTerminated = str.charAt(i) == 0 && i == sz-1;
+
+            if (!isDisplayable && !isNullTerminated) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public static boolean allBytesDisplayable(final byte[] bytes) {
         if (allBytesUTF_8(bytes)) {
