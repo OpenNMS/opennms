@@ -11,13 +11,17 @@ It contains the following sections:
 * Top 25 events by node and UEI.
 * Top 25 nodes with generic enterprise default traps.
 
-The first section includes a pie showing all events by source, along with a table showing the data for the pie chart.
+The first section includes a pie chart showing all events by source, along with a table showing the data for the pie chart.
 This section also includes two line charts showing the total average processed events per hour and events per day.
-Finally, it contains a table with information about the database providing the above information.
+Finally, it contains a table with information about the database providing the above information:
+
+image::database-reports/event-analysis-report.png["Example of an Event Analysis report showing the first page of content. A pie chart, two line graphs, and a table of database information are displayed.", 650]
 
 The next four sections each contain a table and a corresponding line chart showing a breakdown of the top 25 events over the last 30 days, broken down from different perspectives.
 
-The "Top 25 events by UEI and event source" section shows the top 25 instances of the various combinations of UEI (for example, `nodes/NodeDown`, `threshold/highThresholdExceeded`, and so on) and event sources (for example, `OpenNMS.Poller.DefaultPollContext`, `OpenNMS.Threshd.hrStorageUsed`, and so on).
+The "Top 25 events by UEI and event source" section shows the top 25 instances of the various combinations of UEI (for example, `nodes/NodeDown`, `threshold/highThresholdExceeded`, and so on) and event sources (for example, `OpenNMS.Poller.DefaultPollContext`, `OpenNMS.Threshd.hrStorageUsed`, and so on):
+
+image::database-reports/event-analysis-report-2.png["Example of an Event Analysis report showing the second page of content. A table of events and a line graph are displayed.", 650]
 
 The next section, "Top 25 event hours", counts the number of times each UEI occurs within every hour of the 30-day window, and then lists the top 25 combinations of UEI and hour.
 This table shows the top hours when a specific UEI occurred.
