@@ -10,6 +10,9 @@ The report provides the following data for each interface:
 * Bytes transmitted.
 * Total bytes in and out.
 
+.Example Total Bytes Transferred by Interface report
+image::database-reports/total-bytes-interface.png["Example of a Total Bytes Transferred by Interface report. A table of interfaces in the Cameras surveillance category is displayed with transferred byte statistics.", 650]
+
 You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
 
 == Parameters

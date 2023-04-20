@@ -1,18 +1,14 @@
-[[OSGI-and-OpenNMS]]
-= OSGi Integration within OpenNMS
 
-OpenNMS uses https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] Container.
+= OSGi Integration
 
-This document explains how to integrate a Maven module (OSGi bundle) into the system.
+{page-component-title} uses the https://www.osgi.org/resources/what-is-osgi/[OSGi] framework in a https://karaf.apache.org/manual/latest/[Karaf] container.
+This section explains how to integrate a Maven module (OSGi bundle) in your {page-component-title} instance.
 
+== Add Maven module
 
-== Add a new Maven module
+New Maven modules are usually distributed in the form of a bundle (a JAR file and OSGi metadata).
+After you create a Maven module, add this plugin to `pom.xml` to create the necessary metadata:
 
-This section describes how to integrate a new Maven module into OpenNMS.
-
-Any new Maven module that we need to add to OpennMS is mostly a bundle (jar + OSGi metadata).
-
-After creating a Maven module, add the following plugin to pom.xml to create the necessary OSGi metadata.
 [source, xml]
 ----
     <packaging>bundle</packaging>
@@ -31,26 +27,25 @@ After creating a Maven module, add the following plugin to pom.xml to create the
                     <!-- <Export-Package>org.foo.myproject.api</Export-Package>--> <1>
                     <!-- <Import-Package>org.foo.myproject.api.dependencies</Import-Package>--> <2>
                     <!-- <Private-Package>org.foo.myproject.impl</Private-Package>--> <3>
-                    <!-- <Karaf-Commands>*</Karaf-Commands>-->                      <4>
+                    <!-- <Karaf-Commands>*</Karaf-Commands>--> <4>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 ----
+<1> (Optional) Define packages that can be exported.
+<2> (Optional) Define packages to import from dependent modules.
+<3> (Optional) Define private packages that should not be exported.
+<4> Include this only when the module is intended for adding Karaf commands.
 
-<1> Can define packages that can be exported here; optional not needed by default.
-<2> Can import packages from dependent modules; optional not needed by default.
-<3> Private packages that should not be exported; optional not needed by default.
-<4> Add this when the module is for adding Karaf commands (needed only for Karaf command bundles).
+== Add Karaf feature
 
-== Adding a Karaf feature
+A feature is a set of bundles that can be installed in Karaf.
+For any given module, all of its dependencies must be specified in a feature.
+Sometimes, there are runtime dependencies that will run only when you actually use the feature.
 
-A feature is a combination of bundles that can be installed in Karaf.
-For a given module, all the dependencies need to be specified in feature.
-Sometimes there are run time dependencies that will trigger only when you actually do something in the feature.
-
-.Example feature
+.Example feature definition
 [source, xml]
 ----
    <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
@@ -64,75 +59,68 @@ Sometimes there are run time dependencies that will trigger only when you actual
     </feature>
 ----
 
-=== Feature definitions
+You can define features by editing the files located in `container/features/src/main/resources/`:
 
-You can define the features in following feature files, located in container/features/src/main/resources/
+* `features.xml`: All features specific to {page-component-title} and those common to Minion and Sentinel.
+* `features-minion.xml`: All features specific to Minion.
+* `features-sentinel.xml`: All features specific to Sentinel.
 
-* features.xml - All the features specific to OpenNMS and common to Minion/Sentinel.
+To make a feature available in the Karaf container, add the feature and any appropriate dependencies to the following files:
 
-* features-minion.xml - All the features that are specific to Minion.
+* *{page-component-title}:* `opennms-full-assembly/pom.xml`
+* *Minion:* `features/minion/repository/pom.xml` (feature and Maven dependencies)
+* *Sentinel:* `features/sentinel/repository/pom.xml` (feature and Maven dependencies)
 
-* features-sentinel.xml - All the features that are specific to Sentinel.
+=== Install feature by default
 
-=== Make new feature available on Karaf Container.
+To install a new feature by default, edit the following files:
 
-* OpenNMS: add the feature in `opennms-full-assembly/pom.xml`.
+* *{page-component-title}:* Add the feature in `container/karaf/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
+* *Minion:* Add the feature in `features/minion/repository/src/main/resources/features.boot`.
+* *Sentinel:* Add the feature in `features/container/sentinel/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
 
-* Minion: add this feature and Maven dependencies in  `features/minion/repository/pom.xml`.
+== Spring Maven modules
 
-* Sentinel: add this feature and Maven dependencies in  `features/sentinel/repository/pom.xml`.
+If a Maven module should be loaded in Spring by default, you must include it in `opennms-base-assembly/pom.xml`.
+All of the modules that are loaded in Spring will be made available in `${opennms.target}/opennms/lib`.
 
-=== Install a new feature by default
+Some modules are defined only in Spring (legacy RPC modules, such as `opennms-services`).
+These are loaded in the default classloader.
 
-* OpenNMS: add the feature in `container/karaf/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
+You can add Spring beans to the OSGi service registry by exposing the beans as `<onmsgi:service>`.
 
-* Minion: add the feature in `features/minion/repository/src/main/resources/features.boot`.
+=== Add package to custom.properties
 
-* Sentinel: add this feature in `features/container/sentinel/src/main/filtered-resources/etc/org.apache.karaf.features.cfg`.
+Packages added to `custom.properties` are loaded in the default classloader, even when loaded in OSGi.
+You must use `custom.properties` to export packages that are loaded in Spring, but are also accessed through OSGi.
 
-=== Modules that need to be on Spring
+== Health check
 
-If a Maven module should be loaded in Spring by default, that Maven module should be included in `opennms-base-assembly/pom.xml`.
-All the modules that are loaded in Spring will be available in `${opennms.target}/opennms/lib`.
+The health check command is available in all Karaf containers:
 
-Some modules are only defined in Spring (legacy, RPC modules like opennms-services).
-These are loaded in Default ClassLoader.
+[source, shell]
+opennms:health-check
 
-Add Spring beans to the OSGi service registry by exposing the bean as `<onmsgi:service>`.
+It validates whether all features are enabled and running without issue in your {page-component-title} environment.
+If you see any bundle-related failures, you can use `bundle:diag id` to retrieve more specific information.
 
+== Dynamically reload module for debugging
 
-=== When to add a package to custom.properties
+You can use the `bundle:watch *` command to dynamically reload a module.
+This lets you watch the module for behaviors that may be of interest during the debugging process.
 
-Packages added to custom.properties are loaded in the default classloader even when loaded in OSGi.
-You must use custom.properties to export packages that are loaded in Spring but also accessed through OSGi.
+You can also use `bundle:watch~` in the Karaf container to watch for any updates in the local m2 repository.
 
-=== Health Check
+To update a specific module in your local Karaf repository, use `mvn clean install` in the appropriate directory.
 
-Health Check is available on all Karaf containers.
-Health Check validates whether all features are enabled.
+== Disable Karaf SSH host key check
 
-----
-health:check
-----
+To disable the host key check function for SSH in your Karaf container, add the following code to `.ssh/config`:
 
-If you see any failure related to a bundle, you can do `bundle:diag id` to understand the specific failure.
-
-=== Reload a specific Maven module dynamically for debugging
-
-----
-bundle:watch *
-----
-
-`bundle:watch~` in the Karaf container, watches any updates in the local m2 repository.
-Do `mvn clean install` in a specific module to update it in the local Karaf repository.
-
-=== Avoid host key checking for Karaf SSH
-
-Add the following lines to `.ssh/config`
+[source, ]
 ----
 Host localhost
     HostKeyAlgorithms +ssh-dss
     StrictHostKeyChecking no
 UserKnownHostsFile=/dev/null
 ----
-
