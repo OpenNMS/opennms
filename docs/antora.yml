@@ -1,9 +1,9 @@
 name: horizon
-version: '31-SNAPSHOT'
+version: '31'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '31.0.7-SNAPSHOT'
+    full-display-version: '31.0.7'
     experimental: true
     source-language: asciidoc@
     xrefstyle: short@
