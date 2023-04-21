@@ -18,7 +18,7 @@ The codename for Horizon 31.0.7 is https://wikipedia.org/wiki/$$Snickerdoodle$$[
 
 ===== Task
 
-* VIsualization of database-report templates in docs (Issue https://issues.opennms.org/browse/NMS-15423[NMS-15423])
+* Visualization of database-report templates in docs (Issue https://issues.opennms.org/browse/NMS-15423[NMS-15423])
 * Add Velocloud plugin in our core and minion containers (Issue https://issues.opennms.org/browse/NMS-15567[NMS-15567])
 
 ===== Story
