@@ -27,6 +27,14 @@ metrics storage without the administrative overhead.
 Horizon 31.0.0 is the first new major Horizon release to support writing time-series data to a Cortex
 instance via the optional https://github.com/OpenNMS/opennms-cortex-tss-plugin[OpenNMS Cortex Plugin].
 
+=== Native Holt-Winters forecasting
+
+The Holt-Winters forecasting filter no longer depends on the `R` package and has been converted to Java leveraging some work done by the team at https://github.com/ExpediaGroup/adaptive-alerting[Expedia].
+You can continue to use the filter is as no changes are needed to take advantage of this functionality.
+The filter that leverages `R` will be discontinued in a future release.
+
+https://github.com/ExpediaGroup/adaptive-alerting
+
 === UI Preview Integration
 
 The "UI Preview" that was separate from the main UI in Horizon 30 has been
