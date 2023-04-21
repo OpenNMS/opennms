@@ -149,21 +149,21 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
 
 
     private void snzLogger() {
-        for (final Entry<String,String[]> entry : original_parameters.entrySet()) {
+        for (final Entry<String, String[]> entry : original_parameters.entrySet()) {
             final String key = entry.getKey();
             final String[] rawVals = entry.getValue();
             final String[] snzVals = sanitized_parameters.get(key);
-            if (rawVals !=null && rawVals.length>0)
-            {
-                for (int i=0; i < rawVals.length; i++) 
-                {
-                    if (rawVals[i].equals(snzVals[i]))                                                          
-                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);
-                    else
-                        LOG.debug("Sanitization. Param modified: {}[{}]={}", key, i, snzVals[i]);
-                }       
+            if (rawVals != null && rawVals.length > 0) {
+                for (int i = 0; i < rawVals.length; i++) {
+                    final String value = key.toLowerCase().contains("pass") ? "<output omitted>" : snzVals[i];
+
+                    if (rawVals[i].equals(snzVals[i])) {
+                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, value);
+                    } else {
+                        LOG.debug("Sanitization. Param modified: {}[{}]={}", key, i, value);
+                    }
+                }
             }
         }
     }
-
 }

@@ -150,7 +150,22 @@
     <logger name="org.apache.kafka" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender" />
     </logger>
+    <logger name="org.eclipse.jetty.http.HttpParser" additivity="false" level="ERROR">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.eclipse.jetty.io.ChannelEndPoint" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.eclipse.jetty.server.HttpChannel" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="org.eclipse.jetty.server.HttpConnection" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
     <logger name="org.eclipse.jetty.server.HttpInput" additivity="false" level="INFO">
+     <appender-ref ref="RoutingAppender"/>
+    </logger>
+    <logger name="com.zaxxer.hikari.pool.ProxyConnection" additivity="false" level="ERROR">
      <appender-ref ref="RoutingAppender"/>
     </logger>
 
