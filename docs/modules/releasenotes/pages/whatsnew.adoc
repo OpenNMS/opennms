@@ -42,6 +42,14 @@ datastax-java-driver {
 
 ** See https://github.com/datastax/java-driver/blob/4.0.1/core/src/main/resources/reference.conf[reference.conf] in the DataStax GitHub repository for a complete example.
 
+=== Native Holt-Winters forecasting
+
+The Holt-Winters forecasting filter no longer depends on the `R` package and has been converted to Java leveraging some work done by the team at https://github.com/ExpediaGroup/adaptive-alerting[Expedia].
+You can continue to use the filter is as no changes are needed to take advantage of this functionality.
+The filter that leverages `R` will be discontinued in a future release.
+
+https://github.com/ExpediaGroup/adaptive-alerting
+
 == Breaking changes
 
 === Newts: DataStax driver for Cassandra upgrade
