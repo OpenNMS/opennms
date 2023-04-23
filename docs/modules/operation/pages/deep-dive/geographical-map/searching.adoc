@@ -4,70 +4,58 @@ The search bar lets you do a simple text search, as well as searching particular
 
 ## Search fields
 
-You can search the following fields:
+This search uses the Search REST endpoint that can find nodes by any of the fields this API offers.
+This includes the previous supported fields listed.
 
 [options="header"]
-[cols="2*"]
+[cols="3*"]
 |====
 | Field
 | Description
+| Allow substring
 
 | nodeId
 | The ID of the node
+| No
 
 | nodeLabel
 | A text description
+| Yes
 
 | foreignSource
 | The provisioned foreign source, if any
+| No
 
 | foreignId
 | The provisioned foreign ID, if any
+| No
 
 | ipAddress
 | The primary IP address
+| Yes
 
 | severityLabel
-| The severity ("Normal", "Warning", etc.)
+| The severity (Normal, Warning, etc.)
+| No
 
 | description
 | The description field from the node's assets
+| Yes
 
 | maintContract
 | The maintenance contract from the node's assets
+| Yes
 
 | category
 | Match a category, if any
+| Yes
 
 |====
 
-Note that all searches are case-insensitive.
+Note that all searches are case-insensitive. Also note this search currently only allows node selection by the any of the search fields in the list.
 
-## Substring matching example
+## Exact and substring matching example
 
-To search for text in one of the fields, use the following syntax:
-
-`fieldname:searchtext`
-
-If the search is `nodelabel:server` it will match a node's label like `server1.opennms.com` or `server2.opennms.com`.
-
-### Exact Matching Example
-
-To search for an exact match of a field, use the following syntax:
-
-`fieldname=searchtext`
-
-If the search is `nodelabel=server1.opennms.com` it will only match a node's label like `server1.opennms.com`.
-
-## Link to a search
-
-It is possible to create a link to the `node-maps` URL that already has a pre-filled search defintion by adding a `#search/searchtext` into the URL.
-
-For example, to link to the node label search from the substring match example above, write the URL as follows:
-
-`\http://opennms-ip/opennms/node-maps#search/nodelabel:server`
+To search for en exact or a partial text in one of the fields, enter the desired text.
 
 
-Or to search for the exact node label match:
-
-`\http://opennms-ip/opennms/node-maps#search/nodelabel=server1.opennms.com`
