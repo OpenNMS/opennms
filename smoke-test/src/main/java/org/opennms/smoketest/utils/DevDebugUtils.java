@@ -141,7 +141,7 @@ public class DevDebugUtils {
             return null;
         }
 
-        LOG.info("send SIGQUIT to process in container");
+        LOG.debug("send SIGQUIT to process in container");
         try {
             LIMITER.callWithTimeout(() -> {
                 container.execInContainer("kill", "-3", "1");
@@ -150,6 +150,7 @@ public class DevDebugUtils {
         } catch (Exception e) {
             LOG.warn("Sending SIGQUIT to JVM in container failed. Thread dump may not be available.", e);
         }
+        LOG.debug("kill sent");
 
         final Callable<String> threadDumpCallable;
         if (outputLog != null) {
@@ -158,6 +159,7 @@ public class DevDebugUtils {
             threadDumpCallable = container::getLogs;
         }
 
+        LOG.debug("waiting for thread dump to complete ...");
         try {
             await("waiting for thread dump to complete")
                     .atMost(Duration.ofSeconds(5))
@@ -169,6 +171,7 @@ public class DevDebugUtils {
                     outputLog != null ? outputLog : "console logs",
                     e);
         }
+        LOG.debug("thread dump complete");
 
         if (targetLogFolder == null) {
             return null;
@@ -180,6 +183,7 @@ public class DevDebugUtils {
             throw new RuntimeException("Failed to create " + targetLogFolder, e);
         }
 
+        LOG.debug("grabbing thread dump");
         var targetFile = targetLogFolder.resolve("threadDump.log");
         try {
             // Example:
@@ -209,6 +213,7 @@ public class DevDebugUtils {
                                 + "\n");
                 fileWriter.write(threadDump);
             }
+            LOG.debug("grabbed thread dump");
             return targetFile;
         } catch (Exception e) {
             LOG.warn("Could not retrieve or store thread dump in file {}", targetFile, e);
