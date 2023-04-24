@@ -1628,8 +1628,9 @@
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
-    <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
-    <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
+    <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
+    <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+    <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
@@ -4730,6 +4731,16 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
