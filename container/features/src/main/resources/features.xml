@@ -156,7 +156,16 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
+    <feature name="asm" version="${asmVersion}" description="ASM">
+        <bundle>mvn:org.ow2.asm/asm/9.5</bundle>
+        <bundle>mvn:org.ow2.asm/asm-analysis/9.5</bundle>
+        <bundle>mvn:org.ow2.asm/asm-commons/9.5</bundle>
+        <bundle>mvn:org.ow2.asm/asm-tree/9.5</bundle>
+        <bundle>mvn:org.ow2.asm/asm-util/9.5</bundle>
+    </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <!-- needed by spifly -->
+        <feature version="[9.4,10)">asm</feature>
         <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
@@ -173,7 +182,7 @@
         <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
         <!-- needed by jsr223 support -->
-        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.3.6</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
@@ -358,7 +367,7 @@
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
         <feature>opennms-util</feature>
-        <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_3</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
