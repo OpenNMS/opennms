@@ -27,7 +27,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | No
 
 | foreignId
-| The provisioned foreign ID, if any
+| The provisioned foreign ID, if any.
 | No
 
 | ipAddress
