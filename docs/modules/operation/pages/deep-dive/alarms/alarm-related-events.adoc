@@ -1,7 +1,7 @@
 = Related Events
 
 {page-component-title} correlates possible related events from the same node in ongoing alarms.
-To do this events with the same `node ID`, `interface`, `service`, and `ifIndex` are being used.
+It uses events with the same `node ID`, `interface`, `service`, and `ifIndex` to do this.
 
 .Alarm Related Events page
 image::alarms/alarm_related-events.png["Alarm Related Events page displaying related events", 850]
