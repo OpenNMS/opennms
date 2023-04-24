@@ -12,7 +12,7 @@ This includes the previous supported fields listed.
 |====
 | Field
 | Description
-| Allow substring
+| Allow Substring
 
 | nodeId
 | The ID of the node
