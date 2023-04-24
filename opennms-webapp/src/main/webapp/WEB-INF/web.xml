@@ -72,17 +72,6 @@
     </init-param>
   </filter>
 
-  <!-- this filter prevents leaking sessionids to caches, see https://issues.opennms.org/browse/NMS-10704 -->
-  <filter>
-    <filter-name>jSessionIdNoCacheFilter</filter-name>
-    <filter-class>org.opennms.web.security.JSessionIdNoCacheFilter</filter-class>
-    <!-- optional, defaults to JSESSIONID
-    <init-param>
-      <param-name>sessionIdName</param-name>
-      <param-value>JSESSIONID</param-value>
-    </init-param> -->
-  </filter>
-
   <filter>
     <!--  note the name of this filter is important and is used in the app contexts -->
     <filter-name>springSecurityFilterChain</filter-name>
@@ -193,11 +182,6 @@
 
   <filter-mapping>
     <filter-name>characterEncodingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <filter-mapping>
-    <filter-name>jSessionIdNoCacheFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
