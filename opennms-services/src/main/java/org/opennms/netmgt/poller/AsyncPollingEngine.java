@@ -75,7 +75,7 @@ public class AsyncPollingEngine {
         try {
             bulkhead.acquirePermission();
         } catch (BulkheadFullException e) {
-            LOG.info("Postponing poll for {}. Too many concurrent polls already in progress (max=%d).", maxConcurrentCalls);
+            LOG.info("Postponing poll for {}. Too many concurrent polls in progress (max=%d).", maxConcurrentCalls);
             throw new PostponeNecessary("BulkheadFullException postpone poll");
         }
 

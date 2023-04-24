@@ -159,7 +159,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             public PollStatus onInterrupted(Throwable cause) {
                 LOG.warn("Interrupted while invoking the poll for {}."
                         + " Marking the service as UNKNOWN.", service);
-                return PollStatus.unknown("Interrupted while invoking the poll for"+service+". "+t);
+                return PollStatus.unknown("Interrupted while invoking the poll for "+service+". "+t);
             }
 
             @Override
