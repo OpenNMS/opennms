@@ -811,6 +811,9 @@ else
 	# Java 9+, add required modules
 	JAVA_CMD=("${JAVA_CMD[@]}" $("${OPENNMS_HOME}/bin/_module_opts.sh"))
 
+	# extra options that aren't shared with Minion and Sentinel
+	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
+
 	# see NMS-12261 -- use backwards-compatible locale provider by default
 	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi

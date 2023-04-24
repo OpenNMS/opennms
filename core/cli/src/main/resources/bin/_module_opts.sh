@@ -44,7 +44,7 @@ JAVA_EXPORTS=(
     "jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED" \
     "jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED" \
     "java.rmi/sun.rmi.registry=ALL-UNNAMED" \
-    "java.security.sasl/com.sun.security.sasl=ALL-UNNAMED" \
+    "java.security.sasl/com.sun.security.sasl=ALL-UNNAMED"
     "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED"
 )
 
