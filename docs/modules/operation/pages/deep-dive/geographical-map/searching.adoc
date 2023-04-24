@@ -19,7 +19,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | No
 
 | nodeLabel
-| A text description
+| A text description.
 | Yes
 
 | foreignSource
