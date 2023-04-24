@@ -22,6 +22,7 @@ CACERTS="${MINION_HOME}/cacerts"
 
 export JAVA_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
+export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${MINION_HOME}"
 
 # Error codes
 E_ILLEGAL_ARGS=126
