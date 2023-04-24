@@ -70,7 +70,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Command(scope = "opennms", name = "poller-benchmark", description = "Benchmark pollerd by creating N nodes/services and waiting for them all to be polled.")
+@Command(scope = "opennms", name = "poller-benchmark", description = "Benchmark pollerd by creating N nodes/services and waiting for them to be polled.")
 @Service
 public class Benchmark implements Action {
 
@@ -93,10 +93,10 @@ public class Benchmark implements Action {
 
     private final int batchSize = 100;
 
-    @Option(name = "-n", aliases = "--nodes", description = "Number of nodes & services to create. A single service per interface per node is created.")
+    @Option(name = "-n", aliases = "--nodes", description = "Number of nodes and services to create. A single service per interface per node is created.")
     int numNodes = 100;
 
-    @Option(name = "-r", aliases = "--recycle", description = "Recycle nodes created by a previous run instead of deleting/recreating these.")
+    @Option(name = "-r", aliases = "--recycle", description = "Recycle nodes created by a previous run instead of deleting/recreating them.")
     boolean recycleNetwork = false;
 
     private final Set<Integer> allMonitoredServiceIds = new HashSet<>();
