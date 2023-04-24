@@ -23,7 +23,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | Yes
 
 | foreignSource
-| The provisioned foreign source, if any
+| The provisioned foreign source, if any.
 | No
 
 | foreignId
