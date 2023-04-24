@@ -56,4 +56,3 @@ NOTE: All searches are case-insensitive, and the search currently allows node se
 
 If you want to search for exact or partial text in one of the search fields, simply type the desired text in the appropriate field.
 
-
