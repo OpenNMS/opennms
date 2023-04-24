@@ -64,7 +64,7 @@ During evaluation of an expression, the following scopes are available:
 
 By default, the number of polls active at any given time is limited by the number of threads that are allocated to pollerd.
 Each thread is responsible for one poll, and will block until the poll is completed; this is true even when the polling is done by a Minion at a remote location.
-In this case, the thread is blocked for the duration of the RPC.
+In this case, the thread is blocked for the duration of the remote procedure call.
 
 If you have hundreds of locations and hundreds of nodes at each location, you may want to reduce the number of threads required on your {page-component-title} instance.
 Each thread allocates a fixed amount of system memory.

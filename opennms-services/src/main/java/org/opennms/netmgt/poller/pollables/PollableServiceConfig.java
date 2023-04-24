@@ -164,7 +164,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
             @Override
             public PollStatus onTimedOut(Throwable cause) {
-                LOG.warn("No response was received when remotely invoking the poll for {}."
+                LOG.warn("No response received when remotely invoking the poll for {}."
                         + " Marking the service as UNKNOWN.", service);
                 return PollStatus.unknown(String.format("No response received for %s. %s", service, cause));
             }
