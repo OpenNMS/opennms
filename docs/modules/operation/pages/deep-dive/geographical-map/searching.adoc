@@ -52,7 +52,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 
 |====
 
-Note that all searches are case-insensitive. Also note this search currently only allows node selection by the any of the search fields in the list.
+NOTE: All searches are case-insensitive, and the search currently allows node selection only using the listed search fields.
 
 ## Exact and substring matching example
 
