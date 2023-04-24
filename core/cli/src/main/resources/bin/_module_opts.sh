@@ -53,6 +53,7 @@ JAVA_OPENS=(
     "java.base/jdk.internal.loader=ALL-UNNAMED" \
     "java.base/java.lang=ALL-UNNAMED" \
     "java.base/java.lang.reflect=ALL-UNNAMED" \
+    "java.base/java.math=ALL-UNNAMED" \
     "java.base/java.net=ALL-UNNAMED" \
     "java.base/java.security=ALL-UNNAMED" \
     "java.base/java.text=ALL-UNNAMED" \
