@@ -29,11 +29,11 @@ instance via the optional https://github.com/OpenNMS/opennms-cortex-tss-plugin[O
 
 === Native Holt-Winters forecasting
 
-The Holt-Winters forecasting filter no longer depends on the `R` package and has been converted to Java leveraging some work done by the team at https://github.com/ExpediaGroup/adaptive-alerting[Expedia].
-You can continue to use the filter is as no changes are needed to take advantage of this functionality.
-The filter that leverages `R` will be discontinued in a future release.
+The Holt-Winters forecasting filter no longer depends on the `R` package, and has been converted to Java.
+This leverages adaptive alerting work done by the team at https://github.com/ExpediaGroup/adaptive-alerting[Expedia].
+You can continue to use the filter as-is; no changes are needed to use this forecasting method.
 
-https://github.com/ExpediaGroup/adaptive-alerting
+The filter that depends on the `R` package will be discontinued in a future release.
 
 === UI Preview Integration
 
