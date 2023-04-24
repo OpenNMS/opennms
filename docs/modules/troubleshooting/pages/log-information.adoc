@@ -7,7 +7,6 @@ This section describes common log files to look at when troubleshooting.
 == manager.log
 
 `$\{OPENNMS_HOME}/logs/manager.log` contains information relating to manager server events and the start and stop processes for {page-component-title} services.
-
 For example, this log describes a problem connecting to the PostgreSQL database server:
 
 [source, shell]
@@ -22,7 +21,6 @@ org.opennms.netmgt.vmmgr.InvalidDataSourceException: Data source 'opennms' faile
 == karafStartupMonitor.log
 
 `$\{OPENNMS_HOME}/logs/karafStartupMonitor.log` contains information relating to startup of the {page-component-title} Karaf container and its feature functionality.
-
 For example, this log describes a problem with the Karaf container's startup process, and steps you can take to troubleshoot the error:
 
 [source, shell]

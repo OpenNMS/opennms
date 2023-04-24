@@ -27,12 +27,13 @@ opennms[80542]: failed
 systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
 ----
 
-See xref:deployment:core/system-requirements.adoc[] for software compatibility requirements, including the supported versions of Java.
+See xref:deployment:core/system-requirements.adoc[] for software compatibility requirements, including supported Java versions
 
 [[startup-errors]]
 == Configuration errors
 
-If you encounter a configuration error when starting {page-component-title}, you may need to run the {page-component-title} database installer, which updates the relational database schema to the latest version and applies any required changes to the configuration files:
+If you encounter a configuration error when starting {page-component-title}, you may need to run the {page-component-title} database installer.
+This updates the relational database schema to the latest version and applies any required changes to the configuration files:
 
 [source, shell]
 install -dis
@@ -60,9 +61,11 @@ If the tests pass, a success message is displayed.
 
 === Nonobvious error messages with older Linux distributions
 
-Some older Linux distributions like Red Hat Enterprise Linux 7 and CentOS 7 are a bit more terse when a failure occurs when trying to start the {page-component-title} service and an additional diagnostic step can help reveal the problem.
+Some older Linux distributions (Red Hat Enterprise Linux 7, CentOS 7, and so on) are more terse when a {page-component-title} startup failure occurs.
+An additional diagnostic step can help reveal the problem.
 
 After installing the software and running `systemctl start opennms`, the process immediately exits with a brief error message:
+
 [source, shell]
 ----
 # systemctl start opennms
@@ -71,6 +74,7 @@ See "systemctl status opennms.service" and "journalctl -xe" for details.
 ----
 
 Running `systemctl status opennms` produces the following output:
+
 [source, shell]
 ----
 systemd[1]: Starting OpenNMS server...
@@ -80,7 +84,8 @@ systemd[1]: Unit opennms.service entered failed state.
 systemd[1]: opennms.service failed.
 ----
 
-Another way of starting the {page-component-title} verbosely is with the command `$\{OPENNMS_HOME}/bin/opennms -v start` which will give some additional detail:
+You can also start the {page-component-title} services verbosely; this provides additional details about any errors:
+
 [source, shell]
 ----
 # $\{OPENNMS_HOME}/bin/opennms -v start
@@ -102,7 +107,7 @@ http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
 [FAILED]
 ----
 
-In the above, `$\{OPENNMS_HOME}/bin/install -dis` had not been run which was causing startup to fail.
+In the above example, `$\{OPENNMS_HOME}/bin/install -dis` had not been run, causing startup to fail.
 
 [[database-errors]]
 == Database errors
@@ -165,7 +170,7 @@ systemd[1]: Failed to start OpenNMS server.
 NOTE: You should evaluate the `.rpmnew` or `.rpmsave` file against the original file with the same name to determine which to keep.
 Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (if applicable), and start {page-component-title}.
 
-You can run the following command to identify any `.rpmnew` or `.rpmsave` files in your environment:
+You can run this command to identify any `.rpmnew` or `.rpmsave` files in your environment:
 
 [source, shell]
 $ sudo find ${OPENNMS_HOME} -name '*.rpm*' -exec ls -la {} \;
