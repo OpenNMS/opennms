@@ -54,7 +54,6 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 
 NOTE: All searches are case-insensitive, and the search currently allows node selection only using the listed search fields.
 
-## Exact and substring matching example
 
 To search for en exact or a partial text in one of the fields, enter the desired text.
 
