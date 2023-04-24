@@ -1,0 +1,39 @@
+
+== Single alarm tracking problem states
+
+An alarm is instantiated on the first occurrence of a `service-down` problem:
+
+.`service-down` alarm created
+image::alarms/single_alarm_1.png["Alarm List displaying one alarm of minor severity"]
+
+Click the number displayed in the *Count* column to display the corresponding events and their details:
+
+.Alarm displaying service down event
+image::alarms/single_alarm_2.png["Alarm Details page displaying a service down event"]
+
+The alarm is cleared immediately when service is restored, and no alarm is created when the service returns to a normal state:
+
+.Alarm cleared
+image::alarms/single_alarm_3.png["Alarm List displaying one cleared alarm and its log message"]
+
+.Service down and service restored events
+image::alarms/single_alarm_4.png["Alarm Details page displaying one service down event and one service restored event"]
+
+If the problem occurs again, the events are reduced into the existing alarm.
+The alarm's count is updated to reflect the new activity:
+
+.Reduced alarm
+image::alarms/single_alarm_5.png["Alarm List displaying one alarm with a count of 2"]
+
+.List of events
+image::alarms/single_alarm_6.png["Detailed event list page displaying two service down events and one service restored event, all of which are members of the same alarm"]
+
+The alarm is once again cleared immediately when service is restored:
+
+.Reduced alarm cleared
+image::alarms/single_alarm_7.png["Alarm List displaying one cleared alarm with a count of 2, and its log message"]
+
+Note that the alarm's count does not increment when the problem is resolved.
+
+.Service down and restored events
+image::alarms/single_alarm_8.png["Detailed event list page displaying two service down events and two service restored events, all of which are members of the same alarm"]
