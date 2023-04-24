@@ -4,8 +4,8 @@ The search bar lets you do a simple text search, as well as searching particular
 
 ## Search fields
 
-This search uses the Search REST endpoint that can find nodes by any of the fields this API offers.
-This includes the previous supported fields listed.
+The search function for the geographical map uses the Search REST endpoint.
+This endpoint can find nodes using any of the fields offered by the API, including the previously listed fields:
 
 [options="header"]
 [cols="3*"]
