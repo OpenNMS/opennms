@@ -62,7 +62,7 @@
          for the same version of selenium specified in selenium.version above.
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
-    <testcontainers.version>1.17.5</testcontainers.version>
+    <testcontainers.version>1.18.0</testcontainers.version>
     <netty4Version>4.1.78.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
