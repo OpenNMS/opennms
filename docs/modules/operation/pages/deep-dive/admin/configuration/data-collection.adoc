@@ -1,7 +1,7 @@
 
 = Data Collection
 
-When enabled, the Data Choices module collects anonymous use statistics.
+When enabled, the Usage Statistics module collects anonymous use statistics.
 It publishes them to https://stats.opennms.org when {page-component-title} starts, and every 24 hours after.
 
 The following data points are collected and published:
@@ -38,12 +38,6 @@ The following data points are collected and published:
 * Number of Newts samples inserted.
 * Number of queued updates completed.
 * Number of virtual appliances, Mini appliances, and 1U appliances that are connected to the system.
-
-For more details, navigate to the Help Improve OpenNMS dialog:
-
-. Click the *gear* symbol in the top-right of the page.
-. Under Additional Tools, select *Data Choices*.
-. Click *Show Me What is Being Sent*.
 
 You can view the aggregated statistics from all participating users on the https://stats.opennms.com/[OpenNMS Usage Report].
 
