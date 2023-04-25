@@ -1789,7 +1789,7 @@
     <minaSshdVersion>2.8.0</minaSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <patchedSpringVersion>6.0.7_1</patchedSpringVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
