@@ -45,7 +45,6 @@ JAVA_EXPORTS=(
     "jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED" \
     "java.rmi/sun.rmi.registry=ALL-UNNAMED" \
     "java.security.sasl/com.sun.security.sasl=ALL-UNNAMED"
-    "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED"
 )
 
 # JDK 9+ modules that need public+private methods available to reflection
