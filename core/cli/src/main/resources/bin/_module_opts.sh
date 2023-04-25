@@ -58,6 +58,7 @@ JAVA_OPENS=(
     "java.base/java.security=ALL-UNNAMED" \
     "java.base/java.text=ALL-UNNAMED" \
     "java.base/java.util=ALL-UNNAMED" \
+    "java.base/java.util.concurrent=ALL-UNNAMED" \
     "java.desktop/java.awt.font=ALL-UNNAMED" \
     "java.naming/javax.naming.spi=ALL-UNNAMED" \
     "java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED"
