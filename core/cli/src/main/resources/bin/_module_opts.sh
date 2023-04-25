@@ -51,6 +51,7 @@ JAVA_EXPORTS=(
 # JDK 9+ modules that need public+private methods available to reflection
 JAVA_OPENS=(
     "java.base/jdk.internal.loader=ALL-UNNAMED" \
+    "java.base/java.io=ALL-UNNAMED" \
     "java.base/java.lang=ALL-UNNAMED" \
     "java.base/java.lang.reflect=ALL-UNNAMED" \
     "java.base/java.math=ALL-UNNAMED" \
@@ -59,9 +60,12 @@ JAVA_OPENS=(
     "java.base/java.text=ALL-UNNAMED" \
     "java.base/java.util=ALL-UNNAMED" \
     "java.base/java.util.concurrent=ALL-UNNAMED" \
+    "java.base/java.util.regex=ALL-UNNAMED" \
     "java.desktop/java.awt.font=ALL-UNNAMED" \
+    "java.desktop/java.beans=ALL-UNNAMED" \
     "java.naming/javax.naming.spi=ALL-UNNAMED" \
-    "java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED"
+    "java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED" \
+    "java.sql/java.sql=ALL-UNNAMED"
 )
 
 # Java 9+, add required modules
