@@ -34,6 +34,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -50,9 +51,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.logging.Logging;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
+import org.opennms.netmgt.notifd.api.NotificationConfigProvider;
+import org.opennms.netmgt.notifd.api.NotificationTester;
+import org.opennms.netmgt.provision.service.MonitorHolder;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -217,6 +224,35 @@ public class NotificationRestService extends OnmsRestService {
         } finally {
             writeUnlock();
         }
+    }
+
+    @POST
+    @Path("destination-paths/{destinationPathName}/trigger")
+    @Transactional
+    public Response triggerDestinationPath(@Context final SecurityContext securityContext, @PathParam("destinationPathName") final String destinationPathName) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw getException(Status.FORBIDDEN, "User {} does not have access to trigger notifications.", securityContext.getUserPrincipal().getName());
+        }
+
+        NotificationConfigProvider notificationConfigProvider = BeanUtils.getBean("notifdContext",
+                "notificationConfigProvider", NotificationConfigProvider.class);
+        NotificationTester notificationTester = BeanUtils.getBean("notifdContext",
+                "notificationTester", NotificationTester.class);
+
+        List<String> targetNames = notificationConfigProvider.getTargetNames(destinationPathName, false);
+        if (targetNames.isEmpty()) {
+            return Response.noContent().build();
+        }
+
+        for (String targetName : targetNames) {
+            for (String command : notificationConfigProvider.getCommands(destinationPathName, targetName, false)) {
+                try(Logging.MDCCloseable ignored = Logging.withPrefixCloseable("notifd")) {
+                    notificationTester.triggerNotificationsForTarget(targetName, command);
+                }
+            }
+        }
+
+        return Response.accepted().build();
     }
 
     private void processNotifAck(final SecurityContext securityContext, final OnmsNotification notif, final Boolean ack) {

@@ -588,6 +588,11 @@
       <artifactId>javassist</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -973,6 +973,9 @@
     <feature name="opennms-poller-shell" version="${project.version}" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
+    <feature name="opennms-notifications-shell" version="${project.version}" description="OpenNMS :: Notifications :: Shell">
+        <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.shell/${project.version}</bundle>
+    </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <feature>jackson-core</feature>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
