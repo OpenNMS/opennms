@@ -2,8 +2,9 @@
 = Data Collection
 
 When enabled, the Data Choices module collects anonymous use statistics.
-It publishes them on system startup and every 24 hours after.
-Usage statistics include the following data points:
+It publishes them to https://stats.opennms.org when {page-component-title} starts, and every 24 hours after.
+
+The following data points are collected and published:
 
 * System ID (a randomly generated, universally unique identifier (UUID)).
 * {page-component-title} release.
@@ -42,16 +43,18 @@ For more details, navigate to the Help Improve OpenNMS dialog:
 
 . Click the *gear* symbol in the top-right of the page.
 . Under Additional Tools, select *Data Choices*.
-. Click *Show me What is Being Sent*.
+. Click *Show Me What is Being Sent*.
 
 You can view the aggregated statistics from all participating users on the https://stats.opennms.com/[OpenNMS Usage Report].
 
 [[disable-data-collection]]
 == Enable or disable usage statistics collection
 
-Admin users can enable or disable usage statistics collection at any time by following these steps:
+Admin users can enable or disable usage statistics collection at any time.
+To do so, follow these steps:
 
-. Log in to the {page-component-title} web UI.
 . Click the *gear* symbol at the top-right of the page.
 . Under Additional Tools, click *Data Choices*.
 . Select either *Opt-In* or *Opt-Out*, as desired.
+
+The usage statistics collection settings are updated.
