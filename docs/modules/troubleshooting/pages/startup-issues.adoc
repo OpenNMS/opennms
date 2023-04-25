@@ -27,7 +27,7 @@ opennms[80542]: failed
 systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
 ----
 
-See xref:deployment:core/system-requirements.adoc[] for software compatibility requirements, including supported Java versions
+See xref:deployment:core/system-requirements.adoc[] for software compatibility requirements, including supported Java versions.
 
 [[startup-errors]]
 == Configuration errors
