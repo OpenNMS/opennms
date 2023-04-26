@@ -247,9 +247,6 @@
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <!-- TODO: Should we import both versions of Jetty? -->
-                <feature>jetty/8.1.14.v20131031</feature>
-                <feature>jetty/9.3.9.v20160517</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -314,10 +311,8 @@
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <feature version="8.1.14.v20131031">jetty</feature>
-                <feature version="9.3.9.v20160517">jetty</feature>
-                <!--TODO: Needed?-->
-                <feature version="9.4.29.v20200521">jetty</feature>
+                <!-- pull in the latest jetty so we don't end up with multiple versions -->
+                <feature>jetty/${jettyVersion}</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
