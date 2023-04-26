@@ -95,6 +95,8 @@
                         <!-- make sure the custom opennms features don't make it in -->
                         <feature>opennms-bridge-http-service</feature>
                         <feature>opennms-http-whiteboard</feature>
+                        <feature>jetty/9.4.18.v20190429</feature>
+                        <feature>pax-jetty/9.4.18.v20190429</feature>
                     </blacklistedFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
