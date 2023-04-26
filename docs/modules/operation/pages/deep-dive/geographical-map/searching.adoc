@@ -49,8 +49,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | category
 | Match a category, if any.
 | Yes
-
-|====
+|===
 
 NOTE: All searches are case-insensitive, and the search currently allows node selection using only the listed search fields.
 
