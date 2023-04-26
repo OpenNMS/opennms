@@ -1689,12 +1689,14 @@
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
+    <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.44.v20210927</jettyVersion>
+    <jettyVersion>9.4.51.v20230217</jettyVersion>
+    <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>2.9.1</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1766,7 +1768,6 @@
     <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
-    <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
@@ -4413,9 +4414,9 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>jakarta.mail</artifactId>
-        <version>1.6.7</version>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${javaxMailVersion}</version>
       </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
@@ -4508,12 +4509,37 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jaas</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jaspi</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jmx</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jndi</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>apache-jstl</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-rewrite</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -4533,7 +4559,17 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlets</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util-ajax</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -4549,11 +4585,6 @@
       <dependency>
         <groupId>org.eclipse.jetty.aggregate</groupId>
         <artifactId>jetty-all-server</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-rewrite</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
