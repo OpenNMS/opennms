@@ -39,7 +39,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | No
 
 | description
-| The description field from the node's assets
+| The description field from the node's assets.
 | Yes
 
 | maintContract
