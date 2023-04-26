@@ -43,7 +43,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | Yes
 
 | maintContract
-| The maintenance contract from the node's assets
+| The maintenance contract from the node's assets.
 | Yes
 
 | category
