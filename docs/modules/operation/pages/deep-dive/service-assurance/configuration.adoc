@@ -82,7 +82,7 @@ To enable the feature, set the following attributes in the top-level element of 
                       maxConcurrentAsyncPolls="200" <2>
 ----
 <1> Enables the asynchronous polling engine.
-<2> Used to limit the number of polls active, since each of these still consume some memory resources.
+<2> Used to limit the number of polls active, since each of these still consumes some memory resources.
 
 In this mode, threads are used only to trigger a poll to run; this means that the number of threads can typically be reduced.
 You can see the actual number of active (in-flight) polls by reviewing the `NumPollsInFlight` metrics associated with pollerd's MBeans.
