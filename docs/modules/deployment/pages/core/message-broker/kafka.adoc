@@ -7,21 +7,38 @@ sudo vi etc/opennms.properties.d/kafka.properties
 .Configure Kafka
 [source, kafka.properties]
 ----
-org.opennms.core.ipc.strategy=kafka<1>
-org.opennms.core.ipc.sink.initialSleepTime=60000<2>
-org.opennms.core.ipc.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:9092<3>
+org.opennms.activemq.broker.disable=true<1>
+org.opennms.core.ipc.strategy=kafka<2>
+org.opennms.core.ipc.sink.initialSleepTime=60000<3>
+org.opennms.core.ipc.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:9092<4>
 ----
 
-<1> Use Kafka for remote producer calls (RPC).
-<2> Ensure that messages are not consumed from Kafka for Sink until the system has fully initialized. Default is 60 seconds.
-<3> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+<1> Disable the embedded ActiveMQ broker
+<2> Use Kafka for remote producer calls (RPC).
+<3> Ensure that messages are not consumed from Kafka for Sink until the system has fully initialized. Default is 60 seconds.
+<4> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
 NOTE: If you set more than one Kafka node as `bootstrap.servers`, the driver attempts to connect to the first entry.
       If that is successful, the client discovers and knows the whole broker topology.
       The other entries are used only if the connection to the first entry fails.
 
-NOTE: You can still set module-specific config for sink IPC with prefix `org.opennms.core.ipc.sink.kafka`; similarly for RPC and twin.
+Any valid Kafka configuration property can be set with the `org.opennms.core.ipc.kafka` prefix.
+      An example using SASL/SCRAM with TLS:
+
+[source, kafka.properties]
+----
+org.opennms.core.ipc.strategy=kafka
+org.opennms.core.ipc.sink.initialSleepTime=60000
+org.opennms.core.ipc.kafka.bootstrap.servers=my-kafka-ip-1:9096,my-kafka-ip-2:9096
+org.opennms.core.ipc.kafka.security.protocol=SASL_SSL
+org.opennms.core.ipc.kafka.sasl.mechanism=SCRAM-SHA-512
+org.opennms.core.ipc.kafka.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="opennms-ipc" password="kafka";
+----
+
+NOTE: You can set module-specific config for modules `sink`, `rpc`, and `twin` with prefixes `org.opennms.core.ipc.sink.kafka`, `org.opennms.core.ipc.rpc.kafka`, and `org.opennms.core.ipc.twin.kafka`, respectively.
       Module-specific config takes precedence over common config with prefix `org.opennms.core.ipc.kafka`.
+
+NOTE: {page-component-title} Core requires the Kafka broker configuration option `auto.create.topics.enable` to be set to `true`.
 
 .Restart the {page-component-title} Core instance to apply the changes
 [source, console]
