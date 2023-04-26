@@ -35,7 +35,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | Yes
 
 | severityLabel
-| The severity (Normal, Warning, etc.)
+| The severity (Normal, Warning, and so on)
 | No
 
 | description
