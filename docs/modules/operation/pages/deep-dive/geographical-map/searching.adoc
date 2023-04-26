@@ -9,7 +9,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 
 [options="header"]
 [cols="3*"]
-|====
+|===
 | Field
 | Description
 | Allow Substring
