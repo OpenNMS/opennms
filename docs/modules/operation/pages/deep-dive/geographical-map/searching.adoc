@@ -47,7 +47,7 @@ This endpoint can find nodes using any of the fields offered by the API, includi
 | Yes
 
 | category
-| Match a category, if any
+| Match a category, if any.
 | Yes
 
 |====
