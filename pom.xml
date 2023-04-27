@@ -1782,8 +1782,8 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.5.10</zookeeperVersion>
-    <zookeeper2Version>3.6.3</zookeeper2Version>
+    <zookeeperVersion>3.8.1</zookeeperVersion>
+    <zookeeper2Version>3.8.1</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.8.0</minaSshdVersion>
 
