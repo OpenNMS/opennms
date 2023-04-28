@@ -128,7 +128,7 @@ const metadataMap = computed<Map<string,UsageStatisticsMetadataItem>>(() => {
       key: obj.key,
       name: obj.name || '',
       description: obj.description || '',
-      datatype: obj.datatype
+      datatype: obj.datatype || 'string'
     } as UsageStatisticsMetadataItem
 
     map.set(obj.key, item)
@@ -142,17 +142,10 @@ const filteredData = computed<StatisticsItem[]>(() => {
 
   if (statistics.value && metadata.value) {
     for (const key of Object.keys(statistics.value)) {
-      const statsObj = statistics.value[key]
+      const statsValue = statistics.value[key]
       const metaItem = metadataMap.value.get(key)
 
-      let latestValue = ''
-      let isLink = false
-
-      if (isString(statsObj) || isNumber(statsObj)) {
-        latestValue = (statsObj as string)?.toString() || ''
-      } else {
-        isLink = true
-      }
+      const { isLink, latestValue } = getLatestValue(statsValue, metaItem)
 
       const statsItem = {
         key,
@@ -189,6 +182,39 @@ const filteredData = computed<StatisticsItem[]>(() => {
 
   return sortedItems
 })
+
+const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem | undefined) => {
+  let latestValue = ''
+  let isLink = false
+  const datatype = metaItem?.datatype || ''
+
+  // use hints from metadata if possible
+  if (datatype) {
+    if (datatype === 'string') {
+      latestValue = (statsValue as string) || '--'
+    } else if (datatype === 'boolean') {
+      latestValue = statsValue && statsValue === true ? 'Yes' : 'No'
+    } else if (datatype === 'number') {
+      latestValue = new Intl.NumberFormat().format(statsValue as number)
+    } else if (datatype === 'object') {
+      isLink = true
+    }
+  } else {
+    // fallback if metadata entry not found
+    if (isString(statsValue)) {
+      latestValue = (statsValue as string) || '--'
+    } else if (isNumber(statsValue)) {
+      latestValue = new Intl.NumberFormat().format(statsValue as number)
+    } else {
+      isLink = true
+    }
+  }
+
+  return {
+    isLink,
+    latestValue
+  }
+}
 
 const shouldClipValue = (row: StatisticsItem) => {
   return !row.isLink && row.latestValue && row.latestValue.length > STRING_CLIP_LENGTH
