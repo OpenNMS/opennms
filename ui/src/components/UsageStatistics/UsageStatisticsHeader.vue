@@ -2,8 +2,8 @@
   <div class="usage-stats-header">
     <div>
       <p>
-        Anonymous OpenNMS usage statistics is sent to <a href="#">OpenNMS Statistics</a>.
-        This helps improve your OpenNMS software, subject to our <a href="#">privacy policy</a>.
+        Anonymous OpenNMS usage statistics is sent to <a href="https://stats.opennms.org">OpenNMS Statistics</a>.
+        This helps improve your OpenNMS software, subject to our <a href="https://www.opennms.com/privacy/">privacy policy</a>.
       </p>
     </div>
     <div class="spacer-medium"></div>

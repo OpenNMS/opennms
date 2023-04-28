@@ -3,7 +3,7 @@
         {
             "key": "alarms",
             "name": "Current alarm count",
-            "description": "How many alarms currently exist in the system?",
+            "description": "Current number of alarms that exist in the system",
             "datatype": "number"
         },
         {
@@ -21,7 +21,7 @@
         {
             "key": "availableProcessors",
             "name": "System CPU count",
-            "description": "How many CPU cores does the core OS kernel see?",
+            "description": "Number of CPU cores the core OS kernel sees",
             "datatype": "number"
         },
         {
@@ -62,7 +62,7 @@
         },
         {
             "key": "coreNewtsSamplesInserted",
-            "name": "coreNewtsSamplesInserted",
+            "name": "Core Newts Samples Inserted",
             "description": "",
             "datatype": "number"
         },
@@ -135,14 +135,14 @@
         {
             "key": "events",
             "name": "Current event count",
-            "description": "How many events have been created since the system was installed?",
+            "description": "Count of events have been created since the system was installed",
             "datatype": "number"
         },
         {
             "key": "freePhysicalMemorySize",
-            "name": "Physical memory size",
+            "name": "Free physical memory size",
             "description": "How much physical memory does the core OS kernel see?",
-            "datatype": "string"
+            "datatype": "number"
         },
         {
             "key": "groups",
@@ -152,14 +152,14 @@
         },
         {
             "key": "inContainer",
-            "name": "inContainer",
-            "description": "",
-            "datatype": "object"
+            "name": "Containerization status",
+            "description": "Whether or not the core appears to be running inside a containerized environment such as Docker or podman",
+            "datatype": "boolean"
         },
         {
             "key": "installedFeatures",
             "name": "List of Karaf features installed",
-            "description": "Which features are installed on the core system?",
+            "description": "Which features are installed on the core system",
             "datatype": "object"
         },
         {
@@ -171,7 +171,7 @@
         {
             "key": "ipInterfaces",
             "name": "Current IP interfaces count",
-            "description": "How many IP addresses does the system know about across all devices?",
+            "description": "Count of IP addresses that the system knows about across all devices",
             "datatype": "number"
         },
         {
@@ -187,12 +187,6 @@
             "datatype": "object"
         },
         {
-            "key": "isRunningInContainer",
-            "name": "Is running in container",
-            "description": "Whether or not the core is detected to be running inside a containerized environment",
-            "datatype": "string"
-        },
-        {
             "key": "metaRestEndpointForReadingKpis",
             "name": "Meta: REST endpoint for reading all KPIs",
             "description": "Create a REST API endpoint which exposes all the KPIs",
@@ -201,31 +195,31 @@
         {
             "key": "minions",
             "name": "Minion count",
-            "description": "How many Minions are registered?",
+            "description": "How many Minions are registered",
             "datatype": "number"
         },
         {
             "key": "monitoredServices",
             "name": "Monitored services count",
-            "description": "How many monitored services exist in the system's inventory?",
+            "description": "How many monitored services exist in the system's inventory",
             "datatype": "number"
         },
         {
             "key": "monitoringLocations",
             "name": "Monitoring locations count",
-            "description": "How many monitoring locations are defined?",
+            "description": "How many monitoring locations are defined",
             "datatype": "number"
         },
         {
             "key": "nodes",
-            "name": "nodes",
-            "description": "",
+            "name": "Node count",
+            "description": "Number of nodes being monitored",
             "datatype": "number"
         },
         {
             "key": "nodesBySysOid",
             "name": "Top-ten sysObjectIDs",
-            "description": "Which device types dominate the set of SNMP-enabled nodes?",
+            "description": "Which device types dominate the set of SNMP-enabled nodes",
             "datatype": "object"
         },
         {
@@ -236,9 +230,9 @@
         },
         {
             "key": "notificationEnablementStatus",
-            "name": "Notifications globally enabled?",
-            "description": "Are notifications in use on this installation?",
-            "datatype": "string"
+            "name": "Notifications globally enabled",
+            "description": "Whether notifications are in use on this installation",
+            "datatype": "boolean"
         },
         {
             "key": "notifications",
@@ -261,19 +255,19 @@
         {
             "key": "osArch",
             "name": "OS architecture",
-            "description": "Which CPU architecture is the core system?",
+            "description": "CPU architecture of the core system",
             "datatype": "string"
         },
         {
             "key": "osName",
             "name": "OS name",
-            "description": "Which operating system is in use on the core system?",
+            "description": "Operating system in use on the core system",
             "datatype": "string"
         },
         {
             "key": "osVersion",
             "name": "OS version",
-            "description": "Which OS kernel version is in use on the core system?",
+            "description": "OS kernel version in use on the core system",
             "datatype": "string"
         },
         {
@@ -285,7 +279,7 @@
         {
             "key": "packageName",
             "name": "Product name",
-            "description": "Which core product (Horizon vs. Meridian) is in use?",
+            "description": "Which core product (Horizon vs. Meridian) is in use",
             "datatype": "string"
         },
         {
@@ -296,7 +290,7 @@
         },
         {
             "key": "provisiondImportThreadPoolSize",
-            "name": "provisiondImportThreadPoolSize",
+            "name": "Provisiond Import thread pool size",
             "description": "",
             "datatype": "number"
         },
@@ -308,19 +302,19 @@
         },
         {
             "key": "provisiondRescanThreadPoolSize",
-            "name": "provisiondRescanThreadPoolSize",
+            "name": "Provisiond Rescan thread pool size",
             "description": "",
             "datatype": "number"
         },
         {
             "key": "provisiondScanThreadPoolSize",
-            "name": "provisiondScanThreadPoolSize",
+            "name": "Provisiond Scan thread pool size",
             "description": "",
             "datatype": "number"
         },
         {
             "key": "provisiondWriteThreadPoolSize",
-            "name": "provisiondWriteThreadPoolSize",
+            "name": "Provisiond Write thread pool size",
             "description": "",
             "datatype": "number"
         },
@@ -350,13 +344,13 @@
         },
         {
             "key": "servicesPerInterfaceMode",
-            "name": "servicesPerInterfaceMode",
+            "name": "Services per interface mode",
             "description": "Arithmetic mode of the number of services per IP interface, calculated both canonically and with zero-service interfaces excluded from consideration. The string key divides the two sets; the lists are empty if no mode exists for its considered population.",
             "datatype": "string"
         },
         {
             "key": "servicesPerInterfaceStats",
-            "name": "servicesPerInterfaceStats",
+            "name": "Services per interface stats",
             "description": "Statistical breakdown of the distribution of IP services across IP interfaces. For the population of IP interfaces, characterize the number of services per interface as minimum, maximum, arithmetic mean (rounded value), and median (rounded value). Each set is calculated both canonically and with zero-service interfaces excluded from the population; the topmost string key divides the two sets.",
             "datatype": "object"
         },
@@ -380,13 +374,13 @@
         },
         {
             "key": "snmpInterfacesPerNodeMode",
-            "name": "snmpInterfacesPerNodeMode",
+            "name": "SNMP Interfaces per node mode",
             "description": "Arithmetic mode of the number of SNMP interfaces per node, calculated both canonically and with zero-interface nodes excluded from consideration. The string key divides the two sets; the lists are empty if no mode exists for its considered population.",
             "datatype": "string"
         },
         {
             "key": "snmpInterfacesPerNodeStats",
-            "name": "snmpInterfacesPerNodeStats",
+            "name": "SNMP Interfaces per node stats",
             "description": "Statistical breakdown of the distribution of SNMP interfaces across nodes. For the population of nodes, characterize the number of SNMP interfaces per node as minimum, maximum, arithmetic mean (rounded value), and median (rounded value). Each set is calculated both canonically and with zero-interface nodes excluded from the population; the topmost string key divides the two sets.",
             "datatype": "object"
         },
@@ -404,7 +398,7 @@
         },
         {
             "key": "totalPhysicalMemorySize",
-            "name": "totalPhysicalMemorySize",
+            "name": "Total Physical Memory Size",
             "description": "",
             "datatype": "number"
         },
@@ -429,7 +423,7 @@
         {
             "key": "version",
             "name": "Product version",
-            "description": "Which version of the core product in use?",
+            "description": "Which version of the core product in use",
             "datatype": "string"
         }
    ]
