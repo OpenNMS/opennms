@@ -1726,7 +1726,7 @@
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
-    <pktsVersion>3.0.0</pktsVersion>
+    <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.5.4</postgresqlVersion>
