@@ -29,13 +29,24 @@
 package org.opennms.features.datachoices.internal;
 
 public class UsageStatisticsStatusDTO {
-    private boolean isEnabled;
+    // note, these can be null (user never chose a status)
+    private Boolean isEnabled;
 
-    public boolean getEnabled() {
+    private Boolean initialNoticeAcknowledged;
+
+    public Boolean getEnabled() {
         return isEnabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public Boolean getInitialNoticeAcknowledged() {
+        return initialNoticeAcknowledged;
+    }
+
+    public void setInitialNoticeAcknowledged(Boolean status) {
+        this.initialNoticeAcknowledged = status;
     }
 }
