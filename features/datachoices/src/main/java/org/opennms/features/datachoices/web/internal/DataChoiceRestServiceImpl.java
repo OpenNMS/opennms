@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
@@ -98,6 +99,17 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
         }
 
         return dto;
+    }
+
+    @Override
+    public Response setStatus(HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException {
+        try {
+            m_stateManager.setEnabled(dto.getEnabled(), request.getRemoteUser());
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+
+        return Response.accepted().build();
     }
 
     @Override

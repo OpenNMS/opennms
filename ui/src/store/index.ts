@@ -20,6 +20,7 @@ import pluginModule from './plugin'
 import deviceModule from './device'
 import scvModule from './scv'
 import menuModule from './menu'
+import usageStatisticsModule from './usageStatistics'
 
 export default createStore({
   modules: {
@@ -41,6 +42,7 @@ export default createStore({
     pluginModule,
     deviceModule,
     scvModule,
-    menuModule
+    menuModule,
+    usageStatisticsModule
   }
 })
