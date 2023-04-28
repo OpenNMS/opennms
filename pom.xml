@@ -1633,7 +1633,7 @@
     <curatorVersion>3.2.1</curatorVersion>
     <curatorTestVersion>5.4.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
-    <cxfXjcVersion>3.3.2</cxfXjcVersion>
+    <cxfXjcVersion>4.0.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dom4jVersion>2.1.3</dom4jVersion>
