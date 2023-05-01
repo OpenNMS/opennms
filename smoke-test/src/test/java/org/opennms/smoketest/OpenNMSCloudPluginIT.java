@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,7 @@ import org.opennms.smoketest.utils.KarafShellUtils;
  * The user needs to configure only one plugin.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Category(org.opennms.smoketest.junit.SentinelTests.class)
 public class OpenNMSCloudPluginIT {
 
     private static final Path CLOUD_KAR_PATH_HOST = Path.of("target/plugin-cloud-assembly/org.opennms.plugins.cloud-assembly.kar");
