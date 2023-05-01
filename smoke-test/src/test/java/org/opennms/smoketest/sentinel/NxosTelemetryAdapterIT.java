@@ -41,7 +41,7 @@ import org.opennms.smoketest.stacks.NetworkProtocol;
 /**
  * Verifies that NXOS messages are persisted to newts if set up correctly.
  */
-@Category(org.opennms.smoketest.junit.SentinelTests.class)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.SentinelTests.class)
 public class NxosTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override

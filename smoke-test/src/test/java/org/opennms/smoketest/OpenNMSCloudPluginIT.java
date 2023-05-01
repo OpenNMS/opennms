@@ -49,7 +49,7 @@ import org.opennms.smoketest.utils.KarafShellUtils;
  * The user needs to configure only one plugin.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@Category(org.opennms.smoketest.junit.SentinelTests.class)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.SentinelTests.class)
 public class OpenNMSCloudPluginIT {
 
     private static final Path CLOUD_KAR_PATH_HOST = Path.of("target/plugin-cloud-assembly/org.opennms.plugins.cloud-assembly.kar");

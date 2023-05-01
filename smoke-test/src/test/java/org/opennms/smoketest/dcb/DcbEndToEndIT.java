@@ -87,7 +87,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import com.google.common.collect.Iterables;
 
-@Category(org.opennms.smoketest.junit.MinionTests.class)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.MinionTests.class)
 public class DcbEndToEndIT {
     private static final String DCB_CONFIG_TYPE = "testcfg";
     private static final String DCB_USERNAME = "dcbuser";

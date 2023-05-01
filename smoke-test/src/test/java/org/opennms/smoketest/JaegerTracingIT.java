@@ -50,7 +50,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
-@Category(org.opennms.smoketest.junit.MinionTests.class)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.MinionTests.class)
 public class JaegerTracingIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()

@@ -43,7 +43,7 @@ import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Category(org.opennms.smoketest.junit.MinionTests.class)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.MinionTests.class)
 public class IntegrationAPIIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationAPIIT.class);
