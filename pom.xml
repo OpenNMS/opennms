@@ -1145,6 +1145,7 @@
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
+                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: javax.mail:mail -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
@@ -1669,8 +1670,8 @@
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
-    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
-    <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
+    <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
+    <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
     <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
