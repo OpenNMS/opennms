@@ -1681,7 +1681,7 @@
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.5.16</groovyVersion>
+    <groovyVersion>2.5.22</groovyVersion>
     <grpcVersion>1.24.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
