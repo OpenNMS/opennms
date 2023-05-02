@@ -17,7 +17,7 @@ export SENTINEL_HOME="/opt/sentinel"
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 
-export JAVA_OPTS="-Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${SENTINEL_HOME}/bin/_module_opts.sh")"
 export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${SENTINEL_HOME}"
 
