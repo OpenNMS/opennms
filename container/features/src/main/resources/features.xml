@@ -174,7 +174,7 @@
         <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
         <!-- needed by jsr223 support -->
-        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
@@ -324,10 +324,10 @@
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
 
@@ -382,6 +382,7 @@
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-jms</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
@@ -389,7 +390,6 @@
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">

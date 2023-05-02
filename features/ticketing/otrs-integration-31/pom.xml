@@ -97,10 +97,6 @@
 					<groupId>com.sun.xml.bind</groupId>
 					<artifactId>jaxb-impl</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>org.ow2.asm</groupId>
-					<artifactId>asm</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -127,10 +123,6 @@
 			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>jaxb-dependencies</artifactId>
 			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-all</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
