@@ -1636,7 +1636,7 @@
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
-    <freemarkerVersion>2.3.23</freemarkerVersion>
+    <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
