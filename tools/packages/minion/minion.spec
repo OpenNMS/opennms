@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $MINION_HOME in the finished package
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
-# The path where the repositories will live
-%{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 # Where Systemd files live
 %{!?_unitdir:%define _unitdir /lib/systemd/system}
 
