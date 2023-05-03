@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ public class RrdStrategyFactory implements ApplicationContextAware {
 
     private ApplicationContext m_context;
 
-    private static enum StrategyName {
+    private enum StrategyName {
         basicRrdStrategy,
         queuingRrdStrategy,
         tcpAndBasicRrdStrategy,
@@ -63,8 +63,8 @@ public class RrdStrategyFactory implements ApplicationContextAware {
     @SuppressWarnings("unchecked")
     public <D, F> RrdStrategy<D, F> getStrategy() {
         RrdStrategy<D, F> rrdStrategy = null;
-        Boolean useQueue = (Boolean) m_context.getBean("useQueue");
-        Boolean useTcp = (Boolean) m_context.getBean("useTcp");
+        boolean useQueue = (Boolean) m_context.getBean("useQueue");
+        boolean useTcp = (Boolean) m_context.getBean("useTcp");
 
         if (useQueue) {
             if (useTcp) {
@@ -78,10 +78,6 @@ public class RrdStrategyFactory implements ApplicationContextAware {
             } else {
                 rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
             }
-        }
-
-        if (rrdStrategy == null) {
-            throw new IllegalStateException(String.format("Invalid RRD configuration useQueue: %s, useTcp: %s", useQueue, useTcp));
         }
 
         return rrdStrategy;

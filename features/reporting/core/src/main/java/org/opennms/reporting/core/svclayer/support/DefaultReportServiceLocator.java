@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,15 +49,8 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
      * {@inheritDoc}
      */
     @Override
-    public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
-
-        ReportService reportService = (ReportService) m_applicationContext.getBean(reportServiceName);
-
-        if (reportService == null) {
-            throw new ReportServiceLocatorException("cannot locate report service bean: " + reportServiceName);
-        } else {
-            return reportService;
-        }
+    public ReportService getReportService(final String reportServiceName) throws ReportServiceLocatorException {
+    	return (ReportService) m_applicationContext.getBean(reportServiceName);
     }
 
     /**

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,16 +41,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
 
-/**
- * <p>BeanUtils class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public abstract class PropertyUtils {
-
-    /**
+public interface PropertyUtils {
+	/**
      * <p>getProperties</p>
      *
      * @param bean a {@link java.lang.Object} object.

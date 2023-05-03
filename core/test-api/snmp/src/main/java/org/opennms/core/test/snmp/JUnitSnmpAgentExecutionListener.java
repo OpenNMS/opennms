@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,6 +58,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * This {@link TestExecutionListener} looks for the {@link JUnitSnmpAgent} annotation
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
  */
+@SuppressWarnings("java:S1192")
 public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListener {
     private static final Logger LOG = LoggerFactory.getLogger(JUnitSnmpAgentExecutionListener.class);
     private static final Boolean s_useMockSnmpStrategyDefault = false;
@@ -143,14 +143,14 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         // Put the strategy class property back the way it was before the tests.
         final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
-        if (strategyClass == null) {
-            System.clearProperty(STRATEGY_CLASS_PROPERTY);
-        } else {
+        if (strategyClass != null) {
             System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
+        } else {
+            System.clearProperty(STRATEGY_CLASS_PROPERTY);
         }
     }
 
-    private void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, boolean useMockSnmpStrategy, MockSnmpDataProvider provider) throws IOException, UnknownHostException, InterruptedException {
+    private void handleSnmpAgent(final TestContext testContext, final JUnitSnmpAgent config, boolean useMockSnmpStrategy, MockSnmpDataProvider provider) throws IOException, InterruptedException {
         if (config == null) return;
 
         String factoryClassName = "unknown";
@@ -179,7 +179,6 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
              * Mac OS: primary external interface
              */
             host = InetAddressUtils.getLocalHostAddressAsString();
-            //host = "127.0.0.1";
         }
 
         final ResourceLoader loader = new DefaultResourceLoader();
@@ -199,7 +198,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             MockSnmpAgent agent = null;
             try {
                 agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(InetAddress.getLocalHost()) + "/0");
-            } catch (Throwable e) {
+            } catch (@SuppressWarnings("java:S2142") final InterruptedException e) {
                 agent = MockSnmpAgent.createAgentAndRun(resource.getURL(), str(InetAddressUtils.ONE_TWENTY_SEVEN) + "/0");
             }
             SnmpAgentAddress listenAddress = new SnmpAgentAddress(agent.getInetAddress(), agent.getPort());
@@ -277,7 +276,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         @Override
         public void updateCounter32Value(SnmpAgentAddress address, String oid, int val) {
-            MockSnmpStrategy.updateCounter32Value(address, oid, (long)val);
+            MockSnmpStrategy.updateCounter32Value(address, oid, val);
         }
 
         @Override
@@ -287,7 +286,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
     }
 
     private static final class MockSnmpAgentDataProvider implements MockSnmpDataProvider {
-        private final Map<SnmpAgentAddress, MockSnmpAgent> m_agents = new ConcurrentHashMap<SnmpAgentAddress, MockSnmpAgent>();
+        private final Map<SnmpAgentAddress, MockSnmpAgent> m_agents = new ConcurrentHashMap<>();
 
         @Override
         public void addAgent(SnmpAgentAddress address, MockSnmpAgent agent) {
@@ -305,14 +304,14 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         }
 
         @Override
-        public void resetData() {
+        public void resetData() throws InterruptedException {
             for (final MockSnmpAgent agent : m_agents.values()) {
                 try {
                     LOG.debug("Shutting down agent: {}", agent);
                     agent.shutDownAndWait();
                 } catch (final InterruptedException e) {
                     LOG.debug("Unable to shut down agent {}", agent, e);
-                    // Thread.currentThread().interrupt();
+                    throw e;
                 }
             }
             m_agents.clear();
