@@ -88,7 +88,7 @@
         "angular-sanitize": "~1.5.11",
         "angular-ui-router": "^1.0.22",
         "angular-ui-sortable": "^0.19.0",
-        "backshift": "git+https://github.com/opennms/backshift.git#v1.3.1",
+        "backshift": "git+https://github.com/opennms/backshift.git#v1.3.2",
         "bootbox": "^5.5.2",
         "bootstrap": "~4.3.1",
         "c3": "^0.4.24",
