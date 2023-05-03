@@ -72,6 +72,8 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
@@ -79,6 +81,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
+
+import joptsimple.internal.Strings;
 
 /*
  * TODO:
@@ -115,6 +119,7 @@ public class Installer {
     String m_etc_dir = "";
     String m_tomcat_conf = null;
     String m_webappdir = null;
+    String m_resetWebAppAdminPassword = null;
     String m_import_dir = null;
     String m_install_servletdir = null;
     String m_library_search_path = null;
@@ -271,6 +276,10 @@ public class Installer {
             updateTomcatConf();
         }
 
+        if (!Strings.isNullOrEmpty(m_resetWebAppAdminPassword)) {
+            resetWebAppAdminPassword();
+        }
+
         System.out.println();
         System.out.println("Installer completed successfully!");
 
@@ -278,6 +287,13 @@ public class Installer {
             System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
             Bootstrap.main(new String[] {});
         }
+    }
+
+    protected void resetWebAppAdminPassword() throws Exception {
+        UserFactory.init();
+        UserManager userManager = UserFactory.getInstance();
+        userManager.setUnencryptedPassword("admin", m_resetWebAppAdminPassword);
+        System.out.println("Password for the web application admin user was set.");
     }
 
     private void checkIPv6() {
@@ -487,6 +503,8 @@ public class Installer {
         options.addOption("l", "library-path", true,
                           "library search path (directories separated by '"
                                   + File.pathSeparator + "')");
+        options.addOption("R", "reset-webui-password", true,
+                "set password of the web application admin account");
         options.addOption("r", "rpm-install", false,
                           "RPM install (deprecated)");
         options.addOption("o", "skip-ownership-validation", false,
@@ -552,6 +570,7 @@ public class Installer {
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_timescaleDB = m_commandLine.hasOption("t");
+        m_resetWebAppAdminPassword = m_commandLine.getOptionValue("R", m_resetWebAppAdminPassword);
 
         m_validate_ownership = !m_commandLine.hasOption("o");
 
@@ -571,7 +590,7 @@ public class Installer {
         }
 
         // XXX this probably needs to reflect the webapp options
-        if (!m_update_database && !m_update_iplike && m_library_search_path == null) {
+        if (!m_update_database && !m_update_iplike && m_library_search_path == null && m_resetWebAppAdminPassword == null) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
             System.exit(1);
         }

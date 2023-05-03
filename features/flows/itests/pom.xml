@@ -264,8 +264,8 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.elasticsearch</groupId>
-            <artifactId>elasticsearch-drift-plugin</artifactId>
-            <version>${elasticsearchTargetVersion}</version>
+            <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+            <version>${elasticsearchDriftPluginVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

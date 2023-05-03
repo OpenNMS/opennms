@@ -11,6 +11,7 @@
 # shellcheck disable=SC2086
 
 set -e
+set -x
 
 umask 002
 export OPENNMS_HOME="/usr/share/opennms"

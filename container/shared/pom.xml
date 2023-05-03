@@ -64,6 +64,10 @@
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
                         <feature>spring/${springVersion}</feature>
                         <feature>spring-jms/${springVersion}</feature>
+
+                        <feature>jetty/${jettyVersion}</feature>
+                        <feature>pax-jetty/${jettyVersion}</feature>
+                        <feature>pax-http-whiteboard</feature>
                     </installedFeatures>
                     <startupFeatures>
                         <feature>eventadmin</feature>
@@ -91,6 +95,9 @@
                         <!-- make sure the custom opennms features don't make it in -->
                         <feature>opennms-bridge-http-service</feature>
                         <feature>opennms-http-whiteboard</feature>
+
+                        <feature>jetty/9.4.43.v20210629</feature>
+                        <feature>pax-jetty/9.4.43.v20210629</feature>
                     </blacklistedFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->

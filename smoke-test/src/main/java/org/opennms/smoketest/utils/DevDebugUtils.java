@@ -47,6 +47,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -141,24 +142,16 @@ public class DevDebugUtils {
             return null;
         }
 
-        LOG.info("kill -3 -1 ...");
+        LOG.debug("send SIGQUIT to process in container");
         try {
-            // We've been having tests hang, and I suspect it's in this code.
-            // The LIMITER interrupts the thread running the callable, but I
-            // suspect the command isn't reacting to the interrupt.
-            await("send kill to process in container")
-                    .atMost(Duration.ofSeconds(65))
-                    .untilAsserted(
-                        () ->
-                            LIMITER.callWithTimeout(() -> {
-                                container.execInContainer("kill", "-3", "1");
-                                return null;
-                            }, 1, TimeUnit.MINUTES)
-                    );
+            LIMITER.callWithTimeout(() -> {
+                container.execInContainer("kill", "-3", "1");
+                return null;
+            }, 1, TimeUnit.MINUTES);
         } catch (Exception e) {
             LOG.warn("Sending SIGQUIT to JVM in container failed. Thread dump may not be available.", e);
         }
-        LOG.info("kill sent");
+        LOG.debug("kill sent");
 
         final Callable<String> threadDumpCallable;
         if (outputLog != null) {
@@ -167,7 +160,7 @@ public class DevDebugUtils {
             threadDumpCallable = container::getLogs;
         }
 
-        LOG.info("waiting for thread dump to complete ...");
+        LOG.debug("waiting for thread dump to complete ...");
         try {
             await("waiting for thread dump to complete")
                     .atMost(Duration.ofSeconds(5))
@@ -179,7 +172,7 @@ public class DevDebugUtils {
                     outputLog != null ? outputLog : "console logs",
                     e);
         }
-        LOG.info("thread dump complete");
+        LOG.debug("thread dump complete");
 
         if (targetLogFolder == null) {
             return null;
@@ -191,7 +184,7 @@ public class DevDebugUtils {
             throw new RuntimeException("Failed to create " + targetLogFolder, e);
         }
 
-        LOG.info("grabbing thread dump");
+        LOG.debug("grabbing thread dump");
         var targetFile = targetLogFolder.resolve("threadDump.log");
         try {
             // Example:
@@ -209,10 +202,15 @@ public class DevDebugUtils {
             // A few tricky things:
             // - We optionally include the time stamp on the line before "Full thread dump".
             // - We end our match once we see an empty line after "Heap".
-            var threadDump = threadDumpCallable.call().replaceFirst(
-                    "(?ms).*?((^[^\r\n]*$[\r\n]+)?^Full thread dump .*^Heap$.*?^$).*?",
-                    "$1"
-            );
+            // WARNING: Be careful of regexes that take a long time to run: https://bugs.openjdk.org/browse/JDK-5014450
+            var pattern = Pattern.compile("(?ms)((^[^\r\n]*$[\r\n]+)?^Full thread dump .*^Heap$.*?^$)");
+            var matcher = pattern.matcher(threadDumpCallable.call());
+            if (!matcher.find()) {
+                LOG.warn("Did not find thread dump");
+                return null;
+            }
+            var threadDump = matcher.group(1);
+
             try (Writer fileWriter = new OutputStreamWriter(
                     new FileOutputStream(targetFile.toFile()), StandardCharsets.UTF_8)) {
                 fileWriter.write(
@@ -221,6 +219,7 @@ public class DevDebugUtils {
                                 + "\n");
                 fileWriter.write(threadDump);
             }
+            LOG.debug("grabbed thread dump");
             return targetFile;
         } catch (Exception e) {
             LOG.warn("Could not retrieve or store thread dump in file {}", targetFile, e);

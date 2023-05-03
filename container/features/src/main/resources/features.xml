@@ -156,13 +156,6 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-extender/${eclipseGeminiVersion}</bundle>
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
-    <feature name="asm" version="${asmVersion}" description="ASM">
-        <bundle>mvn:org.ow2.asm/asm/9.5</bundle>
-        <bundle>mvn:org.ow2.asm/asm-analysis/9.5</bundle>
-        <bundle>mvn:org.ow2.asm/asm-commons/9.5</bundle>
-        <bundle>mvn:org.ow2.asm/asm-tree/9.5</bundle>
-        <bundle>mvn:org.ow2.asm/asm-util/9.5</bundle>
-    </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
         <!-- needed by spifly -->
         <feature version="[9.4,10)">asm</feature>
@@ -182,7 +175,7 @@
         <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
         <!-- needed by jsr223 support -->
-        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.3.6</bundle>
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
@@ -216,8 +209,8 @@
         <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
-    <feature name="javax.mail" version="1.6.7" description="javax.mail">
-        <bundle>mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
+    <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
+        <bundle>mvn:javax.mail/mail/${javaxMailVersion}</bundle>
     </feature>
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
         <bundle start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
@@ -332,10 +325,10 @@
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
 
@@ -390,6 +383,7 @@
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-jms</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
@@ -397,7 +391,6 @@
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
@@ -857,8 +850,8 @@
         <feature>opennms-dao-api</feature>
         <!-- early start-level to override jettison version in 3rd-party feature files -->
         <bundle start-level="30">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${servicemixSpecsVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemixSpecsVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${karaf.servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${karaf.servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xercesVersion}_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
@@ -1827,7 +1820,7 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${karaf.servicemix.specs.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:net.minidev/accessors-smart/${accessorsSmartVersion}</bundle>
         <bundle>mvn:net.minidev/json-smart/${jsonSmartVersion}</bundle>

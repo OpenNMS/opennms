@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $SENTINEL_HOME in the finished package
 %{!?sentinelinstprefix:%define sentinelinstprefix /opt/sentinel}
-# The path where the repositories will live 
-%{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
 # Where Systemd files live
 %{!?_unitdir:%define _unitdir /lib/systemd/system}
 
@@ -150,7 +148,6 @@ sed -i \
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
     grep -v %{sentinelinstprefix}/etc | \
-    grep -v %{sentinelrepoprefix} | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
 
@@ -175,7 +172,6 @@ find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
 
 # Exclude subdirs of the repository directory
 find %{buildroot}%{sentinelinstprefix} -type d | \
-    grep -v %{sentinelrepoprefix}/ | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.sentinel
 
