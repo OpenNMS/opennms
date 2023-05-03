@@ -1616,7 +1616,7 @@
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.9.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
-    <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
+    <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
