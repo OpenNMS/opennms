@@ -28,32 +28,33 @@
 
 package org.opennms.features.datachoices.web.internal;
 
-import com.google.common.collect.Maps;
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.web.api.HtmlInjector;
+
+import com.google.common.collect.Maps;
+
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 public class ModalInjector implements HtmlInjector {
     private StateManager m_stateManager;
 
     @Override
-    public String inject(HttpServletRequest request) throws TemplateException, IOException {
-        // only display this notice if user never chose to opt-in or opt-out
-        if ((m_stateManager.isInitialNoticeAcknowledged() == null ||
-            !m_stateManager.isInitialNoticeAcknowledged().booleanValue()) &&
-            isPage("/opennms/index.jsp", request) &&
-            isUserInAdminRole(request)) {
+    public String inject(HttpServletRequest request) throws TemplateException, IOException {  
+        if (isPage("/opennms/admin/index.jsp", request)) {
+            return generateModalHtml(false);
+        } else if (m_stateManager.isEnabled() == null && isPage("/opennms/index.jsp", request) && isUserInAdminRole(request)) {
             return generateModalHtml(true);
         }
-
         return null;
     }
 

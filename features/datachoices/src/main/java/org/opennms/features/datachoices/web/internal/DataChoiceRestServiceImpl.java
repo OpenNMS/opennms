@@ -62,6 +62,28 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     private static final String METADATA_RESOURCE_PATH = "web/datachoicesMetadata.json";
 
     @Override
+    public void updateCollectUsageStatisticFlag(HttpServletRequest request, String action) {
+        if (action == null) {
+            return;
+        }
+
+        try {
+            switch (action) {
+            case "enable":
+                m_stateManager.setEnabled(true, request.getRemoteUser());
+                break;
+            case "disable":
+                m_stateManager.setEnabled(false, request.getRemoteUser());
+                break;
+            default:
+                // pass
+            }
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
     public UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException {
         return m_usageStatisticsReporter.generateReport();
     }
@@ -72,7 +94,6 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
 
         try {
             dto.setEnabled(m_stateManager.isEnabled());
-            dto.setInitialNoticeAcknowledged(m_stateManager.isInitialNoticeAcknowledged());
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
@@ -83,15 +104,7 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     @Override
     public Response setStatus(HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException {
         try {
-            final String remoteUser = request.getRemoteUser();
-
-            if (dto.getEnabled() != null) {
-                m_stateManager.setEnabled(dto.getEnabled().booleanValue(), remoteUser);
-            }
-
-            if (dto.getInitialNoticeAcknowledged() != null) {
-                m_stateManager.setInitialNoticeAcknowledged(dto.getInitialNoticeAcknowledged().booleanValue(), remoteUser);
-            }
+            m_stateManager.setEnabled(dto.getEnabled(), request.getRemoteUser());
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
