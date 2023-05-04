@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.smoketest.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.Exception;
 import java.net.URL;
 import java.util.Optional;
 
@@ -41,11 +42,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Rest Health client used to verify HealCheck implementations statuses
  */
 public class RestHealthClient {
+    private static final Logger LOG = LoggerFactory.getLogger(RestHealthClient.class);
 
     private URL url;
 
@@ -73,24 +77,32 @@ public class RestHealthClient {
         return alias.isPresent() ? client.target(url.toString()).path(alias.get()).path(path) : client.target(url.toString()).path(path);
     }
 
-    public String getProbeHealthResponse(){
-        Response response
-                = getTargetFor(PROBE).request(MediaType.TEXT_PLAIN).get();
-        /*
-        return response.getStatus() == 200 && response.getHeaders().containsKey(HEALTH_KEY + "foo") ?
-                response.getHeaders().get(HEALTH_KEY +"foo").toString() : { throw new RuntimeException("Health key not found in: " + response.toString()); return ""; };
-                */
+    public String getProbeHealthResponse() {
+        Response response;
+        try {
+            response = getTargetFor(PROBE).request(MediaType.TEXT_PLAIN).get();
+        } catch (final Exception e) {
+            LOG.warn("Failed to get response from the health check REST endpoint: " + e.getMessage());
+            return null;
+        }
 
         if (response.getStatus() == 200 && response.getHeaders().containsKey(HEALTH_KEY)) {
             return response.getHeaders().get(HEALTH_KEY).toString();
         }
 
         try {
-            return "Response status != 200 or " + HEALTH_KEY + " header not found. Dumping response.\nStatus: " + response.getStatus() + "\nHeaders: " + response.getStringHeaders() + "\n" + IOUtils.toString((InputStream)response.getEntity());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "Response status != 200 or " + HEALTH_KEY + " header not found. Dumping response.\n"
+                + "Status: " + response.getStatus() + "\n"
+                + "Headers: " + response.getStringHeaders() + "\n"
+                + IOUtils.toString((InputStream)response.getEntity());
+        } catch (final IOException e) {
+            LOG.warn("An error occurred while handling the response from the health check REST endpoint: " + e.getMessage());
         }
+
+        return null;
     }
 
-    public String getProbeSuccessMessage(){return SUCCESS_PROBE;}
+    public String getProbeSuccessMessage() {
+        return SUCCESS_PROBE;
+    }
 }
