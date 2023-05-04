@@ -95,7 +95,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-        new String[] { "Data Choices", "//*[@id='datachoices-enable']" }
+        new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" }
     };
 
     @Before
@@ -105,7 +105,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(10, countElementsMatchingCss("div.card-header")); // the 10th is the hidden datachoices modal
+        assertEquals(9, countElementsMatchingCss("div.card-header"));
         findElementByXpath("//span[text()='OpenNMS System']");
         findElementByXpath("//span[text()='Provisioning']");
         findElementByXpath("//span[text()='Flow Management']");

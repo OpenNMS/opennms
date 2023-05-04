@@ -28,6 +28,9 @@
 
 package org.opennms.smoketest.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static io.restassured.RestAssured.when;
@@ -55,20 +58,27 @@ public class DataChoicesRestServiceIT {
     }
 
     @Test
-    public void verifyGet() {
+    public void verifyGetStatus() {
         given()
             .queryParam("action", "disable")
         .when()
-            .get("/rest/datachoices")
+            .get("/rest/datachoices/status")
                 .then()
                 .statusCode(200);
     }
 
     @Test
-    public void verifyUpdate() {
-        when()
-            .post("/rest/datachoices")
+    public void verifyUpdateStatus() {
+        // UsageSharingStatisticsStatusDTO
+        Map<String, Object> dto = new HashMap<>();
+        dto.put("enabled", true);
+
+        given()
+            .contentType("application/json")
+            .body(dto)
+        .when()
+            .post("/rest/datachoices/status")
                 .then()
-                .statusCode(204);
+                .statusCode(202);
     }
 }

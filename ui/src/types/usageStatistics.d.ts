@@ -1,6 +1,7 @@
 import { UsageStatisticsMetadata } from '@/types/usageStatistics';
 export interface UsageStatisticsStatus {
-  enabled: boolean
+  enabled: boolean | null,
+  initialNoticeAcknowledged?: boolean | null
 }
 
 export interface UsageStatisticsData {
