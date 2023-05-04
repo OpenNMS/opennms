@@ -63,9 +63,6 @@ public class StateManager {
     private static final String SYSTEM_ID_KEY = "systemid";
     private static final String ACKNOWLEDGED_BY_KEY = "acknowledged-by";
     private static final String ACKNOWLEDGED_AT_KEY = "acknowledged-at";
-    private static final String INITIAL_NOTICE_ACKNOWLEDGED_KEY = "initialNoticeAcknowledged";
-    private static final String INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY = "initialNoticeAcknowledgedAt";
-    private static final String INITIAL_NOTICE_ACKNOWLEDGED_BY_KEY = "initialNoticeAcknowledgedBy";
 
     private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
     private final CmProperties propertiesCache;
@@ -87,20 +84,9 @@ public class StateManager {
         propertiesCache.setProperty(ENABLED_KEY, enabled);
         propertiesCache.setProperty(ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
         propertiesCache.setProperty(ACKNOWLEDGED_AT_KEY, new Date().toString());
-
         for (StateChangeHandler listener : m_listeners) {
             listener.onIsEnabledChanged(enabled);
         }
-    }
-
-    public Boolean isInitialNoticeAcknowledged() throws IOException {
-        return (Boolean) propertiesCache.getProperty(INITIAL_NOTICE_ACKNOWLEDGED_KEY);
-    }
-
-    public void setInitialNoticeAcknowledged(boolean status, String user) throws Exception {
-        propertiesCache.setProperty(INITIAL_NOTICE_ACKNOWLEDGED_KEY, status);
-        propertiesCache.setProperty(INITIAL_NOTICE_ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
-        propertiesCache.setProperty(INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
     }
 
     public String getOrGenerateSystemId() throws IOException {

@@ -50,14 +50,12 @@ const updateSharing = async (enable: boolean) => {
   const success = !!(resp && (resp.status === 200 || resp.status === 202))
 
   if (success) {
-    if (enable) {
-      showSnackBar({ msg: 'Usage Statistics Sharing is now enabled. Thank you for helping us improve OpenNMS.' })
-    } else {
-      showSnackBar({ msg: 'Usage Statistics Sharing is now disabled.' })
-    }
+    showSnackBar({
+      msg: `Statistics sharing ${enable ? 'enabled' : 'disabled'}.`
+    })
   } else {
     showSnackBar({
-      msg: `Error attempting to ${enable ? 'enable' : 'disable'} Usage Statistics Sharing.`,
+      msg: `Error attempting to ${enable ? 'enable' : 'disable'} statistics sharing.`,
       error: true
     })
   }

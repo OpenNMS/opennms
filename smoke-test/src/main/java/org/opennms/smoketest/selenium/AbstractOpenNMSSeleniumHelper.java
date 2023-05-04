@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -301,17 +301,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 }
             } catch (NoSuchElementException e) {
                 // "datachoices-modal" is not visible or does not exist.
-                // No further action required
-            }
-        });
-        invokeWithImplicitWait(0, () -> {
-            try {
-                WebElement element = findElementById("usage-statistics-sharing-modal");
-                if (element.isDisplayed()) { // usage statistics modal is visible
-                    findElementById("usage-statistics-sharing-notice-dismiss").click(); // close modal
-                }
-            } catch (NoSuchElementException e) {
-                // "usage-statistics-sharing-notice-dismiss" is not visible or does not exist.
                 // No further action required
             }
         });
