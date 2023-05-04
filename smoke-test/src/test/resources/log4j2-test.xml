@@ -6,6 +6,16 @@
         </Console>
     </Appenders>
     <Loggers>
+        <!-- stuff that comes from testcontainers -->
+        <Logger name="org.testcontainers" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.github.dockerjava" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.github.dockerjava.zerodep.shaded.org.apache.hc.client5.http.wire" level="OFF" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <!-- StreamGobbler 🦃 is noisy -->
         <Logger name="org.opennms.smoketest.utils.StreamGobbler" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
