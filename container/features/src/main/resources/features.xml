@@ -157,6 +157,8 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <!-- needed by spifly -->
+        <feature version="[9.4,10)">asm</feature>
         <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
@@ -358,7 +360,7 @@
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
         <feature>opennms-util</feature>
-        <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_3</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
@@ -2003,7 +2005,7 @@
     <feature name="fst" description="FST" version="${project.version}">
         <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
-        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/${objenesisVersion}</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 

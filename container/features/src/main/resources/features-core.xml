@@ -37,6 +37,7 @@
         <bundle dependency="true">mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe/config/1.4.1</bundle>
         <bundle dependency="true">mvn:org.hdrhistogram/HdrHistogram/2.1.12</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.1.16</bundle>
     </feature>
 
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
