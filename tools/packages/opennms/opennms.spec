@@ -557,6 +557,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.version="%{version}-%{release}" \
 	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" \
+	-Denable.license=true \
 	-Dinstall.bin.dir="%{bindir}" \
 	-Dbuild=all \
 	-Dbuild.profile=full \
