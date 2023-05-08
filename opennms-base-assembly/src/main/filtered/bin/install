@@ -22,16 +22,16 @@ if [ $? -eq 0 ]; then
 	done
 fi
 
+if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
+	. "$OPENNMS_HOME/etc/opennms.conf"
+fi
+
 myuser="`id -u -n`"
 if [ x"$myuser" = x"$RUNAS" ]; then
 	true # all is well
 else
 	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
 	exit 4 # According to LSB: 4 - user had insufficient privileges
-fi
-
-if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
-	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
 OPTIONS=""
