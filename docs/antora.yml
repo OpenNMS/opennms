@@ -33,4 +33,5 @@ nav:
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
 - modules/reference/nav.adoc
+- modules/troubleshooting/nav.adoc
 - modules/write-the-docs/nav.adoc

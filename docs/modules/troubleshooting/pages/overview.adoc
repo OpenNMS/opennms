@@ -1,0 +1,4 @@
+
+= Troubleshooting and Support
+
+This section describes common troubleshooting strategies and how to get support with various {page-component-title} issues.
