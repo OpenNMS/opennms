@@ -59,7 +59,7 @@ systemd[1]: Failed to start OpenNMS server.
 NOTE: You can also run `config-tester -a` to verify your configuration settings.
 If the tests pass, a success message is displayed.
 
-=== Nonobvious error messages with older Linux distributions
+=== Non-obvious error messages with older Linux distributions
 
 Some older Linux distributions (Red Hat Enterprise Linux 7, CentOS 7, and so on) are more terse when a {page-component-title} startup failure occurs.
 An additional diagnostic step can help reveal the problem.
