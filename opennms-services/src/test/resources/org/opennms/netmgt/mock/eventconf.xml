@@ -1279,7 +1279,7 @@
     <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
     <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
     <descr>
-      This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be reloaded
+      This event is sent by the WebUI or the user when scheduled outage configuration has changed and should be reloaded
     </descr>
     <logmsg dest='logndisplay'>
       The scheduled outage configuration has been changed and should be reloaded
