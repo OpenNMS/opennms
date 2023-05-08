@@ -1674,7 +1674,7 @@
     <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
-    <jcommonVersion>1.0.23</jcommonVersion>
+    <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
     <jettyVersion>9.4.51.v20230217</jettyVersion>
