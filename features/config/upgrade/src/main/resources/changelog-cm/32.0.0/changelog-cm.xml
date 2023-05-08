@@ -13,4 +13,22 @@
             <cm:put name="initialNoticeAcknowledgedBy" type="string"/>
         </cm:changeSchema>
     </changeSet>
+
+    <changeSet author="stheleman" id="32.0.0-cm-enable-usage-statistics-sharing-by-default-if-not-disabled" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM kvstore_jsonb
+                WHERE context = 'CM_CONFIG'
+                AND key = 'org.opennms.features.datachoices'
+                AND (value -> 'configs' -> 'default' ->> 'enabled') IS NULL;
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            UPDATE kvstore_jsonb
+            SET value = jsonb_set(value, '{configs, default, enabled}', 'true')
+            WHERE context = 'CM_CONFIG'
+            AND key = 'org.opennms.features.datachoices'
+        </sql>
+    </changeSet>
 </databaseChangeLog>
