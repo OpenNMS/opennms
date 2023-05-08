@@ -82,7 +82,7 @@
             <!-- Override joda to match the version used by Beam in Nephron -->
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10.5</version>
+            <version>2.12.5</version>
         </dependency>
 
         <dependency>
