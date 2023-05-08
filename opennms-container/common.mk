@@ -134,7 +134,19 @@ docker-buildx-create:
 # is run before docker-buildx
 ifdef DOCKERX_INSTANCE
 docker-buildx: docker-buildx-create
+else
+docker-buildx: check-docker-buildx-default
 endif
+
+check-docker-buildx-default:
+	CURRENT_BUILDX=`docker buildx inspect | head -1 | sed 's/^Name: *//'` ; \
+	  if [ "$$CURRENT_BUILDX" != "default" ]; then \
+	    echo "DOCKERX_INSTANCE is not set but there is a non-default docker buildx instance" >&2 ; \
+	    echo "active: $$CURRENT_BUILDX" >&2 ; \
+	    echo "You probably want to 'docker buildx use default' or delete the other instance" >&2 ; \
+	    echo "with 'docker buildx rm $$CURRENT_BUILDX'." >&2 ; \
+	    exit 1 ; \
+	  fi
 
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set
