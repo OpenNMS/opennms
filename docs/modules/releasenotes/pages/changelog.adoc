@@ -20,7 +20,7 @@ The codename for Horizon 31.0.8 is https://wikipedia.org/wiki/$$Spritzgeb%C3%A4c
 * Geographical Map map search capability is not as described in the docs (Issue https://issues.opennms.org/browse/NMS-15426[NMS-15426])
 * Foundation-2020: Snmp4JValueFactory: getOctetString displayable should be true (Issue https://issues.opennms.org/browse/NMS-15599[NMS-15599])
 * Jetty CVE-2023-26048/CVE-2023-26049 (Issue https://issues.opennms.org/browse/NMS-15612[NMS-15612])
-* update to latest groovy 2.x (Issue https://issues.opennms.org/browse/NMS-15633[NMS-15633])
+* Update to latest groovy 2.x (Issue https://issues.opennms.org/browse/NMS-15633[NMS-15633])
 * $OPENNMS_HOME/etc/THIRD-PARTY.txt has gone missing with Horizon 31.0.6 and onwards (Issue https://issues.opennms.org/browse/NMS-15636[NMS-15636])
 * SNMPv3 support for AES256 appears broken (Issue https://issues.opennms.org/browse/NMS-15637[NMS-15637])
 
