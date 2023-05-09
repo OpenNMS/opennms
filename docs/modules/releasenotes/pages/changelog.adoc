@@ -1,6 +1,47 @@
 
 [[release-31-changelog]]
 = Changelog
+[[releasenotes-changelog-31.0.8]]
+
+==== Release 31.0.8
+
+Release 31.0.8 contains four security vulnerability fixes and a generous helping of other bug fixes.
+It also includes a few small enhancements to the startup scripts and other components.
+
+The codename for Horizon 31.0.8 is https://wikipedia.org/wiki/$$Spritzgeb%C3%A4ck$$[_Spritzgebäck_].
+
+===== Bug
+
+* POW Arithmetic Operator Does not work with Backshift Graphing Engine (Issue https://issues.opennms.org/browse/NMS-14779[NMS-14779])
+* Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured (Issue https://issues.opennms.org/browse/NMS-14936[NMS-14936])
+* REST API: Deleting nodes fails with "could not insert: [org.opennms.netmgt.model.OnmsAssetRecord]" error message (Issue https://issues.opennms.org/browse/NMS-15033[NMS-15033])
+* Plaintext Password Present in the Web logs (Issue https://issues.opennms.org/browse/NMS-15305[NMS-15305])
+* Stored XSS on Quick-Add Node (Issue https://issues.opennms.org/browse/NMS-15308[NMS-15308])
+* Geographical Map map search capability is not as described in the docs (Issue https://issues.opennms.org/browse/NMS-15426[NMS-15426])
+* Foundation-2020: Snmp4JValueFactory: getOctetString displayable should be true (Issue https://issues.opennms.org/browse/NMS-15599[NMS-15599])
+* Jetty CVE-2023-26048/CVE-2023-26049 (Issue https://issues.opennms.org/browse/NMS-15612[NMS-15612])
+* Update to latest groovy 2.x (Issue https://issues.opennms.org/browse/NMS-15633[NMS-15633])
+* $OPENNMS_HOME/etc/THIRD-PARTY.txt has gone missing with Horizon 31.0.6 and onwards (Issue https://issues.opennms.org/browse/NMS-15636[NMS-15636])
+* SNMPv3 support for AES256 appears broken (Issue https://issues.opennms.org/browse/NMS-15637[NMS-15637])
+
+===== New Feature
+
+* Add a CLI mechanism to set the admin password (Issue https://issues.opennms.org/browse/NMS-15221[NMS-15221])
+
+===== Story
+
+* Add KPI for boolean containerization status (Issue https://issues.opennms.org/browse/NMS-15368[NMS-15368])
+* Add REST endpoint exposing usage analytics KPIs (Issue https://issues.opennms.org/browse/NMS-15371[NMS-15371])
+* Usage statistics docs updated to include containerization status (Issue https://issues.opennms.org/browse/NMS-15627[NMS-15627])
+
+===== Enhancement
+
+* Smoke test improvements and small tweaks to help developers (Issue https://issues.opennms.org/browse/NMS-15387[NMS-15387])
+
+===== Task
+
+* DOC: Pull changes into foundation branch (Issue https://issues.opennms.org/browse/NMS-15658[NMS-15658])
+
 [[releasenotes-changelog-31.0.7]]
 
 ==== Release 31.0.7
