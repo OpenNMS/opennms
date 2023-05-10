@@ -93,4 +93,6 @@ public interface PollerdMBean extends BaseOnmsMBean {
      * @return The number of open slots on our ExecutorService queue.
      */
     public long getTaskQueueRemainingCapacity();
+
+    public long getNumPollsInFlight();
 }
