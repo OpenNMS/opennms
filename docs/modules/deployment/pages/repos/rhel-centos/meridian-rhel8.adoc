@@ -1,5 +1,5 @@
 .Add repository and import GPG key
-[source, console, subs="attributes,callouts"]
+[source, console, subs="verbatim,attributes"]
 ----
 cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
 [meridian]
