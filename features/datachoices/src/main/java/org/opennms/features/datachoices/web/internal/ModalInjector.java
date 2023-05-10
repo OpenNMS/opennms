@@ -46,9 +46,13 @@ public class ModalInjector implements HtmlInjector {
 
     @Override
     public String inject(HttpServletRequest request) throws TemplateException, IOException {
-        // only display this notice if user never chose to opt-in or opt-out
-        if ((m_stateManager.isInitialNoticeAcknowledged() == null ||
-            !m_stateManager.isInitialNoticeAcknowledged().booleanValue()) &&
+        // don't display Usage Statistics Sharing notice if already acked or user previously opted-out
+        boolean noticeAcked = m_stateManager.isInitialNoticeAcknowledged() != null &&
+            m_stateManager.isInitialNoticeAcknowledged().booleanValue();
+        boolean optedOut = m_stateManager.isEnabled() != null && !m_stateManager.isEnabled().booleanValue();
+        boolean hideNotice = noticeAcked || optedOut;
+
+        if (!hideNotice &&
             isPage("/opennms/index.jsp", request) &&
             isUserInAdminRole(request)) {
             return generateModalHtml(true);

@@ -8,7 +8,7 @@
 
     <changeSet author="stheleman" id="32.0.0-update-schema-datachoices">
         <cm:changeSchema schemaId="org.opennms.features.datachoices">
-            <cm:put name="initialNoticeAcknowledged" type="boolean"/>
+            <cm:put name="initialNoticeAcknowledged" type="boolean" default="false"/>
             <cm:put name="initialNoticeAcknowledgedAt" type="string"/>
             <cm:put name="initialNoticeAcknowledgedBy" type="string"/>
         </cm:changeSchema>
