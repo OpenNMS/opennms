@@ -11,21 +11,24 @@ The `opennms:pollerd-schedule` Karaf Shell command can be used to output details
 opennms:pollerd-schedule
 ----
 
-* Use `--services/-s` to output a number of scheduled services. The option's argument specifies the limit. Use `0` to display all scheduled services.
+* Use `--services/-s` to output a number of scheduled services.
+The option's argument specifies the limit.
+Use `0` to display all scheduled services.
 +
 [source, karaf]
 ----
 opennms:pollerd-schedule --services 0
 ----
 
-* You can alter the output by specifying `--columns/-c` using a comma-seperated list of the columns to be displayed.
+* You can alter the output by specifying `--columns/-c` using a comma-seperated list of the columns to display.
 +
 [source, karaf]
 ----
 opennms:pollerd-schedule --services 0 --columns nodeId,readyTimeMs
 ----
 
-* You can alter the order of the displayed service schedules by using the option `--option/-o`. To switch to a descending order specify the additional option `--desc/-d`.
+* You can alter the order of the displayed service schedules by using the option `--option/-o`.
+To switch to a descending order specify the additional option `--desc/-d`.
 +
 [source, karaf]
 ----
