@@ -12,7 +12,7 @@ endif
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-2.1.0.b175
+BASE_IMAGE              := opennms/deploy-base:ubuntu-3.0.1.b220-jre-11
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
@@ -134,7 +134,19 @@ docker-buildx-create:
 # is run before docker-buildx
 ifdef DOCKERX_INSTANCE
 docker-buildx: docker-buildx-create
+else
+docker-buildx: check-docker-buildx-default
 endif
+
+check-docker-buildx-default:
+	CURRENT_BUILDX=`docker buildx inspect | head -1 | sed 's/^Name: *//'` ; \
+	  if [ "$$CURRENT_BUILDX" != "default" ]; then \
+	    echo "DOCKERX_INSTANCE is not set but there is a non-default docker buildx instance" >&2 ; \
+	    echo "active: $$CURRENT_BUILDX" >&2 ; \
+	    echo "You probably want to 'docker buildx use default' or delete the other instance" >&2 ; \
+	    echo "with 'docker buildx rm $$CURRENT_BUILDX'." >&2 ; \
+	    exit 1 ; \
+	  fi
 
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set
