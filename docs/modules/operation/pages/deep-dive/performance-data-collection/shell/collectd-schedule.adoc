@@ -1,0 +1,34 @@
+
+[[ga-performance-mgmt-schedule-shell]]
+
+= Collectd Schedule
+
+The `opennms:pollerd-schedule` Karaf Shell command can be used to output details of the Collectd scheduler.
+
+* List all collected statistics of the Collectd daemon.
++
+[source, karaf]
+----
+opennms:collectd-schedule
+----
+
+* Use `--services/-s` to output a number of scheduled services. The option's argument specifies the limit. Use `0` to display all scheduled services.
++
+[source, karaf]
+----
+opennms:collectd-schedule --services 0
+----
+
+* You can alter the output by specifying `--columns/-c` using a comma-seperated list of the columns to be displayed.
++
+[source, karaf]
+----
+opennms:collectd-schedule --services 0 --columns nodeId,readyTimeMs
+----
+
+* You can alter the order of the displayed service schedules by using the option `--option/-o`. To switch to a descending order specify the additional option `--desc/-d`.
++
+[source, karaf]
+----
+opennms:collectd-schedule --services 0 --order nodeId --desc
+----

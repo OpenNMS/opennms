@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.collectd.jmx;
 
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
+
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
@@ -91,4 +94,6 @@ public interface CollectdMBean extends BaseOnmsMBean {
      * @return The number of pending tasks
      */
     public long getTaskQueueRemainingCapacity();
+
+    TabularData getSchedule() throws OpenDataException;
 }
