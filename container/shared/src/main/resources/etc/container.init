@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/env bash
 
 NAME="@NAME_LC@"
 DESC="@NAME_DISPLAY@"
