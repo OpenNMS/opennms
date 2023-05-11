@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.poller.jmx;
 
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.TabularData;
+
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
@@ -95,4 +98,6 @@ public interface PollerdMBean extends BaseOnmsMBean {
     public long getTaskQueueRemainingCapacity();
 
     public long getNumPollsInFlight();
+
+    public TabularData getSchedule() throws OpenDataException;
 }

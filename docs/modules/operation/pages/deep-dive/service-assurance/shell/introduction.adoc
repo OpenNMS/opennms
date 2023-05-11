@@ -1,0 +1,16 @@
+
+= Shell Commands
+
+A number of Karaf Shell commands are available to help administer and diagnose issues related to service assurance.
+
+To use the commands, log into the Karaf Shell on your system using:
+
+[source]
+----
+ssh -p 8101 admin@localhost
+----
+
+NOTE: The Karaf shell uses the same credentials as the web interface.
+      Users must be associated with the `ADMIN` role to access the shell.
+
+IMPORTANT: To keep the session open while performing long-running tasks without any user input add `-o ServerAliveInterval=10` to your ssh command.
