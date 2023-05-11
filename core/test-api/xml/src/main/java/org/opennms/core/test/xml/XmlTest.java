@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,6 +89,7 @@ abstract public class XmlTest<T> {
 
     static {
         initXmlUnit();
+        initOpennmsHome();
     }
 
     public static void initXmlUnit() {
@@ -96,6 +98,18 @@ abstract public class XmlTest<T> {
         XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
         XMLUnit.setNormalize(true);
+    }
+
+    public static void initOpennmsHome() {
+        if (System.getProperty("opennms.home") == null) {
+            LOG.warn("$OPENNMS_HOME is not set, creating a temporary one for tests");
+            try {
+                final var opennmsHome = Files.createTempDirectory("opennms-home-temp");
+                System.setProperty("opennms.home", opennmsHome.normalize().toString());
+            } catch (IOException e) {
+                throw new RuntimeException("unable to create temporary $OPENNMS_HOME for tests", e);
+            }
+        }
     }
 
     private T m_sampleObject;
