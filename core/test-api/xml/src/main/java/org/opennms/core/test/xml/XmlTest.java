@@ -42,6 +42,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +51,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -84,7 +84,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 @RunWith(Parameterized.class)
-abstract public class XmlTest<T> {
+public abstract class XmlTest<T> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
 
     static {
@@ -116,7 +116,7 @@ abstract public class XmlTest<T> {
     private Object m_sampleXml;
     private String m_schemaFile;
 
-    public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
+    protected XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
         m_sampleObject = sampleObject;
         m_sampleXml = sampleXml;
         m_schemaFile = schemaFile;
@@ -134,13 +134,13 @@ abstract public class XmlTest<T> {
 
     protected String getSampleXml() throws IOException {
         if (m_sampleXml instanceof File) {
-            return IOUtils.toString(((File)m_sampleXml).toURI());
+            return IOUtils.toString(((File)m_sampleXml).toURI(), Charset.defaultCharset());
         } else if (m_sampleXml instanceof URI) {
-            return IOUtils.toString((URI)m_sampleXml);
+            return IOUtils.toString((URI)m_sampleXml, Charset.defaultCharset());
         } else if (m_sampleXml instanceof URL) {
-            return IOUtils.toString((URL)m_sampleXml);
+            return IOUtils.toString((URL)m_sampleXml, Charset.defaultCharset());
         } else if (m_sampleXml instanceof InputStream) {
-            return IOUtils.toString((InputStream)m_sampleXml);
+            return IOUtils.toString((InputStream)m_sampleXml, Charset.defaultCharset());
         } else {
             return m_sampleXml.toString();
         }
@@ -185,6 +185,8 @@ abstract public class XmlTest<T> {
         }
 
         final SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         final File schemaFile = new File(getSchemaFile());
         LOG.debug("Validating using schema file: {}", schemaFile);
         final Schema schema = schemaFactory.newSchema(schemaFile);
@@ -248,12 +250,9 @@ abstract public class XmlTest<T> {
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
-        unmarshaller.setEventHandler(new ValidationEventHandler() {
-            @Override
-            public boolean handleEvent(final ValidationEvent event) {
-                LOG.warn("Received validation event: {}", event, event.getLinkedException());
-                return false;
-            }
+        unmarshaller.setEventHandler(event -> {
+            LOG.warn("Received validation event: {}", event, event.getLinkedException());
+            return false;
         });
         try {
             final InputSource inputSource = new InputSource(getSampleXmlInputStream());
@@ -286,7 +285,7 @@ abstract public class XmlTest<T> {
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = XmlTest.getDifferencesSimple(expectedXml, actualXml);
-        if (differences.size() > 0) {
+        if (!differences.isEmpty()) {
             LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
@@ -294,7 +293,7 @@ abstract public class XmlTest<T> {
 
     protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = getDifferences(expectedXml, actualXml);
-        if (differences.size() > 0) {
+        if (!differences.isEmpty()) {
             LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
@@ -338,7 +337,7 @@ abstract public class XmlTest<T> {
         }
         final List<Difference> retDifferences = new ArrayList<>();
         @SuppressWarnings("unchecked") final List<Difference> allDifferences = myDiff.getAllDifferences();
-        if (allDifferences.size() > 0) {
+        if (!allDifferences.isEmpty()) {
             DIFFERENCES:
             for (final Difference d : allDifferences) {
                 final NodeDetail controlNodeDetail = d.getControlNodeDetail();
@@ -366,11 +365,9 @@ abstract public class XmlTest<T> {
                             continue DIFFERENCES;
                         }
                     }
-                    if (test != null && !"null".equals(test)) {
-                        if (ignorePrefix.test(test.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                            continue DIFFERENCES;
-                        }
+                    if (test != null && !"null".equals(test) && ignorePrefix.test(test.toLowerCase())) {
+                        LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                        continue DIFFERENCES;
                     }
                 } else if (d.getDescription().equals("xsi:schemaLocation attribute")) {
                     LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null ? testNodeDetail.getValue() : controlNodeDetail.getValue());
@@ -391,18 +388,12 @@ abstract public class XmlTest<T> {
 
     protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {
         final XPath query = XPathFactory.newInstance().newXPath();
-        StringReader sr = null;
-        InputSource is = null;
-        NodeList nodes = null;
-        try {
-            sr = new StringReader(xml);
-            is = new InputSource(sr);
-            nodes = (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
-        } finally {
-            sr.close();
-            IOUtils.closeQuietly(sr);
+        try (
+            final StringReader sr = new StringReader(xml);
+        ) {
+            final InputSource is = new InputSource(sr);
+            return (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
         }
-        return nodes;
     }
 
     public static void assertDepthEquals(final Object expected, Object actual) {
@@ -453,10 +444,12 @@ abstract public class XmlTest<T> {
                 try {
                     expectedValue = expectedWrapper.getPropertyValue(property);
                 } catch (final Exception e) {
+                    // let this fall through, the recursion should handle it
                 }
                 try {
                     actualValue = actualWrapper.getPropertyValue(property);
                 } catch (final Exception e) {
+                    // let this fall through, the recursion should handle it
                 }
 
                 assertDepthEquals(depth + 1, property, expectedValue, actualValue);
