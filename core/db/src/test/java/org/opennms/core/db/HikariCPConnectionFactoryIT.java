@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.core.db;
 
+import static org.junit.Assert.assertTrue;
+
 import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +39,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -51,69 +52,17 @@ public class HikariCPConnectionFactoryIT {
     
     @Test
     public void testMarshalDataSourceFromConfig() throws Exception {
-        HikariCPConnectionFactory factory1 = null;
-        HikariCPConnectionFactory factory2 = null;
+        HikariCPConnectionFactory factory1 = makeFactory("opennms");
+        HikariCPConnectionFactory factory2 = makeFactory("opennms2");
 
-        try {
-            factory1 = makeFactory("opennms");
-            factory2 = makeFactory("opennms2");
-
-            Connection conn = null;
-            Statement s = null;
-            try {
-                conn = factory2.getConnection();
-                s = conn.createStatement();
-                s.execute("select * from pg_proc");
-            } finally {
-                if (s != null) {
-                    s.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            }
+        try (
+            final Connection conn = factory2.getConnection();
+            final Statement s = conn.createStatement();
+        ) {
+            assertTrue("execute should pass and return a result set", s.execute("select * from pg_proc"));
         } finally {
-            Throwable t1 = null;
-            Throwable t2 = null;
-
-            if (factory1 != null) {
-                try {
-                    factory1.close();
-                    factory1 = null;
-                } catch (Throwable e1) {
-                    t1 = e1;
-                }
-            }
-
-            if (factory2 != null) {
-                try {
-                    factory2.close();
-                    factory2 = null;
-                } catch (Throwable e2) {
-                    t2 = e2;
-                }
-            }
-
-            if (t1 != null || t2 != null) {
-                final StringBuilder message = new StringBuilder();
-                message.append("Could not successfully close both C3P0 factories.  Future tests might fail.");
-
-                Throwable choice;
-                if (t1 != null) {
-                    message.append("  First factory failed with: " + t1.getMessage() + "; see stack back trace.");
-                    choice = t1;
-
-                    if (t2 != null) {
-                        System.err.println("  Both factories failed to close.  See stderr for second stack back trace.");
-                        t2.printStackTrace(System.err);
-                    }
-                } else {
-                    choice = t2;
-                }
-                AssertionError e = new AssertionError(message.toString());
-                e.initCause(choice);
-                throw e;
-            }
+            factory1.close();
+            factory2.close();
         }
     }
 
@@ -158,12 +107,9 @@ public class HikariCPConnectionFactoryIT {
         JaxbUtils.marshal(config, sw);
         final String configString = sw.toString();
 
-        InputStream stream = new ByteArrayInputStream(configString.getBytes());
-        final DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
-        try {
+        try (final InputStream stream = new ByteArrayInputStream(configString.getBytes())) {
+            final DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
             return new HikariCPConnectionFactory(factory.getJdbcDataSource(database));
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 
