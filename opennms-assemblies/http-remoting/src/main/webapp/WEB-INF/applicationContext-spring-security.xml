@@ -3,13 +3,15 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd"> 
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd"> 
 
 
 	<!-- this is a pidgin version of the context from opennms-webapps, start there if you haven't already -->
 
    <!-- was mappedEntryPoint -->
-	<http pattern="/**" realm="OpenNMS Realm">
+   <http pattern="/**" realm="OpenNMS Realm" use-expressions="false">
+      <csrf disabled="true" />
+      <headers defaults-disabled="true" />
       <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/*.exe"       access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
@@ -17,7 +19,10 @@
       <intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
       <http-basic />
       <custom-filter position="LAST" ref="authFilterEnabler"/>
-	</http>
+    </http>
+
+    <http-firewall ref="httpFirewall" />
+    <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall" />
 
 	<!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
 	<beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">

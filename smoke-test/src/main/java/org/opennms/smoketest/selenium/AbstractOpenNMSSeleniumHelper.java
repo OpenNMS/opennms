@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -280,8 +280,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
         enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-        findElementByName("Login").click();
+        clickElement(By.name("Login"));
 
+        wait.until((WebDriver driver) -> {
+            return ! driver.getCurrentUrl().contains("login.jsp");
+        });
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
         invokeWithImplicitWait(0, () -> {
             try {
