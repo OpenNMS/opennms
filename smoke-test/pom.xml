@@ -72,11 +72,12 @@
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
+    <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
     <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
