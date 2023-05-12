@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.measurements.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,10 +37,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Query response.
@@ -121,6 +119,7 @@ public class QueryResponse {
     }
 
     @XmlElement(name = "timestamps")
+    @JsonProperty("timestamps")
     public long[] getTimestamps() {
         return timestamps;
     }
@@ -136,6 +135,7 @@ public class QueryResponse {
         }
     }
 
+    @com.fasterxml.jackson.annotation.JsonSetter
     public void setTimestamps(final long[] timestamps) {
         this.timestamps = timestamps;
     }
@@ -167,6 +167,7 @@ public class QueryResponse {
         }
     }
 
+    @com.fasterxml.jackson.annotation.JsonSetter
     public void setColumns(final Map<String, double[]> columns) {
         final int N = columns.keySet().size();
         this.labels = new String[N];
@@ -187,6 +188,7 @@ public class QueryResponse {
         this.constants = constants;
     }
 
+    @com.fasterxml.jackson.annotation.JsonSetter
     public void setConstants(final Map<String,Object> constants) {
         final List<QueryConstant> c = new ArrayList<>();
         for (final Map.Entry<String,Object> entry : constants.entrySet()) {

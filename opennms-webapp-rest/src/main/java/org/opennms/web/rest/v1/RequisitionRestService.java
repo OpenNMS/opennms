@@ -47,6 +47,13 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
@@ -147,6 +154,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(
+            summary = "Get the number of deployed requisitions",
+            description = "Get the number of deployed requisitions (returns plaintext rather than XML or JSON).",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Get the number of deployed requisitions (returns plaintext rather than XML or JSON).")
+            }
+    )
     public String getDeployedCount() {
         return Integer.toString(m_accessService.getDeployedCount());
     }
@@ -196,6 +212,13 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("deployed")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get a list of all deployed (active) requisitions.",
+            description = "Get a list of all deployed (active) requisitions.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionCollection.class)), responseCode = "200"),
+            }
+    )
     public RequisitionCollection getDeployedRequisitions() throws ParseException {
         return m_accessService.getDeployedRequisitions();
     }
@@ -208,6 +231,13 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get all active requisitions.",
+            description = "Get all active requisitions.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionCollection.class)), responseCode = "200"),
+            }
+    )
     public RequisitionCollection getRequisitions() throws ParseException {
         return m_accessService.getRequisitions();
     }
@@ -220,6 +250,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(
+            summary = "Get the number of undeployed requisitions",
+            description = "Get the number of undeployed requisitions (returns plaintext rather than XML or JSON).",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Get the number of undeployed requisitions (returns plaintext rather than XML or JSON).")
+            }
+    )
     public String getPendingCount() {
         return Integer.toString(m_accessService.getPendingCount());
     }
@@ -233,6 +272,14 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the active requisition for the given foreign source name.",
+            description = "Get the active requisition for the given foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = Requisition.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+            }
+    )
     public Requisition getRequisition(@PathParam("foreignSource") final String foreignSource) {
         final Requisition requisition = m_accessService.getRequisition(foreignSource);
         if (requisition == null) {
@@ -251,6 +298,14 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the list of nodes being requisitioned for the given foreign source name.",
+            description = "Get the list of nodes being requisitioned for the given foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionNodeCollection.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+            }
+    )
     public RequisitionNodeCollection getNodes(@PathParam("foreignSource") final String foreignSource) throws ParseException {
         final RequisitionNodeCollection results = m_accessService.getNodes(foreignSource);
         if (results == null) {
@@ -270,6 +325,14 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the node with the given foreign ID for the given foreign source name.",
+            description = "Get the node with the given foreign ID for the given foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionNode.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+            }
+    )
     public RequisitionNode getNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
         if (node == null) {
@@ -289,6 +352,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the interfaces for the node with the given foreign ID and foreign source name.",
+            description = "Get the interfaces for the node with the given foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionInterfaceCollection.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionInterfaceCollection ifaces = m_accessService.getInterfacesForNode(foreignSource, foreignId);
         if (ifaces == null) {
@@ -309,6 +381,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the interface with the given IP for the node with the specified foreign ID and foreign source name.",
+            description = "Get the interface with the given IP for the node with the specified foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionInterface.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         final RequisitionInterface iface = m_accessService.getInterfaceForNode(foreignSource, foreignId, ipAddress);
         if (iface == null) {
@@ -329,6 +410,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the services for the interface with the specified IP address, foreign ID, and foreign source name.",
+            description = "Get the services for the interface with the specified IP address, foreign ID, and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionMonitoredServiceCollection.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         final RequisitionMonitoredServiceCollection services = m_accessService.getServicesForInterface(foreignSource, foreignId, ipAddress);
         if (services == null) {
@@ -350,6 +440,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the given service with the specified IP address, foreign ID, and foreign source name.",
+            description = "Get the given service with the specified IP address, foreign ID, and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionMonitoredService.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") String service) throws ParseException {
         final RequisitionMonitoredService monitoredService = m_accessService.getServiceForInterface(foreignSource, foreignId, ipAddress, service);
         if (monitoredService == null) {
@@ -369,6 +468,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the categories for the node with the given foreign ID and foreign source name.",
+            description = "Get the categories for the node with the given foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionCategoryCollection.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionCategoryCollection categories = m_accessService.getCategories(foreignSource, foreignId);
         if (categories == null) {
@@ -389,6 +497,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the category with the given name for the node with the specified foreign ID and foreign source name.",
+            description = "Get the category with the given name for the node with the specified foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionCategory.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionCategory getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
         final RequisitionCategory reqCategory = m_accessService.getCategory(foreignSource, foreignId, category);
         if (reqCategory == null) {
@@ -408,6 +525,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the assets for the node with the given foreign ID and foreign source name.",
+            description = "Get the assets for the node with the given foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionAssetCollection.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionAssetCollection assets = m_accessService.getAssetParameters(foreignSource, foreignId);
         if (assets == null) {
@@ -428,6 +554,15 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the value of the asset for the given assetName for the node with the given foreign ID and foreign source name.",
+            description = "Get the value of the asset for the given assetName for the node with the given foreign ID and foreign source name.",
+            responses = {
+                    @ApiResponse(content = @Content(schema = @Schema(implementation = RequisitionAsset.class)), responseCode = "200"),
+                    @ApiResponse(responseCode = "404")
+
+            }
+    )
     public RequisitionAsset getAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) throws ParseException {
         final RequisitionAsset asset = m_accessService.getAssetParameter(foreignSource, foreignId, parameter);
         if (asset == null) {
@@ -445,7 +580,20 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceRequisition(@Context final UriInfo uriInfo, final Requisition requisition) {
+    @Operation(summary = "Adds or replaces a requisition.",
+            description = "Adds or replaces a requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = Requisition.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceRequisition(@Context final UriInfo uriInfo,
+                                            @RequestBody(description = "Requisition")  final Requisition requisition) {
         try {
             requisition.validate();
         } catch (final ValidationException e) {
@@ -468,7 +616,21 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, RequisitionNode node) {
+    @Operation(summary = "Adds or replaces a node in the specified requisition.",
+            description = "Adds or replaces a node in the specified requisition. This operation can be very helpful when working with large requisitions.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = RequisitionNode.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceNode(@Context final UriInfo uriInfo,
+                                     @Parameter(required = true) @PathParam("foreignSource") String foreignSource,
+                                     @RequestBody(description = "Node" ) RequisitionNode node) {
         try {
             node.validate();
         } catch (final ValidationException e) {
@@ -492,7 +654,22 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
+    @Operation(summary = "Adds or replaces an interface for the given node in the specified requisition.",
+            description = "Adds or replaces an interface for the given node in the specified requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = RequisitionInterface.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceInterface(@Context final UriInfo uriInfo,
+                                          @Parameter(required = true) @PathParam("foreignSource") String foreignSource,
+                                          @Parameter(required = true) @PathParam("foreignId") String foreignId,
+                                          @RequestBody(description = "Interface") RequisitionInterface iface) {
         try {
             final RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
             iface.validate(node);
@@ -518,7 +695,23 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceService(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
+    @Operation(summary = "Adds or replaces a service on the given interface in the specified requisition.",
+            description = "Adds or replaces a service on the given interface in the specified requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = RequisitionMonitoredService.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceService(@Context final UriInfo uriInfo,
+                                        @Parameter(required = true) @PathParam("foreignSource") String foreignSource,
+                                        @Parameter(required = true) @PathParam("foreignId") String foreignId,
+                                        @Parameter(required = true) @PathParam("ipAddress") String ipAddress,
+                                        @RequestBody(description = "Monitored Service") RequisitionMonitoredService service) {
         try {
             service.validate();
         } catch (final ValidationException e) {
@@ -542,7 +735,22 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/categories")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNodeCategory(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
+    @Operation(summary = "Adds or replaces a category for the given node in the specified requisition.",
+            description = "Adds or replaces a category for the given node in the specified requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = RequisitionCategory.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceNodeCategory(@Context final UriInfo uriInfo,
+                                             @Parameter(required = true) @PathParam("foreignSource") String foreignSource,
+                                             @Parameter(required = true) @PathParam("foreignId") String foreignId,
+                                             @RequestBody(description = "Category") RequisitionCategory category) {
         try {
             category.validate();
         } catch (final ValidationException e) {
@@ -566,7 +774,22 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/assets")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNodeAssetParameter(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
+    @Operation(summary = "Adds or replaces an asset for the given node in the specified requisition.",
+            description = "Adds or replaces an asset for the given node in the specified requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = RequisitionAsset.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response addOrReplaceNodeAssetParameter(@Context final UriInfo uriInfo,
+                                                   @Parameter(required = true) @PathParam("foreignSource") String foreignSource,
+                                                   @Parameter(required = true) @PathParam("foreignId") String foreignId,
+                                                   @RequestBody(description = "Asset") RequisitionAsset asset) {
         try {
             asset.validate();
         } catch (final ValidationException e) {
@@ -587,7 +810,19 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
+    @Operation(
+            summary = "Performs an import or synchronize on the specified requisition.",
+            description = "Performs an import or synchronize on the specified requisition. This turns the \"active\" requisition into a \"deployed\" requisition.",
+            responses = {
+                    @ApiResponse(
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response importRequisition(@Context final UriInfo uriInfo,
+                                      @Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                      @Parameter(description = "If it is newly added or removed. Existing nodes are not scanned until the next rescan interval. This request type is useful when applying changes to a subset of nodes in a requisition.") @QueryParam("rescanExisting") final String rescanExisting) {
         LOG.debug("importRequisition: Importing requisition for foreign source {}", foreignSource);
         m_accessService.importRequisition(foreignSource, rescanExisting);
         return Response.accepted().header("Location", uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
@@ -604,7 +839,22 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update the specified requisition.",
+            description = "Update the specified requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = MultivaluedMapImpl.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response updateRequisition(@Context final UriInfo uriInfo,
+                                      @Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                      @RequestBody(description = "Requisition key/value pairs") final MultivaluedMapImpl params) {
         m_accessService.updateRequisition(foreignSource, params);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
@@ -621,7 +871,23 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update the specified node for the given requisition.",
+            description = "Update the specified node for the given requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = MultivaluedMapImpl.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response updateNode(@Context final UriInfo uriInfo,
+                               @Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                               @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                               @RequestBody(description = "Node key/value pairs")  final MultivaluedMapImpl params) {
         m_accessService.updateNode(foreignSource, foreignId, params);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
@@ -639,7 +905,24 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update the specified IP address for the given node and requisition.",
+            description = "Update the specified IP address for the given node and requisition.",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = MultivaluedMapImpl.class)
+                            ),
+                            headers = @Header(name = "Location"),
+                            responseCode = "202"
+                    )
+            }
+    )
+    public Response updateInterface(@Context final UriInfo uriInfo,
+                                    @Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                    @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                                    @Parameter(required = true) @PathParam("ipAddress") final String ipAddress,
+                                        @RequestBody(description = "Interface key/value pairs") final MultivaluedMapImpl params) {
         m_accessService.updateInterface(foreignSource, foreignId, ipAddress, params);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
@@ -653,7 +936,12 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}")
     @Transactional
-    public Response deletePendingRequisition(@PathParam("foreignSource") final String foreignSource) {
+    @Operation(
+            summary = "Delete the pending requisition for the named foreign source.",
+            description = "Delete the pending requisition for the named foreign source.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deletePendingRequisition(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
         m_accessService.deletePendingRequisition(foreignSource);
         return Response.accepted().build();
     }
@@ -667,7 +955,12 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("deployed/{foreignSource}")
     @Transactional
-    public Response deleteDeployedRequisition(@PathParam("foreignSource") final String foreignSource) {
+    @Operation(
+            summary = "Delete the active requisition for the named foreign source.",
+            description = "Delete the active requisition for the named foreign source.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteDeployedRequisition(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
         m_accessService.deleteDeployedRequisition(foreignSource);
         return Response.accepted().build();
     }
@@ -682,7 +975,13 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}")
     @Transactional
-    public Response deleteNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) {
+    @Operation(
+            summary = "Delete the node with the given foreign ID from the given requisition.",
+            description = "Delete the node with the given foreign ID from the given requisition.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteNode(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                               @Parameter(required = true) @PathParam("foreignId") final String foreignId) {
         m_accessService.deleteNode(foreignSource, foreignId);
         return Response.accepted().build();
     }
@@ -698,7 +997,14 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Transactional
-    public Response deleteInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") String ipAddress) {
+    @Operation(
+            summary = "Delete the IP address from the requisitioned node with the given foreign ID.",
+            description = "Delete the IP address from the requisitioned node with the given foreign ID.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteInterface(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                    @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                                    @Parameter(required = true) @PathParam("ipAddress") String ipAddress) {
         m_accessService.deleteInterface(foreignSource, foreignId, ipAddress);
         return Response.accepted().build();
     }
@@ -715,7 +1021,15 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Transactional
-    public Response deleteInterfaceService(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") final String service) {
+    @Operation(
+            summary = "Delete the service from the requisitioned interface with the given IP address and foreign ID.",
+            description = "Delete the service from the requisitioned interface with the given IP address and foreign ID.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteInterfaceService(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                           @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                                           @Parameter(required = true) @PathParam("ipAddress") final String ipAddress,
+                                           @Parameter(required = true) @PathParam("service") final String service) {
         m_accessService.deleteInterfaceService(foreignSource, foreignId, ipAddress, service);
         return Response.accepted().build();
     }
@@ -731,7 +1045,14 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Transactional
-    public Response deleteCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) {
+    @Operation(
+            summary = "Delete the category from the node with the given foreign ID.",
+            description = "Delete the category from the node with the given foreign ID.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteCategory(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource,
+                                   @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                                   @Parameter(required = true) @PathParam("category") final String category) {
         m_accessService.deleteCategory(foreignSource, foreignId, category);
         return Response.accepted().build();
     }
@@ -747,7 +1068,14 @@ public class RequisitionRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Transactional
-    public Response deleteAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) {
+    @Operation(
+            summary = "Delete the field from the node’s assets with the given foreign ID and asset name.",
+            description = "Delete the field from the node’s assets with the given foreign ID and asset name.",
+            responses = @ApiResponse(responseCode = "202")
+    )
+    public Response deleteAssetParameter(@Parameter(required = true)  @PathParam("foreignSource") final String foreignSource,
+                                         @Parameter(required = true) @PathParam("foreignId") final String foreignId,
+                                         @Parameter(required = true) @PathParam("parameter") final String parameter) {
         m_accessService.deleteAssetParameter(foreignSource, foreignId, parameter);
         return Response.accepted().build();
     }
