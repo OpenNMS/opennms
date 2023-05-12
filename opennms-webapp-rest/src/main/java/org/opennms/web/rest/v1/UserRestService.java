@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
@@ -69,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("userRestService")
 @Path("users")
+@Tag(name = "Users", description = "Users API")
 @Transactional
 public class UserRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestService.class);

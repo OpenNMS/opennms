@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
@@ -89,6 +90,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
+@Tag(name = "Alarms", description = "Alarms API")
 public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
 
     @Autowired

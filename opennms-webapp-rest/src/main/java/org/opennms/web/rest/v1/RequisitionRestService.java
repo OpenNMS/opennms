@@ -54,6 +54,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
@@ -129,6 +130,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("requisitionRestService")
 @Path("requisitions")
+@Tag(name = "Requisitions", description = "Requisitions API")
 public class RequisitionRestService extends OnmsRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionRestService.class);
