@@ -28,6 +28,8 @@
 
 package org.opennms.core.db;
 
+import static org.junit.Assert.assertTrue;
+
 import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,82 +39,28 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-
-import junit.framework.TestCase;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class C3P0ConnectionFactoryIT extends TestCase {
+public class C3P0ConnectionFactoryIT {
+    @Test
     public void testMarshalDataSourceFromConfig() throws Exception {
-        C3P0ConnectionFactory factory1 = null;
-        C3P0ConnectionFactory factory2 = null;
-        
-        try {
-        	factory1 = makeFactory("opennms");
-        	factory2 = makeFactory("opennms2");
-
-        	Connection conn = null;
-        	Statement s = null;
-        	try {
-        		conn = factory2.getConnection();
-        		s = conn.createStatement();
-        		s.execute("select * from pg_proc");
-        	} finally {
-        		if (s != null) {
-        			s.close();
-        		}
-        		if (conn != null) {
-        			conn.close();
-        		}
-        	}
+        C3P0ConnectionFactory factory1 = makeFactory("opennms");
+        C3P0ConnectionFactory factory2 = makeFactory("opennms2");
+        try (
+            final Connection conn = factory2.getConnection();
+            final Statement s = conn.createStatement();
+        ) {
+            assertTrue("execute should pass and a result set", s.execute("select * from pg_proc"));
         } finally {
-        	Throwable t1 = null;
-        	Throwable t2 = null;
-        	
-    		if (factory1 != null) {
-    			try {
-    				factory1.close();
-    				factory1 = null;
-    			} catch (Throwable e1) {
-    				t1 = e1;
-    			}
-    		}
-
-    		if (factory2 != null) {
-    			try {
-    				factory2.close();
-    				factory2 = null;
-    			} catch (Throwable e2) {
-    				t2 = e2;
-    			}
-    		}
-    		
-    		if (t1 != null || t2 != null) {
-    			final StringBuilder message = new StringBuilder();
-    			message.append("Could not successfully close both C3P0 factories.  Future tests might fail.");
-    			
-    			Throwable choice;
-    			if (t1 != null) {
-    				message.append("  First factory failed with: " + t1.getMessage() + "; see stack back trace.");
-    				choice = t1;
-    				
-    				if (t2 != null) {
-    					System.err.println("  Both factories failed to close.  See stderr for second stack back trace.");
-    					t2.printStackTrace(System.err);
-    				}
-    			} else {
-    				choice = t2;
-    			}
-    			AssertionError e = new AssertionError(message.toString());
-    			e.initCause(choice);
-    			throw e;
-    		}
+            factory1.close();
+            factory2.close();
         }
     }
 
@@ -156,13 +104,9 @@ public class C3P0ConnectionFactoryIT extends TestCase {
         final StringWriter sw = new StringWriter();
         JaxbUtils.marshal(config, sw);
         final String configString = sw.toString();
-
-        InputStream stream = new ByteArrayInputStream(configString.getBytes());
-        final DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
-        try {
+        try (final InputStream stream = new ByteArrayInputStream(configString.getBytes())) {
+            final DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
             return new C3P0ConnectionFactory(factory.getJdbcDataSource(database));
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 }
