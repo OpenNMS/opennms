@@ -100,7 +100,7 @@ retry sudo apt update && \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
 ulimit -n 65536
