@@ -1496,7 +1496,7 @@
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx2g</argLineMemory>
+    <argLineMemory>-Xmx4g -XX:ReservedCodeCacheSize=1g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
