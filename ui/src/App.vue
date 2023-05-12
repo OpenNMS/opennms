@@ -13,6 +13,9 @@
         </keep-alive>
       </router-view>
     </div>
+    <template v-slot:footer>
+      <Footer />
+    </template>
   </FeatherAppLayout>
 </template>
 
@@ -22,6 +25,7 @@
 >
 import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
+import Footer from './components/Layout/Footer.vue'
 import Menubar from './components/Layout/Menubar.vue'
 import Spinner from './components/Common/Spinner.vue'
 import Snackbar from '@/components/Common/Snackbar.vue'
