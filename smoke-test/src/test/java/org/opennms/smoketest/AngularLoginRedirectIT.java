@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -73,7 +72,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             this.url = Objects.requireNonNull(url);
             this.verifyPageLoaded = Objects.requireNonNull(verifyPageLoaded);
             this.actionToPerform = Objects.requireNonNull(actionToPerform);
-            this.actionToPerformAfterLogout = actionToPerformAfterLogout;
+            this.actionToPerformAfterLogout = actionToPerformAfterLogout == null? actionToPerform : actionToPerformAfterLogout;
         }
     }
 
@@ -135,7 +134,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
 
             // Logout (via HttpGet, so we are still on the page)
             LOG.info("{}: Simulate session timeout", eachCheck.url);
-            simulateSessionTimeout();
+            simulateSessionTimeout(eachCheck.url);
             sleep(SLEEP_TIME);
 
             // Verify we are still on the page
@@ -146,11 +145,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             // Run action (again or an individual one), which should still pass
             LOG.info("{}: Perform action again. Should redirect to login page.", eachCheck.url);
             try {
-                if (eachCheck.actionToPerformAfterLogout != null) {
-                    eachCheck.actionToPerformAfterLogout.run();
-                } else {
-                    eachCheck.actionToPerform.run();
-                }
+                eachCheck.actionToPerformAfterLogout.run();
             } catch(Exception e) {
                 // Sometimes we get logged out directly so the actionToPerform might fail.
                 // This is fine as long as the logout itself happened which we test below.
@@ -160,17 +155,19 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             // Verify we have been forwarded to the login page
             new WebDriverWait(driver, Duration.ofSeconds(5)).until(input -> {
                     LOG.info("{}: Verify redirect to login.jsp occurred", eachCheck.url);
-                    return driver.getCurrentUrl().matches("http://opennms:8980/opennms/login\\.jsp[?;].*");
+                    return driver.getCurrentUrl().matches("http://opennms:8980/opennms/login\\.jsp");
                 }
             );
             LOG.info("{}: Test passed", eachCheck.url);
         }
     }
 
-    private void simulateSessionTimeout() throws IOException {
+    private void simulateSessionTimeout(final String url) throws IOException {
         final Set<Cookie> cookies = driver.manage().getCookies();
         for (Cookie eachCookie : cookies) {
+            LOG.info("{}: simulateSessionTimeout handling cookie: {}={}", url, eachCookie.getName(), eachCookie.getValue());
             if (eachCookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                LOG.info("{}: simulateSessionTimeout found JSESSIONID, attempting to log out", url);
                 final HttpPost httpPost = new HttpPost(getBaseUrlExternal() + "opennms/j_spring_security_logout");
                 httpPost.addHeader("Cookie", eachCookie.getName() + "=" + eachCookie.getValue());
 
@@ -178,6 +175,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
                      CloseableHttpResponse response = client.execute(httpPost)
                 ) {
                     assertEquals(302, response.getStatusLine().getStatusCode());
+                    LOG.info("{}: simulateSessionTimeout successfully logged out, redirected to {}", url, response.getFirstHeader("Location"));
                 }
             }
         }
