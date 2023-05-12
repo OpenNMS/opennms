@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,8 @@ import org.springframework.core.io.Resource;
 public class TimeTrackingMonitorTest {
 
     @Test
-    public void testAll() {
+    @SuppressWarnings("java:S2925")
+    public void testAll() throws InterruptedException {
         MetricRegistry registry = new MetricRegistry();
         TimeTrackingMonitor monitor = new TimeTrackingMonitor("test", registry);
         DeleteOperation dummyOperation = new DeleteOperation(0, null, null, null);
@@ -51,6 +52,7 @@ public class TimeTrackingMonitorTest {
         Assert.assertEquals(1, monitor.getAuditTimer().getCount());
 
         monitor.beginImporting();
+        Thread.sleep(1);
         monitor.finishImporting();
         Assert.assertEquals(1, monitor.getImportTimer().getCount());
 
@@ -63,17 +65,19 @@ public class TimeTrackingMonitorTest {
         Assert.assertEquals(1, monitor.getPersistingTimer().getCount());
 
         monitor.beginLoadingResource(dummyResource);
+        Thread.sleep(1);
         monitor.finishLoadingResource(dummyResource, 10);
         Assert.assertEquals(1, monitor.getLoadingTimer().getCount());
         Assert.assertEquals(10, monitor.getNodeCount());
 
         monitor.beginScanning(dummyNodeScan);
         Assert.assertTrue(monitor.getCurrentNodes().containsKey(dummyNodeScan));
+        Thread.sleep(1);
         monitor.finishScanning(dummyNodeScan);
         Assert.assertEquals(1, monitor.getScanningTimer().getCount());
         Assert.assertEquals(0, monitor.getCurrentNodes().size());
 
         monitor.finish();
-        Assert.assertTrue(monitor.getEndTime().after(monitor.getStartTime()));
+        Assert.assertTrue(String.format("%s is not after %s!", monitor.getEndTime(), monitor.getStartTime()), monitor.getEndTime().after(monitor.getStartTime()));
     }
 }
