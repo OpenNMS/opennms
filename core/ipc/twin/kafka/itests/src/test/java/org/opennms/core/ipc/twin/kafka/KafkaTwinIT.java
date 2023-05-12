@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,14 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.core.ipc.twin.kafka;
-
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
-
+import java.time.Duration;
 import java.util.Properties;
-
 import com.codahale.metrics.MetricRegistry;
 import io.opentracing.util.GlobalTracer;
 import org.junit.Rule;
@@ -55,17 +52,14 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
 })
 @JUnitConfigurationEnvironment
 public class KafkaTwinIT extends AbstractTwinBrokerIT {
-
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
-
     @Override
     protected TwinPublisher createPublisher() throws Exception {
         final KafkaConfigProvider config = () -> {
@@ -79,18 +73,10 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry, new MetricRegistry());
         final var kafkaTwinPublisher = new KafkaTwinPublisher(localTwinSubscriber, config, tracerRegistry, new MetricRegistry());
         kafkaTwinPublisher.init();
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return kafkaTwinPublisher;
     }
-
     @Override
-    protected TwinSubscriber createSubscriber(final MinionIdentity identity) {
+    protected TwinSubscriber createSubscriber(final MinionIdentity identity) throws InterruptedException {
         final KafkaConfigProvider config = () -> {
             final var properties = new Properties();
             properties.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
@@ -102,35 +88,20 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         try {
             kafkaTwinSubscriber.init();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return kafkaTwinSubscriber;
     }
-
     @Test
     public void retryTest() throws Exception {
         // This test is kafka-specific for now.
         // There is no generic way to stop/break other message brokers.
-
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
-
         this.kafkaServer.stopKafkaServer();
-
-        Thread.sleep(5000);
-
         final var tracker = Tracker.subscribe(this.createSubscriber(new MockMinionIdentity("Default")), "test", String.class);
-
         this.kafkaServer.startKafkaServer();
-
         // Ensure Test1 is received.
-        await().until(tracker::getLog, contains("Test1"));
+        await().atMost(ONE_MINUTE).until(tracker::getLog, contains("Test1"));
     }
 }

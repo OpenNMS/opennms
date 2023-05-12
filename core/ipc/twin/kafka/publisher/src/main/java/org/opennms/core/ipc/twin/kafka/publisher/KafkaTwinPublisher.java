@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,14 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.core.ipc.twin.kafka.publisher;
-
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
-
 import com.codahale.metrics.MetricRegistry;
 import io.opentracing.References;
 import io.opentracing.Scope;
@@ -62,39 +59,30 @@ import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
-
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX;
 import static org.opennms.core.ipc.common.kafka.KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX;
-
 public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTwinPublisher.class);
-
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
-
     private final KafkaConfigProvider kafkaConfigProvider;
-
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumerRunner;
-
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this(localTwinSubscriber, new OnmsKafkaConfigProvider(KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX), tracerRegistry, metricRegistry);
     }
-
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
                               final KafkaConfigProvider kafkaConfigProvider,
                               final TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         super(localTwinSubscriber, tracerRegistry, metricRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
-
-    public void init() throws Exception {
+    public void init() {
         final var kafkaConfig = new Properties();
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
@@ -107,16 +95,13 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
             LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
             this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-
             final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
             consumer.subscribe(ImmutableList.<String>builder()
                     .add(Topic.request())
                     .build());
-
             this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
         }
     }
-
     public void close() throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
             if (this.consumerRunner != null) {
@@ -127,18 +112,15 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
             }
         }
     }
-
     @Override
     protected void handleSinkUpdate(final TwinUpdate sinkUpdate) {
         try {
             final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
                     ? Topic.responseGlobal()
                     : Topic.responseForLocation(sinkUpdate.getLocation());
-
             final var proto = mapTwinResponse(sinkUpdate);
-
-            final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
-            this.producer.send(record, (meta, ex) -> {
+            final var rec = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
+            this.producer.send(rec, (meta, ex) -> {
                 if (ex != null) {
                     RATE_LIMITED_LOG.error("Error publishing update", ex);
                 }
@@ -147,16 +129,17 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
             LOG.error("Exception while sending update for key {} at location {} ", sinkUpdate.getKey(), sinkUpdate.getLocation());
         }
     }
-
-    private void handleMessage(final ConsumerRecord<String, byte[]> record) {
+    private void handleMessage(final ConsumerRecord<String, byte[]> consumerRecord) {
         try {
-            final TwinRequest request = mapTwinRequestProto(record.value());
+            final TwinRequest request = mapTwinRequestProto(consumerRecord.value());
             String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                     tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
-            try (Scope scope = spanBuilder.startActive(true)) {
+            final var span = spanBuilder.start();
+            final var scopeManager = getTracer().scopeManager();
+            try (final Scope scope = scopeManager.activate(span)) {
                 final var response = this.getTwin(request);
-                addTracingInfo(scope.span(), response);
+                addTracingInfo(scopeManager.activeSpan(), response);
                 this.handleSinkUpdate(response);
             }
         } catch (Exception e) {
