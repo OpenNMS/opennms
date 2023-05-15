@@ -103,6 +103,8 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
 Provides:	opennms-plugin-api = %{opa_version}
+Provides:	%{name}-contrib = %{version}-%{release}
+Obsoletes:	%{name}-contrib < %{version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
@@ -662,9 +664,6 @@ find %{buildroot}%{sharedir} ! -type d | \
 find %{buildroot}%{instprefix}/agent ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	sort >> %{_tmppath}/files.main
-find %{buildroot}%{instprefix}/contrib ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
-	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jradius' | \
@@ -687,7 +686,6 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 # Put the agent, bin, etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/agent \
 	%{buildroot}%{instprefix}/bin \
-	%{buildroot}%{instprefix}/contrib \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
 	%{buildroot}%{instprefix}/system \
