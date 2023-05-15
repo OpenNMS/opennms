@@ -60,7 +60,7 @@
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "marked": "^4.0.18",
-    "pinia": "^2.0.18",
+    "pinia": "^2.0.36",
     "rapidoc": "^9.3.3",
     "sass": "^1.54.4",
     "sass-loader": "^13.0.2",
