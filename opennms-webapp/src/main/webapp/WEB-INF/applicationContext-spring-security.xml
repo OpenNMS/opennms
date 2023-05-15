@@ -10,6 +10,9 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
   
   <http pattern="/rest/alarms/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS,','ROLE_REST,','ROLE_ADMIN,','ROLE_USER,','ROLE_MOBILE,','ROLE_FILESYSTEM_EDITOR')"/>
 
