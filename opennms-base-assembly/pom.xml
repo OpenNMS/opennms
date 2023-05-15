@@ -22,14 +22,14 @@
         <filtering>true</filtering>
         <directory>${project.build.directory}/cli</directory>
         <excludes>
-          <exclude>bin/_lib.sh</exclude>
+          <exclude>bin/_*.sh</exclude>
         </excludes>
       </resource>
       <resource>
         <filtering>false</filtering>
         <directory>${project.build.directory}/cli</directory>
         <includes>
-          <include>bin/_lib.sh</include>
+          <include>bin/_*.sh</include>
         </includes>
       </resource>
     </resources>

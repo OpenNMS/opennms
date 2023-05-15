@@ -30,7 +30,7 @@ for CONTAINER in \
   "cassandra:3.11.2" \
   "confluentinc/cp-kafka:5.2.1" \
   "confluentinc/cp-kafka:latest" \
-  "docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0" \
+  "docker.elastic.co/elasticsearch/elasticsearch:7.17.9" \
   "opennms/dummy-http-endpoint:0.0.2" \
   "postgres:10.7-alpine" \
   "postgres:latest" \
@@ -48,7 +48,7 @@ done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
-export MAVEN_OPTS="-Xmx1g -Xms1g"
+export MAVEN_OPTS="-Xmx2g -Xms2g"
 
 # shellcheck disable=SC3045
 # Set higher open files limit

@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -101,6 +101,7 @@ public class UsageStatisticsReportDTO {
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
+    private boolean m_inContainer;
     public int getNotifications() {return notifications;}
 
     public void setNotifications(int notifications) {this.notifications = notifications;}
@@ -520,6 +521,14 @@ public class UsageStatisticsReportDTO {
 
     public Map<String, Long> getApplianceCounts() {
         return m_applianceCounts;
+    }
+
+    public void setInContainer(final boolean inContainer) {
+        m_inContainer = inContainer;
+    }
+
+    public boolean isInContainer() {
+        return m_inContainer;
     }
 
     public void setApplianceCounts(Map<String, Long> applianceCounts) {

@@ -429,7 +429,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>keytool-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
         <executions>
           <execution>
             <goals>
@@ -442,6 +442,7 @@
           <workingDirectory>${project.build.directory}</workingDirectory>
           <skipIfExist>true</skipIfExist>
           <keystore>${test.keystore}</keystore>
+          <keyalg>RSA</keyalg>
           <storepass>${test.storepass}</storepass>
           <alias>${test.keyalias}</alias>
           <keypass>${test.keypass}</keypass>
@@ -593,7 +594,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -716,7 +717,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.5.0</version>
         <configuration>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
@@ -1118,7 +1119,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,12)</version>
+                 <version>[11,18)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1139,11 +1140,13 @@
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
 
-                   <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
+                   <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm:* -->
+                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- doesn't exist anymore, use individual deps -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
+                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: javax.mail:mail -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
@@ -1393,7 +1396,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.20.0</version>
         <configuration>
             <targetJdk>1.8</targetJdk>
             <rulesets>
@@ -1448,7 +1451,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.3.0</version>
       </plugin>
 <!--
       <plugin>
@@ -1475,8 +1478,18 @@
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx2g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLineMemory>-Xmx4g -XX:ReservedCodeCacheSize=1g</argLineMemory>
+    <argLineAllowReflection>--add-opens java.base/java.lang=ALL-UNNAMED
+        --add-opens=java.desktop/java.beans=ALL-UNNAMED
+        --add-opens=java.base/java.io=ALL-UNNAMED
+        --add-opens=java.base/java.math=ALL-UNNAMED
+        --add-opens=java.base/java.util=ALL-UNNAMED
+        --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+        --add-opens=java.base/java.util.regex=ALL-UNNAMED
+        --add-opens=java.base/java.net=ALL-UNNAMED
+        --add-opens=java.base/java.text=ALL-UNNAMED
+        --add-opens=java.sql/java.sql=ALL-UNNAMED</argLineAllowReflection>
+    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom ${argLineAllowReflection}</argLine>
     <skipITs>true</skipITs>
     <runPingTests>false</runPingTests>
 
@@ -1585,19 +1598,18 @@
 
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
-    <args4jVersion>2.32</args4jVersion>
-    <asmVersion>5.0.4</asmVersion>
+    <args4jVersion>2.33</args4jVersion>
+    <asmVersion>9.5</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.16</batikVersion>
-    <bouncyCastleVersion>1.68</bouncyCastleVersion>
+    <bouncyCastleVersion>1.72</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.19.1</camelVersion>
-    <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
     <!-- Match Newts version -->
-    <cassandraVersion>3.11.2</cassandraVersion>
+    <cassandraVersion>4.15.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.15</commonsCodecVersion>
@@ -1615,36 +1627,39 @@
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.9.0</commonsNetVersion>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
-    <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
+    <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <curatorTestVersion>2.9.1</curatorTestVersion>
+    <curatorTestVersion>5.4.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dom4jVersion>2.1.3</dom4jVersion>
-    <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
+    <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
-    <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
-    <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
+    <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
+    <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+    <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
-    <felixBridgeVersion>4.0.4</felixBridgeVersion>
-    <felixProxyVersion>3.0.4</felixProxyVersion>
+    <felixBridgeVersion>4.1.6</felixBridgeVersion>
+    <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
-    <freemarkerVersion>2.3.23</freemarkerVersion>
-    <fstVersion>2.47</fstVersion>
+    <freemarkerVersion>2.3.32</freemarkerVersion>
+    <fstVersion>2.57</fstVersion>
+    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
+    <objenesisVersion>2.5.1</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>3.0.14</groovyVersion>
+    <groovyVersion>3.0.17</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>25.1-jre</guavaVersion>
-    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
+    <guavaVersion>31.1-jre</guavaVersion>
+    <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1652,8 +1667,8 @@
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
-    <httpcoreVersion>4.4.15</httpcoreVersion>
-    <httpclientVersion>4.5.13</httpclientVersion>
+    <httpcoreVersion>4.4.16</httpcoreVersion>
+    <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
@@ -1668,14 +1683,16 @@
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
-    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
-    <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
+    <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
+    <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
+    <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
-    <jcommonVersion>1.0.23</jcommonVersion>
+    <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.48.v20220622</jettyVersion>
+    <jettyVersion>9.4.51.v20230217</jettyVersion>
+    <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1686,7 +1703,7 @@
     <jmhVersion>1.36</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
-    <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
@@ -1700,28 +1717,31 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <junitVintageEngineVersion>5.9.2</junitVintageEngineVersion>
+    <junit4Version>4.13.2</junit4Version>
+    <junit5Version>5.9.2</junit5Version>
+    <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
-    <log4j2Version>2.18.0</log4j2Version>
+    <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.8.8</mavenApiVersion>
+    <mavenApiVersion>3.9.1</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.87.Final</netty4Version>
-    <newtsVersion>1.5.7</newtsVersion>
+    <newtsVersion>3.0.0</newtsVersion>
+    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
-    <pktsVersion>3.0.0</pktsVersion>
+    <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.5.4</postgresqlVersion>
@@ -1734,7 +1754,7 @@
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
+    <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
@@ -1750,7 +1770,6 @@
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
-    <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
@@ -1758,6 +1777,7 @@
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
+    <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
@@ -1779,8 +1799,8 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.5.10</zookeeperVersion>
-    <zookeeper2Version>3.6.3</zookeeper2Version>
+    <zookeeperVersion>3.8.1</zookeeperVersion>
+    <zookeeper2Version>3.8.1</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.8.0</minaSshdVersion>
 
@@ -3529,13 +3549,43 @@
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-all</artifactId>
+        <artifactId>asm</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-bom</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-test</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
         <version>${asmVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.10.11</version>
+        <version>1.10.13</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -4435,9 +4485,9 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>jakarta.mail</artifactId>
-        <version>1.6.7</version>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${javaxMailVersion}</version>
       </dependency>
       <!-- functionally identical to com.sun.activation:javax.activation:1.2.0, don't upgrade further until we can excise other versions -->
       <!-- yes, that means even 1.2.2, which added a module-info.java and technically could change some things, in theory (at least until it's out of $OPENNMS_HOME/lib) -->
@@ -4494,6 +4544,11 @@
         <version>${dropwizardMetricsVersion}</version>
       </dependency>
       <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
+        <version>${dropwizardMetricsVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>${jdom2Version}</version>
@@ -4530,12 +4585,37 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jaas</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jaspi</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jmx</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-jndi</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>apache-jstl</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-rewrite</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -4555,7 +4635,17 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlets</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util-ajax</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -4571,11 +4661,6 @@
       <dependency>
         <groupId>org.eclipse.jetty.aggregate</groupId>
         <artifactId>jetty-all-server</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-rewrite</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -4656,7 +4741,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13.2</version>
+        <version>${junit4Version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4668,7 +4753,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>hamcrest-pojo</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4723,6 +4808,16 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
@@ -5152,12 +5247,12 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
+        <artifactId>bcpkix-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
+        <artifactId>bcprov-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>
@@ -5172,9 +5267,21 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit5Version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-engine</artifactId>
+        <version>${junit5PlatformVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>${junitVintageEngineVersion}</version>
+        <version>${junit5Version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

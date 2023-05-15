@@ -78,7 +78,7 @@ It sends email notifications to all users in the Admin group.
 NOTE: For `Email-Admin` to work, you have to configure your email server.
 Instructions for this are beyond the scope of the Quick Start guide.
 
-For this example, we will specify a destination path that sends browser pop-up notifications to users in the Admin group (currently, the default `admin` account and the personalized user account that you created in <<quick-start/users.adoc#create-user, Step 1: First-Time Login>>).
+For this example, we will specify a destination path that sends browser pop-up notifications to users in the Admin group (currently, the default `admin` account and the personalized user account that you created in <<quick-start/users.adoc#create-user, Step 1: First-Time Sign In>>).
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, click menu:Configure Notifications[Configure Destination Paths].

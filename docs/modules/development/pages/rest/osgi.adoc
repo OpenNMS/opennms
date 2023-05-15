@@ -18,7 +18,9 @@ First, create a public interface that must contain jax-rs annotations.
 public interface DataChoiceRestService {
 
     @POST <2>
-    void updateCollectUsageStatisticFlag(@Context HttpServletRequest request, @QueryParam("action") String action);
+    @Path("status")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response setStatus(@Context HttpServletRequest request, UsageStatisticsStatusDTO dto);
 
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
@@ -42,8 +44,9 @@ NOTE: The class may or may not repeat the jax-rs annotations from the interface.
 public class DataChoiceRestServiceImpl implements DataChoiceRestService {
 
     @Override
-    public void updateCollectUsageStatisticFlag(HttpServletRequest request, String action) {
-       // do something
+    public Response setStatus(HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException {
+        // do something
+        return Response.accepted().build();
     }
 
     @Override

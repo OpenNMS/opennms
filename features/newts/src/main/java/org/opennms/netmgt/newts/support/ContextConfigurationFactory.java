@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.newts.support;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.cassandra.ContextConfigurations;
-
-import com.datastax.driver.core.ConsistencyLevel;
 
 /**
  * Used to build the {@link org.opennms.newts.cassandra.ContextConfigurations} from the configured
@@ -54,8 +54,8 @@ public class ContextConfigurationFactory {
             final String resourceShardStr, final String readConsistencyStr, final String writeConsistencyStr) {
 
         Duration resourceShard = Duration.seconds(Long.parseLong(resourceShardStr));
-        ConsistencyLevel readConsistency = ConsistencyLevel.valueOf(readConsistencyStr);
-        ConsistencyLevel writeConsistency = ConsistencyLevel.valueOf(writeConsistencyStr);
+        ConsistencyLevel readConsistency = DefaultConsistencyLevel.valueOf(readConsistencyStr);
+        ConsistencyLevel writeConsistency = DefaultConsistencyLevel.valueOf(writeConsistencyStr);
 
         ContextConfigurations contexts = new ContextConfigurations();
         contexts.addContextConfig(Context.DEFAULT_CONTEXT, resourceShard, readConsistency, writeConsistency);

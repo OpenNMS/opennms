@@ -175,13 +175,6 @@
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
-        <!-- jinjava needs a newer guava, we'll make sure it's pulled into the feature -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>25.0-jre</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.opennms.features.geolocation</groupId>
             <artifactId>org.opennms.features.geolocation.api</artifactId>

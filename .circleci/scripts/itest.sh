@@ -91,6 +91,7 @@ retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                openjdk-17-jdk-headless \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -98,8 +99,8 @@ retry sudo apt update && \
                 jicmp6 \
             || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
 ulimit -n 65536
@@ -158,7 +159,6 @@ echo "#### Executing tests"
            "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \

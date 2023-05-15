@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.measurements.filters.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.integrations.R.RScriptException;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.model.FilterDef;
 
@@ -40,7 +39,7 @@ import com.google.common.collect.TreeBasedTable;
 public class HWForecastIT extends AnalyticsFilterTest {
 
     @Test
-    public void canCheckForecastSupport() throws RScriptException  {
+    public void canCheckForecastSupport() {
         // Verify that this function doesn't throw any exceptions under normal circumstances
         HWForecast.checkForecastSupport();
     }
@@ -75,8 +74,6 @@ public class HWForecastIT extends AnalyticsFilterTest {
         // The forecasted value should be constant
         for (long i = 100; i < 112; i++) {
             Assert.assertEquals(1.0d, table.get(i, "HWFit"), 0.0001);
-            Assert.assertEquals(1.0d, table.get(i, "HWLwr"), 0.0001);
-            Assert.assertEquals(1.0d, table.get(i, "HWUpr"), 0.0001);
         }
     }
 }

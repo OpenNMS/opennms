@@ -96,6 +96,26 @@
           </restriction>
         </simpleType>
       </attribute>
+
+      <attribute default="false" name="asyncPollingEngineEnabled" use="optional">
+        <annotation>
+          <documentation>Flag which indicates if the async engine is enabled</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute default="100" name="maxConcurrentAsyncPolls" use="optional">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1" />
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
 
