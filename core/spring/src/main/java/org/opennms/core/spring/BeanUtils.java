@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -150,7 +150,7 @@ public class BeanUtils implements ApplicationContextAware {
                 try {
                     field.setAccessible(true);
                     notNull(field.get(instance), "@Autowired/@Inject/@Resource field " + field.getName() + " cannot be null");
-                    LOG.debug("{} is not null", field.getName());
+                    LOG.trace("{} is not null", field.getName());
                 } catch (IllegalAccessException e) {
                     throw new IllegalArgumentException("Illegal access to @Autowired/@Resource field " + field.getName());
                 }
