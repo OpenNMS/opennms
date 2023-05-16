@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,9 +49,6 @@ public class OpenNMSLoginUrlAuthEntryPoint extends LoginUrlAuthenticationEntryPo
     private static final Logger logger = LoggerFactory.getLogger(OpenNMSLoginUrlAuthEntryPoint.class);
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public OpenNMSLoginUrlAuthEntryPoint() {
-    }
-
     public OpenNMSLoginUrlAuthEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
     }
@@ -68,7 +65,7 @@ public class OpenNMSLoginUrlAuthEntryPoint extends LoginUrlAuthenticationEntryPo
             if (redirectUrl == null) {
                 String loginForm = determineUrlToUseForThisRequest(request, response, authException);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Server side forward to: " + loginForm);
+                    logger.debug("Server side forward to: {}", loginForm);
                 }
                 RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
                 dispatcher.forward(request, response);
@@ -102,7 +99,7 @@ public class OpenNMSLoginUrlAuthEntryPoint extends LoginUrlAuthenticationEntryPo
                 urlBuilder.setScheme("https");
                 urlBuilder.setPort(httpsPort);
             } else {
-                logger.warn("Unable to redirect to HTTPS as no port mapping found for HTTP port " + serverPort);
+                logger.warn("Unable to redirect to HTTPS as no port mapping found for HTTP port {}", serverPort);
             }
         }
         return urlBuilder.getUrl();

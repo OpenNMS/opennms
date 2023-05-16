@@ -281,8 +281,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
         enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-        findElementByName("Login").click();
+        clickElement(By.name("Login"));
 
+        wait.until((WebDriver driver) -> {
+            return ! driver.getCurrentUrl().contains("login.jsp");
+        });
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
         invokeWithImplicitWait(0, () -> {
             try {

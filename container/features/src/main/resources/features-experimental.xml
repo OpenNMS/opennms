@@ -138,7 +138,7 @@
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
 
-      <feature>spring-security32</feature>
+      <feature>spring-security-opennms</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
 
       <!-- The main webapp WAR file -->
