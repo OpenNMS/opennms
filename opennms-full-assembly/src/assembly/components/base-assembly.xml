@@ -16,9 +16,6 @@
       </includes>
       <unpackOptions>
         <excludes>
-          <!-- contrib -->
-          <exclude>contrib/**/*</exclude>
-
           <!-- northbounders -->
           <exclude>lib/*alarm-northbounder-jms*</exclude>
 
