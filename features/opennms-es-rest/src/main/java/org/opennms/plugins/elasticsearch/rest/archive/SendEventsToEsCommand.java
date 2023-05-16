@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,10 +66,10 @@ public class SendEventsToEsCommand implements Action {
 	@Option(name = "--offset", description = "Offset for starting events")
 	int offset = 0;
 
-	@Option(name = "--username", description = "Password for OpenNMS ReST interface")
+	@Option(name = "--username", description = "Username for OpenNMS ReST interface")
 	String username = null;
 
-	@Option(name = "--password", description = "Username for OpenNMS ReST interface")
+	@Option(name = "--password", description = "Password for OpenNMS ReST interface")
 	String password = null;
 
 	@Option(name = "--url", description = "URL of OpenNMS ReST interface to retrieve events to send")
