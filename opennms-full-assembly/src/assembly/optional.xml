@@ -13,6 +13,5 @@
     <componentDescriptor>src/assembly/components/nsclient.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/xml-contrib.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
