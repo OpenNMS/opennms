@@ -76,7 +76,7 @@ import org.opennms.web.servlet.MissingParameterException;
  */
 public class AlarmQueryServlet extends HttpServlet {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 9140535159580534211L;
 
@@ -84,7 +84,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link AlarmFilterController AlarmFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[] { "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category" };
+    protected static String[] IGNORE_LIST = new String[]{"alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category", "_csrf"};
 
     /**
      * The URL for the {@link AlarmFilterController AlarmFilterController}. The
@@ -115,7 +115,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * the {@link AlarmFilterController AlarmFilterController}.
      */
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<>();
 
         // convenient syntax for AlarmTextFilter
