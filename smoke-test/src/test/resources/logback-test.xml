@@ -9,9 +9,9 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="org.testcontainers" level="DEBUG"/>
     <!-- The following logger can be used for containers logs since 1.18.0 -->
-    <logger name="tc" level="INFO"/>
+    <logger name="tc" level="DEBUG"/>
 
     <!-- Apache HTTPClient from the Java Docker stuff is _terribly_ noisy -->
     <logger name="com.github.dockerjava" level="WARN"/>
