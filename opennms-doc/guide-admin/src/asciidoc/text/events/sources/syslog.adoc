@@ -25,7 +25,7 @@ Different parsers can be used to convert the syslog message fields into {opennms
 ====== RadixTreeSyslogParser
 
 The `RadixTreeSyslogParser` normally uses a set of internally-defined patterns to parse multiple syslog message formats.
-If you wish to customize the set of patterns, you can put a new set of patterns into a `syslog-grok-patterns.txt` in the `etc` directory for {opennms-product-name}.
+To customize the set of patterns, modify `$\{OPENNMS_HOME}/etc/syslogd-grok-patterns.txt`.
 
 The patterns are defined in _grok_-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
 Whitespace in the pattern will match 0...n whitespace characters and character literals in the pattern will match the corresponding characters.
