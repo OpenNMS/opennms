@@ -42,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -66,6 +67,7 @@ import com.google.common.base.Strings;
 
 @Component("assetRecordResource")
 @Path("assetRecord")
+@Tag(name = "Asset Records", description = "Asset Records API")
 @Transactional
 public class AssetRecordResource extends OnmsRestService {
 

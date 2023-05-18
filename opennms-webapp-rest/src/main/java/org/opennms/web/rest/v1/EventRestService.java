@@ -52,6 +52,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -69,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("eventRestService")
 @Path("events")
+@Tag(name = "Events", description = "Events API")
 public class EventRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(EventRestService.class);
     private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();

@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.HeatMapDTOCollection;
@@ -55,6 +56,7 @@ import com.google.common.collect.Lists;
 
 @Component("heatMapRestService")
 @Path("heatmap")
+@Tag(name = "Heatmap", description = "Heatmap API")
 public class HeatMapRestService extends OnmsRestService {
     /**
      * Property and default value for category filtering

@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -53,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("perspectivepoller")
 @Transactional
+@Tag(name = "PerspectivePoller", description = "Perspective Poller API")
 public class ApplicationStatusRestService {
 
     @Autowired
