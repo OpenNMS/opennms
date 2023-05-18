@@ -58,7 +58,7 @@ If you set more than one Kafka node as `bootstrap.servers` the driver attempts t
 If that is successful, the whole broker topology will be discovered and will be known by the client.
 The other entries are used only if the connection to the first entry fails.
 
-Any valid Kafka configuration property can be used.
+You can use any valid Kafka configuration property.
       An example using SASL/SCRAM with TLS:
 
 [source, karaf]
