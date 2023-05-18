@@ -38,7 +38,7 @@ STOP_TIMEOUT=36
 JAVA_INITIAL_HEAP_SIZE=""
 
 # Maximum heap size (-Xmx) in megabytes
-JAVA_HEAP_SIZE="2048"
+JAVA_HEAP_SIZE=4096
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -773,12 +773,25 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
-if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ];then
+ if [[ "$JAVA_INITIAL_HEAP_SIZE" =~ [0-9] ]];then
+    if [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ];then
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+    fi
+ else
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}")
+ fi
 fi
 
-if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+
+#if [ -z "$JAVA_HEAP_SIZE" ]; then
+#  JAVA_HEAP_SIZE=4096
+#fi
+if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+ else
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
