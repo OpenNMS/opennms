@@ -33,7 +33,7 @@ You can use parsers to convert syslog message fields into {page-component-title}
 === RadixTreeSyslogParser
 
 The `RadixTreeSyslogParser` normally uses a set of internally defined patterns to parse multiple syslog message formats.
-To customize the set of patterns, modify `$\{OPENNMS_HOME}/etc/syslog-grok-patterns.txt`.
+To customize the set of patterns, modify `$\{OPENNMS_HOME}/etc/syslogd-grok-patterns.txt`.
 
 The patterns are defined in Grok-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
 Whitespace in the pattern will match `0...n` whitespace characters, and character literals in the pattern will match the corresponding characters.
