@@ -76,7 +76,8 @@ NOTE: You can configure module-specific values for modules `sink`, `rpc`, and `t
 
 Exit the Karaf shell with kbd:[Ctrl+d]
 
-By default, the minion will use a topic prefix of `OpenNMS`. If you chose to use a different prefix in core, for instance, to use a single Apache Kafka cluster with multiple {page-component-title} instances, change the topic prefix by setting the `org.opennms.instance.id` system property in `$MINION_HOME/etc/custom.system.properties`, like so:
+By default, the Minion will use a topic prefix of `OpenNMS`.
+If you chose to use a different prefix in core (for instance, to use a single Apache Kafka cluster with multiple {page-component-title} instances), change the topic prefix by setting the `org.opennms.instance.id` system property in `$MINION_HOME/etc/custom.system.properties`:
 [source, properties]
 ----
 org.opennms.instance.id=MyNMS<1>
