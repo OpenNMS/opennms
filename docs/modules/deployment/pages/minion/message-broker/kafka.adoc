@@ -59,7 +59,7 @@ If that is successful, the whole broker topology will be discovered and will be 
 The other entries are used only if the connection to the first entry fails.
 
 You can use any valid Kafka configuration property.
-      An example using SASL/SCRAM with TLS:
+The following example uses SASL/SCRAM with TLS:
 
 [source, karaf]
 ----
