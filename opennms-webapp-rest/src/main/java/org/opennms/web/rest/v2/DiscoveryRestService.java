@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -62,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("discovery")
 @Transactional
+@Tag(name = "Discovery", description = "Discovery API")
 public class DiscoveryRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(org.opennms.web.rest.v2.DiscoveryRestService.class);

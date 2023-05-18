@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -67,6 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("alarmStatsRestService")
 @Path("stats/alarms")
+@Tag(name = "Alarms Stats", description = "Alarms Stats API")
 @Transactional
 public class AlarmStatsRestService extends AlarmRestServiceBase {
 

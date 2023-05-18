@@ -47,6 +47,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGroup;
@@ -71,6 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("groupRestService")
 @Path("groups")
+@Tag(name = "Groups", description = "Groups API")
 @Transactional
 public class GroupRestService extends OnmsRestService {
 	

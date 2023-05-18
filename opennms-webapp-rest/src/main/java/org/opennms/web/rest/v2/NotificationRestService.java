@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -62,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("notifications")
 @Transactional
+@Tag(name = "Notifications", description = "Notifications API")
 public class NotificationRestService extends AbstractDaoRestService<OnmsNotification,SearchBean,Integer,Integer> {
 
     @Autowired

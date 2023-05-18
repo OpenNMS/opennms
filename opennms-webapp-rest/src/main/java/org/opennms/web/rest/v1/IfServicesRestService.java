@@ -43,6 +43,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -90,6 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("ifServicesRestService")
 @Path("ifservices")
+@Tag(name = "Ifservices", description = "Ifservices API")
 @Transactional
 public class IfServicesRestService extends OnmsRestService {
 
