@@ -446,7 +446,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         if(Objects.isNull(smiType)){
             return null;
         }
-        if(smiType.getId().equalsIgnoreCase("CounterBasedGauge64")){
+        if(!Objects.isNull(smiType.getId()) && smiType.getId().equalsIgnoreCase("CounterBasedGauge64")){
             return "gauge";
         }
         final SmiPrimitiveType type = smiType.getPrimitiveType();

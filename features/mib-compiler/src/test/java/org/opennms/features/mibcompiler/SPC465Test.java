@@ -117,12 +117,12 @@ public class SPC465Test {
      * @throws Exception the exception
      */
     @Test
-    public void testJuniperIfMib() throws Exception {
-        if (parser.parseMib(new File(MIB_DIR, "JUNIPER-IF-MIB.mib"))) {
-            Assert.fail("The JUNIPER-IF-MIB.mib must contain problems");
+    public void testBcnDnsMib() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "BCN-DNS-MIB.mib"))) {
+            Assert.fail("The BCN-DNS-MIB.mib must contain problems");
         } else {
             Assert.assertFalse(parser.getMissingDependencies().isEmpty());
-            Assert.assertEquals("[HCNUM-TC]", parser.getMissingDependencies().toString());
+            Assert.assertEquals("[BCN-SMI-MIB]", parser.getMissingDependencies().toString());
         }
     }
 
