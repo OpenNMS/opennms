@@ -1,0 +1,16 @@
+
+= Startup Configuration
+
+{page-component-title} startup scripts source `\$OPENNMS_HOME/etc/opennms.conf` early in their startup, if that file exists.
+
+No `opennms.conf` exists in the default RPM/DEB installation, but `\$OPENNMS_HOME/etc/ examples` includes a sample file that you can use as a starting point.
+
+The most important variables that one might set in `opennms.conf`, include the following:
+
+JAVA_HEAP_SIZE and JAVA_INITIAL_HEAP_SIZE (units are in MB; suffix m added automatically with result passed as -Xmx and -Xms flag to JVM, respectively)
+
+ADDITIONAL_MANAGER_OPTIONS (appended to other JVM startup flags)
+
+MAXIMUM_FILE_DESCRIPTORS (passed to ulimit -n before starting JVM)
+
+MAXIMUM_SIZE_STACK_SEGMENT (passed to ulimit -s before starting JVM)
