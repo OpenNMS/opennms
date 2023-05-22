@@ -46,6 +46,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataRetrievalFailureException;
 
 public class EventConfDaoReloadTest {
     @Rule
@@ -209,5 +210,73 @@ public class EventConfDaoReloadTest {
 
     private Resource getResourceForRelativePath(String resourceSuffix) {
         return new ClassPathResource("/org/opennms/netmgt/config/eventd/" + resourceSuffix);
+    }
+
+    @Test
+    public void NMS15289_working() throws IOException {
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        assertEquals(3, eventConfDao.getAllEvents().size());
+
+        eventConfDao.setConfigResource(getResourceForRelativePath("NMS-15289/working-eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        // reload should work
+        assertEquals(1, eventConfDao.getAllEvents().size());
+    }
+
+    @Test(expected = DataRetrievalFailureException.class)
+    public void NMS15289_notFound() throws IOException {
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        assertEquals(3, eventConfDao.getAllEvents().size());
+
+        eventConfDao.setConfigResource(getResourceForRelativePath("NMS-15289/broken0-eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        // reload should be skipped
+        assertEquals(3, eventConfDao.getAllEvents().size());
+    }
+
+    @Test(expected = DataRetrievalFailureException.class)
+    public void NMS15289_brokenRoot() throws IOException {
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        assertEquals(3, eventConfDao.getAllEvents().size());
+
+        eventConfDao.setConfigResource(getResourceForRelativePath("NMS-15289/broken1-eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        // reload should be skipped
+        assertEquals(3, eventConfDao.getAllEvents().size());
+    }
+
+    @Test(expected = DataRetrievalFailureException.class)
+    public void NMS15289_brokenChild() throws IOException {
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        assertEquals(3, eventConfDao.getAllEvents().size());
+
+        eventConfDao.setConfigResource(getResourceForRelativePath("NMS-15289/broken2-eventconf.xml"));
+        eventConfDao.afterPropertiesSet();
+        eventConfDao.reload();
+
+        // reload should be skipped
+        assertEquals(3, eventConfDao.getAllEvents().size());
     }
 }

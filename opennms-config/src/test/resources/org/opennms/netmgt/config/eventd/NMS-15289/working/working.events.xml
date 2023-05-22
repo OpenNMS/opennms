@@ -1,0 +1,23 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.2.3.4.5.6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foo/traps/FooBarCondition</uei>
+        <event-label>Trap event: FooBar</event-label>
+        <descr></descr>
+        <logmsg dest="logndisplay">FooBar</logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>
