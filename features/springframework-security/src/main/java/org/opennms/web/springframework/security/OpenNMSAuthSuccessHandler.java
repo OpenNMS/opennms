@@ -39,9 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 
 public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -50,7 +50,7 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        SavedRequest savedRequest = this.requestCache.getRequest(request, response);
+        final DefaultSavedRequest savedRequest = (DefaultSavedRequest) this.requestCache.getRequest(request, response);
 
         // changing JSESSIONID to prevent Session Fixation attacks, see NMS-15310
         request.changeSessionId();
@@ -62,7 +62,7 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             String targetUrlParameter = this.getTargetUrlParameter();
             if (!this.isAlwaysUseDefaultTargetUrl() && (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
                 this.clearAuthenticationAttributes(request);
-                String targetUrl = createTargetURL(request, response);
+                final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
                 this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
                 this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
             } else {
@@ -71,7 +71,6 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             }
         }
     }
-
     private String createTargetURL(HttpServletRequest request, HttpServletResponse response) {
         return Util.calculateUrlBase(request, determineTargetUrl(request, response));
     }
