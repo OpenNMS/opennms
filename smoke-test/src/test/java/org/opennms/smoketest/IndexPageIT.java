@@ -31,19 +31,15 @@ package org.opennms.smoketest;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * The Test Class for the Index Page.
@@ -121,4 +117,16 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         }
     }
 
+    @Test
+    public void verifyDeepLinks() {
+        logout();
+        driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=999999999");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
+        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
+        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        clickElement(By.name("Login"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='Event ID Not Found']")));
+    }
 }

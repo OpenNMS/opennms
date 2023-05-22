@@ -279,12 +279,12 @@
                 password-parameter="j_password"
                 login-processing-url="/j_spring_security_check"
                 authentication-failure-url="/login.jsp?login_error=1"
+                authentication-failure-handler-ref="failureHandler"
+                authentication-success-handler-ref="successHandler"
     />
     <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/>
 
     <!-- added for custom authentication filter -->
-    <custom-filter before="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
-
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
