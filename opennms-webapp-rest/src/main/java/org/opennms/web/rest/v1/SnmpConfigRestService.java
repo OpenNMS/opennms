@@ -42,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpConfigAccessService;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -100,6 +101,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("snmpConfigRestService")
 @Path("snmpConfig")
+@Tag(name = "SnmpConfig", description = "SNMP Config API")
 @Transactional
 public class SnmpConfigRestService extends OnmsRestService {
 

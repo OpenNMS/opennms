@@ -26,6 +26,7 @@
     <module>services</module>
     <module>schema</module>
     <module>snmp</module>
+    <module>ssh</module>
     <module>xml</module>
   </modules>
   <dependencyManagement>
