@@ -2,6 +2,7 @@
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 4
+    resource_class: medium+
     steps:
       - run:
           name: "skip if flaky tests are enabled"
