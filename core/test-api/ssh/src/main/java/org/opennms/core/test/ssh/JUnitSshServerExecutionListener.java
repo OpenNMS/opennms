@@ -29,6 +29,7 @@
 package org.opennms.core.test.ssh;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -74,10 +75,11 @@ public class JUnitSshServerExecutionListener extends AbstractTestExecutionListen
             host = InetAddressUtils.getLocalHostAddress();
         }
 
+        final var canonicalHostName = host.getCanonicalHostName();
         final var port = (config != null && config.port() > 0)? config.port() : SocketUtils.findAvailableTcpPort();
 
         server = SshServer.setUpDefaultServer();
-        server.setHost(host.getCanonicalHostName());
+        server.setHost(canonicalHostName);
         server.setPort(port);
         server.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
         server.setPublickeyAuthenticator((s, publicKey, session) -> true);
@@ -92,7 +94,11 @@ public class JUnitSshServerExecutionListener extends AbstractTestExecutionListen
 
         CoreModuleProperties.WELCOME_BANNER.set(server, "JUnitSshServer SSH 0.0");
 
-        server.start();
+        try {
+            server.start();
+        } catch (final BindException e) {
+            LOG.warn("Failed to start SSH server on {}:{}", canonicalHostName, port, e);
+        }
 
         if (testContext.getTestInstance() instanceof SshServerDataProviderAware) {
             final var provider = new JUnitSshServerDataProvider(server, host, port);
@@ -105,7 +111,7 @@ public class JUnitSshServerExecutionListener extends AbstractTestExecutionListen
     public void afterTestMethod(final TestContext testContext) throws Exception {
         super.afterTestMethod(testContext);
 
-        this.server.stop();
+        this.server.stop(true);
         server = null;
     }
 
