@@ -6,14 +6,46 @@ There are a number of startup settings that you can configure, including `JAVA_H
 
 No `opennms.conf` exists in the default RPM/DEB installation, but `\${OPENNMS_HOME}/etc/examples` includes a sample file that you can use as a starting point.
 
-== Available variables
+.Variables you may want to set
 
-The most important variables that you might set in `opennms.conf`, include the following:
+[options="header"]
+[cols="2,3,1,3"]
+|===
 
-`JAVA_HEAP_SIZE` and `JAVA_INITIAL_HEAP_SIZE` (units are in MB; suffix m added automatically with result passed as `-Xmx` and `-Xms` flag to JVM, respectively)
+| Variable
+| Description
+| Default
+| Behavior
 
-`ADDITIONAL_MANAGER_OPTIONS` (appended to other JVM startup flags)
+| `JAVA_HEAP_SIZE`
+| Specifies the maximum amount of memory the JVM should use.
+You may want to increase this value if you experience long response times, frequent garbage collection that takes a lot of time, or see alarms that should have been cleared automatically still listed as alarms.
+See https://opennms.discourse.group/t/performance-tuning/1438[performance tuning] on Discourse for more information.
+| 512 MB
+| Units are in MB.
+Suffix `m` is added automatically with the result passed to JVM as an `-Xmx`.
 
-`MAXIMUM_FILE_DESCRIPTORS` (passed to `ulimit -n` before starting JVM)
+|`JAVA_INITIAL_HEAP_SIZE`
+| Specifies the initial amount of memory the JVM should use.
+Effectively sets a minimum memory value when used in conjunction with `JAVA_HEAP_SIZE`.
+You may want to increase this value if you experience long response times, frequent garbage collection that takes a lot of time, or see alarms that should have been cleared automatically still listed as alarms.
+It is good practice to set the `JAVA_INITIAL_HEAP_SIZE` and `JAVA_HEAP_SIZE` to the same value.
+| Units are in MB.
+| Suffix `m` is added automatically with the result passed to JVM as an `-Xms` flag.
 
-`MAXIMUM_SIZE_STACK_SEGMENT` (passed to `ulimit -s` before starting JVM)
+| `ADDITIONAL_MANAGER_OPTIONS`
+| Additional options to pass to Java when starting {page-component-title}.
+|
+| Appended to other JVM startup flags.
+
+| `MAXIMUM_FILE_DESCRIPTORS`
+| You may want to change these values if you end up with too many "files open exceptions" in {page-component-title}.
+See https://opennms.discourse.group/t/how-to-investigate-file-descriptor-issues/953[How to investigate file descriptor issues] on Discourse for more information.
+| 204800
+| Passed to `ulimit -n` before starting JVM.
+
+| `MAXIMUM_SIZE_STACK_SEGMENT`
+| Defines the size limit for each Java thread in the JVM.
+| 8192 kbytes
+| Passed to `ulimit -s` before starting JVM.
+|===
