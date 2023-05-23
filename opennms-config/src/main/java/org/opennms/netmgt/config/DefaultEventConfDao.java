@@ -91,12 +91,28 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_programmaticStoreRelativePath = programmaticStoreRelativeUrl;
 	}
 
+	void validateConfig(final Resource resource) throws DataAccessException {
+		final Events events;
+
+		try {
+			events = JaxbUtils.unmarshal(Events.class, resource, true);
+		} catch (Exception e) {
+			LOG.error("Eventd configuration validation failed! Cannot parse file {}", resource.getFilename(), e);
+			throw new DataRetrievalFailureException("Eventd configuration validation failed! Cannot parse file " + resource.getFilename());
+		}
+
+		for (final String eventFilename : events.getEventFiles()) {
+			validateConfig(Events.getRelative(m_configResource, eventFilename));
+		}
+	}
+
 	@Override
 	public void reload() throws DataAccessException {
+		validateConfig(m_configResource);
 		try {
 		    reloadConfig();
 		} catch (Exception e) {
-			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
 		}
 	}
 
@@ -215,7 +231,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_events.initialize(m_partition, new EventOrdering());
 
 		return true;
-
 	}
 
 	@Override
