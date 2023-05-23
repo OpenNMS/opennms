@@ -30,6 +30,8 @@ export interface MainMenu {
   noticeStatus: string
   username: string
   baseNodeUrl: string
+  copyrightDates: string
+  version: string
   
   menus: TopMenuItem[]
   helpMenu: TopMenuItem | null
