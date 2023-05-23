@@ -51,7 +51,7 @@ To view the full list of data points, follow these steps:
 . Click the *gear* symbol at the top-right of the page.
 . Under Additional Tools, click *Usage Statistics Sharing*.
 . Scroll through the list.
-. Click *Copy JSON* to download a copy of collected the data points.
+. Click *Copy JSON* to copy a JSON representation of collected data points to your clipboard.
 
 [[disable-data-collection]]
 == Enable or disable usage statistics sharing

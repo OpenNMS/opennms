@@ -186,7 +186,12 @@ Consent to share collected usage statistics is assumed by default.
 
 The OpenNMS Group uses this information to help determine product use and to improve the {page-component-title} software.
 We do not share it with third parties, and we will not use it for sales purposes.
-Click *Show Me What is Being Sent* to see a list of xref:operation:deep-dive/admin/configuration/usage-statistics.adoc[information that we collect and share].
+
+Click *Learn More* to view the xref:operation:deep-dive/admin/configuration/usage-statistics.adoc[information that we collect and share].
+This also hides the notification.
+
+Click *Dismiss* to simply hide the notification.
+You can view the usage statistics at any time on the admin page.
 
 NOTE: Admin users can xref:operation:deep-dive/admin/configuration/usage-statistics.adoc#disable-data-collection[opt out of sharing the statistics] at any time.
 
