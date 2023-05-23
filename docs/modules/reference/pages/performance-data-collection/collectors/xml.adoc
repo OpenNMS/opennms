@@ -130,7 +130,7 @@ Configure the system proxy settings via <<operation:deep-dive/admin/configuratio
 | false
 
 | xslt-source-file
-| Full path to XSLT file to transform XML data before processing to collection definitions
+| Full path to XSLT file to transform XML data before processing to collection definitions.
 | n/a
 |===
 
