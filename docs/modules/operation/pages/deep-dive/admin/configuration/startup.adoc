@@ -2,9 +2,9 @@
 = Startup Configuration
 
 There are a number of startup settings that you can configure, including `JAVA_HEAP_SIZE`.
-{page-component-title} startup scripts source `\$OPENNMS_HOME/etc/opennms.conf` early in their startup, if that file exists.
+{page-component-title} startup scripts load `\${OPENNMS_HOME}/etc/opennms.conf` early in their startup, if that file exists.
 
-No `opennms.conf` exists in the default RPM/DEB installation, but `\$OPENNMS_HOME/etc/examples` includes a sample file that you can use as a starting point.
+No `opennms.conf` exists in the default RPM/DEB installation, but `\${OPENNMS_HOME}/etc/examples` includes a sample file that you can use as a starting point.
 
 == Available variables
 
