@@ -241,6 +241,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
