@@ -4,14 +4,14 @@
 = Changelog
 [[releasenotes-changelog-31.0.8]]
 
-==== Release 31.0.8
+== Release 31.0.8
 
 Release 31.0.8 contains four security vulnerability fixes and a generous helping of other bug fixes.
 It also includes a few small enhancements to the startup scripts and other components.
 
 The codename for Horizon 31.0.8 is https://wikipedia.org/wiki/$$Spritzgeb%C3%A4ck$$[_Spritzgebäck_].
 
-===== Bug
+=== Bug
 
 * POW Arithmetic Operator Does not work with Backshift Graphing Engine (Issue https://issues.opennms.org/browse/NMS-14779[NMS-14779])
 * Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured (Issue https://issues.opennms.org/browse/NMS-14936[NMS-14936])
@@ -25,58 +25,58 @@ The codename for Horizon 31.0.8 is https://wikipedia.org/wiki/$$Spritzgeb%C3%A4c
 * $OPENNMS_HOME/etc/THIRD-PARTY.txt has gone missing with Horizon 31.0.6 and onwards (Issue https://issues.opennms.org/browse/NMS-15636[NMS-15636])
 * SNMPv3 support for AES256 appears broken (Issue https://issues.opennms.org/browse/NMS-15637[NMS-15637])
 
-===== New Feature
+=== New Feature
 
 * Add a CLI mechanism to set the admin password (Issue https://issues.opennms.org/browse/NMS-15221[NMS-15221])
 
-===== Story
+=== Story
 
 * Add KPI for boolean containerization status (Issue https://issues.opennms.org/browse/NMS-15368[NMS-15368])
 * Add REST endpoint exposing usage analytics KPIs (Issue https://issues.opennms.org/browse/NMS-15371[NMS-15371])
 * Usage statistics docs updated to include containerization status (Issue https://issues.opennms.org/browse/NMS-15627[NMS-15627])
 
-===== Enhancement
+==== Enhancement
 
 * Smoke test improvements and small tweaks to help developers (Issue https://issues.opennms.org/browse/NMS-15387[NMS-15387])
 
-===== Task
+=== Task
 
 * DOC: Pull changes into foundation branch (Issue https://issues.opennms.org/browse/NMS-15658[NMS-15658])
 
 [[releasenotes-changelog-31.0.7]]
 
-==== Release 31.0.7
+== Release 31.0.7
 
 Release 31.0.7 is an off-cadence release containing several small bug fixes.
 Most notably, it upgrades the OpenNMS Plugin API host to version 1.4.0, enabling OPA plugins targeting that version to load successfully.
 
 The codename for Horizon 31.0.7 is https://wikipedia.org/wiki/$$Snickerdoodle$$[_Snickerdoodle_].
 
-===== Bug
+=== Bug
 
 * Adding new thresholds to an existing group often throws an IndexOutOfBoundsException (Issue https://issues.opennms.org/browse/NMS-15334[NMS-15334])
 * A small typo in plugin.sh prevents artifacts from GitHub to be included in containers (Issue https://issues.opennms.org/browse/NMS-15592[NMS-15592])
 * Syslog Northbounder maxMessageSize config option is not used (Issue https://issues.opennms.org/browse/NMS-15606[NMS-15606])
 
-===== Task
+=== Task
 
 * Visualization of database-report templates in docs (Issue https://issues.opennms.org/browse/NMS-15423[NMS-15423])
 * Add Velocloud plugin in our core and minion containers (Issue https://issues.opennms.org/browse/NMS-15567[NMS-15567])
 
-===== Story
+=== Story
 
 * Implement collector config extensions – NMS side (Issue https://issues.opennms.org/browse/NMS-15585[NMS-15585])
 
 [[releasenotes-changelog-31.0.6]]
 
-==== Release 31.0.6
+== Release 31.0.6
 
 Release 31.0.6 contains a bunch of bug fixes, along with fixes for several security vulnerabilities.
 It also upgrades the embedded Drools library from v7.x to v8.x, so be sure to test any custom rules that you depend on before moving to production.
 
 The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyotas_].
 
-===== Bug
+=== Bug
 
 * DOC: Document Newts fetch step / heartbeat settings in opennms.properties (Issue https://issues.opennms.org/browse/NMS-10155[NMS-10155])
 * Document the function hiding Meta-Data values with keynames containing "password" or "secret" (Issue https://issues.opennms.org/browse/NMS-12808[NMS-12808])
@@ -102,7 +102,7 @@ The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyot
 * Cortex plugin has no LICENSE.md (Issue https://issues.opennms.org/browse/NMS-15521[NMS-15521])
 * upgrade Xalan to 2.7.3 (CVE-2022-34169) (Issue https://issues.opennms.org/browse/NMS-15578[NMS-15578])
 
-===== Enhancement
+=== Enhancement
 
 * Deploy Release Jars to Maven Central (Issue https://issues.opennms.org/browse/NMS-14727[NMS-14727])
 * DOC: Create documentation for vacuumd (Issue https://issues.opennms.org/browse/NMS-15440[NMS-15440])
@@ -110,7 +110,7 @@ The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyot
 * Update docs to include RHEL9 and Rocky/Alma compatability (Issue https://issues.opennms.org/browse/NMS-15500[NMS-15500])
 * re-enable license maven plugin as a separate job (Issue https://issues.opennms.org/browse/NMS-15572[NMS-15572])
 
-===== Task
+=== Task
 
 * DOC: Update replacement tokens documentation (Issue https://issues.opennms.org/browse/NMS-15045[NMS-15045])
 * Vulnerable c3p0 0.9.1.1 packaged in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-15072[NMS-15072])
