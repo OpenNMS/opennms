@@ -141,18 +141,18 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> ASSET_RECORD_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsAssetRecord.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsAssetRecord.class, "additionalhardware", "Additional Hardware", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "address1", "Address 1", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "address2", "Address 2", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.address1", "Address 1", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.address2", "Address 2", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "admin", "Admin", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "assetNumber", "Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "autoenable", "Auto-enable", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "building", "Building", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "category", "Category", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "circuitId", "Circuit ID", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "city", "City", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.city", "City", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "comment", "Comment", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "connection", "Connection", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "country", "Country", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.country", "Country", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "cpu", "CPU", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "dateInstalled", "Date Installed", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "department", "Department", STRING),
@@ -171,10 +171,10 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "inputpower", "Input Power", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "lastModifiedBy", "Last Modified By", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "lastModifiedDate", "Last Modified Date", TIMESTAMP),
-		//new SearchProperty(OnmsAssetRecord.class, "latitude", "Latitude", FLOAT),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.latitude", "Latitude", FLOAT),
 		new SearchProperty(OnmsAssetRecord.class, "lease", "Lease", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "leaseExpires", "Lease Expires", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "longitude", "Longitude", FLOAT),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.longitude", "Longitude", FLOAT),
 		new SearchProperty(OnmsAssetRecord.class, "maintcontract", "Maintenance Contract", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "maintContractExpiration", "Maintenance Contract Expiration", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "managedObjectInstance", "Managed Object Instance", STRING),
@@ -195,7 +195,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "serialNumber", "Serial Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "slot", "Slot", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "snmpcommunity", "SNMP Community", STRING),
-		//new SearchProperty(OnmsAssetRecord.class, "state", "State or Province", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "state", "State or Province", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "storagectrl", "Storage Controller", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "supportPhone", "Support Phone", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "thresholdCategory", "Threshold Category", STRING),
@@ -203,8 +203,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendor", "Vendor", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING)
-		//new SearchProperty(OnmsAssetRecord.class, "zip", "ZIP or Postal Code", STRING)
+		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.zip", "ZIP or Postal Code", STRING)
 	));
 
 	static final SortedSet<SearchProperty> CATEGORY_PROPERTIES = new TreeSet<>(Arrays.asList(
