@@ -21,8 +21,8 @@ No `opennms.conf` exists in the default RPM/DEB installation, but `\${OPENNMS_HO
 | Specifies the maximum amount of memory the JVM should use.
 You may want to increase this value if you experience long response times, frequent garbage collection that takes a lot of time, or see alarms that should have been cleared automatically still listed as alarms.
 See https://opennms.discourse.group/t/performance-tuning/1438[performance tuning] on Discourse for more information.
-| 512 MB
-| Units are in MB.
+| 2048
+| Units are in megabytes.
 Suffix `m` is added automatically with the result passed to JVM as an `-Xmx`.
 
 |`JAVA_INITIAL_HEAP_SIZE`
@@ -30,8 +30,9 @@ Suffix `m` is added automatically with the result passed to JVM as an `-Xmx`.
 Effectively sets a minimum memory value when used in conjunction with `JAVA_HEAP_SIZE`.
 You may want to increase this value if you experience long response times, frequent garbage collection that takes a lot of time, or see alarms that should have been cleared automatically still listed as alarms.
 It is good practice to set the `JAVA_INITIAL_HEAP_SIZE` and `JAVA_HEAP_SIZE` to the same value.
-| Units are in MB.
-| Suffix `m` is added automatically with the result passed to JVM as an `-Xms` flag.
+| null
+| Units are in megabytes.
+Suffix `m` is added automatically with the result passed to JVM as an `-Xms` flag.
 
 | `ADDITIONAL_MANAGER_OPTIONS`
 | Additional options to pass to Java when starting {page-component-title}.
@@ -41,11 +42,12 @@ It is good practice to set the `JAVA_INITIAL_HEAP_SIZE` and `JAVA_HEAP_SIZE` to 
 | `MAXIMUM_FILE_DESCRIPTORS`
 | You may want to change these values if you end up with too many "files open exceptions" in {page-component-title}.
 See https://opennms.discourse.group/t/how-to-investigate-file-descriptor-issues/953[How to investigate file descriptor issues] on Discourse for more information.
-| 204800
+| 20480
 | Passed to `ulimit -n` before starting JVM.
 
 | `MAXIMUM_SIZE_STACK_SEGMENT`
 | Defines the size limit for each Java thread in the JVM.
-| 8192 kbytes
-| Passed to `ulimit -s` before starting JVM.
+| 8192
+| Units are in kilobytes.
+Passed to `ulimit -s` before starting JVM.
 |===
