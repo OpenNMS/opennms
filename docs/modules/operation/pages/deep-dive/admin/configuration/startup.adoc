@@ -2,9 +2,9 @@
 = Startup Configuration
 
 There are a number of startup settings that you can configure, including `JAVA_HEAP_SIZE`.
-{page-component-title} startup scripts load `\${OPENNMS_HOME}/etc/opennms.conf` early in their startup, if that file exists.
+{page-component-title} startup scripts load `$\{OPENNMS_HOME}/etc/opennms.conf` early in their startup, if that file exists.
 
-No `opennms.conf` exists in the default RPM/DEB installation, but `\${OPENNMS_HOME}/etc/examples` includes a sample file that you can use as a starting point.
+No `opennms.conf` exists in the default RPM/DEB installation, but `$\{OPENNMS_HOME}/etc/examples` includes a sample file that you can use as a starting point.
 
 .Variables you may want to set
 
@@ -23,7 +23,7 @@ You may want to increase this value if you experience long response times, frequ
 See https://opennms.discourse.group/t/performance-tuning/1438[performance tuning] on Discourse for more information.
 | 2048
 | Units are in megabytes.
-Suffix `m` is added automatically with the result passed to JVM as an `-Xmx`.
+Suffix `m` is added automatically with the result passed to JVM as an `-Xmx` flag.
 
 |`JAVA_INITIAL_HEAP_SIZE`
 | Specifies the initial amount of memory the JVM should use.
