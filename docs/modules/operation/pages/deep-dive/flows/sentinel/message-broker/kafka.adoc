@@ -13,6 +13,19 @@ sentinel-kafka
 sentinel-flows
 ----
 
+.(Optional) Configure a custom topic prefix
+[source, console]
+----
+sudo vi etc/custom.system.properties
+----
+
+[source, custom.system.properties]
+----
+org.opennms.instance.id=OpenNMS<1>
+----
+
+<1> Replace `OpenNMS` with the same topic prefix used by the target instance of {page-component-title} Core.
+
 .Connect to the Karaf shell via SSH
 [source, console]
 ----
@@ -25,12 +38,11 @@ ssh -p 8301 admin@localhost
 config:edit org.opennms.sentinel.controller
 config:property-set location SENTINEL<1>
 config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
-config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:update
 ----
 
-<1> A location string is used to assign the Sentinel to a monitoring location with Minions.
-<2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title).
+<1> A location string is used to assign the Sentinel to a monitoring location. This can be an existing location or a new location and does not impact the messages that this Sentinel will process.
+<2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title}.
 
 .Configure Sentinel as Kafka consumer for flow messages
 [source, karaf]
@@ -43,6 +55,9 @@ config:update
 <1> Edit the configuration for the flow consumer from Kafka.
 <2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
+The configuration properties required depends on your Kafka deployment.
+It will likely be similar to the configuration used by {page-component-title} Core.
+
 .Configure Sentinel to generate and send events
 [source, karaf]
 ----
@@ -54,17 +69,11 @@ config:update
 <1> Edit the configuration to send generated events from Sentinel via Kafka.
 <2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
+The configuration properties required depends on your Kafka deployment.
+It will likely be similar to the configuration used by {page-component-title} Core.
+
 TIP: To use a Kafka cluster with multiple {page-component-title} instances, customize the topic prefix by setting `group.id`, which is by default set to `OpenNMS`.
      You can set a different topic prefix for each instance with `config:edit group.id my-group-id` for the consumer and sink.
-
-.Configure the credentials and exit Karaf shell
-[source, karaf]
-----
-opennms:scv-set opennms.http my-sentinel-user my-sentinel-password<1>
-----
-<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
-
-The credentials are encrypted on disk in `$\{SENTINEL_HOME}/etc/scv.jce`.
 
 Exit the Karaf Shell with kbd:[Ctrl+d]
 
@@ -90,7 +99,6 @@ Connecting to Kafka from Sink Producer         [ Success  ]
 Connecting to Kafka from Sink Consumer         [ Success  ]
 Retrieving NodeDao                             [ Success  ]
 Connecting to ElasticSearch ReST API (Flows)   [ Success  ]
-Connecting to OpenNMS ReST API                 [ Success  ]
 
 => Everything is awesome
 ----

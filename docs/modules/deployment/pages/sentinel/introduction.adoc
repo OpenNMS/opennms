@@ -2,7 +2,6 @@
 
 Sentinel provides scalability for data processing of flows and streaming telemetry.
 It also supports thresholding for streaming telemetry if you are using OpenNMS xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].
-The Sentinel can distribute Telemetryd functionality such as processing flows and store measurements data to OpenNMS Newts.
 The Sentinel requires a Minion.
 It processes flow and streaming telemetry data received by one or more Minions.
 If you are using Minions to receive flow and/or streaming telemetry and need to scale processing capacity, you need Sentinel.
