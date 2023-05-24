@@ -67,7 +67,7 @@ IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell an
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8::
+CentOS/RHEL 7/8/9::
 +
 --
 include::centos-rhel/secure-karaf.adoc[]
