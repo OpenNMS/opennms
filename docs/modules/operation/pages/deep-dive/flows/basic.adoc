@@ -57,14 +57,22 @@ elasticIndexStrategy=daily
 
 ** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
 
-== Enable protocols
+== Multi-protocol listener
 
-Follow these steps to enable one or more of the protocols that you want to handle.
+With most tools, if you are monitoring multiple flow protocols, you must set up a listener on its own UDP port for each protocol.
+However, {page-component-title} allows a multi-port listener option; this listener, named `Multi-UDP-9999`, is enabled by default and monitors multiple protocols on a single UDP port (`9999`). The default configuration includes support for Netflow v5, Netflow v9, sFlow, and IPFIX.
+You can edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number and add or remove protocols.
+
+IMPORTANT: Make sure your firewall allow list includes the ports that you have configured to receive flow data.
+
+== Enable individual protocols
+
+Follow these steps to enable one or more protocols that you want to handle individually or that are not included in the default multi-protocol listener.
 
 NOTE: This example uses the NetFlow v5 protocol.
 You can follow the same steps for any of the other flow-related protocols.
 
-. Edit or create `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to enable protocols:
+. Edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to enable protocols:
 +
 [source, xml]
 ----
@@ -80,20 +88,15 @@ You can follow the same steps for any of the other flow-related protocols.
 </queue>
 ----
 
+NOTE: Example configurations for many protocols are provided in the default configuration file.
+To enable one of these protocols, simply find the correct example `listener` and `adapter` elements and change their `enabled` attributes to `true`.
+
 . Reload the daemons to apply your changes:
 +
 [source, console]
 ${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 
 This configuration opens a UDP socket bound to `0.0.0.0:8877`; NetFlow v5 messages are forwarded to this socket (see <<deep-dive/admin/configuration/daemon-config-files.adoc#daemon-reload, Reload daemons by CLI>> for more information).
-
-=== Multi-port listener
-
-Normally, if you are monitoring multiple flow protocols, you must set up a listener on its own UDP port for each protocol.
-By default, {page-component-title} allows a multi-port listener option; this monitors multiple protocols on a single UDP port (`9999`).
-You can edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number and add or remove protocols.
-
-IMPORTANT: Make sure your firewall allow list includes the ports that you have configured to receive flow data.
 
 == Enable flows on your devices
 
