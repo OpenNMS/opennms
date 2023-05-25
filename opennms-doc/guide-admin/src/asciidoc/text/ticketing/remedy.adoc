@@ -7,6 +7,9 @@
 
 The _Remedy Ticketing Plugin_ is used to create requests in the BMC Remedy ARS Help Desk Module in response to _{opennms-product-name}_ alarms.
 
+NOTE: The _Remedy Ticketing Plugin_ is deprecated, and will be removed in OpenNMS Horizon 32.x and meridian 2024.x.
+There is now an OPA version of the plugin compatible with all supported versions of Horizon and Meridian, downloadable from link:https://github.com/OpenNMS/opennms-opa-plugin-ticketing-remedy/releases[the plugin release page].
+
 ==== Remedy Product Overview
 It's important to be specific when discussing Remedy, because BMC Remedy is a suite of products.
 The _{opennms-product-name}_ Remedy Ticketing Plugin requires the core Remedy ARS and the Help Desk Module.
