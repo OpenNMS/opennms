@@ -10,6 +10,9 @@
   <artifactId>org.opennms.features.ticketing</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Ticketing</name>
+  <properties>
+    <axis.version>1.4</axis.version>
+  </properties>
   <modules>
     <module>api</module>
     <module>daemon</module>
@@ -23,4 +26,40 @@
     <module>remedy-integration</module>
     <module>tsrm-integration</module>
   </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>axistools-maven-plugin</artifactId>
+          <version>${axis.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis</artifactId>
+        <version>${axis.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>axis</groupId>
+            <artifactId>axis-wsdl4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis-jaxrpc</artifactId>
+        <version>${axis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis-saaj</artifactId>
+        <version>${axis.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
