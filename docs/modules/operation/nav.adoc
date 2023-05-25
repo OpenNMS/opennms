@@ -225,6 +225,8 @@
 
 ** {page-component-title} Administration
 *** xref:deep-dive/admin/configuration/introduction.adoc[]
+**** xref:deep-dive/admin/configuration/startup.adoc[]
+**** xref:deep-dive/admin/configuration/system-proxies.adoc[]
 **** xref:deep-dive/admin/configuration/config-tester.adoc[]
 **** xref:deep-dive/admin/configuration/daemon-config-files.adoc[]
 **** xref:deep-dive/admin/configuration/data-collection.adoc[]
@@ -238,7 +240,6 @@
 **** xref:deep-dive/admin/configuration/same-site-cookie.adoc[]
 **** xref:deep-dive/admin/configuration/scv-configuration.adoc[]
 **** xref:deep-dive/admin/configuration/system-properties.adoc[]
-**** xref:deep-dive/admin/configuration/system-proxies.adoc[]
 *** xref:deep-dive/admin/housekeeping.adoc[]
 *** xref:deep-dive/admin/jmx-config-generator/introduction.adoc[]
 **** xref:deep-dive/admin/jmx-config-generator/cli.adoc[]
