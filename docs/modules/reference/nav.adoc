@@ -109,7 +109,6 @@
 
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/ticketer/jira.adoc[]
-** xref:ticketing/ticketer/remedy.adoc[]
 ** xref:ticketing/ticketer/tsrm.adoc[]
 
 * Provisioning

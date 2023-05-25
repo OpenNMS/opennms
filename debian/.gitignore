@@ -24,7 +24,6 @@ opennms-plugin-protocol-nsclient
 opennms-plugin-protocol-radius
 opennms-plugin-protocol-xml
 opennms-plugin-ticketer-jira
-opennms-plugin-ticketer-otrs
 opennms-plugin-ticketer-rt
 opennms-plugins
 opennms-remote-poller

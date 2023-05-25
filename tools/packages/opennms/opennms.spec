@@ -109,6 +109,10 @@ Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
 Provides:	%{name}-plugin-provisioning-rancid = %{version}-%{release}
 Obsoletes:	%{name}-plugin-provisioning-rancid < %{version}
+Provides:	%{name}-plugin-ticketing-otrs = %{version}-%{release}
+Obsoletes:	%{name}-plugin-ticketing-otrs < %{version}
+Provides:	%{name}-plugin-ticketing-remedy = %{version}-%{release}
+Obsoletes:	%{name}-plugin-ticketing-remedy < %{version}
 Recommends:	haveged
 
 %description core
@@ -201,8 +205,6 @@ Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
 Requires:	%{name}-plugin-ticketer-jira
-Requires(pre):	%{name}-plugin-ticketer-otrs
-Requires:	%{name}-plugin-ticketer-otrs
 Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
 Requires(pre):	%{name}-plugin-protocol-cifs
@@ -332,20 +334,6 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-jira
 The JIRA ticketer plugin provides the ability to automatically create JIRA
-issues from %{_descr} alarms.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-ticketer-otrs
-Summary:	OTRS Ticketer Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-ticketer-otrs
-The OTRS ticketer plugin provides the ability to automatically create OTRS
 issues from %{_descr} alarms.
 
 %{extrainfo}
@@ -616,7 +604,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
@@ -640,7 +627,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
@@ -669,7 +655,6 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jradius' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
-	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
@@ -811,12 +796,6 @@ rm -rf %{buildroot}
 %{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar.sha1
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
-
-%files plugin-ticketer-otrs
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/opennms-integration-otrs-*.jar
-%config(noreplace) %{instprefix}/etc/otrs.properties
-%{sharedir}/etc-pristine/otrs.properties
 
 %files plugin-ticketer-rt
 %defattr(664 opennms opennms 775)
@@ -1022,9 +1001,6 @@ fi
 
 %post plugin-ticketer-jira
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-jira"
-
-%post plugin-ticketer-otrs
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-otrs"
 
 %post plugin-ticketer-rt
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-rt"
