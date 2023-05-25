@@ -15,6 +15,7 @@
 
   <reference id="identity" interface="org.opennms.distributed.core.api.Identity" availability="mandatory"/>
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+  <reference id="ackDao" interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" availability="mandatory"/>
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
@@ -44,6 +45,7 @@
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
     <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
       <argument ref="alarmDao"/>
+      <argument ref="ackDao"/>
       <argument ref="sessionUtils"/>
     </bean>
   </service>
