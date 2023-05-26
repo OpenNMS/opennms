@@ -566,11 +566,6 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.2</version>
         <configuration>
@@ -800,19 +795,6 @@
                 </pluginExecutionFilter>
                 <action>
                   <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>axistools-maven-plugin</artifactId>
-                  <versionRange>[1.4,)</versionRange>
-                  <goals>
-                    <goal>wsdl2java</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -3450,27 +3432,6 @@
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>${antlr.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis</artifactId>
-        <version>1.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>axis</groupId>
-            <artifactId>axis-wsdl4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-jaxrpc</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-saaj</artifactId>
-        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
