@@ -44,20 +44,25 @@ import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.ticketing.Ticket.State;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 public class AlarmDaoImpl implements AlarmDao {
 
     private final org.opennms.netmgt.dao.api.AlarmDao alarmDao;
-    private AcknowledgmentDao ackDao;
+    private final AcknowledgmentDao ackDao;
+    private final AlarmEntityNotifier alarmEntityNotifier;
     private final SessionUtils sessionUtils;
 
-    public AlarmDaoImpl(org.opennms.netmgt.dao.api.AlarmDao alarmDao, final AcknowledgmentDao ackDao, final SessionUtils sessionUtils) {
+    public AlarmDaoImpl(org.opennms.netmgt.dao.api.AlarmDao alarmDao, final AcknowledgmentDao ackDao, final AlarmEntityNotifier alarmEntityNotifier, final SessionUtils sessionUtils) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
+        this.alarmEntityNotifier = Objects.requireNonNull(alarmEntityNotifier);
         this.ackDao = Objects.requireNonNull(ackDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
@@ -113,8 +118,10 @@ public class AlarmDaoImpl implements AlarmDao {
     public void setTicketState(final State state, final int... alarmIds) {
         sessionUtils.withTransaction(() -> {
             Arrays.stream(alarmIds).boxed().map(alarmDao::get).forEach(alarm -> {
+                final TroubleTicketState previousState = alarm.getTTicketState();
                 alarm.setTTicketState(ModelMappers.fromTicketState(state));
                 alarmDao.saveOrUpdate(alarm);
+                alarmEntityNotifier.didChangeTicketStateForAlarm(alarm, previousState);
             });
         });
     }
@@ -184,8 +191,10 @@ public class AlarmDaoImpl implements AlarmDao {
                     .toCriteria();
             final List<OnmsAlarm> alarms = alarmDao.findMatching(criteria);
             alarms.forEach(alarm -> {
+                final OnmsSeverity previousSeverity = alarm.getSeverity();
                 alarm.setSeverity(onmsSeverity);
                 alarmDao.saveOrUpdate(alarm);
+                alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
             });
         });
     }
