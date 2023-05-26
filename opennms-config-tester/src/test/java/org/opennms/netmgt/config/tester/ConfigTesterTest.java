@@ -346,14 +346,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Not part of the standard build?
-     */
-    public void testOtrs() {
-        ignoreConfigFile("otrs.properties");
-    }
-
-    @Test
     public void testPollOutages() {
         testConfigFile("poll-outages.xml");
     }
