@@ -128,9 +128,9 @@ install: build
 	sed -e 's,@PACKAGE@,opennms-plugin-collector-juniper-tca,g' debian/package-permissions.sh > debian/opennms-plugin-collector-juniper-tca.postinst
 	
 	# Setup ticketers
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/var/lib/opennms/etc-pristine
 
 	# CIFS
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
@@ -172,12 +172,6 @@ install: build
 	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
 	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-jira,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-jira.postinst
-	
-	# OTRS
-	mv debian/temp/lib/opennms-integration-otrs*.jar                                           debian/opennms-plugin-ticketer-otrs/usr/share/java/opennms/
-	mv debian/temp/etc/otrs.properties                                                         debian/opennms-plugin-ticketer-otrs/etc/opennms/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/otrs.properties                      debian/opennms-plugin-ticketer-otrs/var/lib/opennms/etc-pristine/
-	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-otrs,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-otrs.postinst
 	
 	# RT
 	mv debian/temp/lib/opennms-integration-rt*.jar                                             debian/opennms-plugin-ticketer-rt/usr/share/java/opennms/

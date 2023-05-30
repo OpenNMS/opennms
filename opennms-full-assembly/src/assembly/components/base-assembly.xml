@@ -33,8 +33,6 @@
           <!-- <exclude>lib/*wsman-asset-provisioning-adapter*</exclude> -->
 
           <!-- ticketing plugins -->
-          <exclude>etc/*otrs*</exclude>
-          <exclude>lib/*otrs*</exclude>
           <exclude>etc/rt.properties</exclude>
           <exclude>lib/*integration-rt*</exclude>
         </excludes>

@@ -86,3 +86,5 @@ To enable the feature, set the following attributes in the top-level element of 
 
 In this mode, threads are used only to trigger a poll to run; this means that the number of threads can typically be reduced.
 You can see the actual number of active (in-flight) polls by reviewing the `NumPollsInFlight` metrics associated with pollerd's MBeans.
+
+NOTE: To disable asynchronous polling, set `asyncPollingEngineEnabled` to false.

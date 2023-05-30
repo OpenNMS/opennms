@@ -155,7 +155,7 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | false
 |===
 
-WARNING: Specifying "false" with a `use-{protocol}-discovery` attribute deletes persisted protocol data.
+WARNING: Specifying "false" with a `use-\{protocol}-discovery` attribute deletes persisted protocol data.
 
 The first run of the bridge discovery process is scheduled for `initial_sleep_time + bridge_topology_interval`.
 The first run of the updaters is scheduled for `0L`.

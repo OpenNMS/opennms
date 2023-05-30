@@ -16,11 +16,7 @@
     <module>drools-integration</module>
     <module>jira-integration</module>
     <module>jira-client</module>
-    <module>otrs-integration-common</module>
-    <module>otrs-integration</module>
-    <module>otrs-integration-31</module>
     <module>rt-integration</module>
-    <module>remedy-integration</module>
     <module>tsrm-integration</module>
     <module>inmemory</module>
   </modules>
