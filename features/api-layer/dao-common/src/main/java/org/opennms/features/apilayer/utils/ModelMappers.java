@@ -208,6 +208,9 @@ public class ModelMappers {
     }
     
     public static State toTicketState(final TroubleTicketState state) {
+        if (state == null) {
+            return null;
+        }
         switch (state) {
             case OPEN:
                 return State.OPEN;
