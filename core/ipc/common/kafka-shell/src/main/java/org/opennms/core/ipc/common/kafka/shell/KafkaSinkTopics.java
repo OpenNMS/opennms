@@ -46,6 +46,8 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.google.common.base.Strings;
+
 @Command(scope = "opennms", name = "kafka-sink-topics", description = "List Sink Topics used by current system.")
 @Service
 public class KafkaSinkTopics implements Action {
@@ -59,7 +61,7 @@ public class KafkaSinkTopics implements Action {
     @Option(name = "-t", aliases = "--timeout", description = "Connection timeout for Kafka Server")
     private int timeout;
 
-    private static final int DEFAULT_TIMEOUT = 5000;
+    protected static final int DEFAULT_TIMEOUT = 5000;
 
     @Override
     public Object execute() throws Exception {
@@ -70,9 +72,13 @@ public class KafkaSinkTopics implements Action {
             return null;
         }
         if (timeout <= 0) {
-            timeout = DEFAULT_TIMEOUT;
+            final String requestTimeoutMsConfig = kafkaConfig.getProperty(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG);
+            if (!Strings.isNullOrEmpty(requestTimeoutMsConfig)) {
+                timeout = Integer.parseInt(requestTimeoutMsConfig);
+            } else {
+                timeout = DEFAULT_TIMEOUT;
+            }
         }
-
         kafkaConfig.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, timeout);
         try {
             Set<String> topics = Utils.getTopics(kafkaConfig);
