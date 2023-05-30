@@ -32,10 +32,34 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
+      <artifactId>config</artifactId>
+      <version>${opennmsApiVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
       <artifactId>karaf-features</artifactId>
       <version>${opennmsApiVersion}</version>
       <type>xml</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>tss-tests</artifactId>
+      <version>${opennmsApiVersion}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>
