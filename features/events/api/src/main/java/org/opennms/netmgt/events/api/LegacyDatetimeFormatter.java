@@ -60,22 +60,6 @@ public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
         return formatter;
     });
 
-    public static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = ThreadLocal.withInitial(() -> {
-        int timeFormat = DateFormat.FULL;
-        // The DateFormat.FULL format for France/Germany do not include the seconds digit
-        // which is necessary to have sub-minute resolution in event times. For these
-        // locales, we'll fall back to using DateFormat.LONG.
-        final String language = Locale.getDefault().getLanguage();
-        if (language.equals(Locale.FRANCE.getLanguage()) || language.equals(Locale.GERMANY.getLanguage())) {
-            timeFormat = DateFormat.LONG;
-        }
-
-        final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
-        formatter.setLenient(true);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return formatter;
-    });
-
     public static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = ThreadLocal.withInitial(() -> {
         final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
         formatter.setLenient(true);

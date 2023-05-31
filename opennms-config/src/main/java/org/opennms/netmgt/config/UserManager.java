@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 
@@ -85,6 +86,8 @@ public abstract class UserManager implements UserConfig {
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();
+
+    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
 
     protected GroupManager m_groupManager;
     /**
@@ -952,7 +955,7 @@ public abstract class UserManager implements UserConfig {
 
         final Header header = oldHeader;
         if (header != null) {
-            header.setCreated(EventConstants.formatToString(new Date()));
+            header.setCreated(formatter.format(new Date()));
             userinfo.setHeader(header);
         }
         oldHeader = header;

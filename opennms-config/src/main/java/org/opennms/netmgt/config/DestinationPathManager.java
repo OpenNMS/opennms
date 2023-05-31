@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,29 +45,22 @@ import org.opennms.netmgt.config.destinationPaths.Header;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 
 /**
  * <p>Abstract DestinationPathManager class.</p>
  *
  * @author David Hustace <david@opennms.org>
- * @version $Id: $
  */
 public abstract class DestinationPathManager {
 
-    /**
-     * 
-     */
     private DestinationPaths allPaths;
 
-    /**
-     * 
-     */
     private Map<String, Path> m_destinationPaths;
 
-    /**
-     * 
-     */
     private Header oldHeader;
+
+    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
 
     /**
      * <p>parseXML</p>
@@ -280,7 +273,7 @@ public abstract class DestinationPathManager {
     private Header rebuildHeader() {
         Header header = oldHeader;
     
-        header.setCreated(EventConstants.formatToString(new Date()));
+        header.setCreated(formatter.format(new Date()));
     
         return header;
     }

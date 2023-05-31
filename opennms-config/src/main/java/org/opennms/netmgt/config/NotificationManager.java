@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
@@ -82,6 +83,8 @@ import org.springframework.util.Assert;
  */
 public abstract class NotificationManager {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationManager.class);
+
+    private EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Object containing all Notification objects parsed from the xml file
@@ -1144,7 +1147,7 @@ public abstract class NotificationManager {
     private Header rebuildHeader() {
         Header header = oldHeader;
 
-        header.setCreated(EventConstants.formatToString(new Date()));
+        header.setCreated(formatter.format(new Date()));
 
         return header;
     }
