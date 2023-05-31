@@ -1,12 +1,12 @@
 
 = Notification Shell Commands
 
-The following shell commands are made available to help administer and debug Notifd.
+The following shell commands can help you to administer and debug Notifd.
 
 == opennms:destination-path-trigger
 
 Use the `destination-path-trigger` command to test the notification targets and commands associated with a destination path.
-This can be used to verify that commands are properly configured and that notifications get sent to the recipients.
+Use to verify that commands are properly configured and that notifications get sent to the recipients.
 
 [source, console]
 ----
