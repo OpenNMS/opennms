@@ -56,7 +56,7 @@ public class LegacyDatetimeFormatterTest {
     public void testFormat() throws Exception {
         final LegacyDatetimeFormatter formatter = new LegacyDatetimeFormatter();
         final String date = formatter.format(new Date(0));
-        assertEquals("Thursday, January 1, 1970 12:00:00 AM GMT", date);
+        assertEquals("1970-01-01T00:00:00Z", date);
     }
 
     @Test
