@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder implements EventForwarder {
 	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapForwarderHelper.class);
 
-	private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+	private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
 	String source_ip;
 	
@@ -393,7 +393,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
              else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.2.0", "OctetString", "text", "null");
              if (event.getCreationTime() != null)
-                     snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.3.0", "OctetString", "text", formatter.format(event.getCreationTime()));
+                     snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.3.0", "OctetString", "text", FORMATTER.format(event.getCreationTime()));
              else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.3.0", "OctetString", "text", "null");
              if (event.getMasterStation() != null)
@@ -415,7 +415,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
              } else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", "null");
              if (event.getTime() != null)
-                     snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.9.0", "OctetString", "text", formatter.format(event.getTime()));
+                     snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.9.0", "OctetString", "text", FORMATTER.format(event.getTime()));
              else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.9.0", "OctetString", "text", "null");
              if (event.getHost() != null)

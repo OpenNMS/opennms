@@ -87,7 +87,7 @@ public abstract class UserManager implements UserConfig {
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();
 
-    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     protected GroupManager m_groupManager;
     /**
@@ -955,7 +955,7 @@ public abstract class UserManager implements UserConfig {
 
         final Header header = oldHeader;
         if (header != null) {
-            header.setCreated(formatter.format(new Date()));
+            header.setCreated(FORMATTER.format(new Date()));
             userinfo.setHeader(header);
         }
         oldHeader = header;

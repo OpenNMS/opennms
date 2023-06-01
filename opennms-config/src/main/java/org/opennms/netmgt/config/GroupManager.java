@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -113,7 +113,7 @@ public abstract class GroupManager implements GroupConfig {
         }
     }
 
-    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupManager.class);
 
@@ -259,7 +259,7 @@ public abstract class GroupManager implements GroupConfig {
     public synchronized void saveGroups() throws Exception {
         Header header = m_oldHeader;
 
-        if (header != null) header.setCreated(formatter.format(new Date()));
+        if (header != null) header.setCreated(FORMATTER.format(new Date()));
     
         final List<Group> groups = new ArrayList<>();
         for (final Group grp : m_groups.values()) {

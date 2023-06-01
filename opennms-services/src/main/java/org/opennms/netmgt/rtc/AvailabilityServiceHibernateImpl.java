@@ -79,7 +79,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 	@Autowired
 	private OutageDao m_outageDao;
 
-    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Builds a map of configured categories, keyed by label.
@@ -121,7 +121,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         final EuiLevel level = new EuiLevel();
 
         // set created in m_header and add to level
-        header.setCreated(formatter.format(curDate));
+        header.setCreated(FORMATTER.format(curDate));
         level.setHeader(header);
 
         final Category levelCat = new Category();

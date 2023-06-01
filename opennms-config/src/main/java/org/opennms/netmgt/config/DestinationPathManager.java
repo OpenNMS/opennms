@@ -53,14 +53,13 @@ import org.opennms.netmgt.events.api.EventDatetimeFormatter;
  * @author David Hustace <david@opennms.org>
  */
 public abstract class DestinationPathManager {
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     private DestinationPaths allPaths;
 
     private Map<String, Path> m_destinationPaths;
 
     private Header oldHeader;
-
-    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
 
     /**
      * <p>parseXML</p>
@@ -273,7 +272,7 @@ public abstract class DestinationPathManager {
     private Header rebuildHeader() {
         Header header = oldHeader;
     
-        header.setCreated(formatter.format(new Date()));
+        header.setCreated(FORMATTER.format(new Date()));
     
         return header;
     }

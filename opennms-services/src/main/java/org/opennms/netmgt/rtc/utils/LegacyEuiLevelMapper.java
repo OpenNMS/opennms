@@ -59,7 +59,7 @@ public class LegacyEuiLevelMapper {
     private final Header m_header;
     private final DataManager m_dataMgr;
 
-    private final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Constructor
@@ -92,7 +92,7 @@ public class LegacyEuiLevelMapper {
         EuiLevel level = new EuiLevel();
 
         // set created in m_header and add to level
-        m_header.setCreated(formatter.format(curDate));
+        m_header.setCreated(FORMATTER.format(curDate));
         level.setHeader(m_header);
 
         org.opennms.netmgt.xml.rtc.Category levelCat = new org.opennms.netmgt.xml.rtc.Category();

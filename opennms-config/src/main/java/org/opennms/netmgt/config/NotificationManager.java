@@ -84,7 +84,7 @@ import org.springframework.util.Assert;
 public abstract class NotificationManager {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationManager.class);
 
-    private EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Object containing all Notification objects parsed from the xml file
@@ -1147,7 +1147,7 @@ public abstract class NotificationManager {
     private Header rebuildHeader() {
         Header header = oldHeader;
 
-        header.setCreated(formatter.format(new Date()));
+        header.setCreated(FORMATTER.format(new Date()));
 
         return header;
     }

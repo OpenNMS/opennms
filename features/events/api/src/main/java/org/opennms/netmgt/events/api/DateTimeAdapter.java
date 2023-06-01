@@ -33,18 +33,18 @@ import java.util.Date;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateTimeAdapter extends XmlAdapter<String, Date> {
-    private static final EventDatetimeFormatter formatter = EventConstants.getEventDatetimeFormatter();
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /** {@inheritDoc} */
     @Override
     public String marshal(final Date date) throws Exception {
-        return date == null ? null : formatter.format(date);
+        return date == null ? null : FORMATTER.format(date);
     }
 
     /** {@inheritDoc} */
     @Override
     public Date unmarshal(final String string) throws Exception {
-        return (string == null || string.isEmpty()) ? null : formatter.parse(string);
+        return (string == null || string.isEmpty()) ? null : FORMATTER.parse(string);
     }
 
 }
