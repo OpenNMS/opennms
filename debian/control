@@ -121,8 +121,8 @@ Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
-Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version})
-Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-provisioning-rancid (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version})
+Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version}), opennms-contrib (<<${binary:Version})
+Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-provisioning-rancid (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version}), opennms-contrib (<<${binary:Version})
 Breaks: opennms-plugin-provisioning-rancid (<<${binary:Version})
 Provides: opennms-plugin-api (= OPA_VERSION)
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
@@ -182,21 +182,6 @@ Description: Enterprise-grade Open-source Network Management Platform (Documenta
  .
  This package provides the user, administration, and programming documentation
  for OpenNMS.
-
-Package: opennms-contrib
-Architecture: all
-Depends: opennms-common (=${binary:Version})
-Description: Enterprise-grade Open-source Network Management Platform (Contrib)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides additional features and functionality that are not part
- of OpenNMS proper.
 
 Package: opennms-plugins
 Architecture: all

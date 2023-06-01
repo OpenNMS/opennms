@@ -4,7 +4,7 @@
 
 import datetime
 from lxml import etree as ET
-import urllib2
+import urllib3
 import base64
 
 class EventParameter:
@@ -54,14 +54,14 @@ class Event:
         return ET.tostring(root, pretty_print=True)
 
 def send_event(event):
-    r = urllib2.Request("http://localhost:8980/opennms/rest/events", data=event.to_xml(), headers={'Content-Type': 'application/xml'})
-    b64 = base64.encodestring("{}:{}".format("admin", "admin")).rstrip()
-    r.add_header("Authorization", "Basic {}".format(b64))
-    u = urllib2.urlopen(r)
-    response = u.read()
+    http = urllib3.PoolManager()
+    b64_creds = base64.b64encode(str.encode('{}:{}'.format('admin', 'admin').rstrip()))
+    post_headers = {'Content-Type': 'application/xml', 'Authorization': 'Basic {}'.format(b64_creds.decode("utf-8"))}
+    r = http.request('POST', "http://localhost:8980/opennms/rest/events", body=event.to_xml(), headers=post_headers)
+    response = r.data
 
 e = Event("uei.opennms.org/internal/discovery/newSuspect")
 e.add_parameter("key", "value")
-print "Sending event: {}".format(e.to_xml())
+print("Sending event: {}".format(e.to_xml()))
 send_event(e)
 

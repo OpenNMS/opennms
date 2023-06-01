@@ -833,13 +833,6 @@
       <classifier>etc</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xml</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>contrib</classifier>
-    </dependency>
-    <dependency>
       <groupId>com.ximpleware</groupId>
       <artifactId>vtd-xml</artifactId>
     </dependency>
