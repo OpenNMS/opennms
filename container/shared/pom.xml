@@ -83,9 +83,10 @@
                         <feature>scv-jceks-impl</feature>
                         <feature>scv-shell</feature>
 
-                        <!-- OPENNMS: Additional tools -->
+                        <!-- OPENNMS: Additional or overrided tools -->
                         <feature>hawtio</feature>
                         <feature>jolokia</feature>
+                        <feature>ssh/${karafSshdVersion}</feature>
                     </bootFeatures>
                     <blacklistedFeatures>
                         <!-- make sure the custom opennms features don't make it in -->
@@ -93,6 +94,7 @@
                         <feature>opennms-http-whiteboard</feature>
                         <feature>jetty/9.4.40.v20210413</feature>
                         <feature>pax-jetty/9.4.40.v20210413</feature>
+                        <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
