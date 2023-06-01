@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
@@ -77,6 +78,7 @@ import com.google.common.collect.Lists;
  */
 @Component("foreignSourceConfigRestService")
 @Path("foreignSourcesConfig")
+@Tag(name = "ForeignSourcesConfig", description = "Foreign Sources Config API")
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceConfigRestService.class);
 
@@ -340,7 +342,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getServices(@PathParam("groupName") String groupName) {
         ElementList elements = new ElementList(m_pollerConfig.getServiceMonitorNames());
-        m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
+        m_collectdConfigFactory.getCollectors().forEach(c -> {
             if (!elements.contains(c.getService())) {
                 elements.add(c.getService());
             }

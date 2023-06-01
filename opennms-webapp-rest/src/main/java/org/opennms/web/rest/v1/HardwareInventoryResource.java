@@ -44,6 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -85,6 +86,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("hardwareInventoryResource")
 @Path("hardwareInventory")
+@Tag(name = "HardwareInventory", description = "Hardware Inventory API")
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryResource.class);

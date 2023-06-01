@@ -1,3 +1,23 @@
+opennms-sentinel (31.0.8-1) stable; urgency=medium
+
+  * Minor release containing several small bug fixes and enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.8/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 May 2023 12:06:35 -0400
+
+opennms-sentinel (31.0.7-1) stable; urgency=medium
+
+  * Minor release containing several small bug fixes.
+    Most notably, it upgrades the OpenNMS Plugin API host to version 1.4.0,
+    enabling OPA plugins targeting that version to load successfully.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.7/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 21 Apr 2023 08:43:49 -0400
+
 opennms-sentinel (31.0.6-1) stable; urgency=medium
 
   * Minor release which fixes several bugs, including several security

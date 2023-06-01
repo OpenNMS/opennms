@@ -44,7 +44,8 @@ dns://my-dns-server/myzone.com/portland/?expression=^por-.*
 
 This URL imports all nodes from the same server and zone, but only imports the nodes in the zone that match the regular expression `^port-.*`.
 The matching nodes will be assigned to a requisition named 'portland'.
-If your expression requires URL encoding, for example you need to use a `?` in the expression, you must encode it properly.
+
+NOTE: The content of your expression must be URL encoded otherwise characters such as `?`, `+`, and slashes will be considered part of the query string and not the expression.
 
 [source]
 ----
@@ -64,10 +65,11 @@ dns://my-dns-server/myzone.com/portland/?location=Raleigh
 
 By prefixing with a `~`, you can specify a URL-encoded regular expression to determine the location based on the host entries.
 The following example derives the location based on the subdomain.
-This example uses a URL-encoded regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly one capturing group containing the subdomain.
+This example uses a URL-encoded regular expression with exactly one capturing group containing the subdomain.
 
 [source]
 ----
+Expression: ^(?:.*\.|)(.*?)\.hs-fulda\.de\.$
 dns://my-dns-server/hs-fulda.de/?location=~%5E%28%3F%3A.%2A%5C.%7C%29%28.%2A%3F%29%5C.hs-fulda%5C.de%5C.%24
 ----
 
@@ -93,4 +95,13 @@ A quick way to test if zone transfers are working is:
 [source, console]
 ----
 dig -t AXFR @<dnsServer> <zone>
+----
+
+== Trigger manual import
+
+You can manually trigger an import by sending a reload event.
+
+[source, console]
+----
+./send-event.pl -p 'url dns://my-dns-server/hs-fulda.de/?expression=^por[0-9]%3F&location=Raleigh' uei.opennms.org/internal/importer/reloadImport
 ----

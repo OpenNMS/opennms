@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.rest</artifactId>
-        <version>31.0.6</version>
+        <version>31.0.9-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.rest</groupId>
@@ -75,7 +75,7 @@
     <dependency>
       <groupId>org.apache.servicemix.specs</groupId>
       <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
-      <version>${servicemixSpecsVersion}</version>
+      <version>${karaf.servicemix.specs.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>

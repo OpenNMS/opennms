@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -90,6 +91,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("scheduledOutagesRestService")
 @Path("sched-outages")
+@Tag(name = "Sched-outages", description = "Scheduled Outages API")
 public class ScheduledOutagesRestService extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesRestService.class);
@@ -349,7 +351,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (Package pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
+            for (Package pkg : m_collectdConfigFactory.getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.joda.time.Duration;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
@@ -125,6 +126,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("foreignSourceRestService")
 @Path("foreignSources")
+@Tag(name = "ForeignSources", description = "Foreign Sources API")
 public class ForeignSourceRestService extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceRestService.class);

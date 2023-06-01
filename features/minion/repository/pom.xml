@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>31.0.6</version>
+        <version>31.0.9-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -32,8 +32,6 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
-                                <!-- Additional tools -->
-                                <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->
@@ -56,7 +54,6 @@
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
-                                <feature>hawtio</feature>
                                 <feature>cxf-commands/${cxfVersion}</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>
@@ -99,6 +96,27 @@
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete>
+                                  <fileset dir="${project.build.directory}/maven-repo/org/eclipse/jetty" />
+                                  <dirset dir="${project.build.directory}/maven-repo/org/eclipse/jetty" />
+                                  <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web" />
+                                  <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web" />
+                                </delete>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

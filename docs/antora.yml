@@ -1,9 +1,9 @@
 name: horizon
-version: '31'
+version: '31-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '31.0.6'
+    full-display-version: '31.0.9-SNAPSHOT'
     experimental: true
     source-language: asciidoc@
     xrefstyle: short@
@@ -33,4 +33,5 @@ nav:
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
 - modules/reference/nav.adoc
+- modules/troubleshooting/nav.adoc
 - modules/write-the-docs/nav.adoc

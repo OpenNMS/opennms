@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-javamail</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.6</version>
+    <version>31.0.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-javamail-api</artifactId>
@@ -31,8 +31,8 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>jakarta.mail</artifactId>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

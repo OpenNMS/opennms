@@ -50,6 +50,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
@@ -64,6 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("timelineRestService")
 @Path("timeline")
+@Tag(name = "Timeline", description = "Timeline API")
 public class TimelineRestService extends OnmsRestService {
 
     private static class TimescaleDescriptor {

@@ -29,6 +29,7 @@
 package org.opennms.install;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +43,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.bootstrap.FilesystemPermissionValidator;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.FileSystemUtils;
 
@@ -162,5 +165,43 @@ public class InstallerTest {
         Files.setPosixFilePermissions(lostFoundDir, Set.of());
 
         installer.verifyFilesAndDirectories();
+    }
+
+    @Test
+    public void testPasswordStaysTheSame() throws Exception {
+        Files.copy(Paths.get("src/test/resources/etc").resolve("users.xml"), etcDir.resolve("users.xml"));
+        Files.copy(Paths.get("src/test/resources/etc").resolve("groups.xml"), etcDir.resolve("groups.xml"));
+
+        UserFactory.init();
+        final UserManager userManager = UserFactory.getInstance();
+        userManager.reload();
+
+        assertTrue(userManager.comparePasswords("admin", "admin"));
+        try {
+            installer.install(new String[]{"-s"});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userManager.reload();
+        assertTrue(userManager.comparePasswords("admin", "admin"));
+    }
+
+    @Test
+    public void testPasswordIsSet() throws Exception {
+        Files.copy(Paths.get("src/test/resources/etc").resolve("users.xml"), etcDir.resolve("users.xml"));
+        Files.copy(Paths.get("src/test/resources/etc").resolve("groups.xml"), etcDir.resolve("groups.xml"));
+
+        UserFactory.init();
+        final UserManager userManager = UserFactory.getInstance();
+        userManager.reload();
+
+        assertTrue(userManager.comparePasswords("admin", "admin"));
+        try {
+            installer.install(new String[]{"-R", "foobar"});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userManager.reload();
+        assertTrue(userManager.comparePasswords("admin", "foobar"));
     }
 }

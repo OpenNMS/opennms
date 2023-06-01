@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>31.0.6</version>
+		<version>31.0.9-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs-31</artifactId>
@@ -97,10 +97,6 @@
 					<groupId>com.sun.xml.bind</groupId>
 					<artifactId>jaxb-impl</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>org.ow2.asm</groupId>
-					<artifactId>asm</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -127,10 +123,6 @@
 			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>jaxb-dependencies</artifactId>
 			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-all</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>

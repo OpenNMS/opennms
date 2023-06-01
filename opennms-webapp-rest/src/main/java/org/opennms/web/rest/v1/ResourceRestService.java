@@ -48,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -74,6 +75,7 @@ import com.google.gson.Gson;
  */
 @Component("resourceRestService")
 @Path("resources")
+@Tag(name = "Resources", description = "Resources API")
 public class ResourceRestService extends OnmsRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceRestService.class);

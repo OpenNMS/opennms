@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>31.0.6</version>
+    <version>31.0.9-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -244,9 +244,6 @@
                 <feature>instance</feature>
                 <feature>jaas-deployer</feature>
                 <feature>jasypt-encryption</feature>
-                <!-- TODO: Should we import both versions of Jetty? -->
-                <feature>jetty/8.1.14.v20131031</feature>
-                <feature>jetty/9.3.9.v20160517</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -264,7 +261,7 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
+                <feature>ssh/${karafSshdVersion}</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -311,10 +308,8 @@
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <feature version="8.1.14.v20131031">jetty</feature>
-                <feature version="9.3.9.v20160517">jetty</feature>
-                <!--TODO: Needed?-->
-                <feature version="9.4.29.v20200521">jetty</feature>
+                <!-- pull in the latest jetty so we don't end up with multiple versions -->
+                <feature>jetty/${jettyVersion}</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -331,7 +326,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -421,7 +415,7 @@
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
                 <feature>smack</feature>
-                <feature>spring-security32</feature>
+                <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>

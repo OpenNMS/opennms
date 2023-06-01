@@ -64,4 +64,4 @@ Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring
 After the pre-authentication plugin is enabled and set up, use the following command to test its configuration:
 
 [source, console]
-curl -H "X-Remote-User: myuser" -H "X-Remote-Role: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami
+curl -H "X-Remote-User: myuser" -H "X-Remote-Roles: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami

@@ -10,4 +10,4 @@ jobs:
       - run-integration-tests:
           rerun-failtest-count: 0
           failure-option: --fail-never
-          changes-only: true
+          changes-only: false

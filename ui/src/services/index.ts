@@ -36,7 +36,7 @@ import { search } from './searchService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
-import { getOpenApi } from './helpService'
+import { getOpenApiV1, getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
 import { getPlugins } from './pluginService'
 
@@ -66,6 +66,7 @@ export default {
   getNotificationSummary,
   getFileNames,
   getFileExtensions,
+  getOpenApiV1,
   getOpenApi,
   getProvisionDService,
   populateProvisionD,

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,9 +54,10 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
         "org.opennms.core.test.BeanUtilsTestContextInjectionExecutionListener",
         "org.opennms.test.OpenNMSConfigurationExecutionListener",
         "org.opennms.core.test.db.TemporaryDatabaseExecutionListener",
-        "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
-        "org.opennms.core.test.http.JUnitHttpServerExecutionListener",
         "org.opennms.core.test.dns.JUnitDNSServerExecutionListener",
+        "org.opennms.core.test.http.JUnitHttpServerExecutionListener",
+        "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
+        "org.opennms.core.test.ssh.JUnitSshServerExecutionListener",
         "org.opennms.core.collection.test.JUnitCollectorExecutionListener",
         "org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
         "org.springframework.test.context.support.DirtiesContextTestExecutionListener",
@@ -77,7 +78,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 
         // Make a deep copy of the existing listeners
         List<TestExecutionListener> oldListeners = getTestContextManager().getTestExecutionListeners();
-        List<TestExecutionListener> listeners = new ArrayList<TestExecutionListener>(oldListeners.size());
+        List<TestExecutionListener> listeners = new ArrayList<>(oldListeners.size());
         for (TestExecutionListener old : oldListeners) {
             listeners.add(old);
         }
@@ -86,7 +87,8 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
         // Register the standard set of execution listeners
         for (final String className : STANDARD_LISTENER_CLASS_NAMES) {
             try {
-                final TestExecutionListener listener = (TestExecutionListener)Class.forName(className).newInstance();
+                final var standardListenerClazz = Class.forName(className);
+				final TestExecutionListener listener = (TestExecutionListener)standardListenerClazz.getDeclaredConstructor().newInstance();
                 getTestContextManager().registerTestExecutionListeners(listener);
             } catch (final Exception e) {
             	LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, e.getLocalizedMessage());
@@ -95,7 +97,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 
         // Add any additional listeners that may have been specified manually in the test
         final Comparator<TestExecutionListener> comparator = new ClassNameComparator();
-        final TreeSet<TestExecutionListener> standardListeners = new TreeSet<TestExecutionListener>(comparator);
+        final TreeSet<TestExecutionListener> standardListeners = new TreeSet<>(comparator);
         standardListeners.addAll(getTestContextManager().getTestExecutionListeners());
         for (final TestExecutionListener listener : listeners) {
             if (!standardListeners.contains(listener)) {

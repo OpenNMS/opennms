@@ -39,7 +39,6 @@
         java.util.TreeMap,
         java.util.Enumeration,
 	org.opennms.netmgt.config.CollectdConfigFactory,
-	org.opennms.netmgt.config.collectd.CollectdConfiguration,
 	org.opennms.netmgt.config.collectd.Collector,
         org.opennms.netmgt.config.PollerConfigFactory,
         org.opennms.netmgt.config.PollerConfig,
@@ -80,12 +79,11 @@
     //Collectd
     Boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
     CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
-    CollectdConfiguration collectdConfig =  collectdConfigFactory.getCollectdConfig();
     List<String> collectdPackageNames = new ArrayList<String>();
     Map<String,String> collectdParameters = new TreeMap<String,String>();
 
     if (isServiceCollectionEnabled) { // Service exists in any collection package and is enabled
-        for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfig.getPackages()) {
+        for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfigFactory.getPackages()) {
             if (pkg.serviceInPackageAndEnabled(serviceName)) {
                 collectdPackageNames.add(pkg.getName()); //there should be at least one, right?
             }
@@ -104,7 +102,7 @@
             }
         }
         String collectorClassName = null;
-        for (Collector collectdCollector : collectdConfig.getCollectors()) {
+        for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
             if (collectdCollector.getService().equals(serviceName)) {
 		pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
     	        break;

@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.joda.time.Duration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -66,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("monitoringLocationsRestService")
 @Path("monitoringLocations")
+@Tag(name = "MonitoringLocations", description = "Monitoring Locations API")
 public class MonitoringLocationsRestService extends OnmsRestService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsRestService.class);

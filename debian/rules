@@ -13,6 +13,7 @@ export OPTS_PROFILES=-Prun-expensive-tasks
 
 export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
+	-Denable.license=true \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
 	-Dinstall.dir=/usr/share/opennms \
 	-Dinstall.bin.dir=/usr/share/opennms/bin \
