@@ -261,7 +261,7 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
+                <feature>ssh/${karafSshdVersion}</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -326,7 +326,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>

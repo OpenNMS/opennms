@@ -169,14 +169,15 @@
     </feature>
 
     <!-- override the default Karaf ssh with a version from a newer release -->
-    <feature name="ssh" description="Provide a SSHd server on Karaf" version="4.3.9">
+    <feature name="ssh" description="Provide an SSHd server on Karaf" version="${karafSshdVersion}">
         <feature>shell</feature>
         <feature>jaas</feature>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/2.9.2</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/2.9.2</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/2.9.2</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk15on/1.70</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk15on/1.70</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/1.72</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/1.72</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/1.72</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
     </feature>
 </features>

@@ -1782,7 +1782,8 @@
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.8.0</minaSshdVersion>
+    <minaSshdVersion>2.10.0</minaSshdVersion>
+    <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
@@ -5243,6 +5244,21 @@
       <dependency>
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-osgi</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-scp</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
       </dependency>
     </dependencies>
