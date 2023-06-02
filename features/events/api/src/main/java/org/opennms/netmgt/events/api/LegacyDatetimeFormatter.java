@@ -31,12 +31,21 @@ package org.opennms.netmgt.events.api;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * A datetime formatter that attempts to mimic, as closely as possible, formatting in pre-2019 OpenNMS releases.
+ * This will not work <em>exactly</em> the same unless you change the <code>-Djava.locale.provider=<code>
+ * property during startup to be <code>COMPAT</code> by default.
+ */
 public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
     public static final ThreadLocal<DateFormat> FORMATTER_FULL = ThreadLocal.withInitial(() -> {
         int timeFormat = DateFormat.FULL;
@@ -57,22 +66,6 @@ public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
     public static final ThreadLocal<DateFormat> FORMATTER_LONG = ThreadLocal.withInitial(() -> {
         final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
         formatter.setLenient(true);
-        return formatter;
-    });
-
-    public static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = ThreadLocal.withInitial(() -> {
-        int timeFormat = DateFormat.FULL;
-        // The DateFormat.FULL format for France/Germany do not include the seconds digit
-        // which is necessary to have sub-minute resolution in event times. For these
-        // locales, we'll fall back to using DateFormat.LONG.
-        final String language = Locale.getDefault().getLanguage();
-        if (language.equals(Locale.FRANCE.getLanguage()) || language.equals(Locale.GERMANY.getLanguage())) {
-            timeFormat = DateFormat.LONG;
-        }
-
-        final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
-        formatter.setLenient(true);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         return formatter;
     });
 
@@ -100,35 +93,46 @@ public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
         return formatter;
     });
 
+    private static final List<ThreadLocal<DateFormat>> preferredOrder = Arrays.asList(FORMATTER_LONG, FORMATTER_CUSTOM, FORMATTER_FULL, FORMATTER_DEFAULT);
+
     @Override
     public Date parse(final String dateString) throws ParseException {
         if (dateString == null) {
             throw new ParseException("time was null!", -1);
         }
-        try {
-            return FORMATTER_LONG.get().parse(dateString);
-        } catch (final ParseException parseException) {
-            try {
-                return FORMATTER_CUSTOM.get().parse(dateString);
-            } catch (final ParseException pe) {
+        final String noUtc = dateString.replaceAll("UTC$", "GMT");
+        Exception e = null;
+        for (final String attempt : Arrays.asList(dateString, noUtc)) {
+            for (final ThreadLocal<DateFormat> formatter : preferredOrder) {
+                final DateFormat dateFormatter = formatter.get();
+                // System.err.println("attempt=" + attempt + ", formatter=" + dateFormatter);
                 try {
-                    return FORMATTER_FULL.get().parse(dateString);
-                } catch (final Exception fpe) {
-                    try {
-                        return Date.from(ZonedDateTime.parse(dateString).toInstant());
-                    } catch (final DateTimeParseException dtpe) {
-                        throw new ParseException("failed to parse " + dateString + " as an ISO date; giving up", dtpe.getErrorIndex());
-                    } catch (final Exception isoe) {
-                        throw new ParseException("failed to parse " + dateString + " as an ISO date; giving up", 0);
+                    return dateFormatter.parse(attempt);
+                } catch (final ParseException pe) {
+                    if (e == null) {
+                        e = pe;
                     }
                 }
             }
         }
+
+        // we tried all the "legacy" formatters, either ISO will work, or we give up
+
+        ParseException thrown = null;
+        try {
+            return Date.from(ZonedDateTime.parse(dateString).toInstant());
+        } catch (final DateTimeParseException dtpe) {
+            thrown = new ParseException("failed to parse " + dateString + " as any legacy format; giving up", dtpe.getErrorIndex());
+        } catch (final Exception isoe) {
+            thrown = new ParseException("failed to parse " + dateString + " as any legacy format; giving up", 0);
+        }
+        thrown.initCause(e);
+        throw thrown;
     }
 
     @Override
     public String format(final Date date) {
-        return FORMATTER_LONG_GMT.get().format(date);
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toInstant().atZone(ZoneId.systemDefault()));
     }
 
 }

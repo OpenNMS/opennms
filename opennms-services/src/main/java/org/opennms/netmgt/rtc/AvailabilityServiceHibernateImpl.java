@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -77,6 +78,8 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
 	@Autowired
 	private OutageDao m_outageDao;
+
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Builds a map of configured categories, keyed by label.
@@ -118,7 +121,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         final EuiLevel level = new EuiLevel();
 
         // set created in m_header and add to level
-        header.setCreated(EventConstants.formatToString(curDate));
+        header.setCreated(FORMATTER.format(curDate));
         level.setHeader(header);
 
         final Category levelCat = new Category();
