@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -103,7 +104,9 @@ public class SnmpTrapHelper {
      */
     private Map<String, Object> m_factoryMap;
 
-    /**
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
+
+	/**
      * Constructs a new SNMPTrapHelper.
      */
     public SnmpTrapHelper() {
@@ -1127,7 +1130,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.8.0", // OPENNMS-MIB::openNMS-event-nodeid 
                       EventConstants.TYPE_SNMP_OCTET_STRING, Long.toString(event.getNodeid()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.9.0", // OPENNMS-MIB::openNMS-event-time
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventConstants.formatToString(event.getTime()));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, FORMATTER.format(event.getTime()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface
