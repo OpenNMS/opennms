@@ -1505,7 +1505,7 @@
     <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+    <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
 
@@ -1712,7 +1712,7 @@
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.1</mavenApiVersion>
+    <mavenApiVersion>3.9.2</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
