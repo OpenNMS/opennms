@@ -144,7 +144,7 @@ echo "#### Building Assembly Dependencies"
            install
 
 echo "#### Executing tests"
-./compile.pl "${MAVEN_ARGS[@]}" \
+ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
