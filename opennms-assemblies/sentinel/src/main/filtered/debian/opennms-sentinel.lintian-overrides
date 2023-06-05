@@ -2,7 +2,6 @@ opennms-sentinel: codeless-jar usr/share/sentinel/system/org/apache/aries/bluepr
 opennms-sentinel: debian-revision-not-well-formed
 opennms-sentinel: debian-revision-should-not-be-zero
 opennms-sentinel: empty-binary-package
-opennms-sentinel: executable-not-elf-or-script usr/share/sentinel/bin/contrib/karaf-*
 opennms-sentinel: misplaced-extra-member-in-deb
 opennms-sentinel: package-has-long-file-name
 opennms-sentinel: unknown-java-class-version

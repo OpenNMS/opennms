@@ -65,7 +65,6 @@
         <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms.properties" value="unknown"/>
-        <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesDao"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
@@ -317,14 +316,6 @@
   <bean id="dataSourceTester" class="org.opennms.core.db.DataSourceConfigurationFactory">
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
-
-  <bean id="otrsConfigDao" class="org.opennms.netmgt.ticketer.otrs.DefaultOtrsConfigDao"/>
-
-  <bean id="otrsConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="otrsConfigDao" />
-    <property name="targetMethod"><value>getEndpoint</value></property>
-  </bean>
-
 
   <bean name="noOpJsonStore" class="org.opennms.features.distributed.kvstore.json.noop.NoOpJsonStore" />
   <bean name="pollOutagesDao" class="org.opennms.netmgt.config.dao.outages.impl.OnmsPollOutagesDao">

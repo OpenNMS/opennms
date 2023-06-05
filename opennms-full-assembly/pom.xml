@@ -261,7 +261,7 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
+                <feature>ssh/${karafSshdVersion}</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -326,7 +326,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -396,6 +395,7 @@
                 <feature>opennms-kafka-consumer</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
+                <feature>opennms-notifications-shell</feature>
                 <feature>opennms-poller-shell</feature>
                 <feature>opennms-provisioning</feature>
                 <feature>opennms-provisioning-detectors</feature>
@@ -831,13 +831,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xml</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>contrib</classifier>
     </dependency>
     <dependency>
       <groupId>com.ximpleware</groupId>

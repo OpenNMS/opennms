@@ -452,18 +452,6 @@
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs-31</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-remedy</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-model</artifactId>
       <scope>compile</scope>
@@ -1019,16 +1007,6 @@
       <groupId>io.pyroscope</groupId>
       <artifactId>agent</artifactId>
       <version>${pyroscopeVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

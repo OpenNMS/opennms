@@ -225,6 +225,16 @@ public class NotificationTask implements Runnable {
         return m_commands.clone();
     }
 
+    protected static ExecutorStrategy getExecutorStrategy(Command command) {
+        if (command.getServiceRegistry()) {
+            return new ServiceRegistryExecutor();
+        } else if (command.getBinary()) {
+            return new CommandExecutor();
+        } else {
+            return new ClassExecutor();
+        }
+    }
+
     /**
      * <p>run</p>
      */
@@ -260,13 +270,7 @@ public class NotificationTask implements Runnable {
                             }
 
                             isBinary = command.getBinary();
-                            if (command.getServiceRegistry()) {
-                                strategy = new ServiceRegistryExecutor();
-                            } else if (isBinary) {
-                                strategy = new CommandExecutor();
-                            } else {
-                                strategy = new ClassExecutor();
-                            }
+                            strategy = getExecutorStrategy(command);
                             LOG.debug("Class created is: {}", command.getClass());
 
                             getNotificationManager().incrementAttempted(isBinary);
@@ -320,7 +324,7 @@ public class NotificationTask implements Runnable {
 
     /**
      */
-    private List<org.opennms.netmgt.model.notifd.Argument> getArgumentList(Command command) {
+    protected List<org.opennms.netmgt.model.notifd.Argument> getArgumentList(Command command) {
         Collection<Argument> notifArgs = getArgumentsForCommand(command);
         List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<>();
 

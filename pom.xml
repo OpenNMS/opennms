@@ -572,11 +572,6 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.2</version>
         <configuration>
@@ -808,19 +803,6 @@
                 </pluginExecutionFilter>
                 <action>
                   <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>axistools-maven-plugin</artifactId>
-                  <versionRange>[1.4,)</versionRange>
-                  <goals>
-                    <goal>wsdl2java</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -1303,8 +1285,6 @@
             <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
-            <runRemedyTests>${runRemedyTests}</runRemedyTests>
-            <runOtrsTests>${runOtrsTests}</runOtrsTests>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
@@ -1748,8 +1728,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
-    <opennmsApiVersion>1.4.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.5.0</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.5.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1802,7 +1782,8 @@
     <zookeeperVersion>3.8.1</zookeeperVersion>
     <zookeeper2Version>3.8.1</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.8.0</minaSshdVersion>
+    <minaSshdVersion>2.10.0</minaSshdVersion>
+    <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
@@ -3228,22 +3209,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-otrs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-otrs-31</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-remedy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3597,27 +3563,6 @@
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>${antlr.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis</artifactId>
-        <version>1.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>axis</groupId>
-            <artifactId>axis-wsdl4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-jaxrpc</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-saaj</artifactId>
-        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.camel</groupId>
@@ -5308,6 +5253,21 @@
       <dependency>
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-osgi</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-scp</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
       </dependency>
     </dependencies>

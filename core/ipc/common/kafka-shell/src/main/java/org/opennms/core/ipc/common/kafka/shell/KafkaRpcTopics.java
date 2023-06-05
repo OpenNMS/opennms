@@ -30,7 +30,6 @@ package org.opennms.core.ipc.common.kafka.shell;
 
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME;
-import static org.springframework.jdbc.support.DatabaseStartupValidator.DEFAULT_TIMEOUT;
 
 import java.util.Properties;
 import java.util.Set;
@@ -49,6 +48,8 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.SystemType;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.google.common.base.Strings;
+
 @Command(scope = "opennms", name = "kafka-rpc-topics", description = "List RPC topics used by current system.")
 @Service
 public class KafkaRpcTopics implements Action {
@@ -64,7 +65,6 @@ public class KafkaRpcTopics implements Action {
 
     @Override
     public Object execute() throws Exception {
-
         Properties kafkaConfig = Utils.getKafkaConfig(identity, configAdmin, KafkaRpcConstants.RPC_TOPIC_PREFIX);
         // Pre-check for bootstrap.servers.
         if (kafkaConfig.isEmpty() || (kafkaConfig.getProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG) == null)) {
@@ -72,7 +72,12 @@ public class KafkaRpcTopics implements Action {
             return null;
         }
         if (timeout <= 0) {
-            timeout = DEFAULT_TIMEOUT;
+            final String requestTimeoutMsConfig = kafkaConfig.getProperty(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG);
+            if (!Strings.isNullOrEmpty(requestTimeoutMsConfig)) {
+                timeout = Integer.parseInt(requestTimeoutMsConfig);
+            } else {
+                timeout = KafkaSinkTopics.DEFAULT_TIMEOUT;
+            }
         }
         kafkaConfig.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, timeout);
         try {

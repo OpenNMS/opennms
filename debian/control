@@ -121,8 +121,8 @@ Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
-Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
-Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-provisioning-rancid (<<${binary:Version})
+Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version}), opennms-contrib (<<${binary:Version})
+Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version}), opennms-plugin-provisioning-rancid (<<${binary:Version}), opennms-plugin-ticketing-otrs (<<${binary:Version}), opennms-plugin-ticketing-remedy (<<${binary:Version}), opennms-contrib (<<${binary:Version})
 Breaks: opennms-plugin-provisioning-rancid (<<${binary:Version})
 Provides: opennms-plugin-api (= OPA_VERSION)
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
@@ -183,24 +183,9 @@ Description: Enterprise-grade Open-source Network Management Platform (Documenta
  This package provides the user, administration, and programming documentation
  for OpenNMS.
 
-Package: opennms-contrib
-Architecture: all
-Depends: opennms-common (=${binary:Version})
-Description: Enterprise-grade Open-source Network Management Platform (Contrib)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides additional features and functionality that are not part
- of OpenNMS proper.
-
 Package: opennms-plugins
 Architecture: all
-Depends: opennms-plugin-northbounder-jms (=${binary:Version}), opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-reverse-dns (=${binary:Version}), opennms-plugin-provisioning-snmp-asset (=${binary:Version}), opennms-plugin-provisioning-snmp-hardware-inventory (=${binary:Version}), opennms-plugin-provisioning-wsman-asset (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-collector-vtdxml-handler (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
+Depends: opennms-plugin-northbounder-jms (=${binary:Version}), opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-reverse-dns (=${binary:Version}), opennms-plugin-provisioning-snmp-asset (=${binary:Version}), opennms-plugin-provisioning-snmp-hardware-inventory (=${binary:Version}), opennms-plugin-provisioning-wsman-asset (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-collector-vtdxml-handler (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -399,21 +384,6 @@ Description: Enterprise-grade Open-source Network Management Platform (JIRA Tick
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
  This package provides support for opening JIRA issues from OpenNMS alarms.
-
-Package: opennms-plugin-ticketer-otrs
-Architecture: all
-Depends: opennms-server (=${binary:Version})
-Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
-Description: Enterprise-grade Open-source Network Management Platform (OTRS Ticketer Support)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides support for opening OTRS tickets from OpenNMS alarms.
 
 Package: opennms-plugin-ticketer-rt
 Architecture: all
