@@ -1,29 +1,81 @@
 <style>
-    #usage-statistics-sharing-modal .modal-dialog {
+    #usage-statistics-sharing-alert.alert {
+		/* ensure alert is above the geomap */
+		z-index: 1000;
+    }
+
+    #usage-statistics-sharing-alert .alert-dialog {
        position: fixed;
        top: auto;
        right: auto;
-       left: calc(50% - 400px);
-       bottom: 0;
-       min-width: 800px;
+       left: max(calc(60% - 450px), 1px);
+       bottom: 1rem;
+       min-width: 600px;
+       max-width: 900px;
+       box-shadow: 1px 3px 3px #6c757d;
+    }
+
+    .alert-dialog .modal-content .modal-header {
+      border-bottom: none;
+    }
+
+    #usage-stats-alert-body.modal-body {
+        display: flex;
+        padding: 0.25rem 1rem 1rem 1rem;
+    }
+
+    .usage-stats-content {
+		display: inline-block;
+		flex: 1;
+		max-width: 70%;
+    }
+
+    .usage-stats-button {
+        border-radius: 0;
+		box-shadow: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        line-height: 1.25rem;
+        text-transform: uppercase;
+    }
+
+    #usage-statistics-sharing-notice-learn-more.usage-stats-learn-button {
+        border: none;
+        color: #273180;
+    }
+
+    #usage-statistics-sharing-notice-learn-more.usage-stats-learn-button:hover {
+        background-color: #e9ecef;
+    }
+
+	#usage-statistics-sharing-notice-dismiss.usage-stats-dismiss-button {
+        background-color: #273180;
+        border: 2px solid transparent;
+        color: #fff;
+        margin-left: 1rem;
+    }
+
+    #usage-statistics-sharing-notice-dismiss.usage-stats-dismiss-button:hover {
+        box-shadow: 3px 1px 2px #6c757d;
     }
 </style>
 
-<div class="modal" id="usage-statistics-sharing-modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog">
+<div class="alert alert-dismissable" id="usage-statistics-sharing-alert" tabindex="-1" role="alert">
+	<div class="alert-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title">Usage Statistics Sharing Notice</h4>
+				<h5 class="modal-title">Usage Statistics Sharing Notice</h5>
 			</div>
-			<div class="modal-body">
-				<p>Anonymous OpenNMS usage statistics is sent to
+			<div id="usage-stats-alert-body" class="modal-body">
+				<div class="usage-stats-content">Anonymous OpenNMS usage statistics are sent to
 					<a target="_blank" href="https://stats.opennms.org">OpenNMS Statistics</a>.
 					This will help us improve your OpenNMS software, subject to our
-					<a target="_blank" href="https://www.opennms.com/privacy/">privacy policy</a>.</p>
-			</div>
-			<div class="modal-footer">
-				<button id="usage-statistics-sharing-notice-learn-more" type="button" class="btn btn-success">Learn More</button>
-				<button id="usage-statistics-sharing-notice-dismiss" type="button" class="btn btn-secondary" data-dismiss="modal">Dismiss</button>
+					<a target="_blank" href="https://www.opennms.com/privacy/">privacy policy</a>.</div>
+				<div class="usage-stats-buttons">
+					<button id="usage-statistics-sharing-notice-learn-more" type="button" class="btn usage-stats-button usage-stats-learn-button">Learn More</button>
+					<button id="usage-statistics-sharing-notice-dismiss" type="button" class="btn usage-stats-button usage-stats-dismiss-button" data-dismiss="alert">Dismiss</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -51,8 +103,8 @@
     }
 
     $(document).ready(function() {
-        $('#usage-statistics-sharing-modal').on('shown.bs.modal', function () {
-            $(this).find('.modal-dialog').css({height:'auto', 'max-height':'100%'});
+        $('#usage-statistics-sharing-alert').on('shown.bs.alert', function () {
+            $(this).find('.alert-dialog').css({height:'auto', 'max-height':'100%'});
             $('#usage-statistics-sharing-notice-learn-more').focus();
         });
         $('#usage-statistics-sharing-notice-dismiss').click(function() {
@@ -62,10 +114,7 @@
             ackInitialNotice('ui/index.html#/usage-statistics');
         });
         <#if showOnLoad>
-            $('#usage-statistics-sharing-modal').modal({
-                keyboard: false,
-                backdrop: 'static'
-            });
+            $('#usage-statistics-sharing-alert').alert();
         </#if>
     });
 })();
