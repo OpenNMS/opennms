@@ -293,7 +293,7 @@
                 <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
-                <feature>activemq-broker</feature>
+                <feature>activemq-broker-noweb</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
