@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.rtc.utils;
 import java.util.Date;
 
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.rtc.DataManager;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
@@ -57,6 +58,8 @@ public class LegacyEuiLevelMapper {
      */
     private final Header m_header;
     private final DataManager m_dataMgr;
+
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /**
      * Constructor
@@ -89,7 +92,7 @@ public class LegacyEuiLevelMapper {
         EuiLevel level = new EuiLevel();
 
         // set created in m_header and add to level
-        m_header.setCreated(EventConstants.formatToString(curDate));
+        m_header.setCreated(FORMATTER.format(curDate));
         level.setHeader(m_header);
 
         org.opennms.netmgt.xml.rtc.Category levelCat = new org.opennms.netmgt.xml.rtc.Category();
