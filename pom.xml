@@ -1770,7 +1770,7 @@
     <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
-    <xalanVersion>2.7.3.ONMS.1</xalanVersion>
+    <xalanVersion>2.7.3</xalanVersion>
     <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
