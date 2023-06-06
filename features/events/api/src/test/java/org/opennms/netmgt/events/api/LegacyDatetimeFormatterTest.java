@@ -35,11 +35,24 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.test.LocaleProviderUtils;
 
 public class LegacyDatetimeFormatterTest {
     private TimeZone oldZone;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        LocaleProviderUtils.compat();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        LocaleProviderUtils.reset();
+    }
 
     @Before
     public void setUp() {
