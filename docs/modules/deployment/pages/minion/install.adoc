@@ -32,7 +32,12 @@ include::../time-sync.adoc[]
 
 [{tabs}]
 ====
-CentOS/RHEL 8/9::
+CentOS/RHEL 9::
++
+--
+include::centos-rhel9/install-minion.adoc[]
+--
+CentOS/RHEL 8::
 +
 --
 include::centos-rhel8/install-minion.adoc[]
