@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,17 +33,18 @@ import java.util.Date;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateTimeAdapter extends XmlAdapter<String, Date> {
+    private static final EventDatetimeFormatter FORMATTER = EventConstants.getEventDatetimeFormatter();
 
     /** {@inheritDoc} */
     @Override
     public String marshal(final Date date) throws Exception {
-        return date == null ? null : EventConstants.formatToString(date);
+        return date == null ? null : FORMATTER.format(date);
     }
 
     /** {@inheritDoc} */
     @Override
     public Date unmarshal(final String string) throws Exception {
-        return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
+        return (string == null || string.isEmpty()) ? null : FORMATTER.parse(string);
     }
 
 }
