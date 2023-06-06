@@ -22,7 +22,7 @@
         "@babel/preset-env": "^7.16.5",
         "@babel/preset-typescript": "^7.16.5",
         "@rangerrick/moment-javaformat": "^2.0.1",
-        "@types/jest": "^27.0.3",
+        "@types/jest": "^29.5.2",
         "@types/lodash": "^4.14.141",
         "@typescript-eslint/eslint-plugin": "^5.45.0",
         "@typescript-eslint/parser": "^5.45.0",
