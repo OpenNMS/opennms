@@ -4256,7 +4256,7 @@
       <dependency>
         <groupId>com.caucho</groupId>
         <artifactId>hessian</artifactId>
-        <version>3.1.5</version>
+        <version>4.0.66</version>
       </dependency>
       <dependency>
         <groupId>com.github.seancfoley</groupId>
