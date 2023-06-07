@@ -1062,36 +1062,42 @@ public abstract class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
-    protected static EventDatetimeFormatter m_eventDatetimeFormatter;
-
-    static {
-        if (Boolean.parseBoolean("org.opennms.events.legacyFormatter")) {
-            m_eventDatetimeFormatter = new LegacyDatetimeFormatter();
-        } else {
-            m_eventDatetimeFormatter = new ISODatetimeFormatter();
-        }
-    }
-
     /**
      * A utility method to parse a string into a 'Date' instance.
      *
+     * @deprecated use {@link #getEventDatetimeFormatter()} instead
      * @param timeString a {@link java.lang.String} object
      * @return a {@link java.util.Date} object
      * @throws java.text.ParseException if any
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
-        return m_eventDatetimeFormatter.parse(timeString);
+        return getEventDatetimeFormatter().parse(timeString);
     }
 
     /**
      * A utility method to format a 'Date' into a string.
      *
+     * @deprecated use {@link #getEventDatetimeFormatter()} instead
      * @param date a {@link java.util.Date} object
      * @return a {@link java.lang.String} object
      */
     public static final String formatToString(final Date date) {
-        return m_eventDatetimeFormatter.format(date);
+        return getEventDatetimeFormatter().format(date);
     }
+
+    /**
+     * Get the appropriate instance of an event date/time formatter based on whether
+     * the system property org.opennms.events.legacyFormatter is true or false.
+     *
+     * @return a formatter instance
+     */
+    public static EventDatetimeFormatter getEventDatetimeFormatter() {
+        if (Boolean.getBoolean("org.opennms.events.legacyFormatter")) {
+            return new LegacyDatetimeFormatter();
+        } else {
+            return new ISODatetimeFormatter();
+        }
+	}
 
 	/**
 	 * Converts the value of a parm ('Value') of the instance to a string
