@@ -1,19 +1,16 @@
 
-[[ref-daemons]]
 = Daemons
 
 The {page-component-title} service is composed of several daemon "sub-services" that each perform a specific set of tasks.
-Enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.
+You can enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.
 
-See the xref:operation:deep-dive/admin/daemon-config-files.adoc[system administration] section for details on sending daemon reload commands.
+See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] section for details on sending daemon reload commands.
 
 == List of daemons
 
-[options="header"]
 [cols="1,3"]
 |===
-| Name
-| Description
+| Name  | Description
 
 | Ackd
 | The acknowledge daemon is responsible for alarm acknowledgement.
@@ -22,7 +19,7 @@ See the xref:operation:deep-dive/admin/daemon-config-files.adoc[system administr
 | Generates Java actions based on received events.
 
 | Alarmd
-| The alarm daemon handles alarm workflows.
+| Handles alarm workflows.
 
 | AsteriskGateway
 | Communicates with an Asterisk server for VOIP notification.
@@ -58,7 +55,7 @@ See the xref:operation:deep-dive/admin/daemon-config-files.adoc[system administr
 | Used in startup script to detect if Karaf started properly.
 
 | Notifd
-| The notification daemon sends notifications to other systems based on event UEIs.
+| Sends notifications to other systems based on event UEIs.
 
 | PassiveStatusd
 | The Passive Status Keeper provides a mechanism to generate service outages based on events.
@@ -68,45 +65,45 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Handles Application Perspective Monitoring availability calculations.
 
 | Pollerd
-| The poller daemon is responsible for service availability monitoring.
+| Responsible for service availability monitoring.
 
 | Provisiond
-| The provision daemon handles the node import and service detection processes.
+| Handles the node import and service detection processes.
 
 | Queued
-| The queue daemon handles scheduling of tasks to run in the future.
+| Handles scheduling of tasks to run in the future.
 
 | Reportd
-| The report daemon generates and schedules reports.
+| Generates and schedules reports.
 
 | Rtcd
-| The Real Time Console daemon handles uptime percentage calculations.
+| Handles uptime percentage calculations.
 
 | Scriptd
-| Scriptd allows the user to configure Bean Shell script to run in response to events.
+| Lets you configure Bean Shell script to run in response to events.
 
 | SnmpPoller
-| The SNMP poller checks SNMP interface admin status.
+| Checks SNMP interface admin status.
 It is separate from pollerd's SnmpMonitor.
 
 | Statsd
 | Generates statistical reports from node data.
 
 | Syslogd
-| A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
+| Allows retrieval and parsing of syslog messages to generate events.
 
 | Telemetryd
-| The Telemetry daemon collects sensor data sent from nodes to {page-component-title}.
+| Collects sensor data sent from nodes to {page-component-title}.
 
 | Ticketer
-| The ticketing integration daemon lets {page-component-title} create trouble tickets in external systems.
+| Enables {page-component-title} to create trouble tickets in external systems.
 
 | Tl1d
-| The TL1 daemon enables reception of TL1 autonomous messages.
+| Enables reception of TL1 autonomous messages.
 
 | Trapd
-| The trap daemon provides an SNMP server that accepts SNMP traps that can be converted to events.
+| Provides an SNMP server that accepts SNMP traps that can be converted to events.
 
 | Vacuumd
-| The vacuum daemon executes daily cleanup tasks for the PostgreSQL database.
+| Runs daily cleanup tasks for the PostgreSQL database.
 |===

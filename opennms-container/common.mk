@@ -12,7 +12,7 @@ endif
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-2.1.0.b175
+BASE_IMAGE              := opennms/deploy-base:ubuntu-3.0.1.b220-jre-17
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
@@ -98,7 +98,22 @@ test: $(TARBALL)
 	$(info Ready to go, let's light this candle!)
 	@true
 
+# We do a sanity check first to make sure the assembly was built with
+# the proper opennms.home path, otherwise the build can succeed but
+# people get really weird startup errors from runjava because it can't
+# find find-java.sh.
 $(README): $(TARBALL) Dockerfile $(shell find container-fs -type f)
+	@echo "Sanity checking OPENNMS_HOME path in **/fix-permissions script..."
+	@fix_permissions_file=`tar -t -z -f $< | grep '/fix-permissions$$'` || exit 1 ; \
+	  fix_permissions_opennms_home=`tar -x -z -f $< -O "$$fix_permissions_file" | \
+	    egrep "^\\s*OPENNMS_HOME='" | sed "s/^.*OPENNMS_HOME='//;s/'//"` || exit 1 ; \
+          expectation="/opt/opennms" ; \
+	  if [ "$$fix_permissions_opennms_home" != "$$expectation" ]; then \
+	    echo "OPENNMS_HOME in bin/fix-permissions from $< was not $$expectation" >&2 ; \
+	    echo "OPENNMS_HOME was $$fix_permissions_opennms_home -- make sure -Dopennms.home=$$expectation is passed when assemble.pl is run" >&2 ; \
+	    echo "Go to the top-level and run this: $(ASSEMBLE_COMMAND)" >&2 ; \
+	    exit 1 ; \
+	  fi
 	@echo "Unpacking tarball for Docker context..."
 	rm -rf tarball-root
 	mkdir -p tarball-root
@@ -119,7 +134,19 @@ docker-buildx-create:
 # is run before docker-buildx
 ifdef DOCKERX_INSTANCE
 docker-buildx: docker-buildx-create
+else
+docker-buildx: check-docker-buildx-default
 endif
+
+check-docker-buildx-default:
+	CURRENT_BUILDX=`docker buildx inspect | head -1 | sed 's/^Name: *//'` ; \
+	  if [ "$$CURRENT_BUILDX" != "default" ]; then \
+	    echo "DOCKERX_INSTANCE is not set but there is a non-default docker buildx instance" >&2 ; \
+	    echo "active: $$CURRENT_BUILDX" >&2 ; \
+	    echo "You probably want to 'docker buildx use default' or delete the other instance" >&2 ; \
+	    echo "with 'docker buildx rm $$CURRENT_BUILDX'." >&2 ; \
+	    exit 1 ; \
+	  fi
 
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set

@@ -189,9 +189,7 @@
     </feature>
 
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
-        <feature>commons-lang3</feature>
+        <feature>health-api</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
     </feature>
 

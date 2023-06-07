@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -40,12 +40,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,7 +59,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import org.awaitility.core.ConditionTimeoutException;
 
 public class QueueFileOffHeapDispatchQueueTest {
 
@@ -87,7 +87,7 @@ public class QueueFileOffHeapDispatchQueueTest {
     @Test
     public void canQueueAndDequeueInParallel() throws IOException {
         DispatchQueue<String> queue = new QueueFileOffHeapDispatchQueue<>(String::getBytes, String::new,
-                "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 20, 5, 100_000_000);
+                "canQueueAndDequeueInParallel", Paths.get(folder.newFolder().toURI()), 20, 5, 100_000_000);
 
         int numEntries = 11_111;
         List<String> toQueue = IntStream.range(0, numEntries)
@@ -95,13 +95,11 @@ public class QueueFileOffHeapDispatchQueueTest {
                 .map(Object::toString)
                 .collect(Collectors.toList());
 
-        CountDownLatch startedQueueing = new CountDownLatch(1);
         AtomicInteger count = new AtomicInteger(0);
         CompletableFuture.runAsync(() -> {
             while(count.get() < numEntries) {
                 try {
                     queue.enqueue(toQueue.get(count.getAndIncrement()), "key");
-                    startedQueueing.countDown();
                 } catch (WriteFailedException e) {
                     throw new RuntimeException(e);
                 }
@@ -110,11 +108,7 @@ public class QueueFileOffHeapDispatchQueueTest {
         
         List<String> dequeued = new CopyOnWriteArrayList<>();
         CompletableFuture.runAsync(() -> {
-            try {
-                startedQueueing.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            await().pollDelay(Duration.ofMillis(10)).pollInterval(Duration.ofMillis(10)).until(() -> queue.getSize() > 0);
             while(true) {
                 try {
                     dequeued.add(queue.dequeue().getValue());

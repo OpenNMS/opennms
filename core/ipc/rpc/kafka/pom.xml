@@ -88,6 +88,10 @@
         <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
       </dependency>
       <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi.cmpn</artifactId>
         <scope>provided</scope>
@@ -155,7 +159,7 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>com.jayway.awaitility</groupId>
+        <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <scope>test</scope>
       </dependency>

@@ -35,20 +35,15 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Loads the Cassandra pool configuration from system properties and exposes these as named beans.
- * Uses a value of null if no system property is set (which allows the driver to use it's own defaults.)
+ * Uses a value of null if no system property is set (which allows the driver to use its own defaults.)
  */
 @Configuration
 public class CassandraPoolConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(CassandraPoolConfiguration.class);
 
-    @Bean(name="cassandra.pool.core-connections-per-host")
+    @Bean(name="cassandra.pool.connections-per-host")
     public Integer getCoreConnectionsPerHost() {
-        return sysPropToIntOrNull("org.opennms.newts.config.core-connections-per-host");
-    }
-
-    @Bean(name="cassandra.pool.max-connections-per-host")
-    public Integer getMaxConnectionsPerHost() {
-        return sysPropToIntOrNull("org.opennms.newts.config.max-connections-per-host");
+        return sysPropToIntOrNull("org.opennms.newts.config.connections-per-host");
     }
 
     @Bean(name="cassandra.pool.max-requests-per-connection")

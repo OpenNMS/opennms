@@ -15,7 +15,22 @@ A simple REST API also lets you evaluate the results, verify stored data, and pr
 
 NOTE: This feature requires Elasticsearch 7.0+.
 
-== Enable alarm history indexing
+== Alarm history indexing
+
+When alarms are created, a document that includes all alarm fields and additional details on related objects (for example, the node), is pushed to Elasticsearch.
+To avoid pushing a new document every time a new event is reduced to an existing alarm, documents are pushed only when at least one of the following conditions is met:
+
+* A document has not recently been pushed for the alarm (see `alarmReindexDurationMs`).
+* The severity of the alarm has changed.
+* The alarm has been acknowledged or unacknowledged.
+* The associated sticky or journal memos have changed.
+* The state of the associated ticket has changed.
+* The alarm has been associated with or removed from a situation.
+* A related alarm has been added to or removed from a situation.
+
+NOTE: To change this behavior and push a new document for every change, set `indexAllUpdates` to `true`.
+
+When alarms are deleted, {page-component-title} pushes a new document containing the alarm ID, reduction key, and deletion time to Elasticsearch.
 
 Follow these steps to enable alarm history indexing:
 
@@ -34,23 +49,6 @@ admin@opennms()> config:update
 ** (Optional) To set the feature to start automatically upon future service starts, add `opennms-alarm-history-elastic` to `$\{OPENNMS_HOME}/etc/featuresBoot.d/alarm.boot`.
 If the file does not exist, create it.
 ** (Optional) To start the feature immediately, run the `feature:install opennms-alarm-history-elastic` command in the Karaf shell.
-
-== Alarm indexing
-
-When alarms are created, a document that includes all alarm fields, and additional details on related objects (for example, the node), is pushed to Elasticsearch.
-To avoid pushing a new document every time a new event is reduced to an existing alarm, documents are pushed only when at least one condition is met:
-
-* A document has not recently been pushed for the alarm (see `alarmReindexDurationMs`).
-* The severity of the alarm has changed.
-* The alarm has been acknowledged or unacknowledged.
-* The associated sticky or journal memos have changed.
-* The state of the associated ticket has changed.
-* The alarm has been associated with or removed from a situation.
-* A related alarm has been added to or removed from the situation.
-
-NOTE: To change this behavior and push a new document for every change, set `indexAllUpdates` to `true`.
-
-When alarms are deleted, {page-component-title} pushes a new document containing the alarm ID, reduction key, and deletion time to Elasticsearch.
 
 === Alarm document fields
 

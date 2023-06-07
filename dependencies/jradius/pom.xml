@@ -15,7 +15,6 @@
     can depend on to use the JRadius library.
   </description>
   <dependencies>
-    <!-- add this commons stuff to keep JNLP app from getting confused by versions -->
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>

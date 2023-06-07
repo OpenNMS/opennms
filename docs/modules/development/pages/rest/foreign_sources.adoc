@@ -9,50 +9,90 @@ Foreign source definitions are POSTed and will be deployed when the correspondin
 
 If a request says that it gets the "active" foreign source, that means it returns the pending foreign source (being edited for deployment) if there is one, otherwise it returns the deployed foreign source.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header, autowidth", cols="5,10"]
+[caption=]
+.Foreign Sources API GET functions
+[options="autowidth"]
 |===
-| Resource                                            | Description
-| `/foreignSources`                                   | Get all active foreign sources.
-| `/foreignSources/default`                           | Get the active default foreign source.
-| `/foreignSources/deployed`                          | Get the list of all deployed (active) foreign sources.
-| `/foreignSources/deployed/count`                    | Get the number of deployed foreign sources. (Returns plaintext, rather than XML or JSON.)
-| `/foreignSources/\{name}`                           | Get the active foreign source named \{name}
-| `/foreignSources/\{name}/detectors`                 | Get the configured detectors for the foreign source named \{name}
-| `/foreignSources/\{name}/detectors/\{detector}`     | Get the specified detector for the foreign source named \{name}
-| `/foreignSources/\{name}/policies`                  | Get the configured policies for the foreign source named \{name}
-| `/foreignSources/\{name}/policies/\{policy}`        | Get the specified policy for the foreign source named \{name}
-|===
+| Resource  | Description
 
-== POSTs (Adding Data)
+| /foreignSources
+| Get all active foreign sources.
 
-POST requires XML using application/xml as its Content-Type.
+| /foreignSources/default
+| Get the active default foreign source.
 
-[options="header", cols="5,10"]
-|===
-| Resource                             | Description
-| `/foreignSources`                    | Add a foreign source.
-| `/foreignSources/\{name}/detectors`  | Add a detector to the named foreign source.
-| `/foreignSources/\{name}/policies`   | Add a policy to the named foreign source.
-|===
+| /foreignSources/deployed
+| Get the list of all deployed (active) foreign sources.
 
-== PUTs (Modifying Data)
+| /foreignSources/deployed/count
+| Get the number of deployed foreign sources (returns plaintext, rather than XML or JSON).
 
-PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
+| /foreignSources/\{name}
+| Get the active foreign source named `\{name}`.
 
-[options="header", cols="5,10"]
-|===
-| Resource                   | Description
-| `/foreignSources/\{name}`  | Modify a foreign source with the given name.
+| /foreignSources/\{name}/detectors
+| Get the configured detectors for the foreign source named `\{name}`.
+
+| /foreignSources/\{name}/detectors/\{detector}
+| Get the specified detector for the foreign source named `\{name}`.
+
+| /foreignSources/\{name}/policies
+| Get the configured policies for the foreign source named `\{name}`.
+
+| /foreignSources/\{name}/policies/\{policy}
+| Get the specified policy for the foreign source named `\{name}`.
 |===
 
-== DELETEs (Removing Data)
+== POSTs (adding data)
 
-[options="header", cols="5,10"]
+POST requires XML using `application/xml` as its `Content-Type`.
+
+[caption=]
+.Foreign Sources API POST functions
+[options="autowidth"]
 |===
-| Resource                                           | Description
-| `/foreignSources/\{name}`                          | Delete the named foreign source.
-| `/foreignSources/\{name}/detectors/\{detector}`    | Delete the specified detector from the named foreign source.
-| `/foreignSources/\{name}/policies/\{policy}`       | Delete the specified policy from the named foreign source.
+| Resource  | Description
+
+| /foreignSources
+| Add a foreign source.
+
+| /foreignSources/\{name}/detectors
+| Add a detector to the named foreign source.
+
+| /foreignSources/\{name}/policies
+| Add a policy to the named foreign source.
+|===
+
+== PUT (modifying data)
+
+PUT requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
+
+[caption=]
+.Foreign Sources API PUT function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /foreignSources/\{name}
+| Modify a foreign source with the given name.
+|===
+
+== DELETEs (removing data)
+
+[caption=]
+.Foreign Sources API DELETE functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /foreignSources/\{name}
+| Delete the named foreign source.
+
+| /foreignSources/\{name}/detectors/\{detector}
+| Delete the specified detector from the named foreign source.
+
+| /foreignSources/\{name}/policies/\{policy}
+| Delete the specified policy from the named foreign source.
 |===

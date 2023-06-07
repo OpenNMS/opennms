@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,7 +42,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jdk.internal.joptsimple.internal.Strings;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
@@ -159,7 +158,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
      * @return String with the row panel title if exists or an empty string if not.
      */
     private String getRowTitle(final Panel panel){
-        String currentRowPanel = Strings.EMPTY;
+        String currentRowPanel = "";
         for(final Panel p : this.dashboard.getPanels()){
             if(p.getType().equals("row")){
                 currentRowPanel = p.getTitle().trim();
@@ -167,7 +166,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
                 return currentRowPanel;
             } else {
                 // clear the title right after passing the first panel after the row panel.
-                currentRowPanel = Strings.EMPTY;
+                currentRowPanel = "";
             }
         }
         return currentRowPanel;

@@ -83,7 +83,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-class CollectableService implements ReadyRunnable {
+public class CollectableService implements ReadyRunnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
 
@@ -693,5 +693,9 @@ class CollectableService implements ReadyRunnable {
             }
         };
         return wrappedVisitor;
+    }
+
+    public long getLastScheduledCollectionTime() {
+        return m_lastScheduledCollectionTime;
     }
 }

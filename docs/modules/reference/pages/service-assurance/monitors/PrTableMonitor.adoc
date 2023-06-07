@@ -53,6 +53,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <!-- Overriding default SNMP config -->

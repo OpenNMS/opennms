@@ -55,7 +55,7 @@ public class Schedule {
     private volatile boolean m_scheduled = false;
 	
     
-    class ScheduleEntry implements ReadyRunnable {
+    public class ScheduleEntry implements ReadyRunnable {
         private final int m_expirationCode;
 
         public ScheduleEntry(int expirationCode) {
@@ -102,6 +102,10 @@ public class Schedule {
             if (interval >= 0 && m_scheduled)
                 m_timer.schedule(interval, this);
 
+        }
+
+        public ReadyRunnable getSchedulable() {
+            return m_schedulable;
         }
         
         @Override

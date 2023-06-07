@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,12 +35,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Ref;
@@ -49,6 +52,9 @@ import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class GenericInfoPanelItemProviderTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     public class TestVertexRef extends AbstractVertex {
 
@@ -111,7 +117,9 @@ public class GenericInfoPanelItemProviderTest {
     private static final String EDGE_ID = "edgeId";
 
     @Before
-    public void setUp() throws IllegalAccessException, InstantiationException {
+    public void setUp() throws IOException {
+        System.setProperty("opennms.home", tempFolder.newFolder().getAbsolutePath());
+
         m_nodeDao = mock(NodeDao.class);
         m_measurementsService = mock(MeasurementsService.class);
         m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService);

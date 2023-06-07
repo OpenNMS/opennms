@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +49,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * 1. Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  * 2. Verifies that special characters can be used in scheduled outage names. See LTS-234.
  */
-@Ignore("flapping")
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     @Before
@@ -109,7 +109,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
 
         // Wait till the editor page appears.
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage").apply(driver));
         // Now add all nodes and interfaces...
         findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
         // ...and confirm the alert box.
@@ -132,7 +132,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//input[@name='addOutage']").click();
 
         // check whether the outage text appears correctly...
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(text));
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(text).apply(driver));
     }
 
     private void testCharactersInName(String name) throws Exception {
@@ -140,7 +140,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
             enterText(By.xpath("//form[@action='admin/sched-outages/editoutage.jsp']//input[@name='newName']"), name);
             findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
-            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
+            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name).apply(driver));
             findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
             getDriver().switchTo().alert().accept();
 
@@ -159,7 +159,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             findElementByXpath("//input[@name='saveButton']").click();
             getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":TestMachine");
             findElementByXpath("//a[text()='"+name+"']").click();
-            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name));
+            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name).apply(driver));
         } finally {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
 
@@ -200,7 +200,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//form[@action='admin/sched-outages/editoutage.jsp']//button[@name='newOutage']").click();
 
         // Wait till the editor page appears.
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage"));
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: My-Scheduled-Outage").apply(driver));
         // Now add all nodes and interfaces...
         findElementByXpath("//form[@id='matchAnyForm']//input[@name='matchAny']").click();
         // ...and confirm the alert box.
@@ -221,7 +221,7 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // ...and apply.
         findElementByXpath("//input[@name='setOutageType']").click();
 
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("daily"));
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("daily").apply(driver));
 
         // This is not working since it's an <input type='image'>
         findElementByXpath("//input[@id='deleteOutageTypeBtn']").click();
@@ -235,6 +235,6 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         findElementByXpath("//input[@name='setOutageType']").click();
 
         // check whether the outage type text appears correctly...
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("weekly"));
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("weekly").apply(driver));
     }
 }

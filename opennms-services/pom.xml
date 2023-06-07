@@ -150,6 +150,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.ssh</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasypt-dependencies</artifactId>
       <type>pom</type>
@@ -273,11 +278,11 @@
       <exclusions>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpkix-jdk15on</artifactId>
+          <artifactId>bcpkix-jdk18on</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15on</artifactId>
+          <artifactId>bcprov-jdk18on</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -330,8 +335,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>jakarta.mail</artifactId>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -467,7 +472,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
@@ -498,6 +503,15 @@
       <dependency>
           <groupId>org.opennms</groupId>
           <artifactId>opennms-provisiond</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>io.github.resilience4j</groupId>
+          <artifactId>resilience4j-bulkhead</artifactId>
+          <version>${resilience4jVersion}</version>
       </dependency>
   </dependencies>
 </project>

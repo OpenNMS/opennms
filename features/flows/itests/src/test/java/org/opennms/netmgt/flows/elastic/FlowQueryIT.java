@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -39,7 +39,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
-
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.net.MalformedURLException;
@@ -73,33 +72,36 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
+import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
-import org.opennms.netmgt.flows.processing.FlowBuilder;
-import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.processing.FlowBuilder;
+import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
@@ -107,7 +109,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class FlowQueryIT {
 
@@ -125,7 +128,9 @@ public class FlowQueryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final JestClient client = restClientFactory.createClient();
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()), eventForwarder);
         final IndexSettings settings = new IndexSettings();
         settings.setIndexPrefix("flows");
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,

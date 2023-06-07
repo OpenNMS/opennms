@@ -53,8 +53,8 @@ case "${CIRCLE_BRANCH}" in
 esac
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
-echo "=== Building checkstyle & root POM ==="
-"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PRODUCTION --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
+echo "=== Building root POM ==="
+"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PRODUCTION --projects org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
 
 COMPILE="./compile.pl"
 

@@ -227,7 +227,7 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
+		nameParam = request.getParameter("newName");
 		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
@@ -313,7 +313,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Collectd outages config *********
 	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+	for (Package thisPackage : collectdConfig.getPackages()) {
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
@@ -339,142 +339,143 @@ Could not find an outage to edit because no outage name parameter was specified 
 
 			try {
 
-				//Process the form submission - yeah, this should be a servlet, but this is a quick and dirty hack for now
-				//It can be tidied up later -- of course, it's been what, almost 3 years?  "later" means 2.0 + rewrite  ;)
-				//First, process any changes to the editable inputs
-
-				//Now handle any buttons that were clicked.  There should be only one
-				//If there is more than one, we use the first and ignore the rest.
-				if (request.getParameter("saveButton") != null) {
-					//Save was clicked - save
-
-					//Process the notifications status.  NB: we keep an in-memory copy initially, and only save when the save button is clicked
-					if ("on".equals(request.getParameter("notifications"))) {
-						//Want to turn it on.
-						enabledOutages.add("notifications");
+			//Process the form submission - yeah, this should be a servlet, but this is a quick and dirty hack for now
+			//It can be tidied up later -- of course, it's been what, almost 3 years?  "later" means 2.0 + rewrite  ;)
+			//First, process any changes to the editable inputs
+	
+			//Now handle any buttons that were clicked.  There should be only one
+			//If there is more than one, we use the first and ignore the rest.
+			if (request.getParameter("saveButton") != null) {
+				//Save was clicked - save 
+	
+				//Process the notifications status.  NB: we keep an in-memory copy initially, and only save when the save button is clicked
+				if ("on".equals(request.getParameter("notifications"))) {
+					//Want to turn it on.
+					enabledOutages.add("notifications");
+				} else {
+					//Want to turn off (missing, or set to something other than "on")
+					enabledOutages.remove("notifications");
+				}
+	
+				for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+					String name = "polling-" + thisKey.getName();
+					System.out.println("Checking " + name);
+					if ("on".equals(request.getParameter(name))) {
+						System.out.println(" is on - adding to enabledOutages");
+						enabledOutages.add(name);
 					} else {
-						//Want to turn off (missing, or set to something other than "on")
-						enabledOutages.remove("notifications");
+						enabledOutages.remove(name);
 					}
-
-					for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
-						String name = "polling-" + thisKey.getName();
-						System.out.println("Checking " + name);
-						if ("on".equals(request.getParameter(name))) {
-							System.out.println(" is on - adding to enabledOutages");
-							enabledOutages.add(name);
-						} else {
-							enabledOutages.remove(name);
-						}
-					}
-
-					for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
-						String name = "threshold-" + thisKey.getName();
-						System.out.println("Checking " + name);
-						if ("on".equals(request.getParameter(name))) {
-							enabledOutages.add(name);
-						} else {
-							enabledOutages.remove(name);
-						}
-					}
-
-					for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
-						String name = "collect-" + thisKey.getName();
-						System.out.println("Checking " + name);
-						if ("on".equals(request.getParameter(name))) {
-							enabledOutages.add(name);
-						} else {
-							enabledOutages.remove(name);
-						}
-					}
-
-					//Check if the outage is a new one, or an edited old one
-					String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
-					if (origname == null) {
-						//A new outage - just plonk it in place
-						pollOutagesDao.getWriteableConfig().addOutage(theOutage);
+				}
+	
+				for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+					String name = "threshold-" + thisKey.getName();
+					System.out.println("Checking " + name);
+					if ("on".equals(request.getParameter(name))) {
+						enabledOutages.add(name);
 					} else {
-						//An edited outage - replace the old one
-						pollOutagesDao.getWriteableConfig().replaceOutage(pollOutagesDao.getWriteableConfig().getOutage(origname), theOutage);
+						enabledOutages.remove(name);
 					}
-					//Push the enabledOutages into the actual configuration of the various packages
-					//Don't do until after we've successfully put the outage into the polloutages configuration (for coherency)
-					if (enabledOutages.contains("notifications")) {
-						if (!notificationOutages.contains(theOutage.getName())) {
-							NotifdConfigFactory.getInstance().getConfiguration().addOutageCalendar(theOutage.getName());
+				}
+	
+				for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+					String name = "collect-" + thisKey.getName();
+					System.out.println("Checking " + name);
+					if ("on".equals(request.getParameter(name))) {
+						enabledOutages.add(name);
+					} else {
+						enabledOutages.remove(name);
+					}
+				}
+	
+				//Check if the outage is a new one, or an edited old one
+				String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
+				if (origname == null) {
+					//A new outage - just plonk it in place
+					pollOutagesDao.getWriteableConfig().addOutage(theOutage);
+				} else {
+					//An edited outage - replace the old one
+					pollOutagesDao.getWriteableConfig().replaceOutage(pollOutagesDao.getWriteableConfig().getOutage(origname), theOutage);
+				}
+				//Push the enabledOutages into the actual configuration of the various packages
+				//Don't do until after we've successfully put the outage into the polloutages configuration (for coherency)
+				if (enabledOutages.contains("notifications")) {
+					if (!notificationOutages.contains(theOutage.getName())) {
+						NotifdConfigFactory.getInstance().getConfiguration().addOutageCalendar(theOutage.getName());
+					}
+				} else {
+					if (notificationOutages.contains(theOutage.getName())) {
+						NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(theOutage.getName());
+					}
+				}
+	
+				for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+					Collection<String> pollingPackage = pollingOutages.get(thisKey);
+					String name = "polling-" + thisKey.getName();
+					if (enabledOutages.contains(name)) {
+						if (!pollingPackage.contains(theOutage.getName())) {
+							thisKey.addOutageCalendar(theOutage.getName());
 						}
 					} else {
-						if (notificationOutages.contains(theOutage.getName())) {
-							NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(theOutage.getName());
+						if (pollingPackage.contains(theOutage.getName())) {
+							thisKey.removeOutageCalendar(theOutage.getName());
 						}
 					}
-
-					for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
-						Collection<String> pollingPackage = pollingOutages.get(thisKey);
-						String name = "polling-" + thisKey.getName();
-						if (enabledOutages.contains(name)) {
-							if (!pollingPackage.contains(theOutage.getName())) {
-								thisKey.addOutageCalendar(theOutage.getName());
-							}
-						} else {
-							if (pollingPackage.contains(theOutage.getName())) {
-								thisKey.removeOutageCalendar(theOutage.getName());
-							}
+				}
+	
+				for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+					Collection<String> thresholdPackage = thresholdOutages.get(thisKey);
+					String name = "threshold-" + thisKey.getName();
+					if (enabledOutages.contains(name)) {
+						if (!thresholdPackage.contains(theOutage.getName())) {
+							thisKey.addOutageCalendar(theOutage.getName());
 						}
-					}
-
-					for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
-						Collection<String> thresholdPackage = thresholdOutages.get(thisKey);
-						String name = "threshold-" + thisKey.getName();
-						if (enabledOutages.contains(name)) {
-							if (!thresholdPackage.contains(theOutage.getName())) {
-								thisKey.addOutageCalendar(theOutage.getName());
-							}
-						} else {
-							if (thresholdPackage.contains(theOutage.getName())) {
-								thisKey.removeOutageCalendar(theOutage.getName());
-							}
-						}
-					}
-
-					for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
-						Collection<String> collectPackage = collectionOutages.get(thisKey);
-						String name = "collect-" + thisKey.getName();
-						if (enabledOutages.contains(name)) {
-							if (!collectPackage.contains(theOutage.getName())) {
-								thisKey.addOutageCalendar(theOutage.getName());
-							}
-						} else {
-							if (collectPackage.contains(theOutage.getName())) {
-								thisKey.removeOutageCalendar(theOutage.getName());
-							}
-						}
-					}
-
-					//Save to disk
-					pollOutagesDao.saveConfig();
-					NotifdConfigFactory.getInstance().saveCurrent();
-					collectdConfig.saveCurrent();
-					PollerConfigFactory.getInstance().save();
-					sendOutagesChangedEvent();
-
-					//forward the request for proper display
-					// RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/sched-outages/index.jsp");
-					response.sendRedirect("index.jsp");
-					// dispatcher.forward(request, response);
-					return;
-				} else if (request.getParameter("addNodeButton") != null) {
-					String newNode = WebSecurityUtils.sanitizeString(request.getParameter("newNode"));
-					if (newNode == null || "".equals(newNode.trim())) {
-						// No node was specified
 					} else {
-						int newNodeId = WebSecurityUtils.safeParseInt(newNode);
-						addNode(theOutage, newNodeId);
-						if (request.getParameter("addPathOutageNodeRadio") != null) {
-							for (Integer pathOutageNodeid : getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
-								addNode(theOutage, pathOutageNodeid.intValue());
-							}
+						if (thresholdPackage.contains(theOutage.getName())) {
+							thisKey.removeOutageCalendar(theOutage.getName());
 						}
+					}
+				}
+	
+				for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+					Collection<String> collectPackage = collectionOutages.get(thisKey);
+					String name = "collect-" + thisKey.getName();
+					if (enabledOutages.contains(name)) {
+						if (!collectPackage.contains(theOutage.getName())) {
+							thisKey.addOutageCalendar(theOutage.getName());
+						}
+					} else {
+						if (collectPackage.contains(theOutage.getName())) {
+							thisKey.removeOutageCalendar(theOutage.getName());
+						}
+					}
+				}
+	
+				//Save to disk	
+				pollOutagesDao.saveConfig();
+				NotifdConfigFactory.getInstance().saveCurrent();
+				collectdConfig.saveCurrent();
+				PollerConfigFactory.getInstance().save();
+				threshdDao.saveConfig();
+				sendOutagesChangedEvent();
+	
+				//forward the request for proper display
+				// RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/sched-outages/index.jsp");
+				response.sendRedirect("index.jsp");
+				// dispatcher.forward(request, response);
+				return;
+			} else if (request.getParameter("addNodeButton") != null) {
+				String newNode = WebSecurityUtils.sanitizeString(request.getParameter("newNode"));
+				if (newNode == null || "".equals(newNode.trim())) {
+					// No node was specified
+				} else {
+					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
+					addNode(theOutage, newNodeId);
+					if (request.getParameter("addPathOutageNodeRadio") != null) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
+						    addNode(theOutage,pathOutageNodeid.intValue());
+						}
+					}
 
 					}
 				} else if (request.getParameter("addInterfaceButton") != null) {
@@ -765,7 +766,7 @@ function updateOutageTypeDisplay(selectElement) {
     }
 %>
 
-<h3>Editing Outage: <%=theOutage.getName()%></h3>
+<h3>Editing Outage: <%=WebSecurityUtils.sanitizeString(theOutage.getName())%></h3>
 
 		<label>Nodes and Interfaces:</label>
 			<table class="table table-sm table-borderless">
@@ -807,7 +808,7 @@ function updateOutageTypeDisplay(selectElement) {
 																	out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
 																	OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 																	if (thisNode != null) {
-																		out.println(thisNode.getLabel());
+																		out.println(WebSecurityUtils.sanitizeString(thisNode.getLabel()));
 																	} else {
 																		out.println("Node " + nodeId + " is null");
 																	}

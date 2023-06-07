@@ -150,4 +150,55 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
         response = new org.json.JSONObject(jsonResponse);
         assertEquals(2, response.getInt("count"));
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testMultipleIPInterfacesForSnmpInterface() throws Exception {
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node1 = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "<sysContact>The Owner</sysContact>" +
+                "<sysDescription>" +
+                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+                "</sysDescription>" +
+                "<sysLocation>DevJam</sysLocation>" +
+                "<sysName>TestMachine1</sysName>" +
+                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+                "</node>";
+        sendPost("/nodes", node1, 201);
+
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAdminStatus>1</ifAdminStatus>" +
+                "<ifDescr>en1</ifDescr>" +
+                "<ifName>en1</ifName>" +
+                "<ifOperStatus>1</ifOperStatus>" +
+                "<ifSpeed>10000000</ifSpeed>" +
+                "<ifType>6</ifType>" +
+                "<netMask>255.255.255.0</netMask>" +
+                "<physAddr>001e5271136d</physAddr>" +
+                "</snmpInterface>";
+
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201, "/nodes/1/snmpinterfaces/6");
+
+        String ipInterface1 = "<ipInterface snmpPrimary=\"P\">" +
+                "<ipAddress>10.10.10.10</ipAddress>" +
+                "<nodeId>1</nodeId>" +
+                "<hostName>TestMachine1</hostName>" +
+                "<ifIndex>6</ifIndex>" +
+                "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface1, 201);
+
+        String ipInterface2 = "<ipInterface snmpPrimary=\"P\">" +
+                "<ipAddress>10.10.10.11</ipAddress>" +
+                "<nodeId>1</nodeId>" +
+                "<hostName>TestMachine1</hostName>" +
+                "<ifIndex>6</ifIndex>" +
+                "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface2, 201);
+
+        JSONObject response = new JSONObject(sendRequest(GET, "/snmpinterfaces", 200));
+        assertEquals(1, response.getInt("count"));
+
+    }
 }

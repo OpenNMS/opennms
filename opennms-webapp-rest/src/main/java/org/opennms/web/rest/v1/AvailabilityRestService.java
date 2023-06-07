@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -79,6 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("availabilityRestService")
 @Path("availability")
+@Tag(name = "Availability", description = "Availability API")
 @Transactional
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {

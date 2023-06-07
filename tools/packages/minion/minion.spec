@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $MINION_HOME in the finished package
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
-# The path where the repositories will live
-%{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 # Where Systemd files live
 %{!?_unitdir:%define _unitdir /lib/systemd/system}
 
@@ -68,10 +66,10 @@ Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Requires(post): util-linux
 Requires:       util-linux
-Requires:       jicmp >= 2.0.0
-Requires(pre):  jicmp >= 2.0.0
-Requires:       jicmp6 >= 2.0.0
-Requires(pre):  jicmp6 >= 2.0.0
+Requires:       jicmp >= 3.0.0
+Requires(pre):  jicmp >= 3.0.0
+Requires:       jicmp6 >= 3.0.0
+Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
 Recommends:	haveged
 
@@ -159,17 +157,19 @@ echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minio
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 # fix the init script for RedHat/CentOS layout
-mkdir -p "%{buildroot}%{_initrddir}"
+install -d -m 755 "%{buildroot}%{minioninstprefix}/bin"
 sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" \
 	-e 's,^PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 	-e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" \
 	"%{buildroot}%{minioninstprefix}/etc/minion.init" \
-	> "%{buildroot}%{_initrddir}"/minion
-chmod 755 "%{buildroot}%{_initrddir}"/minion
+	> "%{buildroot}%{minioninstprefix}"/bin/minion
+chmod 755 "%{buildroot}%{minioninstprefix}"/bin/minion
 rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
 mkdir -p "%{buildroot}%{_unitdir}"
-install -c -m 644 "%{buildroot}%{minioninstprefix}/etc/minion.service" "%{buildroot}%{_unitdir}/minion.service"
+sed -e "s,^/etc/init.d,%{minioninstprefix}/bin," "%{buildroot}%{minioninstprefix}/etc/minion.service" > "%{buildroot}%{_unitdir}/minion.service"
+rm -f "%{buildroot}%{minioninstprefix}/etc/minion.service"
+chmod 644 "%{buildroot}%{_unitdir}/minion.service"
 
 # move minion.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
@@ -225,7 +225,6 @@ rm -rf %{buildroot}
 
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
-%attr(755,minion,minion) %{_initrddir}/minion
 %attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme

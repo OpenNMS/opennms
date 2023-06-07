@@ -69,6 +69,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

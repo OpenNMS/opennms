@@ -1,1 +1,591 @@
-{"openapi":"3.0.1","info":{"title":"OpenNMS Model","description":"OpenNMS Data Model","version":"1.0.0"},"paths":{"/VacuumdConfiguration":{"get":{"tags":["VacuumdConfiguration"],"summary":"Get VacuumdConfiguration configIds","responses":{"200":{"description":"configIds","content":{"application/json":{"schema":{"type":"array","example":null,"items":{"type":"string","example":null}}}}},"400":{"description":"Error message","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":null}},"example":null}}}}}}},"/VacuumdConfiguration/{configId}":{"get":{"tags":["VacuumdConfiguration"],"summary":"Get VacuumdConfiguration configuration","parameters":[{"name":"configId","in":"path","required":true,"schema":{"type":"string","example":null}}],"responses":{"200":{"description":"VacuumdConfiguration configuration","content":{"application/json":{"schema":{"$ref":"#/components/schemas/VacuumdConfiguration"}}}},"400":{"description":"Error message","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":null}},"example":null}}}}}},"put":{"tags":["VacuumdConfiguration"],"summary":"Overwrite VacuumdConfiguration configuration","parameters":[{"name":"configId","in":"path","required":true,"schema":{"type":"string","example":null}},{"name":"replace","in":"query","description":"Set to true for replace the whole config","schema":{"type":"boolean","example":null}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/VacuumdConfiguration"}}}},"responses":{"200":{"description":"empty"},"400":{"description":"Error message","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":null}},"example":null}}}}}},"post":{"tags":["VacuumdConfiguration"],"summary":"Add VacuumdConfiguration configuration","parameters":[{"name":"configId","in":"path","required":true,"schema":{"type":"string","example":null}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/VacuumdConfiguration"}}}},"responses":{"200":{"description":"empty"},"400":{"description":"Error message","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":null}},"example":null}}}}}},"delete":{"tags":["VacuumdConfiguration"],"summary":"Delete VacuumdConfiguration configuration","parameters":[{"name":"configId","in":"path","required":true,"schema":{"type":"string","example":null}}],"responses":{"200":{"description":"empty"},"400":{"description":"Error message","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","example":null}},"example":null}}}}}}}},"components":{"schemas":{"VacuumdConfiguration":{"required":["period","period-exc"],"type":"object","properties":{"period":{"minimum":1,"type":"number","description":"how often to vacuum the database in\n          seconds","example":null},"period-exc":{"maximum":100,"exclusiveMaximum":true,"minimum":1,"exclusiveMinimum":true,"type":"number","description":"how often to vacuum the database in\n            seconds","example":null},"statement":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/statement"}},"automations":{"$ref":"#/components/schemas/automations"},"triggers":{"$ref":"#/components/schemas/triggers"},"actions":{"$ref":"#/components/schemas/actions"},"auto-events":{"$ref":"#/components/schemas/auto-events"},"action-events":{"$ref":"#/components/schemas/action-events"}},"description":"Top-level element for the vacuumd-configuration.xml\n      configuration file.","example":null},"statement":{"type":"object","properties":{"transactional":{"type":"boolean","example":null,"default":true},"statement":{"type":"string","example":null}},"description":"Just a generic string used for SQL\n      statements","example":null},"automations":{"type":"object","properties":{"automation":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/automation"}}},"example":null},"automation":{"required":["action-name","date","dateTime","name","positiveInterval"],"type":"object","properties":{"date":{"type":"string","description":"date doc","format":"date","example":null},"dateTime":{"type":"string","description":"dateTime doc","format":"date-time","example":null},"action-name":{"type":"string","description":"reference an action from the collection of\n          actions","example":null},"trigger-name":{"type":"string","description":"reference a trigger from the collection of\n          triggers","example":null},"positiveInterval":{"minimum":1,"type":"integer","description":"positiveInterval doc","format":"int32","example":null,"default":10},"auto-event-name":{"type":"string","description":"specify an event UEI to send","example":null},"name":{"type":"string","description":"The name of this automation","example":null,"default":"name"},"action-event":{"type":"string","description":"Create an Event from Result of Trigger","example":null},"active":{"type":"boolean","description":"enable/disable this automation","example":null},"interval":{"type":"integer","description":"How often should this automation run","format":"int32","example":null}},"description":"Triggers and Actions hooked up and run by the Vacuumd\n      schedule using interval for frequency","example":null},"triggers":{"type":"object","properties":{"trigger":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/trigger"}}},"description":"A collection of triggers","example":null},"trigger":{"required":["name"],"type":"object","properties":{"operator":{"maxLength":2,"minLength":1,"pattern":"(<|<=|=|>=|>)","type":"string","description":"only run the action if the row count evaluates with\n          the operator (defaults to > 0)","example":null},"row-count":{"type":"integer","format":"int32","example":null},"name":{"type":"string","example":null},"data-source":{"type":"string","example":null,"default":"opennms"},"statement":{"$ref":"#/components/schemas/statement"}},"description":"A query to the database with a resultset used for\n      actions","example":null},"actions":{"type":"object","properties":{"action":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/action"}}},"description":"A collection of actions","example":null},"action":{"required":["name"],"type":"object","properties":{"name":{"type":"string","example":null},"data-source":{"type":"string","example":null,"default":"opennms"},"statement":{"$ref":"#/components/schemas/statement"}},"description":"actions modify the database based on results of a\n      trigger","example":null},"auto-events":{"type":"object","properties":{"auto-event":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/auto-event"}}},"example":null},"auto-event":{"required":["name"],"type":"object","properties":{"fields":{"type":"string","example":null},"name":{"type":"string","example":null},"uei":{"type":"string","example":null}},"description":"(THIS IS BEING DEPRECATED) actions modify the database based on results of a\n      trigger","example":null},"action-events":{"type":"object","properties":{"action-event":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/action-event"}}},"example":null},"action-event":{"required":["name"],"type":"object","properties":{"add-all-parms":{"type":"boolean","example":null,"default":false},"name":{"type":"string","example":null},"for-each-result":{"type":"boolean","example":null,"default":false},"assignment":{"type":"array","example":null,"items":{"$ref":"#/components/schemas/assignment"}}},"example":null},"assignment":{"required":["name","type","value"],"type":"object","properties":{"type":{"type":"string","example":null},"value":{"type":"string","example":null},"name":{"type":"string","example":null}},"example":null}}}}
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenNMS Model",
+    "description": "OpenNMS Data Model",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/VacuumdConfiguration": {
+      "get": {
+        "tags": [
+          "VacuumdConfiguration"
+        ],
+        "summary": "Get VacuumdConfiguration configIds",
+        "responses": {
+          "200": {
+            "description": "configIds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "example": null,
+                  "items": {
+                    "type": "string",
+                    "example": null
+                  }
+                },
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": null
+                    }
+                  },
+                  "example": null
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/VacuumdConfiguration/{configId}": {
+      "get": {
+        "tags": [
+          "VacuumdConfiguration"
+        ],
+        "summary": "Get VacuumdConfiguration configuration",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "VacuumdConfiguration configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacuumdConfiguration"
+                },
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": null
+                    }
+                  },
+                  "example": null
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "VacuumdConfiguration"
+        ],
+        "summary": "Overwrite VacuumdConfiguration configuration",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": null
+            }
+          },
+          {
+            "name": "replace",
+            "in": "query",
+            "description": "Set to true for replace the whole config",
+            "schema": {
+              "type": "boolean",
+              "example": null
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VacuumdConfiguration"
+              },
+              "example": null
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "empty"
+          },
+          "400": {
+            "description": "Error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": null
+                    }
+                  },
+                  "example": null
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "VacuumdConfiguration"
+        ],
+        "summary": "Add VacuumdConfiguration configuration",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": null
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VacuumdConfiguration"
+              },
+              "example": null
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "empty"
+          },
+          "400": {
+            "description": "Error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": null
+                    }
+                  },
+                  "example": null
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "VacuumdConfiguration"
+        ],
+        "summary": "Delete VacuumdConfiguration configuration",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "empty"
+          },
+          "400": {
+            "description": "Error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": null
+                    }
+                  },
+                  "example": null
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VacuumdConfiguration": {
+        "required": [
+          "period",
+          "period-exc"
+        ],
+        "type": "object",
+        "properties": {
+          "period": {
+            "minimum": 1,
+            "type": "number",
+            "description": "how often to vacuum the database in\n          seconds",
+            "example": null
+          },
+          "period-exc": {
+            "maximum": 100,
+            "exclusiveMaximum": true,
+            "minimum": 1,
+            "exclusiveMinimum": true,
+            "type": "number",
+            "description": "how often to vacuum the database in\n            seconds",
+            "example": null
+          },
+          "statement": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/statement"
+            }
+          },
+          "automations": {
+            "$ref": "#/components/schemas/automations"
+          },
+          "triggers": {
+            "$ref": "#/components/schemas/triggers"
+          },
+          "actions": {
+            "$ref": "#/components/schemas/actions"
+          },
+          "auto-events": {
+            "$ref": "#/components/schemas/auto-events"
+          },
+          "action-events": {
+            "$ref": "#/components/schemas/action-events"
+          }
+        },
+        "description": "Top-level element for the vacuumd-configuration.xml\n      configuration file.",
+        "example": null
+      },
+      "statement": {
+        "type": "object",
+        "properties": {
+          "transactional": {
+            "type": "boolean",
+            "example": null,
+            "default": true
+          },
+          "statement": {
+            "type": "string",
+            "example": null
+          }
+        },
+        "description": "Just a generic string used for SQL\n      statements",
+        "example": null
+      },
+      "automations": {
+        "type": "object",
+        "properties": {
+          "automation": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/automation"
+            }
+          }
+        },
+        "example": null
+      },
+      "automation": {
+        "required": [
+          "action-name",
+          "date",
+          "dateTime",
+          "name",
+          "positiveInterval"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "date doc",
+            "format": "date",
+            "example": null
+          },
+          "dateTime": {
+            "type": "string",
+            "description": "dateTime doc",
+            "format": "date-time",
+            "example": null
+          },
+          "action-name": {
+            "type": "string",
+            "description": "reference an action from the collection of\n          actions",
+            "example": null
+          },
+          "trigger-name": {
+            "type": "string",
+            "description": "reference a trigger from the collection of\n          triggers",
+            "example": null
+          },
+          "positiveInterval": {
+            "minimum": 1,
+            "type": "integer",
+            "description": "positiveInterval doc",
+            "format": "int32",
+            "example": null,
+            "default": 10
+          },
+          "auto-event-name": {
+            "type": "string",
+            "description": "specify an event UEI to send",
+            "example": null
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of this automation",
+            "example": null,
+            "default": "name"
+          },
+          "action-event": {
+            "type": "string",
+            "description": "Create an Event from Result of Trigger",
+            "example": null
+          },
+          "active": {
+            "type": "boolean",
+            "description": "enable/disable this automation",
+            "example": null
+          },
+          "interval": {
+            "type": "integer",
+            "description": "How often should this automation run",
+            "format": "int32",
+            "example": null
+          }
+        },
+        "description": "Triggers and Actions hooked up and run by the Vacuumd\n      schedule using interval for frequency",
+        "example": null
+      },
+      "triggers": {
+        "type": "object",
+        "properties": {
+          "trigger": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/trigger"
+            }
+          }
+        },
+        "description": "A collection of triggers",
+        "example": null
+      },
+      "trigger": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "operator": {
+            "maxLength": 2,
+            "minLength": 1,
+            "pattern": "(<|<=|=|>=|>)",
+            "type": "string",
+            "description": "only run the action if the row count evaluates with\n          the operator (defaults to > 0)",
+            "example": null
+          },
+          "row-count": {
+            "type": "integer",
+            "format": "int32",
+            "example": null
+          },
+          "name": {
+            "type": "string",
+            "example": null
+          },
+          "data-source": {
+            "type": "string",
+            "example": null,
+            "default": "opennms"
+          },
+          "statement": {
+            "$ref": "#/components/schemas/statement"
+          }
+        },
+        "description": "A query to the database with a resultset used for\n      actions",
+        "example": null
+      },
+      "actions": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/action"
+            }
+          }
+        },
+        "description": "A collection of actions",
+        "example": null
+      },
+      "action": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": null
+          },
+          "data-source": {
+            "type": "string",
+            "example": null,
+            "default": "opennms"
+          },
+          "statement": {
+            "$ref": "#/components/schemas/statement"
+          }
+        },
+        "description": "actions modify the database based on results of a\n      trigger",
+        "example": null
+      },
+      "auto-events": {
+        "type": "object",
+        "properties": {
+          "auto-event": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/auto-event"
+            }
+          }
+        },
+        "example": null
+      },
+      "auto-event": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "string",
+            "example": null
+          },
+          "name": {
+            "type": "string",
+            "example": null
+          },
+          "uei": {
+            "type": "string",
+            "example": null
+          }
+        },
+        "description": "(THIS IS BEING DEPRECATED) actions modify the database based on results of a\n      trigger",
+        "example": null
+      },
+      "action-events": {
+        "type": "object",
+        "properties": {
+          "action-event": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/action-event"
+            }
+          }
+        },
+        "example": null
+      },
+      "action-event": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "add-all-parms": {
+            "type": "boolean",
+            "example": null,
+            "default": false
+          },
+          "name": {
+            "type": "string",
+            "example": null
+          },
+          "for-each-result": {
+            "type": "boolean",
+            "example": null,
+            "default": false
+          },
+          "assignment": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/assignment"
+            }
+          }
+        },
+        "example": null
+      },
+      "assignment": {
+        "required": [
+          "name",
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": null
+          },
+          "value": {
+            "type": "string",
+            "example": null
+          },
+          "name": {
+            "type": "string",
+            "example": null
+          }
+        },
+        "example": null
+      }
+    }
+  }
+}

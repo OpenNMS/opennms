@@ -1,14 +1,13 @@
 
-[[ga-operation-log-file-viewer]]
-= View Log Files
+= Log File Viewer
 
-You can view log files in the {page-component-title} UI.
+You can view log files in the {page-component-title} web UI.
 To do so, click menu:Info[Logs] in the top menu bar.
 
-.Log File Viewer page
-image::logging/log-file-viewer.png[Log file viewer, 700]
+.Log file viewer
+image::logging/log-file-viewer.png["{page-component-title} UI displaying the log file viewer.", 700]
 
-On the log file viewer page, the left pane displays a list of log files.
+On the Log File Viewer page, the left pane displays a list of log files.
 Select a file name to display its contents in the right pane.
 You can scroll through its contents both vertically and horizontally.
 

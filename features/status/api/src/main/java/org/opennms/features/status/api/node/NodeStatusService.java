@@ -29,8 +29,10 @@
 package org.opennms.features.status.api.node;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -40,10 +42,17 @@ import org.opennms.features.status.api.StatusSummary;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.features.status.api.node.strategy.Status;
+import org.opennms.netmgt.config.GroupDao;
+import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.springframework.security.AclUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -53,6 +62,12 @@ public class NodeStatusService {
 
     @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
+
+    @Autowired
+    private GroupDao groupDao;
 
     @Autowired
     private NodeStatusCalculator statusCalculator;
@@ -67,9 +82,35 @@ public class NodeStatusService {
                 OnmsSeverity.CRITICAL));
         config.setCalculationStrategy(strategy);
 
-        final Map<OnmsSeverity, Long> statusOverviewMap = statusCalculator.calculateStatusOverview(config);
+        final Map<OnmsSeverity, Long> statusOverviewMap = statusCalculator.calculateStatusOverview(applyWebAcls(config));
         final long totalCount = nodeDao.countAll();
         return new StatusSummary(statusOverviewMap, totalCount);
+    }
+
+    private NodeStatusCalculatorConfig applyWebAcls(final NodeStatusCalculatorConfig config) {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            return config;
+        }
+
+        if (!AclUtils.shouldFilter(authentication.getAuthorities())) {
+            return config;
+        }
+
+        final String username = authentication.getName();
+        final List<Group> groups = groupDao.findGroupsForUser(username);
+        final Set<OnmsCategory> categories = new HashSet<>();
+        for (final Group group : groups) {
+            categories.addAll(categoryDao.getCategoriesWithAuthorizedGroup(group.getName()));
+        }
+
+        config.setNodeIds(nodeDao.findAllByCategoryList(categories).stream()
+                .map(n -> n.getId())
+                .collect(Collectors.toList())
+        );
+
+        return config;
     }
 
     public int count(NodeQuery query) {
@@ -127,6 +168,6 @@ public class NodeStatusService {
         if (query.getParameters().getOrder() != null) {
             config.setOrder(query.getParameters().getOrder());
         }
-        return config;
+        return applyWebAcls(config);
     }
 }

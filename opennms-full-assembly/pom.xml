@@ -244,9 +244,6 @@
                 <feature>instance</feature>
                 <feature>jaas-deployer</feature>
                 <feature>jasypt-encryption</feature>
-                <!-- TODO: Should we import both versions of Jetty? -->
-                <feature>jetty/8.1.14.v20131031</feature>
-                <feature>jetty/9.3.9.v20160517</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -264,7 +261,7 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
+                <feature>ssh/${karafSshdVersion}</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -273,8 +270,6 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
-                <feature>spring/3.1.4.RELEASE</feature>
-                <feature>spring/3.2.18.RELEASE_1</feature>
                 <feature>spring/4.0.9.RELEASE_1</feature>
                 <feature>spring-jms/4.0.9.RELEASE_1</feature>
                 <feature>spring/4.1.9.RELEASE_1</feature>
@@ -295,7 +290,7 @@
                 <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
-                <feature>activemq-broker</feature>
+                <feature>activemq-broker-noweb</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
@@ -313,16 +308,15 @@
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <feature version="8.1.14.v20131031">jetty</feature>
-                <feature version="9.3.9.v20160517">jetty</feature>
-                <!--TODO: Needed?-->
-                <feature version="9.4.29.v20200521">jetty</feature>
+                <!-- pull in the latest jetty so we don't end up with multiple versions -->
+                <feature>jetty/${jettyVersion}</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
                 <feature>minimal</feature>
                 <feature>obr</feature>
+                <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
                 <feature>profile</feature>
                 <feature>scheduler</feature>
@@ -332,7 +326,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -402,6 +395,7 @@
                 <feature>opennms-kafka-consumer</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
+                <feature>opennms-notifications-shell</feature>
                 <feature>opennms-poller-shell</feature>
                 <feature>opennms-provisioning</feature>
                 <feature>opennms-provisioning-detectors</feature>
@@ -422,7 +416,7 @@
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
                 <feature>smack</feature>
-                <feature>spring-security32</feature>
+                <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>
@@ -520,6 +514,8 @@
                 <feature>opennms-deviceconfig-service</feature>
                 <feature>opennms-deviceconfig-monitor</feature>
                 <feature>opennms-timeseries-api</feature>
+                
+                <feature>inmemory-timeseries-plugin</feature>
 
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
@@ -835,13 +831,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xml</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>contrib</classifier>
     </dependency>
     <dependency>
       <groupId>com.ximpleware</groupId>

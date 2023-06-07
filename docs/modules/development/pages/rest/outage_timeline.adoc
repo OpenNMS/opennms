@@ -1,13 +1,23 @@
 
 = Outage Timelines
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Outage Timelines API GET functions
+[options="autowidth"]
 |===
-| Resource                                                                 | Description
-| `/header/\{start}/\{end}/\{width}`                                       | Generate the timeline header.
-| `/image/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}`  | Generate the timeline image.
-| `/empty/\{start}/\{end}/\{width}`                                        | Generate an empty timeline for non-monitored services.
-| `/html/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}`   | Generate the raw HTML for the image.
+| Resource  | Description
+
+| /header/\{start}/\{end}/\{width}
+| Generate the timeline header.
+
+| /image/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}
+| Generate the timeline image.
+
+| /empty/\{start}/\{end}/\{width}
+| Generate an empty timeline for non-monitored services.
+
+| /html/\{nodeid}/\{ipaddress}/\{servicename}/\{start}/\{end}/\{width}
+| Generate the raw HTML for the image.
 |===

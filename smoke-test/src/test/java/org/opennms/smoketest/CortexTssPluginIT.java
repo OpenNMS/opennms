@@ -29,45 +29,32 @@
 package org.opennms.smoketest;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
+import java.time.Duration;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.KarafShellUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class CortexTssPluginIT {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CortexTssPluginIT.class);
-
-    public static final String CORTEX_PLUGIN_RELEASE = "https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases/download/v2.0.1/opennms-cortex-tss-plugin.kar";
-    public static final Path CORTEX_PLUGIN_KAR = Path.of("target", "opennms-cortex-tss-plugin.kar");
-
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.minimal(
+            b -> b.withInstallFeature("opennms-plugins-cortex-tss", "opennms-cortex-tss-plugin")
+    );
 
-    private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+    protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        if (!CORTEX_PLUGIN_KAR.toFile().exists()) {
-            FileUtils.copyURLToFile(new URL(CORTEX_PLUGIN_RELEASE), CORTEX_PLUGIN_KAR.toFile());
-        }
-
         // Make sure the Karaf shell is healthy before we start
         KarafShellUtils.awaitHealthCheckSucceeded(stack.opennms());
     }
 
     @Test
-    public void canLoadCortexFeature() throws Exception {
-        stack.opennms().installFeature("opennms-plugins-cortex-tss", CORTEX_PLUGIN_KAR);
-
-        KarafShellUtils.testHealthCheckSucceeded(stack.opennms().getSshAddress());
+    public void everythingHappy() throws Exception {
+        karafShell.checkFeature("opennms-plugins-cortex-tss", "Started", Duration.ofSeconds(30));
     }
 }

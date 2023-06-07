@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore("Flapping. See NMS-12114")
+/* Flapping. See NMS-12114 */
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeocoderServiceConfigurationPageIT.class);

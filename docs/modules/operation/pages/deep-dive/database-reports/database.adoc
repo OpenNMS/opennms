@@ -2,21 +2,22 @@
 = Database Reports
 
 Reporting on data from your monitoring system is important for strategic and operational decisions.
-Database reports provide access to the {page-component-title} JasperReports engine, and allow users to create and customize report templates.
-You can run reports on demand, or on a predefined schedule.
+Database reports provide access to the {page-component-title} JasperReports engine, and let you create and customize report templates.
+You can run reports on demand or on a predefined schedule.
 
-NOTE: Originally, database reports creates reports based only on data stored in the {page-component-title} database.
+NOTE: Originally, database reports created reports based only on data stored in the {page-component-title} database.
 This is no longer mandatory; you can also use performance data.
 Theoretically, reports do not need to be {page-component-title}-related.
 
-The {page-component-title} Report Engine lets you create reports, and supports distributed report repositories.
+The {page-component-title} Report Engine lets you create reports and supports distributed report repositories.
 This documentation does not cover those features; it describes only reports using the JasperReports engine and Grafana dashboards.
 
 == Overview
 
 The {page-component-title} Report Engine uses the JasperReport library to create reports in various formats.
 Each report template must be saved as a `*.jrxml` file.
-Each time a report is run, the Report Engine passes it a JDBC connection to the {page-component-title} database.
+
+Every time a report runs, the Report Engine passes it a JDBC connection to the {page-component-title} database.
 
 NOTE: Only a JDBC connection to the {page-component-title} database can be passed to the report.
 
@@ -31,8 +32,9 @@ s| JasperReport Version
 | {jasperreportsversion}
 |===
 
-For more details on how JasperReports works, please refer to the JasperSoft Studio http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
+For more details on how JasperReports works, see the http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official Jaspersoft Studio documentation].
 
+[[db-report-sample-templates]]
 == Report templates
 
 {page-component-title} includes the following sample report templates:
@@ -120,8 +122,8 @@ When a subreport is modified, {page-component-title} detects the change based on
 A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
 Subreports are located in `$\{OPENNMS_HOME}/etc/report-templates/subreports`.
 
-TIP: If you're not sure that your compiled subreports match the current templates, simply delete all `.jasper` files.
-{page-component-title} will automatically recompile the subreports as needed.
+TIP: If you are not sure that your compiled subreports match the current templates, simply delete all `.jasper` files.
+{page-component-title} automatically recompiles the subreports as needed.
 
 == Add a custom report
 
@@ -141,11 +143,12 @@ To add a new report to your local {page-component-title} repository, follow thes
 -----
 <1> A unique identifier.
 <2> The name of the report.
-Appears in the web UI.
-<3> Defines if this report can be executed on demand, otherwise only scheduling is possible.
-<4> The report service implementation to use. In most cases this is `jasperReportService`.
+This name is displayed in the web UI.
+<3> Defines if this report can run on demand; otherwise, only scheduling is possible.
+<4> The report service implementation to use.
+In most cases, this is `jasperReportService`.
 <5> A description of the report.
-Appears in the web UI.
+This description is displayed in the web UI.
 
 . Create a new entry in `$\{OPENNMS_HOME}/etc/jasper-reports.xml`:
 +
@@ -158,57 +161,54 @@ Appears in the web UI.
 />
 -----
 <1> The identifier defined in the previous step.
-This identifier must exist in `$\{OPENNMS_HOME}/etc/database-reports.xml`.
+It must exist in `$\{OPENNMS_HOME}/etc/database-reports.xml`.
 <2> The name of the template.
 The template must be located in `$\{OPENNMS_HOME}/etc/report-templates`.
 <3> The engine to use (either `jdbc` or `null`).
 
-== JasperSoft Studio
+== Jaspersoft Studio
 
-We recommend that you use JasperSoft Studio to develop new reports.
-Download it via the http://community.jaspersoft.com/project/jaspersoft-studio[official JasperSoft website].
+We recommend that you use Jaspersoft Studio to develop new reports.
+You can download it via the http://community.jaspersoft.com/project/jaspersoft-studio[official Jaspersoft website].
 
-TIP: We recommend that you use the same version of JasperSoft Studio that the {page-component-title} JasperReport library uses.
-Currently, {page-component-title} uses JasperSoft Studio version {jasperreportsversion}.
+TIP: We recommend that you use the same version of Jaspersoft Studio that the {page-component-title} JasperReport library uses.
+Currently, {page-component-title} uses version {jasperreportsversion}.
 
 === Connect to {page-component-title} database
 
-You must create a database data adapter to run SQL queries against your {page-component-title} database.
-The official JasperSoft Studio documentation and wiki describe how to do this.
+You must create a database data adapter to run SQL queries against your {page-component-title} database (see the https://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/data-sources[official Jaspersoft Studio documentation]).
 
 === Use Measurements Datasource and helpers
 
-You must add the Measurements Datasource library to JasperStudio's build path to use the Measurements API:
+You must add the Measurements Datasource library to Jaspersoft Studio's build path to use the Measurements API:
 
 . Open the Project Explorer.
 . Right-click in the window and select *Configure Buildpath*.
+. Navigate to the *Libraries* tab:
 +
-image::database-reports/1_configure-build-path-1.png["Project Explorer UI displaying the Properties dialog"]
+image::database-reports/1_configure-build-path-1.png["Project Explorer UI displaying the Properties dialog."]
 
-. Navigate to the *Libraries* tab.
 . Click *Add External JARs*.
-. Select `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` from the `$\{OPENNMS_HOME}/contrib/jasperstudio-extension` directory.
+. Select `$\{OPENNMS_HOME}/bin/opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar`.
 . Close the file selection dialog.
+The Measurements Datasource and helpers should now be available:
 +
-image::database-reports/2_configure-build-path-2.png["Project Explorer UI displaying the Properties dialog with the external JAR configured"]
-+
-The Measurements Datasource and helpers should now be available.
+image::database-reports/2_configure-build-path-2.png["Project Explorer UI displaying the Properties dialog with the external JAR configured."]
 
-. Open JasperSoft Studio and navigate the Dataset and Query dialog.
-. Select the *Measurement* language.
+. Open Jaspersoft Studio and navigate to the *Dataset and Query* dialog.
+. Select the *Measurement* language from the *Language* list:
 +
-image::database-reports/3_dataset-query-dialog.png["JasperSoft Studio UI displaying the Dataset and Query dialog"]
+image::database-reports/3_dataset-query-dialog.png["JasperSoft Studio UI displaying the Dataset and Query dialog."]
 
 NOTE: If the Read Fields functionality is not available, use the Data Preview.
-To access the Measurements API, use the `MEASUREMENT_URL`, `MEASUREMENT_USERNAME`, and `MEASUREMENT_PASSWORD` parameters.
-See <<ga-database-reports-fields, Datasource fields>> for more information.
+To access the Measurements API, use the `MEASUREMENT_URL`, `MEASUREMENT_USERNAME`, and `MEASUREMENT_PASSWORD` parameters (see <<ga-database-reports-fields, Datasource fields>>).
 
 == Access performance data
 
 The {page-component-title} Measurement Datasource lets you query the Measurements API and process the returned performance data in your reports.
-Refer to the xref:development:rest/measurements.adoc[Measurements API section] for information on how to use the API.
+See xref:development:rest/measurements.adoc[] for information on how to use the API.
 
-NOTE: When you use the Measurements Datasource for a report, an HTTP connection to the Measurements API is established only if the report is not running within {page-component-title} (for example, when run in JasperSoft Studio).
+NOTE: When you use the Measurements Datasource for a report, an HTTP connection to the Measurements API is established only if the report is not running within {page-component-title} (for example, when run in Jaspersoft Studio).
 
 To receive data from the Measurements API, create a query:
 
@@ -220,7 +220,7 @@ To receive data from the Measurements API, create a query:
   <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
 </query-request>
 ------
-<1> The query language; in this case, "measurement".
+<1> The query language; in this case, `measurement`.
 JasperReports supports many languages out of the box, including SQL, xpath, and so on.
 
 [[ga-database-reports-fields]]
@@ -290,17 +290,15 @@ You can set it in a `.properties` file in `$\{OPENNMS_HOME}/etc/opennms.properti
 == Helper methods
 
 You can use helper methods to create reports in {page-component-title}.
-These helpers are included with the Measurement Datasource.
+These helpers are included with the Measurement Datasource:
 
-[caption=]
-.Supported `org.opennms.netmgt.jasper.helper.MeasurementsHelper` methods
 [cols="1,1"]
 |===
 | Helper Method | Description
 
 | getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)
 | Generates a node source descriptor according to the input parameters.
-Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned. +
+Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned.
 `nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not `null`.
 Otherwise, `node[nodeId]` is returned. +
 For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptors>>.
@@ -308,7 +306,7 @@ For more details, see <<ga-database-reports-node-source-descriptor, Node source 
 | getInterfaceDescriptor(snmpifname, snmpifdescr, snmpphysaddr)
 | Returns the interface descriptor of a given interface (for example, `en0-005e607e9e00`).
 The input parameters are prioritized. +
-If an `snmpifdescr` is specified, it is used instead of the `snmpifname`. +
+If an `snmpifdescr` is specified, it is used instead of the `snmpifname`.
 If an `snmpphysaddr` is defined, it will be appended to `snmpifname` or `snmpifdescr`. +
 Because each input parameter may be `null`, at least one must be defined. +
 For more details, see <<ga-database-reports-interface-descriptor, Interface descriptors>>.
@@ -317,8 +315,9 @@ For more details, see <<ga-database-reports-interface-descriptor, Interface desc
 [[ga-database-reports-node-source-descriptor]]
 === Node source descriptors
 
-A node is addressed by a node source descriptor, which references the node using either the foreign source and foreign ID, or the node ID.
-If `storeByForeignSource` is enabled, you can address the node only using its foreign source and foreign ID (see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse).
+A node is addressed by a node source descriptor.
+The node source descriptor references a node using either its foreign source and foreign ID, or its node ID.
+If `storeByForeignSource` is enabled, you can address the node using only its foreign source and foreign ID (see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse).
 
 To make report creation easier, the Measurement Datasource includes a helper method that creates the node source descriptor:
 
@@ -357,10 +356,7 @@ The Measurement Datasource includes a helper method that allows easy access to t
 
 === Connect to Measurements API
 
-To establish a secure connection to the Measurements API, you must import your {page-component-title} instance's public certificate to the Java Truststore and configure {page-component-title} to use the Java Truststore.
-See <<deep-dive/admin/https/https-client.adoc#ga-operation-ssl-opennms-trust-store, Configure {page-component-title} to use the defined Java Truststore>> for setup instructions.
-
+To establish a secure connection to the Measurements API, you must import your {page-component-title} instance's public certificate to the Java truststore and configure {page-component-title} to use it (see <<deep-dive/admin/configuration/https/https-client.adoc#ga-operation-ssl-opennms-trust-store, Configure {page-component-title} to use the Java truststore>>).
 You must also set `org.opennms.netmgt.jasper.measurement.ssl.enable` to `true` in `$\{OPENNMS_HOME}/etc/opennms.properties` to ensure that only secure connections are established.
 
 WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`, an insecure connection to the Measurements API can be established.
-Setting it to `true` ensures that this does not happen.

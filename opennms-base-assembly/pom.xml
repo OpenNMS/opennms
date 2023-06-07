@@ -22,17 +22,24 @@
         <filtering>true</filtering>
         <directory>${project.build.directory}/cli</directory>
         <excludes>
-          <exclude>bin/_lib.sh</exclude>
+          <exclude>bin/_*.sh</exclude>
         </excludes>
       </resource>
       <resource>
         <filtering>false</filtering>
         <directory>${project.build.directory}/cli</directory>
         <includes>
-          <include>bin/_lib.sh</include>
+          <include>bin/_*.sh</include>
         </includes>
       </resource>
     </resources>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${osMavenPluginVersion}</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -234,7 +241,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>shell script tests</id>
@@ -443,18 +450,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs-31</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-remedy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -1012,16 +1007,6 @@
       <groupId>io.pyroscope</groupId>
       <artifactId>agent</artifactId>
       <version>${pyroscopeVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

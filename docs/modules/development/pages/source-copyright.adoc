@@ -1,0 +1,75 @@
+[[source-copyright]]
+= Source File Copyright Conventions and Guidelines
+
+Every source code file in our code bases (whether it's for {page-component-title} or another project) should have a comment block at the top which includes copyright information, followed by a license portion.
+The copyright portion looks like this for a Java source file that is part of the main {page-component-title} code base:
+
+[source, console]
+----
+1 /*******************************************************************************
+ 2 * This file is part of OpenNMS(R).
+ 3 *
+ 4 * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ 5 * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ 6 *
+ 7 * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+----
+
+Lines 4 and 5 in the example contain the copyright dates.
+Line 4 is specific to the current file.
+Line 5 applies to the code base as a larger work.
+Developers may need to update one or both lines any time they make changes to a file.
+
+== Copyright date change matrix
+
+Here are the two lines with identifiers for the years in brackets to help with the matrix that illustrates what should change in different scenarios.
+
+[source, console]
+----
+1 * Copyright (C) 2009[A]-2014[B] The OpenNMS Group, Inc.
+2 * OpenNMS(R) is Copyright (C) 1999[C]-2014[D] The OpenNMS Group, Inc.
+----
+
+The following matrix assumes that the developer is updating the file in the year 2023 (Gregorian calendar).
+When year B or D are empty, the dash after the year is not required, as in the following:
+
+[source, console]
+----
+1 * Copyright (C) 2023 The OpenNMS Group, Inc.
+2 * OpenNMS(R) is Copyright (C) 2023 The OpenNMS Group, Inc.
+----
+
+.Source file copyright matrix
+[options="header"]
+[cols="3,1,1,1,1"]
+| ===
+| Scenario
+| Year A
+| Year B
+| Year C
+| Year D
+
+| Adding a new file to the OpenNMS code base
+| 2023
+| (empty)
+| 1999
+| 2023
+
+| Updating an existing file in the OpenNMS code base, if that file was added in 2004
+| 2004
+| 2023
+| 1999
+| 2023
+
+| Adding a new file to a code base created the same year
+| 2023
+| (empty)
+| 2023
+| (empty)
+
+| Updating an existing file in a code base created the same year
+| 2023
+| (empty)
+| 2023
+| (empty)
+| ===

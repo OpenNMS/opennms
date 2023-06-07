@@ -28,7 +28,7 @@
 
 package org.opennms.features.kafka.consumer.events;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;

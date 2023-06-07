@@ -291,7 +291,7 @@ public class Provisioner implements SpringServiceDaemon {
         checkNodeListForRemovals(schedules);
         
         for(final NodeScanSchedule schedule : schedules) {
-            if (schedule.getScanInterval().getMillis() <= 0) {
+            if (schedule.getScanInterval().getMillis() < 0) {
                 continue;
             }
             if(!m_scheduledNodes.containsKey(schedule.getNodeId())) {

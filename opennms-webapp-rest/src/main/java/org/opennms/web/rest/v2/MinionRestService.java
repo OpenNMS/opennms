@@ -37,6 +37,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
@@ -66,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("minions")
 @Transactional
+@Tag(name = "Minion", description = "Minion API")
 public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMinion,String,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);

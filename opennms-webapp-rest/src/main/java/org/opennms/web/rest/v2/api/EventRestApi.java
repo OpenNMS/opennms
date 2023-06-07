@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,6 +51,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @Path("events")
+@Tag(name = "Events", description = "Events API V2")
 public interface EventRestApi {
 
     @GET

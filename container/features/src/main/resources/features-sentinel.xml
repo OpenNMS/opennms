@@ -12,6 +12,10 @@
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
 
+    <!-- ActiveMQ service features -->
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
+    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
     <!-- Required by sentinel-jms -->
     <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
@@ -30,7 +34,7 @@
         <feature>geronimo-jms-api</feature>
 
         <!-- Needed by activemq-camel -->
-        <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
+        <bundle dependency="true">mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
         <feature>activemq-camel</feature>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
 
@@ -150,6 +154,7 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
@@ -314,5 +319,6 @@
     <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
         <feature>sentinel-persistence</feature>
         <feature>opennms-timeseries-api</feature>
+        <feature>fst</feature>
     </feature>
 </features>

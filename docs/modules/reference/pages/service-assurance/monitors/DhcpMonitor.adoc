@@ -78,20 +78,30 @@ Examples use CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 .Configure a DHCP service in `poller-configuration.xml`
+
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">
- <parameter key="retry" value="2" />
- <parameter key="timeout" value="3000" />
- <parameter key="relayMode" value="false"/>
- <parameter key="extendedMode" value="false"/>
- <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
- <parameter key="rrd-base-name" value="dhcp" />
- <parameter key="ds-name" value="dhcp" />
+ <parameter key="retry" value="2" /> <1>
+ <parameter key="timeout" value="3000" /> <2>
+ <parameter key="relayMode" value="false"/> <3>
+ <parameter key="extendedMode" value="false"/> <4>
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <5>
+ <parameter key="rrd-base-name" value="dhcp" /> <6>
+ <parameter key="ds-name" value="dhcp" /> <7>
 </service>
 
-<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <8>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> Sets the poller's relay mode.
+<4> When *extendedMode* is *false*, the DHCP poller sends a DISCOVER.
+When *extendedMode* is *true*, the DHCP poller sends a DISCOVER.
+<5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<6> The name of the RRD file (minus the .rrd or .jrb file extension).
+<7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<8> Required *monitor* section.
 
 == Example: testing DHCP server in a different subnet in extended mode
 
@@ -101,18 +111,28 @@ You can use the same monitor in `poller-configuration.xml` as in the above examp
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">
- <parameter key="retry" value="2" />
- <parameter key="timeout" value="3000" />
- <parameter key="relayMode" value="true"/>
- <parameter key="extendedMode" value="false"/>
- <parameter key="myIpAddress" value="1.2.3.4"/>
- <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
- <parameter key="rrd-base-name" value="dhcp" />
- <parameter key="ds-name" value="dhcp" />
+ <parameter key="retry" value="2" /> <1>
+ <parameter key="timeout" value="3000" /> <2>
+ <parameter key="relayMode" value="true"/> <3>
+ <parameter key="extendedMode" value="false"/> <4>
+ <parameter key="myIpAddress" value="1.2.3.4"/> <8>
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" /> <5>
+ <parameter key="rrd-base-name" value="dhcp" /> <6>
+ <parameter key="ds-name" value="dhcp" /> <7>
 </service>
 
-<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
+<monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/> <9>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> Sets the poller's relay mode.
+<4> When *extendedMode* is *false*, the DHCP poller sends a DISCOVER.
+When *extendedMode* is *true*, the DHCP poller sends a DISCOVER.
+<5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<6> The name of the RRD file (minus the .rrd or .jrb file extension).
+<7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<8> If *relayMode* is set to *true*, this parameter will usually be set to the IP address of the {page-component-title} server.
+<9> Required *monitor* section.
 
-NOTE: If in extendedMode, the time required to complete the poll for an unresponsive node increases by a factor of three.
-      It is a good idea to limit the number of retries to a small number.
+NOTE: If in `extendedMode`, the time required to complete the poll for an unresponsive node increases by a factor of three.
+We recommend that you limit the number of retries to a small number.

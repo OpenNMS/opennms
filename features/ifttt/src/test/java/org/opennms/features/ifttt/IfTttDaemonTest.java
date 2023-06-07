@@ -28,7 +28,7 @@
 
 package org.opennms.features.ifttt;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

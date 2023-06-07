@@ -1,0 +1,32 @@
+
+= Configuration Tester
+
+To identify configuration problems, use the configuration tester located in `$\{OPENNMS_HOME}/bin/`.
+You can use the tool when {page-component-title} is either running or stopped.
+
+Use the `config-tester` command to check configuration files.
+The tool prints issues to `output.log`.
+
+== Parameters
+
+The following parameters are available for the configuration tester:
+
+[options="autowidth"]
+|===
+| Parameter | Description
+
+| -a, --all
+| Check all supported configuration files.
+
+| -h, --help
+| Print the tool's help guide and exit.
+
+| -i, --ignore-unknown
+| Ignore unknown configuration files and continue processing.
+
+| -l, --list
+| List supported configuration files and exit.
+
+| -v, --verbose
+| List each configuration file as it is tested.
+|===

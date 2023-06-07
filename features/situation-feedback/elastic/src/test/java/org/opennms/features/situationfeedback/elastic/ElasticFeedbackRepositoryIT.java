@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -43,17 +43,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.events.api.EventForwarder;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticFeedbackRepositoryIT {
 
@@ -69,11 +73,14 @@ public class ElasticFeedbackRepositoryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
         MockLogAppender.setupLogging(true, "DEBUG");
         final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
-        final JestClient client = restClientFactory.createClient();
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFeedbackRepositoryIT.class.getName()), eventForwarder);
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         final IndexSettings settings = new IndexSettings();
         final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
+
         feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 5, initializer);
         // initialize the repository manually
         initializer.initialize();

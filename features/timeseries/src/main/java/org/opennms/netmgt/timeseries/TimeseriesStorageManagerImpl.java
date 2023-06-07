@@ -30,12 +30,14 @@ package org.opennms.netmgt.timeseries;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,7 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
 
     public TimeseriesStorageManagerImpl() {
         this(new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-                .blocking()
+                .blocking(ServiceLookupBuilder.GRACE_PERIOD_MS, ServiceLookupBuilder.LOOKUP_DELAY_MS, 0)
                 .build());
     }
 
@@ -62,7 +64,7 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
         LOOKUP = Objects.requireNonNull(lookup);
     }
 
-    public TimeSeriesStorage get() {
+    public TimeSeriesStorage get() throws StorageException {
         if(this.stackOfStorages.isEmpty()) {
             TimeSeriesStorage storage = LOOKUP.lookup(TimeSeriesStorage.class, null);
             if(storage != null) {
@@ -72,11 +74,11 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
                         " Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
             }
         }
-        return getOrNull();
+        return Optional.ofNullable(getOrNull()).orElseThrow(() -> new StorageException("No timeseries storage implementation found"));
     }
 
     private TimeSeriesStorage getOrNull() {
-        return this.stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
+        return stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
     }
 
     @SuppressWarnings("rawtypes")

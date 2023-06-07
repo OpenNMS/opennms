@@ -29,7 +29,7 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.hamcrest.Matchers.is;
 import java.util.concurrent.TimeUnit;

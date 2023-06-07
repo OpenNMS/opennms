@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.features.alarms.history.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -40,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import org.elasticsearch.index.reindex.ReindexPlugin;
 import org.elasticsearch.painless.PainlessPlugin;
+import org.elasticsearch.reindex.ReindexPlugin;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -51,21 +51,27 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
-import com.jayway.awaitility.Awaitility;
+import org.awaitility.Awaitility;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticAlarmIndexerIT {
-    private JestClient jestClient;
+    private JestClientWithCircuitBreaker jestClient;
     private AlarmHistoryRepository alarmHistoryRepo;
     private ElasticAlarmIndexer elasticAlarmIndexer;
+    private CircuitBreaker circuitBreaker;
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
@@ -81,8 +87,10 @@ public class ElasticAlarmIndexerIT {
 
     @Before
     public void setUp() throws IOException {
-        RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        jestClient = restClientFactory.createClient();
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        final JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticAlarmIndexerIT.class.getName()), eventForwarder);
         alarmHistoryRepo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         MetricRegistry metrics = new MetricRegistry();

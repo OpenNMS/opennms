@@ -45,15 +45,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
@@ -90,7 +91,6 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
     private final StackModel model;
     private final SentinelProfile profile;
     private final Path overlay;
-    private Exception waitUntilReadyException = null;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
         super(IMAGE);
@@ -114,7 +114,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
@@ -280,34 +280,6 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         return SENTINEL_JETTY_PORT;
     }
 
-    /**
-     * Workaround exception details that are lost from waitUntilReady due to
-     * <a href="https://github.com/testcontainers/testcontainers-java/pull/6167">this issue</a>.
-     */
-    @Override
-    protected void doStart() {
-        try {
-            super.doStart();
-        } catch (Exception e) {
-            if (waitUntilReadyException != null) {
-                // If the caught exception includes waitUntilReadyException, no need to do anything special
-                for (var cause = e.getCause(); cause != null; cause = cause.getCause()) {
-                    if (cause == waitUntilReadyException) {
-                        throw e;
-                    }
-                }
-                throw new IllegalStateException("Failed to start container due to exception thrown from waitUntilReady."
-                        + " See cause further below. Intervening org.testcontainer exceptions are shown first:"
-                        + "\n\t\t----------------------------------------------------------\n"
-                        + ExceptionUtils.getStackTrace(e).replaceAll("(?m)^", "\t\t")
-                        + "\t\t----------------------------------------------------------",
-                        waitUntilReadyException);
-            } else {
-                throw e;
-            }
-        }
-    }
-
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
@@ -317,16 +289,6 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         @Override
         protected void waitUntilReady() {
-            try {
-                waitUntilReadyWrapped();
-            } catch (Exception e) {
-                container.waitUntilReadyException = e;
-
-                throw e;
-            }
-        }
-
-        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for Sentinel health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
@@ -336,6 +298,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -347,21 +311,32 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
-    }
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
+        DevDebugUtils.clearLogs(targetLogFolder);
 
-    private static void copyLogs(SentinelContainer container, String prefix) {
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
+
+        LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.copyLogs(this,
                 // dest
-                Paths.get("target", "logs", prefix, ALIAS),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", ALIAS, "data", "log"),
                 // log files
                 logFiles);
+
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
+        }
     }
+
 }

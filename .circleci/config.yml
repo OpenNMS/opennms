@@ -21,12 +21,16 @@ parameters:
     description: whether to enable running flaky smoke tests
     type: boolean
     default: false
+  is_pr:
+    description: whether this build is a pull request (only valid in non-setup workflows)
+    type: boolean
+    default: false
 
 setup: true
 
 commands:
   shallow-clone:
-      description: "Quick shallow checkout"
+      description: "Quick shallow checkout (if possible)"
       steps:
         - run:
             name: git clone
@@ -35,7 +39,13 @@ commands:
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
-              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+              git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
+              if [ -n "${CIRCLE_TAG}" ]; then
+                git checkout --force "${CIRCLE_TAG}"
+                git reset --hard "${CIRCLE_SHA1}"
+              else
+                git checkout --force -B "${CIRCLE_BRANCH}" "${CIRCLE_SHA1}"
+              fi
   verify-config:
     description: "Verify generated main.yml file"
     steps:
@@ -112,8 +122,10 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ true, << pipeline.parameters.trigger-automation >> ]
     jobs:
-      - docker_gc
-
+      - docker_gc:
+          context:
+            - "CircleCI"
+            - "docker-publish-account"
 jobs:
   docker_gc:
     docker:
@@ -123,21 +135,18 @@ jobs:
           name:  Docker GC - remove inactive images on feature branches
           # TODO replace expect when https://github.com/docker/hub-tool/pull/198 is merged
           command: |
-            wget https://github.com/docker/hub-tool/releases/download/v0.4.4/hub-tool-linux-amd64.tar.gz
+            wget https://github.com/docker/hub-tool/releases/download/v0.4.5/hub-tool-linux-amd64.tar.gz
             tar -xzf hub-tool-linux-amd64.tar.gz
-            apk update
-            apk add expect
-            expect_commands="
-            spawn hub-tool/hub-tool login ${DOCKERHUB_LOGIN}
-            expect 'Password:'
-            send \"${DOCKERHUB_PASS}\n\"
-            interact"
-            expect -c "${expect_commands//
-            /;}"
-            GC_LIST=$( hub-tool/hub-tool tag ls opennms/horizon | ( grep feature || true ) | ( grep inactive || true ) | cut -d" " -f1 )
-            for image in $GC_LIST; do
-              echo "Delete image $image"
-              ( yes || true ) | hub-tool/hub-tool tag rm $image
+            cd hub-tool
+            DOCKERHUB_AUTH_HASH="$(echo -n "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64)"
+            echo "{ \"auths\": { \"hub-tool\": { \"auth\": \"${DOCKERHUB_AUTH_HASH}\" } } }" > config.json
+            export DOCKER_CONFIG="$(pwd)"
+            for HUB_REPO in horizon minion sentinel meridian-minion; do
+              GC_LIST=$( ./hub-tool tag ls "opennms/${HUB_REPO}" | ( grep -E '^[^:][^:]*:(feature|jira|dependabot)' || true ) | ( grep inactive || true ) | cut -d" " -f1 )
+              for image in $GC_LIST; do
+                echo "Delete image $image"
+                ( yes || true ) | ./hub-tool tag rm $image
+              done
             done
 
   trigger-coverage:

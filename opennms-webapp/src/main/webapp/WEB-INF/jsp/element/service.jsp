@@ -30,12 +30,16 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="
+        contentType="text/html"
+        session="true"
+        import="
+	java.util.ArrayList,
+	java.util.List,
         java.util.Map,
         java.util.TreeMap,
         java.util.Enumeration,
+	org.opennms.netmgt.config.CollectdConfigFactory,
+	org.opennms.netmgt.config.collectd.Collector,
         org.opennms.netmgt.config.PollerConfigFactory,
         org.opennms.netmgt.config.PollerConfig,
         org.opennms.netmgt.config.poller.Package,
@@ -44,7 +48,7 @@
         org.opennms.netmgt.model.OnmsMonitoredService,
         org.opennms.netmgt.poller.ServiceMonitor,
         org.opennms.netmgt.poller.DefaultPollContext
-	"
+        "
 %>
 <%@ page import="java.util.Optional" %>
 <%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
@@ -72,6 +76,42 @@
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
 
+    //Collectd
+    Boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
+    CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
+    List<String> collectdPackageNames = new ArrayList<String>();
+    Map<String,String> collectdParameters = new TreeMap<String,String>();
+
+    if (isServiceCollectionEnabled) { // Service exists in any collection package and is enabled
+        for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfigFactory.getPackages()) {
+            if (pkg.serviceInPackageAndEnabled(serviceName)) {
+                collectdPackageNames.add(pkg.getName()); //there should be at least one, right?
+            }
+            for (org.opennms.netmgt.config.collectd.Service collectdSvc : pkg.getServices()) {
+                if (collectdSvc.getName().equals(serviceName)) {
+		    pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
+                    for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
+                        if (p.getKey().toLowerCase().contains("password")) {
+                            continue; // Hide passwords for security reasons
+                        } else {
+                            collectdParameters.put(p.getKey(), p.getValue());
+                        }
+                    }
+                    pageContext.setAttribute("collectdParameters", collectdParameters);
+                }
+            }
+        }
+        String collectorClassName = null;
+        for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
+            if (collectdCollector.getService().equals(serviceName)) {
+		pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
+    	        break;
+    	    }
+        }
+    pageContext.setAttribute("collectdPackageNames", collectdPackageNames);
+    }
+
+    // Pollerd
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
@@ -122,7 +162,7 @@
 %>
 
 <c:url var="eventUrl" value="event/list.htm">
-  <c:param name="filter" value="node=${service.ipInterface.node.id}"/> 
+  <c:param name="filter" value="node=${service.ipInterface.node.id}"/>
   <c:param name="filter" value="interface=${service.ipInterface.ipAddress.hostAddress}"/>
   <c:param name="filter" value="service=${service.serviceId}"/>
 </c:url>
@@ -142,8 +182,8 @@
   <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
   <jsp:param name="breadcrumb" value="Service" />
 </jsp:include>
-  
-  
+
+
 <sec:authorize url="admin/deleteService">
 
 <script type="text/javascript" >
@@ -163,7 +203,7 @@ function doDelete() {
 </script>
 
 </sec:authorize>
-	
+
       <h4>${service.serviceName} service on ${service.ipAddress.hostAddress}</h4>
 
        <sec:authorize url="admin/deleteService">
@@ -173,7 +213,7 @@ function doDelete() {
          <input type="hidden" name="service" value="${service.serviceType.id}"/>
        </sec:authorize>
 
-        
+
       <ul class="list-inline">
          <li class="list-inline-item"><a href="${eventUrl}">View Events</a></li>
 
@@ -184,16 +224,16 @@ function doDelete() {
           </c:url>
 
           <li class="list-inline-item"><a href="<c:out value="${metaDataLink}"/>">Meta-Data</a></li>
- 	
+
        <sec:authorize url="admin/deleteService">
          <li class="list-inline-item"><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
        </sec:authorize>
 
-	
+
 
       </ul>
 
-          
+
 
       <sec:authorize url="admin/deleteService">
          </form>
@@ -216,11 +256,19 @@ function doDelete() {
               </tr>
               <tr>
                 <c:url var="interfaceLink" value="element/interface.jsp">
-                  <c:param name="ipinterfaceid" value="${service.ipInterface.id}"/> 
+                  <c:param name="ipinterfaceid" value="${service.ipInterface.id}"/>
                 </c:url>
-                <th>Interface</th> 
+                <th>Interface</th>
                 <td><a href="${fn:escapeXml(interfaceLink)}">${service.ipInterface.ipAddress.hostAddress}</a></td>
-              </tr>              
+              </tr>
+            </table>
+            </div>
+            <!-- Polling info box -->
+            <div class="card">
+            <div class="card-header">
+              <span>Polling</span>
+            </div>
+            <table class="table table-sm">
               <tr>
                 <th>Polling Status</th>
                 <td>${service.statusLong}</td>
@@ -267,6 +315,45 @@ function doDelete() {
                   </tr>
                 </c:when>
               </c:choose>
+            </table>
+            </div>
+            <!-- collection info box -->
+            <div class="card">
+            <div class="card-header">
+              <span>Collection</span>
+            </div>
+            <table class="table table-sm">
+	      <% if (isServiceCollectionEnabled) { %>
+              <tr>
+                <th>Collection Status</th>
+                <td>Enabled</td>
+              </tr>
+              <c:forEach var="pkg" items="${collectdPackageNames}">
+                  <tr>
+                      <th>Collection Package</th>
+                      <td>${pkg}</td>
+                  </tr>
+              </c:forEach>
+             <tr>
+               <th>Collection Interval</th>
+               <c:choose>
+               <c:when test="${collectdInterval != null}"><td>${collectdInterval}</td></c:when>
+                   <c:otherwise><td>Unknown</td></c:otherwise>
+               </c:choose>
+             </tr>
+             <tr>
+               <th>Collector Class</th>
+               <c:choose>
+               <c:when test="${collectorClassName != null}"><td>${collectorClassName}</td></c:when>
+                   <c:otherwise><td>Unknown or Missing</td></c:otherwise>
+               </c:choose>
+             </tr>
+	      <% } else { %>
+	      <tr>
+                <th>Collection Status</th>
+                <td>Not Enabled for Collection</td>
+              </tr>
+	      <% } %>
             </table>
             </div>
 
@@ -329,7 +416,7 @@ function doDelete() {
             <c:if test="${parameters != null}">
               <div class="card">
               <div class="card-header">
-                <span>Service Parameters</span>
+                <span>Poller Service Parameters</span>
               </div>
                   <table class="table table-sm severity">
                       <tr>
@@ -345,6 +432,65 @@ function doDelete() {
                           final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope, MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", patternVariables));
 
                           for(Map.Entry<String,String> entry : ((Map<String,String>)pageContext.getAttribute("parameters")).entrySet()) {
+                              %>
+                              <tr>
+                                  <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
+                                  <td><%=WebSecurityUtils.sanitizeString(entry.getValue())%></td>
+                                  <%
+                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), scope);
+
+                                      if (result.parts.size() == 1) {
+                                          %>
+                                            <td><%=WebSecurityUtils.sanitizeString(result.output)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'">&#9432;</span></td>
+                                          <%
+                                      } else {
+                                          %>
+                                          <td><%=WebSecurityUtils.sanitizeString(result.output)%>
+                                          <%
+                                      }
+                                      if (result.parts.size() > 1) {
+                                          int counter = 1;
+                                          %>
+                                          </td>
+                                          <%
+                                          for(Interpolator.ResultPart part : result.parts) {
+                                            %>
+                                            </tr>
+                                                <tr class="CellStatus">
+                                                    <td class="severity-Cleared nobright spacer"></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(entry.getKey())%> #<%=counter++%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.input)%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.value.value)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'">&#9432;</span></td>
+                                            <%
+                                          }
+                                      }
+                              %>
+                              </tr>
+                              <%
+                          }
+                      %>
+                  </table>
+              </div>
+            </c:if>
+	    <!-- Collectd service parameters -->
+            <c:if test="${collectdParameters != null}">
+              <div class="card">
+              <div class="card-header">
+                <span>Collectd Service Parameters</span>
+              </div>
+                  <table class="table table-sm severity">
+                      <tr>
+                          <th colspan="2">Parameter</th>
+                          <th>Value</th>
+                          <th>Effective</th>
+                      </tr>
+                      <%
+                          final Scope nodeScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForNode(service.getNodeId());
+                          final Scope interfaceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForInterface(service.getNodeId(), ipAddr);
+                          final Scope serviceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForService(service.getNodeId(), InetAddressUtils.getInetAddress(ipAddr), serviceName);
+                          final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope);
+
+                          for(Map.Entry<String,String> entry : ((Map<String,String>)pageContext.getAttribute("collectdParameters")).entrySet()) {
                               %>
                               <tr>
                                   <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
@@ -406,12 +552,10 @@ function doDelete() {
               <jsp:param name="header" value="<a href='${eventUrl}'>Recent Events</a>" />
               <jsp:param name="moreUrl" value="${eventUrl}" />
             </jsp:include>
-      
+
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
       </div> <!-- content-right -->
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
-

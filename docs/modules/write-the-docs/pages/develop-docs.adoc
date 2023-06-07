@@ -19,7 +19,7 @@ All formal technical documentation should follow a basic structure:
 * Procedure steps and technical content such as parameters, configuration, and examples, as appropriate.
 
 Minimize the use of screenshots; they should be included only to illustrate a concept that may be difficult to understand, or something that is not easy to locate in the UI.
-See the xref:write-the-docs:write-docs.adoc#ga-opennms-docs-images[Images] section for more information.
+See the <<write-docs.adoc#ga-opennms-docs-images, Images>> section for more information.
 
 [[ga-opennms-docs-repo-structure]]
 == Documentation file structure
@@ -31,35 +31,34 @@ The `./modules` directory may have more nested directories to create a hierarchy
 You will find `.adoc` files in the `./pages` directory or one of its subdirectories, and image files in the `./images` directory or one of its subdirectories.
 The following table describes the documentation modules for the Horizon project:
 
-[options="header", cols="1,3"]
+[options="autowidth"]
 |===
-| Directory
-| Contents
+| Directory | Contents
 
-| `docs/modules/deployment`
+| docs/modules/deployment
 | Documentation on how to install and configure Horizon on different operating systems.
 
-| `docs/modules/development`
+| docs/modules/development
 | Documentation for those who want to develop Horizon.
 
-| `docs/modules/operation`
+| docs/modules/operation
 | Documentation for administrators to configure, optimize, and run Horizon.
 
-| `docs/modules/reference`
+| docs/modules/reference
 | Glossary and miscellaneous configuration topics.
 
-| `docs/modules/releasenotes`
+| docs/modules/releasenotes
 | Changelog and release notes.
 
-| `docs/modules/write-the-docs`
+| docs/modules/write-the-docs
 | Documentation on how to write documentation for the Horizon project.
 |===
 
-NOTE: Documentation for other OpenNMS projects (for example, `opennms-helm`) follows a similar hierarchy, as appropriate for the project.
+NOTE: Documentation for other OpenNMS projects (for example, `opennms-alec`) follows a similar hierarchy, as appropriate for the project.
 
 Every new directory or `.adoc` file must be included in the general structure of the documentation, defined by the `nav.adoc` files:
 
-. Create a new doc (in this example, `dosc/modules/operation/pages/meta-data.adoc`)
+. Create a new `.adoc` file (in this example, `dosc/modules/operation/pages/meta-data.adoc`).
 . Open the directory's `nav.adoc` file (in this example, `docs/modules/operation/nav.adoc`).
 . Add a new bullet list entry linking to the new page.
 +
@@ -68,7 +67,7 @@ If the document is located in a sub-directory (for example, `/operation/pages/ad
 To add a new level-one list item, use the following syntax:
 +
 .Level-one `nav.adoc` list item with defined hyperlink text
-[source]
+[source, asciidoc]
 ----
 * xref:meta-data.adoc[Meta Data]
 ----
@@ -77,4 +76,4 @@ If you choose not to define the hyperlink text within the square brackets, the l
 
 . Save your changes and commit them to your active repository branch.
 
-To test your changes locally, xref:write-the-docs:build-docs.adoc[build the documentation].
+To test your changes locally, xref:build-docs.adoc[build the documentation].

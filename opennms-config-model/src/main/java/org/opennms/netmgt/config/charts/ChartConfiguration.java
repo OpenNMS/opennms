@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 @XmlRootElement(name = "chart-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -202,12 +204,13 @@ public class ChartConfiguration implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vBarChart
      * @throws IndexOutOfBoundsException if the index given is outside
      * the bounds of the collection
      */
+    @Hidden
     public void setBarChart(final int index, final BarChart vBarChart) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this.barChartList.size()) {
@@ -219,9 +222,10 @@ public class ChartConfiguration implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vBarChartArray
      */
+    @Hidden
     public void setBarChart(final BarChart[] vBarChartArray) {
         //-- copy array
         barChartList.clear();
@@ -251,6 +255,7 @@ public class ChartConfiguration implements java.io.Serializable {
      * 
      * @param barChartList the Vector to set.
      */
+    @Hidden
     public void setBarChartCollection(final java.util.List<BarChart> barChartList) {
         this.barChartList = barChartList == null? new ArrayList<>() : barChartList;
     }

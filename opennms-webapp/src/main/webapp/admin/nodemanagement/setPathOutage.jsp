@@ -119,7 +119,7 @@ LABEL
   }
 </script>
 
-<h3>Node: <%=node_db.getLabel()%></h3>
+<h3>Node: <%=WebSecurityUtils.sanitizeString(node_db.getLabel())%></h3>
 
 <% if (task != null) { %>
   <h2><%=task%></h2>

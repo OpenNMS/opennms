@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
 import java.util.ArrayList;
 import java.util.Arrays;

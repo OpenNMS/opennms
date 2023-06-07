@@ -22,6 +22,8 @@
 
   <!-- Service references -->
   <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao" availability="mandatory"/>
+  <reference id="ackDao" interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" availability="mandatory"/>
+  <reference id="alarmEntityNotifier" interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" availability="mandatory"/>
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
@@ -43,6 +45,7 @@
   <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
   <reference id="secureCredentialsVaultInternal" interface="org.opennms.features.scv.api.SecureCredentialsVault" /><!-- Reference to internal (opennms) SCV-->
   <reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig" />
+  <reference id="collectdConfig" interface="org.opennms.netmgt.config.api.CollectdConfigFactory" />
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -67,6 +70,8 @@
   <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
     <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
       <argument ref="alarmDao"/>
+      <argument ref="ackDao"/>
+      <argument ref="alarmEntityNotifier"/>
       <argument ref="sessionUtils"/>
     </bean>
   </service>
@@ -177,6 +182,22 @@
   </reference-list>
 
   <service ref="pollerConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Collector Config Extension -->
+  <bean id="collectorConfExtensionManager" class="org.opennms.features.apilayer.config.CollectorConfExtensionManager">
+    <argument ref="collectdConfig"/>
+    <argument ref="eventForwarder"/>
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.collector.CollectorConfigurationExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="collectorConfExtensionManager" />
+  </reference-list>
+
+  <service ref="collectorConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
     <service-properties>
       <entry key="registration.export" value="true"/>
     </service-properties>

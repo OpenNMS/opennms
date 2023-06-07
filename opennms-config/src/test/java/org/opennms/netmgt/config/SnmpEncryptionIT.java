@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,6 @@ import static org.opennms.netmgt.config.SnmpPeerFactory.ENCRYPTION_ENABLED;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 
 import org.junit.Rule;
@@ -64,10 +63,12 @@ public class SnmpEncryptionIT {
 
     @Test
     public void testEncryption() throws IOException {
-        URL url = getClass().getResource("/snmp-config.xml");
+        final var file = new File("target/test-classes/snmp-config.xml");
+        final var url = file.toURI().toURL();
         try (InputStream configStream = url.openStream()) {
             SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(configStream));
-            SnmpPeerFactory.setFile(new File(url.getFile()));
+            SnmpPeerFactory.setFile(file);
+
             // Check if encryption is enabled
             assertTrue(snmpPeerFactory.getEncryptionEnabled());
             File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");

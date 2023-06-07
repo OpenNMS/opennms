@@ -13,6 +13,7 @@ export OPTS_PROFILES=-Prun-expensive-tasks
 
 export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
+	-Denable.license=true \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
 	-Dinstall.dir=/usr/share/opennms \
 	-Dinstall.bin.dir=/usr/share/opennms/bin \
@@ -114,14 +115,12 @@ install: build
 	## Setup the protocol packages
 	##
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/usr/share/opennms/contrib
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/var/lib/opennms/etc-pristine
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,nsclient,radius}/var/lib/opennms/xsds
 	
 	# Setup Juniper TCA collector
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/opennms/contrib
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
@@ -129,9 +128,9 @@ install: build
 	sed -e 's,@PACKAGE@,opennms-plugin-collector-juniper-tca,g' debian/package-permissions.sh > debian/opennms-plugin-collector-juniper-tca.postinst
 	
 	# Setup ticketers
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,rt}/var/lib/opennms/etc-pristine
 
 	# CIFS
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
@@ -173,12 +172,6 @@ install: build
 	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
 	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-jira,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-jira.postinst
-	
-	# OTRS
-	mv debian/temp/lib/opennms-integration-otrs*.jar                                           debian/opennms-plugin-ticketer-otrs/usr/share/java/opennms/
-	mv debian/temp/etc/otrs.properties                                                         debian/opennms-plugin-ticketer-otrs/etc/opennms/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/otrs.properties                      debian/opennms-plugin-ticketer-otrs/var/lib/opennms/etc-pristine/
-	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-otrs,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-otrs.postinst
 	
 	# RT
 	mv debian/temp/lib/opennms-integration-rt*.jar                                             debian/opennms-plugin-ticketer-rt/usr/share/java/opennms/
@@ -230,8 +223,8 @@ install: build
 	find debian/opennms-common/usr/share/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
 	
 	# move SNMP MIB files
-	install -d -m 755 debian/opennms-common/var/lib/opennms/mibs/compiled
-	mv debian/temp/share/mibs/compiled/* debian/opennms-common/var/lib/opennms/mibs/compiled/
+	install -d -m 755 debian/opennms-common/var/lib/opennms/mibs
+	mv debian/temp/share/mibs/* debian/opennms-common/var/lib/opennms/mibs/
 	
 	# Adjust permissions for config files containing sensitive information
 	install -m 644 debian/opennms-common.overrides debian/opennms-common/usr/share/lintian/overrides/opennms-common
@@ -287,20 +280,6 @@ install: build
 	sed -e 's,@PACKAGE@,opennms-webapp-hawtio,g' debian/package-permissions.sh > debian/opennms-webapp-hawtio.postinst
 
 	##
-	## Setup the opennms-contrib package
-	##
-	mv debian/temp/contrib/* debian/opennms-contrib/usr/share/opennms/contrib/
-	# Remove this unstripped i386 Linux binary to quiet lintian
-	rm -f debian/opennms-contrib/usr/share/opennms/contrib/qosdaemon/qos_example_configuration/testtraps/trapgen
-	find debian/opennms-contrib/usr/share/opennms/contrib -type f -execdir chmod 644 {} \;
-	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.pl" -execdir chmod 755 {} \;
-	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.sh" -execdir chmod 755 {} \;
-	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
-		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
-		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
-	sed -e 's,@PACKAGE@,opennms-contrib,g' debian/package-permissions.sh > debian/opennms-contrib.postinst
-	
-	##
 	## Make sure there aren't any files left over in debian/temp that missed packaging
 	##
 	find debian/temp -name .gitignore -o -name .gwtignore -o -name .readme | xargs rm -rf
@@ -320,7 +299,6 @@ binary-indep: build install
 	#dh_fixperms # Disabled to allow non-standard permissions
 	dh_makeshlibs -n
 	dh_installdeb
-	dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib
 	-dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums

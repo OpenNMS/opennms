@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.integration.api.v1.flows.Flow;
@@ -185,6 +186,7 @@ public class ThresholdingIT {
                                                  this.databasePopulator.getDistPollerDao(),
                                                  this.databasePopulator.getSnmpInterfaceDao(),
                                                  Mockito.mock(FilterDao.class),
+                                                 new MockSessionUtils(),
                                                  filterService,
                                                  classificationRuleProvider,
                                                  classificationEngine);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Class CatSections.
@@ -174,12 +176,13 @@ public class CatSections implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vSection
      * @throws IndexOutOfBoundsException if the index given is outside
      * the bounds of the collection
      */
+    @Hidden
     public void setSection(final int index, final Section vSection) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this.sectionList.size()) {
@@ -191,9 +194,10 @@ public class CatSections implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vSectionArray
      */
+    @Hidden
     public void setSection(final Section[] vSectionArray) {
         //-- copy array
         sectionList.clear();
@@ -223,6 +227,7 @@ public class CatSections implements java.io.Serializable {
      * 
      * @param sectionList the Vector to set.
      */
+    @Hidden
     public void setSectionCollection(final java.util.List<Section> sectionList) {
         this.sectionList = sectionList;
     }

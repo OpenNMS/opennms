@@ -10,9 +10,9 @@ commands:
           name: restore OCI files matching "<< parameters.match >>"
           command: |
             if [ -n "<< parameters.match >>" ]; then
-              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
             else
-              download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
             fi
 
             cd /tmp/oci-artifacts
@@ -59,7 +59,7 @@ commands:
       - download-download-artifacts
       - run:
           name: download tarball dependency to << parameters.tarball_path >>
-          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+          command: download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
@@ -81,3 +81,32 @@ commands:
       - store_artifacts:
           path: ~/project/opennms-container/<< parameters.container_dir >>/images/
           destination: /
+
+  generate-sbom:
+    parameters:
+      container_dir:
+        type: string
+    steps:
+      - run:
+          name: install Syft
+          command: |
+            set -o pipefail
+            curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "${HOME}/bin"
+      - run:
+          name: generate SBOM
+          command: |
+            cd ~/project/opennms-container/"<< parameters.container_dir >>"/images/
+            if [ -z "$(ls *.oci 2>/dev/null)" ]; then
+              echo 'ERROR: no *.oci files found in opennms-container/<< parameters.container_dir >>/images/'
+              exit 1
+            fi
+
+            mkdir -p /tmp/sboms
+            for IMAGE_FILE in *.oci; do
+              IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
+              syft packages "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
+            done
+      - store_artifacts:
+          path: /tmp/sboms/
+          destination: /
+

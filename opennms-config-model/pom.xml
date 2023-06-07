@@ -98,6 +98,7 @@
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              io.swagger.v3.oas.annotations;resolution:=optional,
               javassist.util.proxy,
               org.hibernate.proxy,
               org.opennms.core.network,
@@ -129,7 +130,11 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

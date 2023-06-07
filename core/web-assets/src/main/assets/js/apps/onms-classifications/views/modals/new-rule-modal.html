@@ -72,7 +72,7 @@
       <div class="form-group form-row">
         <label class="col-form-label" for="rule.exporterFilter">Exporter Filter</label>
         <button class="btn btn-link"
-                uib-popover-html="'<div>The rule is only applied if the exporter of the flow matches the defined <a href=https://wiki.opennms.org/wiki/Filters target=_blank>filter</a>.</div>'"
+                uib-popover-html="'<div>The rule is only applied if the exporter of the flow matches the defined <a href=https://docs.opennms.com/horizon/latest/reference/configuration/filters/filters.html target=_blank>filter</a>.</div>'"
                 popover-trigger="'outsideClick'"><i class="fa fa-question-circle"></i></button>
         <input class="form-control" type="text" id="rule.exporterFilter" name="exporterFilter" placeholder="categoryName == 'Exporters' | ipAddr == '10.0.0.1'" ng-model="classification.exporterFilter"
                ng-class="{ 'is-invalid' : ruleForm.exporterFilter.$invalid || error.exporterFilter }">

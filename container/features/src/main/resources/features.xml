@@ -8,6 +8,7 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/${opennmsApiVersion}/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/${osgiJaxRsVersion}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
@@ -48,8 +49,8 @@
         <bundle>wrap:mvn:com.atomikos/transactions-jdbc/${atomikosVersion}</bundle>
     </feature>
     <feature name="batik" version="${batikVersion}" description="Apache :: XML Graphics :: Batik">
-        <bundle dependency="true">wrap:mvn:xalan/xalan/${xalanVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:xalan/serializer/${xalanVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
         <bundle dependency="true">wrap:mvn:xml-apis/xml-apis-ext/1.3.04</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-anim/${batikVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-awt-util/${batikVersion}</bundle>
@@ -67,7 +68,7 @@
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}</bundle>
     </feature>
     <feature name="bcprov" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
-        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bouncyCastleVersion}</bundle>
+        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
     </feature>
     <feature name="bsf" version="${bsfVersion}" description="Apache :: Bean Scripting Framework">
         <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
@@ -130,9 +131,7 @@
     <feature name="commons-lang" version="${commonsLangVersion}" description="Apache :: commons-lang">
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
-    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
-        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
-    </feature>
+    <!-- commons-lang3 is in features-core.xml -->
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
@@ -144,6 +143,7 @@
     </feature>
     <feature name="dropwizard-metrics" version="${dropwizardMetricsVersion}" description="Dropwizard :: Metrics">
         <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <bundle>mvn:io.dropwizard.metrics/metrics-jmx/${dropwizardMetricsVersion}</bundle>
     </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}</bundle>
@@ -157,6 +157,8 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <!-- needed by spifly -->
+        <feature version="[9.4,10)">asm</feature>
         <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
@@ -173,7 +175,7 @@
         <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
         <!-- needed by jsr223 support -->
-        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
@@ -207,8 +209,8 @@
         <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
-    <feature name="javax.mail" version="1.6.7" description="javax.mail">
-        <bundle>mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
+    <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
+        <bundle>mvn:javax.mail/mail/${javaxMailVersion}</bundle>
     </feature>
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
         <bundle start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
@@ -222,16 +224,6 @@
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
-    </feature>
-    <feature name="jackson-core" version="${jacksonVersion}" description="Jackson :: Core">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-    </feature>
-    <feature name="jackson-dataformat-yaml" version="${jacksonVersion}" description="Jackson :: Data Format :: YAML">
-        <feature>jackson-core</feature>
-        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
     </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bcprov</feature>
@@ -286,27 +278,29 @@
         <feature>joda-time</feature>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
     </feature>
-    <feature name="spring-security32" version="${springSecurityVersion}" description="Spring :: Security">
+    <feature name="spring-security-opennms" version="${springSecurityVersion}" description="Spring :: Security">
         <feature version="[4.2,4.3)">spring-web</feature>
         <feature>commons-codec</feature>
         <feature>javax.servlet</feature>
-        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
-    <feature name="jicmp" version="2.0.1" description="jicmp">
+    <feature name="jicmp" version="${jicmpVersion}" description="jicmp">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
+        <bundle>mvn:org.opennms/jicmp-api/${jicmpVersion}</bundle>
     </feature>
-    <feature name="jicmp6" version="2.0.1" description="jicmp6">
-        <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
+    <feature name="jicmp6" version="${jicmp6Version}" description="jicmp6">
+        <bundle>mvn:org.opennms/jicmp6-api/${jicmp6Version}</bundle>
     </feature>
     <feature name="quartz" version="${quartzVersion}" description="quartz">
         <feature>c3p0</feature>
+        <!-- Quartz needs HikariCP [2,3) - so we use the latest 2.x here -->
+        <bundle>mvn:com.zaxxer/HikariCP/2.7.9</bundle>
         <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
@@ -331,10 +325,10 @@
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
 
@@ -366,7 +360,7 @@
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
         <feature>opennms-util</feature>
-        <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_3</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
@@ -389,6 +383,7 @@
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-jms</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
@@ -396,7 +391,6 @@
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
@@ -466,10 +460,10 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
     </feature>
     <feature name="opennms-config-jaxb" version="${project.version}" description="OpenNMS :: Configuration :: JAXB">
         <feature>hibernate36</feature>
@@ -856,11 +850,12 @@
         <feature>opennms-dao-api</feature>
         <!-- early start-level to override jettison version in 3rd-party feature files -->
         <bundle start-level="30">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${servicemixSpecsVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemixSpecsVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/${karaf.servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${karaf.servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xercesVersion}_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/2.7.2_3</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
@@ -903,7 +898,7 @@
         <feature>javax.servlet</feature>
         <feature>jcifs</feature>
         <feature>jldap</feature>
-        <feature>spring-security32</feature>
+        <feature>spring-security-opennms</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-dhcpd</feature>
@@ -978,6 +973,9 @@
     <feature name="opennms-poller-shell" version="${project.version}" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
+    <feature name="opennms-notifications-shell" version="${project.version}" description="OpenNMS :: Notifications :: Shell">
+        <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.shell/${project.version}</bundle>
+    </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <feature>jackson-core</feature>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
@@ -1009,7 +1007,7 @@
     </feature>
 
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaVersion}">
-        <!-- This is only needed for  servicemix implementation of kafka streams -->
+        <!-- This is only needed for servicemix implementation of kafka streams -->
         <!--
         <feature>jackson-core</feature>
         -->
@@ -1246,8 +1244,8 @@
     <feature name="opennms-jaas-login-module" version="${project.version}" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module/${project.version}</bundle>
-        <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/${karafVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/${karafVersion}</bundle>
     </feature>
     <feature name="jmxconfiggenerator" version="${project.version}" description="OpenNMS JMX Configuration Generator">
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1288,7 +1286,7 @@
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
     </feature>
     <feature name="vaadin-adminpage" version="${project.version}" description="OpenNMS :: Features :: BSM :: Vaadin Adminpage">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1565,8 +1563,8 @@
         <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
         <bundle>mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
@@ -1820,12 +1818,12 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
-        <feature>jackson-yaml</feature>
+        <feature>jackson-dataformat-yaml</feature>
+        <feature>jackson-datatype-jsr310</feature>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${karaf.servicemix.specs.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:net.minidev/accessors-smart/${accessorsSmartVersion}</bundle>
         <bundle>mvn:net.minidev/json-smart/${jsonSmartVersion}</bundle>
@@ -1874,20 +1872,8 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
     </feature>
 
-    <feature name="jackson" description="OpenNMS :: Jackson" version="${project.version}">
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-    </feature>
-
-    <feature name="jackson-yaml" description="OpenNMS :: Jackson With Yaml" version="${project.version}">
-        <feature>jackson</feature>
-        <bundle>mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
-    </feature>
-
     <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
-        <feature>jackson</feature>
+        <feature>jackson-core</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
@@ -2011,11 +1997,18 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries/${project.version}</bundle>
     </feature>
+    
+    <feature name="inmemory-timeseries-plugin" description="FOR TESTING ONLY" version="${project.version}">
+        <feature>opennms-timeseries-api</feature>
+        <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/${re2jVersion}</bundle>
+        <bundle >mvn:org.opennms.features/inmemory-timeseries-plugin/${project.version}</bundle>
+    </feature>
+
 
     <feature name="fst" description="FST" version="${project.version}">
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <feature>jackson-core</feature>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
-        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/${objenesisVersion}</bundle>
         <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 

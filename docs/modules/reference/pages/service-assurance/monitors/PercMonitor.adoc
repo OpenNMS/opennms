@@ -28,8 +28,7 @@ IMPORTANT: This monitor requires the outdated persnmpd software to be installed 
 | Default
 
 | array
-| The RAID ar
-ray you want to monitor.
+| The RAID array to monitor.
 | 0.0
 
 | port
@@ -40,6 +39,8 @@ ray you want to monitor.
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
+
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----

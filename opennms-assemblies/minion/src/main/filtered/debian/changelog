@@ -1,3 +1,58 @@
+opennms-minion (31.0.8-1) stable; urgency=medium
+
+  * Minor release containing several small bug fixes and enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.8/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 May 2023 12:05:56 -0400
+
+opennms-minion (31.0.7-1) stable; urgency=medium
+
+  * Minor release containing several small bug fixes.
+    Most notably, it upgrades the OpenNMS Plugin API host to version 1.4.0,
+    enabling OPA plugins targeting that version to load successfully.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.7/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 21 Apr 2023 08:43:12 -0400
+
+opennms-minion (31.0.6-1) stable; urgency=medium
+
+  * Minor release which fixes several bugs, including several security
+    vulnerabilities, and upgrades the embedded Drools library in the core
+    from v7 to v8.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Apr 2023 17:19:53 -0400
+
+opennms-minion (31.0.5-1) stable; urgency=medium
+
+  * Minor release which fixes several bugs, incorporates several documentation
+    improvements, upgrades a couple of library dependencies, improves how
+    plugins are included in the container images, and adds one small enhancement
+    to the web UI.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.5/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Mar 2023 13:32:55 -0500
+
+opennms-minion (31.0.4-1) stable; urgency=medium
+
+  * Minor release which  brings a handful of containerization improvements,
+    fixes several security vulnerabilities, upgrades many potentially
+    vulnerable dependency libraries, fixes one bug in the BSM daemon, and
+    fixes many non-security bugs.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/31.0.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Feb 2023 16:23:03 -0500
+
 opennms-minion (31.0.3-1) stable; urgency=medium
 
   * Minor release which fixes a number of UI and backend bugs, brings one

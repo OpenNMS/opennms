@@ -85,6 +85,7 @@ REFERENCE_BRANCH="$(get_reference_branch || echo "develop")"
 
 echo "#### Making sure git is up-to-date"
 if [ -n "${REFERENCE_BRANCH}" ]; then
+  git remote prune origin || :
   git fetch origin "${REFERENCE_BRANCH}"
 fi
 

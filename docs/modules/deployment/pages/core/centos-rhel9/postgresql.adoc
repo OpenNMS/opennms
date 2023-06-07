@@ -10,6 +10,9 @@ sudo reboot
 sudo dnf info postgresql-server
 ----
 
+NOTE: These procedures use a specific PostgreSQL version.
+Make sure you reference your current PostgreSQL version.
+
 .Install PostgreSQL client and server
 [source, console]
 ----
@@ -46,7 +49,7 @@ The superuser is required to be able to initialize and change the database schem
 [[core-centos-rhel9-pg_hba]]
 .Change the access policy for PostgreSQL
 [source, console]
-sudo vi /var/lib/pgsql/data/pg_hba.conf
+sudo vi /var/lib/pgsql/14/data/pg_hba.conf
 
 .Allow {page-component-title} to access the database over the local network with an MD5 hashed password
 [source, pg_hba.conf]
@@ -59,4 +62,4 @@ host    all             all             ::1/128                 md5 <1>
 
 .Apply configuration changes for PostgreSQL
 [source, console]
-sudo systemctl reload postgresql
+sudo systemctl reload postgresql-14

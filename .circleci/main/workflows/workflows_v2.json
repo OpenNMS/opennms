@@ -80,7 +80,8 @@
                 "oci",
                 "smoke",
                 "merge",
-                "publish"
+                "publish",
+                "publish-maven"
             ]
         },
         "merge": {
@@ -134,7 +135,8 @@
         },
         "build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "filters": {
                 "branches": {
@@ -184,7 +186,8 @@
         },
         "minion-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -199,7 +202,8 @@
         },
         "horizon-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -214,7 +218,8 @@
         },
         "sentinel-rpm-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -274,7 +279,8 @@
         },
         "sentinel-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -297,7 +303,8 @@
         },
         "minion-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -312,7 +319,8 @@
         },
         "horizon-deb-build": {
             "context": [
-                "CircleCI"
+                "CircleCI",
+                "gpg-signing"
             ],
             "requires": [
                 "build"
@@ -529,7 +537,7 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                        "/^foundation.*/"
                     ]
                 },
                 "user_overridable": false
@@ -561,6 +569,7 @@
             "context": [
                 "CircleCI",
                 "cloudsmith-publish-account",
+                "cosign-signing",
                 "docker-content-trust",
                 "docker-publish-account",
                 "azure-sp-dct"
@@ -584,6 +593,26 @@
                         "/^master-.*/",
                         "/^release-.*/",
                         "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "publish-maven": {
+            "context": [
+                "CircleCI",
+                "gpg-signing",
+                "OSSRH Principal"
+            ],
+            "requires": [
+                "publish"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/"
                     ]
                 },
                 "user_overridable": false

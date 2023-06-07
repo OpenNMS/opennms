@@ -9,13 +9,13 @@ You can visualize the hierarchy using the {page-component-title} topology map.
 
 The operational status of a business service is calculated by rolling up alarms from all subordinate services and edges.
 A reduction key is used to define the class of alarms; this is represented as an edge of an associated business service.
-The operational status provides more granularity than just "Up" or "Down" by associating severities to services (for example, Normal, Warning).
+The operational status provides more granularity than just "Up" or "Down" by associating <<deep-dive/events/event-configuration.adoc#severities, severities>> to services (for example, `Normal`, `Warning`).
 
 Based on the hierarchy, a service's operational status is calculated using map and reduce functions.
 A map function influences which severity is used as an input to the business service.
 A reduce function consolidates severities from all edges of a business service and uses them as inputs; they are then reduced to a single severity, which becomes the service's operational status.
 
-== Topology map
+== Topology Map
 
 The Topology Map lets you traverse business service hierarchies using the semantic zoom level.
 The semantic zoom level defines how many neighbors are shown related to the elements that are in focus.

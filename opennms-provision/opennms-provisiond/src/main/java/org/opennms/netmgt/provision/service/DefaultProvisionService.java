@@ -99,7 +99,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -921,8 +920,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             final Duration scanInterval = fs.getScanInterval();
 
-            if (scanInterval.getMillis() <= 0) {
-                LOG.debug("Node ({}/{}/{}) scan interval is zero, skipping schedule.", node.getId(), node.getForeignSource(), node.getForeignId());
+            if (scanInterval.getMillis() < 0) {
+                LOG.debug("Node ({}/{}/{}) scan interval is disabled, skipping schedule.", node.getId(), node.getForeignSource(), node.getForeignId());
                 return null;
             }
 

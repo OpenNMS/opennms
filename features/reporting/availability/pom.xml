@@ -60,6 +60,7 @@
               org.opennms.reporting.availability.*;version="${project.version}",
               org.opennms.reporting.datablock.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -147,7 +148,7 @@
     <dependency>
       <groupId>avalon-framework</groupId>
       <artifactId>avalon-framework</artifactId>
-      <version>4.1.3</version>
+      <version>4.1.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -165,6 +166,11 @@
           <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swaggerVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

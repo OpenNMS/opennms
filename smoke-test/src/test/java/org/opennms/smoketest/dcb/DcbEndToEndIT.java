@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.dcb;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonArray;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonBoolean;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonInt;
@@ -87,6 +87,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import com.google.common.collect.Iterables;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.MinionTests.class)
 public class DcbEndToEndIT {
     private static final String DCB_CONFIG_TYPE = "testcfg";
     private static final String DCB_USERNAME = "dcbuser";

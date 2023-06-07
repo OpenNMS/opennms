@@ -225,8 +225,7 @@ public class ThresholdController extends AbstractController implements Initializ
         modelAndView.addObject("moveDownButtonTitle", MOVEDOWN_BUTTON_TITLE);
     }
 
-    private ModelAndView gotoNewThreshold(String groupName) {
-        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+    private int addNewDefaultThreshold(Group group) {
         final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
@@ -265,6 +264,14 @@ public class ThresholdController extends AbstractController implements Initializ
                 }
             }
         }
+       return thresholdIndex;
+    }
+
+    private ModelAndView gotoNewThreshold(String groupName) {
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+
+        int thresholdIndex = addNewDefaultThreshold(group);
+        Threshold threshold = group.getThresholds().get(thresholdIndex);
 
         ModelAndView modelAndView;
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
@@ -278,8 +285,7 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
 
-    private ModelAndView gotoNewExpression(String groupName) {
-        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+    private int addNewDefaultExpression(Group group) {
         final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
@@ -318,6 +324,14 @@ public class ThresholdController extends AbstractController implements Initializ
                 }
             }
         }
+        return expressionIndex;
+    }
+
+    private ModelAndView gotoNewExpression(String groupName) {
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+
+        int expressionIndex = addNewDefaultExpression(group);
+        Expression expression = group.getExpressions().get(expressionIndex);
 
         ModelAndView modelAndView;
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
@@ -709,7 +723,11 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Threshold threshold = group.getThresholds().get(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
+        // If threshold config was reloaded during edit, the new threshold could have been lost
+        if (thresholdIndex >= group.getThresholds().size()) {
+            thresholdIndex = addNewDefaultThreshold(group);
+        }
+        Threshold threshold = group.getThresholds().get(thresholdIndex);
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, threshold);
@@ -757,6 +775,10 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
+        // If threshold config was reloaded during edit, the new expression could have been lost
+        if (expressionIndex >= group.getExpressions().size()) {
+            expressionIndex = addNewDefaultExpression(group);
+        }
         Expression expression = group.getExpressions().get(expressionIndex);
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {

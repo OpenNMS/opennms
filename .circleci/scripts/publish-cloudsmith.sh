@@ -58,6 +58,8 @@ export DOCKER_PASSWORD="${CLOUDSMITH_API_KEY}"
 
 export DOCKER_CONTENT_TRUST=0
 
+configure_cosign
+
 for TYPE in horizon minion sentinel; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${REPO}/${TYPE}"
 
@@ -66,6 +68,7 @@ for TYPE in horizon minion sentinel; do
     _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _internal_tag="opennms/${_file_tag}"
     _arch_tag="$(printf '%s' "${_file_tag}" | sed -e "s,^${TYPE}-,,")"
+
     echo "${TYPE}: tag=${_internal_tag}, arch_tag=${_arch_tag}, file=${_file}"
     for _publish_tag in "${DOCKER_TAGS[@]}"; do
       _tagname="${DOCKER_REPO}:${_publish_tag}-${_arch_tag}"
@@ -79,6 +82,9 @@ for TYPE in horizon minion sentinel; do
         do_with_retries docker push --quiet "${_tagname}"
       fi
     done
+
+    _sha256="$(get_sha256 "${_internal_tag}")"
+    cosign_sign "${DOCKER_REPO}@${_sha256}" "/tmp/artifacts/xml/${_file_tag}-sbom.xml"
   done
 
 done

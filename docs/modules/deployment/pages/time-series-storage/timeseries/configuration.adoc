@@ -1,32 +1,32 @@
 
 = Enable Time Series Integration Layer
 
-Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to configure {page-component-title} to use the Time Series Integration Layer:
+Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 
 [source, properties]
 org.opennms.timeseries.strategy=integration
 
-After activating the Time Series Integration Layer, you must implement it; this is done via the Karaf shell:
+[NOTE]
+====
+If you are using a container, you can set this as an environment variable in your container's configuration settings instead of creating or modifying a property file:
 
-[source, console]
-----
-clone & build:
-> git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
-> mvn install
+[source, properties]
+OPENNMS_TIMESERIES_STRATEGY=integration
+====
 
-in Karaf shell:
-> bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
-----
-
-For specific instructions, check your plugin description.
-
+[TIP]
+====
 We also highly recommend that you reference resources stored in the Time Series Integration Layer by their foreign source and foreign ID, as opposed to their database ID.
 To this end, set the following property in the same file:
 
 [source, properties]
 org.opennms.rrd.storeByForeignSource=true
+====
 
-With these set, {page-component-title} begins persisting metrics using the Time Series Integration Layer upon restart.
+After you activate the Time Series Integration Layer, you must configure the plugin.
+For specific instructions, check your plugin's documentation.
+
+Enabling and configuring the Time Series Integration Layer requires a restart of the {page-component-title} service.
 
 == Additional configuration options
 
@@ -87,6 +87,12 @@ Used to prevent large queries.
 Used when no heartbeat is specified.
 Should generally be 1.5x your largest collection interval.
 | 450000
+
+| org.opennms.timeseries.query.heartbeat.multiplier
+| Multiplier: use when heartbeat is smaller than step size.
+It will set heartbeat by step size times multiplier.
+Should generally be 1.5 times step size.
+| 1.5
 
 | org.opennms.timeseries.query.parallelism
 | Maximum number of threads that can be used to compute aggregates.

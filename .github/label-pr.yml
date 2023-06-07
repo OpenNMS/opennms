@@ -1,6 +1,0 @@
-- regExp: "^docs/.*$"
-  labels: ["docs"]
-- regExp: "^opennms-doc/.*$"
-  labels: ["docs"]
-- regExp: "^.*\\.adoc$"
-  labels: ["docs"]

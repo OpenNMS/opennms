@@ -40,6 +40,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.model.OnmsMinionCollection;
@@ -50,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("minionRestService")
 @Path("minions")
+@Tag(name = "Minions", description = "Minions API")
 public class MinionRestService extends OnmsRestService {
     @Autowired
     private MinionDao m_minionDao;

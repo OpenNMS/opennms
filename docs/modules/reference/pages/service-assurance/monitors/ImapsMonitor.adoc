@@ -35,6 +35,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <!-- IMAPS service at OpenNMS.org is on port 9993 -->

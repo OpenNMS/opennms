@@ -43,7 +43,7 @@
             <entry key="description" value="Elasticsearch Flow Repository" />
         </service-properties>
     </service>
-    <bean id="flowPipelineMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="flowPipelineMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="flowPipelineMetricRegistry"/>
     </bean>
     <bean id="flowPipelineMetricRegistryDomainedJmxReporterBuilder" factory-ref="flowPipelineMetricRegistryJmxReporterBuilder" factory-method="inDomain">
@@ -108,6 +108,7 @@
         <argument ref="distPollerDao"/>
         <argument ref="snmpInterfaceDao"/>
         <argument ref="filterDao"/>
+        <argument ref="sessionUtils" />
 
         <argument ref="cachingFilterService"/>
         <argument ref="classificationRuleProvider"/>

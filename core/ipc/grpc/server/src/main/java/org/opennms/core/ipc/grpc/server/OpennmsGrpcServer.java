@@ -81,7 +81,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;

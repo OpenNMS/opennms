@@ -24,7 +24,6 @@
   <modules>
     <module>minion</module>
     <module>sentinel</module>
-    <!-- <module>system-report-onejar</module> -->
     <module>version</module>
     <module>webapp-full</module>
     <module>xsds</module>

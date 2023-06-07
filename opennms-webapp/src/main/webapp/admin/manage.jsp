@@ -34,6 +34,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.admin.nodeManagement.*
 	"
 %>
@@ -137,7 +138,7 @@
 
 
 <form method="post" name="manageAll" action="admin/manageNodes">
-
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 <%
   int halfway = 0;
   int midCount = 0;
@@ -290,7 +291,7 @@
           row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onClick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
           row.append("<td>");
-          row.append(nodeLabel);
+          row.append(WebSecurityUtils.sanitizeString(nodeLabel));
           row.append("</td>").append("\n");
           row.append("<td>");
           row.append(address);
@@ -307,9 +308,9 @@
           row.append("<td class=\"text-center\">");
           row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onClick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
-          row.append("<td>").append(nodeLabel).append("</td>").append("\n");
+          row.append("<td>").append(WebSecurityUtils.sanitizeString(nodeLabel)).append("</td>").append("\n");
           row.append("<td>").append(address).append("</td>").append("\n");
-          row.append("<td>").append(service).append("</td></tr>").append("\n");
+          row.append("<td>").append(WebSecurityUtils.sanitizeString(service)).append("</td></tr>").append("\n");
           
           return row.toString();
       }

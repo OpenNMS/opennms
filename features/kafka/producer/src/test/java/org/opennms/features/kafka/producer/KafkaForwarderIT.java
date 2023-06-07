@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.features.kafka.producer;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -188,6 +188,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private OnmsTopologyDao onmsTopologyDao;
     @Before
     public void setUp() throws IOException {
+        File karaf = tempFolder.newFolder("karaf");
+        System.setProperty("karaf.data", karaf.getAbsolutePath());
+
         File data = tempFolder.newFolder("data");
 
         eventdIpcMgr.setEventWriter(mockDatabase);

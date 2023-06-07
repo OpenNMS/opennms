@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -807,5 +808,4 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), scannedSnmpIface.getCollectionDefinitionSource());
 
     }
-
 }

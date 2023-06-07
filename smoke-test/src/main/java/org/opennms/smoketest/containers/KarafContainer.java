@@ -32,9 +32,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.SshClient;
+import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Container;
 import org.testcontainers.utility.MountableFile;
 
@@ -107,5 +109,22 @@ public interface KarafContainer<T extends KarafContainer<T>> extends Container<T
         // Note that the feature name doesn't always match the KAR name
         assertTrue(karafShell.runCommandOnce("feature:install " + feature,
                 output -> !output.toLowerCase().contains("error"), false));
+    }
+
+    default void assertNoKarafDestroy(Path karafLogFile) {
+        final var karafLogs = TestContainerUtils.getFileFromContainerAsString(this, karafLogFile);
+        final var lines = karafLogs.split("[\r\n]+");
+
+        final var regex = Pattern.compile("Destroying container");
+        final var matches = new StringBuffer();
+        for (final var line : lines) {
+            if (regex.matcher(line).find()) {
+                matches.append(line + "\n");
+            }
+        }
+
+        if (matches.length() > 0) {
+            throw new AssertionError("Found 'Destroying container' messages in karaf.log:\n" + matches);
+        }
     }
 }

@@ -3,13 +3,13 @@ jobs:
     executor: build-executor
     resource_class: large
     steps:
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
       - cached-checkout
       - attach_workspace:
           at: ~/
       - restore-maven-cache
-      - sign-packages/setup-env:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
           command: |

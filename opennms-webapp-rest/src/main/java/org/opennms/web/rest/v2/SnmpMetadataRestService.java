@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.snmpmetadata.SnmpMetadataBase;
@@ -47,6 +48,7 @@ import javax.ws.rs.core.Response;
 @Component
 @Path("snmpmetadata")
 @Transactional
+@Tag(name = "SnmpMetadata", description = "SNMP metadata API")
 public class SnmpMetadataRestService {
 
     /** The node DAO. */

@@ -1,0 +1,4 @@
+
+= Visualizations
+
+This section describes the visualizations that you can use to model the data collected from your monitored network.

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #
+# shellcheck disable=SC2317
+#
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
 # Copyright (c) Daniel J. Gregor, Jr.
@@ -71,7 +73,7 @@ if [ -e "${opennms_home}/bin/_lib.sh" ]; then
 fi
 
 minimum_version="11.0"
-maximum_version="11.9999"
+maximum_version="17.9999"
 
 searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")
 

@@ -145,41 +145,66 @@ For instructions on how to provide JDBC drivers on Minion, see xref:deployment:m
 
 The following example checks if the number of events in the {page-component-title} database is fewer than 250,000.
 
+Note that you must include the `monitor` section in your definition.
+
 [source, xml]
 ----
 <service name="OpenNMS-DB-Event-Limit" interval="30000" user-defined="true" status="on">
-  <parameter key="driver" value="org.postgresql.Driver"/>
-  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
-  <parameter key="user" value="opennms"/>
-  <parameter key="password" value="opennms"/>
-  <parameter key="query" value="select eventid from events" />
-  <parameter key="action" value="row_count" />
-  <parameter key="operand" value="250000" />
-  <parameter key="operator" value="&lt;" />
-  <parameter key="message" value="too many events in OpenNMS database" />
+  <parameter key="driver" value="org.postgresql.Driver"/> <1>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/> <2>
+  <parameter key="user" value="opennms"/> <3>
+  <parameter key="password" value="opennms"/> <4>
+  <parameter key="query" value="select eventid from events" /> <5>
+  <parameter key="action" value="row_count" /> <6>
+  <parameter key="operand" value="250000" /> <7>
+  <parameter key="operator" value="&lt;" /> <8>
+  <parameter key="message" value="too many events in OpenNMS database" /> <9>
 </service>
 
-<monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+<monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <10>
 ----
+<1> JDBC driver class to use.
+<2> JDBC URL to connect to.
+<3> Database user.
+<4> Database password.
+<5> The SQL query to run.
+<6> The evaluation action to perform.
+<7> The operand to compare against the SQL query result.
+<8> Operator to use for the evaluation.
+<9> The message to use if the service is down.
+<10> Required *monitor* section.
 
 === String comparison
 
 The following example checks if the queried string matches against a defined operand.
 
+Note that you must include the `monitor` section in your definition.
+
 [source, xml]
 ----
 <service name="MariaDB-Galera" interval="300000" user-defined="false" status="on">
-  <parameter key="driver" value="org.mariadb.jdbc.Driver"/>
-  <parameter key="user" value="opennms"/>
-  <parameter key="password" value="********"/>
-  <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/>
-  <parameter key="query" value="SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_STATUS WHERE VARIABLE_NAME = 'wsrep_cluster_status'"/>
-  <parameter key="column" value="VARIABLE_VALUE"/>
-  <parameter key="action" value="compare_string"/>
-  <parameter key="operator" value="="/>
-  <parameter key="operand" value="Primary"/>
-  <parameter key="message" value="Galera Node is not in primary component"/>
+  <parameter key="driver" value="org.mariadb.jdbc.Driver"/> <1>
+  <parameter key="user" value="opennms"/> <2>
+  <parameter key="password" value="********"/> <3>
+  <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/> <4>
+  <parameter key="query" value="SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_STATUS WHERE VARIABLE_NAME = 'wsrep_cluster_status'"/> <5>
+  <parameter key="column" value="VARIABLE_VALUE"/> <6>
+  <parameter key="action" value="compare_string"/> <7>
+  <parameter key="operator" value="="/> <8>
+  <parameter key="operand" value="Primary"/> <9>
+  <parameter key="message" value="Galera Node is not in primary component"/> <10>
 </service>
 
-<monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+<monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <11>
 ----
+<1> JDBC driver class to use.
+<2> Database user.
+<3> Database password.
+<4> JDBC URL to connect to.
+<5> The SQL query to run.
+<6> The result column to evaluate against when using *compare_string* method.
+<7> The evaluation action to perform.
+<8> Operator to use for the evaluation.
+<9> The operand to compare against the SQL query result.
+<10> The message to use if the service is down.
+<11> Required *monitor* section.

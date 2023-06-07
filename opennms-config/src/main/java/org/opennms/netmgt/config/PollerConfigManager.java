@@ -246,15 +246,11 @@ abstract public class PollerConfigManager implements PollerConfig  {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
 
-    private List<Package> localPackages = new ArrayList<>();
     private List<Package> externalPackages = new ArrayList<>();
     private List<Package> mergedPackages = new ArrayList<>();
-    //private boolean packagesUpdated = false;
 
-    private List<Monitor> localMonitors = new ArrayList<>();
     private List<Monitor> externalMonitors = new ArrayList<>();
     private List<Monitor> mergedMonitors = new ArrayList<>();
-    //private boolean monitorsUpdated = false;
 
     @Override
     public void setExternalData(List<Package> externalPackages,  List<Monitor> externalMonitors) {
@@ -1217,4 +1213,26 @@ abstract public class PollerConfigManager implements PollerConfig  {
             getReadLock().unlock();
         }
     }
+
+
+    @Override
+    public boolean isAsyncEngineEnabled() {
+        try {
+            getReadLock().lock();
+            return m_config.getAsyncPollingEngineEnabled();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getMaxConcurrentAsyncPolls() {
+        try {
+            getReadLock().lock();
+            return m_config.getMaxConcurrentAsyncPolls();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
 }

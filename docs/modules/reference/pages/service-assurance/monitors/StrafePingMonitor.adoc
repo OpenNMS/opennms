@@ -88,11 +88,13 @@ Additionally, you must assign the nodes to a node tag named `Latency`.
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <package name="strafer" >
   <filter>categoryName == 'Latency'</filter>
-  <include-range begin="10.0.0.1" end="10.0.0.20"/>
+  <include-range begin="10.0.0.1" end="10.0.0.20"/> <1>
   <rrd step="300">
     <rra>RRA:AVERAGE:0.5:1:2016</rra>
     <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -101,18 +103,27 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="StrafePing" interval="300000" user-defined="false" status="on">
-    <parameter key="retry" value="0"/>
-    <parameter key="timeout" value="3000"/>
-    <parameter key="ping-count" value="20"/>
-    <parameter key="failure-ping-count" value="20"/>
-    <parameter key="wait-interval" value="50"/>
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-    <parameter key="rrd-base-name" value="strafeping"/>
+    <parameter key="retry" value="0"/> <2>
+    <parameter key="timeout" value="3000"/> <3>
+    <parameter key="ping-count" value="20"/> <4>
+    <parameter key="failure-ping-count" value="20"/> <5>
+    <parameter key="wait-interval" value="50"/> <6>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/> <7>
+    <parameter key="rrd-base-name" value="strafeping"/> <8>
   </service>
   <downtime interval="30000" begin="0" end="300000"/>
   <downtime interval="300000" begin="300000" end="43200000"/>
   <downtime interval="600000" begin="43200000" end="432000000"/>
   <downtime begin="432000000" delete="true"/>
 </package>
-<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
+<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <9>
 ----
+<1> Range of IP addresses to include--beginning and end.
+<2> Number of attempts to test a service’s status.
+<3> Timeout for the *isReachable* method, in milliseconds.
+<4> The number of pings to attempt each interval.
+<5> The number of pings that need to fail for the service to be considered down.
+<6> Time, in milliseconds, to wait between each ICMP echo-request packet.
+<7> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
+<8> The file name of the RRD file.
+<9> Required *monitor* section.

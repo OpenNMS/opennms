@@ -2,7 +2,7 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
       <div class="center-flex">
-        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" url="/" />
+        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
         <template v-if="mainMenu.username">
           <span class="body-large left-margin-small formatted-time">{{ mainMenu.formattedTime }}</span>
           <font-awesome-icon :icon="noticesDisplay.icon"
@@ -273,7 +273,6 @@ import {
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 
 const store = useStore()
-const route = useRoute()
 const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
@@ -723,7 +722,6 @@ body {
 }
 
 .banner .header {
-
   .logo-link.home {
     padding-left: 0;
     margin-right: 1rem;
@@ -735,7 +733,6 @@ body {
   .body-large.formatted-time {
     margin-right: 1rem;
   }
-
 }
 
 body .feather-menu .feather-menu-dropdown {
@@ -767,8 +764,12 @@ body .feather-menu .feather-menu-dropdown {
   }
 }
 
-.feather-dropdown {
+// remove elevation from menubar
+.header-wrapper.feather-app-bar-wrapper .header {
+  box-shadow: none;
+}
 
+.feather-dropdown {
   .feather-list-item {
     height: auto;
     padding: 0;
@@ -834,6 +835,7 @@ body .feather-menu .feather-menu-dropdown {
 a.top-menu-icon svg.feather-icon {
   color: #FFF;
 }
+
 .feather-menu {
   &.menubar-dropdown {
     margin-left:0;
@@ -842,6 +844,7 @@ a.top-menu-icon svg.feather-icon {
     padding: 0 7px;
   }
 }
+
 .header-content {
   .right.center-horiz {
     margin-right:2px;

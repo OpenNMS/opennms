@@ -65,10 +65,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>

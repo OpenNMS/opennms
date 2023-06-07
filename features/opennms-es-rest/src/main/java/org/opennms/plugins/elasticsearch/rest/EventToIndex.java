@@ -48,6 +48,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
@@ -63,7 +64,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.searchbox.action.BulkableAction;
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
@@ -88,7 +88,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private NodeCache nodeCache = null;
 
-	private final JestClient jestClient;
+	private final JestClientWithCircuitBreaker jestClient;
 
 	private final int bulkRetryCount;
 
@@ -108,7 +108,7 @@ public class EventToIndex implements AutoCloseable {
 			new ThreadPoolExecutor.CallerRunsPolicy()
 	);
 
-	public EventToIndex(JestClient jestClient, int bulkRetryCount) {
+	public EventToIndex(JestClientWithCircuitBreaker jestClient, int bulkRetryCount) {
 		this.jestClient = Objects.requireNonNull(jestClient);
 		this.bulkRetryCount = bulkRetryCount;
 	}

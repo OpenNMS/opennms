@@ -12,7 +12,7 @@
       - when:
           condition: << pipeline.parameters.next_branch >>
           steps:
-            - cached-checkout-for-pushing
+            - checkout-for-pushing
             - run:
                 name: Checkout target branch and merge from source
                 command: |

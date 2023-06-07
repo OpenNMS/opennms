@@ -1,93 +1,111 @@
 
+ifeval::["{page-component-title}" == "Meridian"]
 = OpenNMS Time Series DB
 
-The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from the devices it monitors.
+The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from monitored devices.
 
 == Requirements
 
 You must have the following to use the Time Series DB:
 
-* Horizon 31+ (Meridian availability with the 2023 release).
-* A Time Series DB subscription, which provides access to the https://portal.opennms.com[OpenNMS Portal] to retrieve your activation key and view Time Series DB metrics.
-Contact sales@opennms.com to sign up for the Time Series DB.
+* Meridian 2023+.
+* A Time Series DB subscription.
+The subscription provides access to the https://portal.opennms.com[OpenNMS Portal], where you can retrieve your activation key and view Time Series DB metrics.
+Contact sales@opennms.com to sign up.
+
+NOTE: When you sign up for the Time Series DB subscription, you receive an activation email from The OpenNMS Group with a login for the OpenNMS Portal.
+If you do not receive the activation email, contact your account manager.
 
 == Deployment
 
-There are four steps to set up the Time Series DB for your system:
+Follow these steps to set up the Time Series DB in your environment:
 
-. Update OpenNMS Cloud Services Connector files.
-. Configure plugin settings.
+. Update your OpenNMS Cloud Services Connector files.
+. Configure Cloud Services settings.
 . Obtain an activation key for the Cloud Services Connector.
-. Enable cloud services connectivity.
+. Enable Cloud Services connectivity.
+. Allow {page-component-title} to make outgoing connections to the following gateways:
+** TCP `auth.access.onms-dp-prod.production.prod.dataservice.opennms.com:443`
+** TCP `gateway.onms-dp-prod.production.prod.dataservice.opennms.com:443`
 
-=== Update OpenNMS Cloud Services Connector files
+NOTE: You should ensure that your firewall allows access to the gateways above.
+If they are blocked, you cannot enable the Cloud Services.
 
-The OpenNMS Cloud Services Connector is an extension that lets a {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
-The packages for this extension are installed by default in Horizon 31 and later, but do need to be configured and activated.
-You can use `yum` or `apt` to make sure the `opennms-cloud-plugin` package is up to date with the most current version of the plugin.
+=== Update Cloud Services Connector files
 
-To ensure that the feature is activated on service restarts, add the feature to a file in `featuresBoot.d`:
+The OpenNMS Cloud Services Connector is an extension that lets your {page-component-title} instance send time series data to the OpenNMS-hosted cloud service.
+The packages for this extension are installed by default, but they do need to be configured and activated.
+You can use `yum` or `apt` to make sure your `opennms-cloud-plugin` package is up to date.
+
+To ensure that the feature is activated on future service restarts, add the feature to a file in `featuresBoot.d`:
 
 [source, console]
-----
 echo "opennms-plugin-cloud-core wait-for-kar=opennms-plugin-cloud" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/plugin-cloud.boot
-----
 
-=== Configure OpenNMS Cloud Services settings
+=== Configure Cloud Services
 
-You will need to add settings to tell your {page-component-title} instance to load the plugin on service start and to direct storage to the cloud service.
+You must configure your {page-component-title} instance to load the Cloud Services plugin on start, and to direct storage to the cloud service.
+To do so, copy the example `timeseries.properties` file to your working directory:
 
-If you are running Horizon 31 or later, copy the example `timeseries.properties` file to your working directory:
-
-[source, console]
-----
+[source, shell]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
+
+You can configure custom tags in the following contexts in `timeseries.properties`:
+
+* Asset
+* Interface
+* Node
+* Service
+* Resource
+* Metadata
+
+NOTE: Only users who can access the data in their Time Series DB (for example, via Cortex or InfluxDB) can configure custom tags.
+
+Below are examples of tag definitions:
+
+[source, properties]
+----
+org.opennms.timeseries.tin.metatags.tag.node=${node:label}
+org.opennms.timeseries.tin.metatags.tag.location=${node:location}
+org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
+org.opennms.timeseries.tin.metatags.tag.ifDescr=${ipInterface:if-description}
+org.opennms.timeseries.tin.metatags.tag.label=${resource:label}
 ----
 
 After the plugin is installed and configured, restart the {page-component-title} service:
 
 [source, console]
-----
 systemctl restart opennms
-----
 
-=== Obtain an activation key
+=== Obtain an activation key and enable Cloud Services connectivity
 
-The activation key lets {page-component-title} connect with the Time Series DB cloud service.
-You must log in to the OpenNMS Portal to get this activation key, copy it, and then paste it into the appropriate screen in {page-component-title}.
-
-When you signed up for the Time Series DB, you received an activation email from OpenNMS with a login for the OpenNMS Portal.
-If you did not receive an activation email, contact your account manager.
+An activation key lets your {page-component-title} instance connect to the Time Series DB cloud service.
+You must log in to the OpenNMS Portal to access the key, copy it, and paste it into the appropriate page in {page-component-title}.
 
 IMPORTANT: The activation key is valid for one hour.
 If you do not use it within that time, you must log in to the OpenNMS Portal again, delete the instance, create a new instance, and generate a new key.
 
 To obtain the activation key, follow these steps:
 
-. If you have not already done so, activate your OpenNMS Portal account by clicking the *Account Activation* button in your welcome email.
-. Sign in to the OpenNMS Portal with your username and password.
-. Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
-. Type the name of your instance and click *Generate Activation Key*.
-. Copy the activation key and click *Save & Close*.
+. If you have not already done so, activate your OpenNMS Portal account by clicking *Account Activation* in your welcome email.
+. Sign in to the OpenNMS Portal.
+. Choose *OpenNMS Meridian* in the left menu and click *Add Instance*.
+. Specify the Time Series DB instance type and click *Continue*.
+. Specify an instance name and click *Continue*.
+. Copy the activation key and follow the instructions on the screen to activate your instance:
+.. Sign in to Meridian.
+.. In the top menu bar, click *Plugins > Cloud Services*.
+.. Paste the activation key in the *Enter Activation Key* box, and click *Activate*.
+. In OpenNMS Cloud, click *Finish*.
 
-=== Enable cloud services connectivity
-
-To install the activation key on your {page-component-title} instance, follow these steps:
-
-. Log in to {page-component-title}.
-. Click menu:Plugins[Cloud Services] in the top menu bar.
-. Turn the *Cloud Services Deactivate* toggle to on.
-. Paste the key in the *Enter Activation Key* box and click *Activate*.
-
-By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
-For more information on how to view this information, see <<view-time-series-data,View Time Series Summary Data>>.
-To change the data collection frequency, see xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services[Service configuration attributes].
+For more information on how to view this information, see <<view-time-series-data, View time series summary data>>.
+To change the data collection frequency, see <<operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services,Service configuration attributes>>.
 
 == Troubleshooting
 
 To verify that your Time Series DB is set up correctly, run the `health-check` command in Karaf.
-You should see something like the following:
+The resulting output should be similar to the following example:
 
 [source, karaf]
 ----
@@ -110,13 +128,13 @@ If they are not, this indicates that the Time Series DB is working.
 [[view-time-series-data]]
 == View time series summary data
 
-You can view time series summary data including health status, capacity, and metrics per second in the OpenNMS Portal.
-By default, the screen displays data for all OpenNMS instances you have configured to use the Time Series DB.
+You can view time series summary data, including health status, capacity, and metrics per second, in the OpenNMS Portal.
+By default, the screen displays data for all OpenNMS instances that you have configured to use the Time Series DB.
 You can filter to see data for a specific instance.
 
-. Sign in to the https://portal.opennms.com[OpenNMS Portal] with your username and password.
+. Sign in to the https://portal.opennms.com[OpenNMS Portal].
 . In the left menu, click *Time Series*.
-. View the information.
 . To see summary data for a specific instance, type an instance name in the *Search Instances* field.
 +
 The screen updates to display only that instance and its associated summary data.
+endif::[]

@@ -1,22 +1,33 @@
 
-// Allow image rendering
-:imagesdir: ../../images
-
 = Alarm Northbounder
 
 The alarm northbounder listens for _all_ northbound alarms.
 Alarms are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
 
-The alarm northbounder exposes the following properties via the `org.opennms.features.amqp.alarmnorthbounder` pid:
+The alarm northbounder exposes the following properties via the `org.opennms.features.amqp.alarmnorthbounder` PID:
 
-[options="header"]
+[options="autowidth"]
 |===
-| Property        | Default                                  | Description
-| connectionUrl   | amqp://localhost:5672                    | Used by the JmsConnectionFactory. See http://camel.apache.org/amqp.html[AMQP] for details.
-| username        | guest                                    | Username
-| password        | guest                                    | Password
-| destination     | amqp:topic:opennms-alarms                | Target queue or topic. See http://camel.apache.org/amqp.html[AMQP] for details.
-| processorName   | default-alarm-northbounder-processor     | Named `org.apache.camel.Processor` implementation used to filter and/or format the alarms.
+| Property  | Default Value | Description
+| connectionUrl
+| amqp://localhost:5672
+| Used by the JmsConnectionFactory (see http://camel.apache.org/amqp.html[AMQP]).
+
+| username
+| guest
+| Username
+
+| password
+| guest
+| Password
+
+| destination
+| amqp:topic:opennms-alarms
+| Target queue or topic (see http://camel.apache.org/amqp.html[AMQP]).
+
+| processorName
+| default-alarm-northbounder-processor
+| Named `org.apache.camel.Processor` implementation used to filter and format the alarms.
 |===
 
 The default processor, the `default-alarm-northbounder-processor`, converts the alarms to a string and does not perform any filtering.

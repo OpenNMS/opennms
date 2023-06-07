@@ -7,51 +7,58 @@ Currently implemented on Minion by default.
 
 Examples:
 
-* /rest/health
-* /rest/health/probe
-* /rest/health?tag=local
-* /rest/health/probe?tag=local
-* /rest/health/probe?tag=local&tag=dao
+* `/rest/health`
+* `/rest/health/probe`
+* `/rest/health?tag=local`
+* `/rest/health/probe?tag=local`
+* `/rest/health/probe?tag=local&tag=dao`
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Health rest service GET functions
+[options="autowidth"]
 |===
-| Resource            
-| Description
-| `/health`
-| Health check results for components. Include health check result details for each element.
-| `/health/probe`       
-| Health check probe for components. Only indicate if the health is good or not. 
+| Resource  | Description
+
+| /health
+| Health check results for components.
+Include health check result details for each element.
+
+| /health/probe
+| Health check probe for components.
+Indicates only if the health is good or not.
 |===
 
-The following table shows all supported query string parameters and their default values.
+The following table shows all supported query string parameters and their default values:
 
-[options="header", cols="1,3,1"]
+[options="autowidth"]
 |===
-| Name
-| Description
-| Default 
+| Name  | Description   | Default Value
+
 | t
-| Timeout in milliseconds
-| 5000 
+| Timeout, in milliseconds.
+| 5000
+
 | maxAgeMs
-| Max age to live milliseconds
-| 90000 
-| tag                     
-| Use tag to filter health check components. A tag could be: +
- * local + 
- * rest +
- * broker +
- * telemetry +
- * dao +
- * minion +
- * elastic +
- * bundle 
-| '' 
+| Max age to live, in milliseconds.
+| 90000
+
+| tag
+| Use to filter health check components.
+A tag could be: +
+ * `local`
+ * `rest`
+ * `broker`
+ * `telemetry`
+ * `dao`
+ * `minion`
+ * `elastic`
+ * `bundle`
+| _Blank_
 |===
 
-Requests without parameters will return all available health check components. 
+Requests without parameters will return all available health check components.
 
 .Response
 [source,javascript]
@@ -79,14 +86,18 @@ Requests without parameters will return all available health check components.
 
 == HTTP Error Codes
 
-[options="header", cols="5,10"]
+[caption=]
+.Health rest service HTTP error codes
+[options="autowidth"]
 |===
-| Error
-| Description
+| Error | Description
+
 | 404
 | Rest health feature is not installed, or is installed and stopped.
+
 | 200
-| Rest health feature is installed and running. This reponse is independent of the health status. + 
-*healthy : true* status means all components found are healthy. +
-*healthy : false* status means at least one component didn't return a healthy status.                                              
+| Rest health feature is installed and running.
+This reponse is independent of the health status. +
+`healthy:true` indicates that all components found are healthy. +
+`healthy:false` indicates that at least one component did not return a healthy status.
 |===

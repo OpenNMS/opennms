@@ -13,7 +13,7 @@ jobs:
                   - meridian-v2-{{ .Branch }}-{{ .Revision }}
                   - meridian-v2-{{ .Branch }}-
                   - meridian-v2-
-            - cached-checkout-for-pushing
+            - checkout-for-pushing
             - run:
                 name: Add Meridian remote if necessary
                 command: |

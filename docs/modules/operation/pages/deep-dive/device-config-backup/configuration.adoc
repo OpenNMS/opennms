@@ -8,8 +8,8 @@ You may have to configure the <<tftp-port-configure, TFTP port>> before {page-co
 [[tftp-port-configure]]
 == Configure TFTP port
 
-By default, the TFTP server uses non-privileged port `6969` on Minions and {page-component-title}.
-Follow the steps below to configure the TFTP port:
+By default, the TFTP server uses non-privileged port `6969` on {page-component-title} and Minions.
+Follow the steps below to configure the TFTP port if you want to use a different port:
 
 .Connect to Karaf shell on {page-component-title}
 [source, console]
@@ -23,9 +23,10 @@ ssh -p 8201 admin@localhost
 [source, karaf]
 ----
 config:edit org.opennms.features.deviceconfig.tftp
-config:property-set port 10069
+config:property-set port 10069 <1>
 config:update
 ----
+<1> If you have set `CAP_NET_BIND_SERVICE` on the service unit, you can set the port to the TFTP default of `69` and skip the firewall port redirect steps below.
 
 NOTE: Some devices (for example, Juniper) may allow TFTP upload on a non-default port.
 In these cases, you do not need to change the default port.

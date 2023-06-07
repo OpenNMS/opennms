@@ -65,7 +65,6 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-
 === Placeholder use
 
 [source, xml]
@@ -76,10 +75,12 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 === Exit status example
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="Script_Example" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="script" value="/opt/opennms/bin/some-script.sh"/>
   <parameter key="timeout" value="5000"/>
 </service>
 
@@ -108,7 +109,7 @@ fi
 [source, xml]
 ----
 <service name="Script_Example" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="script" value="/opt/opennms/bin/some-script.sh"/>
   <parameter key="banner" value="PASSED"/>
   <parameter key="timeout" value="5000"/>
 </service>

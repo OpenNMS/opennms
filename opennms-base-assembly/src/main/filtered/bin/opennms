@@ -38,7 +38,7 @@ STOP_TIMEOUT=36
 JAVA_INITIAL_HEAP_SIZE=""
 
 # Maximum heap size (-Xmx) in megabytes
-JAVA_HEAP_SIZE="2048"
+JAVA_HEAP_SIZE=4096
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -61,6 +61,9 @@ RUNJAVA_OPTIONS=""
 # JMX URL that this script uses to communicate with a running OpenNMS daemon
 # when it cannot connect using the Attach API (automatically or by PID)
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
+
+# Whether to include a thread dump before we start shutting down
+THREAD_DUMP=1
 
 # Whether to enable the Pyroscope agent
 [ -z "$PYROSCOPE_AGENT_ENABLED" ] && PYROSCOPE_AGENT_ENABLED=0
@@ -116,7 +119,7 @@ show_help () {
 	cat <<END
 Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] [-s] <command> [<service>]
 
-  command options: start|stop|restart|status|ssh|check|pause|resume|kill
+  command options: start|stop|restart|status|ssh|check|pause|resume|kill|restart-fast
 
   service options: all|<a service id from the etc/service-configuration.xml>
       defaults to all
@@ -475,7 +478,7 @@ doStart(){
 
 	if [ "$START_TIMEOUT" -eq 0 ]; then
 		# don't wait for startup
-		$opennms_echo "(not waiting for startup) \\c"
+		printf "(not waiting for startup) "
 		return 0
 	fi
 
@@ -561,7 +564,9 @@ doStop() {
 	fi
 
 	PID="$(getPid)"
-	if [ "$PID" -gt 0 ]; then
+	if [ -z "$THREAD_DUMP" ] || [ "$THREAD_DUMP" -eq 0 ]; then
+		echo "=== Skipping Complimentary Thread Dump ===" >> "$REDIRECT"
+	elif [ "$PID" -gt 0 ]; then
 		echo "=== ${install.package.description} Complimentary Thread Dump ===" >> "$REDIRECT"
 		kill -3 "$PID" >> "$REDIRECT" 2>&1
 	else
@@ -744,19 +749,6 @@ else
 	done
 fi
 
-if [ "$(echo "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="echo"
-elif [ "$(echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="echo -e"
-elif [ "$(/bin/echo "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="/bin/echo"
-elif [ "$(/bin/echo -e "\\000\\c" | wc -c)" -eq 1 ]; then
-	opennms_echo="/bin/echo -e"
-else
-	echo "ERROR: could not get 'echo' to emit just a null character" >&2
-	exit 1
-fi
-
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
 if [ "$(uname)" = "Darwin" ]; then
@@ -781,12 +773,25 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
-if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ];then
+ if [[ "$JAVA_INITIAL_HEAP_SIZE" =~ [0-9] ]];then
+    if [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ];then
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+    fi
+ else
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}")
+ fi
 fi
 
-if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+
+#if [ -z "$JAVA_HEAP_SIZE" ]; then
+#  JAVA_HEAP_SIZE=4096
+#fi
+if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+ else
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
@@ -803,36 +808,11 @@ if [ -n "$JACOCO_AGENT_ENABLED" ] && [ "$JACOCO_AGENT_ENABLED" -gt 0 ]; then
 fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
-JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1 | cut -d- -f1)"
 if [ -z "$JAVA_SHORT_VERSION" ]; then
 	JAVA_SHORT_VERSION=0
 fi
 
-JAVA_MODULES=(
-	java.base \
-	java.compiler \
-	java.datatransfer \
-	java.desktop \
-	java.instrument \
-	java.logging \
-	java.management \
-	java.management.rmi \
-	java.naming \
-	java.prefs \
-	java.rmi \
-	java.scripting \
-	java.security.jgss \
-	java.security.sasl \
-	java.sql \
-	java.sql.rowset \
-	java.xml \
-	jdk.attach \
-	jdk.httpserver \
-	jdk.jdi \
-	jdk.sctp \
-	jdk.security.auth \
-	jdk.xml.dom \
-)
 
 JPDA_ADDRESS="*:8001"
 JPDA_SUSPEND="n"
@@ -842,11 +822,11 @@ if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	JPDA_ADDRESS="8001"
 else
 	# Java 9+, add required modules
-	OIFS="$IFS"
-	IFS=","
-	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
-	IFS="$OIFS"
-	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+	JAVA_CMD=("${JAVA_CMD[@]}" $("${OPENNMS_HOME}/bin/_module_opts.sh"))
+
+	# extra options that aren't shared with Minion and Sentinel
+	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
+
 	# see NMS-12261 -- use backwards-compatible locale provider by default
 	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi
@@ -1034,7 +1014,7 @@ fi
 
 case "$COMMAND" in
 	start|spawn)
-		$opennms_echo "Starting ${install.package.description}: \\c"
+		printf 'Starting %s: ' "${install.package.description}"
 
 		doStart "$@"
 		__ret="$?"
@@ -1063,7 +1043,7 @@ case "$COMMAND" in
 		;;
 
 	stop)
-		$opennms_echo "Stopping ${install.package.description}: \\c"
+		printf 'Stopping %s: ' "${install.package.description}"
 
 		doStop "$@"
 		__ret="$?"
@@ -1121,9 +1101,29 @@ case "$COMMAND" in
 		"${__opennms_cmd[@]}" "start"
 		;;
 
+	restart-fast)
+		## Kill the service and regardless of whether it was
+		## running or not, start it again.
+		__opennms_cmd=("$OPENNMS_HOME/bin/opennms");
+		if [ "$BIGTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-T")
+		fi
+		if [ "$SMALLTFLAG" -eq 1 ]; then
+			__opennms_cmd+=("-t")
+		fi
+		if [ "$NOEXECUTE" -eq 1 ]; then
+			__opennms_cmd+=("-n")
+		fi
+		if [ "$BACKGROUND" -eq 0 ]; then
+			__opennms_cmd+=("-f")
+		fi
+		"${__opennms_cmd[@]}" "kill" && \
+		"${__opennms_cmd[@]}" "start"
+		;;
+
 	status)
 		if [ -f /etc/SuSE-release ]; then
-			$opennms_echo "Checking for ${install.package.description}: \\c"
+			printf 'Checking for %s: ' "${install.package.description}"
 			if [ "$VERBOSE" -gt 0 ]; then
 				echo ""
 			fi
@@ -1155,7 +1155,7 @@ case "$COMMAND" in
 		;;
 
 	configtest)
-		$opennms_echo "Validating XML files: \\c"
+		printf "Validating XML files: "
 		if checkXmlFiles; then
 			echo "PASSED"
 		fi
@@ -1164,7 +1164,7 @@ case "$COMMAND" in
 	ssh)
 		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2)"
 		karafUser="$(grep "^karaf.local.user" "${OPENNMS_HOME}/etc/system.properties" | cut -d= -f2 | tr -d "[:blank:]")"
-		$opennms_echo "Trying to establish SSH connection to OpenNMS Karaf Shell ($karafUser@localhost:$karafSshPort)..."
+		printf 'Trying to establish SSH connection to OpenNMS Karaf Shell (%s@localhost:%s)... ' "$karafUser" "$karafSshPort"
 		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l "$karafUser" -p "$karafSshPort" localhost
 		;;
 

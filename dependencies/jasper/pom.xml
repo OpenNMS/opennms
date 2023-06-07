@@ -108,4 +108,11 @@
       <artifactId>ecj</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <!-- jaspersoft's cert expired 2023-04-03, use our copy of the olap4j jar for now -->
+    <repository>
+      <id>jaspersoft-third-party</id>
+      <url>https://maven.opennms.org/repository/thirdparty/</url>
+    </repository>
+  </repositories>
 </project>

@@ -277,7 +277,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             throw new TemporaryDatabaseException("The '" + OPENNMS_UNIT_TEST_PROPERTY + "' property is set to true, " +
                     "however this class is only suitable for integration tests, not unit tests. " +
                     "Please refactor to not use a database or move to an integration test (name your test class *IT.java). " +
-                    "See http://wiki.opennms.org/wiki/Test_conventions for details");
+                    "See https://opennms.discourse.group/t/test-conventions/3183 for details");
         }
     }
 

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 

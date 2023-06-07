@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required DEBS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
+ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-17"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -49,6 +49,14 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
     rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 ##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as sentinel-plugins
+
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+##
 # Install and setup OpenNMS Sentinel
 ##
 FROM sentinel-base
@@ -56,6 +64,8 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
+
+COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
@@ -125,7 +135,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${BASE_IMAGE}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"

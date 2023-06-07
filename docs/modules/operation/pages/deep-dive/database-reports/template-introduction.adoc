@@ -1,34 +1,34 @@
-[[ga-report-templates-intro]]
+
 = Report Templates
 
-The last two parameters for most reports are checkboxes for delivery and scheduling of the report.
-Checking the "Deliver this report" checkbox will provide the delivery options described below.
-Checking the "Schedule this report" checkbox will open up the scheduling editor, which is described in the <<schedule-editor, Schedule Editor>> section below.
+{page-component-title} includes a number of <<deep-dive/database-reports/database.adoc#db-report-sample-templates, sample report templates>>.
+You can use them as-is, modify them, or use them as examples on which to base your own custom report templates.
 
-== Report Delivery Options
+.Example Node Availability report
+image::database-reports/node-availability-report.png["Example of a Node Availability report. Two surveillance categories are displayed, with statistics for each node.", 650]
 
-Specify the following report delivery options:
+== Report scheduling and delivery
 
-* Unique name (must be unique among all scheduled reports)
-* Format (PDF, CSV)
-* Delivery options
-** Save a copy of the report (view in the *Persisted Reports* tab)
-// where is it saved?
-** Email report (use a comma to separate multiple email addresses)
-** Webhook (posts generated report to specified HTTP endpoint)
+When you configure a report template, the last two checkboxes for most let you set the delivery and scheduling settings for the report.
+Selecting *Deliver This Report* displays the following delivery options:
 
-[[schedule-editor]]
-== Schedule Editor
+* *Unique Name:* The report's name.
+This must be unique among all scheduled reports.
+* *Format:* Specify PDF or CSV.
+* *Delivery Options:*
+** *Save a Copy of the Report:* Save a copy of the report to your {page-component-title} instance.
+You can view it from the *Persisted Reports* tab.
+** *Email Report:* A comma-separated list of email addresses to which the report will be emailed.
+** *Webhook:* A specified HTTP endpoint to which the report will be posted when it is generated.
 
-Specify the schedule for automatic report delivery:
+Selecting *Schedule This Report* displays the following scheduling options:
 
-* Daily
-* Days per week (specific day(s) of the week)
-* Days per month (specific day(s) of the month, for example, third Sunday of the month)
-* Cron expression
+* *Daily*.
+* *Days per Week:* Specify days of the week on which the report will run.
+* *Days per Month:* Specify days of the month on which the report will run (for example, the third Sunday of each month).
+* *Cron Expression*.
 
-Each schedule has additional fields associated with it, such as days of the week, interval, and specific time.
+NOTE: Each scheduling option has additional fields associated with it, such as *Days of the Week*, *Interval*, and *Specific Time*.
 
-Once you set that information, click *Deliver Report* to generate the report and save, email, or webhook the report as specified in the *Report Delivery Options* section of the screen.
-
-Note that a list of scheduled reports appears in the *Report Schedules* tab.
+After you set the delivery and scheduling information, you can click *Deliver Report* to generate the report and save, email, or webhook it as specified.
+A list of scheduled reports is displayed in the *Report Schedules* tab.

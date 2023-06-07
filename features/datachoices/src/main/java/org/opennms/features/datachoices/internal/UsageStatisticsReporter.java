@@ -28,6 +28,7 @@
 
 package org.opennms.features.datachoices.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
@@ -42,43 +43,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.karaf.features.Dependency;
-import org.apache.karaf.features.Feature;
-import org.apache.karaf.features.FeaturesService;
-import org.opennms.core.db.DataSourceFactoryBean;
-import org.opennms.core.utils.SystemInfoUtils;
-import org.opennms.core.utils.TimeSeries;
-import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
-import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.dao.api.NotificationDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.MonitoringSystemDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
-import org.opennms.core.ipc.sink.common.SinkStrategy;
-import org.opennms.core.rpc.common.RpcStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -88,15 +52,58 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.sql.DataSource;
 
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.features.Dependency;
+import org.apache.karaf.features.Feature;
+import org.apache.karaf.features.FeaturesService;
+import org.opennms.core.db.DataSourceFactoryBean;
+import org.opennms.core.ipc.sink.common.SinkStrategy;
+import org.opennms.core.rpc.common.RpcStrategy;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.ServiceConfigFactory;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
 
     public static final String USAGE_REPORT = "usage-report";
     private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
     private static final String JMX_OBJ_OPENNMS_POLLERD = "OpenNMS:Name=Pollerd";
-    private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process";
-    private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted";
-    private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted";
+    private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process,type=timers";
+    private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted,type=meters";
+    private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted,type=meters";
     private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
@@ -300,10 +307,18 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
         usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
         usageStatisticsReport.setApplianceCounts(this.getApplianceCountByModel());
+        // Container
+        usageStatisticsReport.setInContainer(this.isContainerized());
 
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
+    }
+
+    private boolean isContainerized() {
+        final boolean inPodman = new File("/run/.containerenv").exists();
+        final boolean inDocker = new File("/.dockerenv").exists();
+        return inPodman || inDocker;
     }
 
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {

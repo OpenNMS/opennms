@@ -73,7 +73,9 @@ To provide a JDBC driver, place the driver-jar in your `$OPENNMS_HOME/lib` folde
 == Examples
 
 The following example checks a stored procedure added to the PostgreSQL database {page-component-title} uses.
-The stored procedure returns true as long as less than 250,000 events are in the {page-component-title} events table.
+The stored procedure returns true as long as less than 250,000 events are in the {page-component-title} `events` table.
+
+Note that you must include the `monitor` section in your definition.
 
 .Stored procedure used in the monitor
 [source, sql]
@@ -100,5 +102,6 @@ COST 100;
   <parameter key="schema" value="public"/>
 </service>
 
-<monitor service="OpenNMS-DB-SP-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
+<monitor service="OpenNMS-DB-SP-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/> <1>
 ----
+<1> Required *monitor* section.

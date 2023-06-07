@@ -37,10 +37,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson2Version}</version>
-    </dependency>    
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson2-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>junit</groupId>

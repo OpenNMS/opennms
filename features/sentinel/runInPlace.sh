@@ -6,8 +6,11 @@ test -d repository || (echo "This command must be ran from the features/sentinel
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
-export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
-export CONTAINERDIR="${MYDIR}/../container/sentinel"
+PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+CONTAINERDIR="${MYDIR}/../container/sentinel"
+JAVA_OPTS="-Xmx2g"
+
+export PATH CONTAINERDIR JAVA_OPTS
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -117,6 +120,9 @@ spawn_sentinel() {
   echo "Updating configuration for Sentinel #$idx..."
   # Instance specific configuration
   set_instance_specific_configuration "$SENTINEL_HOME" "$idx"
+
+  # Enable Hawtio
+  echo 'hawtio' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
 
   echo "Starting Sentinel #$idx (detached=$detached)..."
   KARAF_ARGS="debug"

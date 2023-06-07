@@ -40,24 +40,18 @@ import java.nio.file.Path;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.stacks.StackModel;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 public class BrokenWebappIT {
     @ClassRule
-    public static final OpenNMSStack BROKEN_WEBAPP = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withOpenNMS(OpenNMSProfile.newBuilder()
-                    .withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
-                    .withFile(getBrokenLdapXml(), "jetty-webapps/opennms/WEB-INF/spring-security.d/ldap.xml")
-                    .withWaitStrategy(c -> new AbstractWaitStrategy() {
+    public static final OpenNMSStack BROKEN_WEBAPP = OpenNMSStack.minimal(
+            b -> b.withFile(getBrokenLdapXml(), "jetty-webapps/opennms/WEB-INF/spring-security.d/ldap.xml"),
+            b -> b.withWaitStrategy(c -> new AbstractWaitStrategy() {
                         @Override
                         protected void waitUntilReady() {
                         }
-                    })
-                    .build())
-            .build());
+                    }));
 
     public static URL getBrokenLdapXml() {
         try {

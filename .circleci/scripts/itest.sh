@@ -42,6 +42,7 @@ find_tests()
 REFERENCE_BRANCH="$(get_reference_branch || echo "develop")"
 
 echo "#### Making sure git is up-to-date"
+git remote prune origin || :
 git fetch origin "${REFERENCE_BRANCH}"
 
 echo "#### Determining tests to run"
@@ -90,6 +91,7 @@ retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                openjdk-17-jdk-headless \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -97,8 +99,8 @@ retry sudo apt update && \
                 jicmp6 \
             || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
 ulimit -n 65536
@@ -121,6 +123,10 @@ if [ ! -s /tmp/this_node_it_tests ]; then
   MAVEN_ARGS+=("-DskipFailsafe=true")
 fi
 
+if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
+fi
+
 MAVEN_COMMANDS=("install")
 
 echo "#### Building Assembly Dependencies"
@@ -133,13 +139,13 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            --also-make \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
 
 echo "#### Executing tests"
-./compile.pl "${MAVEN_ARGS[@]}" \
+ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -150,10 +156,9 @@ echo "#### Executing tests"
            -DskipITs=false \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \

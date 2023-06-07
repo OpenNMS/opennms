@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-2.1.0.b175"
+ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-17"
 
 FROM ${BASE_IMAGE} as core-tarball
 
@@ -22,11 +22,16 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
         /opt/usr-share/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as core-base
+##
+# Download plugins
+##
+FROM ${BASE_IMAGE} as core-plugins
 
-# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
-# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
-COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
+COPY plugins.sh /tmp/plugins.sh 
+RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+
+
+FROM ${BASE_IMAGE} as core-base
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
@@ -57,22 +62,6 @@ RUN apt-get update && \
     apt-get -y clean && \
     rm -rf /var/cache/apt
 
-# Preserve a pristine copy of the Java binaries before we apply setcap
-# Symlink to the other resources vs copying to keep the container image smaller
-RUN mkdir "${JAVA_HOME}-nocap" && \
-    cp -R "${JAVA_HOME}/bin" "${JAVA_HOME}-nocap/" && \
-    ln -s "${JAVA_HOME}/conf" "${JAVA_HOME}-nocap/conf" && \
-    ln -s "${JAVA_HOME}/docs" "${JAVA_HOME}-nocap/docs" && \
-    ln -s "${JAVA_HOME}/legal" "${JAVA_HOME}-nocap/legal" && \
-    ln -s "${JAVA_HOME}/lib" "${JAVA_HOME}-nocap/lib" && \
-    ln -s "${JAVA_HOME}/man" "${JAVA_HOME}-nocap/man" && \
-    ln -s "${JAVA_HOME}/release" "${JAVA_HOME}-nocap/release"
-
-# Allow to send ICMP messages as non-root user
-RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
-    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
-    ldconfig
-
 # Create OpenNMS user with a specific group ID
 RUN groupadd \
         --gid 10001 \
@@ -84,6 +73,12 @@ RUN groupadd \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
+
+# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
+
+COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
@@ -126,6 +121,7 @@ RUN rm -rf /usr/share/opennms/share/rrd \
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
+COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /usr/share/opennms/etc
@@ -148,7 +144,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${BASE_IMAGE}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"

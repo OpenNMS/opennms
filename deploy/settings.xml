@@ -1,0 +1,9 @@
+<settings>
+  <servers>
+    <server>
+      <id>opennms-ossrh</id>
+      <username>${env.OPENNMS_OSSRH_USERNAME}</username>
+      <password>${env.OPENNMS_OSSRH_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>

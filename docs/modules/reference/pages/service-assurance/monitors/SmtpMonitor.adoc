@@ -54,6 +54,8 @@ QUIT
 The following example uses CentOS/RHEL path names.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="SMTP" interval="300000" user-defined="false" status="on">
@@ -64,5 +66,6 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="rrd-base-name" value="smtp" />
   <parameter key="ds-name" value="smtp" />
 </service>
+
 <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
 ----

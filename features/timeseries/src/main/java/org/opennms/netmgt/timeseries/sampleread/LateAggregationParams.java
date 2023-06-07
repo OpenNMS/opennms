@@ -32,11 +32,16 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+
 public class LateAggregationParams {
 
     public static final long MIN_STEP_MS = SystemProperties.getLong("org.opennms.timeseries.query.minimum_step", 5L * 60L * 1000L);
     public static final int INTERVAL_DIVIDER = SystemProperties.getInteger("org.opennms.timeseries.query.interval_divider", 2);
     public static final long DEFAULT_HEARTBEAT_MS = SystemProperties.getLong("org.opennms.timeseries.query.heartbeat", 450L * 1000L);
+    // https://docs.opennms.com/horizon/31/deployment/time-series-storage/timeseries/configuration.html#additional-configuration-options default is 1.5
+    public static final BigDecimal DEFAULT_HEARTBEAT_MULTIPLIER = SystemProperties.getBigDecimal("org.opennms.timeseries.query.heartbeat.multiplier", new BigDecimal("1.5"));
+
     private static final Logger LOG = LoggerFactory.getLogger(LateAggregationParams.class);
 
     final long step;
@@ -129,6 +134,10 @@ public class LateAggregationParams {
 
             // Use the given heartbeat if specified, fall back to the default
             long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
+            // make sure heartbeat will never smaller than step
+            if (effectiveHeartbeat < effectiveStep) {
+                effectiveHeartbeat = DEFAULT_HEARTBEAT_MULTIPLIER.multiply(new BigDecimal(effectiveStep)).longValue();
+            }
             if (effectiveInterval < effectiveHeartbeat) {
                 if (effectiveHeartbeat % effectiveInterval != 0) {
                     effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);

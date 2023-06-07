@@ -148,7 +148,7 @@
                             </c:choose>
                             <c:url var="detailUrl" value="${baseHref}graph/results.htm">
                               <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                              <c:param name="reports" value="all"/>
+                              <c:param name="reports" value="${resultSet.prefabGraph.name}"/>
                               <c:param name="start" value="${resultSet.start.time}"/>
                               <c:param name="end" value="${resultSet.end.time}"/>
                             </c:url>

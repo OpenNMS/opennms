@@ -18,3 +18,5 @@ jobs:
       - save-artifacts:
           path: target/config-schema/
           location: minion-config-schema
+      - generate-sbom:
+          container_dir: minion

@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.rest;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.authentication;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
@@ -146,7 +146,7 @@ public class ReportRestIT extends AbstractRestIT {
              * Delivered Reports
              */
             // Verify list already persisted reports (none yet)
-            await().atMost(1, MINUTES).until(() -> {
+            await().atMost(1, MINUTES).untilAsserted(() -> {
                 LOG.debug("validating no persisted reports exist");
                 given().get("persisted").then().statusCode(204);
             }); 
@@ -163,7 +163,7 @@ public class ReportRestIT extends AbstractRestIT {
             // Verify list already persisted reports work (one)
             LOG.debug("validating report for {} is persisted", user[0]);
             final AtomicReference<Integer> persistedId = new AtomicReference<>(-1);
-            await().atMost(5, MINUTES).pollInterval(5, SECONDS).until(() -> {
+            await().atMost(5, MINUTES).pollInterval(5, SECONDS).untilAsserted(() -> {
                         final String response = given().get("persisted")
                                 .then().log().status()
                                 .assertThat()
@@ -191,7 +191,7 @@ public class ReportRestIT extends AbstractRestIT {
              * Scheduled Reports
              */
             // Verify listing scheduled report works (none yet)
-            await().atMost(1, MINUTES).until(() -> {
+            await().atMost(1, MINUTES).untilAsserted(() -> {
                 LOG.debug("validating no scheduled reports exist");
                 given().get("scheduled").then().statusCode(204);
             });

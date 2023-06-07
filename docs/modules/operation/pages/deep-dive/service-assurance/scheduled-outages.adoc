@@ -1,0 +1,85 @@
+
+= Scheduled Outages
+
+Scheduled outages let you suppress notifications and pause status polling, threshold checking, and data collection during a specified time period.
+You might want to schedule an outage for any of the following reasons:
+
+* Updating components.
+* Performing scheduled reboots.
+* Planned decommissioning of nodes.
+* Preventing excessive notifications to on-call staff.
+* Completing scheduled infrastructure testing.
+* Other situations where known outages may be caused or thresholds may be reached
+
+When you define a scheduled outage, you must set the following options:
+
+* Name.
+* Nodes to include.
+* Node interfaces to include.
+* Outage type (specific, daily, weekly, monthly).
+* Date and time for the outage.
+* Suppression settings (all notifications, status polling, threshold checking, data collection).
+
+[caption=]
+.Scheduled outage parameters
+[options="autowidth"]
+[cols="2,3"]
+|===
+| Parameter    | Description
+
+| Node Labels
+| Nodes to include in the scheduled outage.
+At least one node is required to schedule an outage.
+
+| Outage Type
+| The outage's recurrence schedule.
+An outage can be either a one-time occurrence (`Specific`) or a recurring event (`Daily`, `Weekly`, `Monthly`).
+
+| Interfaces
+| Interfaces to include in the scheduled outage.
+At least one interface is required to schedule an outage.
+
+| Applies To
+| {page-component-title} services that will be suppressed during the outage (notifications, status polling, threshold checking, data collection).
+You can specify items for each service, or choose *Select All*.
+|===
+
+During the scheduled outage, any nodes and interfaces that match the outage definition are suppressed.
+
+[[scheduled-outage-create]]
+== Create a scheduled outage
+
+You can create a scheduled outage in the {page-component-title} web UI:
+
+. Click the *gear* symbol at the top-right of the page.
+. Under Service Monitoring, select *Configure Scheduled Outages*.
+. Type a name for the outage in the *New Name* box and click the *add* symbol.
+. Under Node Labels, select a node to include in the scheduled outage and click *Add*.
+. Under Interfaces, select a node interface to include in the scheduled outage and click *Add*.
+** Alternatively, you can click *Select All Nodes and Interfaces* to include all nodes and interfaces in your monitored environment.
+. Under Outage Type, select a recurrence schedule (*Specific*, *Daily*, *Weekly*, *Monthly*).
+. Set a date and time for the outage.
+The available date and time settings depend on the recurrence schedule you choose:
+** *Specific:* Set a specific date and time period.
+This type of scheduled outage occurs only once during the specified period of time.
+** *Daily:* Set a time period during which a daily outage will occur.
+** *Weekly:* Set the day of the week and the time period during which a weekly outage will occur.
+** *Monthly:* Set the day of the month and the time period during which a monthly outage will occur.
+. Click *Add Outage*.
+. Under Applies To, select the functions that the outage will suppress:
+** *Notifications:* Suppress all or no notifications.
+** *Status Polling:* Include or exclude specific systems from status polling during the outage.
+** *Threshold Checking:* Include or exclude specific systems from threshold checking during the outage.
+** *Data Collection:* Include or exclude specific systems from data collection during the outage.
+. Click *Save*.
+
+=== Schedule an outage for a node
+
+You can create a scheduled outage for a specific node in {page-component-title}:
+
+. Click menu:Info[Nodes] in the top menu bar.
+. Click on the Node that needs a scheduled outage.
+. Click *Schedule Outage*.
+. <<scheduled-outage-create, Create an outage>> for the node [starting at step 5 since any outage created within a node will be named after the node]
+
+NOTE: You can also configure outages based on device dependencies with xref:deep-dive/service-assurance/path-outages.adoc[path outages].

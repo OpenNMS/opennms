@@ -5,105 +5,177 @@ Use the Flow API to retrieve summary statistics and time series data derived fro
 
 NOTE: Unless otherwise specified, all units of time are expressed in milliseconds.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Flow API GET functions
+[options="autowidth"]
 |===
-| Resource                            | Description
-| `/flows/count`                      | Retrieve the number of flows available.
-| `/flows/exporters`                  | Retrieve basic information for the exporter nodes that have flows available.
-| `/flows/exporters/\{nodecriteria}`  | Retrieve detailed information about a specific exporter node.
-| `/flows/applications`               | Retrieve traffic summary statistics for the top N applications or specific applications.
-| `/flows/applications/enumerate`     | Retrieve a list of the applications with flows.
-| `/flows/applications/series`        | Retrieve time series metrics for the top N applications or specific applications.
-| `/flows/conversations`              | Retrieve traffic summary statistics for the top N conversations or specific conversations.
-| `/flows/conversations/enumerate`    | Retrieve a list of the conversations with flows.
-| `/flows/conversations/series`       | Retrieve time series metrics for the top N conversations or specific conversations.
-| `/flows/hosts`                      | Retrieve traffic summary statistics for the top N hosts or specific hosts.
-| `/flows/hosts/enumerate`            | Retrieve a list of the hosts with flows.
-| `/flows/hosts/series`               | Retrieve time series metrics for the top N hosts or specific hosts.
+| Resource  | Description
+
+| /flows/count
+| Retrieve the number of flows available.
+
+| /flows/exporters
+| Retrieve basic information for the exporter nodes that have flows available.
+
+| /flows/exporters/\{nodecriteria}
+| Retrieve detailed information about a specific exporter node.
+
+| /flows/applications
+| Retrieve traffic summary statistics for the top `N` applications or specific applications.
+
+| /flows/applications/enumerate
+| Retrieve a list of the applications with flows.
+
+| /flows/applications/series
+| Retrieve time series metrics for the top `N` applications or specific applications.
+
+| /flows/conversations
+| Retrieve traffic summary statistics for the top `N` conversations or specific conversations.
+
+| /flows/conversations/enumerate
+| Retrieve a list of the conversations with flows.
+
+| /flows/conversations/series
+| Retrieve time series metrics for the top `N` conversations or specific conversations.
+
+| /flows/hosts
+| Retrieve traffic summary statistics for the top `N` hosts or specific hosts.
+
+| /flows/hosts/enumerate
+| Retrieve a list of the hosts with flows.
+
+| /flows/hosts/series
+| Retrieve time series metrics for the top `N` hosts or specific hosts.
 |===
 
 All of the endpoints support the following query string parameters to help filter the results:
 
+[options="autowidth"]
+|===
+| Name  | Default Value | Comment
+
+| start
+| -14400000
+| Timestamp. +
+If > `0`, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM). +
+If < `0`, the timestamp is relative to the `end` option (for example, default value is 4 hours ago).
+
+| end
+| 0
+| Timestamp.
+If \<= `0`, the effective value will be the current timestamp.
+
+| ifIndex
+| _Blank_
+| Filter for flows that came in through the given SNMP interface.
+
+| exporterNode
+| _Blank_
+| Filter for flows that were exported by the given node. +
+Support either node ID (for example, `1`), or foreign source and foreign ID lookups (for example, `FS:FID`).
+|===
+
 NOTE: The given filters are combined using a logical `AND`.
 There is no support for using `OR` logic, or combinations thereof.
-
-|===
-| Name               | Default   | Comment
-| start              | -14400000 | Timestamp in milliseconds.
-
-                                   If > 0, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM).
-
-                                   If < 0, the timestamp is relative to the `end` option (i.e., default value is 4 hours ago).
-| end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
-| ifIndex            | (none)    | Filter for flows that came in through the given SNMP interface.
-| exporterNode       | (none)    | Filter for flows that were exported by the given node.
-
-                                   Support either node id (integer) i.e., 1, or foreign source and foreign id lookups i.e., FS:FID.
-|===
 
 The `exporters` endpoints do not support any parameters.
 
 The `applications/enumerate` endpoint also supports:
 
-[options="header"]
+[options="autowidth"]
 |===
-| Name               | Default   | Comment
-| limit              | 10        | Number of applications with flows to return.
-| prefix             | ""        | If provided, filters the results to only include applications with names that start
-                                   with the given prefix (using fuzzy matching).
+| Name  | Default Value | Comment
+
+| limit
+| 10
+| Number of applications with flows to return.
+
+| prefix
+| _Blank_
+| If provided, filters the results to include only applications with names that start with the given prefix (using fuzzy matching).
 |===
 
 The `applications` and `applications/series` endpoints also support:
 
-[options="header"]
+[cols="1,1,3"]
 |===
-| name               | default   | comment
-| N                  | none      | Number of top entries (determined by total bytes transferred) to return.
-| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
-                                   the bytes transferred for the flows that fall outside of the selected set.
-| application        | none      | If provided, returns only flow series that match the given application(s). This field
-                                   can be repeated for any number of applications to be included in the query.
+| Name  | Default Value | Comment
+
+| N
+| _Blank_
+| Number of top entries (determined by total bytes transferred) to return.
+
+| includeOther
+| false
+| When set to `true`, the results will also include an additional row or column that contains the bytes transferred for the flows that fall outside of the selected set.
+
+| application
+| _Blank_
+| If provided, returns only flow series that match the given applications.
+This field can be repeated for any number of applications to be included in the query.
 |===
 
-Both endpoints require one of `N` or `application` query parameters to be set and will return an error if neither or
-both are set.
+Both endpoints require one of `N` or `application` query parameters to be set and will return an error if neither or both are set.
 
 The `conversations/enumerate` endpoint also supports:
 
-[options="header"]
+[options="autowidth"]
 |===
-| Name               | Default   | Comment
-| limit              | 10        | Number of hosts with flows to return.
-| location           | ".*"        | If provided, filters the results to only include conversations matching the given
-location regex pattern.
-| protocol           | ".*"        | If provided, filters the results to only include conversations matching the given
-protocol regex pattern.
-| lower              | ".*"        | If provided, filters the results to only include conversations matching the given
-lower IP address regex pattern.
-| upper              | ".*"        | If provided, filters the results to only include conversations matching the given
-upper IP address regex pattern.
-| application        | ".*"        | If provided, filters the results to only include conversations matching the given
-application regex pattern.
+| Name  | Default Value | Comment
+
+| limit
+| 10
+| Number of hosts with flows to return.
+
+| location
+| ".*"
+| If provided, filters the results to include only conversations that match the given location regex pattern.
+
+| protocol
+| ".*"
+| If provided, filters the results to include only conversations that match the given protocol regex pattern.
+
+| lower
+| ".*"
+| If provided, filters the results to include only conversations that match the given lower IP address regex pattern.
+
+| upper
+| ".*"
+| If provided, filters the results to include only conversations that match the given upper IP address regex pattern.
+
+| application
+| ".*"
+| If provided, filters the results to include only conversations that match the given application regex pattern.
 |===
 
-The `conversations` and `conversations/series` endpoints also supports:
+The `conversations` and `conversations/series` endpoints also support:
 
-[options="header"]
+[cols="1,1,3"]
 |===
-| Name               | Default   | Comment
-| N                  | 10        | Number of top entries (determined by total bytes transferred) to return.
-| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
-                                   the bytes transferred for the flows that fall outside of selected set.
-| conversation       | none      | If provided, returns only flow series that match the given conversation(s). This field
-                                   can be repeated for any number of conversations to be included in the query.
-| hostname_mode      | "replace"
+| Name  | Default Value | Comment
+
+| N
+| 10
+| Number of top entries (determined by total bytes transferred) to return.
+
+| includeOther
+| false
+| When set to `true` the results will also include an additional row or column that contains the bytes transferred for the flows that fall outside of the selected set.
+
+| conversation
+| _Blank_
+| If provided, returns only flow series that match the given conversations.
+This field can be repeated for any number of conversations to include in the query.
+
+| hostname_mode
+| replace
 a| Controls how IP addresses are replaced with hostnames if available:
 
-* `replace` will replace the IP with the hostname
-* `append` will append the hostname to the IP address
-* `hide` will not show the hostname at all
+* `replace` will replace the IP address with the hostname.
+* `append` will append the hostname to the IP address.
+* `hide` will not show the hostname at all.
 |===
 
 NOTE: Make sure to URL encode the conversation value in your request.
@@ -113,39 +185,54 @@ both are set.
 
 The `conversations/series` endpoint also supports:
 
-[options="header"]
+[options="autowidth"]
 |===
-| Name               | Default   | Comment
-| step               | 300000    | Requested time interval between rows.
+| Name  | Default Value | Comment
+
+| step
+| 300000
+| Requested time interval between rows.
 |===
 
 The `hosts/enumerate` endpoint also supports:
 
-[options="header"]
+[options="autowidth"]
 |===
-| Name               | Default   | Comment
-| limit              | 10        | Number of hosts with flows to return.
-| pattern            | ".*"        | If provided, filters the results to only include hosts with names that match the given
-regex pattern.
+| Name  | Default Value | Comment
+
+| limit
+| 10
+| Number of hosts with flows to return.
+
+| pattern
+| ".*"
+| If provided, filters the results to include only hosts with names that match the given regex pattern.
 |===
 
 The `hosts` and `hosts/series` endpoints also support:
 
-[options="header"]
+[cols="1,1,3"]
 |===
-| Name               | Default   | Comment
-| N                  | none      | Number of top entries (determined by total bytes transferred) to return.
-| includeOther       | false     | When set to `true` the results will also include an additional row or column that contains
-                                   the bytes transferred for the flows that fall outside of the selected set.
-| host               | none      | If provided, returns only flow series that match the given host(s). This field
-                                   can be repeated for any number of hosts to be included in the query.
+| Name  | Default Value | Comment
+
+| N
+| _Blank_
+| Number of top entries (determined by total bytes transferred) to return.
+
+| includeOther
+| false
+| When set to `true`, the results will also include an additional row or column that contains the bytes transferred for the flows that fall outside of the selected set.
+
+| host
+| _Blank_
+| If provided, returns only flow series that match the given hosts.
+This field can be repeated for any number of hosts to be included in the query.
 |===
 
 Both endpoints require one of `N` or `host` query parameters to be set and will return an error if neither or
 both are set.
 
 === Examples
-
 
 .Retrieve the number of flows persisted in the last 4 hours
 [source,bash]

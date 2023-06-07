@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.graph;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -674,7 +674,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {
         graphmlDocument.create(restClient);
-    	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
+	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).untilAsserted(() -> {
             given().accept(ContentType.JSON).get()
                     .then().statusCode(200)
                     .contentType(ContentType.JSON)

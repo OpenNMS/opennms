@@ -14,16 +14,17 @@ asciidoc:
     compatible-rhel9: '9.x'
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
-    compatible-opennms-helm: '7+'
+    compatible-rocky-linux: '9.x'
+    compatible-opennms-plugin: '7+'
     compatible-oia: '0.6.x'
     compatible-cassandra: '3.11.x'
-    compatible-elasticsearch: '6.7.0 - 7.6.2'
+    compatible-elasticsearch: '6.7.0 - 7.17.9'
     compatible-javajdk: 'OpenJDK 11'
     compatible-kafka: '1.x - 2.x'
     compatible-postgresql: '10.x - 15.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
-    latest-meridian-stable: '2022'
+    latest-meridian-stable: '2023'
     postgresql-version: '15'
 nav:
 - modules/ROOT/index.adoc
@@ -32,4 +33,5 @@ nav:
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
 - modules/reference/nav.adoc
+- modules/troubleshooting/nav.adoc
 - modules/write-the-docs/nav.adoc

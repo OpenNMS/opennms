@@ -62,6 +62,8 @@ public abstract class DataSourceFactory {
     //private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
     private static final Class<?> DEFAULT_FACTORY_CLASS = HikariCPConnectionFactory.class;
 
+    private static final String DEFAULT_DS_NAME = "opennms";
+
     private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
 
     private static final Map<String, DataSource> m_dataSources = new ConcurrentHashMap<>();
@@ -175,6 +177,13 @@ public abstract class DataSourceFactory {
         }
     }
 
+    /**
+     * @return true if the default datasource is loaded, false otherwise
+     */
+    public static synchronized boolean isDefaultDsLoaded() {
+        return isLoaded(DEFAULT_DS_NAME);
+    }
+
     private static synchronized boolean isLoaded(final String dsName) {
         return m_dataSources.containsKey(dsName);			
     }
@@ -193,7 +202,7 @@ public abstract class DataSourceFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static DataSource getInstance() {
-        return getInstance("opennms");
+        return getInstance(DEFAULT_DS_NAME);
     }
 
     /**
@@ -213,7 +222,7 @@ public abstract class DataSourceFactory {
      * @param ds a {@link javax.sql.DataSource} object.
      */
     public static void setInstance(final DataSource ds) {
-        setInstance("opennms", ds);
+        setInstance(DEFAULT_DS_NAME, ds);
     }
 
     /**

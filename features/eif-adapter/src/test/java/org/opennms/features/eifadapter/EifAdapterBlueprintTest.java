@@ -28,7 +28,7 @@
 
 package org.opennms.features.eifadapter;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.google.common.collect.Lists;
