@@ -3,7 +3,7 @@ version: '31-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '32.0.0-SNAPSHOT'
+    full-display-version: '33.0.0-SNAPSHOT'
     experimental: true
     source-language: asciidoc@
     xrefstyle: short@
