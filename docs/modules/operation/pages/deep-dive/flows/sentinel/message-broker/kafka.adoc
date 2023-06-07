@@ -24,7 +24,7 @@ sudo vi etc/custom.system.properties
 org.opennms.instance.id=OpenNMS<1>
 ----
 
-<1> Replace `OpenNMS` with the same topic prefix used by the target instance of {page-component-title} Core.
+<1> Replace `OpenNMS` with the same topic prefix that the target instance of {page-component-title} Core uses.
 
 .Connect to the Karaf shell via SSH
 [source, console]
@@ -55,13 +55,13 @@ config:update
 
 <1> Edit the configuration for the flow consumer from Kafka.
 <2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
-<3> (Optional) Use the same value used for `org.opennms.instance.id` in file `etc/custom.system.properties` as the value of `group.id` when using the same Kafka cluster for multiple {page-component-title} instances.
+<3> (Optional) When using the same Kafka cluster for multiple {page-component-title} instances, the `group.id` value should be the same as the `org.opennms.instance.id` value in the `etc/custom.system.properties` file.
 
 TIP: The complete set of configuration properties needed for your cluster depends on your Kafka deployment.
-Refer to the configuration used for Kafka by {page-component-title} Core and Minion(s) as the properties required for those components will likely be similar to the properties needed in Sentinel's configuration.
+Refer to the Kafka configuration that {page-component-title} Core and Minions use, as the properties required for those components will likely be similar to the properties needed in the Sentinel's configuration.
 
 
-.Configure Sentinel to generate and send events (sink) using the same set of properties used in the previous step
+.Configure Sentinel to generate and send events (sink) using the same set of properties from the previous step
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.sink.kafka

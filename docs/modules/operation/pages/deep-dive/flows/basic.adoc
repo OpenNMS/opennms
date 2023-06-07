@@ -60,7 +60,8 @@ elasticIndexStrategy=daily
 == Multi-protocol listener
 
 With most tools, if you are monitoring multiple flow protocols, you must set up a listener on its own UDP port for each protocol.
-However, {page-component-title} allows a multi-port listener option; this listener, named `Multi-UDP-9999`, is enabled by default and monitors multiple protocols on a single UDP port (`9999`). The default configuration includes support for Netflow v5, Netflow v9, sFlow, and IPFIX.
+However, {page-component-title} allows a multi-port listener option; this listener, named `Multi-UDP-9999`, is enabled by default and monitors multiple protocols on a single UDP port (`9999`). 
+The default configuration includes support for Netflow v5, Netflow v9, sFlow, and IPFIX.
 You can edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number and add or remove protocols.
 
 IMPORTANT: Make sure your firewall allow list includes the ports that you have configured to receive flow data.
@@ -88,8 +89,8 @@ You can follow the same steps for any of the other flow-related protocols.
 </queue>
 ----
 
-NOTE: Example configurations for many protocols are provided in the default configuration file.
-To enable one of these protocols, simply find the correct example `listener` and `adapter` elements and change their `enabled` attributes to `true`.
+NOTE:  The default configuration file provides example configurations for many protocols.
+To enable one of these protocols, find the correct example `listener` and `adapter` elements and change their `enabled` attributes to `true`.
 
 . Reload the daemons to apply your changes:
 +

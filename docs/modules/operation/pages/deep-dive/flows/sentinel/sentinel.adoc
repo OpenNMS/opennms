@@ -76,7 +76,8 @@ In production you should have at least 1.
 <4> Timeout, in milliseconds, Sentinel waits to connect to the Elasticsearch cluster.
 <5> Read timeout when data is fetched from the Elasticsearch cluster.
 
-Additional configuration properties are documented in <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>>. Be sure to set the `indexPrefix` property when using a single Elasticsearch cluster with multiple {page-component-title} instances.
+Additional configuration properties are documented in <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>>. 
+Be sure to set the `indexPrefix` property when using a single Elasticsearch cluster with multiple {page-component-title} instances.
 
 == Set up message broker
 
