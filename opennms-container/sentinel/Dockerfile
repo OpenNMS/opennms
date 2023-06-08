@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b215-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b227-jre-11"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
