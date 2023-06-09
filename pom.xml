@@ -1352,6 +1352,12 @@
         </executions>
       </plugin>
       <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${maven.karaf.plugin.version}</version>
+          <extensions>true</extensions>
+      </plugin>
+      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1499,6 +1505,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
+    <maven.karaf.plugin.version>4.4.3</maven.karaf.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
