@@ -10,6 +10,9 @@
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container :: Karaf Features</name>
+  <properties>
+    <earlyStartLevel>60</earlyStartLevel>
+  </properties>
   <build>
     <plugins>
       <!-- Filter the features.xml files -->

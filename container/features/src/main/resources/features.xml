@@ -1036,7 +1036,7 @@
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.consumer/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-collection" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
+    <feature name="opennms-telemetry-collection" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature version="${netty4Version}">netty4</feature>
         <feature>dropwizard-metrics</feature>
@@ -1056,7 +1056,7 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-telemetry-daemon" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
+    <feature name="opennms-telemetry-daemon" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
         <feature version="${netty4Version}">netty4</feature>
         <feature>camel-spring</feature>
         <feature>dropwizard-metrics</feature>
@@ -1075,14 +1075,14 @@
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-bmp" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
+    <feature name="opennms-telemetry-bmp" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-bmp-adapter</feature>
         <feature>rate-limited-logger</feature>
         <feature>resilience4j</feature>
         <feature>opennms-dnsresolver-api</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
+    <feature name="opennms-telemetry-bmp-adapter" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
@@ -1096,21 +1096,21 @@
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
         <feature>commons-net</feature>
     </feature>
-    <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
+    <feature name="opennms-telemetry-jti" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-nxos" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
+    <feature name="opennms-telemetry-nxos" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
         <feature>opennms-telemetry-collection</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
+    <feature name="opennms-telemetry-graphite" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
         <feature>opennms-telemetry-collection</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.graphite/org.opennms.features.telemetry.protocols.graphite.adapter/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-openconfig"  description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
+    <feature name="opennms-telemetry-openconfig" start-level="${earlyStartLevel}" description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-telemetry-openconfig-client</feature>
         <feature>opennms-rpc-utils</feature>
@@ -1162,7 +1162,7 @@
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.serviceregistry/${project.version}</bundle>
     </feature>
-    <feature name="opennms-flows" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
+    <feature name="opennms-flows" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>

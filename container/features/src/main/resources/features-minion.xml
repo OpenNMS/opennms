@@ -129,7 +129,7 @@
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
+    <feature name="minion-telemetryd-receivers" start-level="${earlyStartLevel}" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>

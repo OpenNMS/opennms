@@ -97,7 +97,7 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
+    <feature name="sentinel-telemetry" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
         <feature>sentinel-timeseries-api</feature>
 
         <feature version="${netty4Version}">netty4</feature>
@@ -127,7 +127,7 @@
         <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.sentinel/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-flows" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+    <feature name="sentinel-flows" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
@@ -157,31 +157,31 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
+    <feature name="sentinel-telemetry-nxos" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-nxos</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-jti" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
+    <feature name="sentinel-telemetry-jti" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-jti</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-graphite" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
+    <feature name="sentinel-telemetry-graphite" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-graphite</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-bmp" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+    <feature name="sentinel-telemetry-bmp" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-bmp-adapter</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-bmp-persist" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+    <feature name="sentinel-telemetry-bmp-persist" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-bmp-adapter</feature>
     </feature>
