@@ -129,6 +129,7 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
@@ -231,6 +232,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "foreign-sources/selfmonitor.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
