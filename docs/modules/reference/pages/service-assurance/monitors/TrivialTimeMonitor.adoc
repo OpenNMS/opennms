@@ -1,0 +1,68 @@
+
+= TrivialTimeMonitor
+
+TrivialTimeMonitor connects to a server that supports the Time Protocol and sends the time as a 32-bit unsigned integer in binary format and in network byte order, representing the number of seconds since 00:00 (midnight) 1 January, 1900 GMT, and fails if the defined clock skew is too large.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.TrivialTimeMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the TrivialTimeMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| protocol
+| Default layer-4 protocol to use.
+| tcp
+
+| port
+| The destination port.
+| 37
+
+| allowedSkew
+| Default permissible skew in seconds between the remote and local clocks.
+| 30
+
+| retry
+| Number of attempts to get a response.
+| 0
+
+| timeout
+| Time in milliseconds to wait for a response.
+| 3000
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+Note that you must include the `monitor` section in your definition.
+
+[source, xml]
+----
+<service name="TrivialTime" interval="300000" user-defined="false" status="on">
+  <parameter key="protocol" value="tcp"/>
+  <parameter key="port" value="37"/>
+  <parameter key="allowedSkew" value="30"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="1000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="trivialTime"/>
+  <parameter key="ds-name" value="trivialTime"/>
+</service>
+<monitor service="TrivialTime" class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor"/>
+----
+
