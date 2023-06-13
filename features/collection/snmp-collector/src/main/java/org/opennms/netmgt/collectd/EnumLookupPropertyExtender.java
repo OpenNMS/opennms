@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class IndexSplitPropertyExtender.
+ * The Class EnumLookupPropertyExtender.
  * 
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
