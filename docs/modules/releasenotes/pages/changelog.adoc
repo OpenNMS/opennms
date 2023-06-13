@@ -7,7 +7,7 @@
 
 Release 31.0.9 contains one CVE-related security fix, a generous helping of other bug fixes, and a several small enhancements intended to improve supportability.
 
-The codename for Horizon 31.0.9 is https://wikipedia.org/wiki/$$Dr._Teeth_and_the_Electric_Mayhem#Zoot$$[_Zoot_].
+The codename for Horizon 31.0.9 is https://wikipedia.org/wiki/$$Ballokume$$[_Ballokume_].
 
 ===== Breaking changes
 
