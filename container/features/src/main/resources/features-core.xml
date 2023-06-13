@@ -23,7 +23,6 @@
     <feature name="bouncycastle" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle Java cryptography APIs">
         <bundle>mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
         <bundle>mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
-        <bundle>mvn:org.bouncycastle/bcprov-ext-jdk18on/${bouncyCastleVersion}</bundle>
         <bundle>mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}</bundle>
     </feature>
 
