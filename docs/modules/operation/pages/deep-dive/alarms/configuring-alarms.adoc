@@ -1,4 +1,4 @@
-
+[[ga-configure-alarms]]
 = Configure Alarms
 
 Because alarmd instantiates alarms from events, defining alarms in {page-component-title} involves defining an additional event XML element that indicates a problem or resolution in the network.

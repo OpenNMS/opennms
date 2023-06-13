@@ -5,4 +5,4 @@
 
 While events carry immutable problem state attributes such as <<deep-dive/events/event-configuration.adoc#severities, severities>>, alarms indicate problems in the network (see xref:deep-dive/bsm/introduction.adoc[]) and carry changeable attributes such as acknowledgment, clearing, escalation, or temporary and persisted notes.
 
-Thus alarms are always based on events that are <<deep-dive/alarms/configuring-alarms.adoc, configured>> to create additional alarms.
+Thus alarms are always based on events that are <<deep-dive/alarms/configuring-alarms.adoc#ga-configure-alarms, configured>> to create additional alarms.
