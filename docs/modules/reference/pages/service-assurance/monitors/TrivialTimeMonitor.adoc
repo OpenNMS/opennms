@@ -2,6 +2,7 @@
 = TrivialTimeMonitor
 
 TrivialTimeMonitor connects to a server that supports the Time Protocol and sends the time as a 32-bit unsigned integer in binary format and in network byte order, representing the number of seconds since 00:00 (midnight) 1 January, 1900 GMT, and fails if the defined clock skew is too large.
+NOTE: This detector utilizes the Time Protocol, not NTP.
 
 == Monitor facts
 
@@ -22,7 +23,7 @@ TrivialTimeMonitor connects to a server that supports the Time Protocol and send
 | Default
 
 | protocol
-| Default layer-4 protocol to use.
+| Default Layer 4 protocol to use.
 | tcp
 
 | port
@@ -46,11 +47,6 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Example uses CentOS/RHEL path name.
-For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
-
-Note that you must include the `monitor` section in your definition.
-
 [source, xml]
 ----
 <service name="TrivialTime" interval="300000" user-defined="false" status="on">
@@ -59,10 +55,12 @@ Note that you must include the `monitor` section in your definition.
   <parameter key="allowedSkew" value="30"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="1000"/>
-  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/><1>
   <parameter key="rrd-base-name" value="trivialTime"/>
   <parameter key="ds-name" value="trivialTime"/>
 </service>
 <monitor service="TrivialTime" class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor"/>
 ----
+<1> Update this path as appropriate on your server.
+Debian installs use the `/var/lib/opennms/rrd/response` directory instead.
 

@@ -1,6 +1,8 @@
 = TrivialTimeDetector
 
-The TrivialTimeDetector finds and assigns Time Protocol services.
+The TrivialTimeDetector finds and assigns services based on a timely response from a Trivial Time Service.
+
+NOTE: This detector utilizes the Time Protocol, not NTP.
 
 == Detector facts
 
@@ -23,7 +25,7 @@ The TrivialTimeDetector uses the xref:reference:provisioning/detectors.adoc#ref-
 | Default value
 
 | protocol
-| Default layer-4 protocol to use
+| Default Layer 4 protocol to use.
 | tcp
 
 | port
