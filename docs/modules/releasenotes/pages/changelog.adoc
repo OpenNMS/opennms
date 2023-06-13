@@ -3,18 +3,18 @@
 = Changelog
 [[releasenotes-changelog-31.0.9]]
 
-==== Release 31.0.9
+== Release 31.0.9
 
 Release 31.0.9 contains one CVE-related security fix, a generous helping of other bug fixes, and a several small enhancements intended to improve supportability.
 
 The codename for Horizon 31.0.9 is https://wikipedia.org/wiki/$$Ballokume$$[_Ballokume_].
 
-===== Breaking changes
+=== Breaking changes
 
 * This release has moved to a newer major version of Spring Security to address a number of CVEs, which necessitated changes to the `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml` file, so if you have modified this file in your installs, be sure to note your changes so you can re-apply them to the updated version.
 * The script `$OPENNMS_HOME/bin/install` checked whether `$myser` equals `$RUNAS` before sourcing `$OPENNMS_HOME/etc/opennms.conf`, which caused startup to fail every time unless the script were run as root; if you have patched that file on your system, watch out for a `.rpmsave` or `.dpkg-new` file.
 
-===== Enhancement
+=== Enhancement
 
 * Codify code copyright conventions and guidelines (Issue https://issues.opennms.org/browse/NMS-13908[NMS-13908])
 * Add diagnostic commands to Karaf shell for various internal schedulers (Issue https://issues.opennms.org/browse/NMS-14526[NMS-14526])
@@ -25,12 +25,12 @@ The codename for Horizon 31.0.9 is https://wikipedia.org/wiki/$$Ballokume$$[_Bal
 * Docs: Add info about XSLT to XmlCollector (Issue https://issues.opennms.org/browse/NMS-15693[NMS-15693])
 * Doc: Update DNS provisioning import adapter docs (Issue https://issues.opennms.org/browse/NMS-15694[NMS-15694])
 
-===== Task
+=== Task
 
 * Remove unsupported configuration from documentation on Cortex Plugin (Issue https://issues.opennms.org/browse/NMS-14969[NMS-14969])
 * Multiple CVEs for Axis 1.4 (Issue https://issues.opennms.org/browse/NMS-15061[NMS-15061])
 
-===== Bug
+=== Bug
 
 * Fixing typo for event uei.opennms.org/internal/schedOutagesChanged (Issue https://issues.opennms.org/browse/NMS-15421[NMS-15421])
 * Sentinels need local copy of thresholding config. (Issue https://issues.opennms.org/browse/NMS-15422[NMS-15422])
@@ -41,7 +41,7 @@ The codename for Horizon 31.0.9 is https://wikipedia.org/wiki/$$Ballokume$$[_Bal
 * Database deadlock caused by JdbcFilterDao (Issue https://issues.opennms.org/browse/NMS-15696[NMS-15696])
 * Karaf SSH locks up if connections are terminated improperly (Issue https://issues.opennms.org/browse/NMS-15714[NMS-15714])
 
-===== Story
+=== Story
 
 * Need a way to get a heap dump in a Docker container -- no jstack/jmap/jcmd (Issue https://issues.opennms.org/browse/NMS-15532[NMS-15532])
 * Docs section about startup configuration and opennms.conf (Issue https://issues.opennms.org/browse/NMS-15634[NMS-15634])
