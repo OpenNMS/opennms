@@ -1,5 +1,5 @@
 
-= Single alarm tracking problem states
+= Alarm Lifecycle
 
 An alarm is generated on the first occurrence of a `service-down` problem:
 

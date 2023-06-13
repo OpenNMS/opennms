@@ -1,5 +1,5 @@
 
-= Alarm handling
+= Alarm Handling
 
 The following are ways you can interact with alarms.
 
@@ -10,8 +10,6 @@ PICTURES MISSING
 Users can acknowledge alarms.
 The alarm will be moved out from `Alarm(s) outstanding` into the `Alarm(s) acknowledged` view.
 Doing this lets other {page-component-title} users see that someone is aware of the alarm.
-
-NOTE: A manually acknowledged alarm that was cleared automatically by its clear event needs also unacknowledged manually to disappear.
 
 == Clearing
 
@@ -29,11 +27,10 @@ To keep track of those `outage alarms`, check the outages list.
 PICTURES MISSING
 
 An alarm always has the same <<deep-dive/events/event-configuration.adoc#severities, severities>> as its underlaying event.
-If an alarm gets escalated, the alarm's <<deep-dive/events/event-configuration.adoc#severities, severity>> increases one level.
+If an alarm gets escalated, the alarm's severity increases one level.
 
 == Alarm notes
 
-{page-component-title} creates alarms for issues in the network.
 Alarm notes let you assign comments to a specific alarm, or to a whole class of alarms, and share that information with other people on your team.
 
 .Alarm Details page with sample notes
