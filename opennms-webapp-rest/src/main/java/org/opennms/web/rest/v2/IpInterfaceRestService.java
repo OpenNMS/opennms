@@ -39,6 +39,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -64,6 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("ipinterfaces")
 @Transactional
+@Tag(name = "IpInterfaces", description = "Ip Interfaces API")
 public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterface,SearchBean,Integer,String> {
 
     @Autowired

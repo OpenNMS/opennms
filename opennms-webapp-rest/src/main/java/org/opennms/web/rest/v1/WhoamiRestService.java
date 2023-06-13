@@ -38,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.netmgt.config.UserManager;
@@ -50,6 +51,7 @@ import com.google.common.base.Strings;
 
 @Component("whoamiRestService")
 @Path("whoami")
+@Tag(name = "Whoami", description = "Whoami API")
 public class WhoamiRestService {
 
     @Autowired

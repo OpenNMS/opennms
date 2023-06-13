@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -66,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("notificationRestService")
 @Path("notifications")
+@Tag(name = "Notifications", description = "Notifications API")
 public class NotificationRestService extends OnmsRestService {
     @Autowired
     private NotificationDao m_notifDao;
