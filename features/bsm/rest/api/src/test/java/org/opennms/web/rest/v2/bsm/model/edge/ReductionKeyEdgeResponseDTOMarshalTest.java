@@ -77,7 +77,7 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
                 "       \"my-custom-reduction-key\"" +
                 "   ]," +
                 "  \"weight\" : 17," +
-                "  \"friendly-name\" : \"reduction-key-friendly-name\"," +
+                "  \"friendly-name\" : \"reduction-key-friendly-name\"" +
                 "}",
                 "<reduction-key-edge>\n" +
                 "   <id>1</id>\n" +

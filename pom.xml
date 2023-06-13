@@ -572,11 +572,6 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.2</version>
         <configuration>
@@ -1478,7 +1473,7 @@
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx2g</argLineMemory>
+    <argLineMemory>-Xmx4g -XX:ReservedCodeCacheSize=1g</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom</argLine>
     <skipITs>true</skipITs>
     <runPingTests>false</runPingTests>
@@ -1501,7 +1496,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
-    <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
+    <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
@@ -1510,7 +1505,7 @@
     <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+    <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
 
@@ -1612,7 +1607,7 @@
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.11.0</commonsIoVersion>
+    <commonsIoVersion>2.12.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.12.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
@@ -1717,7 +1712,7 @@
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.1</mavenApiVersion>
+    <mavenApiVersion>3.9.2</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.6</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
@@ -1735,8 +1730,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>2.8.0</okioVersion>
-    <opennmsApiVersion>1.4.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.4.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.5.0</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.5.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1752,7 +1747,7 @@
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
-    <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
+    <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>7.4.5</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
@@ -1791,7 +1786,8 @@
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.8.0</minaSshdVersion>
+    <minaSshdVersion>2.10.0</minaSshdVersion>
+    <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
@@ -1799,8 +1795,8 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
-    <springLdapVersion>${springSecurityVersion}</springLdapVersion>
+    <springSecurityVersion>4.2.20.RELEASE</springSecurityVersion>
+    <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
@@ -2484,6 +2480,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.snmp</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.ssh</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -3603,27 +3605,6 @@
         <version>${antlr.version}</version>
       </dependency>
       <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis</artifactId>
-        <version>1.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>axis</groupId>
-            <artifactId>axis-wsdl4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-jaxrpc</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>axis</groupId>
-        <artifactId>axis-saaj</artifactId>
-        <version>1.4</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-jms</artifactId>
         <version>${camelVersion}</version>
@@ -4740,7 +4721,7 @@
       <dependency>
         <groupId>org.skyscreamer</groupId>
         <artifactId>jsonassert</artifactId>
-        <version>1.2.3</version>
+        <version>1.5.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -5297,6 +5278,21 @@
       <dependency>
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-osgi</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-scp</artifactId>
+        <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sshd</groupId>
+        <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
       </dependency>
     </dependencies>

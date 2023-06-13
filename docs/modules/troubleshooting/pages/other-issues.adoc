@@ -81,3 +81,8 @@ for x in ${OPENNMS_HOME}/etc/events/*;do xmllint --schema ${OPENNMS_HOME}/share/
 NOTE: `xmllint` can help pinpoint errors in XML syntax and in content that violates the schema (using the `--schema` flag).
 More subtle errors may cause problems, however, even if the output indicates that all files are valid.
 The `config-tester` command is even more exhaustive, but it may not catch all errors that break startup.
+
+== Incoming messages not received
+
+If your ${page-component-title} or Minion server is not processing traps, syslog, flow, or other incoming messages that you are able to see via `tcpdump`, check your firewall settings.
+The `tcpdump` utility will show traffic before system firewalls such as iptables or firewalld block unexpected data.

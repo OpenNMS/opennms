@@ -261,7 +261,7 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
+                <feature>ssh/${karafSshdVersion}</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -290,7 +290,7 @@
                 <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
-                <feature>activemq-broker</feature>
+                <feature>activemq-broker-noweb</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
@@ -326,7 +326,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>ssh</feature>
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
@@ -416,7 +415,7 @@
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
                 <feature>smack</feature>
-                <feature>spring-security32</feature>
+                <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>

@@ -277,17 +277,17 @@
         <feature>joda-time</feature>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
     </feature>
-    <feature name="spring-security32" version="${springSecurityVersion}" description="Spring :: Security">
+    <feature name="spring-security-opennms" version="${springSecurityVersion}" description="Spring :: Security">
         <feature version="[4.2,4.3)">spring-web</feature>
         <feature>commons-codec</feature>
         <feature>javax.servlet</feature>
-        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
     <feature name="jicmp" version="${jicmpVersion}" description="jicmp">
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -897,7 +897,7 @@
         <feature>javax.servlet</feature>
         <feature>jcifs</feature>
         <feature>jldap</feature>
-        <feature>spring-security32</feature>
+        <feature>spring-security-opennms</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-dhcpd</feature>

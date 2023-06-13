@@ -2,6 +2,7 @@
   smoke-test-core:
     executor: smoke-test-executor
     parallelism: 10
+    resource_class: medium+
     steps:
       - run:
           name: "skip if flaky tests are enabled"
