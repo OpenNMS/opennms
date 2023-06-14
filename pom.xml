@@ -1468,6 +1468,7 @@
         --add-opens=java.base/java.util.regex=ALL-UNNAMED
         --add-opens=java.base/java.net=ALL-UNNAMED
         --add-opens=java.base/java.text=ALL-UNNAMED
+        --add-opens=java.base/sun.util.locale.provider=ALL-UNNAMED
         --add-opens=java.sql/java.sql=ALL-UNNAMED</argLineAllowReflection>
     <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom ${argLineAllowReflection}</argLine>
     <skipITs>true</skipITs>
