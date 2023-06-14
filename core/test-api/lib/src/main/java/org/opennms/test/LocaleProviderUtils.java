@@ -29,6 +29,8 @@
 package org.opennms.test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"rawtypes","unchecked","java:S3011"})
+@SuppressWarnings({"deprecation","rawtypes","unchecked","java:S3011"})
 public abstract class LocaleProviderUtils {
     private static Logger LOG = LoggerFactory.getLogger(LocaleProviderUtils.class);
 
@@ -78,8 +80,39 @@ public abstract class LocaleProviderUtils {
 
     private static void makeAccessible(final Field adapterPreference) throws ReflectiveOperationException, IllegalArgumentException {
         adapterPreference.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        final Field modifiersField = getModifiersField();
         modifiersField.setAccessible(true);
         modifiersField.setInt(adapterPreference, adapterPreference.getModifiers() & ~Modifier.FINAL);
+    }
+
+    public static Field getModifiersField() throws IllegalAccessException, NoSuchFieldException {
+        // this is copied from https://github.com/powermock/powermock/pull/1010/files to
+        // work around
+        // JDK 12+
+        Field modifiersField = null;
+        try {
+            modifiersField = Field.class.getDeclaredField("modifiers");
+        } catch (NoSuchFieldException e) {
+            try {
+                Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+                boolean accessibleBeforeSet = getDeclaredFields0.isAccessible();
+                getDeclaredFields0.setAccessible(true);
+                Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
+                getDeclaredFields0.setAccessible(accessibleBeforeSet);
+                for (Field field : fields) {
+                    if ("modifiers".equals(field.getName())) {
+                        modifiersField = field;
+                        break;
+                    }
+                }
+                if (modifiersField == null) {
+                    throw e;
+                }
+            } catch (NoSuchMethodException | InvocationTargetException ex) {
+                e.addSuppressed(ex);
+                throw e;
+            }
+        }
+        return modifiersField;
     }
 }

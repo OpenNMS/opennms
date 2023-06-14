@@ -11,8 +11,8 @@
          <parameter key="friendly-name" value="cassandra"/>
          <parameter key="thresholding-enabled" value="true"/>
          <parameter key="factory" value="PASSWORD-CLEAR"/>
-         <parameter key="username" value="cassandra-username"/>
-         <parameter key="password" value="cassandra-password"/>
+         <parameter key="username" value="${requisition:cassandra-user|cassandra-username}"/>
+         <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}"/>
       </service>
       <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="7199"/>
@@ -24,8 +24,8 @@
          <parameter key="friendly-name" value="cassandra-newts"/>
          <parameter key="thresholding-enabled" value="true"/>
          <parameter key="factory" value="PASSWORD-CLEAR"/>
-         <parameter key="username" value="cassandra-username"/>
-         <parameter key="password" value="cassandra-password"/>
+         <parameter key="username" value="${requisition:cassandra-user|cassandra-username}"/>
+         <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}"/>
       </service>
    </package>
    <package name="vmware3" remote="false">
@@ -103,22 +103,10 @@
          <parameter key="thresholding-enabled" value="true"/>
       </service>
    </package>
-   <package name="example1" remote="false">
+   <package name="opennms" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="254.254.254.254"/>
       <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
-      <service name="SNMP" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="WMI" interval="300000" user-defined="false" status="off">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="WS-Man" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
       <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="18980"/>
          <parameter key="retry" value="2"/>
@@ -141,7 +129,7 @@
          <parameter key="use-foreign-id-as-system-id" value="true"/>
       </service>
       <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="9999"/>
+         <parameter key="port" value="${requisition:kafka-port|9999}"/>
          <parameter key="retry" value="2"/>
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-base-name" value="java"/>
@@ -150,12 +138,41 @@
          <parameter key="ds-name" value="jmx-kafka"/>
          <parameter key="friendly-name" value="jmx-kafka"/>
       </service>
+      <service name="OpenNMS-DB" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="driver" value="org.postgresql.Driver"/>
+         <parameter key="data-source" value="opennms"/>
+      </service>
+         <service name="OpenNMS-DB-Stats" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="PostgreSQL"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="driver" value="org.postgresql.Driver"/>
+         <parameter key="data-source" value="opennms-admin"/>
+      </service>
+   </package>
+   <package name="example1" remote="false">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="WMI" interval="300000" user-defined="false" status="off">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="WS-Man" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
       <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="PostgreSQL"/>
          <parameter key="thresholding-enabled" value="true"/>
          <parameter key="driver" value="org.postgresql.Driver"/>
-         <parameter key="user" value="postgres"/>
-         <parameter key="password" value="postgres"/>
+         <parameter key="user" value="${requisition:pg-user|postgres}"/>
+         <parameter key="password" value="${requisition:pg-pass|postgres}"/>
          <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
       </service>
       <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
@@ -192,4 +209,6 @@
    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="OpenNMS-DB" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
+   <collector service="OpenNMS-DB-Stats" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
 </collectd-configuration>

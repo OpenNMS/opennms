@@ -10,10 +10,11 @@
       <queries>
          <query name="opennmsEventQuery" recheckInterval="0" ifType="ignore">
             <statement>
-               <queryString>SELECT COUNT(eventid) as EventCount FROM events WHERE eventtime BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day') AND CURRENT_TIMESTAMP;</queryString>
+               <queryString>SELECT COUNT(eventid) as EventCount, (SELECT reltuples AS estimate FROM pg_class WHERE relname = 'events') FROM events WHERE eventtime BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day') AND CURRENT_TIMESTAMP;</queryString>
             </statement>
             <columns>
                <column name="eventCount" data-source-name="EventCount" type="gauge" alias="OnmsEventCount"/>
+               <column name="eventEstimate" data-source-name="estimate" type="gauge" alias="OnmsEventEstimate"/>
             </columns>
          </query>
          <query name="opennmsAlarmQuery" recheckInterval="0" ifType="ignore">
