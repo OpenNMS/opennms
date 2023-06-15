@@ -128,7 +128,9 @@
     </feature>
 
     <feature name="sentinel-flows" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+        <feature>bson</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>rate-limited-logger</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-integration-api</feature>
@@ -136,7 +138,6 @@
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
-        <feature>rate-limited-logger</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
@@ -146,7 +147,6 @@
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>

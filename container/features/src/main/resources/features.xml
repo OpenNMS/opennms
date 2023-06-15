@@ -1161,6 +1161,7 @@
     </feature>
     <feature name="opennms-flows" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
+        <feature>bson</feature>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1175,7 +1176,6 @@
         <feature>rate-limited-logger</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
-        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>
@@ -1186,7 +1186,6 @@
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
-        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
