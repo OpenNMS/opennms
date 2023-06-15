@@ -34,6 +34,31 @@
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
     </feature>
 
+    <feature name="commons-beanutils" version="${commonsBeanutilsVersion}" description="Apache :: commons-beanutils">
+        <feature>commons-collections</feature>
+        <bundle dependency="true">mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
+    </feature>
+
+    <feature name="commons-cli" version="${commonsCliVersion}" description="Apache :: commons-cli">
+        <bundle dependency="true">mvn:commons-cli/commons-cli/${commonsCliVersion}</bundle>
+    </feature>
+
+    <feature name="commons-codec" version="${commonsCodecVersion}" description="Apache :: commons-codec">
+        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+    </feature>
+
+    <feature name="commons-collections" version="${commonsCollectionsVersion}" description="Apache :: commons-collections">
+        <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
+    </feature>
+
+    <feature name="commons-compress" version="${commonsCompressVersion}" description="Apache :: commons-compress">
+        <bundle dependency="true">mvn:org.apache.commons/commons-compress/${commonsCompressVersion}</bundle>
+    </feature>
+
+    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
+        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
+    </feature>
+
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
@@ -185,9 +210,9 @@
     </feature>
 
     <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
+        <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
-        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>
 

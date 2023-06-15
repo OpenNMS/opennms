@@ -1609,10 +1609,11 @@
     <cassandraVersion>3.11.2</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
+    <commonsCliVersion>1.2</commonsCliVersion>
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
+    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
