@@ -30,12 +30,9 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -71,7 +68,7 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
     public PollStatus handlePollResult(final MonitoredService svc,
                                        final Map<String, Object> parameters,
                                        final PollStatus status) {
-        if (ParameterMap.getKeyedBoolean(parameters, "rrd-status", false)) {
+        if (ParameterMap.getKeyedBoolean(parameters, "rrd-status", true)) {
             storeStatus(svc, status, parameters);
         }
 
