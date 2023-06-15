@@ -422,7 +422,7 @@ public class RestClient {
     }
 
     public JsonNode getBackups() throws IOException {
-        final var result = getBuilder(getTarget().path("device-config"))
+        final var result = getBuilder(getTarget().path("device-config").queryParam("limit", "0"))
                 .accept(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
