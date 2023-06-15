@@ -12,6 +12,14 @@
          Karaf side.
     -->
 
+    <!-- bouncycastle is weird so we're not gonna share it with the JVM classpath using dependency="true" -->
+    <feature name="bouncycastle" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle Java cryptography APIs">
+        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}</bundle>
+    </feature>
+
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
@@ -181,14 +189,12 @@
 
     <!-- override the default Karaf ssh with a version from a newer release -->
     <feature name="ssh" description="Provide an SSHd server on Karaf" version="${karafSshdVersion}">
-        <feature>shell</feature>
+        <feature version="${bouncyCastleVersion}">bouncycastle</feature>
         <feature>jaas</feature>
+        <feature>shell</feature>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/1.72</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/1.72</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/1.72</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
     </feature>
 </features>
