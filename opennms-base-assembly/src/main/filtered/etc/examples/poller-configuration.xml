@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<poller-configuration threads="30" 
-                      serviceUnresponsiveEnabled="false"
-                      nextOutageId="SELECT nextval('outageNxtId')">
+<poller-configuration threads="30"
+  serviceUnresponsiveEnabled="false"
+  nextOutageId="SELECT nextval('outageNxtId')">
   <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
     <critical-service name="ICMP" />
   </node-outage>
@@ -120,7 +120,8 @@
         <page-sequence>
           <page path="/Login.do" port="7080" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" />
           <page path="/j_security_check.do" port="7080" method="POST"
-            failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed"
+            failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)"
+            failureMessage="HQ Login in Failed"
             successMatch="HQ Dashboard">
             <parameter key="j_username" value="hqadmin" />
             <parameter key="j_password" value="hqadmin" />
@@ -220,15 +221,15 @@
       <parameter key="service-name" value="Task Scheduler" />
     </service>
     <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
-      <parameter key="port" value="18980"/>
-      <parameter key="factory" value="PASSWORD-CLEAR"/>
-      <parameter key="username" value="admin"/>
-      <parameter key="password" value="admin"/>
-      <parameter key="retry" value="2"/>
-      <parameter key="timeout" value="3000"/>
+      <parameter key="port" value="18980" />
+      <parameter key="factory" value="PASSWORD_CLEAR" />
+      <parameter key="username" value="admin" />
+      <parameter key="password" value="admin" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-      <parameter key="ds-name" value="opennms-jvm"/>
-      <parameter key="friendly-name" value="opennms-jvm"/>
+      <parameter key="ds-name" value="opennms-jvm" />
+      <parameter key="friendly-name" value="opennms-jvm" />
     </service>
     <service name="DominoIIOP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
@@ -307,28 +308,32 @@
       <parameter key="timeout" value="3000" />
       <parameter key="retry" value="2" />
       <parameter key="disk" value="/" />
-      <parameter key="match-type" value="exact" /><!-- This is the default if "match-type" is omitted -->
+      <parameter key="match-type" value="exact" /><!-- This is the default if "match-type" is
+      omitted -->
       <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
     </service>
     <service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
       <parameter key="timeout" value="3000" />
       <parameter key="retry" value="2" />
       <parameter key="disk" value="/home" />
-      <parameter key="match-type" value="endsWith" /><!-- Would catch either "/home" or "/export/home" -->
+      <parameter key="match-type" value="endsWith" /><!-- Would catch either "/home" or
+      "/export/home" -->
       <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
     </service>
     <service name="DiskUsage-CDrive" interval="300000" user-defined="false" status="on">
       <parameter key="timeout" value="3000" />
       <parameter key="retry" value="2" />
       <parameter key="disk" value="C:" />
-      <parameter key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which appends label and serial number -->
+      <parameter key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which
+      appends label and serial number -->
       <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
     </service>
     <service name="DiskUsage-BootDisk" interval="300000" user-defined="false" status="on">
       <parameter key="timeout" value="3000" />
       <parameter key="retry" value="2" />
       <parameter key="disk" value="Label:Boot Disk" />
-      <parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given label regardless of letter -->
+      <parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given
+      label regardless of letter -->
       <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
     </service>
     <service name="UnixTime" interval="300000" user-defined="false" status="on">
@@ -337,10 +342,12 @@
       <parameter key="protocol" value="tcp" /><!-- UDP also supported -->
       <parameter key="port" value="37" />
       <parameter key="allowed-skew" value="300" /><!-- Seconds, i.e. 5 minutes -->
-      <parameter key="persist-skew" value="true" /><!-- If true, return a multi-valued PollStatus with skew included -->
+      <parameter key="persist-skew" value="true" /><!-- If true, return a multi-valued PollStatus
+      with skew included -->
     </service>
     <!--
-    Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
+    Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the
+    poll.
     <service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
       <parameter key="ip-match" value="169.254.*.*" />
       <parameter key="is-supported" value="true" />
@@ -355,9 +362,12 @@
 
   </package>
 
-  <!-- Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces
-    will have StrafePing statistical analysis rather than being on for or off for all interfaces.  Change
-    this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing all
+  <!-- Moved StrafePing to its own package.  This allows for more flexible configuration of which
+  interfaces
+    will have StrafePing statistical analysis rather than being on for or off for all interfaces.
+  Change
+    this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing
+  all
     of your network interface may create high loads on the NMS file system.  -->
 
   <package name="strafer">
@@ -379,7 +389,7 @@
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="rrd-base-name" value="strafeping" />
     </service>
-    <downtime interval="300000" begin="0" end="432000000"/><!-- 5m, 0, 5d -->
+    <downtime interval="300000" begin="0" end="432000000" /><!-- 5m, 0, 5d -->
     <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
   </package>
 
@@ -436,42 +446,48 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="MAIL" interval="30000" user-defined="false" status="on">
-    <parameter key="mail-transport-test">
-      <mail-transport-test>
-        <mail-test>
-          <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
-            <!-- These 2 properties are passed directly to the javamailer class.  The will
+      <parameter key="mail-transport-test">
+        <mail-transport-test>
+          <mail-test>
+            <sendmail-test attempt-interval="3000" debug="true" use-authentication="false"
+              use-jmta="false">
+              <!-- These 2 properties are passed directly to the javamailer class.  The will
                 be overridden if they are the same properties that are derived based on the
                 other configuration elements.  Mainly here for convenience allowing properties
                 to be set that don't get set by the configuration. -->
-            <javamail-property name="mail.smtp.userset" value="false" />
-            <javamail-property name="mail.smtp.ehlo" value="true" />
+              <javamail-property name="mail.smtp.userset" value="false" />
+              <javamail-property name="mail.smtp.ehlo" value="true" />
 
-            <!-- Connect to local MTA and send... no auth required but the configuration
+              <!-- Connect to local MTA and send... no auth required but the configuration
                 requires auth be configured.  Disable with use-authentication attribute above. -->
-            <sendmail-host host="127.0.0.1" port="25" />
-            <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
+              <sendmail-host host="127.0.0.1" port="25" />
+              <sendmail-protocol char-set="us-ascii" mailer="smtpsend"
+                message-content-type="text/plain" message-encoding="7-bit"
                 quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
-            <sendmail-message to="foo@gmail.com" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
+              <sendmail-message to="foo@gmail.com" from="root@[127.0.0.1]"
+                subject="OpenNMS Test Message "
                 body="This is an OpenNMS test message." />
-            <user-auth user-name="opennms" password="rulz" />
-          </sendmail-test>
+              <user-auth user-name="opennms" password="rulz" />
+            </sendmail-test>
 
-          <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google Gmail account.  The
+            <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google
+            Gmail account.  The
           attempt interval gives a delay between send and read test as well as between each retry. -->
-          <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message" delete-all-mail="true">
-            <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
-            <javamail-property name="mail.pop3.apop.enable" value="false" />
-            <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+            <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX"
+              subject-match="OpenNMS Test Message" delete-all-mail="true">
+              <!-- Sample properties that you may want to set... these examples are the javamail
+              defaults. -->
+              <javamail-property name="mail.pop3.apop.enable" value="false" />
+              <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
 
-            <readmail-host host="pop.gmail.com" port="995">
-              <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
-            </readmail-host>
-            <user-auth user-name="bar" password="foo" />
-          </readmail-test>
-        </mail-test>
-      </mail-transport-test>
-    </parameter>
+              <readmail-host host="pop.gmail.com" port="995">
+                <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
+              </readmail-host>
+              <user-auth user-name="bar" password="foo" />
+            </readmail-test>
+          </mail-test>
+        </mail-transport-test>
+      </parameter>
     </service>
 
     <downtime interval="15000" begin="0" end="300000" /> <!-- 15s, 0, 5m -->
@@ -483,7 +499,7 @@
   <package name="end2endSameServer">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
-    <rrd step = "300">
+    <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
       <rra>RRA:AVERAGE:0.5:12:1488</rra>
       <rra>RRA:AVERAGE:0.5:288:366</rra>
@@ -491,44 +507,49 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="MAIL" interval="30000" user-defined="false" status="on">
-    <parameter key="mail-transport-test">
-      <mail-transport-test>
-      <mail-test>
-        <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
-        <!-- These 2 properties are passed directly to the javamailer class.  The will
+      <parameter key="mail-transport-test">
+        <mail-transport-test>
+          <mail-test>
+            <sendmail-test attempt-interval="3000" debug="true" use-authentication="false"
+              use-jmta="false">
+              <!-- These 2 properties are passed directly to the javamailer class.  The will
           be overridden if they are the same properties that are derived based on the
           other configuration elements.  Mainly here for convenience allowing properties
           to be set that don't get set by the configuration. -->
-        <javamail-property name="mail.smtp.userset" value="false" />
-        <javamail-property name="mail.smtp.ehlo" value="true" />
+              <javamail-property name="mail.smtp.userset" value="false" />
+              <javamail-property name="mail.smtp.ehlo" value="true" />
 
-        <!-- Connect to local MTA and send... no auth required but the configuration
+              <!-- Connect to local MTA and send... no auth required but the configuration
           requires auth be configured.  Disable with use-authentication attribute above. -->
-        <sendmail-host host="${ipaddr}" port="25" />
-        <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
-          quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
-        <sendmail-message to="root" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
-          body="This is an OpenNMS test message." />
-        <user-auth user-name="opennms" password="rulz" />
-        </sendmail-test>
+              <sendmail-host host="${ipaddr}" port="25" />
+              <sendmail-protocol char-set="us-ascii" mailer="smtpsend"
+                message-content-type="text/plain" message-encoding="7-bit"
+                quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
+              <sendmail-message to="root" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
+                body="This is an OpenNMS test message." />
+              <user-auth user-name="opennms" password="rulz" />
+            </sendmail-test>
 
-        <!-- Read portion of the test.  Check to see if local MTA has delivered mail to root's account on ${ipaddr}.  The
+            <!-- Read portion of the test.  Check to see if local MTA has delivered mail to root's
+            account on ${ipaddr}.  The
         attempt interval gives a delay between send and read test as well as between each retry. -->
-        <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message"
-        delete-all-mail="true">
+            <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX"
+              subject-match="OpenNMS Test Message"
+              delete-all-mail="true">
 
-        <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
-        <javamail-property name="mail.pop3.apop.enable" value="false" />
-        <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+              <!-- Sample properties that you may want to set... these examples are the javamail
+              defaults. -->
+              <javamail-property name="mail.pop3.apop.enable" value="false" />
+              <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
 
-        <readmail-host host="${ipaddr}" port="995">
-          <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
-        </readmail-host>
-        <user-auth user-name="bar" password="foo" />
-        </readmail-test>
-      </mail-test>
-      </mail-transport-test>
-    </parameter>
+              <readmail-host host="${ipaddr}" port="995">
+                <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
+              </readmail-host>
+              <user-auth user-name="bar" password="foo" />
+            </readmail-test>
+          </mail-test>
+        </mail-transport-test>
+      </parameter>
     </service>
 
     <downtime interval="15000" begin="0" end="300000" />     <!-- 15s, 0, 5m -->
@@ -536,13 +557,13 @@
     <downtime interval="300000" begin="43200000" end="432000000" />  <!-- 5m, 12h, 5d -->
     <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
   </package>
-  
+
   <package name="Windows Services">
     <filter>IPADDR != '0.0.0.0'</filter>
     <specific>0.0.0.0</specific>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
     <include-url>file:${install.etc.dir}/include</include-url>
-    <rrd step = "300">
+    <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
       <rra>RRA:AVERAGE:0.5:12:1488</rra>
       <rra>RRA:AVERAGE:0.5:288:366</rra>
@@ -613,7 +634,7 @@
     <include-range begin="1.1.1.1" end="254.254.254.254" />
     <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
     <include-url>file:${install.etc.dir}/include</include-url>
-    <rrd step = "300">
+    <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
       <rra>RRA:AVERAGE:0.5:12:1488</rra>
       <rra>RRA:AVERAGE:0.5:288:366</rra>
@@ -623,11 +644,11 @@
     <service name="DHCP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
-      <parameter key="macAddress" value="00:06:0D:BE:9C:B2"/>
-      <parameter key="myIpAddress" value="127.0.0.1"/>
-      <parameter key="extendedMode" value="false"/>
-      <parameter key="relayMode" value="false"/>
-      <parameter key="requestIpAddress" value="127.0.0.1"/>
+      <parameter key="macAddress" value="00:06:0D:BE:9C:B2" />
+      <parameter key="myIpAddress" value="127.0.0.1" />
+      <parameter key="extendedMode" value="false" />
+      <parameter key="relayMode" value="false" />
+      <parameter key="requestIpAddress" value="127.0.0.1" />
 
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="rrd-base-name" value="dhcp" />
@@ -662,7 +683,8 @@
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
   <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
-  <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="Windows-Task-Scheduler"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
 
   <!-- Example monitors added in this example file -->
@@ -676,12 +698,15 @@
   <monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
   <monitor service="Sybase" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="Informix" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-  <monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
+  <monitor service="DbTestExample"
+    class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
   <monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   <monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   <!--
-  <monitor service="DiskUsage-CDrive" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
-  <monitor service="DiskUsage-BootDisk" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+  <monitor service="DiskUsage-CDrive"
+  class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+  <monitor service="DiskUsage-BootDisk"
+  class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   -->
   <monitor service="UnixTime" class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor" />
   <!-- 
@@ -690,19 +715,30 @@
   <monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
   <monitor service="MAIL" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
   <!-- Windows Exchange Services -->
-  <monitor service="MSExchangeSA" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeIS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeMailboxAssistants" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeMailSubmission" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeADTopology" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeAntispamUpdate" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeEdgeSync" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeFDS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-  <monitor service="MSExchangeTransport" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeSA"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeIS"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeMailboxAssistants"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeMailSubmission"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeADTopology"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeAntispamUpdate"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeEdgeSync"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeFDS"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeServiceHost"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeTransport"
+    class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
-  
-  <!-- These monitors are now distributed separately.  They must be installed before enabling the following: -->
+
+  <!-- These monitors are now distributed separately.  They must be installed before enabling the
+  following: -->
   <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
   <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />

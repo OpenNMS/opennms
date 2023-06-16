@@ -179,7 +179,7 @@ public class UiModel {
 
 		 // If we used credentials, we set them here as well
 		 if (getServiceConfig().isAuthenticate()) {
-			 service.addParameter(createParameter("factory", "PASSWORD-CLEAR"));
+			 service.addParameter(createParameter("factory", "PASSWORD_CLEAR"));
 			 service.addParameter(createParameter("username", getServiceConfig().getUser()));
 			 service.addParameter(createParameter("password", getServiceConfig().getPassword()));
 		 }
