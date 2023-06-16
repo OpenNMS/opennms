@@ -106,6 +106,9 @@ public class JmxConnectionConfig {
         if ("PASSWORD_CLEAR".equals(getFactory())) {
             return PasswordStrategy.PASSWORD_CLEAR;
         }
+        if ("PASSWORD-CLEAR".equals(getFactory())) {
+            return PasswordStrategy.PASSWORD_CLEAR;
+        }
         if ("SASL".equals(getFactory())) {
             return PasswordStrategy.SASL;
         }
