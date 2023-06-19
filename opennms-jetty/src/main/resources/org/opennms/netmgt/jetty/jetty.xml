@@ -6,6 +6,7 @@
   <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
     <Set name="requestHeaderSize"><SystemProperty name="org.opennms.netmgt.jetty.requestHeaderSize" default="4000" /></Set>
     <Set name="sendServerVersion"><SystemProperty name="org.opennms.netmgt.jetty.sendServerVersion" default="false" /></Set>
+    <Set name="relativeRedirectAllowed"><SystemProperty name="org.opennms.netmgt.jetty.relativeRedirectAllowed" default="true" /></Set>
   </New>
 
   <Call name="addConnector">
