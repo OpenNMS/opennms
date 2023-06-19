@@ -2,11 +2,10 @@
 
 Sentinel provides scalability for data processing of flows and streaming telemetry.
 It also supports thresholding for streaming telemetry if you are using OpenNMS xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].
-The Sentinel requires a Minion.
-It processes flow and streaming telemetry data received by one or more Minions.
+Sentinel processes flow and streaming telemetry data received by one or more Minions.
 If you are using Minions to receive flow and/or streaming telemetry and need to scale processing capacity, you need Sentinel.
 
-As your flow and streaming telemetry volumes increase, additional Sentinel containers can be spawned to meet your processing needs.
+As your flow and streaming telemetry volumes increase, additional Sentinel instances can be deployed to meet your processing needs.
 
 In most cases, you can disable adapters and listeners in {page-component-title} that are also run by a Sentinel instance.
 

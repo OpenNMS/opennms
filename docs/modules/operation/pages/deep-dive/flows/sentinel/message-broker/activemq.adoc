@@ -29,7 +29,8 @@ config:property-set broker-url failover:tcp://my-activemq-ip:61616<3>
 config:update
 ----
 
-<1> A location string is used to assign the Sentinel to a monitoring location. This can be an existing location or a new location and does not impact the messages that this Sentinel will process.
+<1> A location string is used to assign the Sentinel to a monitoring location.
+This can be an existing location or a new location and does not impact the messages that this Sentinel will process.
 <2> Unique identifier used as a node label for monitoring the Sentinel instance within {page-component-title}.
 <3> URL that points to ActiveMQ broker.
 
