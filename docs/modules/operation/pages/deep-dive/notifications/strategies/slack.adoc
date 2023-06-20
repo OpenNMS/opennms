@@ -47,11 +47,12 @@ Use it for the notifications you want to go to the second channel.
           <switch>-tm</switch>
       </argument>
       <argument streamed="false">
-	      <substitution>webhook-url-for-different-slack-channel</substitution>
+	      <substitution>https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution><1>
 	      <switch>-url</switch>
       </argument>
    </command>
 ----
+<1>Replace with a valid webhook for your desired channel
 
 Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 
