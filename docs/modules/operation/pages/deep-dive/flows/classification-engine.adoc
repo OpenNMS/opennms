@@ -2,8 +2,8 @@
 [[ga-flow-support-classification-engine]]
 = Flows Classification
 
-For improved flows management, OpenNMS uses a classification engine that applies user- and/or pre-defined rules to filter and classify flows.
-(Pre-defined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].)
+For improved flows management, {page-component-title} uses a classification engine that applies pre-defined and user-defined rules to filter and classify flows.
+The included pre-defined rules are based on the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
 
 You can group flows by a combination of parameters: source/destination port, source/destination address, IP protocol, and exporter filter.
 Once set up, you can view classification groups on the home page.
@@ -66,7 +66,7 @@ Assume that you define the following rules:
 {page-component-title} receives the following flows, classified according to the rules defined above:
 
 [options="header"]
-[cols="1,3"]
+[cols="3,1"]
 |===
 | Flow
 | Classification

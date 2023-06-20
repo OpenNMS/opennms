@@ -75,7 +75,7 @@ The following example defines thresholds for HTTPS traffic exceeding 4096000 byt
 ----
 
 [[ga-flow-support-thresholding-properties]]
-The properties for the step-size and the idle timeout can be specified in the file `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+The properties for the step-size and the idle timeout can be specified in the file `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 You can set the following properties:
 
 [options="header, autowidth" cols="1,3,2"]
