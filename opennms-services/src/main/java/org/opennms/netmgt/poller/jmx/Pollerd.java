@@ -175,6 +175,11 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
         }
     }
 
+    @Override
+    public long getNumPollsInFlight() {
+        return getDaemon().getNetwork().getContext().getAsyncPollingEngine().getNumPollsInFlight();
+    }
+
     private static final String[] SCHEDULE_ITEMS = new String[]{"nodeId", "nodeLabel", "nodeLocation", "ipAddress", "service", "readyTimeMs", "readyTimeAbsoluteMs", "status", "statusChangeTimeMs"};
     private static final String[] SCHEDULE_DESCS = new String[]{"nodeId", "nodeLabel", "nodeLocation", "ipAddress", "service", "readyTimeMs", "readyTimeAbsoluteMs", "status", "statusChangeTimeMs"};
     private static final OpenType<?>[] SCHEDULE_TYPES = new OpenType<?>[]{SimpleType.INTEGER, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.LONG, SimpleType.LONG, SimpleType.STRING, SimpleType.LONG};
@@ -227,7 +232,7 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
     private ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
     }
-    
+
     private boolean getThreadPoolStatsStatus() {
         return (getDaemon().getScheduler() instanceof LegacyScheduler);
     }

@@ -23,3 +23,16 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /events?
 |===
 
 To acknowledge or unacknowledge a notification, use the `acks` endpoint (see xref:rest/acknowledgements.adoc[]).
+
+== POST (actions)
+
+[caption=]
+.Notifications API POST functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| "/notifications/destination-paths/\{destinationPathName}/trigger"
+| Trigger the destination path's targets and commands with a test notification.
+  Use to verify that commands are properly configured and that notifications get sent to the recipients.
+|===

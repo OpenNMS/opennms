@@ -230,7 +230,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 case SWITCH1_NAME:
                     assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
                     assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 4:
                             assertEquals(10109,link.getLldpPortIfindex().intValue());
                             assertEquals(SWITCH1_IF_IFNAME_MAP.get(10109), link.getLldpPortId());
@@ -265,7 +265,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                     }
                     break;
                 case SWITCH2_NAME:
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 4:
                             assertEquals(SWITCH1_LLDP_CHASSISID, link.getLldpRemChassisId());
                             assertEquals(SWITCH1_NAME,link.getLldpRemSysname());
@@ -328,7 +328,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
                 case SWITCH3_NAME:
                     assertEquals(SWITCH2_LLDP_CHASSISID, link.getLldpRemChassisId());
                     assertEquals(SWITCH2_NAME,link.getLldpRemSysname());
-                    switch (link.getLldpLocalPortNum()) {
+                    switch (link.getLldpRemIndex()) {
                         case 1:
                             assertEquals(10019,link.getLldpPortIfindex().intValue());
                             assertEquals(SWITCH3_IF_IFNAME_MAP.get(10019), link.getLldpPortId());
@@ -830,8 +830,9 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         //update configuration to support only CDP updates
         //need to reload daemon
         m_linkd.reload();
-        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertEquals(4, getSupportedProtocolsAsProtocolSupported().size());
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));
@@ -949,7 +950,8 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         // reload daemon and support only: LLDP updates
         m_linkd.reload();
         assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NODES));
-        assertEquals(3, getSupportedProtocolsAsProtocolSupported().size());
+        assertTrue(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.NETWORKROUTER));
+        assertEquals(4, getSupportedProtocolsAsProtocolSupported().size());
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.BRIDGE));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.CDP));
         assertFalse(getSupportedProtocolsAsProtocolSupported().contains(ProtocolSupported.ISIS));

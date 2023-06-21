@@ -28,12 +28,27 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.util.Locale;
+
 public enum ProtocolSupported {
-    LLDP,
-    OSPF,
-    ISIS,
-    BRIDGE,
-    CDP,
     NODES,
-    USERDEFINED
+    CDP,
+    LLDP,
+    BRIDGE,
+    OSPF,
+    OSPFAREA,
+    ISIS,
+    USERDEFINED,
+    NETWORKROUTER;
+
+    public static String[] getCliProtocols() {
+        return new String[]{
+                CDP.name().toLowerCase(Locale.ROOT),
+                LLDP.name().toLowerCase(Locale.ROOT),
+                BRIDGE.name().toLowerCase(Locale.ROOT),
+                OSPF.name().toLowerCase(Locale.ROOT),
+                ISIS.name().toLowerCase(Locale.ROOT)
+        };
+    }
+
 }

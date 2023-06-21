@@ -31,6 +31,7 @@ package org.opennms.enlinkd.generator.protocol;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,12 +43,10 @@ import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class LldpProtocol extends Protocol<LldpElement> {
-    private final static Logger LOG = LoggerFactory.getLogger(IsIsProtocol.class);
-    private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.lldp;
+public class LldpProtocol extends Protocol {
+    private final TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.lldp;
+    private final Random ifindexRandomGenerator = new Random();
 
     public LldpProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);
@@ -129,7 +128,8 @@ public class LldpProtocol extends Protocol<LldpElement> {
 
         // static attributes:
         link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
-        link.setLldpLocalPortNum(123);
+        link.setLldpRemLocalPortNum(ifindexRandomGenerator.nextInt(100000));
+        link.setLldpRemIndex(ifindexRandomGenerator.nextInt(100000));
         link.setLldpLinkLastPollTime(new Date());
         link.setLldpPortDescr("lldpportdescr");
         link.setLldpRemSysname("lldpRemSysname");

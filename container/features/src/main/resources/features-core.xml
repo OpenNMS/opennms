@@ -20,19 +20,33 @@
         <bundle>mvn:org.ow2.asm/asm-util/${asmVersion}</bundle>
     </feature>
 
-    <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
-        <feature version="[${jackson2Version},3)">jackson-core</feature>
+    <feature name="bouncycastle" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle Java cryptography APIs">
+        <bundle>mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle>mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle>mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}</bundle>
+    </feature>
+
+    <feature name="cassandra-driver" description="Datastax Cassandra Driver" version="${cassandraVersion}">
         <feature version="[${netty4Version},5)">netty4</feature>
-        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
-        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
-        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
-        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/4.2.10</bundle>
+        <bundle dependency="true">mvn:com.datastax.oss/java-driver-core/${cassandraVersion}</bundle>
+        <bundle dependency="true">mvn:com.datastax.oss/native-protocol/1.5.1</bundle>
+        <bundle dependency="true">mvn:com.datastax.oss/java-driver-shaded-guava/25.1-jre-graal-sub-1</bundle>
+        <bundle dependency="true">mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}</bundle>
+        <bundle dependency="true">mvn:com.typesafe/config/1.4.1</bundle>
+        <bundle dependency="true">mvn:org.hdrhistogram/HdrHistogram/2.1.12</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.1.16</bundle>
+    </feature>
+
+    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
+        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
 
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle start-level="30" dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
@@ -132,6 +146,7 @@
     </feature>
 
     <feature name="netty4" version="${netty4Version}" description="Netty">
+        <feature version="${bouncyCastleVersion}">bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
@@ -185,9 +200,15 @@
         <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
         <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
         <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/1.72</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/1.72</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/1.72</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+    </feature>
+
+    <feature name="health-api" version="${project.version}" description="Health API">
+        <feature version="${commonsLang3Version}">commons-lang3</feature>
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
     </feature>
 </features>

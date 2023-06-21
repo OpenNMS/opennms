@@ -39,6 +39,12 @@ import { getInfo } from './infoService'
 import { getOpenApiV1, getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
 import { getPlugins } from './pluginService'
+import {
+  getUsageStatistics,
+  getUsageStatisticsMetadata,
+  getUsageStatisticsStatus,
+  setUsageStatisticsStatus
+} from './usageStatisticsService'
 
 export default {
   search,
@@ -87,5 +93,9 @@ export default {
   getAliases,
   getCredentialsByAlias,
   addCredentials,
-  updateCredentials
+  updateCredentials,
+  getUsageStatistics,
+  getUsageStatisticsMetadata, 
+  getUsageStatisticsStatus,
+  setUsageStatisticsStatus
 }

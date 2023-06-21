@@ -45,6 +45,7 @@ import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -77,14 +78,17 @@ public class MetaCommand implements Action {
     @Argument(index = 0, name = "expression", description = "Expression to use, e.g. '${context:key|fallback_context:fallback_key|default}'", required = false, multiValued = false)
     private String expression;
 
-    private void printScope(final Scope scope) {
+    private final String MATCHER = ".*([pP]assword|[sS]ecret).*";
+
+    void printScope(final Scope scope) {
         final Map<String, Set<ContextKey>> grouped = scope.keys().stream()
                 .collect(Collectors.groupingBy(ContextKey::getContext, TreeMap::new, Collectors.toCollection(TreeSet::new)));
 
         for (final Map.Entry<String, Set<ContextKey>> group : grouped.entrySet()) {
             System.out.printf("%s:\n", group.getKey());
             for (final ContextKey contextKey : group.getValue()) {
-                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).map(r -> String.format("%s @ %s", r.value, r.scopeName)).orElse(""));
+                final boolean omitOutput = (SecureCredentialsVaultScope.CONTEXT.equals(group.getKey()) && SecureCredentialsVaultScope.PASSWORD.equals(contextKey.getKey())) || contextKey.getKey().matches(MATCHER);
+                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).map(r -> String.format("%s @ %s", omitOutput ? "<output omitted>" : r.value, r.scopeName)).orElse(""));
             }
         }
     }

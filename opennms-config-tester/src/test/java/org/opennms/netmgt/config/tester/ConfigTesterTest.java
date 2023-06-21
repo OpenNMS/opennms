@@ -346,14 +346,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Not part of the standard build?
-     */
-    public void testOtrs() {
-        ignoreConfigFile("otrs.properties");
-    }
-
-    @Test
     public void testPollOutages() {
         testConfigFile("poll-outages.xml");
     }
@@ -371,14 +363,6 @@ public class ConfigTesterTest {
     @Test
     public void testProvisiondConfiguration() {
         testConfigFile("provisiond-configuration.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Not part of the standard build?
-     */
-    public void testRancidConfiguration() {
-        ignoreConfigFile("rancid-configuration.xml");
     }
 
     @Test
@@ -409,11 +393,6 @@ public class ConfigTesterTest {
     @Test
     public void testRtcConfiguration() {
         testConfigFile("rtc-configuration.xml");
-    }
-
-    @Test
-    public void testRwsConfiguration() {
-        ignoreConfigFile("rws-configuration.xml");
     }
 
     @Test

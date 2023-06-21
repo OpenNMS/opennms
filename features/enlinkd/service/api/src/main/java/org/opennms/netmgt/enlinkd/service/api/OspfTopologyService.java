@@ -32,6 +32,8 @@ package org.opennms.netmgt.enlinkd.service.api;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.enlinkd.model.OspfArea;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
@@ -42,8 +44,10 @@ public interface OspfTopologyService extends TopologyService {
     void reconcile(int nodeId, Date now);
     void store(int nodeId, OspfElement cdp);
     void store(int nodeId, OspfLink link);
+    void store(int nodeId, OspfArea area);
 
-    List<OspfElement> findAllOspfElements();     
+    List<OspfElement> findAllOspfElements();
+    List<OspfAreaTopologyEntity> findAllOspfAreas();
     List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> match();
 
     void deletePersistedData();

@@ -50,7 +50,7 @@ To do so, copy the example `timeseries.properties` file to your working director
 [source, shell]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 
-You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
+You can configure custom tags in the following contexts in `timeseries.properties`:
 
 * Asset
 * Interface

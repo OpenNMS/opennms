@@ -21,12 +21,30 @@
     <bean id="templateInitializer" class="org.opennms.features.alarms.history.elastic.TemplateInitializerForAlarms">
         <constructor-arg ref="jestClient"/>
     </bean>
+    <bean id="circuitBreakerProvider"
+          class="org.opennms.features.jest.client.CircuitBreakerProvider">
+        <property name="failureRateThreshold" value="99"/>
+        <property name="waitDurationInOpenStateInMills" value="60000"/>
+        <property name="ringBufferSizeInClosedState" value="100"/>
+        <property name="ringBufferSizeInHalfOpenState" value="10"/>
+    </bean>
+
+    <bean id="circuitBreaker"
+          factory-bean="circuitBreakerProvider"
+          factory-method="getCircuitBreaker">
+        <constructor-arg value="Alarm"/>
+    </bean>
+
+    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
+        <constructor-arg ref="jestClient"/>
+        <constructor-arg ref="circuitBreaker"/>
+    </bean>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
     <bean id="elasticAlarmIndexer" class="org.opennms.features.alarms.history.elastic.ElasticAlarmIndexer" init-method="init" destroy-method="destroy">
         <constructor-arg ref="metricRegistry"/>
-        <constructor-arg ref="jestClient"/>
+        <constructor-arg ref="jestClientWithCircuitBreaker"/>
         <constructor-arg ref="templateInitializer"/>
         <property name="usePseudoClock" value="true"/>
     </bean>

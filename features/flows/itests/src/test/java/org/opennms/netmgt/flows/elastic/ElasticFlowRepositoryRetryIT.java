@@ -38,19 +38,23 @@ import org.junit.rules.Timeout;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.executors.DefaultRequestExecutor;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.FlowException;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.integration.api.v1.flows.FlowRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticFlowRepositoryRetryIT {
 
@@ -87,7 +91,9 @@ public class ElasticFlowRepositoryRetryIT {
 
         final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
         restClientFactory.setRequestExecutorSupplier(() -> new DefaultRequestExecutor(RETRY_COOLDOWN));
-        try (JestClient client = restClientFactory.createClient()) {
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        try (JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()), eventForwarder)) {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 

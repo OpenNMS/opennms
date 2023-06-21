@@ -51,7 +51,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public abstract class Protocol<Element> {
+public abstract class Protocol {
 
     final TopologySettings topologySettings;
     final TopologyContext context;
@@ -151,7 +151,7 @@ public abstract class Protocol<Element> {
         onmsSnmpInterface.setIfOperStatus(7);
         onmsSnmpInterface.setLastCapsdPoll(new Date());
         onmsSnmpInterface.setLastSnmpPoll(new Date());
-        nodeIfIndexes.computeIfAbsent(node.getId(), key -> ifIndex);
+        nodeIfIndexes.putIfAbsent(node.getId(), ifIndex);
 
         return onmsSnmpInterface;
     }
@@ -170,7 +170,7 @@ public abstract class Protocol<Element> {
         ip.setId(snmp.getId());
         ip.setSnmpInterface(snmp);
         ip.setIpLastCapsdPoll(new Date());
-        ip.setNode(Optional.ofNullable(snmp).map(OnmsSnmpInterface::getNode).orElse(null));
+        ip.setNode(Optional.of(snmp).map(OnmsSnmpInterface::getNode).orElse(null));
         ip.setIpAddress(inetAddress);
         return ip;
     }

@@ -10,8 +10,8 @@ EnvironmentFile=-@SYSCONFDIR@/@NAME_LC@
 PIDFile=@PIDFILE@
 Type=forking
 
-ExecStart=@INITDIR@/@NAME_LC@ start
-ExecStop=@INITDIR@/@NAME_LC@ stop
+ExecStart=@INSTPREFIX@/bin/@NAME_LC@ start
+ExecStop=@INSTPREFIX@/bin/@NAME_LC@ stop
 
 AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
 

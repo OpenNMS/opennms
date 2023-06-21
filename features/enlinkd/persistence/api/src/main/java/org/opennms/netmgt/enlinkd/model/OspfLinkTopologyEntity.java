@@ -42,14 +42,16 @@ public class OspfLinkTopologyEntity {
     private final InetAddress ospfIpMask;
     private final InetAddress ospfRemIpAddr;
     private final Integer ospfIfIndex;
+    private final InetAddress ospfIfAreaId;
 
-    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfIpMask, InetAddress ospfRemIpAddr, Integer ospfIfIndex) {
+    public OspfLinkTopologyEntity(Integer id, Integer nodeId, InetAddress ospfIpAddr, InetAddress ospfIpMask, InetAddress ospfRemIpAddr, Integer ospfIfIndex, InetAddress ospfIfAreaId) {
         this.id = id;
         this.nodeId = nodeId;
         this.ospfIpAddr = ospfIpAddr;
         this.ospfIpMask = ospfIpMask;
         this.ospfRemIpAddr = ospfRemIpAddr;
         this.ospfIfIndex = ospfIfIndex;
+        this.ospfIfAreaId = ospfIfAreaId;
     }
 
     public static OspfLinkTopologyEntity create (OspfLink link) {
@@ -58,7 +60,8 @@ public class OspfLinkTopologyEntity {
                 , link.getOspfIpAddr()
                 , link.getOspfIpMask()
                 , link.getOspfRemIpAddr()
-                , link.getOspfIfIndex());
+                , link.getOspfIfIndex()
+                , link.getOspfIfAreaId());
     }
 
     public Integer getId() {
@@ -88,6 +91,10 @@ public class OspfLinkTopologyEntity {
         return ospfIfIndex;
     }
 
+    public InetAddress getOspfIfAreaId() {
+        return ospfIfAreaId;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -96,6 +103,7 @@ public class OspfLinkTopologyEntity {
                 .add("ospfIpAddr", ospfIpAddr)
                 .add("ospfRemIpAddr", ospfRemIpAddr)
                 .add("ospfIfIndex", ospfIfIndex)
+                .add("ospfIfAreaId", ospfIfAreaId)
                 .toString();
     }
 

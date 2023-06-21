@@ -1,9 +1,9 @@
 name: horizon
-version: '31-SNAPSHOT'
+version: '32-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '31.0.9-SNAPSHOT'
+    full-display-version: '32.0.0-SNAPSHOT'
     experimental: true
     source-language: asciidoc@
     xrefstyle: short@
@@ -18,13 +18,13 @@ asciidoc:
     compatible-opennms-plugin: '7+'
     compatible-oia: '0.6.x'
     compatible-cassandra: '3.11.x'
-    compatible-elasticsearch: '6.7.0 - 7.6.2'
+    compatible-elasticsearch: '6.7.0 - 7.17.9'
     compatible-javajdk: 'OpenJDK 11'
     compatible-kafka: '1.x - 2.x'
     compatible-postgresql: '10.x - 15.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
-    latest-meridian-stable: '2022'
+    latest-meridian-stable: '2023'
     postgresql-version: '15'
 nav:
 - modules/ROOT/index.adoc

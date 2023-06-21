@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>31.0.9-SNAPSHOT</version>
+    <version>32.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -290,7 +290,7 @@
                 <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
-                <feature>activemq-broker</feature>
+                <feature>activemq-broker-noweb</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
@@ -395,6 +395,7 @@
                 <feature>opennms-kafka-consumer</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
+                <feature>opennms-notifications-shell</feature>
                 <feature>opennms-poller-shell</feature>
                 <feature>opennms-provisioning</feature>
                 <feature>opennms-provisioning-detectors</feature>
@@ -791,10 +792,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rancid-provisioning-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
     </dependency>
     <dependency>
@@ -834,13 +831,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.xml</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>contrib</classifier>
     </dependency>
     <dependency>
       <groupId>com.ximpleware</groupId>

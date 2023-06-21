@@ -28,33 +28,36 @@
 
 package org.opennms.features.datachoices.web.internal;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.features.datachoices.internal.StateManager;
-import org.opennms.web.api.HtmlInjector;
-
 import com.google.common.collect.Maps;
-
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.opennms.features.datachoices.internal.StateManager;
+import org.opennms.web.api.HtmlInjector;
 
 public class ModalInjector implements HtmlInjector {
     private StateManager m_stateManager;
 
     @Override
-    public String inject(HttpServletRequest request) throws TemplateException, IOException {  
-        if (isPage("/opennms/admin/index.jsp", request)) {
-            return generateModalHtml(false);
-        } else if (m_stateManager.isEnabled() == null && isPage("/opennms/index.jsp", request) && isUserInAdminRole(request)) {
+    public String inject(HttpServletRequest request) throws TemplateException, IOException {
+        // don't display Usage Statistics Sharing notice if already acked or user previously opted-out
+        boolean noticeAcked = m_stateManager.isInitialNoticeAcknowledged() != null &&
+            m_stateManager.isInitialNoticeAcknowledged().booleanValue();
+        boolean optedOut = m_stateManager.isEnabled() != null && !m_stateManager.isEnabled().booleanValue();
+        boolean hideNotice = noticeAcked || optedOut;
+
+        if (!hideNotice &&
+            isPage("/opennms/index.jsp", request) &&
+            isUserInAdminRole(request)) {
             return generateModalHtml(true);
         }
+
         return null;
     }
 

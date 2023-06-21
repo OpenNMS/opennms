@@ -386,17 +386,6 @@ public abstract class ConfigFileConstants {
     public static final int WMI_CONFIG_FILE_NAME;
 
     /**
-     * The RWS (RestFul Web Service) configuration file
-     * used to access Rancid
-     */
-    public static final int RWS_CONFIG_FILE_NAME;   
-
-    /**
-     * The Rancid Provisioning Adapter configuration file
-     */
-    public static final int RANCID_CONFIG_FILE_NAME;
-
-    /**
      * The SNMP Asset Provisioning Adapter configuration file
      */
     public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
@@ -528,12 +517,6 @@ public abstract class ConfigFileConstants {
         
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
-        RWS_CONFIG_FILE_NAME = 70;
-
-        // XMP_COLLECTION_CONFIG_FILE_NAME = 71;
-        
-        // XMP_CONFIG_FILE_NAME = 72;
-
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
         ASTERISK_CONFIG_FILE_NAME = 74;
@@ -541,8 +524,6 @@ public abstract class ConfigFileConstants {
         AMI_CONFIG_FILE_NAME = 75;
         
         MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
-        
-        RANCID_CONFIG_FILE_NAME = 77;
         
         MICROBLOG_CONFIG_FILE_NAME = 78;
         
@@ -633,8 +614,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
         FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
-        FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
-        FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";

@@ -52,6 +52,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.enlinkd.service.api.CdpTopologyService;
@@ -87,11 +88,13 @@ public class ServiceTest {
     List<OnmsNode> nodes;
     List<IsIsElementTopologyEntity> isiselements;
     List<IsIsLinkTopologyEntity> isisLinks;
-    
+
     List<CdpElementTopologyEntity> cdpelements;
     List<CdpLinkTopologyEntity> cdpLinks;
 
     List<OspfLinkTopologyEntity> ospfLinks;
+
+    List<OspfAreaTopologyEntity> ospfAreas;
 
     List<LldpElementTopologyEntity> lldpelements;
     List<LldpLinkTopologyEntity> lldpLinks;
@@ -116,7 +119,7 @@ public class ServiceTest {
                                   createIsIsLink(10, "2.2", 22, nodes.get(4)),
                                   createIsIsLink(11, "2.3", 22, nodes.get(5))
                           );
-        
+
         cdpelements = Arrays.asList(
                                     createCdpElement(12,nodes.get(0), "Element0"),
                                     createCdpElement(13,nodes.get(1), "match1.4"),
@@ -125,7 +128,7 @@ public class ServiceTest {
                                     createCdpElement(16,nodes.get(4), "match2.4"),
                                     createCdpElement(17,nodes.get(5), "match2.3")
                             );
-        
+
         cdpLinks = Arrays.asList(
                                  createCdpLink(18, nodes.get(0), "nomatch1", "nomatch2", "nomatch3"),
                                  createCdpLink(19, nodes.get(1), "match1.3", "match1.1", "match1.2"),
@@ -147,6 +150,15 @@ public class ServiceTest {
                 createOspfLink(29, nodes.get(5), addresses.get(5), addresses.get(4))
         );
 
+        ospfAreas = Arrays.asList(
+                createOspfArea(36, nodes.get(0), InetAddresses.forString("0.0.0.0"), 1, 1, 1,2,3 ),
+                createOspfArea(37, nodes.get(1), InetAddresses.forString("0.0.0.0"), 2, 1, 3,3,7 ),
+                createOspfArea(38, nodes.get(2), InetAddresses.forString("0.0.0.1"), 1, 2, 5,2,12 ),
+                createOspfArea(39, nodes.get(3), InetAddresses.forString("0.0.0.1"), 1, 2, 7,4,11 ),
+                createOspfArea(40, nodes.get(4), InetAddresses.forString("0.0.0.2"), 1, 3, 9,8,20 ),
+                createOspfArea(41, nodes.get(5), InetAddresses.forString("0.0.0.0"), 1, 1, 1,2,11 )
+        );
+
         lldpelements = Arrays.asList(
         createLldpElement(30,nodes.get(0), "Element0", "host30"),
         createLldpElement(31,nodes.get(1), "match1.1", "host31"),
@@ -156,7 +168,7 @@ public class ServiceTest {
         createLldpElement(35,nodes.get(5), "match2.2", "host35"));
 
         lldpLinks = Arrays.asList(
-           createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
+            createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
             createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2","host1"),
             createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6","host2"),
             createLldpLink(3, nodes.get(3), "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,  "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, "match1.1","host3"),
@@ -174,8 +186,9 @@ public class ServiceTest {
         when(topologyEntityCache.getIsIsLinkTopologyEntities()).thenReturn(isisLinks);
 
         when(topologyEntityCache.getOspfLinkTopologyEntities()).thenReturn(ospfLinks);
+        when(topologyEntityCache.getOspfAreaTopologyEntities()).thenReturn(ospfAreas);
      }
-    
+
     @After
     public void tearDown() {
         verifyNoMoreInteractions(topologyEntityCache);
@@ -189,8 +202,6 @@ public class ServiceTest {
         List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> matchedLinks = isisTopologyService.match();
         assertMatching(isisLinks, matchedLinks);
 
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getIsIsElementTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getIsIsLinkTopologyEntities();
     }
@@ -214,10 +225,14 @@ public class ServiceTest {
         // 4 and 5 will match
         List<TopologyConnection<OspfLinkTopologyEntity, OspfLinkTopologyEntity>> matchedLinks = ospfTopologyService.match();
         assertMatching(ospfLinks, matchedLinks);
-
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getOspfLinkTopologyEntities();
+    }
+
+    @Test
+    public void ospfAreasTest() {
+        List<OspfAreaTopologyEntity> matchingArea = ospfTopologyService.findAllOspfAreas();
+        assertEquals(6, matchingArea.size());
+        verify(topologyEntityCache, atLeastOnce()).getOspfAreaTopologyEntities();
     }
 
     @Test
@@ -227,9 +242,6 @@ public class ServiceTest {
         // 4 and 5 will match
         List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> matchedLinks = lldpTopologyService.match();
         assertMatching(lldpLinks, matchedLinks);
-
-        verify(topologyEntityCache, atLeastOnce()).getCdpElementTopologyEntities();
-        verify(topologyEntityCache, atLeastOnce()).getCdpLinkTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getLldpElementTopologyEntities();
         verify(topologyEntityCache, atLeastOnce()).getLldpLinkTopologyEntities();
     }
@@ -251,11 +263,16 @@ public class ServiceTest {
 
     private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
             , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId, String remoteSysname) {
-        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", -1);
+        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", 100);
     }
 
     private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
-        return new OspfLinkTopologyEntity(id, node.getId(), ipAddress, InetAddressUtils.addr("255.255.255.252"),remoteAddress, -1);
+        return new OspfLinkTopologyEntity(id, node.getId(), ipAddress, InetAddressUtils.addr("255.255.255.252"),remoteAddress, -1, InetAddressUtils.addr("0.0.0.0"));
+    }
+
+    private OspfAreaTopologyEntity createOspfArea(int id, OnmsNode node, InetAddress ipAddress, Integer authType, Integer importAsExtern,
+                                                  Integer areaBdrRtrCount, Integer asBdrRtrCount, Integer areaLsaCount) {
+        return new OspfAreaTopologyEntity(id, node.getId(), ipAddress, authType,importAsExtern,areaBdrRtrCount, asBdrRtrCount, areaLsaCount);
     }
 
     private List<InetAddress> createInetAddresses() {
@@ -288,8 +305,7 @@ public class ServiceTest {
     }
 
     private CdpElementTopologyEntity createCdpElement(Integer id,OnmsNode node, String globalDeviceId) {
-        return new 
-                CdpElementTopologyEntity(id, globalDeviceId, node.getId());
+        return new CdpElementTopologyEntity(id, globalDeviceId, node.getId());
     }
 
     private CdpLinkTopologyEntity createCdpLink(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName,

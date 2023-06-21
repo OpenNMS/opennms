@@ -296,14 +296,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 // This is expected
             }
         });
+
         invokeWithImplicitWait(0, () -> {
             try {
-                WebElement element = findElementById("datachoices-modal");
-                if (element.isDisplayed()) { // datachoice modal is visible
-                    findElementById("datachoices-disable").click(); // opt out
+                WebElement element = findElementById("usage-statistics-sharing-modal");
+                if (element.isDisplayed()) { // usage statistics modal is visible
+                    findElementById("usage-statistics-sharing-notice-dismiss").click(); // close modal
                 }
             } catch (NoSuchElementException e) {
-                // "datachoices-modal" is not visible or does not exist.
+                // "usage-statistics-sharing-notice-dismiss" is not visible or does not exist.
                 // No further action required
             }
         });
@@ -718,7 +719,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 select.selectByVisibleText(text);
                 return true;
             }
-
         });
     }
 

@@ -46,6 +46,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -565,7 +567,12 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        final var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
 
         LOG.info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
@@ -579,8 +586,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         LOG.info("Log directory: {}", targetLogFolder.toUri());
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
         LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
-        if (threadDump != null) {
-            LOG.info("Thread dump: {}", threadDump.toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 }

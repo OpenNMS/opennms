@@ -91,6 +91,7 @@ retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                openjdk-17-jdk-headless \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
@@ -98,7 +99,7 @@ retry sudo apt update && \
                 jicmp6 \
             || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045
@@ -144,7 +145,7 @@ echo "#### Building Assembly Dependencies"
            install
 
 echo "#### Executing tests"
-./compile.pl "${MAVEN_ARGS[@]}" \
+ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \

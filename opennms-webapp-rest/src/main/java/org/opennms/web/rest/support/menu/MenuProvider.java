@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,9 +44,9 @@ import java.util.function.Consumer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
-
 /**
  * Creates a MainMenu object that is used by the MenuRestService, which provides this data to the
  * new Vue UI Menubar.
@@ -106,6 +107,9 @@ public class MenuProvider {
             mainMenu.noticeStatus = context.getNoticeStatus();
             // TODO: Remove
             mainMenu.notices = buildNotices(context);
+
+            mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
+            mainMenu.version = Vault.getProperty("version.display");
 
             // Parse out menu data from "dispatcher-servlet.xml"
             MenuXml.BeansElement xBeans = null;

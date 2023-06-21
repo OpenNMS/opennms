@@ -52,18 +52,29 @@ import org.opennms.netmgt.snmp.TableTracker;
  */
 public class Dot1dStpPortTableTracker extends TableTracker {
 
-	public final static SnmpObjId DOT1D_STP_PORT                   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.1");
-	public final static SnmpObjId DOT1D_STP_PORT_PRIORITY          = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.2");
-	public final static SnmpObjId DOT1D_STP_PORT_STATE             = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.3");
-	public final static SnmpObjId DOT1D_STP_PORT_ENABLE            = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.4");
-	public final static SnmpObjId DOT1D_STP_PORT_PATH_COST         = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.5");
-	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_ROOT   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.6");
-	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_COST   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.7");
-	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_BRIDGE = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.8");
-	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_PORT   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.9");
+	public final static SnmpObjId DOT1D_STP_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.1");
+	public final static SnmpObjId DOT1D_STP_PORT_PRIORITY_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.2");
+	public final static SnmpObjId DOT1D_STP_PORT_STATE_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.3");
+	public final static SnmpObjId DOT1D_STP_PORT_ENABLE_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.4");
+	public final static SnmpObjId DOT1D_STP_PORT_PATH_COST_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.5");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_ROOT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.6");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_COST_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.7");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.8");
+	public final static SnmpObjId DOT1D_STP_PORT_DESIGNATED_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.9");
+
+	public final static String DOT1D_STP_PORT = "dot1dStpPort";
+	public final static String DOT1D_STP_PORT_PRIORITY = "dot1dStpPortPriority";
+	public final static String DOT1D_STP_PORT_STATE = "dot1dStpPortState";
+	public final static String DOT1D_STP_PORT_ENABLE = "dot1dStpPortEnable";
+	public final static String DOT1D_STP_PORT_PATH_COST = "dot1dStpPortPathCost";
+	public final static String DOT1D_STP_PORT_DESIGNATED_ROOT = "dot1dStpPortDesignatedRoot";
+	public final static String DOT1D_STP_PORT_DESIGNATED_COST = "dot1dStpPortDesignatedCost";
+	public final static String DOT1D_STP_PORT_DESIGNATED_BRIDGE = "dot1dStpPortDesignatedBridge";
+	public final static String DOT1D_STP_PORT_DESIGNATED_PORT = "dot1dStpPortDesignatedPort";
 
 	public static final SnmpObjId[] stpport_elemList = new SnmpObjId[] {
 		/*
+		 * dot1dStpPort OBJECT-TYPE
 	     * SYNTAX      Integer32 (1..65535)
          * MAX-ACCESS  read-only
          * STATUS      current
@@ -74,8 +85,8 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          *  "IEEE 802.1D-1998: clause 14.8.2.1.2"		 
          *  
          */
-		DOT1D_STP_PORT,
-		DOT1D_STP_PORT_PRIORITY,
+			DOT1D_STP_PORT_OID,
+			DOT1D_STP_PORT_PRIORITY_OID,
 				
 		/*
 		 *  dot1dStpPortState OBJECT-TYPE
@@ -100,7 +111,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          * REFERENCE
          *  "IEEE 802.1D-1998: clause 8.5.5.2"
          */
-		DOT1D_STP_PORT_STATE,
+			DOT1D_STP_PORT_STATE_OID,
 		
 		/*
 		 *    dot1dStpPortEnable OBJECT-TYPE
@@ -115,10 +126,10 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          * REFERENCE
          *  "IEEE 802.1D-1998: clause 8.5.5.2"
 		 */
-		DOT1D_STP_PORT_ENABLE,
-		DOT1D_STP_PORT_PATH_COST,
-		DOT1D_STP_PORT_DESIGNATED_ROOT,
-		DOT1D_STP_PORT_DESIGNATED_COST,
+			DOT1D_STP_PORT_ENABLE_OID,
+			DOT1D_STP_PORT_PATH_COST_OID,
+			DOT1D_STP_PORT_DESIGNATED_ROOT_OID,
+			DOT1D_STP_PORT_DESIGNATED_COST_OID,
 		/*
 		 *    dot1dStpPortDesignatedBridge OBJECT-TYPE
          * SYNTAX      BridgeId
@@ -131,7 +142,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
          * REFERENCE
          *  "IEEE 802.1D-1998: clause 8.5.5.6"
 		 */
-		DOT1D_STP_PORT_DESIGNATED_BRIDGE,
+			DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID,
 		
 		/*
 		 * SYNTAX      OCTET STRING (SIZE (2))
@@ -142,7 +153,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 *  REFERENCE
          *  "IEEE 802.1D-1998: clause 8.5.5.7"
 		 */
-		DOT1D_STP_PORT_DESIGNATED_PORT
+			DOT1D_STP_PORT_DESIGNATED_PORT_OID
 	};
 
 	public static class Dot1dStpPortRow extends SnmpRowResult {
@@ -157,12 +168,12 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dStpPort() {
-			return getValue(DOT1D_STP_PORT).toInt();
+			return getValue(DOT1D_STP_PORT_OID).toInt();
 		}
 			
 
 		public Integer getDot1dStpPortPriority() {
-			return getValue(DOT1D_STP_PORT_PRIORITY).toInt();
+			return getValue(DOT1D_STP_PORT_PRIORITY_OID).toInt();
 		}
 		/**
 		 * <p>getDot1dStpPortState</p>
@@ -170,7 +181,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dStpPortState() {
-			return  getValue(DOT1D_STP_PORT_STATE).toInt();
+			return  getValue(DOT1D_STP_PORT_STATE_OID).toInt();
 		}
 		
 		/**
@@ -179,19 +190,19 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dStpPortEnable() {
-			return getValue(DOT1D_STP_PORT_ENABLE).toInt();
+			return getValue(DOT1D_STP_PORT_ENABLE_OID).toInt();
 		}
 		
 		public Integer getDot1dStpPortPathCost() {
-			return getValue(DOT1D_STP_PORT_PATH_COST).toInt();
+			return getValue(DOT1D_STP_PORT_PATH_COST_OID).toInt();
 		}
 		
 		public String getDot1dStpPortDesignatedRoot() {
-			return getValue(DOT1D_STP_PORT_DESIGNATED_ROOT).toHexString();
+			return getValue(DOT1D_STP_PORT_DESIGNATED_ROOT_OID).toHexString();
 		}
 
 		public Integer getDot1dStpPortDesignatedCost() {
-			return getValue(DOT1D_STP_PORT_DESIGNATED_COST).toInt();
+			return getValue(DOT1D_STP_PORT_DESIGNATED_COST_OID).toInt();
 		}
 		/**
 		 * <p>getDot1dStpPortDesignatedBridge</p>
@@ -210,7 +221,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getDot1dStpPortDesignatedBridge() {
-			return getValue(DOT1D_STP_PORT_DESIGNATED_BRIDGE).toHexString();
+			return getValue(DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID).toHexString();
 		}
 	
 		/**
@@ -219,7 +230,7 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getDot1dStpPortDesignatedPort() {
-			return getValue(DOT1D_STP_PORT_DESIGNATED_PORT).toHexString();
+			return getValue(DOT1D_STP_PORT_DESIGNATED_PORT_OID).toHexString();
 			
 		}
 
@@ -262,7 +273,18 @@ public class Dot1dStpPortTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker.Dot1dStpPortRow} object.
      */
     public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT, row.getDot1dStpPort() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_PRIORITY_OID + "."+row.getInstance().toString(), DOT1D_STP_PORT_PRIORITY, row.getDot1dStpPortPriority());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_STP_PORT_STATE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_STATE, row.getDot1dStpPortState(), BridgeDot1dStpPortState.get(row.getDot1dStpPortState()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_STP_PORT_ENABLE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_ENABLE, row.getDot1dStpPortEnable(), BridgeDot1dStpPortEnable.get(row.getDot1dStpPortEnable()));
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_PATH_COST_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_PATH_COST, row.getDot1dStpPortPathCost());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_ROOT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_ROOT, row.getDot1dStpPortDesignatedRoot());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_COST_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_COST, row.getDot1dStpPortDesignatedCost());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_BRIDGE_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_BRIDGE, row.getDot1dStpPortDesignatedBridge());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_STP_PORT_DESIGNATED_PORT_OID + "." + row.getInstance().toString(), DOT1D_STP_PORT_DESIGNATED_PORT, row.getDot1dStpPortDesignatedPort());
+
+
+	}
 	
 
 

@@ -44,13 +44,16 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 public class OspfNbrTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(OspfNbrTableTracker.class);
 
-	public final static SnmpObjId OSPF_NBR_IPADDRESS          = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.1");
-    public final static SnmpObjId OSPF_NBR_ADDRESS_LESS_INDEX = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.2");
-    public final static SnmpObjId OSPF_NBR_ROUTERID           = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.3");
- 
+	public final static SnmpObjId OSPF_NBR_IPADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.1");
+    public final static SnmpObjId OSPF_NBR_ADDRESS_LESS_INDEX_OID = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.2");
+    public final static SnmpObjId OSPF_NBR_ROUTERID_OID = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.3");
+
+    public final static String OSPF_NBR_IPADDRESS = "ospfNbrIpAddr";
+    public final static String OSPF_NBR_ADDRESS_LESS_INDEX = "ospfNbrAddressLessIndex";
+    public final static String OSPF_NBR_ROUTERID = "ospfNbrRtrId";
     public static final SnmpObjId[] s_ospfnbrtable_elemList = new SnmpObjId[] {
         
-        /**
+        /*
          * <p>
          * "The IP address this neighbor is using  in  its
          * IP  Source  Address.  Note that, on addressless
@@ -58,9 +61,9 @@ public class OspfNbrTableTracker extends TableTracker {
          * dress of another of the neighbor's interfaces."
          * </p>
         */
-        OSPF_NBR_IPADDRESS,
+            OSPF_NBR_IPADDRESS_OID,
         
-        /**
+        /*
          * <p>
          * "On an interface having an  IP  Address,  zero.
          * On  addressless  interfaces,  the corresponding
@@ -69,9 +72,9 @@ public class OspfNbrTableTracker extends TableTracker {
          * instance."
          * </p>
          */
-        OSPF_NBR_ADDRESS_LESS_INDEX,
+            OSPF_NBR_ADDRESS_LESS_INDEX_OID,
 
-        /**
+        /*
          * <p>
          * "A 32-bit integer (represented as a type  IpAd-
          * dress)  uniquely  identifying  the  neighboring
@@ -79,7 +82,7 @@ public class OspfNbrTableTracker extends TableTracker {
          * DEFVAL   { '00000000'H }    -- 0.0.0.0
          * </p>
          */
-        OSPF_NBR_ROUTERID
+            OSPF_NBR_ROUTERID_OID
     };
         
     public static class OspfNbrRow extends SnmpRowResult {
@@ -89,15 +92,15 @@ public class OspfNbrTableTracker extends TableTracker {
 		}
 
 		public InetAddress getOspfNbrIpAddress() {
-			return getValue(OSPF_NBR_IPADDRESS).toInetAddress();
+			return getValue(OSPF_NBR_IPADDRESS_OID).toInetAddress();
 		}
 
 	    public InetAddress getOspfNbrRouterId() {
-	        return getValue(OSPF_NBR_ROUTERID).toInetAddress();
+	        return getValue(OSPF_NBR_ROUTERID_OID).toInetAddress();
 	    }
 	
 	    public Integer getOspfNbrAddressLessIndex() {
-	        return getValue(OSPF_NBR_ADDRESS_LESS_INDEX).toInt();
+	        return getValue(OSPF_NBR_ADDRESS_LESS_INDEX_OID).toInt();
 	    }
 
 		public OspfLink getOspfLink() {
@@ -141,6 +144,9 @@ public class OspfNbrTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker.OspfNbrRow} object.
      */
     public void processOspfNbrRow(final OspfNbrRow row) {
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_IPADDRESS_OID + "." + row.getInstance().toString(), OSPF_NBR_IPADDRESS, str(row.getOspfNbrIpAddress()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ADDRESS_LESS_INDEX_OID + "." + row.getInstance().toString(), OSPF_NBR_ADDRESS_LESS_INDEX, row.getOspfNbrAddressLessIndex());
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_NBR_ROUTERID_OID + "." + row.getInstance().toString(), OSPF_NBR_ROUTERID, str(row.getOspfNbrRouterId()));
     }
 
 

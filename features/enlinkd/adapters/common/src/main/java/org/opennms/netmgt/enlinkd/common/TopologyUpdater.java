@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.enlinkd.common;
 
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
@@ -59,7 +61,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
             return OnmsTopologyProtocol.create(protocol.name());
     }
-    
+
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {
         Objects.requireNonNull(node);
         Objects.requireNonNull(node.getId());
@@ -153,15 +155,19 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     }
 
     public void setDefaultVertex() {
+        if (m_topology.getVertices().isEmpty()) {
+            LOG.info("setDefaultVertex: {}: topology is empty", getName());
+            return;
+        }
         NodeTopologyEntity defaultFocusPoint = getDefaultFocusPoint();
         if (defaultFocusPoint != null) {
             OnmsTopologyVertex dv = create(defaultFocusPoint,getIpPrimaryMap().get(defaultFocusPoint.getId()));
             if (m_topology.hasVertex(dv.getId())) {
                 m_topology.setDefaultVertex(dv);
-                LOG.info("setDefaultVertex: set default: {}", dv.getLabel());
-            } else  if (!m_topology.getVertices().isEmpty()) {
+                LOG.info("setDefaultVertex: {}: set default: {}", getName(), dv.getLabel());
+            } else  {
                 m_topology.setDefaultVertex(m_topology.getVertices().iterator().next());
-                LOG.info("setDefaultVertex: set first item: {}", m_topology.getDefaultVertex().getLabel());
+                LOG.info("setDefaultVertex: {}: set first item: {}",getName(), m_topology.getDefaultVertex().getLabel());
             }
         }
     }
@@ -212,7 +218,7 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
     public Map<Integer, NodeTopologyEntity> getNodeMap() {
         return m_nodeTopologyService.findAllNode().stream().collect(Collectors.toMap(NodeTopologyEntity::getId, node -> node, (n1, n2) ->n1));
     }
-    
+
     public Map<Integer, IpInterfaceTopologyEntity> getIpPrimaryMap() {
         return m_nodeTopologyService.findAllIp().
                 stream().
@@ -236,7 +242,25 @@ public abstract class TopologyUpdater extends Schedulable implements OnmsTopolog
         }
         return nodeToOnmsSnmpTable;
     }
-    
+
+    public Map<Integer, SnmpInterfaceTopologyEntity> getSnmpInterfaceMap() {
+        return
+                m_nodeTopologyService.
+                        findAllSnmp().
+                        stream().
+                        collect(Collectors.toMap(SnmpInterfaceTopologyEntity::getId, Function.identity()));
+    }
+
+    public Table<Integer, InetAddress, IpInterfaceTopologyEntity> getIpInterfaceTable() {
+        Table<Integer, InetAddress,IpInterfaceTopologyEntity> nodeToOnmsIpTable = HashBasedTable.create();
+        for (IpInterfaceTopologyEntity ip: m_nodeTopologyService.findAllIp()) {
+            if (!nodeToOnmsIpTable.contains(ip.getNodeId(),ip.getIpAddress())) {
+                nodeToOnmsIpTable.put(ip.getNodeId(),ip.getIpAddress(),ip);
+            }
+        }
+        return nodeToOnmsIpTable;
+    }
+
     private static IpInterfaceTopologyEntity getPrimary(IpInterfaceTopologyEntity n1, IpInterfaceTopologyEntity n2) {
         if (PrimaryType.PRIMARY.equals(n2.getIsSnmpPrimary()) ) {
             return n2;

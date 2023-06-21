@@ -34,22 +34,24 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
 
 public class Dot1dBasePortTableTracker extends TableTracker {
-	public final static SnmpObjId DOT1D_BASE_PORT = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.1");
-	public final static SnmpObjId DOT1D_BASE_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
+	public final static SnmpObjId DOT1D_BASE_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.1");
+	public final static SnmpObjId DOT1D_BASE_IFINDEX_OID = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
+	public final static String DOT1D_BASE_IFINDEX = "dot1dBasePortIfIndex";
+	public final static String DOT1D_BASE_PORT = "dot1dBasePort";
 
 	public static final SnmpObjId[] bridgePort_elemList = new SnmpObjId[] {
 		/*
 		 * The port number of the port for which this entry
  		 * contains bridge management information.
 		 */
-		DOT1D_BASE_PORT,
+			DOT1D_BASE_PORT_OID,
 		
 		/*
 		 * The value of the instance of the ifIndex object,
 		 * defined in MIB-II, for the interface corresponding
  		 * to this port.
 		 */
-		DOT1D_BASE_IFINDEX
+			DOT1D_BASE_IFINDEX_OID
 		
 	};
 
@@ -65,7 +67,7 @@ public class Dot1dBasePortTableTracker extends TableTracker {
 		 * @return a Integer.
 		 */
 		public Integer getBaseBridgePort() {
-			return getValue(DOT1D_BASE_PORT).toInt();
+			return getValue(DOT1D_BASE_PORT_OID).toInt();
 		}
 	
 		/**
@@ -74,7 +76,7 @@ public class Dot1dBasePortTableTracker extends TableTracker {
 		 * @return a Integer.
 		 */
 		public Integer getBaseBridgePortIfindex() {
-			return getValue(DOT1D_BASE_IFINDEX).toInt();
+			return getValue(DOT1D_BASE_IFINDEX_OID).toInt();
 		}
 	
 	}	
@@ -96,7 +98,9 @@ public class Dot1dBasePortTableTracker extends TableTracker {
     }
 
     public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_PORT_OID + "." + row.getInstance().toString(), DOT1D_BASE_PORT, row.getBaseBridgePort() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_IFINDEX_OID + "." + row.getInstance().toString(), DOT1D_BASE_IFINDEX, row.getBaseBridgePortIfindex() );
+	}
 
 
 }

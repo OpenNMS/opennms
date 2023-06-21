@@ -32,8 +32,29 @@ package org.opennms.netmgt.enlinkd.api;
  * Provides an interface to reload a topology daemon.
  */
 public interface ReloadableTopologyDaemon {
+
+    /**
+     * Reload enlinkd daemon service
+     */
+    void reload();
+
+    /**
+     * Reload enlinkd configuration and daemon service
+     */
+    boolean reloadConfig();
+
     /**
      * Triggers a reload of the topology in case the topology has been updated
      */
     void reloadTopology();
+
+    /**
+     * Run Single Snmp Collection for specified node and protocol
+     */
+    boolean runSingleSnmpCollection(final String nodeCriteria, String protocol);
+
+    /**
+     * Execute the Enlinkd Topology Discovery for Bridge
+     */
+    void runDiscoveryBridgeDomains();
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,31 +31,30 @@ package org.opennms.features.distributed.kvstore.blob.cassandra;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.cql.Statement;
+import com.datastax.oss.driver.api.core.type.codec.TypeCodecs;
 import org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
 import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
 import org.opennms.features.distributed.kvstore.api.AbstractKeyValueStore;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Statement;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -66,7 +65,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * This implementation persists key values in a specific table that will be created in a keyspace dictated by the
  * {@link org.opennms.features.distributed.cassandra.api.CassandraSchemaManager schema manager}.
  * <p>
- * This implementation does not initiate its own {@link com.datastax.driver.core.Session Cassandra session} and must be
+ * This implementation does not initiate its own {@link com.datastax.oss.driver.api.core.session.Session Cassandra session} and must be
  * provided with one via a {@link CassandraSessionFactory session factory}.
  */
 public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements BlobStore {
@@ -122,8 +121,6 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
 
     @Override
     public Optional<byte[]> get(String key, String context) {
-        byte[] serializedValue;
-
         // Cassandra will throw a runtime exception here if the execution fails
         ResultSet resultSet = session.execute(selectStmt.bind(key, context));
         Row row = resultSet.one();
@@ -133,50 +130,39 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
             return Optional.empty();
         }
 
-        serializedValue = row.getBytes(VALUE_COLUMN).array();
-
-        return Optional.of(serializedValue);
+        ByteBuffer value = row.get(VALUE_COLUMN, TypeCodecs.BLOB);
+        if (value == null) {
+            return Optional.empty();
+        }
+        return Optional.of(value.array());
     }
 
     @Override
     public CompletableFuture<Long> putAsync(String key, byte[] value, String context, Integer ttlInSeconds) {
-        CompletableFuture<Long> putFuture = new CompletableFuture<>();
         long timestamp = System.currentTimeMillis();
-
-        try {
-            Statement statement = getStatementForInsert(key, context, ByteBuffer.wrap(value), timestamp, ttlInSeconds);
-            // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(statement);
-            resultSetFuture
-                    .addListener(() -> {
-                        try {
-                            resultSetFuture.getUninterruptibly();
-                            putFuture.complete(timestamp);
-                        } catch (Exception e) {
-                            putFuture.completeExceptionally(e);
-                        }
-                    }, MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            putFuture.completeExceptionally(e);
-        }
-
-        return putFuture;
+        Statement<?> statement = getStatementForInsert(key, context, ByteBuffer.wrap(value), timestamp, ttlInSeconds);
+        return session.executeAsync(statement).thenApply(e -> timestamp).toCompletableFuture();
     }
 
     @Override
     public CompletableFuture<Optional<byte[]>> getAsync(String key, String context) {
-        CompletableFuture<Optional<byte[]>> getFuture = new CompletableFuture<>();
+        return session.executeAsync(selectStmt.bind(key, context))
+                .toCompletableFuture()
+                .thenApply(resultSet -> {
+                        Row row = resultSet.one();
 
-        try {
-            // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(selectStmt.bind(key, context));
-            resultSetFuture.addListener(() -> processGetFutureResult(getFuture, resultSetFuture),
-                    MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            getFuture.completeExceptionally(e);
-        }
+                    // Could not find the key
+                    if (row == null) {
+                        return Optional.empty();
+                    }
 
-        return getFuture;
+                    ByteBuffer bytes = row.get(VALUE_COLUMN, TypeCodecs.BLOB);
+                    if (bytes == null) {
+                        return Optional.empty();
+                    } else {
+                        return Optional.of(bytes.array());
+                    }
+                });
     }
 
     @Override
@@ -189,7 +175,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         OptionalLong lastUpdated = getLastUpdated(key, context);
 
         // key was not found
-        if (!lastUpdated.isPresent()) {
+        if (lastUpdated.isEmpty()) {
             return Optional.empty();
         }
 
@@ -202,7 +188,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         Optional<byte[]> value = get(key, context);
 
         // The value was removed between checking last updated and now
-        if (!value.isPresent()) {
+        if (value.isEmpty()) {
             return Optional.empty();
         }
 
@@ -223,9 +209,11 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
             return OptionalLong.empty();
         }
 
-        Date lastUpdated = row.getTimestamp(TIMESTAMP_COLUMN);
-
-        return OptionalLong.of(lastUpdated.getTime());
+        Instant lastUpdated = row.get(TIMESTAMP_COLUMN, TypeCodecs.TIMESTAMP);
+        if (lastUpdated == null) {
+            return OptionalLong.empty();
+        }
+        return OptionalLong.of(lastUpdated.toEpochMilli());
     }
 
     @Override
@@ -240,7 +228,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 return;
             }
 
-            if (!lastUpdated.isPresent()) {
+            if (lastUpdated.isEmpty()) {
                 getIfStaleFuture.complete(Optional.empty());
                 return;
             }
@@ -259,7 +247,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
                 }
 
                 // The value was removed between checking last updated and now
-                if (!val.isPresent()) {
+                if (val.isEmpty()) {
                     getIfStaleFuture.complete(Optional.empty());
                 }
 
@@ -275,18 +263,23 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        CompletableFuture<OptionalLong> tsFuture = new CompletableFuture<>();
+        return session.executeAsync(timestampStmt.bind(key, context))
+                .toCompletableFuture()
+                .thenApply(resultSet -> {
+                    Row row = resultSet.one();
 
-        try {
-            // Cassandra will throw a runtime exception here if the execution fails
-            ResultSetFuture resultSetFuture = session.executeAsync(timestampStmt.bind(key, context));
-            resultSetFuture.addListener(() -> processLastUpdatedFutureResult(tsFuture, resultSetFuture),
-                    MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            tsFuture.completeExceptionally(e);
-        }
+                    // Could not find the key
+                    if (row == null) {
+                        return OptionalLong.empty();
+                    }
 
-        return tsFuture;
+                    Instant lastUpdate = row.get(TIMESTAMP_COLUMN, TypeCodecs.TIMESTAMP);
+                    if (lastUpdate == null) {
+                        return OptionalLong.empty();
+                    }
+
+                    return OptionalLong.of(lastUpdate.toEpochMilli());
+                });
     }
 
     @Override
@@ -296,7 +289,7 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         Map<String, byte[]> resultMap = new HashMap<>();
         
         session.execute(enumerateStatement.bind(context))
-                .forEach(row -> resultMap.put(row.getString(KEY_COLUMN), row.getBytes(VALUE_COLUMN).array()));
+                .forEach(row -> resultMap.put(row.getString(KEY_COLUMN), row.get(VALUE_COLUMN, TypeCodecs.BLOB).array()));
         
         return Collections.unmodifiableMap(resultMap);
     }
@@ -312,52 +305,37 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
     @Override
     public CompletableFuture<Map<String, byte[]>> enumerateContextAsync(String context) {
         Objects.requireNonNull(context);
+        Map<String, byte[]> resultMap = new HashMap<>();
+        return session.executeAsync(enumerateStatement.bind(context))
+                .thenCompose(rs -> enumerateContext(rs, resultMap))
+                .toCompletableFuture();
+    }
 
-        CompletableFuture<Map<String, byte[]>> enumerateFuture = new CompletableFuture<>();
-
-        try {
-            ResultSetFuture enumerateResult = session.executeAsync(enumerateStatement.bind(context));
-            enumerateResult.addListener(() -> {
-                Map<String, byte[]> resultMap = new HashMap<>();
-
-                try {
-                    enumerateResult.getUninterruptibly()
-                            .forEach(row -> resultMap.put(row.getString(KEY_COLUMN),
-                                    row.getBytes(VALUE_COLUMN).array()));
-                    enumerateFuture.complete(Collections.unmodifiableMap(resultMap));
-                } catch (Exception e) {
-                    enumerateFuture.completeExceptionally(e);
-                }
-            }, MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            enumerateFuture.completeExceptionally(e);
+    private CompletionStage<Map<String, byte[]>> enumerateContext(AsyncResultSet resultSet, Map<String, byte[]> resultMap) {
+        for (Row row : resultSet.currentPage()) {
+            String key = row.getString(KEY_COLUMN);
+            if (key == null) {
+                continue;
+            }
+            ByteBuffer value = row.get(VALUE_COLUMN, TypeCodecs.BLOB);
+            if (value == null) {
+                continue;
+            }
+            resultMap.put(key, value.array());
         }
-
-        return enumerateFuture;
+        if (resultSet.hasMorePages()) {
+            return resultSet.fetchNextPage().thenCompose(rs -> enumerateContext(rs, resultMap));
+        } else {
+            return CompletableFuture.completedFuture(resultMap);
+        }
     }
 
     @Override
     public CompletableFuture<Void> deleteAsync(String key, String context) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
-
-        CompletableFuture<Void> deleteFuture = new CompletableFuture<>();
-
-        try {
-            ResultSetFuture deleteResult = session.executeAsync(deleteStatement.bind(key, context));
-            deleteResult.addListener(() -> {
-                try {
-                    deleteResult.getUninterruptibly();
-                    deleteFuture.complete(null);
-                } catch (Exception e) {
-                    deleteFuture.completeExceptionally(e);
-                }
-            }, MoreExecutors.directExecutor());
-        } catch (Exception e) {
-            deleteFuture.completeExceptionally(e);
-        }
-
-        return deleteFuture;
+        return session.executeAsync(deleteStatement.bind(key, context)).toCompletableFuture()
+                .thenApply(res -> null);
     }
 
     @Override
@@ -390,67 +368,21 @@ public class CassandraBlobStore extends AbstractKeyValueStore<byte[]> implements
         return truncateFuture;
     }
 
-    private Statement getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
+    private Statement<?> getStatementForInsert(String key, String context, ByteBuffer serializedValue, long timestamp,
                                             Integer ttlInSeconds) {
-        Statement statement;
+        Statement<?> statement;
 
         if (ttlInSeconds != null) {
             if (ttlInSeconds <= 0) {
                 throw new IllegalArgumentException("TTL must be positive and greater than 0");
             }
 
-            statement = insertWithTtlStmt.bind(key, context, serializedValue, new Date(timestamp), ttlInSeconds);
+            statement = insertWithTtlStmt.bind(key, context, serializedValue, Instant.ofEpochMilli(timestamp), ttlInSeconds);
         } else {
-            statement = insertStmt.bind(key, context, serializedValue, new Date(timestamp));
+            statement = insertStmt.bind(key, context, serializedValue, Instant.ofEpochMilli(timestamp));
         }
 
         return statement;
-    }
-
-    private static void processGetFutureResult(CompletableFuture<Optional<byte[]>> future,
-                                               ResultSetFuture resultSetFuture) {
-        ResultSet resultSet;
-
-        try {
-            resultSet = resultSetFuture.getUninterruptibly();
-        } catch (Exception e) {
-            future.completeExceptionally(e);
-            return;
-        }
-
-        Row row = resultSet.one();
-
-        // Could not find the key
-        if (row == null) {
-            future.complete(Optional.empty());
-            return;
-        }
-
-        future.complete(Optional.of(row.getBytes(VALUE_COLUMN).array()));
-    }
-
-    private static void processLastUpdatedFutureResult(CompletableFuture<OptionalLong> future,
-                                                       ResultSetFuture resultSetFuture) {
-        ResultSet resultSet;
-
-        try {
-            resultSet = resultSetFuture.getUninterruptibly();
-        } catch (Exception e) {
-            future.completeExceptionally(e);
-            return;
-        }
-
-        Row row = resultSet.one();
-
-        // Could not find the key
-        if (row == null) {
-            future.complete(OptionalLong.empty());
-            return;
-        }
-
-        Date lastUpdated = row.getTimestamp(TIMESTAMP_COLUMN);
-
-        future.complete(OptionalLong.of(lastUpdated.getTime()));
     }
 
     @Override

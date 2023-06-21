@@ -31,6 +31,9 @@ package org.opennms.netmgt.poller.pollables;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.Timer;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 
 /**
  * Represents a PollConfig
@@ -39,7 +42,9 @@ import org.opennms.netmgt.scheduler.Timer;
  * @version $Id: $
  */
 public interface PollConfig extends Timer {
-    
+
+    CompletionStage<PollStatus> asyncPoll();
+
     /**
      * <p>poll</p>
      *

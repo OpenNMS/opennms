@@ -36,7 +36,7 @@ import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.MtxrLldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
@@ -47,7 +47,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -200,10 +202,24 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return false;
         }
 
-        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> mtxrlldprowss = new ArrayList<>();
+        final Map<Integer, LldpLocalTableTracker.LldpLocalPortRow> mtxrLldpLocalPortMap = new HashMap<>();
+        LldpLocalTableTracker mtxrLldpLocalTable = new LldpLocalTableTracker() {
+            @Override
+            public void processLldpLocPortRow(final LldpLocalPortRow row) {
+                LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {} {} {}", row.getMtxrIndex(), row.getLldpLocalPortIdSubtype(), row.getLldpLocPortId(), row.getLldpLocPortDesc());
+                mtxrLldpLocalPortMap.put(row.getMtxrIndex(), row);
+            }
+        };
 
-        MtxrLldpLocalTableTracker mtxrLldpLocalTable = new MtxrLldpLocalTableTracker();
-        MtxrNeighborTableTracker mtxrNeighborTable = new MtxrNeighborTableTracker();
+        final Map<Integer, Integer> mtxrNeighborMap = new HashMap<>();
+        MtxrNeighborTableTracker mtxrNeighborTable = new MtxrNeighborTableTracker() {
+            @Override
+            public void processMtxrIndexPortRow(final MtxrNeighborRow row) {
+                mtxrNeighborMap.put(row.getMtxrNeighborIndex(), row.getMtxrNeighborInterfaceId());
+            }
+        };
+
+        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> mtxrlldprowss = new ArrayList<>();
         MtxrLldpRemTableTracker mtxrLldpRemTable = new MtxrLldpRemTableTracker() {
 
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
@@ -240,12 +256,14 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return false;
         }
 
-        m_lldpTopologyService.store(getNodeId(), mtxrLldpLocalTable.getLldpElement(sysname));
+        m_lldpTopologyService.store(getNodeId(), LldpLocalTableTracker.getLldpElement(sysname, mtxrLldpLocalPortMap.values()));
 
         for (MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrLldpRemRow : mtxrlldprowss) {
             m_lldpTopologyService.store(getNodeId(),
-                    mtxrLldpLocalTable.getLldpLink(mtxrLldpRemRow,
-                            mtxrNeighborTable.getMtxrinterfaceId(mtxrLldpRemRow)
+                    LldpLocalTableTracker.getLldpLink(
+                            mtxrLldpRemRow,
+                            mtxrNeighborMap.get(mtxrLldpRemRow.getMtxrNeighborIndex()),
+                            mtxrLldpLocalPortMap
                     )
             );
         }

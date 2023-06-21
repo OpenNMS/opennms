@@ -52,7 +52,6 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater;
@@ -87,9 +86,6 @@ public class LinkdTopologyProviderTestIT {
     GenericPersistenceAccessor genericPersistenceAccessor;
 
     @Autowired
-    LinkdTopologyFactory linkdTopologyFactory;
-
-    @Autowired
     TopologyEntityCache entityCache;
     
     @Autowired
@@ -119,7 +115,7 @@ public class LinkdTopologyProviderTestIT {
     private TopologyGenerator generator;
 
     @Autowired
-    private LinkdTopologyProvider linkdTopologyProvider;
+    LinkdTopologyProvider linkdTopologyProvider;
 
     @BeforeTransaction
     public void setUp() {
