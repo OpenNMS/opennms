@@ -234,7 +234,7 @@ config:property-set rpkiUrl http://localhost:8080/api/export.json
 config:update
 ----
 
-==== Running BMP Adapter on Sentinel
+=== Running BMP Adapter on Sentinel
 
 BMP Persisting Adapter can also run on Sentinel.
 Sentinel must start the appropriate BMP adapter.
