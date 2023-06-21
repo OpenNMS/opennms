@@ -78,27 +78,6 @@
         <feature>postgresql</feature>
         <bundle>mvn:com.zaxxer/HikariCP/${hikaricpVersion}</bundle>
     </feature>
-    <feature name="commons-configuration" version="${commonsConfigurationVersion}" description="Apache :: commons-configuration">
-        <feature>commons-beanutils</feature>
-        <feature>commons-codec</feature>
-        <feature>commons-digester</feature>
-        <feature>commons-jxpath</feature>
-        <feature>commons-lang</feature>
-        <feature>javax.mail</feature>
-        <feature>javax.servlet</feature>
-        <bundle>wrap:mvn:org.apache.ant/ant/1.8.2</bundle>
-        <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
-    </feature>
-    <feature name="commons-digester" version="${commonsDigesterVersion}" description="Apache :: commons-digester">
-        <feature>commons-beanutils</feature>
-        <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
-    </feature>
-    <feature name="commons-exec" version="1.2" description="Apache :: commons-exec">
-        <bundle>mvn:org.apache.commons/commons-exec/1.2</bundle>
-    </feature>
-    <feature name="commons-io" version="${commonsIoVersion}" description="Apache :: commons-io">
-        <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
-    </feature>
     <feature name="commons-jexl" version="${commonsJexlVersion}" description="Apache :: commons-jexl">
         <bundle>mvn:org.apache.commons/commons-jexl/${commonsJexlVersion}</bundle>
     </feature>
@@ -111,9 +90,6 @@
     </feature>
     <feature name="commons-lang" version="${commonsLangVersion}" description="Apache :: commons-lang">
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
-    </feature>
-    <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
-        <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
@@ -1146,6 +1122,7 @@
     <feature name="opennms-flows" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>bson</feature>
+        <feature>commons-csv</feature>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1158,8 +1135,6 @@
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
-        <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
-        <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>

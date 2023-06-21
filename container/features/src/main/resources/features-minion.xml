@@ -131,13 +131,13 @@
 
     <feature name="minion-telemetryd-receivers" start-level="${earlyStartLevel}" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <feature>bson</feature>
+      <feature>commons-csv</feature>
       <feature>dropwizard-metrics</feature>
       <feature version="${netty4Version}">netty4</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
-      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>

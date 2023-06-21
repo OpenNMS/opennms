@@ -129,6 +129,7 @@
 
     <feature name="sentinel-flows" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
         <feature>bson</feature>
+        <feature>commons-csv</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>rate-limited-logger</feature>
         <feature>sentinel-telemetry</feature>
@@ -140,7 +141,6 @@
         <feature>opennms-kafka</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
-        <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>

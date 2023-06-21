@@ -55,6 +55,35 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-compress/${commonsCompressVersion}</bundle>
     </feature>
 
+    <feature name="commons-configuration" version="${commonsConfigurationVersion}" description="Apache :: commons-configuration">
+        <feature>commons-beanutils</feature>
+        <feature>commons-codec</feature>
+        <feature>commons-digester</feature>
+        <feature>commons-jxpath</feature>
+        <feature>commons-lang</feature>
+        <feature>javax.mail</feature>
+        <feature>javax.servlet</feature>
+        <bundle dependency="true">wrap:mvn:org.apache.ant/ant/${antVersion}</bundle>
+        <bundle dependency="true">mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
+    </feature>
+
+    <feature name="commons-csv" version="${commonsCsvVersion}" description="Apache :: commons-csv">
+        <bundle dependency="true">mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+    </feature>
+
+    <feature name="commons-digester" version="${commonsDigesterVersion}" description="Apache :: commons-digester">
+        <feature>commons-beanutils</feature>
+        <bundle dependency="true">mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
+    </feature>
+
+    <feature name="commons-exec" version="${commonsExecVersion}" description="Apache :: commons-exec">
+        <bundle dependency="true">mvn:org.apache.commons/commons-exec/${commonsExecVersion}</bundle>
+    </feature>
+
+    <feature name="commons-io" version="${commonsIoVersion}" description="Apache :: commons-io">
+        <bundle dependency="true">mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
+    </feature>
+
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
