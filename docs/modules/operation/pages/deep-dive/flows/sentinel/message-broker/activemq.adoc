@@ -30,7 +30,7 @@ config:update
 ----
 <1> A location string is used to assign the Sentinel to a monitoring location.
 This can be an existing location or a new location and does not impact the messages that this Sentinel will process.
-<2> Unique identifier you define to be used as a node label for monitoring the Sentinel instance within {page-component-title}.
+<2> Unique identifier you define to use as a node label for monitoring the Sentinel instance within {page-component-title}.
 This can be a GUID or a hostname.
 <3> URL that points to ActiveMQ broker.
 

@@ -89,7 +89,7 @@ You can follow the same steps for any of the other flow-related protocols.
 </queue>
 ----
 +
-NOTE:  The default configuration file provides example configurations for many protocols.
+NOTE: The default configuration file provides example configurations for many protocols.
 To enable one of these protocols, find the correct example `listener` and `adapter` elements and change their `enabled` attributes to `true`.
 
 . Reload the daemon to apply your changes:
