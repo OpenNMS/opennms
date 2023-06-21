@@ -78,19 +78,6 @@
         <feature>postgresql</feature>
         <bundle>mvn:com.zaxxer/HikariCP/${hikaricpVersion}</bundle>
     </feature>
-    <feature name="commons-jexl" version="${commonsJexlVersion}" description="Apache :: commons-jexl">
-        <bundle>mvn:org.apache.commons/commons-jexl/${commonsJexlVersion}</bundle>
-    </feature>
-    <feature name="commons-jxpath" version="${commonsJxpathVersion}" description="Apache :: commons-jxpath">
-        <feature>commons-beanutils</feature>
-        <feature>javax.servlet</feature>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
-        <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2</bundle>
-        <bundle>mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}</bundle>
-    </feature>
-    <feature name="commons-lang" version="${commonsLangVersion}" description="Apache :: commons-lang">
-        <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
-    </feature>
     <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
     </feature>
