@@ -1,6 +1,4 @@
-<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller" threads="30"
-   nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false"
-   pathOutageEnabled="false">
+<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller" threads="30" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" pathOutageEnabled="false">
    <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
       <critical-service name="ICMP"/>
    </node-outage>
@@ -43,20 +41,14 @@
          <parameter key="username" value="cassandra-username"/>
          <parameter key="password" value="cassandra-password"/>
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-         <parameter key="beans.samples"
-            value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
+         <parameter key="beans.samples" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
          <parameter key="tests.samples" value="samples.ColumnFamilyName == 'samples'"/>
-         <parameter key="beans.terms"
-            value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=terms"/>
+         <parameter key="beans.terms" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=terms"/>
          <parameter key="tests.terms" value="terms.ColumnFamilyName == 'terms'"/>
-         <parameter key="beans.resource_attributes"
-            value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=resource_attributes"/>
-         <parameter key="tests.resource_attributes"
-            value="resource_attributes.ColumnFamilyName == 'resource_attributes'"/>
-         <parameter key="beans.resource_metrics"
-            value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=resource_metrics"/>
-         <parameter key="tests.resource_metrics"
-            value="resource_metrics.ColumnFamilyName == 'resource_metrics'"/>
+         <parameter key="beans.resource_attributes" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=resource_attributes"/>
+         <parameter key="tests.resource_attributes" value="resource_attributes.ColumnFamilyName == 'resource_attributes'"/>
+         <parameter key="beans.resource_metrics" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=resource_metrics"/>
+         <parameter key="tests.resource_metrics" value="resource_metrics.ColumnFamilyName == 'resource_metrics'"/>
       </service>
       <downtime begin="0" end="300000" interval="30000"/><!-- 30s, 0, 5m -->
       <downtime begin="300000" end="43200000" interval="300000"/><!-- 5m, 5m, 12h -->
@@ -166,20 +158,12 @@
          <parameter key="ds-name" value="hyperic-hq"/>
          <parameter key="page-sequence">
             <page-sequence xmlns="">
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1"
-                  method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http"
-                  successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns=""/>
-               <page disable-ssl-verification="true"
-                  failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)"
-                  failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1"
-                  method="POST" path="/j_security_check.do" port="7080" response-range="100-399"
-                  scheme="http" successMatch="HQ Dashboard" xmlns="">
+               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns=""/>
+               <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns="">
                   <parameter key="j_username" value="hqadmin" xmlns=""/>
                   <parameter key="j_password" value="hqadmin" xmlns=""/>
                </page>
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1"
-                  method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http"
-                  successMatch="HQ Login" xmlns=""/>
+               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" xmlns=""/>
             </page-sequence>
          </parameter>
       </service>
@@ -295,8 +279,7 @@
    </package>
 
    <!--
-      This package is defined for Minion nodes. Don't alter/remove this. If minions are not getting used,
-   it is safe to remove below pkg.
+      This package is defined for Minion nodes. Don't alter/remove this. If minions are not getting used, it is safe to remove below pkg.
    -->
    <package name="Minion">
       <filter>foreignSource == 'Minions' AND IPADDR != '0.0.0.0'</filter>
@@ -330,12 +313,9 @@
       <downtime begin="0" interval="30000"/><!-- 30s -->
    </package>
    <!--
-      Moved StrafePing to its own package.  This allows for more flexible configuration of which
-   interfaces
-      will have StrafePing statistical analysis rather than being on for or off for all interfaces.
-   Change
-      this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing
-   all
+      Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces
+      will have StrafePing statistical analysis rather than being on for or off for all interfaces.  Change
+      this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing all
       of your network interface may create high loads on the NMS file system.
    -->
    <package name="strafer">
@@ -376,8 +356,7 @@
          <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
          <parameter key="rrd-base-name" value="device-config"/>
          <!-- match service name suffix with config-type -->
-         <parameter key="config-type"
-            value="${pattern:configType|requisition:dcb:config-type|default}"/>
+         <parameter key="config-type" value="${pattern:configType|requisition:dcb:config-type|default}"/>
          <parameter key="username" value="${requisition:dcb:username|admin}"/>
          <parameter key="password" value="${requisition:dcb:password|admin}"/>
          <parameter key="ssh-port" value="${requisition:dcb:ssh-port|22}"/>
@@ -386,15 +365,13 @@
          <parameter key="schedule" value="${requisition:dcb:schedule|never}"/>
          <!-- retention-period is a Java Period expression -->
          <parameter key="retention-period" value="${requisition:dcb:retention-period|P1Y}"/>
-         <parameter key="script-file"
-            value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/>
+         <parameter key="script-file" value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/>
       </service>
       <downtime begin="0" interval="300000"/><!-- 300s -->
    </package>
 
    <monitor service="JMX-Cassandra" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="JMX-Cassandra-Newts"
-      class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
+   <monitor service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
    <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
    <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
@@ -410,8 +387,7 @@
    <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
    <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-   <monitor service="Minion-Heartbeat"
-      class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor"/>
+   <monitor service="Minion-Heartbeat" class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor"/>
    <monitor service="Minion-RPC" class-name="org.opennms.netmgt.poller.monitors.MinionRpcMonitor"/>
    <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
@@ -420,17 +396,13 @@
    <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
    <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
    <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
-   <monitor service="Windows-Task-Scheduler"
-      class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
+   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
    <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Minion" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Kafka" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="VMwareCim-HostSystem"
-      class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
-   <monitor service="VMware-ManagedEntity"
-      class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor"/>
-   <monitor service="DeviceConfig"
-      class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor"/>
+   <monitor service="DeviceConfig" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor"/>
 </poller-configuration>

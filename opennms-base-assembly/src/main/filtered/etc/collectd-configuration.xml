@@ -177,8 +177,7 @@
       </service>
       <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="xml-elasticsearch-cluster-stats"/>
-         <parameter key="handler-class"
-            value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+         <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
       </service>
       <service name="Windows-Exporter" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="windows-exporter"/>
@@ -195,20 +194,16 @@
          <parameter key="retry" value="2"/>
       </service>
    </package>
-   <collector service="Windows-Exporter"
-      class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
-   <collector service="Node-Exporter"
-      class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
+   <collector service="Windows-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
+   <collector service="Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
    <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
    <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
    <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
    <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
    <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
-   <collector service="VMware-VirtualMachine"
-      class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
+   <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
    <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
-   <collector service="VMwareCim-HostSystem"
-      class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
+   <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
    <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>

@@ -1,21 +1,20 @@
 <foreign-source name="default" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
 	<scan-interval>1d</scan-interval>
 	<detectors>
-		<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector"/>
-		<detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector"/>
-		<detector name="HTTP" class="org.opennms.netmgt.provision.detector.simple.HttpDetector"/>
-		<detector name="HTTPS" class="org.opennms.netmgt.provision.detector.simple.HttpsDetector"/>
-		<detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector"/>
-		<detector name="IMAP" class="org.opennms.netmgt.provision.detector.simple.ImapDetector"/>
-		<detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector"/>
-		<detector name="NRPE" class="org.opennms.netmgt.provision.detector.simple.NrpeDetector"/>
-		<detector name="POP3" class="org.opennms.netmgt.provision.detector.simple.Pop3Detector"/>
-		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector"/>
-		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
-		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector"/>
-		<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector"/>
-		<detector name="OpenNMS-JVM"
-			class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+		<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
+		<detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
+		<detector name="HTTP" class="org.opennms.netmgt.provision.detector.simple.HttpDetector" />
+		<detector name="HTTPS" class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" />
+		<detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" />
+		<detector name="IMAP" class="org.opennms.netmgt.provision.detector.simple.ImapDetector" />
+		<detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector" />
+		<detector name="NRPE" class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" />
+		<detector name="POP3" class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" />
+		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
+		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
+		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
+		<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector" />
+		<detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="18980"/>
 			<parameter key="factory" value="PASSWORD_CLEAR"/>
 			<parameter key="username" value="admin"/>
@@ -38,8 +37,7 @@
 			<parameter key="retries" value="2"/>
 			<parameter key="type" value="default"/>
 		</detector>
-		<detector name="JMX-Cassandra"
-			class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+		<detector name="JMX-Cassandra" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="7199"/>
 			<parameter key="retries" value="2"/>
 			<parameter key="timeout" value="3000"/>
@@ -50,8 +48,7 @@
 			<parameter key="password" value="cassandra-password"/>
 			<parameter key="type" value="default"/>
 		</detector>
-		<detector name="JMX-Cassandra-Newts"
-			class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+		<detector name="JMX-Cassandra-Newts" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="7199"/>
 			<parameter key="retries" value="2"/>
 			<parameter key="timeout" value="3000"/>
@@ -61,8 +58,7 @@
 			<parameter key="username" value="cassandra-username"/>
 			<parameter key="password" value="cassandra-password"/>
 			<parameter key="type" value="default"/>
-			<parameter key="object"
-				value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
+			<parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
 		</detector>
 		<detector name="MS-RDP" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
 			<parameter key="port" value="3389"/>

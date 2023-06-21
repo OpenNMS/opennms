@@ -18,8 +18,7 @@
       <detector name="OpenNMS-DB" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
          <parameter key="ipMatch" value="127.0.0.1"/>
       </detector>
-      <detector name="OpenNMS-DB-Stats"
-         class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+      <detector name="OpenNMS-DB-Stats" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
          <parameter key="ipMatch" value="127.0.0.1"/>
       </detector>
    </detectors>

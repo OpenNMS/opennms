@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<poller-configuration threads="10" nextOutageId="SELECT nextval('outageNxtId')"
-    serviceUnresponsiveEnabled="false" pathOutageEnabled="false"
-    xmlns="http://xmlns.opennms.org/xsd/config/poller"
-    xmlns:ps="http://xmlns.opennms.org/xsd/page-sequence">
+<poller-configuration threads="10" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" pathOutageEnabled="false" xmlns="http://xmlns.opennms.org/xsd/config/poller" xmlns:ps="http://xmlns.opennms.org/xsd/page-sequence">
     <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
         <critical-service name="ICMP"/>
     </node-outage>
@@ -20,8 +17,7 @@
         <service name="ICMP" interval="30000" user-defined="false" status="on">
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="icmp"/>
             <parameter key="ds-name" value="icmp"/>
         </service>
@@ -31,8 +27,7 @@
             <parameter key="port" value="53"/>
             <parameter key="lookup" value="localhost"/>
             <parameter key="fatal-response-codes" value="2,3,5"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="dns"/>
             <parameter key="ds-name" value="dns"/>
         </service>
@@ -40,8 +35,7 @@
             <parameter key="retry" value="1"/>
             <parameter key="timeout" value="3000"/>
             <parameter key="port" value="25"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="smtp"/>
             <parameter key="ds-name" value="smtp"/>
         </service>
@@ -60,8 +54,7 @@
             <parameter key="timeout" value="3000"/>
             <parameter key="port" value="80"/>
             <parameter key="url" value="/"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="http"/>
             <parameter key="ds-name" value="http"/>
         </service>
@@ -70,8 +63,7 @@
             <parameter key="timeout" value="3000"/>
             <parameter key="port" value="8080"/>
             <parameter key="url" value="/"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="http-8080"/>
             <parameter key="ds-name" value="http-8080"/>
         </service>
@@ -80,8 +72,7 @@
             <parameter key="timeout" value="3000"/>
             <parameter key="port" value="8000"/>
             <parameter key="url" value="/"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="http-8000"/>
             <parameter key="ds-name" value="http-8000"/>
         </service>
@@ -99,36 +90,23 @@
         <service name="HypericHQ" interval="30000" user-defined="false" status="on">
             <parameter key="retry" value="1"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="hyperic-hq"/>
             <parameter key="ds-name" value="hyperic-hq"/>
             <parameter key="page-sequence">
-                <page-sequence xmlns="http://xmlns.opennms.org/xsd/page-sequence"
-                    xmlns:ns3="http://xmlns.opennms.org/xsd/config/poller">
-
-                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1"
-                        method="GET" path="/Login.do" port="7080" response-range="100-399"
-                        scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns=""
-                        xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
-
-                    <page disable-ssl-verification="true"
-                        failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)"
-                        failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1"
-                        method="POST" path="/j_security_check.do" port="7080"
-                        response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns=""
-                        xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence">
-
+                <page-sequence xmlns="http://xmlns.opennms.org/xsd/page-sequence" xmlns:ns3="http://xmlns.opennms.org/xsd/config/poller">
+    
+                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
+    
+                    <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence">
+        
                         <parameter key="j_username" value="hqadmin"/>
-
+        
                         <parameter key="j_password" value="hqadmin"/>
-                    </page>
-
-                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1"
-                        method="GET" path="/Logout.do" port="7080" response-range="100-399"
-                        scheme="http" successMatch="HQ Login" xmlns=""
-                        xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
-                </page-sequence>
+    </page>
+    
+                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
+</page-sequence>
             </parameter>
         </service>
         <service name="MySQL" interval="30000" user-defined="false" status="on">
@@ -160,8 +138,7 @@
             <parameter key="banner" value="SSH"/>
             <parameter key="port" value="22"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="ssh"/>
             <parameter key="ds-name" value="ssh"/>
         </service>
@@ -174,8 +151,7 @@
             <parameter key="retry" value="1"/>
             <parameter key="port" value="110"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="pop3"/>
             <parameter key="ds-name" value="pop3"/>
         </service>
@@ -185,8 +161,7 @@
             <parameter key="port" value="5666"/>
             <parameter key="command" value="_NRPE_CHECK"/>
             <parameter key="padding" value="2"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="ds-name" value="nrpe"/>
         </service>
         <service name="NRPE-NoSSL" interval="30000" user-defined="false" status="on">
@@ -196,8 +171,7 @@
             <parameter key="command" value="_NRPE_CHECK"/>
             <parameter key="usessl" value="false"/>
             <parameter key="padding" value="2"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="ds-name" value="nrpe"/>
         </service>
         <service name="Windows-Task-Scheduler" interval="30000" user-defined="false" status="on">
@@ -210,8 +184,7 @@
             <parameter key="password" value="admin"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="ds-name" value="opennms-jvm"/>
             <parameter key="friendly-name" value="opennms-jvm"/>
         </service>
@@ -244,8 +217,7 @@
             <parameter key="ping-count" value="20"/>
             <parameter key="failure-ping-count" value="20"/>
             <parameter key="wait-interval" value="50"/>
-            <parameter key="rrd-repository"
-                value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
+            <parameter key="rrd-repository" value="/Users/agalue/Development/opennms/git/master/target/opennms-1.13.1-SNAPSHOT/share/rrd/response"/>
             <parameter key="rrd-base-name" value="strafeping"/>
         </service>
         <downtime begin="0" end="432000000" interval="300000"/>
@@ -272,11 +244,8 @@
     <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
     <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
     <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
-    <monitor service="Windows-Task-Scheduler"
-        class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
+    <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
     <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-    <monitor service="VMwareCim-HostSystem"
-        class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
-    <monitor service="VMware-ManagedEntity"
-        class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+    <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+    <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
 </poller-configuration>
