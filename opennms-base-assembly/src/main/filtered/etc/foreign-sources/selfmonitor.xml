@@ -4,7 +4,7 @@
       <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector"/>
       <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
       <detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
+         <parameter key="factory" value="PASSWORD_CLEAR"/>
          <parameter key="username" value="admin"/>
          <parameter key="ipMatch" value="127.0.0.1"/>
          <parameter key="port" value="18980"/>

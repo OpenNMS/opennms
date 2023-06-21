@@ -10,7 +10,7 @@
          <parameter key="collection" value="jmx-cassandra30x"/>
          <parameter key="friendly-name" value="cassandra"/>
          <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
+         <parameter key="factory" value="PASSWORD_CLEAR"/>
          <parameter key="username" value="${requisition:cassandra-user|cassandra-username}"/>
          <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}"/>
       </service>
@@ -23,7 +23,7 @@
          <parameter key="collection" value="jmx-cassandra30x-newts"/>
          <parameter key="friendly-name" value="cassandra-newts"/>
          <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
+         <parameter key="factory" value="PASSWORD_CLEAR"/>
          <parameter key="username" value="${requisition:cassandra-user|cassandra-username}"/>
          <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}"/>
       </service>
@@ -144,7 +144,7 @@
          <parameter key="driver" value="org.postgresql.Driver"/>
          <parameter key="data-source" value="opennms"/>
       </service>
-         <service name="OpenNMS-DB-Stats" interval="300000" user-defined="false" status="on">
+      <service name="OpenNMS-DB-Stats" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="PostgreSQL"/>
          <parameter key="thresholding-enabled" value="true"/>
          <parameter key="driver" value="org.postgresql.Driver"/>
