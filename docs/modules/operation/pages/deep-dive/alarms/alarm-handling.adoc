@@ -18,9 +18,6 @@ PICTURES MISSING
 Clearing an outstanding or acknowledged alarm means "mark it as resolved".
 The cleared alarm will disappear within a defined cycle.
 
-NOTE: Alarms created by a threshold configuration will appear again if the defined metric still matches the threshold configurations or matches it again.
-An alarm based on a `nodeLostService` event won't appear again.
-To keep track of those `outage alarms`, check the outages list.
 
 == Escalation
 
