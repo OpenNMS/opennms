@@ -163,4 +163,7 @@
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
 
+  <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
+      <property name="groupManager" ref="groupManager"/>
+  </bean>
 </beans>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,11 +49,13 @@ import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.integration.api.v1.model.TopologyProtocol;
 import org.opennms.integration.api.v1.model.immutables.ImmutableAlarm;
+import org.opennms.integration.api.v1.ticketing.Ticket.State;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
@@ -88,6 +90,8 @@ public class ModelMappers {
                         }
                     });
 
+    private ModelMappers() {}
+
     public static Alarm toAlarm(OnmsAlarm alarm) {
         if (alarm == null) {
             return null;
@@ -108,7 +112,9 @@ public class ModelMappers {
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
                 .setFirstEventTime(alarm.getFirstEventTime())
-                .setAcknowledged(alarm.isAcknowledged());
+                .setAcknowledged(alarm.isAcknowledged())
+                .setTicketId(alarm.getTTicketId())
+                .setTicketState(ModelMappers.toTicketState(alarm.getTTicketState()));
 
         try {
             if (alarm.getNode() != null) {
@@ -196,10 +202,28 @@ public class ModelMappers {
                 return Severity.MAJOR;
             case CRITICAL:
                 return Severity.CRITICAL;
+            default:
+                return Severity.INDETERMINATE;
         }
-        return Severity.INDETERMINATE;
     }
     
+    public static State toTicketState(final TroubleTicketState state) {
+        if (state == null) {
+            return null;
+        }
+        switch (state) {
+            case OPEN:
+                return State.OPEN;
+            case CLOSED:
+                return State.CLOSED;
+            case CANCELLED:
+                return State.CANCELLED;
+            default:
+                LOG.warn("unable to convert {} to one of OPEN, CLOSED, or CANCELLED", state);
+                return null;
+        }
+    }
+
     public static AlarmFeedback toFeedback(org.opennms.features.situationfeedback.api.AlarmFeedback feedback) {
         return feedback == null ? null : alarmFeedbackMapper.map(feedback);
     }
@@ -222,6 +246,20 @@ public class ModelMappers {
         return OnmsSeverity.get(severity.getId());
     }
     
+    public static TroubleTicketState fromTicketState(final State state) {
+        switch (state) {
+            case OPEN:
+                return TroubleTicketState.OPEN;
+            case CLOSED:
+                return TroubleTicketState.CLOSED;
+            case CANCELLED:
+                return TroubleTicketState.CANCELLED;
+            default:
+                LOG.warn("unhandled OPA ticket state {}", state);
+                return null;
+        }
+    }
+
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
         return OnmsTopologyProtocol.create(protocol.name());
     }

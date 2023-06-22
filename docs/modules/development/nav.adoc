@@ -2,6 +2,7 @@
 .xref:development.adoc[]
 
 * xref:build-from-source.adoc[]
+** xref:source-copyright.adoc[Copyright Conventions and Guidelines]
 
 * xref:osgi/osgi-and-opennms.adoc[]
 

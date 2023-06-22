@@ -1,5 +1,5 @@
 [[build-from-source]]
-= Build from source
+= Build from Source
 
 We highly recommend running a *nix system to build OpenNMS from source code.
 You do not need to run it physically; a virtual machine is sufficient.

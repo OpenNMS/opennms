@@ -1,0 +1,176 @@
+
+= {page-component-title} Startup
+
+This section describes troubleshooting steps for problems encountered while {page-component-title} starts.
+
+[[java-errors]]
+== Java errors
+
+If you encounter a Java error when starting {page-component-title}, you should verify that your Java version is compatible:
+
+[source, shell]
+runjava -s
+
+If you run `systemctl start opennms` with a version of Java that is not compatible, the output displays error messages:
+
+[source, shell]
+----
+opennms[80542]: Starting OpenNMS:
+opennms[81178]: runjava: Error: configured JVM not found.
+opennms[81178]: runjava: "/usr/lib/jvm/java-11-openjdk-11.0.17.0.8-1.el9_1.x86_64/bin/java" does not exist or is not executab>
+opennms[81178]: runjava: Run "/opt/opennms/bin/runjava -s" to set up the java.conf file.
+opennms[81178]: runjava:
+opennms[81178]: runjava: You can install a JVM by downloading one from Oracle, or by running something like
+opennms[81178]: runjava: 'apt-get install openjdk-11-jdk' or 'yum install java-11-openjdk-devel'.
+opennms[80542]: OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml.
+opennms[80542]: failed
+systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+----
+
+See xref:deployment:core/system-requirements.adoc[] for software compatibility requirements, including supported Java versions.
+
+[[startup-errors]]
+== Configuration errors
+
+If you encounter a configuration error when starting {page-component-title}, you may need to run the {page-component-title} database installer.
+This updates the relational database schema to the latest version and applies any required changes to the configuration files:
+
+[source, shell]
+install -dis
+
+NOTE: Running or re-running the database installer is generally safe, provided you stop {page-component-title} first.
+
+If you run `systemctl start opennms` and {page-component-title} is not installed or up to date, the output displays error messages:
+
+[source, shell]
+----
+opennms[119337]: /opt/opennms/etc/configured does not exist.
+opennms[119337]: You need to run the installer to set up the database.  In most
+opennms[119337]: cases, it is enough to run:
+opennms[119337]:   /opt/opennms/bin/install -dis
+opennms[119337]: For details, see the install guide at:
+opennms[119337]: http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+opennms[119134]: failed
+systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+systemd[1]: opennms.service: Failed with result 'exit-code'.
+systemd[1]: Failed to start OpenNMS server.
+----
+
+NOTE: You can also run `config-tester -a` to verify your configuration settings.
+If the tests pass, a success message is displayed.
+
+=== Non-obvious error messages with older Linux distributions
+
+Some older Linux distributions (Red Hat Enterprise Linux 7, CentOS 7, and so on) are more terse when a {page-component-title} startup failure occurs.
+An additional diagnostic step can help reveal the problem.
+
+After installing the software and running `systemctl start opennms`, the process immediately exits with a brief error message:
+
+[source, shell]
+----
+# systemctl start opennms
+Job for opennms.service failed because the control process exited with error code.
+See "systemctl status opennms.service" and "journalctl -xe" for details.
+----
+
+Running `systemctl status opennms` produces the following output:
+
+[source, shell]
+----
+systemd[1]: Starting OpenNMS server...
+systemd[1]: opennms.service: control process exited, code=exited status=1
+systemd[1]: Failed to start OpenNMS server.
+systemd[1]: Unit opennms.service entered failed state.
+systemd[1]: opennms.service failed.
+----
+
+You can also start the {page-component-title} services verbosely; this provides additional details about any errors:
+
+[source, shell]
+----
+# $\{OPENNMS_HOME}/bin/opennms -v start
+WARNING: relaunching as opennms
+WARNING: `systemctl` was found, but OpenNMS is not being run in Systemd mode.
+You will not be able to use systemctl to manage an OpenNMS started manually from the CLI.
+Starting OpenNMS: /opt/opennms/bin/opennms: OpenNMS not configured.
+/opt/opennms/etc/configured does not exist.
+
+You need to run the installer to set up the database.  In most
+cases, it is enough to run:
+
+  /opt/opennms/bin/install -dis
+
+For details, see the install guide at:
+
+http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+
+[FAILED]
+----
+
+In the above example, `$\{OPENNMS_HOME}/bin/install -dis` had not been run, causing startup to fail.
+
+[[database-errors]]
+== Database errors
+
+If you encounter a database error when starting {page-component-title}, database access may not have been configured properly.
+In this case, error messages are displayed when you run `systemctl start opennms`:
+
+[source, shell]
+----
+systemd[1]: Starting OpenNMS server...
+opennms[133961]: Starting OpenNMS:
+opennms[134703]: error invoking "check" operation: Data source 'opennms' failed.
+opennms[133961]: OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml.
+opennms[133961]: failed
+systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+systemd[1]: opennms.service: Failed with result 'exit-code'.
+systemd[1]: Failed to start OpenNMS server.
+----
+
+See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL] for information on installing and setting up PostgreSQL.
+
+[[upgrade-errors]]
+== rpm, yum, dnf upgrade errors
+
+Sometimes, {page-component-title} startup may fail because there are RHEL-related `.rpmnew` or `.rpmsave` files located in `$\{OPENNMS_HOME}`.
+When you check the status of your instance, one of the following errors might be displayed:
+
+.`.rpmnew` error
+[source, shell]
+----
+opennms[8728]: WARNING!  You have files that end in .rpmnew in your
+opennms[8728]: OPENNMS_HOME (/opt/opennms) directory.
+opennms[8728]: The format of the original files may have changed since
+opennms[8728]: you modified them before installing a new version.
+opennms[8728]: Please double-check that your configuration files are
+opennms[8728]: up-to-date and delete any leftover .rpmnew files or
+opennms[8728]: OpenNMS will not start.
+opennms[8011]: failed
+systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+systemd[1]: opennms.service: Failed with result 'exit-code'.
+systemd[1]: Failed to start OpenNMS server.
+----
+
+.`.rpmsave` error
+[source, shell]
+----
+opennms[133068]: WARNING!  You have files that end in .rpmsave in your
+opennms[133068]: OPENNMS_HOME (/opt/opennms) directory.
+opennms[133068]: The format of the original files may have changed since
+opennms[133068]: you modified them before installing a new version.
+opennms[133068]: Please double-check that your configuration files are
+opennms[133068]: up-to-date and delete any leftover .rpmsave files or
+opennms[133068]: OpenNMS will not start.
+opennms[132345]: failed
+systemd[1]: opennms.service: Control process exited, code=exited, status=1/FAILURE
+systemd[1]: opennms.service: Failed with result 'exit-code'.
+systemd[1]: Failed to start OpenNMS server.
+----
+
+NOTE: You should evaluate the `.rpmnew` or `.rpmsave` file against the original file with the same name to determine which to keep.
+Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (if applicable), and start {page-component-title}.
+
+You can run this command to identify any `.rpmnew` or `.rpmsave` files in your environment:
+
+[source, shell]
+$ sudo find ${OPENNMS_HOME} -name '*.rpm*' -exec ls -la {} \;

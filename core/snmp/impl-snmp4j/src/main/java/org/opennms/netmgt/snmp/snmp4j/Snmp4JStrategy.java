@@ -98,6 +98,7 @@ import org.snmp4j.mp.PduHandle;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.mp.StateReference;
 import org.snmp4j.mp.StatusInformation;
+import org.snmp4j.security.PrivAES256;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
@@ -167,6 +168,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
         // NMS-9223: This call can be expensive, and is synchronized
         // so we perform it only once during initialization
         SecurityProtocols.getInstance().addDefaultProtocols();
+        // NMS-15637: AES-256 gets automatically registered, but with an ID of "" instead of "1.3.6.1.4.1.4976.2.2.1.1.2"
+        // Adding it manually here results in it being registered with the correct ID
+        SecurityProtocols.getInstance().addPrivacyProtocol(new PrivAES256());
 
         s_initialized = true;
     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.dao;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,16 +41,29 @@ import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.dao.AlarmDao;
 import org.opennms.integration.api.v1.graph.NodeRef;
 import org.opennms.integration.api.v1.model.Alarm;
+import org.opennms.integration.api.v1.model.Severity;
+import org.opennms.integration.api.v1.ticketing.Ticket.State;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 public class AlarmDaoImpl implements AlarmDao {
 
     private final org.opennms.netmgt.dao.api.AlarmDao alarmDao;
+    private final AcknowledgmentDao ackDao;
+    private final AlarmEntityNotifier alarmEntityNotifier;
     private final SessionUtils sessionUtils;
 
-    public AlarmDaoImpl(org.opennms.netmgt.dao.api.AlarmDao alarmDao, SessionUtils sessionUtils) {
+    public AlarmDaoImpl(org.opennms.netmgt.dao.api.AlarmDao alarmDao, final AcknowledgmentDao ackDao, final AlarmEntityNotifier alarmEntityNotifier, final SessionUtils sessionUtils) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
+        this.alarmEntityNotifier = Objects.requireNonNull(alarmEntityNotifier);
+        this.ackDao = Objects.requireNonNull(ackDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
@@ -81,6 +95,107 @@ public class AlarmDaoImpl implements AlarmDao {
             }
             final Alarm alarm = ModelMappers.toAlarm(matching.get(0));
             return Optional.of(alarm);
+        });
+    }
+
+    @Override
+    public Optional<Alarm> getAlarmForTicket(final String ticketId) {
+        final Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
+                .and(Restrictions.eq("tticketId", ticketId))
+                .limit(1)
+                .toCriteria();
+        return sessionUtils.withReadOnlyTransaction(() -> {
+            final List<OnmsAlarm> matching = alarmDao.findMatching(criteria);
+            if (matching.isEmpty()) {
+                return Optional.empty();
+            }
+            final Alarm alarm = ModelMappers.toAlarm(matching.get(0));
+            return Optional.of(alarm);
+        });
+    }
+
+    @Override
+    public void setTicketState(final State state, final int... alarmIds) {
+        sessionUtils.withTransaction(() -> {
+            Arrays.stream(alarmIds).boxed().map(alarmDao::get).forEach(alarm -> {
+                final TroubleTicketState previousState = alarm.getTTicketState();
+                alarm.setTTicketState(ModelMappers.fromTicketState(state));
+                alarmDao.saveOrUpdate(alarm);
+                alarmEntityNotifier.didChangeTicketStateForAlarm(alarm, previousState);
+            });
+        });
+    }
+
+    @Override
+    public void acknowledge(final String user, final int... alarmIds) {
+        sessionUtils.withTransaction(() -> {
+            final List<OnmsAcknowledgment> acks = Arrays.stream(alarmIds).boxed().map(id -> {
+                final OnmsAcknowledgment ack = new OnmsAcknowledgment(user);
+                ack.setAckType(AckType.ALARM);
+                ack.setAckAction(AckAction.ACKNOWLEDGE);
+                ack.setRefId(id);
+                return ack;
+            }).collect(Collectors.toUnmodifiableList());
+            ackDao.processAcks(acks);
+        });
+    }
+
+    @Override
+    public void unacknowledge(final int... alarmIds) {
+        sessionUtils.withTransaction(() -> {
+            final List<OnmsAcknowledgment> acks = Arrays.stream(alarmIds).boxed().map(id -> {
+                final OnmsAcknowledgment ack = new OnmsAcknowledgment();
+                ack.setAckType(AckType.ALARM);
+                ack.setAckAction(AckAction.UNACKNOWLEDGE);
+                ack.setRefId(id);
+                return ack;
+            }).collect(Collectors.toUnmodifiableList());
+            ackDao.processAcks(acks);
+        });
+    }
+
+    @Override
+    public void escalate(final String user, final int... alarmIds) {
+        sessionUtils.withTransaction(() -> {
+            final List<OnmsAcknowledgment> acks = Arrays.stream(alarmIds).boxed().map(id -> {
+                final OnmsAcknowledgment ack = new OnmsAcknowledgment(user);
+                ack.setAckType(AckType.ALARM);
+                ack.setAckAction(AckAction.ESCALATE);
+                ack.setRefId(id);
+                return ack;
+            }).collect(Collectors.toUnmodifiableList());
+            ackDao.processAcks(acks);
+        });
+    }
+
+    @Override
+    public void clear(final int... alarmIds) {
+        sessionUtils.withTransaction(() -> {
+            final List<OnmsAcknowledgment> acks = Arrays.stream(alarmIds).boxed().map(id -> {
+                final OnmsAcknowledgment ack = new OnmsAcknowledgment();
+                ack.setAckType(AckType.ALARM);
+                ack.setAckAction(AckAction.CLEAR);
+                ack.setRefId(id);
+                return ack;
+            }).collect(Collectors.toUnmodifiableList());
+            ackDao.processAcks(acks);
+        });
+    }
+
+    @Override
+    public void setSeverity(final Severity severity, final int... alarmIds) {
+        final var onmsSeverity = ModelMappers.fromSeverity(severity);
+        sessionUtils.withTransaction(() -> {
+            final Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
+                    .and(Restrictions.in("id", Arrays.asList(alarmIds)))
+                    .toCriteria();
+            final List<OnmsAlarm> alarms = alarmDao.findMatching(criteria);
+            alarms.forEach(alarm -> {
+                final OnmsSeverity previousSeverity = alarm.getSeverity();
+                alarm.setSeverity(onmsSeverity);
+                alarmDao.saveOrUpdate(alarm);
+                alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+            });
         });
     }
 }

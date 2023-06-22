@@ -62,8 +62,9 @@
          for the same version of selenium specified in selenium.version above.
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
-    <testcontainers.version>1.18.0</testcontainers.version>
-    <netty4Version>4.1.78.Final</netty4Version>
+    <slf4jVersion>2.0.7</slf4jVersion>
+    <testcontainers.version>1.18.3</testcontainers.version>
+    <netty4Version>4.1.93.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
     <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
@@ -72,11 +73,12 @@
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
+    <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
     <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -264,7 +266,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
@@ -686,6 +688,12 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>
       <version>4.1.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -855,9 +863,24 @@
       <version>4.5.14</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.20.0</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
@@ -923,6 +946,10 @@
           <groupId>xerces</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -937,6 +964,10 @@
         </exclusion>
         <exclusion>
           <groupId>xerces</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>

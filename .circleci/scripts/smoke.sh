@@ -48,7 +48,7 @@ done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
-export MAVEN_OPTS="-Xmx1g -Xms1g"
+export MAVEN_OPTS="-Xmx2g -Xms2g"
 
 # shellcheck disable=SC3045
 # Set higher open files limit
@@ -66,7 +66,7 @@ else
 fi
 
 # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-../compile.pl \
+ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \

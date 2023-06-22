@@ -37,6 +37,7 @@ Usage statistics include the following data points:
 * Number of Newts samples inserted.
 * Number of queued updates completed.
 * Number of virtual appliances, Mini appliances, and 1U appliances that are connected to the system.
+* Whether {page-component-title} is running inside a containerized environment like Docker or Podman.
 
 For more details, navigate to the Help Improve OpenNMS dialog:
 
