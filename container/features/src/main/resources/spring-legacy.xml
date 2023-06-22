@@ -100,7 +100,7 @@
 
     <feature name="spring-web" description="Spring 3.1.x Web support" version="3.1.4.RELEASE">
         <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-web/3.1.4.RELEASE.ONMS.1</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-webmvc/3.1.4.RELEASE</bundle>
         <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
@@ -331,7 +331,7 @@
 
     <feature name="spring-web" description="Spring 4.3.x Web support" version="4.3.30.RELEASE_1">
         <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/4.3.30.RELEASE_1.ONMS.1
         </bundle>

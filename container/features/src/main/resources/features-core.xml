@@ -179,17 +179,29 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
     </feature>
 
+    <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
+        <bundle start-level="30" dependency="true">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
+    </feature>
+
+    <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
+        <bundle start-level="30" dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
+    </feature>
+
+    <feature name="javax.validation" version="1.0.0.GA" description="javax.validation">
+        <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
+    </feature>
+
     <feature name="jetty" version="${jettyVersion}">
         <feature version="[${jettyVersion},10)">pax-jetty</feature>
     </feature>
 
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
+        <feature>javax.mail</feature>
+        <feature>javax.servlet</feature>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle>
+        <!-- <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle> -->
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2.4</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}</bundle>
