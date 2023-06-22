@@ -4,7 +4,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b227-jre-17"
 
 FROM ${BASE_IMAGE} as minion-base
 
@@ -37,26 +37,13 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_DEBS="hostname uuid-runtime rsync"
-
-# Prevent prompts
-ENV DEBIAN_FRONTEND=noninteractive
+ARG REQUIRED_RPMS="hostname uuid"
 
 # Collect generic steps in a layer for caching
 
-# import keys & install required debs
-RUN apt-get update && \
-    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /var/cache/apt
-
-# get any security updates for the base system
-RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
-    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
-    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
-    apt clean && \
-    rm -rf /var/cache/apt /etc/apt/security.sources.list
+# install required RPMs
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
 
 RUN groupadd \
         --gid 10001 \
