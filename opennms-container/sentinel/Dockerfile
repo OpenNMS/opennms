@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b227-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.1.0.b228-jre-17"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -83,11 +83,6 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./container-fs/* /
-
-# Allow to send ICMP messages as non-root user
-RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
-    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
-    ldconfig
 
 VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 
