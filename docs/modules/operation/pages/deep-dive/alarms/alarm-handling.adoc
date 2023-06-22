@@ -5,26 +5,41 @@ The following are ways you can interact with alarms.
 
 == Acknowledgment
 
-PICTURES MISSING
-
 Users can acknowledge alarms.
 The alarm will be moved out from `Alarm(s) outstanding` into the `Alarm(s) acknowledged` view.
 Doing this lets other {page-component-title} users see that someone is aware of the alarm.
 
-== Clearing
+.Acknowledged alarm of an HTTP outage in the alarm overview
+image::alarms/acked_alarm_overview.png["Acknowledged alarm of an HTTP outage in the alarm overview"]
 
-PICTURES MISSING
+.Acknowledged alarm of an HTTP outage in detail view
+image::alarms/acked_alarm_detail.png["Acknowledged alarm of an HTTP outage in detail view"]
+
+== Clearing
 
 Clearing an outstanding or acknowledged alarm means "mark it as resolved".
 The cleared alarm will disappear within a defined cycle.
 
+.Cleared alarm of an HTTP outage in the alarm overview
+image::alarms/cleared_alarm_overview.png["Cleared alarm of an HTTP outage in the alarm overview"]
+
+.Cleared alarm of an HTTP outage in detail view
+image::alarms/cleared_alarm_detail.png["Cleared alarm of an HTTP outage in detail view"]
+
+NOTE: Per `alarmd.drl`, un-acked alarms are kept for 5 minutes after clearing.
+      Acked alarms are kept for 1 day after clearing.
+      This is customizable by the user editing the cleanup rules in the alarmd drools.
 
 == Escalation
 
-PICTURES MISSING
-
 An alarm always has the same <<deep-dive/events/event-configuration.adoc#severities, severities>> as its underlaying event.
 If an alarm gets escalated, the alarm's severity increases one level.
+
+.Escalated alarm of an HTTP outage in the alarm overview
+image::alarms/escalated_alarm_overview.png["Escalated alarm of an HTTP outage in the alarm overview"]
+
+.Escalated alarm of an HTTP outage in detail view
+image::alarms/escalated_alarm_detail.png["Escalated alarm of an HTTP outage in detail view"]
 
 == Alarm notes
 
