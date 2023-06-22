@@ -104,6 +104,14 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
 
+    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
+        <bundle dependency="true">mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
+    </feature>
+
+    <feature name="commons-pool2" version="${commonsPool2Version}" description="Apache :: commons-pool2">
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/${commonsPool2Version}</bundle>
+    </feature>
+
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
@@ -129,6 +137,12 @@
     <feature name="guava31" version="31.1" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
         <bundle start-level="30">mvn:com.google.guava/guava/31.1-jre</bundle>
+    </feature>
+
+    <feature name="jackson1" version="${jackson1Version}" description="Jackson 1">
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
     </feature>
 
     <feature name="jackson-core" version="${jackson2Version}" description="Jackson 2 :: Base">

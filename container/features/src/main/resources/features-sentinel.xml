@@ -270,13 +270,11 @@
     </feature>
 
     <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <feature>jackson1</feature>
         <feature>resilience4j</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-config-dao-api</feature>
         <bundle>mvn:org.opennms/org.opennms.config-dao.common-impl/${project.version}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
     </feature>
 
     <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">

@@ -78,9 +78,6 @@
         <feature>postgresql</feature>
         <bundle>mvn:com.zaxxer/HikariCP/${hikaricpVersion}</bundle>
     </feature>
-    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
-        <bundle>mvn:commons-net/commons-net/${commonsNetVersion}</bundle>
-    </feature>
     <feature name="cron-parser-core" version="${cronParserCoreVersion}" description="Redhogs :: cron-parser-core">
         <bundle>wrap:mvn:net.redhogs.cronparser/cron-parser-core/${cronParserCoreVersion}</bundle>
     </feature>
@@ -297,16 +294,14 @@
     </feature>
 
     <feature name="opennms-core" version="${project.version}" description="OpenNMS :: Core">
-        <feature version="[4.2,4.3)">spring</feature>
-        <feature version="[4.2,4.3)">spring-orm</feature>
         <feature>commons-io</feature>
         <feature>dnsjava</feature>
+        <feature>jackson1</feature>
         <feature>jaxb</feature>
+        <feature version="[4.2,4.3)">spring</feature>
+        <feature version="[4.2,4.3)">spring-orm</feature>
         <feature>opennms-util</feature>
-        <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_3</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
@@ -822,15 +817,13 @@
         <feature>commons-jxpath</feature>
         <feature>commons-lang</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>jackson1</feature>
         <feature>joda-time</feature>
         <feature>opennms-core-web</feature>
         <bundle>wrap:mvn:com.github.mwiede/jsch/${jschVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/2.0.8_6</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ezmorph/1.0.6_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json-lib/2.4_1</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
@@ -1489,6 +1482,7 @@
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>hibernate36</feature>
+        <feature>jackson1</feature>
         <feature>javax.servlet</feature>
         <feature>quartz</feature>
         <feature>opennms-dao</feature>
@@ -1496,8 +1490,6 @@
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
-        <bundle>mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
@@ -1944,6 +1936,7 @@
     </feature>
 
     <feature name="opennms-newts" description="OpenNMS :: Newts" version="${project.version}">
+        <feature>commons-pool2</feature>
         <feature>groovy</feature>
         <feature>guava</feature>
         <feature>opennms-measurements-api</feature>
@@ -1956,7 +1949,6 @@
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
         <bundle dependency="true">mvn:redis.clients/jedis/2.8.1</bundle>
         <bundle dependency="true">mvn:args4j/args4j/${args4jVersion}</bundle>
 
