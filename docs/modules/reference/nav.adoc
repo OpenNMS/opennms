@@ -47,6 +47,7 @@
 ** xref:service-assurance/monitors/DhcpMonitor.adoc[]
 ** xref:service-assurance/monitors/DiskUsageMonitor.adoc[]
 ** xref:service-assurance/monitors/DnsMonitor.adoc[]
+** xref:service-assurance/monitors/DskTableMonitor.adoc[]
 ** xref:service-assurance/monitors/DNSResolutionMonitor.adoc[]
 ** xref:service-assurance/monitors/FtpMonitor.adoc[]
 ** xref:service-assurance/monitors/HostResourceSwRunMonitor.adoc[]
