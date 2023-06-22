@@ -1,39 +1,68 @@
 
 = Alarm Lifecycle
 
-An alarm is generated on the first occurrence of a `service-down` problem:
+The following is an example of the alarm lifecycle based on a `nodeLostService` event.
 
-.`service-down` alarm created
-image::alarms/single_alarm_1.png["Alarm List displaying one alarm of minor severity"]
+== Lifecycle example
 
-Click the number displayed in the *Count* column to display the corresponding events and their details:
+A new `nodeLostService` event is received and creates a new alarm.
 
-.Alarm displaying service down event
-image::alarms/single_alarm_2.png["Alarm Details page displaying a service down event"]
+.New alarm visible in outstanding alarm list
+image::alarms/single_alarm_1.png["New alarm visible in outstanding alarm list]
 
-The alarm clears immediately when service is restored, and no alarm is created when the service returns to a normal state:
+Clicking the number displayed in the *Count* column displays the corresponding events and their details.
+
+.Event list showing events related to the alarm
+image::alarms/single_alarm_2.png["Event list showing events related to the alarm]
+
+The alarm clears automatically when service is restored, based on a `nodeRegainedService` event.
 
 .Alarm cleared
 image::alarms/single_alarm_3.png["Alarm List displaying one cleared alarm and its log message"]
 
 .Service down and service restored events
-image::alarms/single_alarm_4.png["Alarm Details page displaying one service down event and one service restored event"]
+image::alarms/single_alarm_4.png["Event list page displaying one service down event and one service restored event"]
 
 If the problem occurs again, the events are reduced into the existing alarm.
-The alarm's count is updated to reflect the new activity:
+The alarm's count is updated to reflect the new activity.
 
-.Reduced alarm
+.Alarm reopened with an increase in the `count` value
 image::alarms/single_alarm_5.png["Alarm List displaying one alarm with a count of 2"]
 
-.List of events
+.Event list showing events related to the alarm
 image::alarms/single_alarm_6.png["Detailed event list page displaying two service down events and one service restored event, all of which are components of the same alarm"]
 
-The alarm once again clears immediately when service is restored:
+The alarm once again clears immediately when service is restored.
 
 .Reduced alarm cleared
 image::alarms/single_alarm_7.png["Alarm List displaying one cleared alarm with a count of 2, and its log message"]
 
-Note that the alarm's count does not increment when the problem is resolved.
+Note that the alarm's count only increments on events with a severity of Warning or greater.
 
 .Service down and restored events
 image::alarms/single_alarm_8.png["Detailed event list page displaying two service down events and two service restored events, all of which are members of the same alarm"]
+
+== Alarm lifetime rules
+
+Alarms are deleted from the {page-component-title} database after a set amount of time.
+This lifetime can be configured via Drools rules in the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/alarmd.drl` file.
+The default alarm lifetimes:
+
+[options="autowidth"]
+|===
+| Alarm State | Deletion Delay
+
+| Cleared and Unacknowledged
+| 5 minutes
+
+| Cleared and Acknowledged
+| 1 day
+
+| Active and Unacknowledged
+| 3 days
+
+| All other alarms
+| 8 days
+|===
+
+These delays are based on the last event time, and will restart the counter if a new problem event is reduced into the same alarm.

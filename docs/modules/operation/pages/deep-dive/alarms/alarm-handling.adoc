@@ -5,9 +5,9 @@ The following are ways you can interact with alarms.
 
 == Acknowledgment
 
-Users can acknowledge alarms.
+Users can acknowledge alarms to let other {page-component-title} users see that someone is aware of the alarm.
 The alarm will be moved out from `Alarm(s) outstanding` into the `Alarm(s) acknowledged` view.
-Doing this lets other {page-component-title} users see that someone is aware of the alarm.
+Acknowledged alarms will also be hidden from the "Nodes with Pending Problems" section of the home page.
 
 .Acknowledged alarm of an HTTP outage in the alarm overview
 image::alarms/acked_alarm_overview.png["Acknowledged alarm of an HTTP outage in the alarm overview"]
@@ -17,8 +17,7 @@ image::alarms/acked_alarm_detail.png["Acknowledged alarm of an HTTP outage in de
 
 == Clearing
 
-Clearing an outstanding or acknowledged alarm means "mark it as resolved".
-The cleared alarm will disappear within a defined cycle.
+Clearing an alarm means "mark it as resolved".
 
 .Cleared alarm of an HTTP outage in the alarm overview
 image::alarms/cleared_alarm_overview.png["Cleared alarm of an HTTP outage in the alarm overview"]
@@ -26,20 +25,25 @@ image::alarms/cleared_alarm_overview.png["Cleared alarm of an HTTP outage in the
 .Cleared alarm of an HTTP outage in detail view
 image::alarms/cleared_alarm_detail.png["Cleared alarm of an HTTP outage in detail view"]
 
-NOTE: Per `alarmd.drl`, un-acked alarms are kept for 5 minutes after clearing.
-      Acked alarms are kept for 1 day after clearing.
-      This is customizable by the user editing the cleanup rules in the alarmd drools.
-
 == Escalation
 
-An alarm always has the same <<deep-dive/events/event-configuration.adoc#severities, severities>> as its underlaying event.
-If an alarm gets escalated, the alarm's severity increases one level.
+By default, an alarm has the same <<deep-dive/events/event-configuration.adoc#severities, severity>> as its most recent event.
+If an alarm gets escalated, the alarm's severity is increased by one level.
 
 .Escalated alarm of an HTTP outage in the alarm overview
 image::alarms/escalated_alarm_overview.png["Escalated alarm of an HTTP outage in the alarm overview"]
 
 .Escalated alarm of an HTTP outage in detail view
 image::alarms/escalated_alarm_detail.png["Escalated alarm of an HTTP outage in detail view"]
+
+== Related events
+
+{page-component-title} correlates possible related events into alarms based on events with the same <<deep-dive/alarms/configuring-alarms#ga-reduction-key, reduction key>> to do this.
+You can use the related events section of the alarm details view to see which events have been grouped into the alarm.
+
+
+.Alarm Related Events page
+image::alarms/alarm_related-events.png["Alarm Related Events page displaying related events.", 850]
 
 == Alarm notes
 
@@ -50,12 +54,18 @@ image::alarms/01_alarm-notes.png["Alarm Details page displaying sample notes in 
 
 You can add two types of notes to existing alarms or alarm classes:
 
-* *Sticky Memo:* A user-defined note for a specific instance of an alarm.
+Sticky Memo:: A user-defined note for a specific instance of an alarm.
 Deleting the alarm also deletes any associated sticky memos.
-* *Journal Memo:* A user-defined note for a class of alarms, based on the resolved reduction key.
+Journal Memo:: A user-defined note for a class of alarms, based on the resolved reduction key.
 Journal memos are shown for all alarms that match a specific reduction key.
 Deleting an individual alarm does not remove the journal memo.
-+
 You must click *Clear* on an alarm with an associated journal memo to remove the memo.
 
-Symbols on the Alarm List Summary and Alarm List Detail pages indicate if individual alarms have associated sticky or journal memos.
+The Alarm List Summary and Alarm List Detail pages will have a symbol to indicate if individual alarms have associated sticky or journal memos.
+
+[[ga-advanced-alarm-handling]]
+== Advanced alarm handling
+
+In addition to the manual actions described above, it is possible to automate alarm handling with the use of https://www.drools.org/[Drools] scripts.
+There is a default rule set for handling alarm cleanup in the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/` directory.
+You can find some additional examples in the `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/` directory.
