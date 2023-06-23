@@ -1713,7 +1713,7 @@
     <mavenApiVersion>3.9.2</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.1.6</minaVersion>
-    <mockitoVersion>3.12.4</mockitoVersion>
+    <mockitoVersion>5.2.0</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.87.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
