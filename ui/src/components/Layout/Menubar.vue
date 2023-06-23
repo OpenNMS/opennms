@@ -2,7 +2,7 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
       <div class="center-flex">
-        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" url="/" />
+        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
         <template v-if="mainMenu.username">
           <span class="body-large left-margin-small formatted-time">{{ mainMenu.formattedTime }}</span>
           <font-awesome-icon :icon="noticesDisplay.icon"
@@ -273,7 +273,6 @@ import {
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 
 const store = useStore()
-const route = useRoute()
 const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'

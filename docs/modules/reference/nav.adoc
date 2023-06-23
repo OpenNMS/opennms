@@ -47,6 +47,7 @@
 ** xref:service-assurance/monitors/DhcpMonitor.adoc[]
 ** xref:service-assurance/monitors/DiskUsageMonitor.adoc[]
 ** xref:service-assurance/monitors/DnsMonitor.adoc[]
+** xref:service-assurance/monitors/DskTableMonitor.adoc[]
 ** xref:service-assurance/monitors/DNSResolutionMonitor.adoc[]
 ** xref:service-assurance/monitors/FtpMonitor.adoc[]
 ** xref:service-assurance/monitors/HostResourceSwRunMonitor.adoc[]
@@ -85,6 +86,7 @@
 ** xref:service-assurance/monitors/StrafePingMonitor.adoc[]
 ** xref:service-assurance/monitors/SystemExecuteMonitor.adoc[]
 ** xref:service-assurance/monitors/TcpMonitor.adoc[]
+** xref:service-assurance/monitors/TrivialTimeMonitor.adoc[]
 ** xref:service-assurance/monitors/VmwareCimMonitor.adoc[]
 ** xref:service-assurance/monitors/VmwareMonitor.adoc[]
 ** xref:service-assurance/monitors/WebMonitor.adoc[]
@@ -109,7 +111,6 @@
 
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/ticketer/jira.adoc[]
-** xref:ticketing/ticketer/remedy.adoc[]
 ** xref:ticketing/ticketer/tsrm.adoc[]
 
 * Provisioning
@@ -149,6 +150,7 @@
 *** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[Reverse DNS]
 *** xref:provisioning/detectors/SnmpDetector.adoc[SNMP]
 *** xref:provisioning/detectors/TcpDetector.adoc[TCP]
+*** xref:provisioning/detectors/TrivialTimeDetector.adoc[]
 *** xref:provisioning/detectors/WebDetector.adoc[Web]
 *** xref:provisioning/detectors/Win32ServiceDetector.adoc[Win32 Service]
 *** xref:provisioning/detectors/WmiDetector.adoc[WMI]

@@ -40,12 +40,9 @@ import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class IsIsProtocol extends Protocol<IsIsElement> {
-    private final static Logger LOG = LoggerFactory.getLogger(IsIsProtocol.class);
-    private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.isis;
+public class IsIsProtocol extends Protocol {
+    private final TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.isis;
 
     public IsIsProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);

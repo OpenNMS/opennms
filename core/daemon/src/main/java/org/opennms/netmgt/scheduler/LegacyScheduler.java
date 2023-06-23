@@ -55,7 +55,12 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
-    
+
+    public static interface TimeKeeper extends ReadyRunnable {
+        long getTimeToRun();
+        ReadyRunnable getRunnable();
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(LegacyScheduler.class);
     
     /**
@@ -168,12 +173,22 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     @Override
     public synchronized void schedule(long interval, final ReadyRunnable runnable) {
         final long timeToRun = getCurrentTime()+interval;
-        ReadyRunnable timeKeeper = new ReadyRunnable() {
+        final TimeKeeper timeKeeper = new TimeKeeper() {
             @Override
             public boolean isReady() {
                 return getCurrentTime() >= timeToRun && runnable.isReady();
             }
-            
+
+            @Override
+            public long getTimeToRun() {
+                return timeToRun;
+            }
+
+            @Override
+            public ReadyRunnable getRunnable() {
+                return runnable;
+            }
+
             @Override
             public void run() {
                 runnable.run();
@@ -461,6 +476,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             m_status = STOPPED;
         }
 
+    }
+
+    public Map<Long, BlockingQueue<ReadyRunnable>> getQueue() {
+        return m_queues;
     }
 
     /** {@inheritDoc} */

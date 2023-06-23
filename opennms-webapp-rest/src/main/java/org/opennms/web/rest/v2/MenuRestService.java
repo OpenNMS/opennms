@@ -38,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
 import org.opennms.web.rest.support.menu.MainMenu;
@@ -52,6 +53,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Path("menu")
+@Tag(name = "Menu", description = "Menu API")
 public class MenuRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MenuRestService.class);
     private static final String WEB_INF_PREFIX = "/WEB-INF";

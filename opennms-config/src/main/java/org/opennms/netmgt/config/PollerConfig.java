@@ -97,6 +97,20 @@ public interface PollerConfig extends PathOutageConfig {
      */
     boolean isServiceUnresponsiveEnabled();
 
+
+    /**
+     * Returns true if we want to do things async
+     *
+     * @return a boolean.
+     */
+    boolean isAsyncEngineEnabled();
+
+    /**
+     *
+     * @return
+     */
+    int getMaxConcurrentAsyncPolls();
+
     /**
      * This method is used to rebuild the package against ip list mapping when
      * needed. When a node gained service event occurs, poller has to determine
@@ -417,4 +431,5 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a Lock
      */
     Lock getWriteLock();
+
 }

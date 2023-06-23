@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -116,7 +116,7 @@ public class PageSequenceMonitorIT {
         PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
         assertTrue("Should not be available", notLikely.isUnavailable());
         // Check to make sure that the connection message is nice
-        assertEquals("Connect to 1.1.1.1:10342 [/1.1.1.1] failed: connect timed out", notLikely.getReason());
+        assertEquals("connect to 1.1.1.1:10342 [/1.1.1.1] failed: connect timed out", notLikely.getReason().toLowerCase());
         assertTrue("Expected a DS called 'response-time' but did not find one", notLikely.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
@@ -194,11 +194,11 @@ public class PageSequenceMonitorIT {
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
             "  <!-- Pick out the letters w-i-t-h to try and log in, this will fail -->\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" locationMatch=\"/opennms/spring_security_login\\?login_error\" port=\"10342\" method=\"POST\">\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" locationMatch=\"/opennms/login\\?error\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\" query=\"login_error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Your login attempt was not successful\"/>\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/login\" query=\"error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Your login attempt was not successful\"/>\n" +
             "  <!-- Pick out the letters d-e-m-o to try and log in, this will succeed -->\n" +
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +

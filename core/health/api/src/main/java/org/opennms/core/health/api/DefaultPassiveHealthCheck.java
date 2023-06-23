@@ -47,6 +47,7 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
     private Response cachedResponse = null;
     private Instant cachedResponseTimestamp = null;
+    private boolean cachedExpires = true;
 
     public DefaultPassiveHealthCheck(
             String description,
@@ -60,9 +61,14 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
     @Override
     public synchronized void setResponse(Response response) {
+        setResponse(response, true);
+    }
+
+    public synchronized void setResponse(Response response, boolean expires) {
         LOG.debug("Cache response - healthCheck: {}; status: {}; msg: {}", description, response.getStatus(), response.getMessage());
         cachedResponse = response;
         cachedResponseTimestamp = Instant.now();
+        cachedExpires = expires;
     }
 
     @Override
@@ -77,7 +83,7 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
     @Override
     public synchronized Response perform(Context context) throws Exception {
-        if (Duration.between(cachedResponseTimestamp, Instant.now()).compareTo(context.getMaxAge()) < 0) {
+        if (!cachedExpires || Duration.between(cachedResponseTimestamp, Instant.now()).compareTo(context.getMaxAge()) < 0) {
             return cachedResponse;
         } else {
             return new Response(Status.Failure, String.format("did not receive a recent response - maxAge: %s", context.getMaxAge()));

@@ -36,9 +36,9 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public interface LldpLinkDao extends LinkDao<LldpLink, Integer> {
 
-    LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
+    LldpLink get(OnmsNode node, Integer lldpRemLocalPortNum, Integer lldpRemIndex);
 
-    LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
+    LldpLink get(Integer nodeId, Integer lldpRemLocalPortNum, Integer lldpRemIndex);
 
     List<LldpLink> findLinksForIds(List<Integer> ids);
 

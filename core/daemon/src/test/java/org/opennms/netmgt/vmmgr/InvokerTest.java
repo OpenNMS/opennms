@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -58,6 +59,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
     OpenNMSConfigurationExecutionListener.class,
     DirtiesContextTestExecutionListener.class
 })
+@JUnitConfigurationEnvironment
 public class InvokerTest {
     private List<InvokerService> m_services = null;
     private MBeanServer m_server;

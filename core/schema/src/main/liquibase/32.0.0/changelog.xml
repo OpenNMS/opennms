@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="aramos" id="32.0.0-ospfArea">
+        <createTable tableName="ospfarea">
+            <!-- Unique identifier -->
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <!-- Node Id -->
+            <column name="nodeid" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- Area ID -->
+            <column name="ospfareaid" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ospfauthtype" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfimportasextern" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfareabdrrtrcount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfasbdrrtrcount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfarealsacount" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ospfareacreatetime" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="ospfarealastpolltime" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+
+        </createTable>
+
+        <ext:addAutoIncrement tableName="ospfarea" columnName="id" sequenceName="opennmsNxtId"/>
+        <addForeignKeyConstraint constraintName="fk_ospfarea_nodeid" onDelete="CASCADE" baseTableName="ospfarea"
+                                 baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid"/>
+
+        <createIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx">
+            <column name="nodeid"/>
+        </createIndex>
+        <addUniqueConstraint tableName="ospfarea" columnNames="nodeid,ospfareaid" constraintName="ospfarea_pk_idx"/>
+
+        <rollback>
+            <dropIndex tableName="ospfarea" indexName="ospfarea_nodeid_idx" />
+            <dropIndex tableName="ospfarea" indexName="ospfarea_pk_idx" />
+            <dropForeignKeyConstraint baseTableName="ospfarea" constraintName="fk_ospfarea_nodeid" />
+            <dropUniqueConstraint tableName="ospfArea" constraintName="ospfarea_pk_idx" />
+            <dropTable tableName="ospflink" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="aramos" id="32.0.0-add-column-ospflink">
+        <addColumn tableName="ospflink">
+            <column name="ospfifareaid" type="varchar(16)" >
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="ospflink" columnName="ospfifareaid" />
+        </rollback>
+    </changeSet>
+
+    <changeSet runOnChange="false" author="rssntn67" id="32.0.0-lldplink">
+        <dropIndex tableName="lldplink" indexName="lldplink_pk_idx"/>
+        <renameColumn tableName="lldplink" oldColumnName="lldplocalportnum" newColumnName="lldpremindex"/>
+        <addColumn tableName="lldplink">
+            <column name="lldpremlocalportnum" type="integer" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addUniqueConstraint tableName="lldplink" columnNames="nodeid,lldpremlocalportnum,lldpremindex" constraintName="lldplink_pk_idx"/>
+    </changeSet>
+
+</databaseChangeLog>

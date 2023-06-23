@@ -53,12 +53,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.opennms.web.api.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
 @Path("logs")
+@Tag(name = "Logs", description = "Logs API")
 public class LogRestService {
 
     public static final int DEFAULT_NUM_LINES = 5000;

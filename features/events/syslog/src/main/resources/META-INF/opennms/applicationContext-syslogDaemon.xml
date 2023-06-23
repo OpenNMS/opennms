@@ -23,7 +23,7 @@
 
   <bean id="syslogdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
-  <bean id="syslogdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+  <bean id="syslogdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
       <constructor-arg ref="syslogdMetricRegistry"/>
   </bean>
 

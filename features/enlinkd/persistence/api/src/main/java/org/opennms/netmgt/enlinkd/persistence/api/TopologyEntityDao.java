@@ -38,6 +38,7 @@ import org.opennms.netmgt.enlinkd.model.IsIsLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
+import org.opennms.netmgt.enlinkd.model.OspfAreaTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.OspfLinkTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 
@@ -55,6 +56,7 @@ public interface TopologyEntityDao {
     List<IsIsLinkTopologyEntity> getIsIsLinkTopologyEntities();
     List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities();
     List<OspfLinkTopologyEntity> getOspfLinkTopologyEntities();
+    List<OspfAreaTopologyEntity> getOspfAreaTopologyEntities();
     List<SnmpInterfaceTopologyEntity> getSnmpTopologyEntities();
     List<IpInterfaceTopologyEntity> getIpTopologyEntities();
     List<CdpElementTopologyEntity> getCdpElementTopologyEntities();

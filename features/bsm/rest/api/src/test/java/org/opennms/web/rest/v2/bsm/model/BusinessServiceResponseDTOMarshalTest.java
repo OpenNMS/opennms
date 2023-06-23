@@ -173,8 +173,8 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"application\" : {" +
             "      \"location\" : \"/api/v2/business-services/applications/42\"," +
             "      \"id\" : 42," +
-            "      \"application-name\" : \"MyApplication\"," +
-            "    }," +
+            "      \"application-name\" : \"MyApplication\"" +
+            "    }" +
             "  } ]," +
 
 

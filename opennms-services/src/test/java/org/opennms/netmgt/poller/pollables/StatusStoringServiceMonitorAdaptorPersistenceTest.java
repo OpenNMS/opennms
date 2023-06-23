@@ -175,6 +175,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         sssma.handlePollResult(monitoredService, Maps.newHashMap(ImmutableMap.<String, Object>builder()
                                                              .put("rrd-repository", getStatusRoot().toString())
                                                              .put("rrd-base-name", "smtp-base")
+                                                             .put("rrd-status", "false")
                                                              .build()), PollStatus.available(42.0));
     }
 

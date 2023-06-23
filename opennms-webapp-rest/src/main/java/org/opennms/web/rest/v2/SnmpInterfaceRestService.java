@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -62,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("snmpinterfaces")
 @Transactional
+@Tag(name = "SnmpInterfaces", description = "SNMP Interfaces API")
 public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInterface,SearchBean,Integer,String> {
 
     @Autowired

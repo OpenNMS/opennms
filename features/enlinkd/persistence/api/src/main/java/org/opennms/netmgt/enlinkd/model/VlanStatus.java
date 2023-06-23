@@ -57,7 +57,7 @@ public class VlanStatus implements Comparable<VlanStatus>, Serializable {
 
     private static final Integer[] s_order = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    private Integer m_vlanStatus;
+    private final Integer m_vlanStatus;
 
     private static final Map<Integer, String> vlanStatusMap = new HashMap<>();
 
@@ -75,20 +75,12 @@ public class VlanStatus implements Comparable<VlanStatus>, Serializable {
         vlanStatusMap.put(10, "rowStatus/destroy");
     }
 
-    @SuppressWarnings("unused")
-    private VlanStatus() {
-    }
-
     public VlanStatus(Integer vlanType) {
         m_vlanStatus = vlanType;
     }
 
     public Integer getIntCode() {
         return m_vlanStatus;
-    }
-
-    public void setIntCode(Integer vlanType) {
-        m_vlanStatus = vlanType;
     }
 
     @Override

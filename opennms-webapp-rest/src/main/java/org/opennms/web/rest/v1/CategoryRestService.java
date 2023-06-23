@@ -45,6 +45,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
@@ -66,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("categoryRestService")
 @Path("categories")
+@Tag(name = "Categories", description = "Categories API")
 @Transactional
 public class CategoryRestService extends OnmsRestService {
 	

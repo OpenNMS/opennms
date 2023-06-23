@@ -38,6 +38,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -58,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("userdefinedlinks")
 @Transactional
+@Tag(name = "UserDefinedLinks", description = "User Defined Links API")
 public class UserDefinedLinkRestService extends AbstractDaoRestService<UserDefinedLink,UserDefinedLink,Integer,Integer> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeCategoriesRestService.class);

@@ -43,8 +43,8 @@ import org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon;
  * Usage: type opennms:delete-topology in karaf console
  */
 @Command(scope = "opennms", name = "delete-topology",
-        description = "Delete generated topology (OnmsNodes, XxElements, XxLinks, SnmpInterfaces, IpInterfaces." +
-                "The topology is identified as it belongs to the category 'GeneratedNode'")
+        description = "Delete generated topology (OnmsNodes, Elements, Links, SnmpInterfaces, IpInterfaces." +
+                "The topology is identified by category 'GeneratedNode'")
 @Service
 public class DeleteTopologyCommand implements Action {
 

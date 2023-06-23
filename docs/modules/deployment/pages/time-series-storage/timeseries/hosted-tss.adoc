@@ -50,7 +50,7 @@ To do so, copy the example `timeseries.properties` file to your working director
 [source, shell]
 cp ${OPENNMS_HOME}/etc/examples/opennms.properties.d/hosted_tsdb.timeseries.properties ${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties
 
-You can configure custom tags in the following contexts in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
+You can configure custom tags in the following contexts in `timeseries.properties`:
 
 * Asset
 * Interface
@@ -77,7 +77,7 @@ After the plugin is installed and configured, restart the {page-component-title}
 [source, console]
 systemctl restart opennms
 
-=== Obtain an activation key
+=== Obtain an activation key and enable Cloud Services connectivity
 
 An activation key lets your {page-component-title} instance connect to the Time Series DB cloud service.
 You must log in to the OpenNMS Portal to access the key, copy it, and paste it into the appropriate page in {page-component-title}.
@@ -89,20 +89,15 @@ To obtain the activation key, follow these steps:
 
 . If you have not already done so, activate your OpenNMS Portal account by clicking *Account Activation* in your welcome email.
 . Sign in to the OpenNMS Portal.
-. Choose *OpenNMS Core Instances* in the left menu and click *Add New*.
-. Type the name of your instance and click *Generate Activation Key*.
-. Copy the activation key and click *Save & Close*.
+. Choose *OpenNMS Meridian* in the left menu and click *Add Instance*.
+. Specify the Time Series DB instance type and click *Continue*.
+. Specify an instance name and click *Continue*.
+. Copy the activation key and follow the instructions on the screen to activate your instance:
+.. Sign in to Meridian.
+.. In the top menu bar, click *Plugins > Cloud Services*.
+.. Paste the activation key in the *Enter Activation Key* box, and click *Activate*.
+. In OpenNMS Cloud, click *Finish*.
 
-=== Enable Cloud Services connectivity
-
-To install the activation key on your {page-component-title} instance, follow these steps:
-
-. Log in to {page-component-title}.
-. In the top menu bar, click menu:Plugins[Cloud Services].
-. Turn the *Cloud Services Deactivate* toggle on.
-. Paste the activation key in the *Enter Activation Key* box, and click *Activate*.
-
-By default, collectd collects data every five minutes.
 You should see time series summary information in the OpenNMS Portal UI within 15 minutes.
 For more information on how to view this information, see <<view-time-series-data, View time series summary data>>.
 To change the data collection frequency, see <<operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services,Service configuration attributes>>.

@@ -38,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -242,7 +243,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 String groupName = getGroupName(v);
                 String resourceType = getResourceType(v);
                 Group group = getGroup(dcGroup, groupName, resourceType);
-                String typeName = getMetricType(v.getType().getPrimitiveType()); // FIXME what if it is not a primitive type, like in ENTITY-SENSOR-MIB ?
+                String typeName = getMetricType(v.getType()); // FIXME what if it is not a primitive type, like in ENTITY-SENSOR-MIB ?
                 if (typeName != null) {
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     MibObj mibObj = new MibObj();
@@ -290,7 +291,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 String resourceType = getResourceType(v);
                 if (resourceType == null)
                     resourceType = "nodeSnmp";
-                String typeName = getMetricType(v.getType().getPrimitiveType());
+                String typeName = getMetricType(v.getType());
                 if (v.getId().contains("Index")) { // Treat SNMP Indexes as strings.
                     typeName = "string";
                 }
@@ -438,11 +439,18 @@ public class JsmiMibParser implements MibParser, Serializable {
      * <p>For this reason the valid types are: counter, gauge, timeticks, integer, octetstring, string.</p>
      * <p>Any derivative is also valid, for example: Counter32, Integer64, etc...</p>
      * 
-     * @param type the type
+     * @param smiType the type
      * @return the type
      */
-    private String getMetricType(SmiPrimitiveType type) {
-        if (type == null) {
+    private String getMetricType(final SmiType smiType) {
+        if(Objects.isNull(smiType)){
+            return null;
+        }
+        if(!Objects.isNull(smiType.getId()) && smiType.getId().equalsIgnoreCase("CounterBasedGauge64")){
+            return "gauge";
+        }
+        final SmiPrimitiveType type = smiType.getPrimitiveType();
+        if (Objects.isNull(type)) {
             return null;
         }
         if (type.equals(SmiPrimitiveType.ENUM)) // ENUM are just informational elements.

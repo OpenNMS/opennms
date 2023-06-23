@@ -38,6 +38,8 @@ public class MainMenu {
     public String noticeStatus;
     public String username;
     public String baseNodeUrl;
+    public String copyrightDates;
+    public String version;
 
     final public List<TopMenuEntry> menus = new ArrayList<>();
     public TopMenuEntry helpMenu;

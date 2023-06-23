@@ -55,16 +55,17 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 
     /** {@inheritDoc} */
     @Override
-    public LldpLink get(OnmsNode node, Integer lldpLocalPortNum) {
-        return findUnique("from LldpLink as lldpLink where lldpLink.node = ? and lldpLink.lldpLocalPortNum = ?", node, lldpLocalPortNum);
+    public LldpLink get(OnmsNode node, Integer lldpRemLocalPortNum, Integer lldpRemIndex) {
+        return findUnique("from LldpLink as lldpLink where lldpLink.node = ? and lldpLink.lldpRemLocalPortNum = ? and lldpRemIndex = ?", node, lldpRemLocalPortNum, lldpRemIndex);
     }
 
     /** {@inheritDoc} */
     @Override
-    public LldpLink get(Integer nodeId, Integer lldpLocalPortNum) {
+    public LldpLink get(Integer nodeId, Integer lldpRemLocalPortNum, Integer lldpRemIndex) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        Assert.notNull(lldpLocalPortNum, "lldpLocalPortNum cannot be null");
-        return findUnique("from LldpLink as lldpLink where lldpLink.node.id = ? and lldpLink.lldpLocalPortNum = ?", nodeId, lldpLocalPortNum);
+        Assert.notNull(lldpRemLocalPortNum, "lldpRemLocalPortNum cannot be null");
+        Assert.notNull(lldpRemIndex, "lldpRemIndex cannot be null");
+        return findUnique("from LldpLink as lldpLink where lldpLink.node.id = ? and lldpLink.lldpRemLocalPortNum = ? and lldpLink.lldpRemIndex = ?", nodeId, lldpRemLocalPortNum, lldpRemIndex);
     }
     
     /** {@inheritDoc} */

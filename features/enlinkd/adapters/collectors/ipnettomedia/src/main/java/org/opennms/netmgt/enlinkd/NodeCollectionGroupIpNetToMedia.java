@@ -41,12 +41,10 @@ public class NodeCollectionGroupIpNetToMedia extends SchedulableNodeCollectorGro
 
     private final IpNetToMediaTopologyService m_ipNetToMediaTopologyService;
 
-
     public NodeCollectionGroupIpNetToMedia(long interval, long initial, LegacyPriorityExecutor executor, int priority, NodeTopologyService nodeTopologyService, LocationAwareSnmpClient locationAwareSnmpClient, IpNetToMediaTopologyService ipNeytToMediaTopologyService) {
         super(interval, initial, executor, priority, ProtocolSupported.BRIDGE, nodeTopologyService, locationAwareSnmpClient);
         m_ipNetToMediaTopologyService = ipNeytToMediaTopologyService;
     }
-
 
     public IpNetToMediaTopologyService getIpNetToMediaTopologyService() {
         return m_ipNetToMediaTopologyService;

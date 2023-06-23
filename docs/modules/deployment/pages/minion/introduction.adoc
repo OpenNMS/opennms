@@ -1,7 +1,7 @@
 
 = Minion
 
-A Minion is an instance of the Karaf OSGi service that enables {page-component-title} to monitor devices and services in locations that it otherwise cannot reach.
+A Minion is an instance of the Karaf OSGi runtime that enables {page-component-title} to monitor devices and services in locations that it otherwise cannot reach.
 Minions communicate with these remote devices while {page-component-title} performs coordination and task delegation.
 Minions can operate behind a firewall and network address translation (NAT), as long as they can communicate with {page-component-title} via an ActiveMQ or Apache Kafka message broker.
 
@@ -11,6 +11,7 @@ Minions provide the following benefits:
 
 * No need to set up and maintain a large set of firewall rules for multiple management protocols.
 * Avoid the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols.
+* Enable monitoring of nodes with overlapping IPv4 address ranges at different locations.
 * Simplify network communication to the message broker.
 
 == How it works
@@ -32,14 +33,15 @@ The Minion registers itself to the {page-component-title} instance on start-up.
 .Minion communication with {page-component-title}
 image::deployment/minion/communication.png["Network diagram displaying the communication channels between {page-component-title} and a Minion", 850]
 
-By default, the {page-component-title} instance automatically provisions the Minion as a node and monitors it with the Minion-Heartbeat service.
-The Minion sends heartbeat messages to show that it is running and functioning properly in the defined location.
+By default, the {page-component-title} instance automatically provisions the Minion as a node and monitors it with the `Minion-Heartbeat` and `JMX-Minion` services.
+The Minion sends heartbeat messages to show that it is functioning properly in the defined location, and provides metrics about its own performance.
 
-The specific management protocol messages (for example, SNMP, ICMP) are piped through a message broker communication channel and executed by a Minion.
-The broker forwards responses to the central {page-component-title} instance, which processes them accordingly.
+The specific management protocol messages (for example, SNMP, ICMP) transit a message broker for execution by a Minion.
+The Minion forwards the responses via the same message broker to the central {page-component-title} instance, which processes them accordingly.
 
-A Minion proxy scenario supports the following management protocols:
+A Minion proxy scenario supports the following monitoring capabilities:
 
 * Receive Syslog messages and SNMP traps, and forward them through the message broker to a central {page-component-title} instance.
-* Act as a proxy for SNMP performance data collection.
+* Act as a proxy for performance data collection.
 * Act as a proxy for service monitors to test availability and measure response times from applications.
+* Receive streaming telemetry and flow export messages, and forward them through the message broker for persistence by a Sentinel instance.

@@ -105,7 +105,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "           }," +
             "           \"weight\" : 5," +
             "           \"child-id\" : 3" +
-            "       }," +
+            "       }" +
             "   ]," +
             "  \"ip-service-edges\" : [" +
             "       {" +
@@ -116,7 +116,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "           \"weight\" : 9," +
             "           \"ip-service-id\" : 1," +
             "           \"friendly-name\" : \"ip-service-friendly-name\"" +
-            "       }," +
+            "       }" +
             "   ]," +
             "  \"reduction-key-edges\" : [" +
             "       {" +
@@ -136,7 +136,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "           \"weight\" : 7," +
             "           \"reduction-key\" : \"myReductionKeyB\"," +
             "           \"friendly-name\" : \"reduction-key-b-friendly-name\"" +
-            "       }," +
+            "       }" +
             "   ]," +
             "  \"application-edges\" : [" +
             "       {" +
@@ -145,9 +145,9 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 8," +
-            "           \"application-id\" : 2," +
-            "       }," +
-            "   ]," +
+            "           \"application-id\" : 2" +
+            "       }" +
+            "   ]" +
             "}",
             "<business-service>\n" +
             "   <name>Web Servers</name>\n" +

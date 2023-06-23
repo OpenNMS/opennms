@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +60,9 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Represents a DefaultPollContext
@@ -68,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author brozow
  * @version $Id: $
  */
-public class DefaultPollContext implements PollContext, EventListener {
+public class DefaultPollContext implements PollContext, EventListener, InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
     private static final String[] UEIS = {
@@ -102,7 +104,13 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
+    private volatile AsyncPollingEngine m_asyncPollingEngine;
     private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<>();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        m_asyncPollingEngine = new AsyncPollingEngine(getPollerConfig().getMaxConcurrentAsyncPolls());
+    }
 
     /**
      * <p>getEventManager</p>
@@ -448,6 +456,16 @@ public class DefaultPollContext implements PollContext, EventListener {
         } catch (Exception e) {
             LOG.warn("Error occurred while tracking poll for service: {}", service, e);
         }
+    }
+
+    @Override
+    public boolean isAsyncEngineEnabled() {
+        return m_pollerConfig.isAsyncEngineEnabled();
+    }
+
+    @Override
+    public AsyncPollingEngine getAsyncPollingEngine() {
+        return m_asyncPollingEngine;
     }
 
 

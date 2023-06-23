@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.8</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -22,14 +22,14 @@
         <filtering>true</filtering>
         <directory>${project.build.directory}/cli</directory>
         <excludes>
-          <exclude>bin/_lib.sh</exclude>
+          <exclude>bin/_*.sh</exclude>
         </excludes>
       </resource>
       <resource>
         <filtering>false</filtering>
         <directory>${project.build.directory}/cli</directory>
         <includes>
-          <include>bin/_lib.sh</include>
+          <include>bin/_*.sh</include>
         </includes>
       </resource>
     </resources>
@@ -450,23 +450,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs-31</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-remedy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -1024,16 +1007,6 @@
       <groupId>io.pyroscope</groupId>
       <artifactId>agent</artifactId>
       <version>${pyroscopeVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

@@ -1,0 +1,12 @@
+broken0-eventconf.xml<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <global>
+        <security>
+            <doNotOverride>logmsg</doNotOverride>
+            <doNotOverride>operaction</doNotOverride>
+            <doNotOverride>autoaction</doNotOverride>
+            <doNotOverride>tticket</doNotOverride>
+            <doNotOverride>script</doNotOverride>
+        </security>
+    </global>
+    <event-file>broken/broken.events.xml</event-file>
+</events>

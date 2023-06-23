@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,18 +46,13 @@ import org.opennms.web.api.Authentication;
 
 /**
  * A servlet that handles changing a user's password
- *
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class NewPasswordActionServlet extends HttpServlet {
-    private static final long serialVersionUID = 6803675433403988004L;
-    private final String passwordRegex = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
-    private final String sameCharacterRegex = "(.)\\1{5}";
+    private static final long serialVersionUID = 1L;
+
+    public static final String PASSWORD_REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
+    public static final String SAME_CHARACTER_REGEX = "(.)\\1{5}";
+
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,10 +99,10 @@ public class NewPasswordActionServlet extends HttpServlet {
     }
 
     private boolean validatePassword(final String password) {
-        boolean isPasswordComplexityValid = Pattern.compile(this.passwordRegex)
+        boolean isPasswordComplexityValid = Pattern.compile(this.PASSWORD_REGEX)
                 .matcher(password)
                 .matches();
-        boolean isPasswordWithSameCharacters = Pattern.compile(this.sameCharacterRegex)
+        boolean isPasswordWithSameCharacters = Pattern.compile(this.SAME_CHARACTER_REGEX)
                 .matcher(password)
                 .matches();
         if(isPasswordComplexityValid && !isPasswordWithSameCharacters) {

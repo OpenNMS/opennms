@@ -1213,4 +1213,26 @@ abstract public class PollerConfigManager implements PollerConfig  {
             getReadLock().unlock();
         }
     }
+
+
+    @Override
+    public boolean isAsyncEngineEnabled() {
+        try {
+            getReadLock().lock();
+            return m_config.getAsyncPollingEngineEnabled();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getMaxConcurrentAsyncPolls() {
+        try {
+            getReadLock().lock();
+            return m_config.getMaxConcurrentAsyncPolls();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
 }

@@ -6,6 +6,12 @@ You must configure an incoming webhook in your Slack settings and manually confi
 
 For more information on incoming webhooks in Slack, see the https://api.slack.com/incoming-webhooks[Slack API] documentation.
 
+Note that the example here relies on the ability to override the channel, which has been deprecated.
+We have a workaround, which is to add a second notification command.
+If you have an old-style webhook, the original process still works, but Slack may remove it in the future.
+
+For more information on the discussion, see the article on https://opennms.discourse.group/t/feeding-different-slack-mattermost-channels/338/2[Discourse].
+
 == Setup
 
 First, add the following XML to `notificationCommands.xml` (no customization should be needed):
@@ -24,6 +30,29 @@ First, add the following XML to `notificationCommands.xml` (no customization sho
   </argument>
 </command>
 ----
+
+Add a second notifciation command to `notificationCommands.xml`, and a corresponding destination path.
+Use it for the notifications you want to go to the second channel.
+
+[source, xml]
+----
+ <command binary="false">
+      <name>slack-two</name>
+      <execute>org.opennms.netmgt.notifd.SlackNotificationStrategy</execute>
+      <comment>class for sending messages to a second Slack team channel for notifications</comment>
+      <argument streamed="false">
+          <switch>-subject</switch>
+      </argument>
+      <argument streamed="false">
+          <switch>-tm</switch>
+      </argument>
+      <argument streamed="false">
+	      <substitution>https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution><1>
+	      <switch>-url</switch>
+      </argument>
+   </command>
+----
+<1>Replace with a valid webhook for your desired channel
 
 Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 

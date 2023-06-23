@@ -29,26 +29,38 @@
 package org.opennms.features.datachoices.web;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
+import javax.ws.rs.core.Response;
+import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
+import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
 
 @Path("/datachoices")
 public interface DataChoiceRestService {
-
-    @POST
-    void updateCollectUsageStatisticFlag(@Context HttpServletRequest request, @QueryParam("action") String action);
-
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
     UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException;
+
+    @GET
+    @Path("status")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    UsageStatisticsStatusDTO getStatus() throws ServletException, IOException;
+
+    @POST
+    @Path("status")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response setStatus(@Context HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException;
+
+    @GET
+    @Path("meta")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    UsageStatisticsMetadataDTO getMetadata() throws ServletException, IOException;
 }

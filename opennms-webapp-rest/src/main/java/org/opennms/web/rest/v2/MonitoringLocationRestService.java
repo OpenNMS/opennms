@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -61,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("monitoringLocations")
 @Transactional
+@Tag(name = "MonitoringLocations", description = "Monitoring Locations API")
 public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,OnmsMonitoringLocation,String,String> {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestService.class);
 

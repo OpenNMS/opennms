@@ -44,6 +44,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.utils.SystemInfoUtils;
@@ -60,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("infoRestService")
 @Path("info")
+@Tag(name = "Info", description = "Info API")
 @Transactional
 public class InfoRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(InfoRestService.class);

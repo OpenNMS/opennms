@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class CdpGlobalGroupTracker extends AggregateTracker
+public class CdpGlobalGroupTracker extends AggregateTracker
 {
 	private final static Logger LOG = LoggerFactory.getLogger(CdpGlobalGroupTracker.class);
     /**
@@ -61,9 +61,13 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 	//
 	public final static	String	CDP_GLOBAL_RUN	= "cdpGlobalRun";
 	public final static	String	CDP_GLOBAL_DEVICEID	= "cdpGlobalDeviceId";
-        public final static     String  CDP_GLOBAL_DEVICEID_FORMAT     = "cdpGlobalDeviceIdFormat";
-	
-	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
+    public final static String  CDP_GLOBAL_DEVICEID_FORMAT = "cdpGlobalDeviceIdFormat";
+
+    public final static	String	CDP_GLOBAL_RUN_OID	= ".1.3.6.1.4.1.9.9.23.1.3.1";
+    public final static	String	CDP_GLOBAL_DEVICEID_OID	= ".1.3.6.1.4.1.9.9.23.1.3.4";
+    public final static String  CDP_GLOBAL_DEVICEID_FORMAT_OID = ".1.3.6.1.4.1.9.9.23.1.3.7";
+
+    public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/*
 		 * cdpGlobalRun OBJECT-TYPE
 		 * SYNTAX     TruthValue
@@ -76,7 +80,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
                  *    DEFVAL     { true }
                  *    ::= { cdpGlobal 1 }
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,".1.3.6.1.4.1.9.9.23.1.3.1"),
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,CDP_GLOBAL_RUN_OID),
 
 		/*
 		 * cdpGlobalDeviceId OBJECT-TYPE
@@ -88,7 +92,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
                  *         cdpGlobalDeviceIdFormat object."
                  *    ::= { cdpGlobal 4 }
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,".1.3.6.1.4.1.9.9.23.1.3.4"),
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,CDP_GLOBAL_DEVICEID_OID),
 
 		/*
                  * cdpGlobalDeviceIdFormat  OBJECT-TYPE
@@ -118,7 +122,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
                  *    ::= { cdpGlobal 7 }
                  *
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID_FORMAT,".1.3.6.1.4.1.9.9.23.1.3.7")
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID_FORMAT,CDP_GLOBAL_DEVICEID_FORMAT_OID)
 
 	};
 
@@ -192,5 +196,15 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
     	}    	
     	return cdpElement;
     }
-        
+
+    @Override
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_RUN_OID, CDP_GLOBAL_RUN, getCdpGlobalRun(),(TruthValue.get(getCdpGlobalRun())));
+        System.out.printf("\t\t%s (%s)= %s\n", CDP_GLOBAL_DEVICEID_OID, CDP_GLOBAL_DEVICEID, getCdpDeviceId());
+        if (getCdpGlobalDeviceFormat() == null) {
+            System.out.printf("\t\t%s (%s)= (no value found)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT);
+        } else {
+            System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_GLOBAL_DEVICEID_FORMAT_OID, CDP_GLOBAL_DEVICEID_FORMAT, getCdpGlobalDeviceFormat(), (CdpGlobalDeviceIdFormat.getTypeString(getCdpGlobalDeviceFormat())));
+        }
+    }
 }

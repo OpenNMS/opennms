@@ -16,7 +16,7 @@
 		<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector" />
 		<detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="18980"/>
-			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
 			<parameter key="username" value="admin"/>
 			<parameter key="password" value="admin"/>
 			<parameter key="protocol" value="rmi"/>
@@ -28,7 +28,7 @@
 		</detector>
 		<detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="1299"/>
-			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
 			<parameter key="username" value="admin"/>
 			<parameter key="password" value="admin"/>
 			<parameter key="protocol" value="rmi"/>
@@ -43,7 +43,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="protocol" value="rmi"/>
 			<parameter key="urlPath" value="/jmxrmi"/>
-			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
 			<parameter key="username" value="cassandra-username"/>
 			<parameter key="password" value="cassandra-password"/>
 			<parameter key="type" value="default"/>
@@ -54,7 +54,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="protocol" value="rmi"/>
 			<parameter key="urlPath" value="/jmxrmi"/>
-			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
 			<parameter key="username" value="cassandra-username"/>
 			<parameter key="password" value="cassandra-password"/>
 			<parameter key="type" value="default"/>

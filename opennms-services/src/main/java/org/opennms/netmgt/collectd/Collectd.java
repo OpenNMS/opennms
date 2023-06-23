@@ -621,7 +621,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
-    protected List<CollectableService> getCollectableServices() {
+    public List<CollectableService> getCollectableServices() {
         return m_collectableServices;
     }
 

@@ -168,7 +168,7 @@ public class Events implements Serializable {
         return m_ordering;
     }
 
-    Resource getRelative(final Resource baseRef, final String relative) {
+    public static Resource getRelative(final Resource baseRef, final String relative) {
         try {
             if (relative.startsWith("classpath:")) {
                 return RESOURCE_LOADER.getResource(relative);
