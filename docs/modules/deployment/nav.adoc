@@ -31,8 +31,6 @@ ifeval::["{page-component-title}" == "Meridian"]
 ** xref:time-series-storage/timeseries/hosted-tss.adoc[]
 endif::[]
 
-* xref:logging.adoc[]
-
 * xref:opentracing/jaeger-tracing.adoc[]
 
 * xref:upgrade/introduction.adoc[]
