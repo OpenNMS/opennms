@@ -3,7 +3,7 @@
 
 {page-component-title} uses a network's managed entities, their resources, the services they provide, and any applications that they host to monitor problem states.
 
-While events are immutable, historical records of of things that happen within {page-component-title} and the nodes it monitors, alarms are created from one or more events that are <<deep-dive/alarms/configuring-alarms.adoc#ga-configure-alarms, configured>> with `<alarm-data>` information.
+While events are immutable, historical records of things that happen within {page-component-title} and the nodes it monitors, alarms are created from one or more events that are <<deep-dive/alarms/configuring-alarms.adoc#ga-configure-alarms, configured>> with `<alarm-data>` information.
 These are used to indicate problems in the network and carry changeable attributes such as acknowledgment, clearing, escalation, or temporary and persisted notes.
 
 Alarms provide fault management information regarding problems in your network.

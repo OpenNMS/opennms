@@ -28,7 +28,7 @@ image::alarms/cleared_alarm_detail.png["Cleared alarm of an HTTP outage in detai
 == Escalation
 
 By default, an alarm has the same <<deep-dive/events/event-configuration.adoc#severities, severity>> as its most recent event.
-If an alarm gets escalated, the alarm's severity is increased by one level.
+If an alarm gets escalated, the alarm's severity increases by one level.
 
 .Escalated alarm of an HTTP outage in the alarm overview
 image::alarms/escalated_alarm_overview.png["Escalated alarm of an HTTP outage in the alarm overview"]
@@ -38,7 +38,7 @@ image::alarms/escalated_alarm_detail.png["Escalated alarm of an HTTP outage in d
 
 == Related events
 
-{page-component-title} correlates possible related events into alarms based on events with the same <<deep-dive/alarms/configuring-alarms#ga-reduction-key, reduction key>> to do this.
+{page-component-title} correlates possible related events into alarms based on events with the same <<deep-dive/alarms/configuring-alarms#ga-reduction-key, reduction key>>.
 You can use the related events section of the alarm details view to see which events have been grouped into the alarm.
 
 
