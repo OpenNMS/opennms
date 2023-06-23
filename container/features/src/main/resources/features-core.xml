@@ -25,10 +25,10 @@
     </feature>
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
+        <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <feature version="[${netty4Version},5)">netty4</feature>
-        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
         <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
         <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
@@ -112,6 +112,19 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/${commonsPool2Version}</bundle>
     </feature>
 
+    <feature name="dropwizard-metrics" version="${dropwizardMetricsVersion}" description="Dropwizard :: Metrics">
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <!-- TODO: add back in when this merges forward to H32 -->
+        <!-- <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-jmx/${dropwizardMetricsVersion}</bundle> -->
+    </feature>
+
+    <feature name="fst" description="FST" version="${fstVersion}">
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
+        <bundle dependency="true">mvn:org.objenesis/objenesis/${objenesisVersion}</bundle>
+        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
+    </feature>
+
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
@@ -126,14 +139,17 @@
         <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
 
+    <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava17" version="17.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/17.0</bundle>
     </feature>
 
+    <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava21" version="21.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
+    <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava31" version="31.1" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
         <bundle start-level="30">mvn:com.google.guava/guava/31.1-jre</bundle>

@@ -158,6 +158,7 @@
     </feature>
 
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">
+      <feature>dropwizard-metrics</feature>
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>

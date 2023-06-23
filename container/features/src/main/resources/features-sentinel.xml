@@ -130,6 +130,7 @@
     <feature name="sentinel-flows" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
         <feature>bson</feature>
         <feature>commons-csv</feature>
+        <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>rate-limited-logger</feature>
         <feature>sentinel-telemetry</feature>

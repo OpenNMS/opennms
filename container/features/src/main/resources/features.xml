@@ -84,9 +84,6 @@
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
     </feature>
-    <feature name="dropwizard-metrics" version="${dropwizardMetricsVersion}" description="Dropwizard :: Metrics">
-        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
-    </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/xmlgraphics-commons/${xmlgraphicsCommonsVersion}</bundle>
@@ -486,6 +483,7 @@
     <feature name="opennms-core-ipc-rpc-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: API">
         <feature>camel-blueprint</feature>
         <feature>camel-jms</feature>
+        <feature>dropwizard-metrics</feature>
         <feature>org.json</feature>
         <feature>javax.mail</feature>
         <feature>opennms-core-camel</feature>
@@ -1094,6 +1092,7 @@
         <details>Feature definition to start all required bundles related to *flow-support.</details>
         <feature>bson</feature>
         <feature>commons-csv</feature>
+        <feature>dropwizard-metrics</feature>
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1617,6 +1616,7 @@
     </feature>
 
     <feature name="opennms-core-ipc-grpc-server" description="OpenNMS :: Core :: IPC :: GRPC :: Server" version="${project.version}">
+        <feature>dropwizard-metrics</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-identity</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -1897,6 +1897,7 @@
     </feature>
 
     <feature name="opennms-timeseries-api" description="OpenNMS :: Timeseries Storage API" version="${project.version}">
+        <feature>dropwizard-metrics</feature>
         <feature>opennms-health</feature>
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
@@ -1916,14 +1917,6 @@
         <feature>opennms-timeseries-api</feature>
         <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/${re2jVersion}</bundle>
         <bundle >mvn:org.opennms.features/inmemory-timeseries-plugin/${project.version}</bundle>
-    </feature>
-
-
-    <feature name="fst" description="FST" version="${project.version}">
-        <feature>jackson-core</feature>
-        <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
-        <bundle dependency="true">mvn:org.objenesis/objenesis/2.4</bundle>
-        <bundle dependency="true">mvn:de.ruedigermoeller/fst/${fstVersion}</bundle>
     </feature>
 
     <feature name="opennms-newts" description="OpenNMS :: Newts" version="${project.version}">
