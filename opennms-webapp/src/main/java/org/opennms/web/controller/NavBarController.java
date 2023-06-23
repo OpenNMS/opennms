@@ -28,6 +28,13 @@
 
 package org.opennms.web.controller;
 
+import com.google.common.collect.ImmutableSet;
+import freemarker.ext.beans.StringModel;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModelException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -35,38 +42,32 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.api.MenuProvider;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.opennms.web.navigate.DefaultMenuEntry;
 import org.opennms.web.navigate.DisplayStatus;
+import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.MenuEntry;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
+import org.opennms.web.navigate.RoleBasedNavBarEntry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.AbstractView;
-
-import freemarker.ext.beans.StringModel;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateMethodModelEx;
-import freemarker.template.TemplateModelException;
 
 /**
  * This controller uses Freemarker to render the view.
@@ -146,6 +147,7 @@ public class NavBarController extends AbstractController implements Initializing
 
         // Helper functions
         model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));
+        model.put("isAdminLink", new IsAdminLinkEntryMethod());
 
         return model;
     }
@@ -249,6 +251,44 @@ public class NavBarController extends AbstractController implements Initializing
                 throw new TemplateModelException("Wrong arguments");
             }
             return entryDisplayStatus != DisplayStatus.NO_DISPLAY;
+        }
+    }
+
+    /**
+     * Method used to determine whether an Admin icon should be displayed next to a menu entry.
+     */
+    public static class IsAdminLinkEntryMethod implements TemplateMethodModelEx {
+        private static final ImmutableSet<String> ADMIN_ROLES = ImmutableSet.of(
+            Authentication.ROLE_ADMIN,
+            Authentication.ROLE_FILESYSTEM_EDITOR
+        );
+
+        public IsAdminLinkEntryMethod () {
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Boolean exec(List arguments) throws TemplateModelException {
+            if (arguments.size() == 1) {
+                /*
+                 * Evaluate the NavBarEntry's display status based on the
+                 * current request.
+                 */
+                NavBarEntry entry = (NavBarEntry) ((StringModel) arguments
+                    .get(0)).getWrappedObject();
+
+                if (entry instanceof RoleBasedNavBarEntry) {
+                    RoleBasedNavBarEntry roleEntry = (RoleBasedNavBarEntry) entry;
+
+                    return Arrays.stream(roleEntry.getRoles().split(","))
+                        .map(String::trim)
+                        .anyMatch(s -> ADMIN_ROLES.contains(s.toUpperCase(Locale.ROOT)));
+                }
+            } else {
+                throw new TemplateModelException("Wrong arguments");
+            }
+
+            return false;
         }
     }
 }

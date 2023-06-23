@@ -57,7 +57,8 @@
   of the events</a> to find the event you are looking for.
 </p>
 
-<form method="get" action="event/detail.jsp">
+<form method="post" action="event/detail.jsp">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <p>
     Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID
     <br/>

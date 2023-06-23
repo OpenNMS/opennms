@@ -62,8 +62,6 @@ onMounted(async () => {
   // store.dispatch('mapModule/getNodesGraphEdges')
 })
 
-onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
-onDeactivated(() => store.dispatch('appModule/setNavRailOpen', true))
 </script>
 
 <style scoped lang="scss">

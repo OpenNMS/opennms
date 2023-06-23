@@ -30,6 +30,7 @@ package org.opennms.features.kafka.producer.collection;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -55,10 +56,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class CollectionSetMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     @Autowired
     private final NodeDao nodeDao;
@@ -176,8 +183,16 @@ public class CollectionSetMapper {
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
-                    attributeBuilder.setValue(attribute.getNumericValue().doubleValue());
-                    attributeBuilder.setMetricValue(DoubleValue.of(attribute.getNumericValue().doubleValue()));
+                    final Number number = attribute.getNumericValue();
+
+                    if (number != null) {
+                        attributeBuilder.setValue(number.doubleValue());
+                        attributeBuilder.setMetricValue(DoubleValue.of(number.doubleValue()));
+                    } else {
+                        attributeBuilder.setValue(Double.NaN);
+                        RATE_LIMITED_LOG.error("Missing double value for non-string attribute (group='{}', name='{}', type='{}')", lastGroupName, attribute.getName(), attribute.getType().toString());
+                    }
+
                     attributeBuilder.setType((attribute.getType() == AttributeType.GAUGE) ? Type.GAUGE : Type.COUNTER);
                     collectionSetResourceBuilder.addNumeric(attributeBuilder);
                 }

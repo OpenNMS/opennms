@@ -28,15 +28,18 @@
 
 package org.opennms.smoketest.utils;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,52 +65,75 @@ public class KarafShell {
         this.password = password;
     }
 
+    public KarafShell runCommand(final String command, Function<String, Boolean> verifyOutputFunction) {
+        return runCommand(command, verifyOutputFunction, true);
+    }
+
     /**
      * Runs the given command in the karaf shell.
      * The optional <code>function</code> verifies the output.
      *
      * @param command the command to run, e.g. "features:list"
      * @param verifyOutputFunction An optional function to verify the output, e.g. to check for certain log messages
+     * @param displayLogs include log:display in command output
      * @return The shell itself, to run further commands.
      */
-    public KarafShell runCommand(final String command, Function<String, Boolean> verifyOutputFunction) {
+    public KarafShell runCommand(final String command, Function<String, Boolean> verifyOutputFunction, boolean displayLogs) {
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
-                .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sshAddress, username, password)) {
-                        final PrintStream pipe = sshClient.openShell();
-                        if (command != null) {
-                            pipe.println(command);
-                        }
-                        pipe.println("log:display");
-                        pipe.println("logout");
-
-                        // Wait for karaf to process the commands
-                        await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
-
-                        // Read stdout
-                        final String shellOutput = sshClient.getStdout();
-
-                        // Optionally Verify Output
-                        boolean result = true;
-                        if (verifyOutputFunction != null) {
-                            result = verifyOutputFunction.apply(shellOutput);
-                        }
-
-                        // Log output
-                        if (command != null) {
-                            logger.info(command);
-                        }
-                        logger.info("log:display");
-                        logger.info("{}", shellOutput);
-
-                        return result;
-                    } catch (Exception ex) {
-                        logger.error("Error while executing command '{}': {}", command, ex.getMessage());
-                        return false;
-                    }
-                });
+                .until(() -> runCommandOnce(command, verifyOutputFunction, displayLogs));
         return this;
+    }
+
+    public Boolean runCommandOnce(String command, Function<String, Boolean> verifyOutputFunction, boolean displayLogs) {
+        try (final SshClient sshClient = new SshClient(sshAddress, username, password)) {
+            final PrintStream pipe = sshClient.openShell();
+
+            List<String> foo = new LinkedList<String>();
+            if (command != null) {
+                foo.add(command);
+            }
+            if (displayLogs) {
+                foo.add("log:display");
+            }
+
+            var output = run(foo.toArray(new String[0]));
+
+            // Optionally Verify Output
+            boolean result = true;
+            if (verifyOutputFunction != null) {
+                result = verifyOutputFunction.apply(output.getLeft());
+            }
+
+            // Log output
+            if (command != null) {
+                logger.info(command);
+            }
+            if (displayLogs) {
+                logger.info("log:display");
+            }
+            logger.info("{}", output.getLeft());
+
+            return result;
+        } catch (Exception ex) {
+            logger.error("Error while executing command '{}': {}", command, ex.getMessage());
+            return false;
+        }
+    }
+
+    public Pair<String, String> run(String... command) throws Exception {
+        try (final SshClient sshClient = new SshClient(sshAddress, username, password)) {
+            final PrintStream pipe = sshClient.openShell();
+            for (String c : command) {
+                pipe.println(c);
+            }
+            pipe.println("logout");
+
+            // Wait for karaf to process the commands
+            await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
+
+            return Pair.of(sshClient.getStdout(), sshClient.getStderr());
+        }
     }
 
     /**

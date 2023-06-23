@@ -29,6 +29,8 @@
 package org.opennms.smoketest.sentinel;
 
 
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -36,10 +38,6 @@ import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
-
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 
 
 @Category(SentinelTests.class)
@@ -54,7 +52,6 @@ public class SentinelSshIT {
     public void testSshHealthOnSentinel(){
         //Test for no exception to occur
         LOG.info("Waiting for Sentinel ssh health check...");
-        final InetSocketAddress karafSsh = stack.sentinel().getSshAddress();
-        awaitHealthCheckSucceeded(karafSsh, 3, "Sentinel");
+        awaitHealthCheckSucceeded(stack.sentinel());
     }
 }

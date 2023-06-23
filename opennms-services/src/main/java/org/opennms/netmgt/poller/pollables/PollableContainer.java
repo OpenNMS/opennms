@@ -59,6 +59,20 @@ abstract public class PollableContainer extends PollableElement {
         super(parent, scope);
     }
 
+    @Override
+    protected boolean isSuspended() {
+        if (getMembers().size() == 0) {
+            return false;
+        } else {
+            for (final PollableElement pollableElement : getMembers()) {
+                if (!pollableElement.isSuspended()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     /**
      * <p>getMember</p>
      *

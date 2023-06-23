@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpGetter;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;

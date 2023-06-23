@@ -32,7 +32,6 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
                 "osgi/vaadin-surveillance-views-config",
                 "osgi/wallboard-config",
                 "osgi/bsm-admin-page",
-                "osgi/node-maps",
                 "osgi/topology"
         };
 
@@ -49,7 +48,6 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
                 "admin/vaadin-surveillance-views-config",
                 "admin/wallboard-config",
                 "admin/bsm-admin-page",
-                "node-maps",
                 "topology"
         };
 

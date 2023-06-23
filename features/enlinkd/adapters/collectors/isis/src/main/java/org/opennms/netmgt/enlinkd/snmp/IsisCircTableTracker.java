@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -41,12 +40,11 @@ import org.slf4j.LoggerFactory;
 public class IsisCircTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisCircTableTracker.class);
 
-    public static final SnmpObjId ISIS_CIRC_TABLE       = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2"); // start of table (GETNEXT)
     public final static SnmpObjId ISIS_CIRC_IFINDEX     = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
     public final static SnmpObjId ISIS_CIRC_ADMIN_STATE = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
 
     public static final SnmpObjId[] isisCirctable_elemList = new SnmpObjId[] {
-        /**
+        /*
          *  isisCircIfIndex OBJECT-TYPE
          *      SYNTAX InterfaceIndex
          *      MAX-ACCESS read-create
@@ -59,7 +57,7 @@ public class IsisCircTableTracker extends TableTracker {
          */     
     	ISIS_CIRC_IFINDEX,
     	
-    	/**
+    	/*
     	 *  isisCircAdminState OBJECT-TYPE
          *      SYNTAX IsisAdminState
          *      MAX-ACCESS read-create
@@ -110,11 +108,6 @@ public class IsisCircTableTracker extends TableTracker {
         super(isisCirctable_elemList);
     }
 
-    public IsisCircTableTracker(final RowCallback rowProcessor) {
-        super(rowProcessor,isisCirctable_elemList);
-    }
-
-        
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {

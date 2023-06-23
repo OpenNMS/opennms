@@ -53,9 +53,12 @@ import javax.sql.DataSource;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -204,7 +207,17 @@ public class DeviceConfigDaoIT {
         Assert.assertFalse(deviceConfigOptional.isEmpty());
         Assert.assertThat(deviceConfigOptional.get().getServiceName(), Matchers.is(serviceName));
     }
-    
+
+    @Test
+    public void testDeviceConfigNodesBySysOidCount() {
+        Set<OnmsIpInterface> ipInterfaces = populateIpInterfacesWithSysOid();
+        ipInterfaces.forEach(ipInterface -> populateDeviceConfigs(1, ipInterface, "DeviceConfig-default"));
+
+        Map<String, Long> nodesWithConfigBySysOid = deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid();
+        Assert.assertEquals(nodesWithConfigBySysOid.get(".1.3.6.1.4.1.9.1.799").longValue(), 2L);
+        Assert.assertEquals(nodesWithConfigBySysOid.get(".1.3.6.1.4.1.2636.1.1.1.2.137").longValue(), 1L);
+        Assert.assertEquals(nodesWithConfigBySysOid.get("none").longValue(), 1L);
+    }
 
     private void populateDeviceConfigs(int count, OnmsIpInterface ipInterface, String serviceName) {
         for (int i = 0; i < count; i++) {
@@ -268,5 +281,31 @@ public class DeviceConfigDaoIT {
 
         Assert.assertThat(builder.getCurrentNode().getIpInterfaces(), Matchers.hasSize(5));
         return builder.getCurrentNode().getIpInterfaces();
+    }
+
+    private Set<OnmsIpInterface> populateIpInterfacesWithSysOid() {
+        Set<OnmsIpInterface> interfaces = new HashSet<>();
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("node1").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId(".1.3.6.1.4.1.9.1.799");
+        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+        interfaces.add(builder.getCurrentNode().getPrimaryInterface());
+
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("3").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId(".1.3.6.1.4.1.9.1.799");
+        builder.addInterface("192.168.2.2").setIsManaged("M").setIsSnmpPrimary("P");
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+        interfaces.add(builder.getCurrentNode().getPrimaryInterface());
+
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("4").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId(".1.3.6.1.4.1.2636.1.1.1.2.137");
+        builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("P");
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+        interfaces.add(builder.getCurrentNode().getPrimaryInterface());
+
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("5").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addInterface("192.168.2.4").setIsManaged("M").setIsSnmpPrimary("P");
+        nodeDao.saveOrUpdate(builder.getCurrentNode());
+        interfaces.add(builder.getCurrentNode().getPrimaryInterface());
+
+        return interfaces;
     }
 }

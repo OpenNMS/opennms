@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.tracing</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.tracing</groupId>
@@ -49,6 +49,16 @@
       <artifactId>org.opennms.core.sysprops</artifactId>
       <version>${project.version}</version>
     </dependency>
-</dependencies>
-
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j2Version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

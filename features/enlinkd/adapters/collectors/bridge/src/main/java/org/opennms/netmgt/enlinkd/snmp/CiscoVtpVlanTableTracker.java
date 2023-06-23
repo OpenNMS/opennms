@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.VlanStatus;
 import org.opennms.netmgt.enlinkd.model.VlanType;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -50,7 +49,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
     public static final SnmpObjId CISCO_VTP_VLAN_NAME = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "4");
 
     public static SnmpObjId[] cisco_vlan_elemList = new SnmpObjId[]{
-            /**
+            /*
              * vtpVlanState OBJECT-TYPE
              * SYNTAX          INTEGER  {
              *               operational(1),
@@ -73,7 +72,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
              *
              */
             CISCO_VTP_VLAN_STATE,
-            /**
+            /*
              * SYNTAX          VlanType
              * MAX-ACCESS      read-only
              * STATUS          current
@@ -120,10 +119,6 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      */
     public CiscoVtpVlanTableTracker() {
         super(cisco_vlan_elemList);
-    }
-
-    public CiscoVtpVlanTableTracker(RowCallback rowProcessor) {
-        super(rowProcessor, cisco_vlan_elemList);
     }
 
     /** {@inheritDoc} */

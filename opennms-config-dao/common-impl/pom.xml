@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.config-dao</artifactId>
         <groupId>org.opennms</groupId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.config-dao.common-impl</artifactId>
@@ -68,7 +68,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.jayway.awaitility</groupId>
+            <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>

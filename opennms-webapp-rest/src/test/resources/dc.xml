@@ -184,10 +184,6 @@
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
-    <resourceType name="xmpFilesys" label="Cartographer Filesystem" resourceLabel="${mountpoint}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-    </resourceType>
     <resourceType name="vmware5StPth" label="VMware v5 StPth" resourceLabel="${vmware5StPthName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -836,7 +832,6 @@
     <include-collection dataCollectionGroup="SUN Microsystems"/>
     <include-collection dataCollectionGroup="Trango"/>
     <include-collection dataCollectionGroup="WMI"/>
-    <include-collection dataCollectionGroup="XMP"/>
     <include-collection dataCollectionGroup="Zeus"/>
     <include-collection dataCollectionGroup="VMware3"/>
     <include-collection dataCollectionGroup="VMware4"/>

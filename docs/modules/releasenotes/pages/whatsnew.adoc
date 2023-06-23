@@ -1,105 +1,75 @@
 
-[[releasenotes-30]]
-= What's New in OpenNMS Horizon 30
+[[releasenotes-31]]
+= What's New in OpenNMS Horizon 31
 
 == System requirements
 
-* *Java 11*: OpenNMS Horizon 30 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 30 requires any supported version of PostgreSQL from 10 up to (and including) 14.
-
-== Breaking changes
-
-=== OpenNMS Plugin API required version updated to 1.0.0
-
-The OpenNMS Plugin API required version has been updated to 1.0.0, following its link:https://github.com/OpenNMS/opennms-integration-api/releases/tag/v1.0.0[first stable release].
-Plugins intended to run in {page-component-title} must implement version 1.0.0 (or higher).
-
-=== New configuration management API
-
-A new API has been introduced for accessing and manipulating configurations, including moving configuration from XML files into the database.
-The initial implementation proof-of-concept converts the `provisiond-configuration.xml` to the new API.
-
-The {page-component-title} installer will import your existing `provisiond-configuration.xml` file on upgrade.
-This will happen automatically, but if you rely on programatically manipulating the provisiond configuration you will need to convert your code to use the config management REST API instead.
-
-=== Docker images
-
-The Horizon and Sentinel Docker images are now based on a minimal install of Ubuntu, rather than CentOS.
-Symlinks are provided to match the old paths in `/opt`, but it's possible you will run into subtle differences when transitioning.
-
-=== Collectd strict interval
-
-The `org.opennms.netmgt.collectd.strictInterval` setting now defaults to `true`.
-
-Previously, collectd would not reschedule collection for a device until after the previous collection completes.
-This means that if {page-component-title} is collecting at a 5-minute interval, and it takes 1 minute to collect the data, then the next collection will start 6 minutes after the previous collection was launched.
-
-The new default behavior is to always schedule collection as a predictable interval.
-
-You can switch to the previous behavior by creating a property file in `$OPENNMS_HOME/etc/opennms.properties.d/` with the following line of code: `org.opennms.netmgt.collectd.strictInterval=false`.
+* *Java 11*: OpenNMS Horizon 31 runs on JDK 11.
+* *PostgreSQL 10 or higher*: Horizon 31 requires any supported version of PostgreSQL from 10 up to (and including) 15.
 
 == New features and improvements
 
-=== New UI (early access)
+=== OpenNMS Plugins
 
-Work has begun on creating a new UI with an eye towards making more common workflows easier.
-The new design uses Vue 3 and the link:https://feather.nanthealth.com/[Feather Design System].
-You can try it out by clicking "UI Preview" in the navigation bar of the web UI.
+Horizon 31 supports plugins using the OpenNMS Plugin API version 1.0 through 1.2.
 
-It is also now possible to write OpenNMS Plugin API plugins that extend the new UI.
+Since 1.0, OPA has been improved to include time-series performance enhancements and off-heap support,
+APIs for flow persistence and poller configuration extensions, and enhanced event and monitored service metadata.
 
-=== Device config backup
+==== Cloud Services Connector with Time Series DB Support
 
-Initial support has been added for performing configuration backups of infrastructure devices like routers and switches.
-Backups are performed as part of polling the device, and can be viewed (and triggered) in the web UI.
+Horizon 31 includes the https://issues.opennms.org/browse/NMS-14471[Cloud Services Connector] in its default RPM
+and DEB install, providing access to OpenNMS Time Series DB – a new hosted cloud service which enables scalable
+metrics storage without the administrative overhead.
 
-=== OpenNMS Plugin API supported on Minion and Sentinel
+==== Cortex Time-Series Plugin
 
-The OpenNMS Plugin API can now be used to extend Minion and Sentinel.
-A subset of APIs are supported, as appropriate for each platform.
+Horizon 31.0.0 is the first new major Horizon release to support writing time-series data to a Cortex
+instance via the optional https://github.com/OpenNMS/opennms-cortex-tss-plugin[OpenNMS Cortex Plugin].
 
-=== Secure credentials vault
+=== UI Preview Integration
 
-You can now validate credentials stored in the SCV with the `scv-validate` Karaf command.
-Additionally, support for encrypted credentials has been extended to more places inside {page-component-title}, most notably in metadata interpolation.
-Also, a REST API has been added for accessing and updating the SCV.
+The "UI Preview" that was separate from the main UI in Horizon 30 has been
+https://issues.opennms.org/browse/NMS-14730[integrated into the main web UI] where appropriate for Horizon 31.
 
-=== Flows and Nephron
+=== Topology Improvements
 
-It is now possible to configure thresholding on flow data.
+Network topology discovery ("Enlinkd") has received https://issues.opennms.org/browse/NMS-14883[significant refactoring]
+to make it smarter and more performant.
 
-=== Minion
+=== Containers
 
-=== Polling, metadata, and collection
+==== Container Cleanup and Refactoring
 
-* The XML collector can now treat link:https://issues.opennms.org/browse/NMS-14084[a collected value as an enumerated value], which lets you convert strings into integers to store as a gauge.
-* It is now possible to passively "collect" data from incoming events as time-series data, including those that come from traps or syslog.
-The eventconf has additional options to configure what data to collect from parameters including regular-expression matches.
-* The BgpSessionMonitor can now be configured to use a custom OID prefix for devices that publish peer tables in a non-standard location.
+The work done in Horizon 30, cleaning up and standardizing how our container images are built, has been
+expanded in Horizon 31.
+All images (Horizon, Minion, and Sentinel) use the same core, and are now available in amd64, arm64, and arm7 varieties.
 
-Additions or updates to graphs and collections have been made for:
+==== OpenShift Support
 
-* F5 Devices
-* Flows
-* Node Exporter
-* Prometheus
-* Windows Exporter
+Horizon 30 was incompatible with OpenShift, and we have addressed these issues.
+If you see any weird permissions or ownership problems in an OpenShift environment, log an issue report in https://issues.opennms.com/[Jira].
+
+=== Collection and Thresholding
+
+* configurations have been added for thresholding on Collectd and Pollerd threads
+
+=== Device Configuration Backup
+
+The DCB feature has had a number of improvements, including debugging and script enhancements.
 
 === REST API
 
-* Improvements have been made to the criteria querying API to support "Multi-And" and regexp restrictions, allowing for queries involving multiple event parameters, or complex string matching.
+* The REST API endpoint for configuring external requisitions (aka `requisition-def`s) has been improved to
+  enable targeted updates rather than requiring whole posting of a new configuration.
+
 
 === Documentation
 
-An unspeakable amount of work has gone into documentation improvements and additions across the board.
+As usual, our documentation team has been doing tons of work cleaning up and improving the documentation.
+The biggest addition is a new Quick Start Guide that provides simple steps to set up basic monitoring with a minimal configuration of Horizon.
 
-Notable additions include:
+== Breaking Changes
 
-* Developer documentation for OSGi in OpenNMS, the OpenNMS Plugin API (formerly OIA), the config management API, device config backup APIs, and the Health REST service.
-* Operation documentation updates relating to SNMP property extenders, performance data and collection, thresholding, the log file viewer, SCV, and the new UI preview.
-* Documentation improvements regarding "housekeeping" and other administrative tasks, alarms, Business Service Monitoring, Passive Status Monitoring, and more.
-
-== Important internal changes
-
-* Kafka components have been updated to version 3.0.0.
-* Our embedded Karaf has been updated to version 4.3.6.
+* support for the XML Management Protocol (XMP) has been removed
+* security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`

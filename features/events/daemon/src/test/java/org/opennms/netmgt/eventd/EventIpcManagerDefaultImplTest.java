@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.eventd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -69,7 +70,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
-import com.jayway.awaitility.Duration;
 
 /**
  * @author Seth
@@ -108,12 +108,12 @@ public class EventIpcManagerDefaultImplTest {
     public void tearDown() throws Exception {
         verifyNoMoreInteractions(m_eventHandler);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertEquals("unprocessed received events", 0, m_listener.getEvents().size());
             if (m_caughtThrowable != null) {
                 throw new RuntimeException("Thread " + m_caughtThrowableThread + " threw an uncaught exception: " + m_caughtThrowable, m_caughtThrowable);
             }
-        }});
+        });
     }
 
     @Test
@@ -215,10 +215,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener);
         m_manager.broadcastNow(event, false);
         
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(event)));
-        }});
+        });
     }
 
     @Test
@@ -257,10 +257,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener, e.getUei());
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     @Test
@@ -271,10 +271,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     @Test
@@ -285,10 +285,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     @Test
@@ -318,10 +318,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     @Test
@@ -431,10 +431,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener, e.getUei());
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     @Test
@@ -446,10 +446,10 @@ public class EventIpcManagerDefaultImplTest {
         m_manager.addEventListener(m_listener);
         m_manager.broadcastNow(e, false);
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertTrue("could not remove broadcasted event--did it make it?",
                        m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
-        }});
+        });
     }
 
     /**
@@ -818,9 +818,9 @@ public class EventIpcManagerDefaultImplTest {
         // Wait for N threads to be locked
         lockedFuture.get();
 
-        await().atMost(Duration.ONE_SECOND).until(new Runnable() { public void run() {
+        await().atMost(Duration.ofSeconds(1)).untilAsserted(() -> {
             assertThat(locker.getNumExtraThreadsWaiting(), equalTo(0));
-        }});
+        });
 
         // Release
         locker.release();

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -129,7 +130,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
                 request.setAttribute("scheduledUser", role.getDefaultUser().getName());
-                Date date = new SimpleDateFormat("MM-dd-yyyy").parse(request.getParameter("date"));
+                Date date = new SimpleDateFormat("MM-dd-yyyy", Locale.ROOT).parse(request.getParameter("date"));
                 request.setAttribute("start", date);
                 request.setAttribute("end", date);
                 request.setAttribute("schedIndex", "-1");
@@ -237,7 +238,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
             buf.append(request.getParameter(prefix+"Minute"));
             buf.append(' ');
             buf.append(request.getParameter(prefix+"AmOrPm"));
-            return new SimpleDateFormat("M-d-yyyy h:m a").parse(buf.toString());
+            return new SimpleDateFormat("M-d-yyyy h:m a", Locale.ROOT).parse(buf.toString());
         }
         
         public int getIntParameter(String name, HttpServletRequest request) {
@@ -291,7 +292,6 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
                 return new ListAction().execute(request, response);
             }
         }
-        
     }
     
     /**

@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -46,8 +45,6 @@ import org.opennms.netmgt.snmp.TableTracker;
 
 public class CdpCacheTableTracker extends TableTracker {
 	private static final Logger LOG = LoggerFactory.getLogger(CdpCacheTableTracker.class);
-	
-	public static final SnmpObjId CDP_CACHE_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1"); // start of table (GETNEXT)
 
 	public final static SnmpObjId CDP_CACHE_ADDRESS_TYPE      = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.3");
 	public final static SnmpObjId CDP_CACHE_ADDRESS           = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.4");
@@ -65,13 +62,13 @@ public class CdpCacheTableTracker extends TableTracker {
 	 */
 	public static final SnmpObjId[] cdpCache_elemList = new SnmpObjId[] {
 
-		/**
+		/*
 		 * <P>An indication of the type of address contained in the
 		 *  corresponding instance of cdpCacheAddress.</P>
 		 */
 		CDP_CACHE_ADDRESS_TYPE,
 
-		/**
+		/*
 		 * <P>The (first) network-layer address of the device's
 		 *  SNMP-agent as reported in the Address TLV of the most recently
 		 *  received CDP message. For example, if the corresponding
@@ -80,14 +77,14 @@ public class CdpCacheTableTracker extends TableTracker {
 		 */
 		CDP_CACHE_ADDRESS, 
 
-		/**
+		/*
 		 *     <P>The Version string as reported in the most recent CDP
          *   message.  The zero-length string indicates no Version
          *   field (TLV) was reported in the most recent CDP
          *   message.
 		 */
 		CDP_CACHE_VERSION,
-		/**
+		/*
 		 * <P>The Device-ID string as reported in the most recent CDP
 		 *  message. The zero-length string indicates no Device-ID
 		 *  field (TLV) was reported in the most recent CDP
@@ -95,7 +92,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 */
 		CDP_CACHE_DEVICE_ID,
 
-		/**
+		/*
 		 * <P>The Port-ID string as reported in the most recent CDP
 		 *  message. This will typically be the value of the ifName
 		 *  object (e.g., 'Ethernet0'). The zero-length string
@@ -104,7 +101,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 */
 		CDP_CACHE_DEVICE_PORT,
 		
-		/**
+		/*
 		 * The Device's Hardware Platform as reported in the most
          *   recent CDP message.  The zero-length string indicates
          *   that no Platform field (TLV) was reported in the most
@@ -113,7 +110,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		CDP_CACHE_PLATFORM
 	};
 
-    public class CdpCacheRow extends SnmpRowResult {
+    public static class CdpCacheRow extends SnmpRowResult {
 		
     	public CdpCacheRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
@@ -178,8 +175,8 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 
 		public String getCdpCacheAddressString() {
-		    String cdpCacheAddressValueString = null;
-		    CiscoNetworkProtocolType type = CiscoNetworkProtocolType.get(getCdpCacheAddressType());
+		    String cdpCacheAddressValueString;
+			CiscoNetworkProtocolType type = CiscoNetworkProtocolType.get(getCdpCacheAddressType());
     		    switch (type) {
     		        case ip:
                         case ipv6:
@@ -249,13 +246,6 @@ public class CdpCacheTableTracker extends TableTracker {
 	 */
 	public CdpCacheTableTracker() {
 		super(cdpCache_elemList);
-	}
-
-	/**
-	 * <p>Constructor for CdpCacheTableEntry.</p>
-	 */
-	public CdpCacheTableTracker(RowCallback rowProcessor) {
-		super(rowProcessor,cdpCache_elemList);
 	}
 
     /** {@inheritDoc} */

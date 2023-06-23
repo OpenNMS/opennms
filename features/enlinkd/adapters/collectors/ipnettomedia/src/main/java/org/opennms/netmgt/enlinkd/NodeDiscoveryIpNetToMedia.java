@@ -40,7 +40,6 @@ import org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,16 +60,13 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
 	 * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-	 * @param EnhancedLinkd linkd
-	 * @param LinkableNode node
 	 */
 	public NodeDiscoveryIpNetToMedia(
-	            final IpNetToMediaTopologyService ipNetToMediaTopologyService,
-	            final LocationAwareSnmpClient locationAwareSnmpClient,
-	            final long interval,final long initial,
-	            final Node node) {
-	        super(locationAwareSnmpClient, interval, initial,node);
-    	m_ipNetToMediaTopologyService = ipNetToMediaTopologyService;
+	            final NodeCollectionGroupIpNetToMedia group,
+	            final Node node,
+                final int priority) {
+	        super(group.getLocationAwareSnmpClient(), node, priority);
+    	m_ipNetToMediaTopologyService = group.getIpNetToMediaTopologyService();
     }
 
     public void collect() {

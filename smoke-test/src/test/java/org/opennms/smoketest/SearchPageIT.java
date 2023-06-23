@@ -58,7 +58,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllFormsArePresent() throws Exception {
-        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 13);
+        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 14);
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",

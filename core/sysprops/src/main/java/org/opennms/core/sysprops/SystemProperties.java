@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.core.sysprops;
 
+import java.math.BigDecimal;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -41,6 +42,15 @@ import org.slf4j.LoggerFactory;
 public class SystemProperties {
 
     private final static Logger LOG = LoggerFactory.getLogger(SystemProperties.class);
+
+    public static BigDecimal getBigDecimal(String propertyName) {
+        return getBigDecimal(propertyName, null);
+    }
+
+    public static BigDecimal getBigDecimal(String propertyName, BigDecimal defaultValue) {
+        Function<String, BigDecimal> resolver = (propertyValue) -> (new BigDecimal(propertyValue));
+        return getProperty(propertyName, defaultValue, resolver);
+    }
 
     public static Long getLong(String propertyName) {
         return getLong(propertyName, null);

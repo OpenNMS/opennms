@@ -32,12 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.nio.ByteBuffer;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
 /**
@@ -65,7 +64,7 @@ public class Nms6730Test {
 		for (ByteBuffer incoming : new ByteBuffer[] { example1, example2, example3, example4 }) {
 			try {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					514,
@@ -83,7 +82,7 @@ public class Nms6730Test {
 		{
 			ByteBuffer colonNoSpace = SyslogdTestUtils.toByteBuffer("<14> 2001-01-01 localhost procname:this is [my] message");
 			ConvertToEvent convertToEvent = new ConvertToEvent(
-				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
@@ -97,7 +96,7 @@ public class Nms6730Test {
 		{
 			ByteBuffer spaceBeforeColon = SyslogdTestUtils.toByteBuffer("<14> 2001-01-01 localhost proc name: this is [my] message");
 			ConvertToEvent convertToEvent = new ConvertToEvent(
-				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
@@ -124,7 +123,7 @@ public class Nms6730Test {
 		for (ByteBuffer incoming : new ByteBuffer[] { example1, example2, example3, example4 }) {
 			try {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					514,
@@ -141,7 +140,7 @@ public class Nms6730Test {
 		{
 			ByteBuffer colonNoSpace = SyslogdTestUtils.toByteBuffer("<14> Jan 22 12:39:25 localhost procname:this is [my] message");
 			ConvertToEvent convertToEvent = new ConvertToEvent(
-				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
@@ -155,7 +154,7 @@ public class Nms6730Test {
 		{
 			ByteBuffer spaceBeforeColon = SyslogdTestUtils.toByteBuffer("<14> Jan 22 12:39:25 localhost proc name: this is [my] message");
 			ConvertToEvent convertToEvent = new ConvertToEvent(
-				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
 				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,

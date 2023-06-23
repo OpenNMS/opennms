@@ -14,10 +14,22 @@
   <cm:property-placeholder id="kafkaForwarderProperties" persistent-id="org.opennms.features.flows.persistence.kafka" update-strategy="reload">
     <cm:default-properties>
       <cm:property name="topic" value="flowDocuments" />
+      <cm:property name="useJson" value="false" />
     </cm:default-properties>
   </cm:property-placeholder>
 
   <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="kafkaFlowRepositoryProperties"
+                           persistent-id="org.opennms.features.flows.persistence.elastic"
+                           update-strategy="reload"
+                           placeholder-prefix="$["
+                           placeholder-suffix="]">
+    <cm:default-properties>
+      <cm:property name="enableForwarding" value="false" /> <!-- Disable flow forwarding -->
+    </cm:default-properties>
+  </cm:property-placeholder>
 
   <!-- Metrics -->
   <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -44,8 +56,18 @@
     <argument ref="configurationAdmin"/>
     <argument ref="metricRegistry"/>
     <property name="topicName" value="${topic}"/>
+    <property name="useJson" value="${useJson}"/>
   </bean>
 
-  <service interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder" ref="kafkaFlowForwarder" />
+  <bean id="switchedKafkaFlowForwarder" class="org.opennms.netmgt.flows.processing.persisting.SwitchedFlowRepository">
+    <argument ref="kafkaFlowForwarder" />
+    <property name="enabled" value="$[enableForwarding]" />
+  </bean>
+
+  <service interface="org.opennms.integration.api.v1.flows.FlowRepository" ref="switchedKafkaFlowForwarder">
+    <service-properties>
+      <entry key="flows.repository.id" value="kafka" />
+    </service-properties>
+  </service>
 
 </blueprint>

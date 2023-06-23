@@ -28,8 +28,34 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+
 public interface TopologyService {
-    boolean parseUpdates();    
+    static <L, R> TopologyConnection<L, R>  of(L left, R right) {
+        return new TopologyConnection<>(left, right);
+    }
+
+    static TopologyShared of(SharedSegment shs, List<MacPort> macPortsOnSegment) {
+        TopologyShared tps = new TopologyShared(new ArrayList<>(shs.getBridgePortsOnSegment()),
+                                                macPortsOnSegment, shs.getDesignatedPort());
+
+
+        final Set<String>  noPortMacs = new HashSet<>(shs.getMacsOnSegment());
+        macPortsOnSegment.forEach(mp -> noPortMacs.removeAll(mp.getMacPortMap().keySet()));
+
+        if (noPortMacs.size() >0) {
+            tps.setCloud(new MacCloud(noPortMacs));
+        }
+        return tps;
+    }
+
+    boolean parseUpdates();
     void updatesAvailable();
     boolean hasUpdates();
     void refresh();

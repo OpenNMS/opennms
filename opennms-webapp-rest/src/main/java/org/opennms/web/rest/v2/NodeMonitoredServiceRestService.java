@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -239,6 +240,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get metadata by service", description = "Get metadata by service", operationId = "NodeMonitoredServiceRestServiceGetMetaDataByService")
     public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
@@ -252,6 +254,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata/{context}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get metadata by service and context", description = "Get metadata by service and context", operationId = "NodeMonitoredServiceRestServiceGetMetaDataByServiceAndContext")
     public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 
@@ -267,6 +270,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @GET
     @Path("{serviceName}/metadata/{context}/{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Operation(summary = "Get metadata by service, context and key", description = "Get metadata by service, context and key", operationId = "NodeMonitoredServiceRestServiceGetMetaDataByServiceAndContextAndKey")
     public OnmsMetaDataList getMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") String serviceName, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsMonitoredService service = getService(uriInfo, serviceName);
 

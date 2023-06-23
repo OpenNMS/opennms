@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.api;
 
+import org.opennms.integration.api.v1.flows.FlowException;
+
 public class UnrecoverableFlowException extends FlowException {
     public UnrecoverableFlowException(String message, Throwable cause) {
         super(message, cause);

@@ -58,7 +58,7 @@
     <jsp:param name="breadcrumb" value="Meta-Data" />
 </jsp:include>
 
-<h4>Meta-Data for Node: <strong><%= entity.getLabel() %></strong></h4>
+<h4>Meta-Data for Node: <strong><%= WebSecurityUtils.sanitizeString(entity.getLabel()) %></strong></h4>
 
 <div class="row">
     <div class="col-md-12">

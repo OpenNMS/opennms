@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-syslogd]]
 = Syslogd
 
-Handles processing of xref:operation:events/sources/syslog.adoc[syslog messages] into events.
+Handles processing of xref:operation:deep-dive/events/sources/syslog.adoc[syslog messages] into events.
 
 .Syslogd configuration file overview
 [options="header"]

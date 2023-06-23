@@ -1,16 +1,20 @@
 
-= Time Series Storage
+[[time-series-storage]]
+= Time Series Database
 
-{page-component-title} stores performance data in a time series storage (JRobin by default).
-For different scenarios you may want to use a different time series storage.
+{page-component-title} stores performance data in a time series database (JRobin by default).
+For different scenarios you may want to use a different time series database.
 The following implementations are installed by default:
 
-.Supported time series databases
-[width="100%", cols="1,4"]
+[caption=]
+.Default {page-component-title} time series databases
+[cols="1,3"]
 |===
+| Time Series Database  | Description
+
 | JRobin
-| JRobin is a clone of RRDTool written in Java and is the default time series storage when you install {page-component-title}.
-It does not fully cover the latest feature set of RRDTool.
+| JRobin is a clone of RRDTool written in Java and is the default time series database when you install {page-component-title}.
+It does not fully cover the latest RRDTool feature set.
 Data is stored on the local file system of the {page-component-title} node.
 Depending on I/O capabilities, it works well for small- to medium-size installations.
 
@@ -20,65 +24,72 @@ Data is stored on the local file system of the {page-component-title} node.
 Depending on I/O capabilities it works well for small- to medium-size installations.
 
 | Newts
-| link:http://opennms.github.io/newts/[Newts] is a database schema for link:http://cassandra.apache.org[Cassandra].
-The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist in a large scale.
+| http://opennms.github.io/newts/[Newts] is an OpenNMS database schema for http://cassandra.apache.org[Cassandra].
+The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist at a large scale.
+
+| OpenNMS Time Series DB
+ifeval::["{page-component-title}" == "Horizon"]
+| The Time Series DB is available only with Meridian.
+Contact sales@opennms.com to sign up for the Time Series DB.
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+| The OpenNMS Group now provides a limited availability cloud-hosted time series database to store performance metrics that {page-component-title} collects from the devices it monitors.
+The Time Series DB lets you move the most storage-intensive component of your network management system off-premises, for a smaller {page-component-title} footprint and improved redundancy.
+For more information, see xref:time-series-storage/timeseries/hosted-tss.adoc[].
+endif::[]
 |===
 
-You can use time series storage integrations with plugins based on our OpenNMS Plugin API (formerly OIA).
-Several plugins are available as a replacement for the ones shipped with OpenNMS {page-component-title} (see xref:time-series-storage/timeseries/ts-integration-layer.adoc#ts-integration-layer[time series integration layer]).
+This chapter describes how to configure {page-component-title} to use RRDTool, Newts, and the OpenNMS Time Series DB.
 
-This section describes how to configure {page-component-title} to use RRDTool and Newts.
+== Time series database plugins
+
+You can use time series database integrations with plugins based on our OpenNMS Plugin API (formerly OIA).
+Several plugins are available as a replacement for the ones shipped with OpenNMS {page-component-title} (see xref:time-series-storage/timeseries/ts-integration-layer.adoc[]).
 
 CAUTION: The way data is stored in different time series databases makes it extremely hard to migrate from one technology to another.
-You cannot prevent data loss when you switch from one to another.
+You cannot prevent data loss when you switch from one database type to another.
 
 == Run two time series writes in parallel
 
-The default time series strategy (RRD, Newts, integration) is used for both read/write by default.
-You can add another time series write in parallel to the default strategy.
-This additional time series storage may be used for validation purposes or as a backup time series before moving from one time series to another.
+The default time series strategy (RRD, Newts, Integration Plugin) is used for both read and write operations.
+You can add another time series to write in parallel to the default strategy.
+This additional time series database may be used for validation purposes or for staging metrics before moving from one time series to another.
+If you plan to migrate to a new storage strategy, you can set the new strategy as a write destination while keeping reads on your current storage.
+Once you have written enough data to the new storage, you can then flip the reads over to the new system.
 
-== Write to Newts in parallel
+In order for the dual write plugin to work, you must install a time series feature (either Newts or an integration plugin) and leave `org.opennms.timeseries.strategy` at your current value.
+This will allow writing to both the strategy and the time series database.
 
-You can enable writing to Newts without it being the default time series strategy.
+[[ga-dual-write-newts]]
+=== Write to Newts in parallel
 
-.Create a file to load the `opennms-newts` feature.
+
+.Create a file to load the `opennms-newts` feature:
 [source, console]
-----
 sudo vi etc/featuresBoot.d/newts.boot
-----
 
-.Add feature and save the file
+.Add the feature and save the file:
 [source, newts.boot]
-----
 opennms-newts
-----
 
-.Restart {page-component-title} Core instance to apply the changes
+.Restart {page-component-title} to apply the changes:
 [source, console]
-----
 sudo systemctl restart opennms
-----
 
-== Write to Time Series Integration Plugin in parallel
+[[ga-dual-write-integration]]
+=== Write to time series integration plugin in parallel
 
-You can enable writing to any time series integration plugin in parallel without having integration as the default time series strategy.
+You can enable writing to any time series integration plugin in parallel to RRD or Newts by enabling the `opennms-timeseries-api` feature and not setting the strategy to `integration`.
+This will direct writes to both your `org.opennms.timeseries.strategy` destination and any installed timeseries integration plugin.
 
-
-.Create a file to load the `opennms-timeseries-api` feature.
+.Create a file to load the `opennms-timeseries-api` feature:
 [source, console]
-----
 sudo vi etc/featuresBoot.d/timeseries.boot
-----
 
-.Add feature and save the file
+.Add the feature and save the file:
 [source, timeseries.boot]
-----
 opennms-timeseries-api
-----
 
-.Restart {page-component-title} Core instance to apply the changes
+.Restart {page-component-title} to apply the changes:
 [source, console]
-----
 sudo systemctl restart opennms
-----

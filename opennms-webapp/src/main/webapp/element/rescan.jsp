@@ -95,7 +95,7 @@
         <span>Capability Rescan</span>
       </div>
       <div class="card-body">
-        <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
+        <p>Are you sure you want to rescan the <nobr><%=WebSecurityUtils.sanitizeString(nodeLabel)%></nobr>
           <% if( ipAddr==null ) { %>
             node?
           <% } else { %>
@@ -103,6 +103,7 @@
           <% } %>
         </p>        
         <form method="post" action="element/rescan">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <p>
             <input type="hidden" name="node" value="<%=nodeId%>" />
             <input type="hidden" name="returnUrl" value="${fn:escapeXml(returnUrl)}" />

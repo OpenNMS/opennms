@@ -42,7 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -55,8 +58,13 @@ public class MonitorHolder {
     private final DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private LoadingCache<String, TimeTrackingMonitor> monitors;
+    private final ConcurrentHashMap<String, TimeTrackerOverallMonitor> overallMonitors = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> metricAssociation = new ConcurrentHashMap<>();
+    public static final int MAX_METRIC_ASSOCIATION_SIZE = 30;
     private MetricRegistry metricRegistry = new MetricRegistry();
+    private MetricRegistry metricRegistryOverall = new MetricRegistry();
     private JmxReporter jmxReporter;
+    private JmxReporter jmxReporterOverall;
 
     /**
      * For spring use. Default is 3 days.
@@ -68,6 +76,8 @@ public class MonitorHolder {
     public MonitorHolder(long seconds) {
         jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain("org.opennms.netmgt.provision.status").build();
         jmxReporter.start();
+        jmxReporterOverall = JmxReporter.forRegistry(metricRegistryOverall).inDomain("org.opennms.netmgt.provision.overall").build();
+        jmxReporterOverall.start();
         this.createCacheWithExpireTime(seconds);
     }
 
@@ -108,7 +118,9 @@ public class MonitorHolder {
      */
     public TimeTrackingMonitor createMonitor(String name, ImportJob job) throws ExecutionException {
         monitors.cleanUp();
-        return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode())));
+        String metricName = MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat), String.valueOf(job.hashCode()));
+        updateAssociations(name, metricName);
+        return monitors.get(metricName);
     }
 
     /**
@@ -120,7 +132,49 @@ public class MonitorHolder {
      */
     public TimeTrackingMonitor createMonitor(String name) throws ExecutionException {
         monitors.cleanUp();
-        return monitors.get(MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat)));
+        String metricName = MetricRegistry.name(name, LocalDateTime.now().format(datetimeFormat));
+        updateAssociations(name, metricName);
+        return monitors.get(metricName);
+    }
+
+    /**
+     * Keep track of overall metrics and single job metrics
+     * Key should be the actual requisition (overall metric) and the metric name should be a concatenation that includes
+     * requisition, timestamp and job
+     * This help to link NodeScans overall metrics to the monitorKey which is associated to a single job
+     * @param key overall metric name (requisition)
+     * @param metricName single job metric name
+     */
+    public void updateAssociations(final String key, final String metricName) {
+
+        if (!metricAssociation.containsKey(key)) {
+            var names = new ConcurrentLinkedDeque<String>();
+            names.addFirst(metricName);
+            metricAssociation.put(key, names);
+        } else if (metricAssociation.containsKey(key) && !metricAssociation.get(key).contains(metricName)) {
+            metricAssociation.get(key).addFirst(metricName);
+        }
+        if (metricAssociation.get(key).size() > MAX_METRIC_ASSOCIATION_SIZE) {
+            metricAssociation.get(key).removeLast();
+        }
+
+    }
+
+    /**
+     * It will return existing overall monitor or create new one
+     *
+     * @param name
+     * @return
+     */
+    public TimeTrackerOverallMonitor createOverallMonitor(String name) {
+        TimeTrackerOverallMonitor overallMonitor = null;
+        if (overallMonitors.containsKey(name)) {
+            overallMonitor = overallMonitors.get(name);
+        } else {
+            overallMonitor = new TimeTrackerOverallMonitor(name, metricRegistryOverall);
+            overallMonitors.put(name, overallMonitor);
+        }
+        return overallMonitor;
     }
 
     /**
@@ -143,7 +197,30 @@ public class MonitorHolder {
         return monitors.asMap();
     }
 
+    /**
+     * Gets an overall metric associated to a single job metric
+     * @param metricName
+     * @return
+     */
+    public TimeTrackerOverallMonitor getOverallMonitorForMetric(String metricName) {
+        for(var map: metricAssociation.entrySet()){
+            if(map.getValue().contains(metricName)) {
+                return overallMonitors.get(map.getKey());
+            }
+        }
+        return null;
+    }
+
+    public Map<String, TimeTrackerOverallMonitor> getOverallMonitors() {
+        return overallMonitors;
+    }
+    
+    public AbstractMap<String, ConcurrentLinkedDeque<String>> getAssociatedMetrics(){
+        return this.metricAssociation;
+    }
+
     public void shutdown() {
         jmxReporter.close();
+        jmxReporterOverall.close();
     }
 }

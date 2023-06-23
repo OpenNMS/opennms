@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,8 @@ package org.opennms.netmgt.xml.event;
 //---------------------------------/
 
 import org.opennms.netmgt.events.api.model.ICorrelation;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 import java.io.Serializable;
 
@@ -355,12 +357,13 @@ public class Correlation implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vCuei
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
+    @Hidden
     public void setCuei(
             final int index,
             final java.lang.String vCuei)
@@ -375,9 +378,10 @@ public class Correlation implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vCueiArray
      */
+    @Hidden
     public void setCuei(
             final java.lang.String[] vCueiArray) {
         //-- copy array
@@ -409,6 +413,7 @@ public class Correlation implements Serializable {
      * 
      * @param cueiList the Vector to set.
      */
+    @Hidden
     public void setCueiCollection(
             final java.util.List<java.lang.String> cueiList) {
         this._cueiList = cueiList;

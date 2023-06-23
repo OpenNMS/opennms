@@ -9,6 +9,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory" />
+
 	<!-- Pinger service -->
 	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
 
@@ -32,7 +34,9 @@
 
 	<!-- SnmpDetectorFactory needs destroy method -->
 	<bean id="snmpDetectorFactory" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory"
-		  destroy-method="destroy"/>
+		  destroy-method="destroy">
+		<property name="secureCredentialsVault" ref="secureCredentialsVault"/>
+	</bean>
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory" ref="snmpDetectorFactory"/>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">

@@ -1,66 +1,138 @@
+
 [[config-rest-api]]
 = Config Management
 
-Use the Config Management REST API to manage configurations for OpenNMS.
-Configurations modified will take effect instantly.
+Use the Config Management REST API to manage {page-component-title} configurations.
+Changes take effect immediately.
 
-== GETs (Reading Data)
+== GETs (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Config Management API GET functions
+[cols="2,4"]
 |===
-| Resource | Description
-| `/cm/\{configName}` | Returns a list of configIds in JSON/YAML format, for example, ["config1", "config2"].
+| Resource  | Description
 
-200: Return: String Array
+| /cm/\{configName}
+| Returns a list of `configIds` in JSON/YAML format, (for example, `["config1", "config2"]`). +
+200: Return: String Array +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-| `/cm/schema/\{configName}` | Returns OpenAPI schema (for Swagger UI) in JSON/YAML format.
+| /cm/schema/\{configName}
+| Returns OpenAPI schema (for Swagger UI) in JSON/YAML format. +
+200: Return: OpenAPI schema +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 
-200: Return: OpenAPI schema
+| /cm/\{configName}/\{configId}
+| Returns configuration in JSON/YAML format. +
+200: Return: Config Bean +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-| `/cm/\{configName}/\{configId}` | Returns configuration in JSON/YAML format.
-
-200: Return: Config Bean 
-
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-|===
-
-
-== POSTs (Adding Data)
-
-[options="header", cols="5,10"]
-|===
-| Resource                    | Description
-| `/cm/\{configName}/\{configId}`             | Add new configuration.
-                                                     If the same configuration exists, it will return an error.
-
-200: Return nothing
-
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| /cm/\{configName}/\{configId}/\{path}
+| Returns a part of the configuration specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format or specifies a nonexistent path. +
+200 Return: part of the configuration +
+404 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+400 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 |===
 
-== PUTs (Modifying Data)
+== POSTs (adding data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Config Management API POST functions
+[cols="2,4"]
 |===
-| Resource                    | Description
-| `/cm/\{configName}/\{configId}`             |  Update configuration.
-                                                     If configuration does not exist, it will return error.
+| Resource  | Description
 
-200: Return nothing
+| /cm/\{configName}/\{configId}
+| Add new configuration.
+If the same configuration exists, it will return an error. +
+200: Return nothing +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| /cm/\{configName}/\{configId}/\{path}
+| Adds an array element to the configuration part specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format. +
+200 Return: nothing +
+404 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+400 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 |===
 
-== DELETEs (Removing Data)
+== PUTs (modifying data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Config Management API PUT functions
+[cols="3,4"]
 |===
-| Resource                    | Description
-| `/cm/\{configName}/\{configId}`             | Delete configuration.
+| Resource  | Description
 
-200: Return nothing
+| /cm/\{configName}/\{configId}
+|  Update configuration.
+If configuration does not exist, it will return error. +
+200: Return: nothing +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 
-400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| /cm/\{configName}/\{configId}/\{path}
+| Updates a part of the configuration specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format. +
+200 Return: nothing +
+404 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+400 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
+
+| /cm/\{configName}/\{configId}/\{pathToParent}/\{nodeName}
+| Updates or inserts a part of the configuration specified by `configName`, `configId`, and the path to the parent node in JSONPath format with the node name.
+Returns 404 when the configuration does not exist.
+Returns 400 when the `pathToParent` parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format. +
+200 Return: nothing +
+404 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+400 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+|===
+
+=== Examples
+
+The following example payload multiplies each thread pool size by a factor of 10 and empties the external requisitions list of entries (if any exist):
+
+[source, json]
+----
+{
+    "rescanThreads": 100,
+    "requistion-dir": "/opt/opennms/etc/imports",
+    "importThreads": 80,
+    "scanThreads": 100,
+    "writeThreads": 80,
+    "foreign-source-dir": "/opt/opennms/etc/foreign-sources",
+    "requisition-def": []
+}
+----
+
+NOTE: Do not change the `requisition-dir` and `foreign-source-dir` elements unless OpenNMS support tells you to do so.
+
+You can also target a single element using a cURL command:
+
+[source]
+curl -X PUT -u 'admin:admin' https://opennms.example.com/opennms/rest/cm/provisiond/default -H 'Content-type: application/json' --data '{ "rescanThreads": 150 }'
+
+== DELETEs (removing data)
+
+[caption=]
+.Config Management API DELETE functions
+[cols="2,4"]
+|===
+| Resource  | Description
+
+| /cm/\{configName}/\{configId}
+| Delete configuration. +
+200: Return nothing +
+400: Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
+
+| /cm/\{configName}/\{configId}/\{path}
+| Deletes a part of the configuration specified by `configName`, `configId`, and the path to the part in JSONPath format.
+Returns 404 when the configuration does not exist.
+Returns 400 when the path parameter has a wrong format, specifies a nonexistent path, or the provided part of the configuration has a wrong format. +
+200 Return: nothing +
+404 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}` +
+400 Return: `{"MESSAGE": "<ERROR_MESSAGE>"}`
 |===

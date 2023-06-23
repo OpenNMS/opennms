@@ -31,106 +31,98 @@ package org.opennms.netmgt.nb;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 public class Nms4930NetworkBuilder extends NmsNetworkBuilder {
 
-	NodeDao m_nodeDao;
-	IpNetToMediaDao m_ipNetToMediaDao;
+    //NMS4943
+    public static final String DLINK1_IP = "10.1.1.2";
+    public static final String DLINK1_NAME = "dlink1";
+    public static final String DLINK1_SNMP_RESOURCE = "classpath:/linkd/nms4930/dlink_DES-3026.properties";
 
-        public void addMacNodeWithSnmpInterface(String mac, String ip, Integer ifindex) {
+    public static final String DLINK2_IP = "10.1.2.2";
+    public static final String DLINK2_NAME = "dlink2";
+    public static final String DLINK2_SNMP_RESOURCE = "classpath:/linkd/nms4930/dlink_DGS-3612G.properties";
+
+    public OnmsNode getHost1() {
             NetworkBuilder nb = getNetworkBuilder();
-            nb.addNode(ip).setForeignSource("linkd").setForeignId(ip).setType(NodeType.ACTIVE);
-            nb.addInterface(ip).setIsSnmpPrimary("N").setIsManaged("M")
-            .addSnmpInterface(ifindex).setIfName("eth0").setIfType(6).setPhysAddr(mac).setIfDescr("eth0");
-            m_nodeDao.save(nb.getCurrentNode());
-            m_nodeDao.flush();
+            nb.addNode("host1").setForeignSource("linkd").setForeignId("host1").setType(NodeType.ACTIVE);
+            SnmpInterfaceBuilder snmpbuilder = nb.addSnmpInterface(101).setIfName("eth0").setIfType(6).setPhysAddr("001e58a6aed7").setIfDescr("eth0");
+            nb.addInterface("10.1.2.7",snmpbuilder.getSnmpInterface()).setIsSnmpPrimary("N").setIsManaged("M").setNetMask("255.255.255.0");
+            return nb.getCurrentNode();
+        }
+
+        public IpNetToMedia getMac1() {
 
             IpNetToMedia at0 = new IpNetToMedia();
-            at0.setSourceIfIndex(100);
-            at0.setPhysAddress(mac);
+            at0.setSourceIfIndex(101);
+            at0.setPhysAddress("001e58a6aed7");
             at0.setLastPollTime(at0.getCreateTime());
-            at0.setSourceNode(m_nodeDao.findByForeignId("linkd", ip));
+            at0.setSourceNode(getHost1());
             try {
-                at0.setNetAddress(InetAddress.getByName(ip));
+                at0.setNetAddress(InetAddress.getByName("10.1.2.7"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
             at0.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
-            m_ipNetToMediaDao.saveOrUpdate(at0);
-            m_ipNetToMediaDao.flush();
-
+            at0.setNode(getHost1());
+            return at0;
         }
         
-        public void addMacNode(String mac, String ip) {
+        public OnmsNode getHost2() {
             NetworkBuilder nb = getNetworkBuilder();
-            nb.addNode(ip).setForeignSource("linkd").setForeignId(ip).setType(NodeType.ACTIVE);
-            nb.addInterface(ip).setIsSnmpPrimary("N").setIsManaged("M");
-            m_nodeDao.save(nb.getCurrentNode());
-            m_nodeDao.flush();
+            nb.addNode("host2").setForeignSource("linkd").setForeignId("host2").setType(NodeType.ACTIVE);
+            nb.addInterface("10.1.2.6").setIsSnmpPrimary("N").setIsManaged("M");
+            return nb.getCurrentNode();
+        }
 
-            IpNetToMedia at0 = new IpNetToMedia();
-            at0.setSourceIfIndex(100);
-            at0.setPhysAddress(mac);
-            at0.setLastPollTime(at0.getCreateTime());
-            at0.setSourceNode(m_nodeDao.findByForeignId("linkd", ip));
+        public IpNetToMedia getMac2() {
+
+        IpNetToMedia at = new IpNetToMedia();
+            at.setSourceIfIndex(101);
+            at.setPhysAddress("000ffeb10e26");
+            at.setLastPollTime(at.getCreateTime());
+            at.setSourceNode(getHost1());
             try {
-                at0.setNetAddress(InetAddress.getByName(ip));
+                at.setNetAddress(InetAddress.getByName("10.1.2.6"));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-            at0.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
-            m_ipNetToMediaDao.saveOrUpdate(at0);
-            m_ipNetToMediaDao.flush();
+            at.setNode(getHost2());
+            return at;
 
         }
-	
-    @SuppressWarnings("deprecation")
-	public void buildNetwork4930() {
+
+        public OnmsNode getDlink1() {
+            NetworkBuilder nb = getNetworkBuilder();
+
+            nb.addNode(DLINK1_NAME).setForeignSource("linkd").setForeignId(DLINK1_NAME).setSysObjectId(".1.3.6.1.4.1.9.1.122").setType(NodeType.ACTIVE);
+            SnmpInterfaceBuilder builderA = nb.addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90010");
+            nb.addInterface(DLINK1_IP, builderA.getSnmpInterface()).setIsSnmpPrimary("P").setIsManaged("M").setNetMask("255.255.255.0");
+            SnmpInterfaceBuilder builderB = nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90000");
+            nb.addInterface("10.1.2.1", builderB.getSnmpInterface()).setIsSnmpPrimary("S").setIsManaged("M").setNetMask("255.255.255.0");
+            SnmpInterfaceBuilder builderC = nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90001");
+            nb.addInterface("10.1.3.1",builderC.getSnmpInterface()).setIsSnmpPrimary("S").setIsManaged("M").setNetMask("255.255.255.0");
+            nb.addSnmpInterface(24).setIfType(6).setIfName("Fa0/24").setIfSpeed(100000000);
+            return nb.getCurrentNode();
+        }
+
+    public OnmsNode getDlink2() {
         NetworkBuilder nb = getNetworkBuilder();
-        
-        nb.addNode(DLINK1_NAME).setForeignSource("linkd").setForeignId(DLINK1_NAME).setSysObjectId(".1.3.6.1.4.1.9.1.122").setType(NodeType.ACTIVE);
-        nb.addInterface(DLINK1_IP).setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90010");
-        nb.addInterface("10.1.2.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90000");
-        nb.addInterface("10.1.3.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90001");
-        nb.addSnmpInterface(24).setIfType(6).setIfName("Fa0/24").setIfSpeed(100000000);
-        m_nodeDao.save(nb.getCurrentNode());
-
         nb.addNode(DLINK2_NAME).setForeignSource("linkd").setForeignId(DLINK2_NAME).setSysObjectId(".1.3.6.1.4.1.9.1.122").setType(NodeType.ACTIVE);
-        nb.addInterface(DLINK2_IP).setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90000");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90001");
+        SnmpInterfaceBuilder builderA = nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90000");
+        nb.addInterface(DLINK2_IP, builderA.getSnmpInterface()).setIsSnmpPrimary("P").setIsManaged("M").setNetMask("255.255.255.0");
+
+        SnmpInterfaceBuilder builderB = nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90001");
+        nb.addInterface("10.1.5.1",builderB.getSnmpInterface()).setIsSnmpPrimary("S").setIsManaged("M").setNetMask("255.255.255.0");
         nb.addSnmpInterface(10).setIfType(6).setIfName("FastEthernet0/10").setIfSpeed(100000000);
-        m_nodeDao.save(nb.getCurrentNode());
-        m_nodeDao.flush();
+
+        return nb.getCurrentNode();
     }
-    
 
-    
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		m_nodeDao = nodeDao;
-	}
-	
-       public IpNetToMediaDao getIpNetToMediaDao() {
-	           return m_ipNetToMediaDao;
-	       }
-
-	       public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
-	           m_ipNetToMediaDao = ipNetToMediaDao;
-	       }
-
-	
 }

@@ -1,0 +1,11 @@
+commands:
+  save-maven-cache:
+    description: "Maven: Save cache"
+    steps:
+      - run:
+          name: Remove old artifacts to keep workspace size down
+          command: .circleci/scripts/clean-m2.sh
+      - save_cache:
+          key: maven-dependencies-v5-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+          paths:
+            - ~/.m2

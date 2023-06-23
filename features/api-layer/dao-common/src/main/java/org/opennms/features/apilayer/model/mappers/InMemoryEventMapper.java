@@ -41,7 +41,8 @@ import org.opennms.netmgt.xml.event.Event;
 public interface InMemoryEventMapper {
     @Mappings({
             @Mapping(source = "parmCollection", target = "parameters"),
-            @Mapping(source = "nodeid", target = "nodeId")
+            @Mapping(source = "nodeid", target = "nodeId"),
+            @Mapping(source = "interfaceAddress", target = "interface")
     })
     ImmutableInMemoryEvent map(Event event);
 

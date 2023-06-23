@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -47,10 +46,11 @@ public class StackModel {
 
     private final OpenNMSProfile opennms;
     private final List<MinionProfile> minions;
-    private final List<Map<String,String>> legacyMinions;
     private final List<SentinelProfile> sentinels;
+    private final boolean jaegerEnabled;
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
+    private final boolean simulateRestricedOpenShiftEnvironment;
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
@@ -61,12 +61,13 @@ public class StackModel {
         // Profiles
         opennms = builder.opennms;
         minions = builder.minions;
-        legacyMinions = builder.legacyMinions;
         sentinels = builder.sentinels;
 
         // Flags
+        jaegerEnabled = builder.jaegerEnabled;
         elasticsearchEnabled = builder.elasticsearchEnabled;
         telemetryProcessingEnabled = builder.telemetryProcessingEnabled;
+        simulateRestricedOpenShiftEnvironment = builder.simulateRestricedOpenShiftEnvironment;
 
         // Enums
         ipcStrategy = builder.ipcStrategy;
@@ -83,10 +84,11 @@ public class StackModel {
     public static final class Builder {
         private OpenNMSProfile opennms = OpenNMSProfile.DEFAULT;
         private List<MinionProfile> minions = new LinkedList<>();
-        private List<Map<String, String>> legacyMinions = new LinkedList<>();
         private List<SentinelProfile> sentinels = new LinkedList<>();
+        public boolean jaegerEnabled = false;
         private boolean elasticsearchEnabled = false;
         private boolean telemetryProcessingEnabled = false;
+        private boolean simulateRestricedOpenShiftEnvironment = false;
 
         private IpcStrategy ipcStrategy = IpcStrategy.JMS;
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
@@ -134,26 +136,16 @@ public class StackModel {
         /**
          * Enable a Minion using the given configuration.
          *
-         * @param minion configuration to use
+         * @param configuration minion configuration to use
          * @return this builder
          */
-
-        public Builder withMinion(final Map<String, String> configuration) {
-            legacyMinions = Collections.singletonList(configuration);
-            return this;
-        }
 
         /**
          * Enable many Minions using the given configurations.
          *
-         * @param minions configurations to use
+         * @param configurations minions configurations to use
          * @return this builder
          */
-
-        public Builder withMinions(final Map<String, String> ... configurations) {
-            legacyMinions = Arrays.asList(configurations);
-            return this;
-        }
 
         /**
          * Enable one Sentinel using the default profile.
@@ -173,6 +165,16 @@ public class StackModel {
          */
         public Builder withSentinels(SentinelProfile... sentinels) {
             this.sentinels = Arrays.asList(sentinels);
+            return this;
+        }
+
+        /**
+         * Enable Jaeger for tracing.
+         *
+         * @return this builder
+         */
+        public Builder withJaeger() {
+            jaegerEnabled = true;
             return this;
         }
 
@@ -232,6 +234,17 @@ public class StackModel {
         }
 
         /**
+         * Simulate a restricted OpenShift environment by using a random UID when
+         * starting the container, and using a JDK w/o capabilities set
+         *
+         * @return this builder
+         */
+        public Builder withSimulateRestricedOpenShiftEnvironment() {
+            simulateRestricedOpenShiftEnvironment = true;
+            return this;
+        }
+
+        /**
          * Choose the key value store to use for blobs.
          *
          * @return this builder
@@ -278,12 +291,12 @@ public class StackModel {
         return minions;
     }
 
-    public List<Map<String, String>> getLegacyMinions() {
-        return legacyMinions;
-    }
-
     public List<SentinelProfile> getSentinels() {
         return sentinels;
+    }
+
+    public boolean isJaegerEnabled() {
+        return jaegerEnabled;
     }
 
     public boolean isElasticsearchEnabled() {
@@ -292,6 +305,10 @@ public class StackModel {
 
     public boolean isTelemetryProcessingEnabled() {
         return telemetryProcessingEnabled;
+    }
+
+    public boolean isSimulateRestricedOpenShiftEnvironment() {
+        return simulateRestricedOpenShiftEnvironment;
     }
 
     public IpcStrategy getIpcStrategy() {

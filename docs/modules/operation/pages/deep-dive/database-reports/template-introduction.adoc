@@ -1,0 +1,34 @@
+
+= Report Templates
+
+{page-component-title} includes a number of <<deep-dive/database-reports/database.adoc#db-report-sample-templates, sample report templates>>.
+You can use them as-is, modify them, or use them as examples on which to base your own custom report templates.
+
+.Example Node Availability report
+image::database-reports/node-availability-report.png["Example of a Node Availability report. Two surveillance categories are displayed, with statistics for each node.", 650]
+
+== Report scheduling and delivery
+
+When you configure a report template, the last two checkboxes for most let you set the delivery and scheduling settings for the report.
+Selecting *Deliver This Report* displays the following delivery options:
+
+* *Unique Name:* The report's name.
+This must be unique among all scheduled reports.
+* *Format:* Specify PDF or CSV.
+* *Delivery Options:*
+** *Save a Copy of the Report:* Save a copy of the report to your {page-component-title} instance.
+You can view it from the *Persisted Reports* tab.
+** *Email Report:* A comma-separated list of email addresses to which the report will be emailed.
+** *Webhook:* A specified HTTP endpoint to which the report will be posted when it is generated.
+
+Selecting *Schedule This Report* displays the following scheduling options:
+
+* *Daily*.
+* *Days per Week:* Specify days of the week on which the report will run.
+* *Days per Month:* Specify days of the month on which the report will run (for example, the third Sunday of each month).
+* *Cron Expression*.
+
+NOTE: Each scheduling option has additional fields associated with it, such as *Days of the Week*, *Interval*, and *Specific Time*.
+
+After you set the delivery and scheduling information, you can click *Deliver Report* to generate the report and save, email, or webhook it as specified.
+A list of scheduled reports is displayed in the *Report Schedules* tab.

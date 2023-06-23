@@ -1,6 +1,7 @@
 import { Commit, Dispatch } from 'vuex'
 import { SORT } from '@featherds/table'
 
+
 export interface VuexContext {
   commit: Commit
   dispatch: Dispatch
@@ -23,15 +24,24 @@ export interface SearchResultResponse {
   }
   empty: boolean
   more: boolean
-  results: {
-    identifier: string
-    label: string
-    matches: any
-    properties: any
-    url: string
-    weight: number
-  }[]
+  results: SearchResultMatch[]
 }
+
+export interface SearchResultMatch {
+    label: string;
+    value: string;
+}
+
+export interface SearchResultItem {
+    identifier: string
+    icon: string;
+    label: string;
+    url: string;
+    properties: any;
+    matches: SearchResultMatch[];
+    weight: number;
+}
+export type SearchResultsByContext = Array<{label:string,results:SearchResultResponse[]}>
 
 export interface ApiResponse {
   count: number
@@ -78,6 +88,8 @@ export interface Node {
   assetRecord: {
     longitude: string
     latitude: string
+    description: string
+    maintcontract: string
   }
   categories: Category[]
   createTime: number
@@ -265,6 +277,7 @@ export interface BreadCrumb {
   label: string
   to: string
   position?: string
+  isAbsoluteLink?: boolean
 }
 
 export interface Vertice {
@@ -450,6 +463,7 @@ export interface Expression {
 }
 
 export interface Plugin {
+  extensionClass?: string
   extensionId: string
   menuEntry: string
   moduleFileName: string

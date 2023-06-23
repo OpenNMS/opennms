@@ -25,6 +25,10 @@ const globalErrorHandling = function(scope, errorResponse) {
         'ui.router',
         'onms.http',
     ])
+        .config(['$locationProvider', function($locationProvider) {
+            $locationProvider.hashPrefix('');
+        }])
+
         .directive('onmsCentralSearch', function() {
             return {
                 restrict: 'E',

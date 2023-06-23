@@ -54,7 +54,7 @@ public interface EventRestApi {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get all events", description = "Get all events", tags = {"Events"})
+    @Operation(summary = "Get all events", description = "Get all events", operationId = "EventRestAPIGetAllEvents", tags = {"Events"})
     @ApiResponses(value = {
 
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -67,7 +67,7 @@ public interface EventRestApi {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get the events specified by the given ID", description = "Get the events specified by the given ID", tags = {"Events"})
+    @Operation(summary = "Get the events specified by the given ID", description = "Get the events specified by the given ID", operationId = "EventRestAPIGetEventById", tags = {"Events"})
     @ApiResponses(value = {
 
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -80,7 +80,7 @@ public interface EventRestApi {
     @GET
     @Path("count")
     @Produces({MediaType.TEXT_PLAIN})
-    @Operation(summary = "Get total count of events", description = "Get total count of events", tags = {"Events"})
+    @Operation(summary = "Get total count of events", description = "Get total count of events", operationId = "EventRestAPIGetEventsCount", tags = {"Events"})
     @ApiResponses(value = {
 
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -91,7 +91,7 @@ public interface EventRestApi {
     @GET
     @Path("properties")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get event properties", description = "Get event properties with a given query", tags = {"Events"})
+    @Operation(summary = "Get event properties", description = "Get event properties with a given query", operationId = "EventRestAPIGetEventProperties", tags = {"Events"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
@@ -103,7 +103,7 @@ public interface EventRestApi {
     @GET
     @Path("properties/{propertyId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get event properties specified by query and propertyId", description = "Get event properties with a given query and propertyId", tags = {"Events"})
+    @Operation(summary = "Get event properties specified by query and propertyId", description = "Get event properties with a given query and propertyId", operationId = "EventRestAPIGetPropertyByPropertyId", tags = {"Events"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
@@ -116,7 +116,7 @@ public interface EventRestApi {
     @POST
     @Path("{tiebreaker: $}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Publish a new event", description = "Publish a new event")
+    @Operation(summary = "Publish a new event", description = "Publish a new event", operationId = "EventRestAPIPostTiebreaker")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Successful operation",
                     content = @Content),

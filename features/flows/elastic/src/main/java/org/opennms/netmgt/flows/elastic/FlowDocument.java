@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.flows.api.EnrichedFlow;
-import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.integration.api.v1.flows.Flow;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -45,15 +45,8 @@ import com.google.gson.annotations.SerializedName;
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
 
-
-    public FlowDocument(Flow flow) {
-        this.flow = flow;
-    }
-
     public FlowDocument() {
     }
-
-    private transient Flow flow;
 
     /**
      * Flow timestamp in milliseconds.
@@ -347,14 +340,6 @@ public class FlowDocument {
     public void addHost(String host) {
         Objects.requireNonNull(host);
         hosts.add(host);
-    }
-
-    public Flow getFlow() {
-        return flow;
-    }
-
-    public void setFlow(Flow flow) {
-        this.flow = flow;
     }
 
     public long getTimestamp() {
@@ -684,13 +669,6 @@ public class FlowDocument {
     }
 
     public void setTos(final Integer tos) {
-        if (tos != null) {
-            setDscp((tos & 0b11111100) >> 2);
-            setEcn(tos & 0b00000011);
-        } else {
-            setDscp(null);
-            setEcn(null);
-        }
         this.tos = tos;
     }
 
@@ -751,8 +729,8 @@ public class FlowDocument {
     }
 
     public static FlowDocument from(final Flow flow) {
-        final FlowDocument doc = new FlowDocument(flow);
-        doc.setTimestamp(flow.getTimestamp());
+        final FlowDocument doc = new FlowDocument();
+        doc.setTimestamp(flow.getTimestamp() != null ? flow.getTimestamp().toEpochMilli() : 0);
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
         doc.setDstAddr(flow.getDstAddr());
@@ -762,12 +740,12 @@ public class FlowDocument {
         doc.setDstPort(flow.getDstPort());
         doc.setEngineId(flow.getEngineId());
         doc.setEngineType(flow.getEngineType());
-        doc.setFirstSwitched(flow.getFirstSwitched());
+        doc.setFirstSwitched(flow.getFirstSwitched() != null ? flow.getFirstSwitched().toEpochMilli() : 0);
         doc.setFlowRecords(flow.getFlowRecords());
         doc.setFlowSeqNum(flow.getFlowSeqNum());
         doc.setInputSnmp(flow.getInputSnmp());
         doc.setIpProtocolVersion(flow.getIpProtocolVersion());
-        doc.setLastSwitched(flow.getLastSwitched());
+        doc.setLastSwitched(flow.getLastSwitched() != null ? flow.getLastSwitched().toEpochMilli() : 0);
         doc.setNextHop(flow.getNextHop());
         flow.getNextHopHostname().ifPresent(doc::setNextHopHostname);
         doc.setOutputSnmp(flow.getOutputSnmp());
@@ -781,67 +759,25 @@ public class FlowDocument {
         doc.setSrcMaskLen(flow.getSrcMaskLen());
         doc.setSrcPort(flow.getSrcPort());
         doc.setTcpFlags(flow.getTcpFlags());
-        doc.setDeltaSwitched(flow.getDeltaSwitched());
+        doc.setDeltaSwitched(flow.getDeltaSwitched() != null ? flow.getDeltaSwitched().toEpochMilli() : 0);
         doc.setTos(flow.getTos());
+        doc.setDscp(flow.getDscp());
+        doc.setEcn(flow.getEcn());
         doc.setNetflowVersion(NetflowVersion.from(flow.getNetflowVersion()));
         doc.setVlan(flow.getVlan() != null ? Integer.toUnsignedString(flow.getVlan()) : null);
 
+        doc.setApplication(flow.getApplication());
+        doc.setHost(flow.getHost());
+        doc.setLocation(flow.getLocation());
+        doc.setSrcLocality(Locality.from(flow.getSrcLocality()));
+        doc.setDstLocality(Locality.from(flow.getDstLocality()));
+        doc.setFlowLocality(Locality.from(flow.getFlowLocality()));
+        doc.setNodeSrc(NodeDocument.from(flow.getSrcNodeInfo()));
+        doc.setNodeDst(NodeDocument.from(flow.getDstNodeInfo()));
+        doc.setNodeExporter(NodeDocument.from(flow.getExporterNodeInfo()));
+        doc.setClockCorrection(flow.getClockCorrection() != null ? flow.getClockCorrection().toMillis() : 0);
+        doc.setConvoKey(flow.getConvoKey());
+
         return doc;
     }
-
-    public static EnrichedFlow buildEnrichedFlow(FlowDocument flowDocument) {
-
-        EnrichedFlow enrichedFlow = new EnrichedFlow(flowDocument.getFlow());
-        enrichedFlow.setApplication(flowDocument.getApplication());
-        enrichedFlow.setHost(flowDocument.getHost());
-        enrichedFlow.setLocation(flowDocument.getLocation());
-        enrichedFlow.setDstLocality(matchLocality(flowDocument.getDstLocality()));
-        enrichedFlow.setSrcLocality(matchLocality(flowDocument.getSrcLocality()));
-        enrichedFlow.setFlowLocality(matchLocality(flowDocument.getFlowLocality()));
-        enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
-        enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
-        enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
-        enrichedFlow.setClockCorrection(flowDocument.getClockCorrection());
-        return enrichedFlow;
-
-    }
-
-    private static EnrichedFlow.Locality matchLocality(Locality locality) {
-        switch (locality) {
-            case PUBLIC:
-                return EnrichedFlow.Locality.PUBLIC;
-            case PRIVATE:
-                return EnrichedFlow.Locality.PRIVATE;
-        }
-        return EnrichedFlow.Locality.PUBLIC;
-    }
-
-
-    private static NodeInfo buildNodeInfo(NodeDocument nodeDocument) {
-        if (nodeDocument == null) {
-            return null;
-        }
-        return new NodeInfo() {
-            @Override
-            public Integer getNodeId() {
-                return nodeDocument.getNodeId();
-            }
-
-            @Override
-            public String getForeignId() {
-                return nodeDocument.getForeignId();
-            }
-
-            @Override
-            public String getForeignSource() {
-                return nodeDocument.getForeignSource();
-            }
-
-            @Override
-            public List<String> getCategories() {
-                return nodeDocument.getCategories();
-            }
-        };
-    }
-
 }

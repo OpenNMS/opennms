@@ -32,6 +32,10 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.firs
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -81,13 +85,13 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public long getReceivedAt() {
-        return this.receivedAt.toEpochMilli();
+    public Instant getReceivedAt() {
+        return this.receivedAt;
     }
 
     @Override
-    public long getTimestamp() {
-        return this.header.getTimestamp();
+    public Instant getTimestamp() {
+        return Instant.ofEpochMilli(this.header.getTimestamp());
     }
 
     @Override
@@ -168,14 +172,14 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Long getFirstSwitched() {
+    public Instant getFirstSwitched() {
         // As this flow represents a single packet, there is no "duration" of the flow
-        return this.header.getTimestamp();
+        return Instant.ofEpochMilli(this.header.getTimestamp());
     }
 
     @Override
-    public Long getLastSwitched() {
-        return this.header.getTimestamp();
+    public Instant getLastSwitched() {
+        return Instant.ofEpochMilli(this.header.getTimestamp());
     }
 
     @Override
@@ -255,8 +259,8 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
-        return Flow.SamplingAlgorithm.Unassigned;
+    public SamplingAlgorithm getSamplingAlgorithm() {
+        return SamplingAlgorithm.Unassigned;
     }
 
     @Override
@@ -320,7 +324,7 @@ public class SFlow implements Flow {
     }
 
     @Override
-    public Long getDeltaSwitched() {
+    public Instant getDeltaSwitched() {
         return this.getFirstSwitched();
     }
 

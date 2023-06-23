@@ -1,0 +1,7 @@
+
+= RTC
+
+The RTC dashlet displays your {page-component-title} SLA categories in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
+You can configure the SLA categories on the {page-component-title} home page.
+
+There are no unique configuration properties associated with this dashlet, and xref:deep-dive/visualizations/opsboard/boosting-behavior.adoc[boost support] is not available.

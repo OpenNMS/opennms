@@ -13,10 +13,10 @@
         <#if request.remoteUser?has_content >
             <ul class="navbar-nav ml-1">
                 <li class="nav-item">
-                    <span class="navbar-text">${formattedTime}</span>
+                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
                 </li>
                 <li class="nav-item">
-                    <span class="navbar-text ml-1">
+                    <span class="navbar-text navbar-bell ml-1">
                         <#if noticeStatus = 'Unknown'>
                             <!-- Gray circle with bell inside -->
                             <i class="fa fa-bell text-secondary"></i>
@@ -32,119 +32,145 @@
             </ul>
         </#if>
 
-        <onms-central-search class="ml-auto"></onms-central-search>
+        <onms-central-search></onms-central-search>
 
         <ul class="navbar-nav ml-auto">
-		<#if request.remoteUser?has_content >
-		  <#list model.entryList as entry>
-              <#assign item=entry.getKey()>
-              <#assign display=entry.getValue()>
+  		  <#if request.remoteUser?has_content >
+  		    <#list model.entryList as entry>
+                <#assign item=entry.getKey()>
+                <#assign display=entry.getValue()>
 
-              <#if shouldDisplay(item, display) >
+                <#if shouldDisplay(item, display) >
                   <#if item.entries?has_content >
-                  <#-- has sub-entries, draw menu drop-downs -->
-		        <li class="nav-item dropdown">
-		          <#if item.url?has_content && item.url != "#">
-		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
-                  <#else>
-		            <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
-                  </#if>
-                    <div class="dropdown-menu dropdown-menu-right" role="menu">
-		            <#list item.entries as subItem>
-		              <#if shouldDisplay(subItem) >
-                          <#if subItem.url?has_content >
-		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
-                          <#else>
-		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
+                    <#-- has sub-entries, draw menu drop-downs -->
+  		            <li class="nav-item dropdown">
+  		              <#if item.url?has_content && item.url != "#">
+      		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    		              <#if isAdminLink(item) >
+                            <i class="fa fa-solid fa-cogs"></i>
                           </#if>
-                      </#if>
-                    </#list>
-                    </div>
-                </li>
-                  <#else>
-                      <#if item.url?has_content >
-		          <li class="nav-item"><a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
+      		              ${item.name}
+      		            </a>
                       <#else>
-		          <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
+        		        <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
                       </#if>
-                  </#if>
-              </#if>
-          </#list>
-            <li class="nav-item dropdown">
-                <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
-                        <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
-                    </a>
-                    <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
-                        <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
-                    </a>
-                    <#if isAdmin >
-                        <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp" title="Support">
-                            <i class="fa fa-fw fa-life-ring"></i>&nbsp; Support
-                        </a>
+                      <div class="dropdown-menu dropdown-menu-right" role="menu">
+  		                <#list item.entries as subItem>
+    		              <#if shouldDisplay(subItem) >
+                            <#if subItem.url?has_content >
+  		                      <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">
+                                <#if isAdminLink(subItem) >
+                                  <i class="fa fa-solid fa-cogs"></i>
+                                </#if>
+  		                        ${subItem.name}
+                              </a>
+                            <#else>
+      		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
+                            </#if>
+                          </#if>
+                        </#list>
+                      </div>
+                    </li>
+                  <#else>
+                    <#if item.url?has_content >
+  		              <li class="nav-item">
+  		                <a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">
+    		              <#if isAdminLink(item) >
+                            <i class="fa fa-solid fa-cogs"></i>
+                          </#if>
+  		                  ${item.name}
+		                </a>
+		              </li>
+                    <#else>
+  		              <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
                     </#if>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a name="nav-user-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="fa fa-user"></span>
-                    ${request.remoteUser}
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/newPasswordEntry">
-                        <i class="fa fa-key"></i>&nbsp; Change Password</a>
-                    <a class="dropdown-item" name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">
-                        <i class="fa fa-sign-out"></i>&nbsp; Log Out
-                    </a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link" data-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
-                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
-                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices assigned to you
-                    </a>
-                    <div id="headerNotifications" style="min-width: 500px"></div>
+                  </#if>
+                </#if>
+              </#list>
+
+              <li id="menubar-plugin-container" class="nav-item dropdown" style="display:none">
+                  <a name="nav-plugin-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Plugins</a>
+                  <div id="menubar-plugin-item-container" class="dropdown-menu dropdown-menu-right" role="menu"></div>
+              </li>
+
+              <li class="nav-item dropdown">
+                  <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
+                  <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
+                          <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
+                      </a>
+                      <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
+                          <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
+                      </a>
+                      <a class="dropdown-item" name="nav-admin-api-documentation" href="${baseHref}ui/index.html#/open-api">
+                          <i class="fa fa-fw fa-info-circle"></i>&nbsp; API Documentation
+                      </a>
+                      <#if isAdmin >
+                          <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp" title="Support">
+                              <i class="fa fa-solid fa-cogs"></i>&nbsp;Support
+                          </a>
+                      </#if>
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a name="nav-user-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                      <span class="fa fa-user"></span>
+                      ${request.remoteUser}
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                      <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/newPasswordEntry">
+                          <i class="fa fa-key"></i>&nbsp; Change Password</a>
+                      <form name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
+                      <a class="dropdown-item" name="nav-admin-logout" href="javascript:document.headerLogoutForm.submit()" style="white-space: nowrap">
+                          <i class="fa fa-sign-out"></i>&nbsp; Log Out
+                      </a>
+                  </div>
+              </li>
+              <li class="nav-item dropdown">
+                  <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button" aria-expanded="false">
+                      <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
+                      <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right" role="menu">
+                      <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
+                          <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices assigned to you
+                      </a>
+                      <div id="headerNotifications" style="min-width: 500px"></div>
 
 
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
-                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span class="totalNotificationCount"></span> assigned to anyone but you
-                    </a>
-                    <a class="dropdown-item" href="${baseHref}roles">
-                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
-                    </a>
-                </div>
-            </li>
-            </ul>
-            <ul class="navbar-nav">
-            <#if isAdmin || isProvision >
-                <li class="nav-item">
-                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">
-                        <i class="fa fa-plus-circle"></i>
-                    </a>
-                </li>
-            </#if>
-            <#if isFlow >
-                <li class="nav-item">
-                    <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" title="Flow Management">
-                        <i class="fa fa-minus-circle"></i>
-                    </a>
-                </li>
-            </#if>
-            <#if isAdmin >
-                <li class="nav-item">
-                    <a class="nav-link" style="font-size: 1.25rem" title="Configure OpenNMS" href="${baseHref}admin/index.jsp"><i class="fa fa-cogs"></i></a>
-                </li>
-            </#if>
-        </#if>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
+                          <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span class="totalNotificationCount"></span> assigned to anyone but you
+                      </a>
+                      <a class="dropdown-item" href="${baseHref}roles">
+                          <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
+                      </a>
+                  </div>
+              </li>
+              </ul>
+              <ul class="navbar-nav">
+              <#if isAdmin || isProvision >
+                  <li class="nav-item">
+                      <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">
+                          <i class="fa fa-plus-circle"></i>
+                      </a>
+                  </li>
+              </#if>
+              <#if isFlow >
+                  <li class="nav-item">
+                      <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-flow" href="${baseHref}admin/classification/index.jsp" title="Flow Management">
+                          <i class="fa fa-minus-circle"></i>
+                      </a>
+                  </li>
+              </#if>
+              <#if isAdmin >
+                  <li class="nav-item">
+                      <a class="nav-link" style="font-size: 1.25rem" title="Configure OpenNMS" href="${baseHref}admin/index.jsp"><i class="fa fa-cogs"></i></a>
+                  </li>
+              </#if>
+          </#if>
         </ul>
     </div>
-    <a href="${baseHref}ui/index.html"><button type="button" class="btn btn-primary" id="ui-preview-btn">UI Preview</button></a>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
@@ -254,6 +280,21 @@
         }
     };
 
+    var updatePluginLinks = function(response) {
+        if (response && response.length) {
+            response.forEach(function(item, index) {
+                var name = "nav-plugin-" + item.extensionId + "-" + item.resourceRootPath;
+                var url = "${baseHref}ui/#/plugins/" + item.extensionId + "/" + item.resourceRootPath + "/" + item.moduleFileName;
+                var text = item.menuEntry;
+                var html = '<a class="dropdown-item" name="nav-' + name + '" href="' + url + '">' + text + '</a>';
+
+                $(html).appendTo("#menubar-plugin-item-container");
+            });
+
+            $("#menubar-plugin-container").show();
+        }
+    };
+
     $(document).ready(function() {
         updateNotificationIndicators();
 
@@ -261,6 +302,13 @@
         $.get(baseHref + "rest/notifications/summary", function(response) {
             if (response) {
                 updateNotificationIndicators(response);
+            }
+        });
+
+        // Get plugin info
+        $.get(baseHref + "rest/plugins", function(response) {
+            if (response) {
+                updatePluginLinks(response);
             }
         });
     });

@@ -45,9 +45,11 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.FopFactoryBuilder;
 import org.apache.fop.apps.MimeConstants;
 import org.extremecomponents.table.core.Preferences;
 import org.extremecomponents.table.filter.ViewResolver;
+import org.springframework.core.io.ClassPathResource;
 
 public class OnmsPdfViewResolver implements ViewResolver {
 
@@ -57,8 +59,7 @@ public class OnmsPdfViewResolver implements ViewResolver {
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
-        FopFactory fopFactory = FopFactory.newInstance();
-        fopFactory.setStrictValidation(false);
+        final FopFactory fopFactory = new FopFactoryBuilder(new ClassPathResource("/fop.xconf").getURI()).build();
         FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
         Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
         

@@ -32,27 +32,27 @@
   <!-- Conditionally start a local ActiveMQ broker. -->
   <bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/>
 
-  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" lazy-init="true">
     <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false&amp;jms.useAsyncSend=true')}" />
     <property name="userName" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.username', '')}" />
     <property name="password" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.password', '')}" />
   </bean>
 
   <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
-    init-method="start" destroy-method="stop">
+    init-method="start" destroy-method="stop" lazy-init="true">
     <property name="maxConnections" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.max-connections', '8')}" />
     <property name="idleTimeout" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.idle-timeout', '30000')}" />
     <property name="reconnectOnException" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.reconnect-on-exception', 'true')}" />
     <property name="connectionFactory" ref="jmsConnectionFactory" />
   </bean>
 
-  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" lazy-init="true">
     <property name="connectionFactory" ref="pooledConnectionFactory" />
     <property name="concurrentConsumers" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.concurrent-consumers', '10')}" />
   </bean>
 
   <!-- activemq component to be used by spring applicationContext/camelContext  -->
-  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
   </bean>
 

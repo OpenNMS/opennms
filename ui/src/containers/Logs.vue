@@ -1,6 +1,11 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
+      <BreadCrumbs :items="breadcrumbs" />
+    </div>
+  </div>
+  <div class="feather-row">
+    <div class="feather-col-12">
       <div class="card">
         <div class="feather-row">
           <div class="feather-col-3">
@@ -19,7 +24,20 @@
 import { useStore } from 'vuex'
 import Editor from '@/components/Logs/Editor.vue'
 import Logs from '@/components/Logs/Logs.vue'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { BreadCrumb } from '@/types'
+
 const store = useStore()
+
+const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+
+const breadcrumbs = computed<BreadCrumb[]>(() => {
+  return [
+    { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+    { label: 'Logs', to: '#', position: 'last' }
+  ]
+})
+
 onMounted(() => store.dispatch('logsModule/getLogs'))
 </script>
 

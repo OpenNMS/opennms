@@ -270,7 +270,7 @@ feature:install sentinel-jsonstore-postgres
 feature:install sentinel-telemetry-bmp-persist
 ----
 
-<1> Needs datasource configuration setup per xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
+<1> Needs datasource configuration setup per xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
 <2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
 

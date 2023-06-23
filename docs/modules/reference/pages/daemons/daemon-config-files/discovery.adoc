@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-discovery]]
 = Discovery
 
-Scans unknown nodes to xref:operation:provisioning/auto-discovery.adoc[auto discover] potential nodes to monitor.
+Scans unknown nodes to xref:operation:deep-dive/provisioning/auto-discovery.adoc[auto discover] potential nodes to monitor.
 
 .Discovery configuration file overview
 [options="header"]

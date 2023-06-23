@@ -41,13 +41,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -256,7 +255,8 @@ public class HibernateEventWriterIT {
         assertTrue(event.getDbid() > 0);
 
         String minionId = jdbcTemplate.queryForObject("SELECT systemId FROM events LIMIT 1", String.class);
-        assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, minionId);
+        String originalSystemId = jdbcTemplate.queryForObject("SELECT id FROM monitoringsystems LIMIT 1", String.class);
+        assertEquals(originalSystemId, minionId);
 
         jdbcTemplate.execute("DELETE FROM events");
         jdbcTemplate.execute(String.format("INSERT INTO monitoringsystems (id, location, type) VALUES ('%s', 'Hello World', '%s')", systemId, OnmsMonitoringSystem.TYPE_MINION));

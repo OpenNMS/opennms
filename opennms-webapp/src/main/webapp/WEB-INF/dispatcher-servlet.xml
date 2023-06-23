@@ -282,8 +282,8 @@
                 </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Geographical"/>
-                    <property name="url" value="node-maps"/>
-                    <property name="locationMatch" value="node-maps"/>
+                    <property name="url" value="ui/index.html#/map"/>
+                    <property name="locationMatch" value="ui/index.html#/map"/>
                 </bean>
             </list>
         </property>
@@ -346,10 +346,35 @@
                                 <property name="url" value="pathOutage/index.jsp"/>
                                 <property name="locationMatch" value="pathOutage"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
                                 <property name="name" value="Device Configs"/>
                                 <property name="url" value="ui/index.html#/device-config-backup"/>
                                 <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="External Requisitions"/>
+                                <property name="url" value="ui/index.html#/configuration"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="File Editor"/>
+                                <property name="url" value="ui/index.html#/file-editor"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_FILESYSTEM_EDITOR"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Logs"/>
+                                <property name="url" value="ui/index.html#/logs"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Secure Credentials Vault"/>
+                                <property name="url" value="ui/index.html#/scv"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
                             </bean>
                         </list>
                     </property>

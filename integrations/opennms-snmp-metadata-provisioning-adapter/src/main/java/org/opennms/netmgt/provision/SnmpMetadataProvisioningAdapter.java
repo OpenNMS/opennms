@@ -171,11 +171,18 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
                 }
             }
 
-            results.addAll(node.getMetaData().stream()
-                    .filter(m -> !m.getContext().equals(CONTEXT))
-                    .collect(Collectors.toList()));
+            if (snmpMetadataAdapterConfigDao.getContainer().getObject().getResultsBehavior().equals("update")) {
+                for (final OnmsMetaData result : results) {
+                    // node.addMetaData will update the existing metadata if it already exists and add it if it doesn't
+                    node.addMetaData(result.getContext(), result.getKey(), result.getValue());
+                }
+            } else {
+                results.addAll(node.getMetaData().stream()
+                        .filter(m -> !m.getContext().equals(CONTEXT))
+                        .collect(Collectors.toList()));
 
-            node.setMetaData(results);
+                node.setMetaData(results);
+            }
             nodeDao.saveOrUpdate(node);
 
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, PREFIX + NAME);

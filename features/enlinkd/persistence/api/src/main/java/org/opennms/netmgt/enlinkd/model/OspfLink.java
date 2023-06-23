@@ -98,23 +98,23 @@ public class OspfLink implements Serializable {
 	}
 
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @Column(name="ospfIpAddr",nullable=true)
+    @Column(name="ospfIpAddr")
 	public InetAddress getOspfIpAddr() {
 		return m_ospfIpAddr;
 	}
     
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @Column(name="ospfIpMask",nullable=true)
+    @Column(name="ospfIpMask")
 	public InetAddress getOspfIpMask() {
 		return m_ospfIpMask;
 	}
 
-    @Column(name="ospfAddressLessIndex",nullable=true)
+    @Column(name="ospfAddressLessIndex")
 	public Integer getOspfAddressLessIndex() {
 		return m_ospfAddressLessIndex;
 	}
 
-    @Column(name="ospfIfIndex",nullable=true)
+    @Column(name="ospfIfIndex")
 	public Integer getOspfIfIndex() {
 		return m_ospfIfIndex;
 	}
@@ -191,25 +191,23 @@ public class OspfLink implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-            StringBuffer strb = new StringBuffer();
-            strb.append("ospflink: nodeid:[");
-            strb.append(getNode().getId());
-            strb.append("]: id/mask/ifindex/addressless:[");
-            strb.append(str(getOspfIpAddr()));
-            strb.append("/");
-            strb.append(str(getOspfIpMask()));
-            strb.append("/");
-            strb.append(getOspfIfIndex());
-            strb.append("/");
-            strb.append(getOspfAddressLessIndex());
-            strb.append("]: rem router id/ip/addressless:[");
-            strb.append(str(getOspfRemRouterId()));
-            strb.append("/");
-            strb.append(str(getOspfRemIpAddr()));
-            strb.append("/");
-            strb.append(getOspfRemAddressLessIndex());
-            strb.append("]");
-            return strb.toString();
+		return "ospflink: nodeid:[" +
+				getNode().getId() +
+				"]: id/mask/ifindex/addressless:[" +
+				str(getOspfIpAddr()) +
+				"/" +
+				str(getOspfIpMask()) +
+				"/" +
+				getOspfIfIndex() +
+				"/" +
+				getOspfAddressLessIndex() +
+				"]: rem router id/ip/addressless:[" +
+				str(getOspfRemRouterId()) +
+				"/" +
+				str(getOspfRemIpAddr()) +
+				"/" +
+				getOspfRemAddressLessIndex() +
+				"]";
         }
 
 	

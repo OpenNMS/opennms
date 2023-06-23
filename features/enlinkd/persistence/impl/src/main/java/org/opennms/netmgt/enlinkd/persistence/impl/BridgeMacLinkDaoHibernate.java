@@ -74,13 +74,18 @@ public class BridgeMacLinkDaoHibernate extends
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
         getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
-                                          new Object[] { nodeId, now });
+                nodeId, now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?",
                                           new Object[] { nodeId });
+    }
+
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink");
     }
 
 }

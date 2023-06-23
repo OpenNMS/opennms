@@ -37,8 +37,13 @@ const SAVE_SEARCHED_NODE_LABELS = (state: State, searchedNodeLabels: string[]) =
 const SAVE_NODE_SORT_OBJECT = (state: State, nodeSortObject: FeatherSortObject) => {
   state.nodeSortObject = nodeSortObject
 }
+
 const SAVE_ALARM_SORT_OBJECT = (state: State, alarmSortObject: FeatherSortObject) => {
   state.alarmSortObject = alarmSortObject
+}
+
+const SAVE_NODE_SEARCH_TERM = (state: State, searchTerm: string) => {
+  state.nodeSearchTerm = searchTerm
 }
 
 export default {
@@ -51,5 +56,6 @@ export default {
   SAVE_SELECTED_SEVERITY,
   SAVE_SEARCHED_NODE_LABELS,
   SAVE_NODE_SORT_OBJECT,
-  SAVE_ALARM_SORT_OBJECT
+  SAVE_ALARM_SORT_OBJECT,
+  SAVE_NODE_SEARCH_TERM
 }

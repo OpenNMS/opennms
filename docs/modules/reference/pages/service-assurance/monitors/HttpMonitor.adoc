@@ -114,47 +114,57 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 ----
 <!-- Test HTTP service on port 80 only -->
 <service name="HTTP" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="2"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="80"/>
-  <parameter key="url" value="/"/>
+  <parameter key="retry" value="2"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="80"/> <3>
+  <parameter key="url" value="/"/> <4>
 </service>
 
 <!-- Test for virtual host opennms.com -->
 <service name="OpenNMSdotCom" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="80"/>
-  <parameter key="host-name" value="opennms.com"/>
-  <parameter key="url" value="/solutions"/>
-  <parameter key="response" value="200-202,299"/>
-  <parameter key="response-text" value="~.*[Cc]onsulting.*"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="80"/> <3>
+  <parameter key="host-name" value="opennms.com"/> <5>
+  <parameter key="url" value="/solutions"/> <4>
+  <parameter key="response" value="200-202,299"/> <6>
+  <parameter key="response-text" value="~.*[Cc]onsulting.*"/> <7>
 </service>
 
 <!-- Test for instance of OpenNMS running -->
 <service name="OpenNMS-129" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="8080"/>
-  <parameter key="url" value="/opennms/event/list"/>
-  <parameter key="basic-authentication" value="admin:admin"/>
-  <parameter key="response" value="200"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="8080"/> <3>
+  <parameter key="url" value="/opennms/event/list"/> <4>
+  <parameter key="basic-authentication" value="admin:admin"/> <8>
+  <parameter key="response" value="200"/> <9>
 </service>
 
 <!-- Test for instance of OpenNMS with parameter substitution in basic-authentication parameter -->
 <service name="OpenNMS-22" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="8080"/>
-  <parameter key="url" value="/opennms/event/list"/>
-  <parameter key="basic-authentication" value="{username}:{password}"/>
-  <parameter key="response" value="200"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="8080"/> <3>
+  <parameter key="url" value="/opennms/event/list"/> <4>
+  <parameter key="basic-authentication" value="{username}:{password}"/> <8>
+  <parameter key="response" value="200"/> <9>
 </service>
-<monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-<monitor service="OpenNMSdotCom" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-<monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-<monitor service="OpenNMS-22" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+<monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
+<monitor service="OpenNMSdotCom" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
+<monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
+<monitor service="OpenNMS-22" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" /> <10>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the `isReachable` method, in milliseconds.
+<3> A list of TCP ports to try to connect to.
+<4> URL to retrieve via the HTTP *GET* command.
+<5> Specifies the user ID to use.
+<6> Specifies the password to use.
+<7> Text to look for in the response body.
+<8> Authentication credentials to perform basic authentication.
+<9> A comma-separated list of acceptable HTTP response code ranges.
+<10> Required *monitor* section for each service.
 
 == Test filtering proxies with HttpMonitor
 
@@ -166,21 +176,28 @@ To test this behavior, configure the HttpMonitor as follows:
 [source, xml]
 ----
 <service name="HTTP-Allow-opennms.org" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="3128"/>
-  <parameter key="url" value="http://www.opennms.org/"/>
-  <parameter key="response" value="200-399"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="3128"/> <3>
+  <parameter key="url" value="http://www.opennms.org/"/> <4>
+  <parameter key="response" value="200-399"/> <5>
 </service>
 
 <service name="HTTP-Block-tiktok.com" interval="300000" user-defined="false" status="on">
-  <parameter key="retry" value="1"/>
-  <parameter key="timeout" value="3000"/>
-  <parameter key="port" value="3128"/>
-  <parameter key="url" value="http://www.tiktok.com/"/>
-  <parameter key="response" value="400-599"/>
+  <parameter key="retry" value="1"/> <1>
+  <parameter key="timeout" value="3000"/> <2>
+  <parameter key="port" value="3128"/> <3>
+  <parameter key="url" value="http://www.tiktok.com/"/> <4>
+  <parameter key="response" value="400-599"/> <5>
 </service>
 
-<monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-<monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+<monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <6>
+<monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <6>
 ----
+<1> Number of attempts to test a service’s status.
+<2> Timeout for the *isReachable* method, in milliseconds.
+<3> A list of TCP ports to try to connect to.
+<4> URL to retrieve via the HTTP *GET* command.
+<5> A comma-separated list of acceptable HTTP response code ranges.
+<6> Required *monitor* section for each service.
+

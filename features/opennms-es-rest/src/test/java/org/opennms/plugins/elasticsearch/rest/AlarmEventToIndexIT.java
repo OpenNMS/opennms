@@ -54,6 +54,7 @@ import io.searchbox.core.SearchResult;
 
 
 public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
+	public final static String DEFAULT_DIST_POLLER_ID = "00000000-0000-0000-0000-000000000000";
 	public static final int INDEX_WAIT_SECONDS=10; // time to wait for index to catch up
 
 	// See NMS-9831 for more information
@@ -149,7 +150,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		final Event event = new Event();
 		event.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
 		event.setCreationTime(new Date());
-		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		event.setDistPoller(DEFAULT_DIST_POLLER_ID);
 		event.setDescr("Dummy Event");
 		event.setSeverity(OnmsSeverity.WARNING.getLabel());
 		event.setDbid(eventId);

@@ -1,0 +1,20 @@
+
+= Alarm Notes
+
+{page-component-title} creates alarms for issues in the network.
+Alarm notes let you assign comments to a specific alarm, or to a whole class of alarms, and share that information with other people on your team.
+
+.Alarm Details page with sample notes
+image::alarms/01_alarm-notes.png["Alarm Details page displaying sample notes in the Sticky Memo and Journal Memo boxes", 850]
+
+You can add two types of notes to existing alarms or alarm classes:
+
+* *Sticky Memo:* A user-defined note for a specific instance of an alarm.
+Deleting the alarm also deletes any associated sticky memos.
+* *Journal Memo:* A user-defined note for a class of alarms, based on the resolved reduction key.
+Journal memos are shown for all alarms that match a specific reduction key.
+Deleting an individual alarm does not remove the journal memo.
++
+You must click *Clear* on an alarm with an associated journal memo to remove it.
+
+Symbols on the Alarm List Summary and Alarm List Detail pages indicate if individual alarms have sticky or journal memos associated.

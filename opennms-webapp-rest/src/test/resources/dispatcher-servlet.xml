@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
+        >
+
+    <tx:annotation-driven/>
+    <context:annotation-config/>
+
+    <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
+    <context:component-scan base-package="org.opennms.web.controller"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <!-- Map controllers based on their bean name -->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="order" value="0"/>
+    </bean>
+
+    <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="order" value="1"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename">
+            <value>/WEB-INF/messages</value>
+        </property>
+        <property name="cacheSeconds">
+            <value>2</value>
+        </property>
+    </bean>
+
+    <!-- Dispatches requests mapped to org.springframework.web.servlet.mvc.Controller implementations -->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+    <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
+        <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+        <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+    </bean>
+
+    <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
+          <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
+    <bean name="/admin/applications.htm"
+          class="org.opennms.web.controller.ApplicationController">
+        <property name="adminApplicationService" ref="adminApplicationService"/>
+    </bean>
+
+    <bean name="/admin/categories.htm"
+          class="org.opennms.web.controller.CategoryController">
+        <property name="adminCategoryService" ref="adminCategoryService"/>
+        <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+    </bean>
+    <!-- -->
+    <bean name="/support/groups/setACLUserGroups" class="org.opennms.web.admin.groups.SetUserGroupController">
+        <property name="filterManager" ref="filterManager" />
+        <property name="groupDao" ref="groupDao" />
+    </bean>
+
+    <bean name="/admin/userGroupView/groups/list.htm"
+          class="org.opennms.web.controller.admin.group.GroupListController">
+        <property name="groupManager" ref="groupManager"/>
+    </bean>
+
+    <!-- Converted from a Dispatcher to controller -->
+    <!-- This one uses Autowired -->
+    <bean name="/admin/userGroupView/groups/modifyGroup"
+          class="org.opennms.web.controller.admin.group.GroupController"/>
+
+    <bean name="systemReport" class="org.opennms.systemreport.SystemReport">
+        <property name="serviceRegistry" ref="serviceRegistry"/>
+    </bean>
+
+    <bean name="/admin/support/systemReport.htm"
+          class="org.opennms.web.controller.admin.support.SystemReportController">
+        <property name="systemReport" ref="systemReport"/>
+    </bean>
+
+    <bean name="/admin/support/systemReportList.htm"
+          class="org.opennms.web.controller.admin.support.SystemReportListController">
+        <property name="systemReport" ref="systemReport"/>
+    </bean>
+
+    <bean name="/aggregateStatus.htm"
+          class="org.opennms.web.controller.SiteStatusViewController">
+        <property name="service" ref="siteStatusViewService"/>
+    </bean>
+
+    <bean name="/siteStatusView.htm"
+          class="org.opennms.web.controller.SiteStatusViewController">
+        <property name="service" ref="siteStatusViewService"/>
+    </bean>
+
+    <bean name="/surveillanceView.htm"
+          class="org.opennms.web.controller.SurveillanceViewController">
+        <property name="service" ref="surveillanceService"/>
+    </bean>
+
+    <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+        <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
+    </bean>
+    <bean name="/alarm/ticket/update.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+        <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
+    </bean>
+    <bean name="/alarm/ticket/close.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
+        <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
+    </bean>
+
+    <bean name="/alarm/acknowledge" class="org.opennms.web.controller.alarm.AcknowledgeAlarmController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+        <property name="redirectView" value="/alarm/list.htm"/>
+    </bean>
+
+    <bean name="/alarm/acknowledgeByFilter" class="org.opennms.web.controller.alarm.AcknowledgeAlarmByFilterController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+        <property name="redirectView" value="/alarm/list.htm"/>
+    </bean>
+
+    <bean name="/alarm/changeSeverity" class="org.opennms.web.controller.alarm.AlarmSeverityChangeController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+        <property name="redirectView" value="/alarm/list.htm"/>
+    </bean>
+
+    <bean name="/alarm/createFavorite" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <bean name="/alarm/deleteFavorite" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <alias name="/alarm/index.htm" alias="/alarm/index"/>
+    <bean name="/alarm/index.htm" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <alias name="/alarm/list.htm" alias="/alarm/list"/>
+    <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
+    <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+        <property name="webEventRepository" ref="webEventRepository"/>
+        <property name="defaultShortLimit" value="20"/>
+    </bean>
+
+    <bean name="/alarm/saveStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+    
+    <bean name="/alarm/removeStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+    <bean name="/alarm/saveJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+    
+    <bean name="/alarm/removeJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+    
+    <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
+        <property name="successView" value="alarm/summary-box"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+    <bean name="/situation/summary-box.htm" class="org.opennms.web.controller.situation.SituationBoxController">
+        <property name="successView" value="situation/summary-box"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+    <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
+        <property name="successView" value="bsm/summary-box"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean name="/trend/trend.htm" class="org.opennms.web.controller.trend.TrendController">
+    </bean>
+
+    <bean name="/trend/trend-box.htm" class="org.opennms.web.controller.trend.TrendBoxController">
+    </bean>
+
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
+    </bean>
+
+   	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
+    </bean>
+
+
+    <bean name="/notification/acknowledge"
+          class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
+        <property name="webNotificationRepository" ref="webNotificationRepository"/>
+        <property name="redirectView" value="/notification/list.htm"/>
+    </bean>
+
+    <alias name="/notification/list.htm" alias="/notification/browse"/>
+    <bean name="/notification/list.htm" class="org.opennms.web.controller.notification.NotificationFilterController">
+        <property name="successView" value="notification/list"/>
+        <property name="defaultShortLimit" value="20"/>
+        <property name="defaultLongLimit" value="10"/>
+        <property name="defaultSortStyle" value="ID"/>
+        <property name="webNotificationRepository" ref="webNotificationRepository"/>
+        <property name="webEventRepository" ref="webEventRepository"/>
+        <property name="nodeDao" ref="nodeDao"/>
+    </bean>
+
+    <alias name="/outage/list.htm" alias="/outage/list"/>
+    <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
+        <property name="successView" value="outage/list"/>
+        <property name="defaultShortLimit" value="20"/>
+        <property name="defaultLongLimit" value="10"/>
+        <property name="defaultOutageType" value="CURRENT"/>
+        <property name="defaultSortStyle" value="ID"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <alias name="/outage/detail.htm" alias="/outage/detail.jsp"/>
+    <bean name="/outage/detail.htm" class="org.opennms.web.controller.outage.OutageDetailController">
+        <property name="successView" value="outage/detail"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <bean name="/outage/servicesdown-box.htm" class="org.opennms.web.controller.outage.OutageBoxController">
+        <property name="successView" value="outage/servicesdown-box"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <bean name="/outage/nodeOutages-box.htm" class="org.opennms.web.controller.outage.NodeOutagesController">
+        <property name="successView" value="outage/nodeOutages-box"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <bean name="/outage/interfaceOutages-box.htm" class="org.opennms.web.controller.outage.InterfaceOutagesController">
+        <property name="successView" value="outage/interfaceOutages-box"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <bean name="/outage/serviceOutages-box.htm" class="org.opennms.web.controller.outage.ServiceOutagesController">
+        <property name="successView" value="outage/serviceOutages-box"/>
+        <property name="webOutageRepository" ref="webOutageRepository"/>
+    </bean>
+
+    <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
+        <property name="resourceDao" ref="resourceDao"/>
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
+    <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+        <property name="name" value="Maps" />
+        <property name="url" value="maps.htm" />
+        <property name="entries">
+            <list>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Topology"/>
+                    <property name="url" value="topology"/>
+                    <property name="locationMatch" value="topology"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Geographical"/>
+                    <property name="url" value="ui/index.html#/map"/>
+                    <property name="locationMatch" value="ui/index.html#/map"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="/maps.htm" class="org.opennms.web.controller.MapsController">
+        <property name="mapMenuEntries" ref="mapMenuEntries" />
+    </bean>
+
+    <bean name="dashboardMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+        <property name="name" value="Dashboards" />
+        <property name="url" value="dashboards.htm" />
+        <property name="entries">
+            <list>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Dashboard"/>
+                    <property name="url" value="dashboard.jsp"/>
+                    <property name="locationMatch" value="dashboard"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Ops Board"/>
+                    <property name="url" value="vaadin-wallboard"/>
+                    <property name="locationMatch" value="vaadin-wallboard"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="/dashboards.htm" class="org.opennms.web.controller.DashboardController">
+        <property name="dashboardMenuEntries" ref="dashboardMenuEntries" />
+    </bean>
+
+    <!--  "includes" -->
+    <bean id="navBarEntries" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Search"/>
+                    <property name="url" value="element/index.jsp"/>
+                    <property name="locationMatch" value="element"/>
+                </bean>
+
+                <bean class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+                    <property name="name" value="Info" />
+                    <property name="url" value="#" />
+                    <property name="entries">
+                        <list>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Nodes"/>
+                                <property name="url" value="element/nodeList.htm"/>
+                                <property name="locationMatch" value="nodelist"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Assets"/>
+                                <property name="url" value="asset/index.jsp"/>
+                                <property name="locationMatch" value="asset"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Path Outages"/>
+                                <property name="url" value="pathOutage/index.jsp"/>
+                                <property name="locationMatch" value="pathOutage"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Device Configs"/>
+                                <property name="url" value="ui/index.html#/device-config-backup"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="External Requisitions"/>
+                                <property name="url" value="ui/index.html#/configuration"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="File Editor"/>
+                                <property name="url" value="ui/index.html#/file-editor"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_FILESYSTEM_EDITOR"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Logs"/>
+                                <property name="url" value="ui/index.html#/logs"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Endpoints"/>
+                                <property name="url" value="ui/index.html#/open-api"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Secure Credentials Vault"/>
+                                <property name="url" value="ui/index.html#/scv"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="roles" value="ROLE_ADMIN"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
+                <bean class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+                    <property name="name" value="Status" />
+                    <property name="url" value="#" />
+                    <property name="entries">
+                        <list>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Events"/>
+                                <property name="url" value="event/index"/>
+                                <property name="locationMatch" value="event"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Alarms"/>
+                                <property name="url" value="alarm/index.htm"/>
+                                <property name="locationMatch" value="alarm"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Notifications"/>
+                                <property name="url" value="notification/index.jsp"/>
+                                <property name="locationMatch" value="notification"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Outages"/>
+                                <property name="url" value="outage/index.jsp"/>
+                                <property name="locationMatch" value="outage"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Surveillance"/>
+                                <property name="url" value="surveillance-view.jsp"/>
+                                <property name="locationMatch" value="surveillance-view"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Heatmap"/>
+                                <property name="url" value="heatmap/index.jsp"/>
+                                <property name="locationMatch" value="heatmap"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Trend"/>
+                                <property name="url" value="trend/index.jsp"/>
+                                <property name="locationMatch" value="trend"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Application"/>
+                                <property name="url" value="application/index.jsp"/>
+                                <property name="locationMatch" value="application"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
+                <bean class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+                    <property name="name" value="Reports" />
+                    <property name="url" value="report/index.jsp" />
+                    <property name="entries">
+                        <list>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Charts"/>
+                                <property name="url" value="charts/index.jsp"/>
+                                <property name="locationMatch" value="chart"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Resource Graphs"/>
+                                <property name="url" value="graph/index.jsp"/>
+                                <property name="locationMatch" value="performance"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="KSC Reports"/>
+                                <property name="url" value="KSC/index.jsp"/>
+                                <property name="locationMatch" value="ksc"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Database Reports"/>
+                                <property name="url" value="report/database/index.jsp"/>
+                                <property name="locationMatch" value="database-reports"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Statistics"/>
+                                <property name="url" value="statisticsReports/index.htm"/>
+                                <property name="locationMatch" value="reports"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
+                <ref bean="dashboardMenuEntries" />
+
+                <ref bean="mapMenuEntries" />
+
+<!-- called "Configure OpenNMS" in the user menu now
+                <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">
+                    <property name="name" value="Admin"/>
+                    <property name="url" value="admin/index.jsp"/>
+                    <property name="locationMatch" value="admin"/>
+                </bean>
+-->
+
+<!-- called "Help/Support" in the user menu now
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Support"/>
+                    <property name="url" value="support/index.htm"/>
+                    <property name="locationMatch" value="support"/>
+                </bean>
+-->
+
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
+        <property name="navBarItems" ref="navBarEntries" />
+    </bean>
+
+  <onmsgi:service ref="headerProvider">
+      <onmsgi:interfaces>
+          <value>org.opennms.web.api.OnmsHeaderProvider</value>
+          <value>org.opennms.web.api.MenuProvider</value>
+      </onmsgi:interfaces>
+  </onmsgi:service>
+
+    <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
+        <property name="adminCategoryService" ref="adminCategoryService"/>
+    </bean>
+
+    <bean name="/includes/serviceApplication-box.htm"
+          class="org.opennms.web.controller.ServiceApplicationBoxController">
+        <property name="adminApplicationService" ref="adminApplicationService"/>
+    </bean>
+
+    <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
+        <property name="graphResultsService" ref="graphResultsService"/>
+    </bean>
+
+    <bean name="/graph/graph.png" class="org.opennms.web.controller.RrdGraphController">
+        <property name="rrdGraphService" ref="rrdGraphService"/>
+    </bean>
+
+    <!-- KSC reports -->
+
+    <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+    </bean>
+
+    <bean name="/KSC/formProcGraph.htm" class="org.opennms.web.controller.ksc.FormProcGraphController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+    </bean>
+
+    <bean name="/KSC/formProcReport.htm" class="org.opennms.web.controller.ksc.FormProcReportController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+    </bean>
+
+    <bean name="/KSC/formProcView.htm" class="org.opennms.web.controller.ksc.FormProcViewController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+    </bean>
+
+    <bean name="/KSC/customView.htm" class="org.opennms.web.controller.ksc.CustomViewController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+        <property name="resourceService" ref="resourceService"/>
+        <property name="defaultGraphsPerLine" value="${ksc.default.graphsPerLine}"/>
+    </bean>
+
+    <bean name="/KSC/customReport.htm" class="org.opennms.web.controller.ksc.CustomReportController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+        <property name="resourceService" ref="resourceService"/>
+    </bean>
+
+    <bean name="/KSC/customGraphEditDetails.htm"
+          class="org.opennms.web.controller.ksc.CustomGraphEditDetailsController">
+        <property name="kscReportFactory" ref="kscReportFactory"/>
+        <property name="kscReportService" ref="kscReportService"/>
+        <property name="resourceService" ref="resourceService"/>
+    </bean>
+
+    <bean id="statisticsReportCommandValidator" class="org.opennms.web.validator.StatisticsReportCommandValidator">
+        <property name="statisticsReportDao" ref="statisticsReportDao"/>
+    </bean>
+
+    <bean name="/statisticsReports/index.htm" class="org.opennms.web.controller.statisticsReports.ListController">
+        <property name="statisticsReportService" ref="statisticsReportService"/>
+    </bean>
+
+
+    <!--  Rancid Integration -->
+    <!-- RANCID stuff -->
+    <bean name="/inventory/rancid.htm" class="org.opennms.web.controller.inventory.RancidController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/inventory/rancidList.htm" class="org.opennms.web.controller.inventory.RancidListController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/inventory/invnode.htm" class="org.opennms.web.controller.inventory.InvNodeController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/inventory/rancidViewVc.htm" class="org.opennms.web.controller.inventory.RancidViewVcController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/inventory/rancidReport.htm" class="org.opennms.web.controller.inventory.RancidReportController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/admin/rancid/rancidAdmin.htm" class="org.opennms.web.controller.inventory.AdminRancidController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+
+    <bean name="/admin/storage/storageAdmin.htm" class="org.opennms.web.controller.inventory.AdminStorageController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean name="/admin/storage/storageDeleteBucketItem.htm"
+          class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketItemController">
+        <property name="inventoryService" ref="inventoryService"/>
+    </bean>
+
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="notifdConfigFactory-init">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
+
+    <bean name="/admin/notification/noticeWizard/eventNotices.htm"
+          class="org.opennms.web.controller.admin.notifications.EventNoticesController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="notificationFactory" ref="notificationFactory"/>
+    </bean>
+
+    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
+          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
+    <!-- Examples
+         <bean name="/nodes.htm" class="org.opennms.controller.NodeController">
+           <property name="entityService" ref="entityService" />
+         </bean>
+
+         <bean name="/interfaces.htm" class="org.opennms.controller.InterfaceController">
+           <property name="entityService" ref="entityService" />
+         </bean>
+
+         <bean name="/node-edit.htm" class="org.opennms.controller.NodeEditController">
+           <property name="entityService" ref="entityService" />
+           <property name="commandName" value="node" />
+           <property name="formView" value="node-edit" />
+           <property name="successView" value="processed" />
+         </bean>
+     -->
+
+    <mvc:default-servlet-handler />
+
+    <mvc:resources mapping="/assets/**" location="/assets/">
+        <mvc:resource-chain resource-cache="true">
+            <mvc:resolvers>
+                <ref bean="assetLocator" />
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+
+    <mvc:annotation-driven/>
+</beans>

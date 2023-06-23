@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -99,7 +100,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
 
     @Override
     protected final JaxbListWrapper<OnmsSnmpInterface> createListWrapper(Collection<OnmsSnmpInterface> list) {
-        return new OnmsSnmpInterfaceList(list);
+        return new OnmsSnmpInterfaceList(list.stream().distinct().collect(Collectors.toList()));
     }
 
     @Override

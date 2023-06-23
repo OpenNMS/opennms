@@ -49,6 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
     private static final String LOCATION = "TEST_LOCATION";
+    private static final String DEFAULT_DIST_POLLER_ID = "00000000-0000-0000-0000-000000000000";
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -56,7 +57,7 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
         MinionIdentity identity = new MinionIdentity() {
             @Override
             public String getId() {
-                return DistPollerDao.DEFAULT_DIST_POLLER_ID;
+                return DEFAULT_DIST_POLLER_ID;
             }
             @Override
             public String getLocation() {
@@ -85,18 +86,18 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
         assertEquals(1, dao.countAll());
 
         // Test get()
-        OnmsDistPoller poller = dao.get(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        OnmsDistPoller poller = dao.get(DEFAULT_DIST_POLLER_ID);
         assertNotNull(poller);
-        assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, poller.getId());
-        assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, poller.getLabel());
+        assertEquals(DEFAULT_DIST_POLLER_ID, poller.getId());
+        assertEquals(DEFAULT_DIST_POLLER_ID, poller.getLabel());
         assertEquals(LOCATION, poller.getLocation());
         assertEquals(OnmsMonitoringSystem.TYPE_MINION, poller.getType());
 
         // Test whoami()
         poller = dao.whoami();
         assertNotNull(poller);
-        assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, poller.getId());
-        assertEquals(DistPollerDao.DEFAULT_DIST_POLLER_ID, poller.getLabel());
+        assertEquals(DEFAULT_DIST_POLLER_ID, poller.getId());
+        assertEquals(DEFAULT_DIST_POLLER_ID, poller.getLabel());
         assertEquals(LOCATION, poller.getLocation());
         assertEquals(OnmsMonitoringSystem.TYPE_MINION, poller.getType());
     }

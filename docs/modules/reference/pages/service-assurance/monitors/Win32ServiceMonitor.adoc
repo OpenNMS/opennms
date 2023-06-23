@@ -63,7 +63,9 @@ Use snmpwalk to verify the service name, as opposed to relying on the service ma
 
 == Examples
 
-Monitoring the service running state of the Task Scheduler on an English local Microsoft Windows Server requires at minimum the following entry in poller-configuration.xml:
+Monitoring the service running state of the Task Scheduler on an English-locale Microsoft Windows Server requires, at minimum, the following entry in `poller-configuration.xml`.
+
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----

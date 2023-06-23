@@ -1,7 +1,8 @@
 'use strict';
 
-require('expose-loader?moment!moment');
-require('vendor/jquery-js');
+const moment = require('vendor/moment-js');
+require('vendor/bootstrap-js');
+
 require('tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4');
 require('tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css');
 

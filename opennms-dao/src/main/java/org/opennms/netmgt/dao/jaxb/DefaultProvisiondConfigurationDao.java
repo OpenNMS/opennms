@@ -28,6 +28,14 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -38,24 +46,15 @@ import org.opennms.netmgt.dao.jaxb.callback.ProvisiondConfigurationValidationCal
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 /**
- * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
- * the <code>Ackd</code> and <code>AckdReader</code>s.
+ * Default implementation of <code>ProvisiondConfigurationDao</code>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
 public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
 
-    private static final String CONFIG_NAME = "provisiond";
+    public static final String CONFIG_NAME = "provisiond";
 
     @Autowired
     private EventForwarder eventForwarder;

@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-perspectivepoller]]
 = PerspectivePoller
 
-Queries aggregated percentage availability for a given specific application and its services, as part of xref:operation:application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].
+Queries aggregated percentage availability for a given specific application and its services, as part of xref:operation:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].
 
 .PerspectivePoller log file overview
 [options="header"]

@@ -31,7 +31,7 @@ package org.opennms.netmgt.trapd;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.awaitility.Awaitility;
+import org.awaitility.Awaitility;
 import java.util.concurrent.TimeUnit;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;

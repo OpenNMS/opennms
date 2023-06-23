@@ -120,6 +120,9 @@ The share is named _log_.
 The service should go back to normal if the error log file is deleted and the folder is empty.
 
 .JCifsMonitor configuration to test that a shared folder is empty
+
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="CIFS-ErrorLog" interval="30000" user-defined="true" status="on">
@@ -135,7 +138,7 @@ The service should go back to normal if the error log file is deleted and the fo
 <monitor service="CIFS-ErrorLog" class-name="org.opennms.netmgt.poller.monitors.JCifsMonitor" />
 ----
 <1> Name of the SMB or Microsoft Windows Domain.
-<2> User to access the share.
+<2> Username to access the share.
 <3> Password to access the share.
 <4> Path to the folder inside of the share as part of the SMB URL.
-<5> Mode is set to folder_empty.
+<5> Mode is set to `folder_empty`.

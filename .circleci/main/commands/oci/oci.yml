@@ -1,0 +1,112 @@
+commands:
+  load-oci:
+    parameters:
+      match:
+        description: regular expression match for OCI filename
+        type: string
+    steps:
+      - download-download-artifacts
+      - run:
+          name: restore OCI files matching "<< parameters.match >>"
+          command: |
+            if [ -n "<< parameters.match >>" ]; then
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.match >>" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            else
+              download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" oci "${CIRCLE_BRANCH}" /tmp/oci-artifacts
+            fi
+
+            cd /tmp/oci-artifacts
+            if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
+              echo "ERROR: No OCI files to load. Something probably went wrong earlier."
+              exit 1
+            fi
+
+            docker container prune -f
+            for FILE in *.oci; do
+              echo "Loading ${FILE} into Docker..."
+              _tag="opennms/$(printf "${FILE}" | sed -e 's,\.oci$,,'):latest"
+              if [ -z "$(docker image ls -q "${_tag}")" ]; then
+                echo "Didn't find existing image '${_tag}' -- loading from ${FILE}"
+                docker image load -i "${FILE}"
+              fi
+              if [ -z "$(docker image ls -q "${_tag}")" ]; then
+                echo "ERROR: After loading ${FILE} we still don't have an image with tag '${_tag}'; see 'docker image ls' output following"
+                docker image ls
+                exit 1
+              fi
+              _unprefixed="$(echo "${_tag}" | cut -d/ -f2 | sed -e 's,-linux-.*$,,')"
+              echo "Tagging docker image ${_tag} as [opennms/]${_unprefixed}:latest"
+              docker image tag "${_tag}" "opennms/${_unprefixed}:latest"
+              echo "NO LONGER TAGGING docker image as ${_unprefixed}:latest WITHOUT opennms/"
+            done
+
+  build-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+      container_name:
+        type: string
+      container_dir:
+        type: string
+      tarball_match:
+        type: string
+      tarball_path:
+        type: string
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - cached-checkout
+      - download-download-artifacts
+      - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --ci --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
+          name: build << parameters.container_name >>=<< parameters.architecture >> container image
+          command: |
+            # set up multi-arch
+            docker container prune -f
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
+            export DOCKER_CONTENT_TRUST=1
+            cd opennms-container/<< parameters.container_dir >>
+            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            export TAG="<< parameters.container_name >>-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_OCI="images/${TAG}.oci" \
+                 DOCKER_TAG="opennms/${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 oci
+      - store_artifacts:
+          path: ~/project/opennms-container/<< parameters.container_dir >>/images/
+          destination: /
+
+  generate-sbom:
+    parameters:
+      container_dir:
+        type: string
+    steps:
+      - run:
+          name: install Syft
+          command: |
+            set -o pipefail
+            curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "${HOME}/bin"
+      - run:
+          name: generate SBOM
+          command: |
+            cd ~/project/opennms-container/"<< parameters.container_dir >>"/images/
+            if [ -z "$(ls *.oci 2>/dev/null)" ]; then
+              echo 'ERROR: no *.oci files found in opennms-container/<< parameters.container_dir >>/images/'
+              exit 1
+            fi
+
+            mkdir -p /tmp/sboms
+            for IMAGE_FILE in *.oci; do
+              IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
+              syft packages "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
+            done
+      - store_artifacts:
+          path: /tmp/sboms/
+          destination: /
+

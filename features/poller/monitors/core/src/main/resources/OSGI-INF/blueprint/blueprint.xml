@@ -10,6 +10,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
+
 	<bean id="activeMQMonitor" class="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
 	<service ref="activeMQMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
@@ -353,7 +355,9 @@
 		</service-properties>
 	</service>
 
-	<bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+    <bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.SnmpMonitor">
+        <property name="secureCredentialsVault" ref="secureCredentialsVault"/>
+    </bean>
 	<service ref="snmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
 			<entry key="type" value="org.opennms.netmgt.poller.monitors.SnmpMonitor" />

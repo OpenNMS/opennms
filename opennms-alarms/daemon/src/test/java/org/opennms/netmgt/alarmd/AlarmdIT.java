@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,6 +69,7 @@ import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -174,6 +175,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Autowired
     private ServiceRegistry m_registry;
 
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
     private MockDatabase m_database;
 
     private MockNorthbounder m_northbounder;
@@ -192,6 +196,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     public void setUp() {
         m_mockNetwork.createStandardNetwork();
 
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
         m_eventMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms

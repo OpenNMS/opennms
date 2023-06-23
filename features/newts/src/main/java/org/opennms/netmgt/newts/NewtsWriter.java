@@ -206,8 +206,6 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         Logging.putPrefix("collectd");
 
         List<Sample> samples = event.getSamples();
-        // Decrement our entry counter
-        m_numEntriesOnRingBuffer.decrementAndGet();
 
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
@@ -231,6 +229,9 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                 RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
             }
         }
+
+        // Decrement our entry counter
+        m_numEntriesOnRingBuffer.decrementAndGet();
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

@@ -1,0 +1,60 @@
+
+[[ga-pollerd-configuration]]
+= Configure Pollerd
+
+For information on configuration and log files related to pollerd, see xref:reference:daemons/daemon-config-files/pollerd.adoc[] in the reference section.
+
+You can modify `$\{OPENNMS_HOME}/etc/poller-configuration.xml` to change the behavior for service monitoring.
+The configuration file has the following parts:
+
+* Global daemon configuration:
+** Define the thread pool size used to run service monitors in parallel.
+** Define and configure the critical service for node event correlation.
+* Polling packages:
+** Package to group service monitor configuration parameters.
+* Downtime Model:
+** Configure pollerd behavior to run tests if an outage is detected.
+* Monitor service association:
+** Implement application or network management protocol assignments.
+This configures settings for individual services, based on their names.
+
+.Global configuration parameters for pollerd
+[source, xml]
+----
+<poller-configuration threads="30" <1>
+                      pathOutageEnabled="false" <2>
+                      serviceUnresponsiveEnabled="false"> <3>
+----
+
+<1> Size of the thread pool.
+This lets service monitors run in parallel.
+<2> Enable or disable path outage functionality based on a critical node in a network path.
+<3> In case of an unresponsive service, generate a `serviceUnresponsive` event instead of an outage.
+This stops the xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] from retesting the service after 30 seconds, and prevents false alarms.
+
+Restart {page-component-title} and pollerd to apply configuration changes.
+You can also reload the configuration to send an event to pollerd.
+You can send an event using the CLI or the web UI.
+
+.Send `configuration-reload` event via CLI
+[source, shell]
+----
+cd $OPENNMS_HOME/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
+----
+
+The following shows settings to configure a reload event in the UI:
+.Send `configuration-reload` event in the web UI
+image::service-assurance/04_send-event-WebUI.png["Page displaying configuration settings for generating a configuration-reload event", 700]
+
+[[ga-pollerd-configuration-meta-data]]
+== Metadata DSL
+
+The <<deep-dive/meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use dynamic configuration in parameter values to interpolate metadata into the parameter.
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata

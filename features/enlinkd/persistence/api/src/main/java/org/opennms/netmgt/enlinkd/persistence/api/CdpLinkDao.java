@@ -36,16 +36,10 @@ import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 
-public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
+public interface CdpLinkDao extends LinkDao<CdpLink, Integer> {
 
     CdpLink get(OnmsNode node, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
 
     CdpLink get(Integer nodeId, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
-    
-    List<CdpLink> findByNodeId(Integer nodeId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
-    public void deleteByNodeId(Integer nodeId);
 
 }

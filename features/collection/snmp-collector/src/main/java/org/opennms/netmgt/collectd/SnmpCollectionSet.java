@@ -90,7 +90,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     }
 
-    private final SnmpCollectionAgent m_agent;
+    private SnmpCollectionAgent m_agent;
     private final OnmsSnmpCollection m_snmpCollection;
     private final LocationAwareSnmpClient m_client;
     private SnmpIfCollector m_ifCollector;
@@ -255,6 +255,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      */
     public SnmpCollectionAgent getCollectionAgent() {
        return m_agent;
+    }
+
+    public void setCollectionAgent(SnmpCollectionAgent agent) {
+        m_agent = agent;
     }
 
     Collection<SnmpAttributeType> getAttributeList() {

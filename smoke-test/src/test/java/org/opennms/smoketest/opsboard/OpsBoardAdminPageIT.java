@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.lang.NullPointerException;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -84,8 +85,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Topology"));
 
             // Verify that the header is hidden
             // This method can throw StateElementReference exceptions, so we try multiple times
@@ -94,35 +95,6 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
                     .ignoreExceptionsInstanceOf(NullPointerException.class)
                     .until(() -> driver.switchTo().parentFrame()
                             .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe"))
-                            .findElement(By.id("header")).isDisplayed(), equalTo(false));
-        } finally {
-            setImplicitWait();
-        }
-    }
-
-    // See NMS-12166
-    @Test(timeout = 300000)
-    public void testHeaderHiddenForNodeMap() {
-        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("testBoard");
-        testBoard.addDashlet(new DashletBuilder()
-                .withDashlet("Map")
-                .withTitle("Test Dashlet")
-                .withDuration(300).build());
-
-        // Hit preview button
-        testBoard.preview();
-
-        try {
-            setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Map"));
-
-            // Verify that the header is hidden
-            // This method can throw StateElementReference exceptions, so we try multiple times
-            await().atMost(1, TimeUnit.MINUTES)
-                    .ignoreExceptionsInstanceOf(WebDriverException.class)
-                    .until(() -> driver.switchTo().parentFrame()
-                            .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-map-iframe']//iframe"))
                             .findElement(By.id("header")).isDisplayed(), equalTo(false));
         } finally {
             setImplicitWait();
@@ -144,8 +116,8 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         // Now ensure that access was NOT denied
         try {
             setImplicitWait(1, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
-            new WebDriverWait(driver, 5).until(pageContainsText("Surveillance view"));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(not(pageContainsText("Access denied")));
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Surveillance view"));
         } finally {
             setImplicitWait();
         }

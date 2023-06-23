@@ -6,17 +6,13 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: JMX Config Generator</name>
     <url>http://www.opennms.org</url>
-
-    <properties>
-        <velocity.version>1.7</velocity.version>
-    </properties>
 
     <build>
         <resources>
@@ -93,8 +89,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>${velocity.version}</version>
+            <artifactId>velocity-engine-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -130,13 +125,4 @@
             <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>https://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 </project>

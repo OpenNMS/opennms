@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao</artifactId>
@@ -52,11 +52,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.service</groupId>
-      <artifactId>org.opennms.features.config.service.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -211,7 +206,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>

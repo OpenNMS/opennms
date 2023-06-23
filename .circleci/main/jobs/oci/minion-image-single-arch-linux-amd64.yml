@@ -1,0 +1,22 @@
+jobs:
+  minion-image-single-arch-linux-amd64:
+    executor: base-executor
+    resource_class: medium
+    steps:
+      - build-image-single-arch:
+          architecture: linux/amd64
+          container_name: minion
+          container_dir: minion
+          tarball_match: minion
+          tarball_path: /opennms-assemblies/minion/target
+      - run:
+          name: copy minion config schema for archiving
+          command: |
+            cd ~/project
+            mkdir -p target/config-schema
+            cp opennms-container/minion/minion-config-schema.yml target/config-schema/
+      - save-artifacts:
+          path: target/config-schema/
+          location: minion-config-schema
+      - generate-sbom:
+          container_dir: minion

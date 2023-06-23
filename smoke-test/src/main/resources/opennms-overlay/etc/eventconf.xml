@@ -33,8 +33,6 @@
   <event-file>events/opennms.ticketd.events.xml</event-file>
   <event-file>events/opennms.tl1d.events.xml</event-file>
 
-  <event-file>events/Rancid.events.xml</event-file>
-
   <event-file>events/Cisco.syslog.events.xml</event-file>
 
   <event-file>events/opennms.catch-all.events.xml</event-file>

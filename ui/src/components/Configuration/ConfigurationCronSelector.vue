@@ -5,6 +5,7 @@
       v-if="!props.config.advancedCrontab"
     >
       <FeatherSelect
+        data-test="schedule-type-select"
         textProp="name"
         label="Schedule Type"
         :options="scheduleTypes"

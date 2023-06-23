@@ -54,6 +54,8 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
 	private String m_ifAlias;
     private final InetAddress m_inetAddr;
     private int m_ifIndex;
+
+    private int m_ifType;
     
 
     /**
@@ -226,6 +228,7 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
     		.append("ifIndex", m_ifIndex)
     		.append("inetAddr", InetAddressUtils.str(m_inetAddr))
     		.append("members", getMembers())
+                .append("ifType", m_ifType)
     		.toString();
     }
 
@@ -322,5 +325,13 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      */
     public void setIfIndex(int ifIndex) {
         m_ifIndex = ifIndex;
+    }
+
+    public int getIfType() {
+        return m_ifType;
+    }
+
+    public void setIfType(int ifType) {
+        m_ifType = ifType;
     }
 }

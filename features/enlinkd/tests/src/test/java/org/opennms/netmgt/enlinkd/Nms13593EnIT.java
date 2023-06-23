@@ -42,9 +42,18 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
-import static org.junit.Assert.*;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.*;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr001_RESOURCE;
 
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_NAME;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_IP;
+import static org.opennms.netmgt.nb.Nms13593NetworkBuilder.ZHBGO1Zsr002_RESOURCE;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 public class Nms13593EnIT extends EnLinkdBuilderITCase {
         
 	Nms13593NetworkBuilder builder = new Nms13593NetworkBuilder();
@@ -97,9 +106,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
         final OnmsNode zsr001 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr001_NAME);
         final OnmsNode zsr002 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr002_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(zsr001.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(zsr002.getId()));
-
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(zsr001.getId()));
         assertEquals(1, m_lldpElementDao.countAll());

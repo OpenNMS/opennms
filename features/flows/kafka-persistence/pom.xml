@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.flows</artifactId>
     <groupId>org.opennms.features</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <packaging>bundle</packaging>
@@ -83,8 +83,13 @@
       <version>${protobufVersion}</version>
     </dependency>
     <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>${protobufVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
+      <artifactId>org.opennms.features.flows.processing</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -108,6 +113,5 @@
       <version>${jestGsonVersion}</version>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
 </project>

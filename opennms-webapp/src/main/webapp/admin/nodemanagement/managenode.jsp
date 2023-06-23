@@ -34,7 +34,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.admin.nodeManagement.*
+		org.opennms.web.admin.nodeManagement.*,
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 
@@ -182,7 +183,7 @@
         }
 %>
 
-<h3>Node: <%=nodeLabel%></h3>
+<h3>Node: <%=WebSecurityUtils.sanitizeString(nodeLabel)%></h3>
 
 <hr/>
     

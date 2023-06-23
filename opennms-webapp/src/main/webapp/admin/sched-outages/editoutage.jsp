@@ -57,6 +57,7 @@
         "
 %>
 <%@ page import="org.opennms.netmgt.config.poller.outages.Time" %>
+<%@ page import="static org.springframework.web.servlet.support.WebContentGenerator.METHOD_POST" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -226,7 +227,7 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
+		nameParam = request.getParameter("newName");
 		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
@@ -302,7 +303,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Polling outages config *********
 	PollerConfigFactory.init();
 	Map<org.opennms.netmgt.config.poller.Package, List<String>> pollingOutages = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
-	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 		pollingOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("polling-" + thisPackage.getName());
@@ -312,7 +313,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	// ******* Collectd outages config *********
 	CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+	for (Package thisPackage : collectdConfig.getPackages()) {
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
@@ -331,11 +332,12 @@ Could not find an outage to edit because no outage name parameter was specified 
 	boolean timeSpanError = false;
 
 	String isFormSubmission = request.getParameter("formSubmission");
-	if ("true".equals(isFormSubmission)) {
+	if (METHOD_POST.equals(request.getMethod())) {
+		if ("true".equals(isFormSubmission)) {
 
-		pollOutagesDao.getWriteLock().lock();
-		
-		try {
+			pollOutagesDao.getWriteLock().lock();
+
+			try {
 
 			//Process the form submission - yeah, this should be a servlet, but this is a quick and dirty hack for now
 			//It can be tidied up later -- of course, it's been what, almost 3 years?  "later" means 2.0 + rewrite  ;)
@@ -454,6 +456,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				NotifdConfigFactory.getInstance().saveCurrent();
 				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
+				threshdDao.saveConfig();
 				sendOutagesChangedEvent();
 	
 				//forward the request for proper display
@@ -474,142 +477,144 @@ Could not find an outage to edit because no outage name parameter was specified 
 						}
 					}
 
-				}
-			} else if (request.getParameter("addInterfaceButton") != null) {
-				String newIface = WebSecurityUtils.sanitizeString(request.getParameter("newInterface"));
-				if (newIface == null || "".equals(newIface.trim())) {
-					// No interface was specified
-				} else {
-					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
-					newInterface.setAddress(newIface);
-					addInterface(theOutage, newInterface);
-					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
-						    addNode(theOutage,pathOutageNodeid.intValue());
+					}
+				} else if (request.getParameter("addInterfaceButton") != null) {
+					String newIface = WebSecurityUtils.sanitizeString(request.getParameter("newInterface"));
+					if (newIface == null || "".equals(newIface.trim())) {
+						// No interface was specified
+					} else {
+						org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
+						newInterface.setAddress(newIface);
+						addInterface(theOutage, newInterface);
+						if (request.getParameter("addPathOutageInterfaceRadio") != null) {
+							for (Integer pathOutageNodeid : getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
+								addNode(theOutage, pathOutageNodeid.intValue());
+							}
 						}
 					}
-				}
-			} else if (request.getParameter("matchAny") != null) {
-				//To turn on matchAny, all normal nodes and interfaces are removed
-				theOutage.clearInterfaces();
-				theOutage.clearNodes();
-				theOutage.addInterface(matchAnyInterface);
-			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
-				org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
+				} else if (request.getParameter("matchAny") != null) {
+					//To turn on matchAny, all normal nodes and interfaces are removed
+					theOutage.clearInterfaces();
+					theOutage.clearNodes();
+					theOutage.addInterface(matchAnyInterface);
+				} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
+					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
 
-				if (theOutage.getType().equalsIgnoreCase("specific")) {
-					StringBuffer timeBuffer = new StringBuffer(17);
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartDay")));
-					timeBuffer.append("-");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMonth")));
-					timeBuffer.append("-");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartYear")));
-					timeBuffer.append(" ");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
-					newTime.setBegins(timeBuffer.toString());
-	
-					timeBuffer = new StringBuffer(17);
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishDay")));
-					timeBuffer.append("-");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMonth")));
-					timeBuffer.append("-");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishYear")));
-					timeBuffer.append(" ");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
-					newTime.setEnds(timeBuffer.toString());
-				} else {
-					if (theOutage.getType().equalsIgnoreCase("monthly")) {
-						newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfMonth")));
-					} else if (theOutage.getType().equalsIgnoreCase("weekly")) {
-						newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfWeek")));
+					if (theOutage.getType().equalsIgnoreCase("specific")) {
+						StringBuffer timeBuffer = new StringBuffer(17);
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartDay")));
+						timeBuffer.append("-");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMonth")));
+						timeBuffer.append("-");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartYear")));
+						timeBuffer.append(" ");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
+						newTime.setBegins(timeBuffer.toString());
+
+						timeBuffer = new StringBuffer(17);
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishDay")));
+						timeBuffer.append("-");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMonth")));
+						timeBuffer.append("-");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishYear")));
+						timeBuffer.append(" ");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
+						newTime.setEnds(timeBuffer.toString());
+					} else {
+						if (theOutage.getType().equalsIgnoreCase("monthly")) {
+							newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfMonth")));
+						} else if (theOutage.getType().equalsIgnoreCase("weekly")) {
+							newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfWeek")));
+						}
+
+						StringBuffer timeBuffer = new StringBuffer(8);
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
+						newTime.setBegins(timeBuffer.toString());
+
+						timeBuffer = new StringBuffer(8);
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
+						timeBuffer.append(":");
+						timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
+						newTime.setEnds(timeBuffer.toString());
 					}
-	
-					StringBuffer timeBuffer = new StringBuffer(8);
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
-					newTime.setBegins(timeBuffer.toString());
-					
-					timeBuffer = new StringBuffer(8);
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
-					timeBuffer.append(":");
-					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
-					newTime.setEnds(timeBuffer.toString());
+
+					boolean entryAlreadyExists = false;
+					for (Time time : theOutage.getTimes()) {
+						if (time.equals(newTime)) {
+							entryAlreadyExists = true;
+							break;
+						}
+					}
+					if (entryAlreadyExists) {
+						timeSpanError = true;
+					} else {
+						theOutage.addTime(newTime);
+					}
+				} else {
+					//Look for deleteNode or deleteInterface or deleteTime prefix
+					List<String> paramList = Collections.list(request.getParameterNames());
+					for (String paramName : paramList) {
+						if (paramName.startsWith("deleteNode")) {
+							String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
+							try {
+								int index = WebSecurityUtils.safeParseInt(indexStr);
+								theOutage.removeNode(theOutage.getNodes().get(index));
+							} catch (NumberFormatException e) {
+								//Ignore - nothing we can do
+								continue;
+							} catch (IndexOutOfBoundsException ioob) {
+								//Ignore - it's already removed
+								continue;
+							}
+							break;
+						} else if (paramName.startsWith("deleteInterface")) {
+							String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
+							try {
+								int index = WebSecurityUtils.safeParseInt(indexStr);
+								theOutage.removeInterface(theOutage.getInterfaces().get(index));
+							} catch (NumberFormatException e) {
+								//Ignore - nothing we can do
+								continue;
+							} catch (IndexOutOfBoundsException ioob) {
+								//Ignore - it's already removed
+								continue;
+							}
+							break;
+						} else if (paramName.startsWith("deleteTime")) {
+							String indexStr = paramName.substring("deleteTime".length(), paramName.indexOf("."));
+							try {
+								int index = WebSecurityUtils.safeParseInt(indexStr);
+								theOutage.removeTime(theOutage.getTimes().get(index));
+							} catch (NumberFormatException e) {
+								//Ignore - nothing we can do
+								continue;
+							}
+							break;
+						}
+					}
 				}
 
-				boolean entryAlreadyExists = false;
-				for(Time time : theOutage.getTimes()) {
-					if (time.equals(newTime)) {
-						entryAlreadyExists = true;
-						break;
-					}
-				}
-				if (entryAlreadyExists) {
-					timeSpanError = true;
-				} else {
-					theOutage.addTime(newTime);
-				}
-			} else {
-				//Look for deleteNode or deleteInterface or deleteTime prefix
-				List<String> paramList = Collections.list(request.getParameterNames());
-				for (String paramName : paramList) {
-					if (paramName.startsWith("deleteNode")) {
-						String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
-						try {
-							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeNode(theOutage.getNodes().get(index));
-						} catch (NumberFormatException e) {
-							//Ignore - nothing we can do
-							continue;
-						} catch (IndexOutOfBoundsException ioob) {
-							//Ignore - it's already removed
-							continue;
-						}
-						break;
-					} else if (paramName.startsWith("deleteInterface")) {
-						String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
-						try {
-							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeInterface(theOutage.getInterfaces().get(index));
-						} catch (NumberFormatException e) {
-							//Ignore - nothing we can do
-							continue;
-						} catch (IndexOutOfBoundsException ioob) {
-							//Ignore - it's already removed
-							continue;
-						}
-						break;
-					} else if (paramName.startsWith("deleteTime")) {
-						String indexStr = paramName.substring("deleteTime".length(), paramName.indexOf("."));
-						try {
-							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeTime(theOutage.getTimes().get(index));
-						} catch (NumberFormatException e) {
-							//Ignore - nothing we can do
-							continue;
-						}
-						break;
-					}
-				}
+			} finally {
+				pollOutagesDao.getWriteLock().unlock();
 			}
 
-		} finally {
-			pollOutagesDao.getWriteLock().unlock();
-		}
-
-	} //end if form submission
+			response.sendRedirect("editoutage.jsp");
+		} //end if form submission
+	}
 	boolean hasMatchAny = theOutage.getInterfaces().contains(matchAnyInterface);
 %>
 
@@ -761,7 +766,7 @@ function updateOutageTypeDisplay(selectElement) {
     }
 %>
 
-<h3>Editing Outage: <%=theOutage.getName()%></h3>
+<h3>Editing Outage: <%=WebSecurityUtils.sanitizeString(theOutage.getName())%></h3>
 
 		<label>Nodes and Interfaces:</label>
 			<table class="table table-sm table-borderless">
@@ -772,6 +777,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr>
 					<td valign="top">
 						<form id="addNode" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
@@ -793,6 +799,7 @@ function updateOutageTypeDisplay(selectElement) {
 														if (outageNodes.size() > 0) {
 							%>
 								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
+								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								<input type="hidden" name="formSubmission" value="true" />
 								<%
 								    for (int i = 0; i < outageNodes.size(); i++) {
@@ -801,7 +808,7 @@ function updateOutageTypeDisplay(selectElement) {
 																	out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
 																	OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 																	if (thisNode != null) {
-																		out.println(thisNode.getLabel());
+																		out.println(WebSecurityUtils.sanitizeString(thisNode.getLabel()));
 																	} else {
 																		out.println("Node " + nodeId + " is null");
 																	}
@@ -818,6 +825,7 @@ function updateOutageTypeDisplay(selectElement) {
 					</td>
 					<td valign="top">
 						<form id="addInterface" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
@@ -835,6 +843,7 @@ function updateOutageTypeDisplay(selectElement) {
 							List<org.opennms.netmgt.config.poller.outages.Interface> outageInterfaces = theOutage.getInterfaces();
 							if (outageInterfaces.size() > 0) { %>
 								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									<input type="hidden" name="formSubmission" value="true" />
 									<% for (int i = 0; i < outageInterfaces.size(); i++) {
 										org.opennms.netmgt.config.poller.outages.Interface iface = outageInterfaces.get(i);
@@ -878,6 +887,7 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						</script>
 						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 							<input type="hidden" name="formSubmission" value="true" />
 							<input type="submit" class="btn btn-secondary" name="matchAny" value="Select all nodes and interfaces" />
 						</form>
@@ -891,6 +901,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<% } %>
 			</table>
 		<form id="editOutage" action="admin/sched-outages/editoutage.jsp" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<input type="hidden" name="formSubmission" value="true" />
           <div class="row">
             <div class="col-md-6">

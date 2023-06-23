@@ -2,6 +2,12 @@
 
 <!-- Author: Alejandro Galue <agalue@opennms.org> -->
 
+<style>
+  .menuitem {
+    z-index: 100;
+  }
+</style>
+
 <ol class="breadcrumb">
   <li class="breadcrumb-item"><a href="/opennms/index.jsp">Home</a></li>
   <li class="breadcrumb-item"><a href="/opennms/admin/index.jsp">Admin</a></li>
@@ -62,8 +68,8 @@
     <!-- No Requisitions -->
     <div class="jumbotron" ng-show="loaded && requisitionsData.requisitions.length == 0">
       <div class="container">
-        <h1>There are no external requisitions</h1>
-        <p>Click the 'Add External Requisition' button, to add some.</p>
+        <h1>There are no requisitions</h1>
+        <p>Click the 'Add Requisition' button, to add some.</p>
       </div>
     </div>
 
@@ -92,6 +98,7 @@
               <span class="pull-right">
                 <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
+                        ng-disabled="timingStatus.isRunning"
                         ng-click="edit(requisition.foreignSource)">
                   <span class="fa fa-pencil"></span>
                 </button>
@@ -107,24 +114,24 @@
                     <span class="fa fa-ellipsis-h"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">
-                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="refresh(requisition)">
                       <span class="fa fa-refresh"></span>&nbsp;&nbsp;Refresh deployed stats</a></li>
-                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            id="editForeignSource-{{requisition.foreignSource}}"
                                            ng-click="editForeignSource(requisition.foreignSource)">
                       <span class="fa fa-edit"></span>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
-                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
                       <span class="fa fa-random"></span>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
                     <li class="divider"></li>
-                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
                       <span class="fa fa-remove"></span>&nbsp;&nbsp;Remove all nodes</a></li>
-                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="requisition.nodesInDatabase &gt; 0 || timingStatus.isRunning"
                                            ng-click="delete(requisition.foreignSource)">
                       <span class="fa fa-trash"></span>&nbsp;&nbsp;Delete requisition</a></li>

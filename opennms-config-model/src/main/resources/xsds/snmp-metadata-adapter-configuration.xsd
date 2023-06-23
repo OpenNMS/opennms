@@ -35,6 +35,7 @@
             </xs:complexType>
           </xs:element>
         </xs:sequence>
+        <xs:attribute type="xs:string" name="resultsBehavior" use="optional" default="replace"/>
       </xs:complexType>
     </xs:element>
   </xs:schema>

@@ -91,6 +91,31 @@ public class UsageStatisticsReportDTO {
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
     private int m_groups;
+    private long m_dcbSucceed;
+    private long m_dcbFailed;
+    private long m_dcbWebUiEntries;
+    private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
+    private int outages;
+    private int notifications;
+    private long m_onmsStartupTimeSeconds;
+
+    private Map<String, Long> m_applianceCounts = Collections.emptyMap();
+
+    private boolean m_inContainer;
+    public int getNotifications() {return notifications;}
+
+    public void setNotifications(int notifications) {this.notifications = notifications;}
+
+    public int getOutages() {return outages;}
+
+    public void setOutages(int outages) {this.outages = outages;}
+
+    private int applications;
+
+    public int getApplications(){return applications;}
+
+    public void setApplications(int applications){this.applications = applications;}
+
     public void setSystemId(String systemId) {
         m_systemId = systemId;
     }
@@ -458,6 +483,57 @@ public class UsageStatisticsReportDTO {
         this.m_users = m_users;
     }
 
+    public long getDcbSucceed() {
+        return m_dcbSucceed;
+    }
+
+    public void setDcbSucceed(long m_dcbSucceed) {
+        this.m_dcbSucceed = m_dcbSucceed;
+    }
+
+    public long getDcbFailed() {
+        return m_dcbFailed;
+    }
+
+    public void setDcbFailed(long m_dcbFailed) {
+        this.m_dcbFailed = m_dcbFailed;
+    }
+
+    public long getDcbWebUiEntries() {
+        return m_dcbWebUiEntries;
+    }
+
+    public void setDcbWebUiEntries(long m_dcbWebUiEntries) {
+        this.m_dcbWebUiEntries = m_dcbWebUiEntries;
+    }
+
+    public Map<String, Long> getNodesWithDeviceConfigBySysOid() {
+        return m_nodesWithDeviceConfigBySysOid;
+    }
+
+    public void setNodesWithDeviceConfigBySysOid(Map<String, Long> nodesWithConfigBySysOid) {
+        this.m_nodesWithDeviceConfigBySysOid = nodesWithConfigBySysOid;
+    }
+
+    public long getOnmsStartupTimeSeconds() { return m_onmsStartupTimeSeconds; }
+
+    public void setOnmsStartupTimeSeconds(long onmsStartupTimeSeconds) { this.m_onmsStartupTimeSeconds = onmsStartupTimeSeconds; }
+
+    public Map<String, Long> getApplianceCounts() {
+        return m_applianceCounts;
+    }
+
+    public void setInContainer(final boolean inContainer) {
+        m_inContainer = inContainer;
+    }
+
+    public boolean isInContainer() {
+        return m_inContainer;
+    }
+
+    public void setApplianceCounts(Map<String, Long> applianceCounts) {
+        m_applianceCounts = applianceCounts;
+    }
 
     public String toJson() {
         return toJson(false);

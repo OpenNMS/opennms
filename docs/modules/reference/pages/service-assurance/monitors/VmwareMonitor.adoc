@@ -1,60 +1,70 @@
 
 = VmwareMonitor
 
-This monitor is part of the VMware integration provided in Provisiond and tests the power state of a virtual machine (VM) or a host system (host).
-If the power state of a VM or host is poweredOn, the service is up.
-If the VM or Host is powered off, the service will be marked as down.
-By default, standBy is also considered as down.
-When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), you can change the standBy state.
-See the ignoreStandBy parameter.
-Optionally, a service down event can be triggered if there are pending alarms within vCenter that have not been acknowledged or cleared.
+This monitor is part of the VMWare integration that provisiond provides.
+It tests the power state of a virtual machine or host system.
+If the power state is `poweredOn`, the service is considered to be up; if it is `poweredOff`, the service is marked as down.
+By default, a power state of `standBy` will also mark the service as down.
 
-This monitor requires hosts be imported with Provisiond and the VMware import.
-{page-component-title} requires network access to VMware vCenter server and each of the monitored hosts.
-The credentials for accessing the status of a VMware entity are collected from the responsible VMware vCenter using the settings from `$OPENNMS_HOME/etc/vmware-config.xml`.
-This config file also gets specific asset fields assigned to an imported virtual machine and/or host system.
-The VMware integration populates the following asset fields via Provisiond:
+If you use https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), you can change the `standBy` state (see the `ignoreStandBy` parameter).
+
+Optionally, a service down event can be triggered if there are pending alarms in vCenter that have not been acknowledged or cleared.
+
+== Import hosts
+
+The VmwareMonitor requires that hosts be imported using provisiond and the VMware import function.
+{page-component-title} requires network access to the VMWare vCenter server and each of the monitored hosts.
+
+The credentials for accessing the status of a VMware entity are collected from the appropriate vCenter instance using settings from `$\{OPENNMS_HOME}/etc/vmware-config.xml`.
+This file also sets specific asset fields to be assigned to imported virtual machines and host systems.
+
+The VMware integration populates the following asset fields via provisiond:
 
 * VMware Management Server
 * VMware Managed Entity Type
-* foreignId (which contains an internal VMware vCenter Identifier)
+* `foreignId` (which contains an internal VMware vCenter Identifier)
 
-== Monitor facts
+For more information, see xref:reference:/provisioning/handlers/vmware.adoc[].
 
-[cols="1,7"]
+== VmwareMonitor class
+
+[caption=]
+.VmwareMonitor class
+[cols="1,3"]
 |===
-| Class Name
-| `org.opennms.netmgt.poller.monitors.VmwareMonitor`
+s| Class Name
+| org.opennms.netmgt.poller.monitors.VmwareMonitor
 |===
 
 == Configuration and use
 
-.Optional monitor-specific parameters for the VmwareMonitor
-[options="header"]
-[cols="1,3,2"]
+[caption=]
+.Optional monitor-specific parameters
+[options="autowidth"]
 |===
-| Parameter
-| Description
-| Default
+| Parameter | Description | Default Value
 
 | retry
 | Number of retries before the service is marked as down.
 | 0
 
 | ignoreStandBy
-| Treat power state standBy as up.
+| Treat the `standBy` power state as an indicator that a service is up.
 | false
 
 | reportAlarms
-| Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray).
-| n/a
+| Check for unacknowledged vSphere alarms for a comma-separated list of <<operation:deep-dive/events/event-configuration.adoc#severities, severities>> (red, yellow, green, gray).
+| _Blank_
 |===
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, common configuration parameters>>.
 
-== Examples
-Sample configuration on how to configure the monitor in `poller-configuration.xml`.
-With this configuration, the monitor will go down if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
+== Example
+
+The following is an example of a `poller-configuration.xml` VmwareMonitor configuration.
+With these settings, the monitor will go down if any unacknowledged vSphere alarms with either red or yellow severities exist for the managed entity:
+
+Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -150,6 +150,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.ssh</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasypt-dependencies</artifactId>
       <type>pom</type>
@@ -261,6 +266,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.usageanalytics</groupId>
+      <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.poller.monitors</groupId>
       <artifactId>org.opennms.features.poller.monitors.core</artifactId>
       <version>${project.version}</version>
@@ -325,8 +335,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>jakarta.mail</artifactId>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -467,7 +477,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
@@ -490,16 +500,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.monitor-adaptor</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-provisiond</artifactId>
+      </dependency>
   </dependencies>
 </project>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -53,7 +54,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-@Ignore("Flapping. See NMS-12114")
+/* Flapping. See NMS-12114 */
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeocoderServiceConfigurationPageIT.class);
@@ -230,7 +232,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public Page open() {
             driver.get(url);
-            new WebDriverWait(driver, 5).until(driver -> getTabs().size() == expectedTabs.size());
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> getTabs().size() == expectedTabs.size());
             return this;
         }
 
@@ -290,7 +292,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
         public void click() {
             getElement().click();
             sleep(2000);
-            new WebDriverWait(driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
@@ -360,7 +362,7 @@ public class GeocoderServiceConfigurationPageIT extends UiPageTest {
 
         public void update() {
            getSaveButtonElement().click();
-           new WebDriverWait(driver, 5, 500).until(webDriver -> !isDirty());
+           new WebDriverWait(driver, Duration.ofSeconds(5), Duration.ofMillis(500)).until(webDriver -> !isDirty());
         }
 
         WebElement getSaveButtonElement() {

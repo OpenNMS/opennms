@@ -25,6 +25,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="AVAIL" interval="300000" user-defined="false" status="on">
@@ -34,3 +36,4 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 <monitor service="AVAIL" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
 ----
+

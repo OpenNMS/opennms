@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public final class Dot1dBaseTracker extends AggregateTracker
 {
 	private final static Logger LOG = LoggerFactory.getLogger(Dot1dBaseTracker.class);
-    /**
+    /*
      * the bridge type
      */
 	/** Constant <code>BASE_BRIDGE_ADDRESS="dot1dBaseBridgeAddress"</code> */
@@ -80,12 +80,12 @@ public final class Dot1dBaseTracker extends AggregateTracker
 	 * in this list should be used by multiple instances of
 	 * this class.</P>
 	 */
-	public static NamedSnmpVar[] ms_elemList = null;
-	
+	public static NamedSnmpVar[] ms_elemList;
+
 	static {
-		ms_elemList = new NamedSnmpVar[8]; 
+		ms_elemList = new NamedSnmpVar[8];
 		int ndx = 0;
-		/**
+		/*
 		 * <P>The MAC address used by this bridge when it must
 		 * be referred to in a unique fashion. It is
 		 * recommended that this be the numerically smallest
@@ -95,15 +95,15 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  BridgeIdentifier is formed which is used in the
 		 *  Spanning Tree Protocol.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,BASE_BRIDGE_ADDRESS,".1.3.6.1.2.1.17.1.1");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, BASE_BRIDGE_ADDRESS, ".1.3.6.1.2.1.17.1.1");
 
-		/**
+		/*
 		 * <P> The number of ports controlled by this bridging entity.</P>
-		 * 
+		 *
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_PORTS,".1.3.6.1.2.1.17.1.2");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_PORTS, ".1.3.6.1.2.1.17.1.2");
 
-		/**
+		/*
 		 * <P> Indicates what type of bridging this bridge can
 		 *  perform. If a bridge is actually performing a
 		 *  certain type of bridging this will be indicated by
@@ -114,9 +114,9 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  3 = sourceroute-only
 		 *  4 = srt
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,BASE_NUM_TYPE,".1.3.6.1.2.1.17.1.3");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_TYPE, ".1.3.6.1.2.1.17.1.3");
 
-		/**
+		/*
 		 * <P>An indication of what version of the Spanning
 		 *  Tree Protocol is being run. The value
 		 *  'decLb100(2)' indicates the DEC LANbridge 100
@@ -128,17 +128,17 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 */
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PROTOCOL_SPEC, ".1.3.6.1.2.1.17.2.1");
 
-		/**
+		/*
 		 * <P> The value of the write-able portion of the Bridge
 		 *  ID, i.e., the first two octets of the (8 octet
 		 *  long) Bridge ID. The other (last) 6 octets of the
 		 *  Bridge ID are given by the value of
 		 *  dot1dBaseBridgeAddress.</P>
-		 * 
+		 *
 		 */
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PRIORITY, ".1.3.6.1.2.1.17.2.2");
 
-		/**
+		/*
 		 * <P>The bridge identifier of the root of the spanning
 		 *  tree as determined by the Spanning Tree Protocol
 		 *  as executed by this node. This value is used as
@@ -147,23 +147,23 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 */
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.5");
 
-		/**
+		/*
 		 * <P>The cost of the path to the root as seen from
-         * this bridge.</P>
-		 * 
+		 * this bridge.</P>
+		 *
 		 */
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_COST, ".1.3.6.1.2.1.17.2.6");
-	
-		/**
+
+		/*
 		 * <P>The port number of the port which offers the
 		 * lowest cost path from this bridge to the root
- 		 * bridge.</P>
-		 * 
+		 * bridge.</P>
+		 *
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_PORT, ".1.3.6.1.2.1.17.2.7");
+		ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_PORT, ".1.3.6.1.2.1.17.2.7");
 	}
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
 	
 	/**
 	 * <P>The class constructor is used to initialize the collector
@@ -172,7 +172,6 @@ public final class Dot1dBaseTracker extends AggregateTracker
 	 * data has been collected the passed signaler object is <EM>notified</em>
 	 * using the notifyAll() method.</P>
 	 *
-	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public Dot1dBaseTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

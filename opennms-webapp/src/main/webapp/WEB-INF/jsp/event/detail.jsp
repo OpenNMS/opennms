@@ -280,6 +280,7 @@
  
     <c:if test="<%=canAck && acknowledgeEvent %>">
       <form method="post" action="event/acknowledge">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>
         <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />

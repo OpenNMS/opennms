@@ -33,7 +33,12 @@
     <reference id="provisiondConfigDao" interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao" availability="mandatory"/>
     <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
     <reference id="businessServiceEdgeDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" />
-
+    <reference id="usageAnalyticDao" interface="org.opennms.features.usageanalytics.api.UsageAnalyticDao" />
+    <reference id="deviceConfigDao" interface="org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao" />
+    <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory"/>
+    <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
+    <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
+    
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
     <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -83,6 +88,11 @@
         <property name="groupFactory" ref="groupFactory"/>
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
         <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
+        <property name="usageAnalyticDao" ref="usageAnalyticDao"/>
+        <property name="deviceConfigDao" ref="deviceConfigDao"/>
+        <property name="applicationDao" ref="applicationDao"/>
+        <property name="outageDao" ref="outageDao"/>
+        <property name="notificationDao" ref="notificationDao"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">

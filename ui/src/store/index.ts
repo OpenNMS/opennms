@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 // store modules
 import searchModule from './search'
 import nodesModule from './nodes'
+import ipInterfacesModule from './ipInterfaces'
 import eventsModule from './events'
 import ifServicesModule from './ifServices'
 import configuration from './configuration'
@@ -18,11 +19,13 @@ import graphModule from './graph'
 import pluginModule from './plugin'
 import deviceModule from './device'
 import scvModule from './scv'
+import menuModule from './menu'
 
 export default createStore({
   modules: {
     searchModule,
     nodesModule,
+    ipInterfacesModule,
     eventsModule,
     ifServicesModule,
     configuration,
@@ -37,6 +40,7 @@ export default createStore({
     graphModule,
     pluginModule,
     deviceModule,
-    scvModule
+    scvModule,
+    menuModule
   }
 })

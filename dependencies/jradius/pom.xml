@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -15,7 +15,6 @@
     can depend on to use the JRadius library.
   </description>
   <dependencies>
-    <!-- add this commons stuff to keep JNLP app from getting confused by versions -->
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -108,13 +107,4 @@
       <type>pom</type>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>coova</id>
-      <url>https://maven.opennms.org/content/repositories/coova/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

@@ -1,4 +1,4 @@
-.Login to the Karaf shell
+.Log in to the Karaf shell
 [source, console]
 ----
 ssh -p 8201 admin@localhost
@@ -10,8 +10,11 @@ ssh -p 8201 admin@localhost
 config:edit org.apache.karaf.jaas
 config:property-set encryption.enabled true
 config:property-set encryption.algorithm SHA-512
+config:property-set encryption.name jasypt
 config:update
 ----
+
+WARNING: If you set the `encryption.name` option, you will need to reset any existing passwords that were created while `encryption.enabled` was set to `true`. 
 
 .Set a new secure admin password
 [source, karaf]
@@ -20,6 +23,6 @@ jaas:realm-manage --index 1 --realm karaf
 jaas:user-add admin my-secure-password<1>
 jaas:update
 ----
-<1> Replace `my-secure-password` with a strong password
+<1> Replace `my-secure-password` with a strong password.
 
-Logout and try login to verify your new password is set.
+Log out and log back in to verify that your new password is set.

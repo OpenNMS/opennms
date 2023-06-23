@@ -24,6 +24,7 @@ use vars qw(
 	$MVN
 	$MAVEN_VERSION
 	$MAVEN_OPTS
+	$MINIMUM_FD
 	$OOSNMP_TRUSTSTORE
 	$PATHSEP
 	$PREFIX
@@ -43,6 +44,7 @@ $PATHSEP       = $Config{'path_sep'};
 $SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 $VERBOSE       = undef;
 @DEFAULT_GOALS = ( "install" );
+$MINIMUM_FD    = 20000;
 
 @JAVA_SEARCH_DIRS = qw(
 	/usr/lib/jvm
@@ -181,6 +183,17 @@ $LOGLEVEL = lc($LOGLEVEL);
 if ($LOGLEVEL !~ /^(error|warning|info|debug)$/) {
 	print STDERR "Log level $LOGLEVEL invalid.  Must be one of 'error', 'warning', 'info', or 'debug'.\n";
 	exit 1;
+}
+
+# If we have a ulimit command, do a sanity check on the number of FDs,
+# otherwise ignore (presumable the platform doesn't support ulimit).
+my $ulimit_fd;
+if ($ulimit_fd = `ulimit -n`) {
+	chomp($ulimit_fd);
+	if ($ulimit_fd ne "unlimited" && $ulimit_fd < $MINIMUM_FD) {
+		error("File descriptor limit ('ulimit -n') must be >= $MINIMUM_FD but is $ulimit_fd. Use 'ulimit -n $MINIMUM_FD' to set.");
+		exit 1;
+	}
 }
 
 if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $ENV{'JAVA_HOME'})) {

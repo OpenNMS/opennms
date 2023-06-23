@@ -1,0 +1,99 @@
+
+= Slack Notifications
+
+If your organization uses https://slack.com/[Slack], you can configure {page-component-title} to send notices to any channel via an incoming webhook.
+You must configure an incoming webhook in your Slack settings and manually configure some settings in your {page-component-title} instance.
+
+For more information on incoming webhooks in Slack, see the https://api.slack.com/incoming-webhooks[Slack API] documentation.
+
+Note that the example here relies on the ability to override the channel, which has been deprecated.
+We have a workaround, which is to add a second notification command.
+If you have an old-style webhook, the original process still works, but Slack may remove it in the future.
+
+For more information on the discussion, see the article on https://opennms.discourse.group/t/feeding-different-slack-mattermost-channels/338/2[Discourse].
+
+== Setup
+
+First, add the following XML to `notificationCommands.xml` (no customization should be needed):
+
+[source, xml]
+----
+<command binary="false">
+  <name>slack</name>
+  <execute>org.opennms.netmgt.notifd.SlackNotificationStrategy</execute>
+  <comment>class for sending messages to a Slack team channel for notifications</comment>
+  <argument streamed="false">
+    <switch>-subject</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+Add a second notifciation command to `notificationCommands.xml`, and a corresponding destination path.
+Use it for the notifications you want to go to the second channel.
+
+[source, xml]
+----
+ <command binary="false">
+      <name>slack-two</name>
+      <execute>org.opennms.netmgt.notifd.SlackNotificationStrategy</execute>
+      <comment>class for sending messages to a second Slack team channel for notifications</comment>
+      <argument streamed="false">
+          <switch>-subject</switch>
+      </argument>
+      <argument streamed="false">
+          <switch>-tm</switch>
+      </argument>
+      <argument streamed="false">
+	      <substitution>https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX</substitution><1>
+	      <switch>-url</switch>
+      </argument>
+   </command>
+----
+<1>Replace with a valid webhook for your desired channel
+
+Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
+
+[source, properties]
+org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
+
+Customize its values as appropriate for your organization.
+
+{page-component-title} loads `slack.properties` upon restart.
+After it is loaded, your new `slack` notification command will be available for use in a destination path.
+
+== Additional configuration options
+
+The following table lists optional properties that you may use in `slack.properties` to customize your Slack notifications:
+
+[cols="2,2,1,1"]
+|===
+| Parameter | Description | Default Value | Example
+
+| org.opennms.netmgt.notifd.slack.channel
+| Specify a channel or private group other than the one targeted by the webhook.
+| _Webhook default_
+| NetOps
+
+| org.opennms.netmgt.notifd.slack.username
+| The username to associate with the notification posts.
+| _Blank_
+| OpenNMS_Bot
+
+| org.opennms.netmgt.notifd.slack.iconEmoji
+| An emoji sequence to use as the icon for the notification posts.
+| _Blank_
+| :metal:
+
+| org.opennms.netmgt.notifd.slack.iconURL
+| The URL of an image to use as the icon for the notification posts.
+| _Blank_
+| \https://example.org/assets/icon.png
+
+| org.opennms.netmgt.notifd.slack.useSystemProxy
+| Should the system-wide proxy settings be used? Configure the system proxy settings via <<deep-dive/admin/configuration/system-properties.adoc#ga-opennms-system-properties, system properties>>.
+| true
+| true
+|===

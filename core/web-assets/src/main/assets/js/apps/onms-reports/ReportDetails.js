@@ -3,8 +3,7 @@ import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOpti
 import ContextError from '../../lib/onms-http/ContextError';
 import Util from 'lib/util';
 
-import moment from 'moment';
-require('moment-timezone');
+const moment = require('vendor/moment-js');
 
 export default class ReportDetails {
 

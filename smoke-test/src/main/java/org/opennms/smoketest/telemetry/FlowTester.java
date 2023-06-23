@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest.telemetry;
 
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.core.IsEqual.equalTo;

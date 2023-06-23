@@ -1,0 +1,39 @@
+
+= SNMP Interface Availability Report
+
+This report provides the following availability data for SNMP interfaces, sorted by IP address, over the specified date range:
+
+* Number of outages.
+* Mean Time To Restore ("MTTR") (in hours).
+* Length of time for each outage (in hours).
+* Percent outage (per unit in category).
+* Percent availability (per unit in category).
+
+You can customize this report with a company logo (approximately 195px by 50px) in the header and footer.
+
+For an example of an availability report, see xref:deep-dive/database-reports/template-introduction.adoc[].
+
+== Parameters
+
+[caption=]
+.Report customization parameters
+[options="autowidth"]
+|===
+| Field | Description   | Default Value
+
+| Number of Days
+| The range, in days, from the report `Start Date`.
+| 7
+
+| Availability Warning
+| Availability percentage at which a warning is triggered.
+| 98
+
+| Availability Critical
+| Availability percentage at which status is considered critical.
+| 97
+
+| Start Date
+| The starting date for the data contained in this report.
+| _7 days before today_
+|===

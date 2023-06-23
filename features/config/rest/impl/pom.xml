@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.rest</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.rest</groupId>
@@ -75,7 +75,7 @@
     <dependency>
       <groupId>org.apache.servicemix.specs</groupId>
       <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
-      <version>${servicemixSpecsVersion}</version>
+      <version>${karaf.servicemix.specs.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.bind</groupId>
@@ -85,25 +85,22 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${jackson2Version}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson2-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>${jackson2Version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>${snakeyamlVersion}</version>
-    </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${jsonPathVersion}</version>
     </dependency>
 
     <!-- test -->
@@ -115,7 +112,7 @@
     <dependency>
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
-      <version>1.5.0</version>
+      <version>1.5.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>

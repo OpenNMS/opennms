@@ -30,17 +30,15 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.processing.Pipeline;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
-import com.codahale.metrics.MetricRegistry;
-
 public class Netflow9AdapterFactory implements AdapterFactory {
     private TelemetryRegistry telemetryRegistry;
-    private FlowRepository flowRepository;
+    private Pipeline pipeline;
 
     @Override
     public Class<? extends Adapter> getBeanClass() {
@@ -50,18 +48,18 @@ public class Netflow9AdapterFactory implements AdapterFactory {
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
         Objects.requireNonNull(this.telemetryRegistry);
-        Objects.requireNonNull(this.flowRepository);
+        Objects.requireNonNull(this.pipeline);
 
         return new Netflow9Adapter(adapterConfig,
                                    this.telemetryRegistry.getMetricRegistry(),
-                                   this.flowRepository);
+                                   this.pipeline);
     }
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
     }
 
-    public void setFlowRepository(FlowRepository flowRepository) {
-        this.flowRepository = flowRepository;
+    public void setPipeline(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
 }

@@ -48,7 +48,7 @@
                 org.opennms.netmgt.model.snmpmetadata.SnmpMetadataTable,
                 org.opennms.netmgt.model.snmpmetadata.SnmpMetadataValue"
 %>
-
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
@@ -184,7 +184,7 @@
   <% if (root == null) { %>
     <% if (!snmpHardware) { %>
       <br/>
-      <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>
+      <div class="jumbotron"><h3>The node <%= WebSecurityUtils.sanitizeString(node.getLabel()) %> doesn't have hardware information on the database.</h3></div>
     <% } else {
         SnmpMetadataObject snmpMetadataObject = (SnmpMetadataObject) SnmpMetadataObject.fromOnmsMetadata(onmsMetaDataList, "snmp");
         printSnmpMetadataObject(out, snmpMetadataObject);

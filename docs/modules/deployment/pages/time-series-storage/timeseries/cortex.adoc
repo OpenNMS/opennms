@@ -1,0 +1,100 @@
+
+= Cortex Time Series Plugin
+
+The Cortex Time Series plugin enables {page-component-title} to persist time series performance and latency data to Cortex.
+The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
+It also lets you visualize graphs from the Cortex instance in the https://docs.opennms.com/helm/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+
+.Cortex Time Series plugin architecture
+image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Cortex Time Series plugin and how it integrates with {page-component-title}", 600]
+
+== Requirements
+
+You must have the following before you start to use the Cortex plugin:
+
+* Horizon 30.0.0+ (Meridian availability with the 2023 release)
+* Cortex version 1.10.0+
+
+NOTE: We plan to keep the plugin compatible with https://grafana.com/oss/mimir/[Mimir], Grafana's fork of Cortex, as long as Mimir remains compatible with Cortex.
+The minimum supported Mimir version is 2.0.0.
+
+== Deployment
+
+To use the Cortex Time Series plugin, follow these steps:
+
+. Start Cortex (see the https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions).
+If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
+. Download the plugin's `.kar` file from https://github.com/OpenNMS/opennms-cortex-tss-plugin/releases[GitHub].
+. Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
+. Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
++
+[source, properties]
+----
+org.opennms.timeseries.strategy=integration <1> <2>
+org.opennms.timeseries.tin.metatags.tag.node=${node:label} <3>
+org.opennms.timeseries.tin.metatags.tag.location=${node:location}
+org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
+org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
+----
+<1> Make sure that the `org.opennms.timeseries.strategy` property is set only once so you don't have conflicting values in multiple `properties` files.
+<2> If you are enabling the <<time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration, dual write plugin>> on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.
+<3> See the <<time-series-storage/timeseries/configuration.adoc#ga-opennms-operation-timeseries-properties-meta-tags, time series integration section>> for more information on defining metatags.
++
+NOTE: If you are deploying to a container, instead of setting `org.opennms.timeseries.strategy` via a properties file, you can set your container's environment variables configuration to specify `OPENNMS_TIMESERIES_STRATEGY=integration`.
+
+. Configure the Cortex Time Series plugin in {page-component-title} via the Karaf shell, or by creating or modifying `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg`.
++
+The `writeUrl` and `readUrl` properties are required.
+All other properties shown here are example values to overwrite the defaults.
+Monitor your Cortex cluster's performance and adjust these properties as necessary.
+Substitute the correct host and port for your Cortex cluster.
++
+[{tabs}]
+====
+Karaf shell::
++
+.Configure the plugin's properties:
+[source, karaf]
+----
+config:edit org.opennms.plugins.tss.cortex
+property-set writeUrl http://cortex-service-host:9009/api/prom/push
+property-set readUrl http://cortex-service-host:9009/prometheus/api/v1
+property-set maxConcurrentHttpConnections 100
+property-set writeTimeoutInMs 1000
+property-set readTimeoutInMs 1000
+property-set metricCacheSize 1000
+property-set externalTagsCacheSize 1000
+property-set bulkheadMaxWaitDurationInMs 9223372036854775807
+config:update
+----
+
+CFG file::
++
+.Create or modify the `$\{OPENNMS_HOME}/etc/org.opennms.plugins.tss.cortex.cfg` file:
+[source, properties]
+----
+writeUrl=http://cortex-service-host:9009/api/prom/push
+readUrl=http://cortex-service-host:9009/prometheus/api/v1
+maxConcurrentHttpConnections=100
+writeTimeoutInMs=1000
+readTimeoutInMs=1000
+metricCacheSize=1000
+externalTagsCacheSize=1000
+bulkheadMaxWaitDurationInMs=9223372036854775807
+----
+====
+
+. Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` to configure the plugin to remain installed after {page-component-title} restarts:
++
+[source, properties]
+opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
+
+. Restart the {page-component-title} service.
+
+== Cortex tips
+
+Navigate to the following URLs to view information about your Cortex server:
+
+* *Server status:* \http://cortex-service-host:9009
+* *Ring:* \http://cortex-service-host:9009/ring
+* *Internal metrics:* \http://cortex-service-host:9009/metrics

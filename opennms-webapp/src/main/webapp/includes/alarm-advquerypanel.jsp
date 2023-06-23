@@ -69,7 +69,8 @@
   </c:choose>
 </c:set>
 
-<form action="alarm/query" method="get">
+<form action="alarm/query" method="post">
+	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 	<div class="form-group col-sm-6">
 		<label for="alarmtext">Alarm Text Contains</label>

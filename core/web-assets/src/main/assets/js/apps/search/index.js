@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2016-2017 The OpenNMS Group, Inc.
+* @copyright 2016-2022 The OpenNMS Group, Inc.
 */
 
 'use strict';
@@ -17,6 +17,10 @@ angular.module('onms-search', [
   'onms.http',
   'ui.bootstrap'
 ])
+
+.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}])
 
 .directive('onmsSearchNodes', function() {
   return {

@@ -161,10 +161,8 @@ If the response time should be persisted, add the following parameters:
 <parameter key="ds-name" value="myResponseTime" />
 ----
 
-
-
 It is also possible to return one or many response times directly from the script.
-To add custom response times or override the default one, add entries to the _times_ object.
+To add custom response times or override the default one, add entries to the `times` object.
 The entries are keyed with a string that names the data source and have as values a number that represents the response time.
 To override the default response time data source, add an entry into `times` named `response-time`.
 
@@ -215,7 +213,9 @@ The following table provides the required setup for commonly used languages.
 
 == BeanShell example
 
-._BeanShell_ example `poller-configuration.xml`
+Note that you must include the `monitor` section for each service in your definition.
+
+.BeanShell example `poller-configuration.xml`
 [source, xml]
 ----
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
@@ -244,6 +244,8 @@ if (testFile.exists()) {
 The use of the Groovy language requires an additional library.
 Copy a compatible `groovy-all.jar` into the `$\{OPENNMS_HOME}/lib` folder and restart {page-component-title} to make Groovy available for the BSFMonitor.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 .Groovy example `poller-configuration.xml` with default `run-type` set to `eval`
 [source, xml]
 ----
@@ -255,7 +257,7 @@ Copy a compatible `groovy-all.jar` into the `$\{OPENNMS_HOME}/lib` folder and re
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-.Groovy example `MinimalGroovy.groovy` script file for `run-type` `eval`
+.Groovy example `MinimalGroovy.groovy` script file for `run-type` set to `eval`
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
@@ -298,7 +300,9 @@ if (testFile.exists()) {
 The use of the Jython (Java implementation of Python) language requires an additional library.
 Copy a compatible `jython-x.y.z.jar` into the `$\{OPENNMS_HOME}/lib` folder and restart {page-component-title} to make Jython available for the BSFMonitor.
 
-.Jython example `poller-configuration.xml` with `run-type` `exec`
+Note that you must include the `monitor` section for each service in your definition.
+
+.Jython example `poller-configuration.xml` with `run-type` set to `exec`
 [source, xml]
 ----
 <service name="MinimalJython" interval="300000" user-defined="true" status="on">
@@ -330,6 +334,8 @@ As proof that this is really Python, notice the substitution of Python's `None` 
 == Advanced examples
 
 The following example references all beans that are exposed to the script, including a custom parameter.
+
+Note that you must include the `monitor` section for each service in your definition.
 
 .Groovy example `poller-configuration.xml`
 

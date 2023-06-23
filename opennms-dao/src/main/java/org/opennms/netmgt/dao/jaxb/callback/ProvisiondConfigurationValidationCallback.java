@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.dao.jaxb.callback;
 
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.json.JSONObject;
 import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.ValidationException;
@@ -36,8 +41,6 @@ import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.quartz.CronExpression;
-
-import java.util.function.Consumer;
 
 public class ProvisiondConfigurationValidationCallback implements Consumer<ConfigUpdateInfo> {
     @Override
@@ -49,19 +52,32 @@ public class ProvisiondConfigurationValidationCallback implements Consumer<Confi
         try {
             ProvisiondConfiguration provisiondConfiguration = ConfigConvertUtil.jsonToObject(json.toString(), ProvisiondConfiguration.class);
             this.validateCron(provisiondConfiguration);
+            this.checkNames(provisiondConfiguration.getRequisitionDefs());
         } catch (ConfigConversionException e) {
             // convert to validation error so that the event handler can forward to RESTful API
             throw new ValidationException(e.getMessage());
         }
     }
 
-    private void validateCron(ProvisiondConfiguration provisiondConfiguration) {
+    private static void validateCron(ProvisiondConfiguration provisiondConfiguration) {
         for (RequisitionDef r : provisiondConfiguration.getRequisitionDefs()) {
             r.getCronSchedule().ifPresent(exp -> {
                 if (!CronExpression.isValidExpression(exp)) {
                     throw new ValidationException(String.format("Invalid cron expression. %s", exp));
                 }
             });
+        }
+    }
+
+    private static void checkNames(List<RequisitionDef> requisitionDefs) {
+        if (requisitionDefs != null) {
+            final Set<String> uniqueNames = requisitionDefs.stream()
+                    .map(requisitionDef -> requisitionDef.getImportName().orElse(null))
+                    .filter(name -> name != null && !name.isBlank()) //empty names ere not allowed
+                    .collect(Collectors.toSet()); // Duplicates are not allowed (Set filters duplicates)
+            if (uniqueNames.size() != requisitionDefs.size()) {
+                throw new ValidationException(String.format("All requisition definitions must have unique names"));
+            }
         }
     }
 }

@@ -206,7 +206,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         //add an 'Include URL'
         if(action.equals(addIncludeUrlAction)){
             LOG.debug("Adding Include URL");
-            String url = request.getParameter("iuurl");
+            String url = WebSecurityUtils.sanitizeString(request.getParameter("iuurl"));
             String timeout = request.getParameter("iutimeout");
             String retries = request.getParameter("iuretries");
             String foreignSource = request.getParameter("iuforeignsource");
@@ -248,7 +248,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         //add an 'Exclude URL'
         if(action.equals(addExcludeUrlAction)){
             LOG.debug("Adding Exclude URL");
-            String url = request.getParameter("euurl");
+            String url = WebSecurityUtils.sanitizeString(request.getParameter("euurl"));
             String foreignSource = request.getParameter("euforeignsource");
             String location = request.getParameter("eulocation");
 

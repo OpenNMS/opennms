@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.concurrent.TimeUnit;
@@ -49,8 +49,8 @@ public class EditInRequisitionIT extends OpenNMSSeleniumIT {
     public void before() throws Exception {
         createRequisition();
         createNode();
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
-        LOG.debug("Timeout for element lookup decreased to two seconds");
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        LOG.debug("Timeout for element lookup decreased to five seconds");
     }
 
     @After

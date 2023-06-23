@@ -1,6 +1,7 @@
 #/usr/bin/env python3
 import argparse
 import os
+import re
 import sys
 
 from git import get_current_branch, get_parent_branch, get_changed_files
@@ -28,6 +29,8 @@ def find_changes(maven_project_root):
     for file_changed in files_changed:
         print(file_changed)
 
+def is_test(file):
+    return bool(re.search("\\bsrc/test/", file))
 
 def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=None, integration_test_output=None):
     project = load_maven_project(maven_project_root)
@@ -40,17 +43,31 @@ def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=
 
     if current_branch != parent_branch and changes_only:
         files_changed = get_changed_files(maven_project_root)
-        print("Files with changes:")
-        for file_changed in files_changed:
+        other_files_changed = list(files_changed)
+
+        test_files_changed = list(filter(is_test, files_changed))
+        print("Test files with changes:")
+        for test_file_changed in test_files_changed:
+            other_files_changed.remove(test_file_changed)
+            print(test_file_changed)
+
+        print("Other files with changes:")
+        for file_changed in other_files_changed:
             print(file_changed)
 
-        modules_with_changes = project.get_modules_related_to(files_changed)
-        print("Modules with changes:")
-        for module_with_changes in modules_with_changes:
-            print(module_with_changes)
+        print(list(test_files_changed))
+        modules_with_test_changes = project.get_modules_related_to(test_files_changed)
+        print("Modules with test changes:")
+        for test_module_with_changes in modules_with_test_changes:
+            print(test_module_with_changes)
 
-        module_users = project.get_module_users(modules_with_changes)
-        modules_to_consider = set(module_users).union(set(modules_with_changes))
+        modules_with_other_changes = project.get_modules_related_to(other_files_changed)
+        print("Modules with other changes:")
+        for module_with_other_changes in modules_with_other_changes:
+            print(module_with_other_changes)
+
+        module_users = project.get_module_users(modules_with_other_changes)
+        modules_to_consider = set(module_users).union(set(modules_with_other_changes)).union(set(modules_with_test_changes))
     else:
         # Consider all modules
         modules_to_consider = project.modules

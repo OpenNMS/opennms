@@ -266,7 +266,7 @@ public abstract class EventUtils {
      *         triple
      */
     public static Event createServiceDeletedEvent(String source, int nodeId, InetAddress addr, String service) {
-        debug("createServiceDeletedEvent for nodeid/ipaddr/service:  %d/%s", nodeId, str(addr), service);
+        debug("createServiceDeletedEvent for nodeid/ipaddr/service:  %d/%s/%s", nodeId, str(addr), service);
 
         EventBuilder bldr = new EventBuilder(SERVICE_DELETED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);

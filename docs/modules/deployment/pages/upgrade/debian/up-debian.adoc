@@ -1,11 +1,10 @@
 
-Your {page-component-title} repository is defined in your `/etc/apt/sources.list` directory.
-
+Your {page-component-title} repository is defined in the `/etc/apt/sources.list` directory.
 ifeval::["{page-component-title}" == "Horizon"]
 The file may be named `opennms-repo-stable-<OSversion>.repo`, but it is not guaranteed to be.
 endif::[]
 
-. Sudo to root.
+. Log in as the root user or elevate your permissions to be the root user.
 . Enable auto updates:
 +
 [source, console]
@@ -20,10 +19,10 @@ sudo apt-mark unhold libopennms-java \
 +
 [source, console]
 ----
-apt-get clean
+apt clean
 ----
 
-. Make a backup copy of your OpenNMS config:
+. Make a backup copy of your config:
 +
 [source, console]
 ----
@@ -31,11 +30,18 @@ rsync -Ppav ${OPENNMS_HOME}/etc /tmp/etc.orig
 rsync -Ppav ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF /tmp/opennms-web-inf
 ----
 
+. Update the apt packages index:
++
+[source, console]
+----
+apt update -y
+----
+
 . Upgrade {page-component-title} packages to the newest version:
 +
 [source, console]
 ----
-apt-get upgrade opennms
+apt upgrade opennms
 ----
 
 . Disable auto updates:
@@ -52,17 +58,17 @@ sudo apt-mark hold libopennms-java \
 +
 [source, console]
 ----
-apt-get install java-11-openjdk java-11-openjdk-devel
+apt install openjdk-11-jdk-headless openjdk-11-jre-headless
 ----
 
-. Execute `runjava` to set the JVM that {page-component-title} will use:
+. Use the `runjava` command to set the JVM that {page-component-title} will use:
 +
 [source, console]
 ----
 ${OPENNMS_HOME}/bin/runjava -s
 ----
 
-. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
+. Check for configuration file changes and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
 +
 NOTE: Debian prompts you to keep or overwrite your files during the `apt upgrade` process.
 Inspect these files manually and reconcile any differences.
@@ -76,7 +82,7 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 +
 The upgrade may take some time.
-An `Upgrade completed successfully!` message confirms that the upgrade has completed.
+An "Upgrade completed successfully!" message confirms that the upgrade has finished.
 If you do not get this message, check the output of the install command for any errors.
 
 . Clear the Karaf cache:
@@ -86,16 +92,16 @@ If you do not get this message, check the output of the install command for any 
 yes | ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
 ----
 
-. Start OpenNMS {page-component-title}:
+. Start {page-component-title}:
 +
 [source, console]
 ----
 systemctl start opennms.service
 ----
 +
-NOTE: `tail -F $\{OPENNMS_HOME}/logs/manager.log` illustrates the {page-component-title} startup progress.
+TIP: `tail -F $\{OPENNMS_HOME}/logs/manager.log` shows the {page-component-title} startup progress.
 
-. The upgrade completes and operation resumes.
+. The upgrade is completed and operation resumes.
 
-IMPORTANT: Make sure you clear your browser's cache before using the {page-component-title} web UI against the upgraded version.
+IMPORTANT: Make sure that you clear your browser's cache before using the {page-component-title} web UI against the upgraded version.
 This is especially important for pages that use JavaScript heavily (for example, the Requisitions UI).

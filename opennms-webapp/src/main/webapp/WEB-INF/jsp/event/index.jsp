@@ -60,7 +60,8 @@
       </div>
       <div class="card-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
-        <form action="event/detail.jsp" method="get" role="form" class="form pull-right">
+        <form action="event/detail.jsp" method="post" role="form" class="form pull-right">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <div class="form-group">
             <label for="byeventid_id">Event ID</label>
               <div class="input-group">

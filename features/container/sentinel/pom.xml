@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>container-parent</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.container</groupId>
@@ -89,6 +89,12 @@
             <artifactId>org.opennms.container.shared</artifactId>
 	    <version>${project.version}</version>
             <type>tar.gz</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <version>${jacocoVersion}</version>
+            <classifier>runtime</classifier>
         </dependency>
     </dependencies>
 </project>

@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.kafka.itests;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -61,6 +61,8 @@ import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -103,6 +105,20 @@ public class KafkaLargeBufferSinkIT {
                 .thenReturn(kafkaConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
         remoteMessageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
+        remoteMessageDispatcherFactory.setIdentity(new MinionIdentity() {
+            @Override
+            public String getId() {
+                return "0";
+            }
+            @Override
+            public String getLocation() {
+                return "some location";
+            }
+            @Override
+            public String getType() {
+                return SystemType.Minion.name();
+            }
+        });
         remoteMessageDispatcherFactory.init();
 
         System.setProperty(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());

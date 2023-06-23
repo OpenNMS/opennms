@@ -1,0 +1,19 @@
+
+= Log File Viewer
+
+You can view log files in the {page-component-title} web UI.
+To do so, click menu:Info[Logs] in the top menu bar.
+
+.Log file viewer
+image::logging/log-file-viewer.png["{page-component-title} UI displaying the log file viewer.", 700]
+
+On the Log File Viewer page, the left pane displays a list of log files.
+Select a file name to display its contents in the right pane.
+You can scroll through its contents both vertically and horizontally.
+
+Type in the *Search Logs* box to search for any part of a log file's name
+
+Click the *arrow* symbol at the top-right of the content pane to order the data from oldest to newest, or newest to oldest.
+
+NOTE: The log file's data is not automatically refreshed.
+Click a file name in the left pane to refresh that log's data.

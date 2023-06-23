@@ -117,7 +117,7 @@ public class CollectionSetBuilder {
         }
     }
 
-    private CollectionSetBuilder withAttribute(Resource resource, Attribute<?> attribute) {
+    public CollectionSetBuilder withAttribute(Resource resource, Attribute<?> attribute) {
         if (m_attributesByResource.containsKey(resource)) {
             // Insert
             m_attributesByResource.get(resource).add(attribute);

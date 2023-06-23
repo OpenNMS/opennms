@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -39,20 +43,120 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
 
+    //Nms1055 LLDP and OSPF Juniper network
+    public static final String PENROSE_IP = "10.155.69.16";
+    public static final String PENROSE_NAME = "penrose-mx480";
+    public static final String PENROSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+
+    public static final Map<InetAddress,Integer> PENROSE_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> PENROSE_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> PENROSE_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> PENROSE_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> PENROSE_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> PENROSE_IP_MK_MAP = new HashMap<>();
+
+    public static final String DELAWARE_IP = "10.155.69.17";
+    public static final String DELAWARE_NAME = "delaware";
+    public static final String DELAWARE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
+
+    public static final Map<InetAddress,Integer> DELAWARE_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> DELAWARE_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> DELAWARE_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> DELAWARE_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> DELAWARE_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> DELAWARE_IP_MK_MAP = new HashMap<>();
+
+    public static final String PHOENIX_IP = "10.155.69.42";
+    public static final String PHOENIX_NAME = "phoenix-mx80";
+    public static final String PHOENIX_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+
+    public static final Map<InetAddress,Integer> PHOENIX_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> PHOENIX_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> PHOENIX_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> PHOENIX_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> PHOENIX_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> PHOENIX_IP_MK_MAP = new HashMap<>();
+
+
+    public static final String AUSTIN_IP = "10.155.69.43";
+    public static final String AUSTIN_NAME = "Austin";
+    public static final String AUSTIN_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
+
+    public static final Map<InetAddress,Integer> AUSTIN_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> AUSTIN_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> AUSTIN_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> AUSTIN_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> AUSTIN_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> AUSTIN_IP_MK_MAP = new HashMap<>();
+
+    public static final String SANJOSE_IP = "10.155.69.12";
+    public static final String SANJOSE_NAME = "sanjose-mx240";
+    public static final String SANJOSE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
+
+    public static final Map<InetAddress,Integer> SANJOSE_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> SANJOSE_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> SANJOSE_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> SANJOSE_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> SANJOSE_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> SANJOSE_IP_MK_MAP = new HashMap<>();
+
+    public static final String RIOVISTA_IP = "10.155.69.107";
+    public static final String RIOVISTA_NAME = "Riovista-ce";
+    public static final String RIOVISTA_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
+
+    public static final Map<InetAddress,Integer> RIOVISTA_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> RIOVISTA_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> RIOVISTA_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> RIOVISTA_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> RIOVISTA_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> RIOVISTA_IP_MK_MAP = new HashMap<>();
+
+    public static final String PENROSE_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt";
+    public static final String DELAWARE_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt";
+    public static final String PHOENIX_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt";
+    public static final String AUSTIN_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt";
+    public static final String SANJOSE_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt";
+    public static final String RIOVISTA_SNMP_RESOURCE   = "classpath:/linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt";
+
+    public static final String PENROSE_LLDP_CHASSISID = "80711f8fafc0";
+    public static final String DELAWARE_LLDP_CHASSISID = "0022830957c0";
+    public static final String PHOENIX_LLDP_CHASSISID = "80711fc414c0";
+    public static final String AUSTIN_LLDP_CHASSISID = "80711fc413c0";
+    public static final String SANJOSE_LLDP_CHASSISID = "002283d857c0";
+    public static final String RIOVISTA_LLDP_CHASSISID = "001f12373dc0";
+
+
     static {
+
+        PENROSE_IF_IFNAME_MAP.put(16,"lo0.0");
+        PENROSE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        PENROSE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        PENROSE_IF_IFDESCR_MAP.put(21,"lo0.16384");
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
-        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
-        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.2"), 644);
-        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.16"), 13);
-        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.1"), 535);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.16"), 13);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.2"), 644);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 16);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 16);
+
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.1"), InetAddressUtils.addr("255.255.255.252"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.16"), InetAddressUtils.addr("255.255.224.0"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("20.1.1.2"), InetAddressUtils.addr("255.255.255.252"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        PENROSE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.0.1"), InetAddressUtils.addr("255.255.255.255"));
+
         PENROSE_IF_IFNAME_MAP.put(1, "fxp0");
         PENROSE_IF_IFDESCR_MAP.put(1, "fxp0");
         PENROSE_IF_MAC_MAP.put(1, "00a0a564f50c");
         PENROSE_IF_IFNAME_MAP.put(535, "xe-1/0/0.0");
         PENROSE_IF_IFDESCR_MAP.put(535, "xe-1/0/0.0");
         PENROSE_IF_MAC_MAP.put(535, "80711f8fa94a");
-        PENROSE_IF_NETMASK_MAP.put(535, InetAddressUtils.addr("255.255.255.252"));
+        //PENROSE_IP_MK_MAP.put(535, InetAddressUtils.addr("255.255.255.252"));
         PENROSE_IF_IFNAME_MAP.put(515, "ge-1/2/1");
         PENROSE_IF_IFDESCR_MAP.put(515, "ge-1/2/1");
         PENROSE_IF_MAC_MAP.put(515, "80711f8fa9ef");
@@ -109,7 +213,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PENROSE_IF_IFNAME_MAP.put(13, "fxp0.0");
         PENROSE_IF_IFDESCR_MAP.put(13, "fxp0.0");
         PENROSE_IF_MAC_MAP.put(13, "00a0a564f50c");
-        PENROSE_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
+        //PENROSE_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
         PENROSE_IF_IFNAME_MAP.put(531, "ge-1/3/7");
         PENROSE_IF_IFDESCR_MAP.put(531, "ge-1/3/7");
         PENROSE_IF_MAC_MAP.put(531, "80711f8faa47");
@@ -131,7 +235,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PENROSE_IF_IFNAME_MAP.put(644, "xe-1/0/1.0");
         PENROSE_IF_IFDESCR_MAP.put(644, "xe-1/0/1.0");
         PENROSE_IF_MAC_MAP.put(644, "80711f8fa94b");
-        PENROSE_IF_NETMASK_MAP.put(644, InetAddressUtils.addr("255.255.255.252"));
+        //PENROSE_IP_MK_MAP.put(644, InetAddressUtils.addr("255.255.255.252"));
         PENROSE_IF_IFNAME_MAP.put(501, "demux0");
         PENROSE_IF_IFDESCR_MAP.put(501, "demux0");
         PENROSE_IF_IFNAME_MAP.put(22, "lo0.16385");
@@ -193,7 +297,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PENROSE_IF_IFNAME_MAP.put(18, "em0.0");
         PENROSE_IF_IFDESCR_MAP.put(18, "em0.0");
         PENROSE_IF_MAC_MAP.put(18, "020000000004");
-        PENROSE_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+        //PENROSE_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
         PENROSE_IF_IFNAME_MAP.put(505, "irb");
         PENROSE_IF_IFDESCR_MAP.put(505, "irb");
         PENROSE_IF_MAC_MAP.put(505, "80711f8faff0");
@@ -220,39 +324,81 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PENROSE_IF_IFNAME_MAP.put(670, "ge-1/2/1.0");
         PENROSE_IF_IFDESCR_MAP.put(670, "ge-1/2/1.0");
         PENROSE_IF_MAC_MAP.put(670, "80711f8fa9ef");
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.120"), 630);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.6"), 599);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+
+        DELAWARE_IF_IFNAME_MAP.put(16,"lo0.0");
+        DELAWARE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        DELAWARE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        DELAWARE_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.100"), 610);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.101"), 611);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.103"), 612);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.104"), 613);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.105"), 614);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.106"), 615);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.107"), 616);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.108"), 617);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.109"), 618);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.110"), 619);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.111"), 621);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.112"), 622);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.113"), 623);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.114"), 624);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.115"), 625);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.116"), 626);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.117"), 627);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.118"), 628);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.119"), 629);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.120"), 630);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.121"), 631);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.122"), 632);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.123"), 641);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.124"), 633);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.125"), 634);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 18);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.106"), 615);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.111"), 621);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.109"), 618);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.123"), 641);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.110"), 619);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.121"), 631);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.105"), 614);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.125"), 634);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.114"), 624);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.112"), 622);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.117"), 627);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.104"), 613);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.108"), 617);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.103"), 612);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.100"), 610);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.116"), 626);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.119"), 629);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.118"), 628);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.107"), 616);
         DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.2"), 598);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.115"), 625);
-        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("1.1.1.101"), 611);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.6"), 599);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
+
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.100"), InetAddressUtils.addr("255.255.255.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.101"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.103"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.104"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.105"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.106"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.107"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.108"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.109"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.110"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.111"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.112"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.113"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.114"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.115"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.116"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.117"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.118"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.119"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.120"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.121"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.122"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.123"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.124"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("1.1.1.125"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.0.0.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.2"), InetAddressUtils.addr("255.255.255.252"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.17"), InetAddressUtils.addr("255.255.224.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("20.1.1.6"), InetAddressUtils.addr("255.255.255.252"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        DELAWARE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.0.2"), InetAddressUtils.addr("255.255.255.255"));
+
         DELAWARE_IF_IFNAME_MAP.put(534, "ge-0/1/6");
         DELAWARE_IF_IFDESCR_MAP.put(534, "ge-0/1/6");
         DELAWARE_IF_MAC_MAP.put(534, "002283095058");
@@ -263,7 +409,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(610, "ge-1/3/9.1");
         DELAWARE_IF_MAC_MAP.put(610, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(610, "test unit1");
-        DELAWARE_IF_NETMASK_MAP.put(610, InetAddressUtils.addr("255.255.255.0"));
+        //DELAWARE_IP_MK_MAP.put(610, InetAddressUtils.addr("255.255.255.0"));
         DELAWARE_IF_IFNAME_MAP.put(540, "ge-0/2/0");
         DELAWARE_IF_IFDESCR_MAP.put(540, "ge-0/2/0");
         DELAWARE_IF_MAC_MAP.put(540, "0022830950a4");
@@ -274,7 +420,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(625, "ge-1/3/9.15");
         DELAWARE_IF_MAC_MAP.put(625, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(625, "test unit15");
-        DELAWARE_IF_NETMASK_MAP.put(625, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(625, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(23, "em1");
         DELAWARE_IF_IFDESCR_MAP.put(23, "em1");
         DELAWARE_IF_MAC_MAP.put(23, "020001000004");
@@ -297,7 +443,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(624, "ge-1/3/9.14");
         DELAWARE_IF_MAC_MAP.put(624, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(624, "test unit14");
-        DELAWARE_IF_NETMASK_MAP.put(624, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(624, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(517, "ge-0/0/1");
         DELAWARE_IF_IFDESCR_MAP.put(517, "ge-0/0/1");
         DELAWARE_IF_MAC_MAP.put(517, "002283095001");
@@ -318,12 +464,12 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(611, "ge-1/3/9.2");
         DELAWARE_IF_MAC_MAP.put(611, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(611, "test unit2");
-        DELAWARE_IF_NETMASK_MAP.put(611, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(611, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(619, "ge-1/3/9.10");
         DELAWARE_IF_IFDESCR_MAP.put(619, "ge-1/3/9.10");
         DELAWARE_IF_MAC_MAP.put(619, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(619, "test unit10");
-        DELAWARE_IF_NETMASK_MAP.put(619, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(619, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(503, "pip0");
         DELAWARE_IF_IFDESCR_MAP.put(503, "pip0");
         DELAWARE_IF_MAC_MAP.put(503, "0022830957b0");
@@ -339,7 +485,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFNAME_MAP.put(18, "em0.0");
         DELAWARE_IF_IFDESCR_MAP.put(18, "em0.0");
         DELAWARE_IF_MAC_MAP.put(18, "020000000004");
-        DELAWARE_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+        //DELAWARE_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
         DELAWARE_IF_IFNAME_MAP.put(561, "ge-0/3/9");
         DELAWARE_IF_IFDESCR_MAP.put(561, "ge-0/3/9");
         DELAWARE_IF_MAC_MAP.put(561, "0022830950ff");
@@ -380,12 +526,12 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(629, "ge-1/3/9.19");
         DELAWARE_IF_MAC_MAP.put(629, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(629, "test unit19");
-        DELAWARE_IF_NETMASK_MAP.put(629, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(629, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(621, "ge-1/3/9.11");
         DELAWARE_IF_IFDESCR_MAP.put(621, "ge-1/3/9.11");
         DELAWARE_IF_MAC_MAP.put(621, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(621, "test unit11");
-        DELAWARE_IF_NETMASK_MAP.put(621, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(621, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(543, "ge-0/2/3");
         DELAWARE_IF_IFDESCR_MAP.put(543, "ge-0/2/3");
         DELAWARE_IF_MAC_MAP.put(543, "0022830950a7");
@@ -393,13 +539,13 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(615, "ge-1/3/9.6");
         DELAWARE_IF_MAC_MAP.put(615, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(615, "test unit6");
-        DELAWARE_IF_NETMASK_MAP.put(615, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(615, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(526, "lc-0/0/0");
         DELAWARE_IF_IFDESCR_MAP.put(526, "lc-0/0/0");
         DELAWARE_IF_IFNAME_MAP.put(13, "fxp0.0");
         DELAWARE_IF_IFDESCR_MAP.put(13, "fxp0.0");
         DELAWARE_IF_MAC_MAP.put(13, "00a0a5678e60");
-        DELAWARE_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
+        //DELAWARE_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
         DELAWARE_IF_IFNAME_MAP.put(662, "ge-0/0/6.0");
         DELAWARE_IF_IFDESCR_MAP.put(662, "ge-0/0/6.0");
         DELAWARE_IF_MAC_MAP.put(662, "0022830957c0");
@@ -413,7 +559,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(630, "ge-1/3/9.20");
         DELAWARE_IF_MAC_MAP.put(630, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(630, "test unit20");
-        DELAWARE_IF_NETMASK_MAP.put(630, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(630, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(553, "ge-0/3/1");
         DELAWARE_IF_IFDESCR_MAP.put(553, "ge-0/3/1");
         DELAWARE_IF_MAC_MAP.put(553, "0022830950f7");
@@ -427,7 +573,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(631, "ge-1/3/9.21");
         DELAWARE_IF_MAC_MAP.put(631, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(631, "test unit21");
-        DELAWARE_IF_NETMASK_MAP.put(631, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(631, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(566, "lc-1/2/0");
         DELAWARE_IF_IFDESCR_MAP.put(566, "lc-1/2/0");
         DELAWARE_IF_IFNAME_MAP.put(565, "lc-1/0/0.32769");
@@ -436,7 +582,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(628, "ge-1/3/9.18");
         DELAWARE_IF_MAC_MAP.put(628, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(628, "test unit18");
-        DELAWARE_IF_NETMASK_MAP.put(628, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(628, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(502, "cbp0");
         DELAWARE_IF_IFDESCR_MAP.put(502, "cbp0");
         DELAWARE_IF_MAC_MAP.put(502, "002283095011");
@@ -456,7 +602,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(617, "ge-1/3/9.8");
         DELAWARE_IF_MAC_MAP.put(617, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(617, "test unit8");
-        DELAWARE_IF_NETMASK_MAP.put(617, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(617, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(519, "ge-0/0/3");
         DELAWARE_IF_IFDESCR_MAP.put(519, "ge-0/0/3");
         DELAWARE_IF_MAC_MAP.put(519, "002283095003");
@@ -470,7 +616,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(622, "ge-1/3/9.12");
         DELAWARE_IF_MAC_MAP.put(622, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(622, "test unit12");
-        DELAWARE_IF_NETMASK_MAP.put(622, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(622, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(580, "ge-1/2/2");
         DELAWARE_IF_IFDESCR_MAP.put(580, "ge-1/2/2");
         DELAWARE_IF_MAC_MAP.put(580, "0022830951f0");
@@ -481,7 +627,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(626, "ge-1/3/9.16");
         DELAWARE_IF_MAC_MAP.put(626, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(626, "test unit16");
-        DELAWARE_IF_NETMASK_MAP.put(626, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(626, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(523, "ge-0/0/7");
         DELAWARE_IF_IFDESCR_MAP.put(523, "ge-0/0/7");
         DELAWARE_IF_MAC_MAP.put(523, "002283095007");
@@ -489,12 +635,12 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(612, "ge-1/3/9.3");
         DELAWARE_IF_MAC_MAP.put(612, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(612, "test unit3");
-        DELAWARE_IF_NETMASK_MAP.put(612, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(612, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(616, "ge-1/3/9.7");
         DELAWARE_IF_IFDESCR_MAP.put(616, "ge-1/3/9.7");
         DELAWARE_IF_MAC_MAP.put(616, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(616, "test unit7");
-        DELAWARE_IF_NETMASK_MAP.put(616, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(616, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(550, "lc-0/2/0");
         DELAWARE_IF_IFDESCR_MAP.put(550, "lc-0/2/0");
         DELAWARE_IF_IFNAME_MAP.put(537, "ge-0/1/9");
@@ -508,12 +654,12 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(632, "ge-1/3/9.22");
         DELAWARE_IF_MAC_MAP.put(632, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(632, "test unit22");
-        DELAWARE_IF_NETMASK_MAP.put(632, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(632, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(641, "ge-1/3/9.23");
         DELAWARE_IF_IFDESCR_MAP.put(641, "ge-1/3/9.23");
         DELAWARE_IF_MAC_MAP.put(641, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(641, "test unit23");
-        DELAWARE_IF_NETMASK_MAP.put(641, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(641, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(557, "ge-0/3/5");
         DELAWARE_IF_IFDESCR_MAP.put(557, "ge-0/3/5");
         DELAWARE_IF_MAC_MAP.put(557, "0022830950fb");
@@ -529,14 +675,14 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFNAME_MAP.put(599, "xe-1/0/1.0");
         DELAWARE_IF_IFDESCR_MAP.put(599, "xe-1/0/1.0");
         DELAWARE_IF_MAC_MAP.put(599, "00228309514b");
-        DELAWARE_IF_NETMASK_MAP.put(599, InetAddressUtils.addr("255.255.255.252"));
+        //DELAWARE_IP_MK_MAP.put(599, InetAddressUtils.addr("255.255.255.252"));
         DELAWARE_IF_IFNAME_MAP.put(535, "ge-0/1/7");
         DELAWARE_IF_IFDESCR_MAP.put(535, "ge-0/1/7");
         DELAWARE_IF_MAC_MAP.put(535, "002283095059");
         DELAWARE_IF_IFNAME_MAP.put(598, "xe-1/0/0.0");
         DELAWARE_IF_IFDESCR_MAP.put(598, "xe-1/0/0.0");
         DELAWARE_IF_MAC_MAP.put(598, "00228309514a");
-        DELAWARE_IF_NETMASK_MAP.put(598, InetAddressUtils.addr("255.255.255.252"));
+        //DELAWARE_IP_MK_MAP.put(598, InetAddressUtils.addr("255.255.255.252"));
         DELAWARE_IF_IFNAME_MAP.put(556, "ge-0/3/4");
         DELAWARE_IF_IFDESCR_MAP.put(556, "ge-0/3/4");
         DELAWARE_IF_MAC_MAP.put(556, "0022830950fa");
@@ -566,7 +712,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(618, "ge-1/3/9.9");
         DELAWARE_IF_MAC_MAP.put(618, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(618, "test unit9");
-        DELAWARE_IF_NETMASK_MAP.put(618, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(618, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(558, "ge-0/3/6");
         DELAWARE_IF_IFDESCR_MAP.put(558, "ge-0/3/6");
         DELAWARE_IF_MAC_MAP.put(558, "0022830950fc");
@@ -581,7 +727,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_MAC_MAP.put(658, "0022830957c0");
         DELAWARE_IF_IFNAME_MAP.put(16, "lo0.0");
         DELAWARE_IF_IFDESCR_MAP.put(16, "lo0.0");
-        DELAWARE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(5, "dsc");
         DELAWARE_IF_IFDESCR_MAP.put(5, "dsc");
         DELAWARE_IF_IFNAME_MAP.put(554, "ge-0/3/2");
@@ -596,7 +742,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(633, "ge-1/3/9.24");
         DELAWARE_IF_MAC_MAP.put(633, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(633, "test unit24");
-        DELAWARE_IF_NETMASK_MAP.put(633, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(633, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(588, "ge-1/3/0");
         DELAWARE_IF_IFDESCR_MAP.put(588, "ge-1/3/0");
         DELAWARE_IF_MAC_MAP.put(588, "002283095240");
@@ -628,7 +774,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(627, "ge-1/3/9.17");
         DELAWARE_IF_MAC_MAP.put(627, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(627, "test unit17");
-        DELAWARE_IF_NETMASK_MAP.put(627, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(627, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(585, "ge-1/2/7");
         DELAWARE_IF_IFDESCR_MAP.put(585, "ge-1/2/7");
         DELAWARE_IF_MAC_MAP.put(585, "0022830951f5");
@@ -657,12 +803,12 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(634, "ge-1/3/9.25");
         DELAWARE_IF_MAC_MAP.put(634, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(634, "test unit25");
-        DELAWARE_IF_NETMASK_MAP.put(634, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(634, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(623, "ge-1/3/9.13");
         DELAWARE_IF_IFDESCR_MAP.put(623, "ge-1/3/9.13");
         DELAWARE_IF_MAC_MAP.put(623, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(623, "test unit13");
-        DELAWARE_IF_NETMASK_MAP.put(623, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(623, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(575, "xe-1/0/1");
         DELAWARE_IF_IFDESCR_MAP.put(575, "xe-1/0/1");
         DELAWARE_IF_MAC_MAP.put(575, "00228309514b");
@@ -675,7 +821,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(614, "ge-1/3/9.5");
         DELAWARE_IF_MAC_MAP.put(614, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(614, "test unit5");
-        DELAWARE_IF_NETMASK_MAP.put(614, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(614, InetAddressUtils.addr("255.255.255.255"));
         DELAWARE_IF_IFNAME_MAP.put(529, "ge-0/1/1");
         DELAWARE_IF_IFDESCR_MAP.put(529, "ge-0/1/1");
         DELAWARE_IF_MAC_MAP.put(529, "002283095053");
@@ -689,20 +835,42 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         DELAWARE_IF_IFDESCR_MAP.put(613, "ge-1/3/9.4");
         DELAWARE_IF_MAC_MAP.put(613, "002283095249");
         DELAWARE_IF_IFALIAS_MAP.put(613, "test unit4");
-        DELAWARE_IF_NETMASK_MAP.put(613, InetAddressUtils.addr("255.255.255.255"));
+        //DELAWARE_IP_MK_MAP.put(613, InetAddressUtils.addr("255.255.255.255"));
+
+        PHOENIX_IF_IFNAME_MAP.put(16,"lo0.0");
+        PHOENIX_IF_IFNAME_MAP.put(21,"lo0.16384");
+        PHOENIX_IF_IFDESCR_MAP.put(16,"lo0.0");
+        PHOENIX_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("2.2.2.2"), 563);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("3.3.3.3"), 561);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.42"), 13);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.3"), 16);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.1"), 565);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.5"), 566);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.1"), 564);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("2.2.2.2"), 563);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("200.200.1.1"), 560);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.1"), 565);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("200.200.1.100"), 560);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("3.3.3.3"), 561);
-        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.1"), 16);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
         PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.1"), 16);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.3"), 16);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("200.200.1.1"), 560);
+        PHOENIX_IP_IF_MAP.put(InetAddressUtils.addr("200.200.1.100"), 560);
+
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("2.2.2.2"), InetAddressUtils.addr("255.255.255.255"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("3.3.3.3"), InetAddressUtils.addr("255.255.255.255"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.42"), InetAddressUtils.addr("255.255.224.0"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.1"), InetAddressUtils.addr("255.255.255.252"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.5"), InetAddressUtils.addr("255.255.255.252"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("20.1.1.1"), InetAddressUtils.addr("255.255.255.252"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.1"), InetAddressUtils.addr("255.255.255.255"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.3"), InetAddressUtils.addr("255.255.255.255"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("200.200.1.1"), InetAddressUtils.addr("255.255.255.0"));
+        PHOENIX_IP_MK_MAP.put(InetAddressUtils.addr("200.200.1.100"), InetAddressUtils.addr("255.255.255.0"));
+
         PHOENIX_IF_IFNAME_MAP.put(516, "ge-1/0/4");
         PHOENIX_IF_IFDESCR_MAP.put(516, "ge-1/0/4");
         PHOENIX_IF_MAC_MAP.put(516, "80711fc41464");
@@ -732,17 +900,17 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_MAC_MAP.put(5428, "80711fc41462");
         PHOENIX_IF_IFNAME_MAP.put(16, "lo0.0");
         PHOENIX_IF_IFDESCR_MAP.put(16, "lo0.0");
-        PHOENIX_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+        //PHOENIX_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
         PHOENIX_IF_IFNAME_MAP.put(565, "xe-0/0/0.0");
         PHOENIX_IF_IFDESCR_MAP.put(565, "xe-0/0/0.0");
         PHOENIX_IF_MAC_MAP.put(565, "80711fc41400");
-        PHOENIX_IF_NETMASK_MAP.put(565, InetAddressUtils.addr("255.255.255.252"));
+        //PHOENIX_IP_MK_MAP.put(565, InetAddressUtils.addr("255.255.255.252"));
         PHOENIX_IF_IFNAME_MAP.put(12, "mtun");
         PHOENIX_IF_IFDESCR_MAP.put(12, "mtun");
         PHOENIX_IF_IFNAME_MAP.put(13, "fxp0.0");
         PHOENIX_IF_IFDESCR_MAP.put(13, "fxp0.0");
         PHOENIX_IF_MAC_MAP.put(13, "80711fc414ff");
-        PHOENIX_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
+        //PHOENIX_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
         PHOENIX_IF_IFNAME_MAP.put(524, "ge-1/1/2");
         PHOENIX_IF_IFDESCR_MAP.put(524, "ge-1/1/2");
         PHOENIX_IF_MAC_MAP.put(524, "80711fc4147a");
@@ -767,7 +935,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(563, "ge-1/1/6.0");
         PHOENIX_IF_IFDESCR_MAP.put(563, "ge-1/1/6.0");
         PHOENIX_IF_MAC_MAP.put(563, "80711fc4147e");
-        PHOENIX_IF_NETMASK_MAP.put(563, InetAddressUtils.addr("255.255.255.255"));
+        //PHOENIX_IP_MK_MAP.put(563, InetAddressUtils.addr("255.255.255.255"));
         PHOENIX_IF_IFNAME_MAP.put(536, "ge-1/2/4");
         PHOENIX_IF_IFDESCR_MAP.put(536, "ge-1/2/4");
         PHOENIX_IF_MAC_MAP.put(536, "80711fc41494");
@@ -799,7 +967,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(564, "xe-0/0/1.0");
         PHOENIX_IF_IFDESCR_MAP.put(564, "xe-0/0/1.0");
         PHOENIX_IF_MAC_MAP.put(564, "80711fc41401");
-        PHOENIX_IF_NETMASK_MAP.put(564, InetAddressUtils.addr("255.255.255.252"));
+        //PHOENIX_IP_MK_MAP.put(564, InetAddressUtils.addr("255.255.255.252"));
         PHOENIX_IF_IFNAME_MAP.put(530, "ge-1/1/8");
         PHOENIX_IF_IFDESCR_MAP.put(530, "ge-1/1/8");
         PHOENIX_IF_MAC_MAP.put(530, "80711fc41480");
@@ -896,7 +1064,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(18, "em0.0");
         PHOENIX_IF_IFDESCR_MAP.put(18, "em0.0");
         PHOENIX_IF_MAC_MAP.put(18, "020000000004");
-        PHOENIX_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+        //PHOENIX_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
         PHOENIX_IF_IFNAME_MAP.put(517, "ge-1/0/5");
         PHOENIX_IF_IFDESCR_MAP.put(517, "ge-1/0/5");
         PHOENIX_IF_MAC_MAP.put(517, "80711fc41465");
@@ -905,7 +1073,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(561, "ge-1/0/4.0");
         PHOENIX_IF_IFDESCR_MAP.put(561, "ge-1/0/4.0");
         PHOENIX_IF_MAC_MAP.put(561, "80711fc41464");
-        PHOENIX_IF_NETMASK_MAP.put(561, InetAddressUtils.addr("255.255.255.255"));
+        //PHOENIX_IP_MK_MAP.put(561, InetAddressUtils.addr("255.255.255.255"));
         PHOENIX_IF_IFNAME_MAP.put(556, "ge-1/1/0.32767");
         PHOENIX_IF_IFDESCR_MAP.put(556, "ge-1/1/0.32767");
         PHOENIX_IF_MAC_MAP.put(556, "80711fc41478");
@@ -927,7 +1095,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(566, "ge-1/0/3.0");
         PHOENIX_IF_IFDESCR_MAP.put(566, "ge-1/0/3.0");
         PHOENIX_IF_MAC_MAP.put(566, "80711fc41463");
-        PHOENIX_IF_NETMASK_MAP.put(566, InetAddressUtils.addr("255.255.255.252"));
+        //PHOENIX_IP_MK_MAP.put(566, InetAddressUtils.addr("255.255.255.252"));
         PHOENIX_IF_IFNAME_MAP.put(540, "ge-1/2/8");
         PHOENIX_IF_IFDESCR_MAP.put(540, "ge-1/2/8");
         PHOENIX_IF_MAC_MAP.put(540, "80711fc41498");
@@ -948,7 +1116,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_IFNAME_MAP.put(560, "ge-1/0/1.0");
         PHOENIX_IF_IFDESCR_MAP.put(560, "ge-1/0/1.0");
         PHOENIX_IF_MAC_MAP.put(560, "80711fc41461");
-        PHOENIX_IF_NETMASK_MAP.put(560, InetAddressUtils.addr("255.255.255.0"));
+        //PHOENIX_IP_MK_MAP.put(560, InetAddressUtils.addr("255.255.255.0"));
         PHOENIX_IF_IFNAME_MAP.put(33, "me0");
         PHOENIX_IF_IFDESCR_MAP.put(33, "me0");
         PHOENIX_IF_MAC_MAP.put(33, "02000000000b");
@@ -960,15 +1128,33 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         PHOENIX_IF_MAC_MAP.put(547, "80711fc414ad");
         PHOENIX_IF_IFNAME_MAP.put(6, "lo0");
         PHOENIX_IF_IFDESCR_MAP.put(6, "lo0");
-        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.2"), 554);
-        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.9"), 586);
+
+        AUSTIN_IF_IFNAME_MAP.put(16,"lo0.0");
+        AUSTIN_IF_IFNAME_MAP.put(21,"lo0.16384");
+        AUSTIN_IF_IFDESCR_MAP.put(16,"lo0.0");
+        AUSTIN_IF_IFDESCR_MAP.put(21,"lo0.16384");
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.43"), 13);
-        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.2"), 554);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.9"), 586);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.1.5"), 555);
-        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("20.1.11.1"), 553);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
         AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        AUSTIN_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.2"), 16);
+
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.43"), InetAddressUtils.addr("255.255.224.0"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.2"), InetAddressUtils.addr("255.255.255.252"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.9"), InetAddressUtils.addr("255.255.255.252"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("20.1.1.5"), InetAddressUtils.addr("255.255.255.252"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("20.1.11.1"), InetAddressUtils.addr("255.255.255.252"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        AUSTIN_IP_MK_MAP.put(InetAddressUtils.addr("192.168.0.2"), InetAddressUtils.addr("255.255.255.255"));
+
         AUSTIN_IF_IFNAME_MAP.put(519, "ge-1/0/7");
         AUSTIN_IF_IFDESCR_MAP.put(519, "ge-1/0/7");
         AUSTIN_IF_MAC_MAP.put(519, "80711fc41367");
@@ -992,7 +1178,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(555, "xe-0/0/1.0");
         AUSTIN_IF_IFDESCR_MAP.put(555, "xe-0/0/1.0");
         AUSTIN_IF_MAC_MAP.put(555, "80711fc41301");
-        AUSTIN_IF_NETMASK_MAP.put(555, InetAddressUtils.addr("255.255.255.252"));
+        //AUSTIN_IP_MK_MAP.put(555, InetAddressUtils.addr("255.255.255.252"));
         AUSTIN_IF_IFNAME_MAP.put(523, "ge-1/1/1");
         AUSTIN_IF_IFDESCR_MAP.put(523, "ge-1/1/1");
         AUSTIN_IF_MAC_MAP.put(523, "80711fc41379");
@@ -1024,7 +1210,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(554, "xe-0/0/0.0");
         AUSTIN_IF_IFDESCR_MAP.put(554, "xe-0/0/0.0");
         AUSTIN_IF_MAC_MAP.put(554, "80711fc41300");
-        AUSTIN_IF_NETMASK_MAP.put(554, InetAddressUtils.addr("255.255.255.252"));
+        //AUSTIN_IP_MK_MAP.put(554, InetAddressUtils.addr("255.255.255.252"));
         AUSTIN_IF_IFNAME_MAP.put(547, "ge-1/3/5");
         AUSTIN_IF_IFDESCR_MAP.put(547, "ge-1/3/5");
         AUSTIN_IF_MAC_MAP.put(547, "80711fc413ad");
@@ -1095,7 +1281,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(586, "ge-1/0/3.0");
         AUSTIN_IF_IFDESCR_MAP.put(586, "ge-1/0/3.0");
         AUSTIN_IF_MAC_MAP.put(586, "80711fc41363");
-        AUSTIN_IF_NETMASK_MAP.put(586, InetAddressUtils.addr("255.255.255.252"));
+        //AUSTIN_IP_MK_MAP.put(586, InetAddressUtils.addr("255.255.255.252"));
         AUSTIN_IF_IFNAME_MAP.put(530, "ge-1/1/8");
         AUSTIN_IF_IFDESCR_MAP.put(530, "ge-1/1/8");
         AUSTIN_IF_MAC_MAP.put(530, "80711fc41380");
@@ -1136,10 +1322,10 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(13, "fxp0.0");
         AUSTIN_IF_IFDESCR_MAP.put(13, "fxp0.0");
         AUSTIN_IF_MAC_MAP.put(13, "80711fc413ff");
-        AUSTIN_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
+        //AUSTIN_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
         AUSTIN_IF_IFNAME_MAP.put(16, "lo0.0");
         AUSTIN_IF_IFDESCR_MAP.put(16, "lo0.0");
-        AUSTIN_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+        //AUSTIN_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
         AUSTIN_IF_IFNAME_MAP.put(550, "ge-1/3/8");
         AUSTIN_IF_IFDESCR_MAP.put(550, "ge-1/3/8");
         AUSTIN_IF_MAC_MAP.put(550, "80711fc413b0");
@@ -1166,7 +1352,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(18, "em0.0");
         AUSTIN_IF_IFDESCR_MAP.put(18, "em0.0");
         AUSTIN_IF_MAC_MAP.put(18, "020000000004");
-        AUSTIN_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+        //AUSTIN_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
         AUSTIN_IF_IFNAME_MAP.put(22, "lo0.16385");
         AUSTIN_IF_IFDESCR_MAP.put(22, "lo0.16385");
         AUSTIN_IF_IFNAME_MAP.put(546, "ge-1/3/4");
@@ -1195,7 +1381,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(553, "ge-1/0/1.0");
         AUSTIN_IF_IFDESCR_MAP.put(553, "ge-1/0/1.0");
         AUSTIN_IF_MAC_MAP.put(553, "80711fc41361");
-        AUSTIN_IF_NETMASK_MAP.put(553, InetAddressUtils.addr("255.255.255.252"));
+        //AUSTIN_IP_MK_MAP.put(553, InetAddressUtils.addr("255.255.255.252"));
         AUSTIN_IF_IFNAME_MAP.put(528, "ge-1/1/6");
         AUSTIN_IF_IFDESCR_MAP.put(528, "ge-1/1/6");
         AUSTIN_IF_MAC_MAP.put(528, "80711fc4137e");
@@ -1216,14 +1402,31 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         AUSTIN_IF_IFNAME_MAP.put(503, "pip0");
         AUSTIN_IF_IFDESCR_MAP.put(503, "pip0");
         AUSTIN_IF_MAC_MAP.put(503, "80711fc413b0");
-        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.1"), 16);
-        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+
+        SANJOSE_IF_IFNAME_MAP.put(16,"lo0.0");
+        SANJOSE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        SANJOSE_IF_IFDESCR_MAP.put(16,"lo0.0");
+        SANJOSE_IF_IFDESCR_MAP.put(21,"lo0.16384");
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.1"), 18);
-        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.12"), 13);
-        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
+        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.12"), 13);
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.6"), 564);
         SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("20.1.0.10"), 8562);
+        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        SANJOSE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.1.1"), 16);
+
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.1"), InetAddressUtils.addr("255.0.0.0"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.12"), InetAddressUtils.addr("255.255.224.0"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.6"), InetAddressUtils.addr("255.255.255.252"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("20.1.0.10"), InetAddressUtils.addr("255.255.255.252"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        SANJOSE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.1.1"), InetAddressUtils.addr("255.255.255.255"));
+
         SANJOSE_IF_IFNAME_MAP.put(523, "ge-1/0/7");
         SANJOSE_IF_IFDESCR_MAP.put(523, "ge-1/0/7");
         SANJOSE_IF_MAC_MAP.put(523, "002283d8529c");
@@ -1251,7 +1454,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_IFNAME_MAP.put(564, "ge-1/0/0.0");
         SANJOSE_IF_IFDESCR_MAP.put(564, "ge-1/0/0.0");
         SANJOSE_IF_MAC_MAP.put(564, "002283d85295");
-        SANJOSE_IF_NETMASK_MAP.put(564, InetAddressUtils.addr("255.255.255.252"));
+        //SANJOSE_IP_MK_MAP.put(564, InetAddressUtils.addr("255.255.255.252"));
         SANJOSE_IF_IFNAME_MAP.put(555, "ge-1/3/3");
         SANJOSE_IF_IFDESCR_MAP.put(555, "ge-1/3/3");
         SANJOSE_IF_MAC_MAP.put(555, "002283d85487");
@@ -1269,7 +1472,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_IFNAME_MAP.put(8562, "ge-1/0/1.0");
         SANJOSE_IF_IFDESCR_MAP.put(8562, "ge-1/0/1.0");
         SANJOSE_IF_MAC_MAP.put(8562, "002283d85296");
-        SANJOSE_IF_NETMASK_MAP.put(8562, InetAddressUtils.addr("255.255.255.252"));
+        //SANJOSE_IP_MK_MAP.put(8562, InetAddressUtils.addr("255.255.255.252"));
         SANJOSE_IF_IFNAME_MAP.put(8558, "pfe-1/0/0");
         SANJOSE_IF_IFDESCR_MAP.put(8558, "pfe-1/0/0");
         SANJOSE_IF_IFNAME_MAP.put(17, "em0");
@@ -1317,7 +1520,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_MAC_MAP.put(543, "002283d853e2");
         SANJOSE_IF_IFNAME_MAP.put(16, "lo0.0");
         SANJOSE_IF_IFDESCR_MAP.put(16, "lo0.0");
-        SANJOSE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
+        //SANJOSE_IP_MK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
         SANJOSE_IF_IFNAME_MAP.put(542, "ge-1/2/2");
         SANJOSE_IF_IFDESCR_MAP.put(542, "ge-1/2/2");
         SANJOSE_IF_MAC_MAP.put(542, "002283d853e1");
@@ -1347,7 +1550,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_IFNAME_MAP.put(13, "fxp0.0");
         SANJOSE_IF_IFDESCR_MAP.put(13, "fxp0.0");
         SANJOSE_IF_MAC_MAP.put(13, "00a0a56211a7");
-        SANJOSE_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
+        //SANJOSE_IP_MK_MAP.put(13, InetAddressUtils.addr("255.255.224.0"));
         SANJOSE_IF_IFNAME_MAP.put(558, "ge-1/3/6");
         SANJOSE_IF_IFDESCR_MAP.put(558, "ge-1/3/6");
         SANJOSE_IF_MAC_MAP.put(558, "002283d8548a");
@@ -1412,7 +1615,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_IFNAME_MAP.put(18, "em0.0");
         SANJOSE_IF_IFDESCR_MAP.put(18, "em0.0");
         SANJOSE_IF_MAC_MAP.put(18, "020000000004");
-        SANJOSE_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
+        //SANJOSE_IP_MK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
         SANJOSE_IF_IFNAME_MAP.put(538, "lc-1/1/0");
         SANJOSE_IF_IFDESCR_MAP.put(538, "lc-1/1/0");
         SANJOSE_IF_IFNAME_MAP.put(548, "ge-1/2/8");
@@ -1434,11 +1637,20 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         SANJOSE_IF_IFDESCR_MAP.put(11, "pimd");
         SANJOSE_IF_IFNAME_MAP.put(526, "lc-1/0/0");
         SANJOSE_IF_IFDESCR_MAP.put(526, "lc-1/0/0");
-        RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.16"), 38);
+
+
         RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.107"), 34);
+        RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 38);
+        RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.16"), 38);
         RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.32"), 38);
         RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.127"), 502);
-        RIOVISTA_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 38);
+
+        RIOVISTA_IP_MK_MAP.put(InetAddressUtils.addr("10.155.69.107"), InetAddressUtils.addr("255.255.224.0"));
+        RIOVISTA_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        RIOVISTA_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.16"), InetAddressUtils.addr("192.0.0.0"));
+        RIOVISTA_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.32"), InetAddressUtils.addr("192.0.0.0"));
+        RIOVISTA_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.127"), InetAddressUtils.addr("192.0.0.0"));
+
         RIOVISTA_IF_IFNAME_MAP.put(532, "ge-0/0/36");
         RIOVISTA_IF_IFDESCR_MAP.put(532, "ge-0/0/36");
         RIOVISTA_IF_MAC_MAP.put(532, "001f12373de4");
@@ -1505,7 +1717,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         RIOVISTA_IF_IFNAME_MAP.put(38, "bme0.32768");
         RIOVISTA_IF_IFDESCR_MAP.put(38, "bme0.32768");
         RIOVISTA_IF_MAC_MAP.put(38, "000bcafe0000");
-        RIOVISTA_IF_NETMASK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
+        //RIOVISTA_IP_MK_MAP.put(38, InetAddressUtils.addr("192.0.0.0"));
         RIOVISTA_IF_IFNAME_MAP.put(33, "me0");
         RIOVISTA_IF_IFDESCR_MAP.put(33, "me0");
         RIOVISTA_IF_MAC_MAP.put(33, "001f12373e3f");
@@ -1573,7 +1785,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         RIOVISTA_IF_IFNAME_MAP.put(34, "me0.0");
         RIOVISTA_IF_IFDESCR_MAP.put(34, "me0.0");
         RIOVISTA_IF_MAC_MAP.put(34, "001f12373e3f");
-        RIOVISTA_IF_NETMASK_MAP.put(34, InetAddressUtils.addr("255.255.224.0"));
+        //RIOVISTA_IP_MK_MAP.put(34, InetAddressUtils.addr("255.255.224.0"));
         RIOVISTA_IF_IFNAME_MAP.put(538, "ge-0/0/24");
         RIOVISTA_IF_IFDESCR_MAP.put(538, "ge-0/0/24");
         RIOVISTA_IF_MAC_MAP.put(538, "001f12373dd8");
@@ -1595,7 +1807,7 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
         RIOVISTA_IF_IFNAME_MAP.put(502, "jsrv.1");
         RIOVISTA_IF_IFDESCR_MAP.put(502, "jsrv.1");
         RIOVISTA_IF_MAC_MAP.put(502, "001f12373dc0");
-        RIOVISTA_IF_NETMASK_MAP.put(502, InetAddressUtils.addr("192.0.0.0"));
+        //RIOVISTA_IP_MK_MAP.put(502, InetAddressUtils.addr("192.0.0.0"));
         RIOVISTA_IF_IFNAME_MAP.put(549, "ge-0/0/42");
         RIOVISTA_IF_IFDESCR_MAP.put(549, "ge-0/0/42");
         RIOVISTA_IF_MAC_MAP.put(549, "001f12373dea");
@@ -1645,27 +1857,27 @@ public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
     }
 
     public OnmsNode getPenrose() {
-        return getNode(PENROSE_NAME,PENROSE_SYSOID,PENROSE_IP,PENROSE_IP_IF_MAP,PENROSE_IF_IFNAME_MAP,PENROSE_IF_MAC_MAP,PENROSE_IF_IFDESCR_MAP,PENROSE_IF_IFALIAS_MAP,PENROSE_IF_NETMASK_MAP);
+        return getNode(PENROSE_NAME,PENROSE_SYSOID,PENROSE_IP,PENROSE_IP_IF_MAP,PENROSE_IF_IFNAME_MAP,PENROSE_IF_MAC_MAP,PENROSE_IF_IFDESCR_MAP,PENROSE_IF_IFALIAS_MAP,PENROSE_IP_MK_MAP);
     }    
 
     public OnmsNode getDelaware() {
-        return getNode(DELAWARE_NAME,DELAWARE_SYSOID,DELAWARE_IP,DELAWARE_IP_IF_MAP,DELAWARE_IF_IFNAME_MAP,DELAWARE_IF_MAC_MAP,DELAWARE_IF_IFDESCR_MAP,DELAWARE_IF_IFALIAS_MAP,DELAWARE_IF_NETMASK_MAP);
-    }    
+        return getNode(DELAWARE_NAME,DELAWARE_SYSOID,DELAWARE_IP,DELAWARE_IP_IF_MAP,DELAWARE_IF_IFNAME_MAP,DELAWARE_IF_MAC_MAP,DELAWARE_IF_IFDESCR_MAP,DELAWARE_IF_IFALIAS_MAP,DELAWARE_IP_MK_MAP);
+        }
 
     public OnmsNode getPhoenix() {
-        return getNode(PHOENIX_NAME,PHOENIX_SYSOID,PHOENIX_IP,PHOENIX_IP_IF_MAP,PHOENIX_IF_IFNAME_MAP,PHOENIX_IF_MAC_MAP,PHOENIX_IF_IFDESCR_MAP,PHOENIX_IF_IFALIAS_MAP,PHOENIX_IF_NETMASK_MAP);
+        return getNode(PHOENIX_NAME,PHOENIX_SYSOID,PHOENIX_IP,PHOENIX_IP_IF_MAP,PHOENIX_IF_IFNAME_MAP,PHOENIX_IF_MAC_MAP,PHOENIX_IF_IFDESCR_MAP,PHOENIX_IF_IFALIAS_MAP,PHOENIX_IP_MK_MAP);
     }    
 
     public OnmsNode getAustin() {
-        return getNode(AUSTIN_NAME,AUSTIN_SYSOID,AUSTIN_IP,AUSTIN_IP_IF_MAP,AUSTIN_IF_IFNAME_MAP,AUSTIN_IF_MAC_MAP,AUSTIN_IF_IFDESCR_MAP,AUSTIN_IF_IFALIAS_MAP,AUSTIN_IF_NETMASK_MAP);
+        return getNode(AUSTIN_NAME,AUSTIN_SYSOID,AUSTIN_IP,AUSTIN_IP_IF_MAP,AUSTIN_IF_IFNAME_MAP,AUSTIN_IF_MAC_MAP,AUSTIN_IF_IFDESCR_MAP,AUSTIN_IF_IFALIAS_MAP,AUSTIN_IP_MK_MAP);
     }
 
     public OnmsNode getSanjose() {
-        return getNode(SANJOSE_NAME,SANJOSE_SYSOID,SANJOSE_IP,SANJOSE_IP_IF_MAP,SANJOSE_IF_IFNAME_MAP,SANJOSE_IF_MAC_MAP,SANJOSE_IF_IFDESCR_MAP,SANJOSE_IF_IFALIAS_MAP,SANJOSE_IF_NETMASK_MAP);
+        return getNode(SANJOSE_NAME,SANJOSE_SYSOID,SANJOSE_IP,SANJOSE_IP_IF_MAP,SANJOSE_IF_IFNAME_MAP,SANJOSE_IF_MAC_MAP,SANJOSE_IF_IFDESCR_MAP,SANJOSE_IF_IFALIAS_MAP,SANJOSE_IP_MK_MAP);
     }
 
     public OnmsNode getRiovista() {
-        return getNode(RIOVISTA_NAME,RIOVISTA_SYSOID,RIOVISTA_IP,RIOVISTA_IP_IF_MAP,RIOVISTA_IF_IFNAME_MAP,RIOVISTA_IF_MAC_MAP,RIOVISTA_IF_IFDESCR_MAP,RIOVISTA_IF_IFALIAS_MAP,RIOVISTA_IF_NETMASK_MAP);        
+        return getNode(RIOVISTA_NAME,RIOVISTA_SYSOID,RIOVISTA_IP,RIOVISTA_IP_IF_MAP,RIOVISTA_IF_IFNAME_MAP,RIOVISTA_IF_MAC_MAP,RIOVISTA_IF_IFDESCR_MAP,RIOVISTA_IF_IFALIAS_MAP,RIOVISTA_IP_MK_MAP);
     }
 
 }

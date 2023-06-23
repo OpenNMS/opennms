@@ -2,7 +2,7 @@
 [[ref-daemon-config-files-notifd]]
 = Notifd
 
-Generates xref:operation:notifications/introduction.adoc[notifications] to system operators for desired events.
+Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications] to system operators for desired events.
 
 .Notifd configuration file overview
 [options="header"]

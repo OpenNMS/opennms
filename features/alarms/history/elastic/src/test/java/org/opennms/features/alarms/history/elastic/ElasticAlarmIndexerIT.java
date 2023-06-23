@@ -28,7 +28,7 @@
 
 package org.opennms.features.alarms.history.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -58,7 +58,7 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
-import com.jayway.awaitility.Awaitility;
+import org.awaitility.Awaitility;
 
 import io.searchbox.client.JestClient;
 

@@ -89,7 +89,7 @@
   <input name="node" value="<%=nodeId%>" type="hidden"/>
 </form>
 
-<h4>Node: <%=node_db.getLabel()%> (ID: <%=node_db.getId()%>)</h4>
+<h4>Node: <%=WebSecurityUtils.sanitizeString(node_db.getLabel())%> (ID: <%=node_db.getId()%>)</h4>
 <% if (isRequisitioned) { %>
 <h4><em>Created via requisition <strong><%=node_db.getForeignSource()%></strong> (foreignId: <strong><%=node_db.getForeignId()%></strong>)</em></h4>
 <% } else { %>
@@ -115,7 +115,7 @@
   </p>
 
   <p>
-    <a href="admin/snmpInterfaces.jsp?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">
+    <a href="admin/snmpInterfaces.jsp?node=<%=nodeId%>&nodelabel=<%=java.net.URLEncoder.encode(node_db.getLabel(), "UTF-8")%>">
     Configure SNMP Data Collection per Interface</a>
   </p>
 

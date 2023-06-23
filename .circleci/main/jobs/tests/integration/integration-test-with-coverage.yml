@@ -1,0 +1,13 @@
+jobs:
+  integration-test-with-coverage:
+    executor: integration-test-executor
+    parallelism: 10
+    resource_class: xlarge
+    steps:
+      - cached-checkout
+      - attach_workspace:
+          at: ~/
+      - run-integration-tests:
+          rerun-failtest-count: 0
+          failure-option: --fail-never
+          changes-only: false

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
     <artifactId>org.opennms.features.telemetry.protocols.graphite</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
@@ -30,6 +30,11 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.adapters</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.snmp-collector</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

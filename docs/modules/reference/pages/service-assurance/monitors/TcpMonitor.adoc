@@ -62,6 +62,8 @@ The test evaluates the connection banner starting with `ICA`.
 The example uses a CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
+Note that you must include the `monitor` section for each service in your definition.
+
 [source, xml]
 ----
 <service name="TCP-Citrix-ICA" interval="300000" user-defined="false" status="on">

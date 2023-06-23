@@ -4,7 +4,7 @@ import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 
-declare FromModifyTestFact
+declare FromModifyITFact
   modified : String
   modifiedByRule : String
 end
@@ -12,8 +12,8 @@ end
 rule "fromModify Rule A"
 	salience 100
 	when
-		$fact : FromModifyTestFact()
-		FromModifyTestFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule) from $fact
+		$fact : FromModifyITFact()
+		FromModifyITFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule) from $fact
 	then
 		modify($fact) { setModified("true"), setModifiedByRule($mbr + "A") };
 		System.out.println( "Rule A modified test fact: "+$fact );
@@ -22,8 +22,8 @@ end
 rule "fromModify Rule B"
 	salience 90
 	when
-		$fact : FromModifyTestFact()
-		FromModifyTestFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule) from $fact
+		$fact : FromModifyITFact()
+		FromModifyITFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule) from $fact
 	then
 		modify($fact) { setModified("true"), setModifiedByRule($mbr + "B") };
 		System.out.println( "Rule B modified test fact: "+$fact );
@@ -32,7 +32,7 @@ end
 rule "fromModify Rule C"
 	salience 90
 	when
-		$fact : FromModifyTestFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule)
+		$fact : FromModifyITFact(modified == "false", modifiedByRule == "", $mbr : modifiedByRule)
 	then
 		modify($fact) { setModified("true"), setModifiedByRule($mbr + "C") };
 		System.out.println( "Rule C modified test fact: "+$fact );

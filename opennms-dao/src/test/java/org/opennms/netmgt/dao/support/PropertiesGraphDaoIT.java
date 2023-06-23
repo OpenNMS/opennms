@@ -42,6 +42,8 @@ import java.util.HashSet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao.PrefabGraphTypeDao;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
@@ -181,6 +183,8 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
                 fail("Prefab graph contains extra whitespace: " + graph.getCommand());
             }
         }
+        MockLogAppender.assertNoErrorOrGreater();
+        MockLogAppender.resetState();
     }
 
     @Test

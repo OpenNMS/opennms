@@ -29,19 +29,15 @@
 package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.apache.http.client.ClientProtocolException;
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +45,14 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
 
 /** Contains cross concern  */
 public class WebappIT {
@@ -99,8 +103,9 @@ public class WebappIT {
   public void verifyNoCachingOfRequestWithSessionCookie() {
     given().get("login.jsp").then().assertThat()
         .statusCode(200)
-        .header("Set-Cookie", containsString("JSESSIONID"))
-        .header("Cache-Control", is("no-cache"));
+        .header("Set-Cookie", matchesPattern("^JSESSIONID=.*SameSite=Strict$"))
+        .header("Cache-Control", is("no-store"))
+        .header("Pragma", is("no-cache"));
   }
 
   @Test
@@ -119,6 +124,24 @@ public class WebappIT {
         .then().assertThat()
         .log().all()
         .statusCode(200)
-        .header("Cache-Control", is("no-cache"));
+        .header("Cache-Control", is("no-store"))
+        .header("Pragma", is("no-cache"));
   }
+
+  @Test
+  public void verifyNoCachingOnStartPage() {
+    given().get("index.jsp").then().assertThat()
+            .statusCode(200)
+            .header("Cache-Control", is("no-store"))
+            .header("Pragma", is("no-cache"));
+  }
+
+  @Test
+  public void verifyCachingOnStaticAssets() {
+    given().get("assets/vendor.min.js").then().assertThat()
+            .statusCode(200)
+            .header("Cache-Control", not("no-store"))
+            .header("Pragma", not("no-cache"));
+  }
+
 }

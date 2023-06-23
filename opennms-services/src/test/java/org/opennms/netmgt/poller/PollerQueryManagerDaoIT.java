@@ -47,13 +47,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
+import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
@@ -72,8 +77,10 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -98,6 +105,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
 
+		"classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
+
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
 		"classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
@@ -110,10 +119,12 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 	private Poller m_poller;
 
+	@Autowired
 	private MockNetwork m_network;
 
 	private MockDatabase m_db;
 
+	@Autowired
 	private MockPollerConfig m_pollerConfig;
 
 	@Autowired
@@ -122,6 +133,9 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private boolean m_daemonsStarted = false;
 
 	private OutageAnticipator m_outageAnticipator;
+
+	@Autowired
+	private DistPollerDao m_distPollerDao;
 
 	@Autowired
 	private QueryManager m_queryManager;
@@ -133,7 +147,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 	private TransactionTemplate m_transactionTemplate;
 
 	@Autowired
-	private LocationAwarePollerClient m_locationAwarePollerClient;
+	private LocationAwarePollerClientImpl m_locationAwarePollerClient;
 
 	private LocationAwarePingClient m_locationAwarePingClient;
 
@@ -155,7 +169,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 
-		m_network = new MockNetwork();
 		m_network.setCriticalService("ICMP");
 		m_network.addNode(1, "Router");
 		m_network.addInterface("192.168.1.1");
@@ -184,10 +197,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 //		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
 //		m_network.addService("SNMP");
 
+		m_db.setDistPoller(m_distPollerDao.whoami().getId());
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 
-		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 		m_pollerConfig.setCriticalService("ICMP");

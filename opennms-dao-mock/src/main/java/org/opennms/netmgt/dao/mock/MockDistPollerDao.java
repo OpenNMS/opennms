@@ -35,6 +35,8 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> implements DistPollerDao {
+
+    public final static String DEFAULT_DIST_POLLER_ID = "00000000-0000-0000-0000-000000000000";
     @Override
     protected void generateId(final OnmsDistPoller dp) {
         dp.setId(UUID.randomUUID().toString());

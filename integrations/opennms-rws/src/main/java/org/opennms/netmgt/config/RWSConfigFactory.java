@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,10 +38,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -70,7 +71,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-    
+
     /**
      * Loaded version
      */
@@ -102,16 +103,21 @@ public final class RWSConfigFactory extends RWSConfigManager {
             // to reload, reload() will need to be called
             return;
         }
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
 
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-
-        InputStream stream = null;
         try {
-            stream = new FileInputStream(cfgFile);
-            setInstance(new RWSConfigFactory(cfgFile.lastModified(), stream));
-        } finally {
-            IOUtils.closeQuietly(stream);
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
+
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
+
+            try (final InputStream stream = new FileInputStream(cfgFile)) {
+                setInstance(new RWSConfigFactory(cfgFile.lastModified(), stream));
+            }
+        } catch (final FileNotFoundException e) {
+            LOG.warn("unable to locate {}, falling back to default", ConfigFileConstants.getFileName(ConfigFileConstants.RWS_CONFIG_FILE_NAME));
+            final ClassPathResource resource = new ClassPathResource("/" + ConfigFileConstants.getFileName(ConfigFileConstants.RWS_CONFIG_FILE_NAME));
+            try (final InputStream stream = resource.getInputStream()) {
+                setInstance(new RWSConfigFactory(0, stream));
+            }
         }
     }
 
@@ -128,7 +134,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
         }
         return m_singleton;
     }
-    
+
     /**
      * <p>setInstance</p>
      *
@@ -177,14 +183,17 @@ public final class RWSConfigFactory extends RWSConfigManager {
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());
-                InputStream stream = null;
-                try {
-                    stream = new FileInputStream(cfgFile);
+                try (final InputStream stream = new FileInputStream(cfgFile)) {
                     reloadXML(stream);
-                } finally {
-                    IOUtils.closeQuietly(stream);
                 }
                 LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
+            }
+        } catch (final FileNotFoundException e) {
+            LOG.warn("unable to locate {}, falling back to default", ConfigFileConstants.getFileName(ConfigFileConstants.RWS_CONFIG_FILE_NAME));
+            final ClassPathResource resource = new ClassPathResource("/" + ConfigFileConstants.getFileName(ConfigFileConstants.RWS_CONFIG_FILE_NAME));
+            try (final InputStream stream = resource.getInputStream()) {
+                reloadXML(stream);
+                m_currentVersion = 0L;
             }
         } finally {
             getWriteLock().unlock();

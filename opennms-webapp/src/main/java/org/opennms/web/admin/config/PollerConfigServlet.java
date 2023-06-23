@@ -66,8 +66,6 @@ public class PollerConfigServlet extends HttpServlet {
      * 
      */
     private static final long serialVersionUID = 2622622848304715121L;
-    
-    PollerConfiguration pollerConfig = null;
 
     protected String redirectSuccess;
 
@@ -84,24 +82,7 @@ public class PollerConfigServlet extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-        ServletConfig config = this.getServletConfig();
-        try {
-            PollerConfigFactory.init();
-            pollerFactory = PollerConfigFactory.getInstance();
-            pollerConfig = pollerFactory.getConfiguration();
-
-            if (pollerConfig == null) {
-                throw new ServletException("Poller Configuration file is empty");
-            }
-
-        } catch (Throwable e) {
-            throw new ServletException(e.getMessage());
-        }
-        initPollerServices();
-        this.redirectSuccess = config.getInitParameter("redirect.success");
-        if (this.redirectSuccess == null) {
-            throw new ServletException("Missing required init parameter: redirect.success");
-        }
+        reloadFiles();
     }
 
     /**
@@ -114,9 +95,8 @@ public class PollerConfigServlet extends HttpServlet {
         try {
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
-            pollerConfig = pollerFactory.getConfiguration();
 
-            if (pollerConfig == null) {
+            if (pollerFactory.getLocalConfiguration() == null) {
                 throw new ServletException("Poller Configuration file is empty");
             }
 
@@ -134,7 +114,7 @@ public class PollerConfigServlet extends HttpServlet {
      * <p>initPollerServices</p>
      */
     public void initPollerServices() {
-        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerConfig.getPackages();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerFactory.getExtendedConfiguration().getPackages();
         if (packageColl != null) {
             Iterator<org.opennms.netmgt.config.poller.Package> pkgiter = packageColl.iterator();
             if (pkgiter.hasNext()) {
@@ -187,7 +167,7 @@ public class PollerConfigServlet extends HttpServlet {
             deleteThese(deleteList);
 
             try(Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), StandardCharsets.UTF_8)) {
-                JaxbUtils.marshal(pollerConfig, poller_fileWriter);
+                JaxbUtils.marshal(pollerFactory.getLocalConfiguration(), poller_fileWriter);
             }
         }
 
@@ -244,26 +224,20 @@ public class PollerConfigServlet extends HttpServlet {
     /**
      * <p>removeMonitor</p>
      * 
-     * FIXME: I think that this should be using Iterator.remove()
-     *
      * @param service a {@link java.lang.String} object.
      */
     public void removeMonitor(String service) {
         // Add the new monitor with the protocol.
-        Collection<Monitor> monitorColl = pollerConfig.getMonitors();
-        Monitor newMonitor = new Monitor();
+        Collection<Monitor> monitorColl = pollerFactory.getLocalConfiguration().getMonitors();
         if (monitorColl != null) {
             for (Monitor mon : monitorColl) {
                 if (mon != null) {
                     if (mon.getService().equals(service)) {
-                        newMonitor.setService(service);
-                        newMonitor.setClassName(mon.getClassName());
-                        newMonitor.setParameters(mon.getParameters());
+                        pollerFactory.getLocalConfiguration().removeMonitor(mon);
                         break;
                     }
                 }
             }
-            monitorColl.remove(newMonitor);
         }
     }
 

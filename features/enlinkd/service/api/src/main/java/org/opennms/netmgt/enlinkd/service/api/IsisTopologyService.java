@@ -46,4 +46,7 @@ public interface IsisTopologyService extends TopologyService {
 
     List<IsIsElementTopologyEntity> findAllIsIsElements();
     List<TopologyConnection<IsIsLinkTopologyEntity, IsIsLinkTopologyEntity>> match();
+
+    void deletePersistedData();
+
 }

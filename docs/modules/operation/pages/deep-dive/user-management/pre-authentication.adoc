@@ -1,0 +1,67 @@
+
+= Web UI Pre-Authentication
+
+You can configure your {page-component-title} instance to run behind a proxy that provides authentication.
+Authenticated users can then be directed to the {page-component-title} web UI using a header.
+You can configure pre-authentication settings in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`.
+This file is automatically included in the Spring security context, but is not enabled by default.
+
+WARNING: Do not configure {page-component-title} to use pre-authentication unless you are certain that the web UI is accessible only to the proxy, and not to end users.
+If end users have access to the web UI, malicious attackers can craft queries that include the pre-authentication header, allowing them full control of the web UI and any REST APIs.
+
+== Enable pre-authentication
+
+Set the `enabled` property in `header-preauth.xml`:
+
+[source, xml]
+<beans:property name="enabled" value="true" />
+
+== Configure pre-authentication
+
+You can configure the following properties to change the pre-authentication plugin's behavior:
+
+[cols="1,2,1"]
+|====
+| Property  | Description | Default Value
+
+| enabled
+| Indicates whether the pre-authentication plugin is active.
+| false
+
+| failOnError
+| If `true`, block users from logging in if their header is not set or the user does not exist. +
+If `false`, fall through to other mechanisms (basic authentication, form login, and so on).
+| false
+
+| userHeader
+| The HTTP header that specifies which user to authenticate.
+| X-Remote-User
+
+| credentialsHeader
+| A comma-separated list of credentials to associate with the principal.
+If specified, the header must be set for authentication to be successful.
+| _Blank_
+
+| authoritiesHeader
+| HTTP header.
+When set, this contains a comma-separated list of roles for the authenticated user.
+| _Blank_
+|====
+
+== Enable pre-authorization
+
+Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
+
+[source, xml]
+----
+<beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+  <beans:property name="preAuthenticatedUserDetailsService">
+    <beans:bean id="preAuthUserDetailsService" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService"/>
+  </beans:property>
+</beans:bean>
+----
+
+After the pre-authentication plugin is enabled and set up, use the following command to test its configuration:
+
+[source, console]
+curl -H "X-Remote-User: myuser" -H "X-Remote-Roles: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami

@@ -1,0 +1,87 @@
+
+[[ga-flow-support-introduction]]
+= Flows
+
+Flows are summaries of network traffic sent by network devices (switches, routers, and so on).
+This information includes, but is not limited to, source and destination addresses, source and destination ports, octet count, and duration of activity.
+Collecting and analyzing flows data provides a picture of network usage and helps to diagnose issues.
+Persisting flows for long-term storage can aid in forensic analysis.
+
+{page-component-title} provides the following:
+
+* A platform to collect, persist, and visualize flows, with support for NetFlow versions 5 and 9, IPFIX, and sFlow.
+* Inventory enrichment (mapping to {page-component-title} nodes).
+* Application classification.
+* Horizontal scaling.
+* Enterprise reporting.
+* Top K statistics by interface, application, host, and conversation with QoS.
+
+See the xref:reference:telemetryd/protocols/introduction.adoc[Telemetry] section for a list of supported protocols.
+
+This section presents a set of procedures to set up flows that progress from a basic environment to more complex:
+
+* xref:deep-dive/flows/basic.adoc[Basic setup].
+* Collect flows data in a xref:deep-dive/flows/distributed.adoc[distributed or remote network].
+* Process a xref:deep-dive/flows/sentinel/sentinel.adoc[large volume of flows data].
+* Use https://github.com/OpenNMS/nephron[OpenNMS Nephron] to diagnose issues with flows at scale and queries taking too long.
+
+== How it works
+
+At a high level, with a xref:deep-dive/flows/basic.adoc[basic setup], {page-component-title} processes flows as follows:
+
+. Network devices send flows to either your {page-component-title} or a Minion with a xref:deep-dive/telemetryd/introduction.adoc[telemetryd] listener enabled.
+. Telemetryd adapters on {page-component-title} or a Sentinel convert the flows to a canonical flow model.
+. Flows are enriched:
+** The xref:deep-dive/flows/classification-engine.adoc[flow support classification engine] tags flows and groups them under a name based on a set of rules.
+** Metadata related to associated nodes (such as IDs and categories) are added to the flows.
+. Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
+. (Optional) The OpenNMS streaming analytics tool aggregates flows and outputs them to Elasticsearch, Cortex, or Kafka.
+
+You can access collected flows data in the following locations:
+
+* OpenNMS plugin for Grafana dashboards:
+** The "Flow Deep Dive" dashboard visualizes flows and aggregates that are stored in Elasticsearch using a flows datasource.
+** The "Cortex Flow Deep Dive" dashboard visualizes aggregates that are stored in Cortex using a Prometheus datasource.
+* The REST API can generate summaries and time series data from the stored flows or aggregates.
+
+.Overview of flows integration
+image::flows/flow_integration_overview.png["Network graph displays how flows integrate with {page-component-title}", 700]
+
+=== Technologies
+
+{page-component-title} supports the following flows technologies:
+
+[cols="1,1,1,1,1"]
+|===
+| Feature   | NetFlow v5    | NetFlow v9    | sFlow | IPFIX
+
+s| Open/Proprietary
+| Proprietary
+| Proprietary
+| Open
+| Open
+
+s| Sampled/Flow-Based
+| Primarily flow-based; sampled mode available.
+| Primarily flow-based; sampled mode available.
+| Sampled
+| Primarily flow-based; sampled mode available.
+
+s| Information Captured
+| Metadata and statistical information, including bytes transferred, interface counters, and so on.
+| Metadata and statistical information, including bytes transferred, interface counters, and so on.
+| Complete packet headers, partial packet payloads.
+| Metadata and statistical information, including bytes transferred, interface counters, and so on.
+
+s| Ingress/Egress Monitoring
+| Ingress only
+| Ingress and egress
+| Ingress and egress
+| Ingress and egress
+
+s| IPv6/VLAN/MPLS Support
+| No
+| Yes
+| Yes
+| Yes
+|===

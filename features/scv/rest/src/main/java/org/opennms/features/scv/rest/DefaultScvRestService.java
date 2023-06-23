@@ -133,6 +133,18 @@ public class DefaultScvRestService implements ScvRestService {
     }
 
     @Override
+    public Response deleteCredentials(final String alias) {
+        try {
+            scv.deleteCredentials(alias);
+        } catch (Exception e) {
+            LOG.error("Exception while deleting credentials with alias {} ", alias, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
+
+        return Response.noContent().build();
+    }
+
+    @Override
     public Response getAliases() {
         Set<String> aliasSet = scv.getAliases();
         var aliases = new TreeSet<String>(Collator.getInstance());

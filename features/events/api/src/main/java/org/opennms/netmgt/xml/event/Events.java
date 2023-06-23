@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Class Events.
@@ -222,7 +224,7 @@ public class Events implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vEvent
      * @throws java.lang.IndexOutOfBoundsException if the index
@@ -242,7 +244,7 @@ public class Events implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vEventArray
      */
     public void setEvent(
@@ -276,6 +278,7 @@ public class Events implements Serializable {
      * 
      * @param eventList the Vector to set.
      */
+    @Hidden
     public void setEventCollection(
             final java.util.List<org.opennms.netmgt.xml.event.Event> eventList) {
         this._eventList = eventList;

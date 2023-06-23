@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -75,7 +76,7 @@ public class UiPageTest extends OpenNMSSeleniumIT {
     }
 
     protected void verifyElementNotPresent(final By by) {
-        new WebDriverWait(driver, 7 /* seconds */).until(
+        new WebDriverWait(driver, Duration.ofSeconds(7)).until(
                 ExpectedConditions.not((ExpectedCondition<Boolean>) input -> execute(() -> {
                     try {
                         WebElement elementFound = input.findElement(by);

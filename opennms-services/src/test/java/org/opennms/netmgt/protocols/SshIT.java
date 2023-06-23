@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,60 +28,80 @@
 
 package org.opennms.netmgt.protocols;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.ssh.SshServerDataProvider;
+import org.opennms.core.test.ssh.SshServerDataProviderAware;
+import org.opennms.core.test.ssh.annotations.JUnitSshServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.monitors.support.Ssh;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class SshIT extends TestCase {
-    InetAddress good;
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/emptyContext.xml"})
+@JUnitSshServer
+public class SshIT implements SshServerDataProviderAware {
     private static final InetAddress bad = InetAddressUtils.UNPINGABLE_ADDRESS;
 
-    private static final String GOOD_HOST = "localhost";
-    private static final int PORT = 22;
-    private static final int TIMEOUT = 2000;
+    private static final int TIMEOUT = 500;
+
+    private SshServerDataProvider sshServerProvider;
+    private Ssh ssh;
     private TimeoutTracker tt;
-    Ssh ssh;
-    
-    @Override
-    public void setUp() throws Exception {
-        Map<String, String> parameters = new HashMap<String,String>();
+
+    @Test
+    public void testSshGood() throws Exception {
+        init();
+
+        final var host = sshServerProvider.getHost();
+        ssh.setAddress(host);
+
+        assertTrue("SSH poll against " + sshServerProvider.getHost() + " failed", ssh.poll(tt).isAvailable());
+    }
+
+    @Test
+    public void testSshBad() throws Exception {
+        init();
+        ssh.setAddress(bad);
+
+        final var start = new Date();
+        assertFalse(ssh.poll(tt).isAvailable());
+        final var end = new Date();
+
+        // make sure it timed out in TIMEOUT ms
+        assertTrue(end.getTime() - start.getTime() < (TIMEOUT * 1.2));
+    }
+
+    protected void init() throws Exception {
+        final var parameters = new HashMap<String,String>();
+
         parameters.put("retries", "0");
-        parameters.put("port", "22");
+        parameters.put("port", Integer.toString(sshServerProvider.getPort()));
         parameters.put("timeout", Integer.toString(TIMEOUT));
         
         tt = new TimeoutTracker(parameters, 0, TIMEOUT);
         ssh = new Ssh();
-        ssh.setPort(PORT);
+        ssh.setPort(sshServerProvider.getPort());
         ssh.setTimeout(TIMEOUT);
-
-        good = InetAddressUtils.addr(GOOD_HOST);
     }
-    
-    public void testSshGood() throws Exception {
-        ssh.setAddress(good);
-        assertTrue("SSH poll against " + GOOD_HOST + " failed", ssh.poll(tt).isAvailable());
-    }
-    
-    public void testSshBad() throws Exception {
-        Date start = new Date();
-        ssh.setAddress(bad);
-        assertFalse(ssh.poll(tt).isAvailable());
-        Date end = new Date();
 
-        // give it 2.5 seconds to time out
-        assertTrue(end.getTime() - start.getTime() < 2500);
+    @Override
+    public void setSshServerDataProvider(final SshServerDataProvider provider) {
+        sshServerProvider = provider;
     }
     
 }

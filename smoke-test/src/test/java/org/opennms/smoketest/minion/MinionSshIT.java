@@ -34,12 +34,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.utils.KarafShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
-
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 
 
 @Category(MinionTests.class)
@@ -54,7 +51,6 @@ public class MinionSshIT {
     public void testSshHealthOnMinion(){
         //Test for no exception to occur
         LOG.info("Waiting for Minion ssh health check...");
-        final InetSocketAddress karafSsh = stack.minion().getSshAddress();
-        awaitHealthCheckSucceeded(karafSsh, 3, "Minion");
+        KarafShellUtils.awaitHealthCheckSucceeded(stack.minion());
     }
 }

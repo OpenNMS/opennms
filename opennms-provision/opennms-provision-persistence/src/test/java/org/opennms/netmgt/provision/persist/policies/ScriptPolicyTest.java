@@ -39,6 +39,7 @@ import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.Collections;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -49,6 +50,17 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class ScriptPolicyTest {
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("opennms.home", System.getProperty("user.dir"));
+    }
+
+    @Test(expected = IOException.class)
+    public void testScriptOutsideScriptPath() throws Exception {
+        final ScriptPolicy p = new ScriptPolicy(Paths.get("/", "opt", "opennms").toAbsolutePath());
+        p.compileScript("../policy.groovy");
+    }
 
     @Test
     public void testScriptPolicy() throws Exception {
@@ -161,7 +173,7 @@ public class ScriptPolicyTest {
         final File scriptFile = File.createTempFile("foobar", ".groovy");
 
         // ...and attach it to the ScriptPolicy
-        final ScriptPolicy p = new ScriptPolicy(Paths.get("src", "test", "resources").toAbsolutePath());
+        final ScriptPolicy p = new ScriptPolicy(scriptFile.toPath().getParent());
         p.setLabel("~.*");
         p.setMatchBehavior("ALL_PARAMETERS");
         p.setScript(scriptFile.getAbsolutePath());

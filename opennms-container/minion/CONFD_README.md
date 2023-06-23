@@ -136,12 +136,12 @@ Config specified will be written to `etc/org.opennms.netmgt.trapd.cfg`.
 --- 
 system:
     properties:
-        jaeger-agent-host: "<host>"
+        JAEGER_AGENT_HOST: "<host>"
         org.opennms.snmp.snmp4j.allowSNMPv2InV1: true
         # Any other keys necessary can be specified here
 ```
 Config specified will be written to `etc/confd.system.properties` which gets automatically appended to `etc/system.properties`. Additionally, provided the
-`jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.
+`JAEGER_AGENT_HOST` or `JAEGER_ENDPOINT` keys are specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.
 
 ### Karaf Properties
 ```yaml

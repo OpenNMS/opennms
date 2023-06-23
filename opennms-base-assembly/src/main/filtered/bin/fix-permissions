@@ -94,7 +94,7 @@ do_chown() {
     echo "* fixing ownership of ${_mypath} contents"
     _count="$(find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" | wc -l)"
     if [ "${_count}" -ge 1 ]; then
-      find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" -print0 | do_sudo xargs -0 chown "${RUNAS_UID}:${RUNAS_GID}"
+      find -L "${_mypath}" -mount ! -user "${RUNAS_UID}" -print0 | do_sudo xargs --no-run-if-empty -0 chown "${RUNAS_UID}:${RUNAS_GID}"
     fi
   fi
 }

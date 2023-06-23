@@ -13,6 +13,7 @@
         <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
         <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
         <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+        <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
         <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
         <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
 
@@ -22,6 +23,7 @@
             <property name="collectionAgentFactory" ref="collectionAgentFactory" />
             <property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
             <property name="filterDao" ref="filterDao" />
+            <property name="nodeDao" ref="nodeDao" />
             <property name="persisterFactory" ref="persisterFactory" />
             <property name="thresholdingService" ref="thresholdingService" />
         </bean>

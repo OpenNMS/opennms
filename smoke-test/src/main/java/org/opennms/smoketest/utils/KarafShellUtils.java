@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,9 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.opennms.core.health.shell.HealthCheckCommand;
+import org.opennms.smoketest.containers.KarafContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,13 +89,16 @@ public class KarafShellUtils {
     }
 
     /**
-     * Awaits that the health check succeeds within the given amount of minutes.
+     * Awaits that the health check succeeds within 3 minutes.
      *
      * @throws RuntimeException if the health check does not succeed.
      */
-    public static void awaitHealthCheckSucceeded(InetSocketAddress addr, int timeoutMinutes, String what) {
+    public static void awaitHealthCheckSucceeded(KarafContainer container) {
+        InetSocketAddress addr = container.getSshAddress();
         Objects.requireNonNull(addr);
-        await(what + " health check").atMost(timeoutMinutes, MINUTES)
+        await(container.getDockerImageName() + " health check").atMost(3, MINUTES)
+                .failFast("container is no longer running", () -> !container.isRunning())
+                .pollDelay(Duration.ZERO) // Poll immediately in case it's already up so we can move on
                 .pollInterval(5, SECONDS)
                 .ignoreExceptions()
                 .untilAsserted(() -> testHealthCheckSucceeded(addr));
@@ -105,7 +111,10 @@ public class KarafShellUtils {
      */
     public static void testHealthCheckSucceeded(InetSocketAddress sshAddr) throws Exception {
         final var healthCheckResult = executeHealthCheck(sshAddr);
-        assertThat("health check result: " + healthCheckResult, healthCheckResult.isSuccess());
+        assertThat("health check result: " + healthCheckResult
+                        + "\nMost recent exception from karaf:\n"
+                        + new KarafShell(sshAddr).run("log:exception-display").getLeft(),
+                healthCheckResult.isSuccess());
     }
 
     /**
@@ -126,6 +135,59 @@ public class KarafShellUtils {
                     return new HealthCheckResult(streams.stdout.getLines(), streams.stderr.getLines());
                 }
         );
+    }
+
+    /**
+     * Trigger a dump and collect it.
+     */
+    @SuppressWarnings("java:S5443")
+    public static void saveCoverage(final KarafContainer container, final String prefix, final String type) {
+        if (!container.isRunning()) {
+            LOG.warn("Container [{}] isn't running, cannot save coverage data", container.getDockerImageName());
+            return;
+        }
+        try {
+            LOG.info("Triggering code coverage data file dump...");
+            KarafShellUtils.triggerCoverageDump(container, "/tmp/jacoco.exec");
+
+            LOG.info("Gathering coverage files...");
+            DevDebugUtils.copyLogs(container,
+                    // dest
+                    Paths.get("target", "coverage", prefix, type),
+                    // source folder
+                    Paths.get("/tmp"),
+                    // coverage file
+                    Arrays.asList("jacoco.exec"));
+        } catch (final Exception e) {
+            LOG.error("I been hacked. all my dumps gone. this just failed please help me", e);
+        }
+    }
+
+    /**
+     * triggers jacoco:dump on the Karaf shell
+     */
+    protected static void triggerCoverageDump(final KarafContainer container, final String outputFile) throws Exception {
+        Objects.requireNonNull(container);
+        try (var sshClient = await()
+                .pollDelay(5, SECONDS)
+                .atMost(Duration.ofMinutes(1))
+                .ignoreExceptions()
+                // wait until a shell could be opened
+                .until(() -> {
+                    var client = container.ssh();
+                    client.openShell();
+                    return client;
+                }, Matchers.notNullValue())) {
+            var streams = sshClient.getStreams();
+            streams.stdin.println("jacoco:dump " + (outputFile == null? "jacoco.exec":outputFile));
+            await().atMost(Duration.ofMinutes(1))
+                .until(() -> streams.stdout.getLines()
+                    .stream()
+                    .anyMatch(line -> line.contains("Wrote") && line.contains("bytes")));
+            streams.stdin.println("logout");
+            streams.stdout.interrupt();
+            streams.stderr.interrupt();
+        }
     }
 
     /**

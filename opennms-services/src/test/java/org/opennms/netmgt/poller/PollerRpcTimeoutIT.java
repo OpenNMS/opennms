@@ -211,7 +211,8 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         IOUtils.closeQuietly(is);
 
         // Sanity check the config
-        ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitor("HTTP");
+        ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitorLocator("HTTP").orElseThrow()
+                .getServiceMonitor(PollerConfigFactory.getInstance().getServiceMonitorRegistry());
         Assert.assertNotNull(monitor);
         Package pkg = PollerConfigFactory.getInstance().getPackage("PollerRpcTimeoutIT");
         Assert.assertNotNull(pkg);

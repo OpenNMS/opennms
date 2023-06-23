@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,16 @@
 package org.opennms.features.config.rest.api;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -119,4 +128,78 @@ public interface ConfigManagerRestService {
     @DELETE
     @Path("/{configName}/{configId}")
     Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
+
+    /**
+     * Get config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param path jsonPath to the part
+     * @return requested part of configuration
+     */
+    @GET
+    @Path(value="/{configName}/{configId}/{path}")
+    Response getConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                           @PathParam("path") String path);
+
+    /**
+     * Update config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param path jsonPath to the part
+     * @param newContent the new content for the node
+     * @return empty response
+     */
+    @PUT
+    @Path(value="/{configName}/{configId}/{path}")
+    Response updateConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                              @PathParam("path") String path, String newContent);
+
+    /**
+     * Update config part specified by configName, configId, path to the parent node and the node name.
+     * Unlike {@link #updateConfigPart(String, String, String, String) updateConfigPart} this method does not fail when
+     * the node is valid but the path can not be found while configuration manager does not provide some elements when
+     * they are not set. Only the parent node must exist.
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param pathToParent jsonPath to the parent node
+     * @param nodeName name of the node to update/insert within the parent node
+     * @param newContent the new content for the node
+     * @return empty response
+     */
+    @PUT
+    @Path(value="/{configName}/{configId}/{pathToParent}/{nodeName}")
+    Response updateOrInsertConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                                      @PathParam("pathToParent") String pathToParent,
+                                      @PathParam("nodeName") String nodeName, String newContent);
+
+    /**
+     * Add an array element to a config specified by configName, configId and path to the array
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param path jsonPath to the array to add an element into
+     * @param newElement a new element to add to the specified array in configuration
+     * @return empty response
+     */
+    @POST
+    @Path(value="/{configName}/{configId}/{path}")
+    Response appendToArrayInConfig(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                                   @PathParam("path") String path, String newElement);
+
+    /**
+     * Delete config part specified by configName, configId and path to the part
+     *
+     * @param configName configuration name
+     * @param configId configuration id
+     * @param path jsonPath to the part
+     * @return empty response
+     */
+    @DELETE
+    @Path(value="/{configName}/{configId}/{path}")
+    Response deleteConfigPart(@PathParam("configName") String configName, @PathParam("configId") String configId,
+                              @PathParam("path") String path);
+
 }

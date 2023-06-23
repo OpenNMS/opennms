@@ -306,6 +306,9 @@
          <parameter key="ds-name" value="jmx-minion"/>
          <parameter key="use-foreign-id-as-system-id" value="true"/>
       </service>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
+      </service>
       <!-- Query every 30secs always -->
       <downtime begin="0" interval="30000"/><!-- 30s -->
    </package>

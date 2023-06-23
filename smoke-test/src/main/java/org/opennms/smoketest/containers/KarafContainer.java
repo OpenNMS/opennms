@@ -28,10 +28,17 @@
 
 package org.opennms.smoketest.containers;
 
+import static org.junit.Assert.assertTrue;
+
+import java.net.InetSocketAddress;
+import java.nio.file.Path;
+
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.SshClient;
 import org.testcontainers.containers.Container;
+import org.testcontainers.utility.MountableFile;
 
-public interface KarafContainer extends Container {
+public interface KarafContainer<T extends KarafContainer<T>> extends Container<T> {
 
     /**
      * Create a new SSH client connected to the Karaf shell in this container.
@@ -40,4 +47,65 @@ public interface KarafContainer extends Container {
      */
     SshClient ssh();
 
+    /**
+     * Returns the socket address for the Karaf shell in this container.
+     *
+     * @return an InetSocketAddress usable for connecting to the Karaf shell.
+     */
+    InetSocketAddress getSshAddress();
+
+    /**
+     * Returns the path to the Karaf home directory.
+     *
+     * @return the path to the Karaf home directory
+     */
+    Path getKarafHomeDirectory();
+
+    /**
+     * Returns the path to the Karaf hot deploy directory. KARs installed in this directory will be
+     * deployed automatically without needing to run "kar:install".
+     *
+     * @return the path to the Karaf hot deploy directory
+     */
+    default Path getKarafHotDeployDirectory() {
+        return getKarafHomeDirectory().resolve("deploy");
+    }
+
+    /**
+     * Copy KAR file from the host system to the Karaf hot deploy directory in the container,
+     * verify that the feature is available, optionally run pre-install configuration commands,
+     * and finally install the feature, ensuring there are no errors in the output.
+     *
+     * @param feature the name of the Karaf feature
+     * @param kar the KAR file on the local host system to copy to the container
+     * @param preInstallConfig pre-install configuration commands
+     */
+    default void installFeature(String feature, Path kar, String... preInstallConfig) {
+        copyFileToContainer(MountableFile.forHostPath(kar), getKarafHotDeployDirectory().resolve(kar.getFileName()).toString());
+
+        installFeature(feature, preInstallConfig);
+    }
+
+    /**
+     * Verify that a Karaf feature is available, optionally run pre-install configuration commands,
+     * and finally install the feature, ensuring there are no errors in the output.
+     *
+     * @param feature the name of the Karaf feature
+     * @param preInstallConfig pre-install configuration commands
+     */
+    default void installFeature(String feature, String... preInstallConfig) {
+        var karafShell = new KarafShell(getSshAddress());
+
+        karafShell.runCommand("feature:list | grep " + feature,
+                output -> output.contains(feature),false);
+
+        for (var line : preInstallConfig) {
+            assertTrue(karafShell.runCommandOnce(line,
+                    output -> !output.toLowerCase().contains("error"), false));
+        }
+
+        // Note that the feature name doesn't always match the KAR name
+        assertTrue(karafShell.runCommandOnce("feature:install " + feature,
+                output -> !output.toLowerCase().contains("error"), false));
+    }
 }

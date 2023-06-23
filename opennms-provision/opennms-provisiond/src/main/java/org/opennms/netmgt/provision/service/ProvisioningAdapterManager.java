@@ -97,7 +97,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAddedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
-            LOG.info("handleNodeAddedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
+            LOG.info("handleNodeAddedEvent: Calling adapter:{} for node: {}", adapter.getName(), e.getNodeid());
             try {
                 adapter.addNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
@@ -116,7 +116,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdatedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
-            LOG.info("handleNodeUpdatedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
+            LOG.info("handleNodeUpdatedEvent: Calling adapter:{} for node: {}", adapter.getName(), e.getNodeid());
             try {
                 adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
@@ -135,7 +135,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
-            LOG.info("handleNodeDeletedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
+            LOG.info("handleNodeDeletedEvent: Calling adapter:{} for node: {}", adapter.getName(), e.getNodeid());
             try {
                 adapter.deleteNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
@@ -157,7 +157,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
     public void handleNodeScanCompletedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
-            LOG.info("handleScanCompletedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
+            LOG.info("handleScanCompletedEvent: Calling adapter:{} for node: {}", adapter.getName(), e.getNodeid());
             try {
                 adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
@@ -176,7 +176,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
     @EventHandler(uei = EventConstants.NODE_CONFIG_CHANGE_UEI)
     public void handleNodeChangedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
-            LOG.info("handleNodeChangedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
+            LOG.info("handleNodeChangedEvent: Calling adapter:{} for node: {}", adapter.getName(), e.getNodeid());
             try {
                 if (e.getNodeid() != 0) {
                     adapter.nodeConfigChanged(e.getNodeid().intValue());

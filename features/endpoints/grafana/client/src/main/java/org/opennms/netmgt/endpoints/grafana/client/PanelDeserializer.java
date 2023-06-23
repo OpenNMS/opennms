@@ -86,6 +86,8 @@ public class PanelDeserializer implements JsonDeserializer<Panel> {
             } else if (prop.isJsonObject()) {
                 // newer contain an object with { uid: ..., type: ... }
                 p.setDatasource(prop.getAsJsonObject().get("uid").getAsJsonPrimitive().getAsString());
+            } else if (p.getType().equals("row") && prop.isJsonNull()) {
+                // do nothing, let the datasource be null, since rows are skipped from the report
             } else {
                 throw new JsonParseException("JSON element 'datasource' was expected to be either a uid string, or an object containing a uid string and optional type string, but instead was: " + jsonElement);
             }

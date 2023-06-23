@@ -75,12 +75,16 @@ import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageDispatcher;
 import org.snmp4j.MessageDispatcherImpl;
+import org.snmp4j.MutablePDU;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.SNMP4JSettings;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.TransportStateReference;
+import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BEROutputStream;
 import org.snmp4j.event.AuthenticationFailureEvent;
 import org.snmp4j.event.AuthenticationFailureListener;
 import org.snmp4j.event.ResponseEvent;
@@ -89,7 +93,12 @@ import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
+import org.snmp4j.mp.MutableStateReference;
 import org.snmp4j.mp.PduHandle;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.mp.StateReference;
+import org.snmp4j.mp.StatusInformation;
+import org.snmp4j.security.PrivAES256;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
@@ -98,6 +107,8 @@ import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.security.UsmUserEntry;
 import org.snmp4j.security.UsmUserTable;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -157,6 +168,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
         // NMS-9223: This call can be expensive, and is synchronized
         // so we perform it only once during initialization
         SecurityProtocols.getInstance().addDefaultProtocols();
+        // NMS-15637: AES-256 gets automatically registered, but with an ID of "" instead of "1.3.6.1.4.1.4976.2.2.1.1.2"
+        // Adding it manually here results in it being registered with the correct ID
+        SecurityProtocols.getInstance().addPrivacyProtocol(new PrivAES256());
 
         s_initialized = true;
     }
@@ -652,6 +666,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 nextDispatcher.addCommandResponder(authenticationFailureLogger);
 
                 nextDispatcher.addMessageProcessingModel(new MPv3(usm));
+                // Give the dispatcher NoOp message processors for other SNMP versions to avoid
+                // logs complaining about unsupported versions
+                nextDispatcher.addMessageProcessingModel(new NoOpMessageProcessor(MessageProcessingModel.MPv1));
+                nextDispatcher.addMessageProcessingModel(new NoOpMessageProcessor(MessageProcessingModel.MPv2c));
                 // Use the same trap notifier
                 nextDispatcher.addCommandResponder(trapNotifier);
                 transport.addTransportListener(nextDispatcher);
@@ -974,4 +992,78 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
         }
 
+    /**
+     * A message processor that does nothing but return OK statuses
+     */
+    private static class NoOpMessageProcessor implements MessageProcessingModel {
+
+            private int id;
+
+            private NoOpMessageProcessor(int id) {
+                this.id = id;
+            }
+
+            @Override
+            public int getID() {
+                return this.id;
+            }
+
+            @Override
+            public int prepareOutgoingMessage(Address transportAddress,
+                                       int maxMsgSize,
+                                       int messageProcessingModel,
+                                       int securityModel,
+                                       byte[] securityName,
+                                       int securityLevel,
+                                       PDU pdu,
+                                       boolean expectResponse,
+                                       PduHandle sendPduHandle,
+                                       Address destTransportAddress,
+                                       BEROutputStream outgoingMessage,
+                                       TransportStateReference tmStateReference)
+                    throws IOException {
+                return SnmpConstants.SNMP_MP_OK;
+            }
+
+            @Override
+            public int prepareResponseMessage(int messageProcessingModel,
+                                       int maxMsgSize,
+                                       int securityModel,
+                                       byte[] securityName,
+                                       int securityLevel,
+                                       PDU pdu,
+                                       int maxSizeResponseScopedPDU,
+                                       StateReference stateReference,
+                                       StatusInformation statusInformation,
+                                       BEROutputStream outgoingMessage)
+                    throws IOException {
+                return SnmpConstants.SNMP_MP_OK;
+            }
+
+            @Override
+            public int prepareDataElements(MessageDispatcher messageDispatcher,
+                                    Address transportAddress,
+                                    BERInputStream wholeMsg,
+                                    TransportStateReference tmStateReference,
+                                    Integer32 messageProcessingModel,
+                                    Integer32 securityModel,
+                                    OctetString securityName,
+                                    Integer32 securityLevel,
+                                    MutablePDU pdu,
+                                    PduHandle sendPduHandle,
+                                    Integer32 maxSizeResponseScopedPDU,
+                                    StatusInformation statusInformation,
+                                    MutableStateReference mutableStateReference)
+                    throws IOException {
+                return SnmpConstants.SNMP_MP_OK;
+            }
+
+            @Override
+            public boolean isProtocolVersionSupported(int snmpProtocolVersion) {
+                return snmpProtocolVersion == getID();
+            }
+
+            @Override
+            public void releaseStateReference(PduHandle pduHandle) {}
+        }
 }

@@ -33,9 +33,9 @@
 	contentType="text/html"
 	session="true"
 	import="
-        java.util.Map,
-        java.util.TreeMap,
-        java.util.Enumeration,
+        java.util.*,
+        org.opennms.netmgt.config.CollectdConfigFactory,
+        org.opennms.netmgt.config.collectd.Collector,
         org.opennms.netmgt.config.PollerConfigFactory,
         org.opennms.netmgt.config.PollerConfig,
         org.opennms.netmgt.config.poller.Package,
@@ -58,6 +58,7 @@
 <%@ page import="org.opennms.core.mate.api.Scope" %>
 <%@ page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@ page import="org.opennms.core.mate.api.MapScope" %>
+<%@ page import="org.opennms.netmgt.poller.ServiceMonitorLocator" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -71,6 +72,42 @@
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
 
+    //Collectd
+    Boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
+    CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
+    List<String> collectdPackageNames = new ArrayList<String>();
+    Map<String,String> collectdParameters = new TreeMap<String,String>();
+
+    if (isServiceCollectionEnabled) { // Service exists in any collection package and is enabled
+        for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfigFactory.getPackages()) {
+            if (pkg.serviceInPackageAndEnabled(serviceName)) {
+                collectdPackageNames.add(pkg.getName()); //there should be at least one, right?
+            }
+            for (org.opennms.netmgt.config.collectd.Service collectdSvc : pkg.getServices()) {
+                if (collectdSvc.getName().equals(serviceName)) {
+		    pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
+                    for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
+                        if (p.getKey().toLowerCase().contains("password")) {
+                            continue; // Hide passwords for security reasons
+                        } else {
+                            collectdParameters.put(p.getKey(), p.getValue());
+                        }
+                    }
+                    pageContext.setAttribute("collectdParameters", collectdParameters);
+                }
+            }
+        }
+        String collectorClassName = null;
+        for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
+            if (collectdCollector.getService().equals(serviceName)) {
+                pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
+                break;
+            }
+        }
+        pageContext.setAttribute("collectdPackageNames", collectdPackageNames);
+    }
+
+    // Pollerd
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
@@ -95,8 +132,8 @@
             pageContext.setAttribute("pollerPattern", serviceMatch.service.getPattern());
             pageContext.setAttribute("patternVariables", serviceMatch.patternVariables);
 
-            ServiceMonitor monitor = pollerCfgFactory.getServiceMonitor(serviceMatch.service.getName());
-            pageContext.setAttribute("monitorClass", monitor == null ? "N/A" : monitor.getClass().getName());
+            Optional<ServiceMonitorLocator> monitor = pollerCfgFactory.getServiceMonitorLocator(serviceMatch.service.getName());
+            pageContext.setAttribute("monitorClass", monitor.isEmpty() ? "N/A" : monitor.get().getServiceLocatorKey());
 
             pageContext.setAttribute("interval", serviceMatch.service.getInterval());
 
@@ -211,7 +248,7 @@ function doDelete() {
                   <c:param name="node" value="${service.ipInterface.node.id}"/>
                 </c:url>
                 <th>Node</th>
-                <td><a href="${fn:escapeXml(nodeLink)}">${service.ipInterface.node.label}</a></td>
+                <td><a href="${fn:escapeXml(nodeLink)}"><c:out value="${service.ipInterface.node.label}"/></a></td>
               </tr>
               <tr>
                 <c:url var="interfaceLink" value="element/interface.jsp">

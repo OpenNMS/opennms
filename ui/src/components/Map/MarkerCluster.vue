@@ -17,8 +17,11 @@ const props = {
     type: Object,
     default() {
       return {}
-    },
+    }
   },
+  onClusterClick: {
+    type: Function
+  }
 }
 
 export default {
@@ -61,8 +64,13 @@ export default {
         LatLng,
         LatLngBounds,
         LayerGroup,
+        Map,
         Marker,
+        Path,
         Point,
+        Polygon,
+        Polyline,
+        popup,
         Util,
       } = await import('leaflet/dist/leaflet-src.esm')
 
@@ -79,8 +87,13 @@ export default {
         LatLng,
         LatLngBounds,
         LayerGroup,
+        Map,
         Marker,
+        Path,
         Point,
+        Polygon,
+        Polyline,
+        popup,
         Util,
       }
       window['L'] = L
@@ -92,6 +105,9 @@ export default {
 
       const listeners = remapEvents(context.attrs)
       DomEvent.on(leafletRef.value, listeners)
+      if (props.onClusterClick) {
+        leafletRef.value.on('clusterclick', props.onClusterClick)
+      }
 
       propsBinder(methods, leafletRef.value, props)
 

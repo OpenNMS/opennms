@@ -319,6 +319,7 @@
         <% if ( alarmCount > 0 ) { %>
             <!-- hidden form for acknowledging the result set -->
             <form style="display:inline" method="post" action="<%= Util.calculateUrlBase(req, "alarm/acknowledgeByFilter") %>" name="acknowledge_by_filter_form">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
               <input type="hidden" name="actionCode" value="<%=action%>" />
               <%=Util.makeHiddenTags(req)%>
@@ -448,6 +449,7 @@
 
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <form class="form-inline" action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>

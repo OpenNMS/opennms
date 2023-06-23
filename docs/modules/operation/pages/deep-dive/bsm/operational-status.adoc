@@ -1,0 +1,20 @@
+
+= Operational Status
+
+Every business service maintains an operational status that represents its overall status.
+The overall status is calculated from the edges, using the map and reduce functions, and uses the <<deep-dive/events/event-configuration.adoc#severities, severities>> from associated events and alarms.
+
+If a business service changes its operational status, a `uei.opennms.org/bsm/serviceOperationalStatusChanged` event is generated.
+In cases where the operational status changes severity to a state other than `Normal`, a `uei.opennms.org/bsm/serviceProblem` event is generated and is assigned the same severity as the business service.
+When the business service returns to `Normal` severity, a `uei.opennms.org/bsm/serviceProblemResolved` event is generated.
+
+TIP: You can use the `serviceProblem` and `serviceProblemResolved` events for notifications or ticketing integration.
+
+Event log messages have the following information:
+
+* `businessServiceName`: The business service name.
+* `id`: The business service identifier.
+* `prevSeverityId`: The ID of the event's previous severity.
+* `prevSeverityLabel`: The the event's previous severity label.
+* `newSeverityId`: The ID of the event's new severity.
+* `newSeverityLabel`: The event's new severity label.

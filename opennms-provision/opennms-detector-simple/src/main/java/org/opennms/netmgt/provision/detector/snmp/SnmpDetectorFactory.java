@@ -40,6 +40,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PreDestroy;
 
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
@@ -56,8 +57,14 @@ public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector
             .build();
     private final ExecutorService snmpDetectorExecutor = Executors.newCachedThreadPool(snmpDetectorThreadFactory);
 
+    private SecureCredentialsVault m_scv;
+
     public SnmpDetectorFactory() {
         super(SnmpDetector.class);
+    }
+
+    public void setSecureCredentialsVault(SecureCredentialsVault scv) {
+        this.m_scv = scv;
     }
 
 
@@ -66,6 +73,7 @@ public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector
     public SnmpDetector createDetector(Map<String, String> properties) {
         SnmpDetector snmpDetector = super.createDetector(properties);
         snmpDetector.setSnmpDetectorExecutor(snmpDetectorExecutor);
+        snmpDetector.setSecureCredentialsVault(m_scv);
         return snmpDetector;
     }
 
@@ -78,7 +86,9 @@ public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector
 
         List<SnmpProfile> snmpProfiles = agentConfigFactory.getProfiles();
         if (snmpProfiles.isEmpty()) {
-            return agentConfigFactory.getAgentConfig(address, location).toMap();
+            final var map = agentConfigFactory.getAgentConfig(address, location).toMap();
+            map.put("location", location);
+            return map;
         } else {
             // SNMP config has profiles, detector should handle multiple agent configs.
             Map<String, String> agentConfigMap = new HashMap<>();
@@ -91,6 +101,7 @@ public class SnmpDetectorFactory extends GenericSnmpDetectorFactory<SnmpDetector
                 SnmpAgentConfig snmpAgentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, address);
                 agentConfigMap.put(AGENT_CONFIG_PREFIX + snmpAgentConfig.getProfileLabel(), snmpAgentConfig.toProtocolConfigString());
             }));
+            agentConfigMap.put("location", location);
             return agentConfigMap;
         }
     }

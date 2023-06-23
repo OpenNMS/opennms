@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -499,7 +500,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
                 break;
             case NONE:
                 // Don't let provisiond override either
-                if (!isCollectionUserSpecified() || !isCollectionPolicySpecified()) {
+                if (!isCollectionUserSpecified() && !isCollectionPolicySpecified()) {
                     m_collect = shouldCollect ? "C" : "N";
                 }
                 break;
@@ -807,5 +808,4 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), scannedSnmpIface.getCollectionDefinitionSource());
 
     }
-
 }

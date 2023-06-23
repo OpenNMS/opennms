@@ -48,14 +48,11 @@ done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
-export MAVEN_OPTS="-Xmx1g -Xms1g"
+export MAVEN_OPTS="-Xmx2g -Xms2g"
 
 # shellcheck disable=SC3045
 # Set higher open files limit
 ulimit -n 65536
-
-# Clean up the workspace so there's less junk lying around
-./clean.pl
 
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
@@ -68,13 +65,16 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
-../compile.pl \
+# When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
+ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \
   -Dtest.fork.count=0 \
   -Dit.test="$IT_TESTS" \
   --fail-fast \
+  --batch-mode \
+  -Dfailsafe.skipAfterFailureCount=1 \
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \

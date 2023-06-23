@@ -95,4 +95,48 @@ public class InetAddressUtilsTest {
         assertEquals("ffff:ffff:ffff:ffff:0000:0000:0000:0000", str(InetAddressUtils.convertCidrToInetAddressV6(64)));
         assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", str(InetAddressUtils.convertCidrToInetAddressV6(128)));
     }
+
+    @Test
+    public void testGetNetwork() throws Exception {
+        assertEquals("192.168.1.0", str(InetAddressUtils.getNetwork(InetAddressUtils.addr("192.168.1.3"),InetAddressUtils.addr("255.255.255.0"))));
+        assertEquals("192.168.0.0", str(InetAddressUtils.getNetwork(InetAddressUtils.addr("192.168.1.3"),InetAddressUtils.addr("255.255.0.0"))));
+        assertEquals("192.0.0.0", str(InetAddressUtils.getNetwork(InetAddressUtils.addr("192.168.1.3"),InetAddressUtils.addr("255.0.0.0"))));
+        assertEquals("fd25:28a1:ba2f:0000:0000:0000:0000:0000", str(InetAddressUtils.getNetwork(InetAddressUtils.addr("fd25:28a1:ba2f:6b78:0000:0000:0000:0001"),InetAddressUtils.addr("ffff:ffff:ffff:0:0:0:0:0"))));
+        assertEquals("fd25:28a1:ba2f:6b78:0000:0000:0000:0000", str(InetAddressUtils.getNetwork(InetAddressUtils.addr("fd25:28a1:ba2f:6b78:0000:0000:0000:0001"),InetAddressUtils.addr("ffff:ffff:ffff:ffff:0:0:0:0"))));
+    }
+
+    @Test
+    public void testGetCidr() throws Exception {
+        assertEquals(1, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("128.0.0.0")));
+        assertEquals(2, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("192.0.0.0")));
+        assertEquals(3, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("224.0.0.0")));
+        assertEquals(4, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("240.0.0.0")));
+        assertEquals(5, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("248.0.0.0")));
+        assertEquals(6, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("252.0.0.0")));
+        assertEquals(7, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("254.0.0.0")));
+        assertEquals(8, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.0.0.0")));
+        assertEquals(9, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.128.0.0")));
+        assertEquals(10, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.192.0.0")));
+        assertEquals(11, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.224.0.0")));
+        assertEquals(12, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.240.0.0")));
+        assertEquals(13, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.248.0.0")));
+        assertEquals(14, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.252.0.0")));
+        assertEquals(15, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.254.0.0")));
+        assertEquals(16, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.255.0.0")));
+        assertEquals(24, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.255.255.0")));
+        assertEquals(32, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.255.255.255")));
+        assertEquals(64, InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("ffff:ffff:ffff:ffff:0:0:0:0")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNotValidMask() {
+        InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.128.255.0"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectNotValidMaskValue() {
+        InetAddressUtils.convertInetAddressMaskToCidr(InetAddressUtils.addr("255.255.251.0"));
+    }
+
+
 }

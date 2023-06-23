@@ -49,6 +49,8 @@ public class MinionIdentityDTO implements Message {
     private String location;
     @XmlElement(name = "timestamp")
     private Date timestamp;
+    @XmlElement(name = "version")
+    private String version;
 
     public MinionIdentityDTO() {
 
@@ -84,9 +86,17 @@ public class MinionIdentityDTO implements Message {
         this.timestamp = timestamp;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, location, timestamp);
+        return Objects.hash(id, location, timestamp, version);
     }
 
     @Override
@@ -100,11 +110,12 @@ public class MinionIdentityDTO implements Message {
         MinionIdentityDTO other = (MinionIdentityDTO) obj;
         return Objects.equals(this.id, other.id)
                 && Objects.equals(this.location, other.location)
-                && Objects.equals(this.timestamp, other.timestamp);
+                && Objects.equals(this.timestamp, other.timestamp)
+                && Objects.equals(this.version, other.version);
     }
 
     @Override
     public String toString() {
-        return String.format("MinionIdentityDTO[id=%s, location=%s, timestamp=%s]", id, location, timestamp);
+        return String.format("MinionIdentityDTO[id=%s, location=%s, timestamp=%s, version=%s]", id, location, timestamp, version);
     }
 }

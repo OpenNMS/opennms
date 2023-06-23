@@ -79,7 +79,7 @@ public class SurveillanceDashlet extends AbstractDashlet {
                     }
 
                     /**
-                     * creating browser frame to display node-maps
+                     * creating browser frame to display surveillance view
                      */
                     BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/vaadin-surveillance-views?dashboard=false&viewName=" + viewName));
                     browserFrame.setSizeFull();

@@ -1,0 +1,254 @@
+
+[[metadata-overview]]
+= Metadata
+
+{page-component-title} supports the assignment of arbitrary metadata to nodes, interfaces and services.
+You can use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds.
+
+The metadata is made up of a simple triad of strings containing a context, a key, and the associated value.
+Each node, interface, and service can have an arbitrary number of metadata elements assigned to it.
+The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
+
+The association of metadata with nodes, interfaces, and services happens during provisioning with the use of <<reference:provisioning/detectors.adoc#ref-provisioning-meta-data, detectors>>.
+Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development:rest/meta-data.adoc[REST endpoints].
+
+A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) lets users access metadata that is associated with the elements they are working on, and use it as a variable in parameters and expressions.
+There is no limitation to defining metadata: users can decide how to define and use it in expressions.
+
+You can view the metadata that is currently assigned to nodes, interfaces, and services on the entity's details page:
+
+.Node metadata
+image::metadata/metadata-view.png["{page-component-title} web UI showing a node's associated metadata"]
+
+== Contexts
+
+Contexts distinguish different kinds of metadata use.
+{page-component-title} uses several default contexts: `pattern` (used with polling), `requisition`, `node`, `interface`, and `service`.
+Three special contexts provide details about nodes, interfaces, and service objects.
+Each context has keys associated with it that you can use in a metadata expression.
+
+You can create user-defined contexts in the REST API by prefixing its name with `X-`.
+Using an `X-` prefix can help to avoid future {page-component-title} contexts interfering with a user-defined context, since {page-component-title} contexts are not prefixed in this way.
+
+=== Node context
+
+The `node` context provides details about the node currently processed.
+The following keys are available under this context:
+
+[options="autowidth"]
+|===
+| Context:Key            | Description
+
+| node:label
+| The node's label
+
+| node:foreign-source
+| The node's foreign source name
+
+| node:foreign-id
+| The node's foreign ID
+
+| node:netbios-domain
+| The NetBIOS domain as provided by SNMP.
+
+| node:netbios-name
+| The NetBIOS name as provided by SNMP.
+
+| node:os
+| The node's operating system
+
+| node:sys-name
+| The node's system name
+
+| node:sys-location
+| The node's system location
+
+| node:sys-contact
+| The system contact specified for the node.
+
+| node:sys-description
+| The node's system description
+
+| node:location
+| The node's monitoring location name
+
+| node:area
+| The node's monitoring location area
+
+| node:geohash
+| A https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude or longitude.
+|===
+
+=== Interface context
+
+The `interface` context provides details about the interface currently processed.
+The following keys are available under this context:
+
+[options="autowidth"]
+|===
+| Context:Key                | Description
+
+| interface:hostname
+| The hostname associated with the IP address of the interface.
+
+| interface:address
+| The interface's IP address
+
+| interface:netmask
+| The interface's netmask
+
+| interface:if-index
+| The SNMP interface index
+
+| interface:if-alias
+| The SNMP interface alias
+
+| interface:if-description
+| The SNMP interface description
+
+| interface:phy-addr
+| The interface's physical address
+|===
+
+=== Service context
+
+The `service` context provides details about the service currently processed.
+The following key is available under this context:
+
+[options="autowidth"]
+|===
+| Context:Key        | Description
+
+| service:name
+| The service's full name
+|===
+
+[[ga-metadata-scv]]
+=== Secure credentials vault
+
+The special context `scv` provides access to values stored in the xref:deep-dive/admin/configuration/scv-configuration.adoc[secure credentials vault].
+The key used in this context must consist of the alias and the attribute of the credential, separated by a colon (for example, `${scv:mydevice:password}` will access the `password` attribute of a credential named `mydevice`).
+
+[[ga-metadata-webui]]
+== Add metadata through the web UI
+
+Follow these steps to edit the `requisition` context in the web UI:
+
+. Click the *gear* symbol in the top-right of the page.
+. Under Provisioning, select *Manage Provisioning Requisitions*.
+. Click *Edit* beside the requisition that you want to modify.
+. Click *Edit* beside the node that you want to modify.
+. Navigate to the *Meta-Data* tab, and click *Add Meta-Data*.
++
+image::metadata/metadata_add.png["{page-component-title} UI displaying the Meta-Data Entry page with example parameters"]
+
+. In the *Scope* list, select either *Node* or *Interface*.
+. Specify the key and a value, and click *Save*.
+
+[[ga-metadata-passwords]]
+== Hidden passwords in metadata
+
+Metadata values for key names that include a substring match of `password`, `Password`, `secret`, or `Secret` will be hidden by default for non-administrator users.
+Users with `ROLE_ADMIN` permissions can read these values in the web UI.
+
+[[ga-meta-data-dsl]]
+== The metadata DSL
+
+The metadata DSL lets you interpolate metadata into a parameter.
+Its syntax lets you use patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+
+Each expression can contain multiple references to metadata.
+The references will be replaced with their corresponding values during evaluation.
+Placeholders start with `${` and end with `}`, and they contain references to context-key pairs.
+You may choose to define multiple fallback context-key pairs and a trailing default value.
+Separate the context and the key using a colon.
+Use a vertical bar (`|`) to separate any fallback context-key pairs and default values.
+
+If the first context-key value is not available (not found on a service, interface, node, or any other special context), the next value following the vertical bar is used.
+The final value--the default value--is not interpreted as a context-key, but is used as a literal.
+Its evaluation will always succeed.
+
+The interpolation process supports recursive evaluation.
+This lets you specify a pattern inside another pattern, or provide whole expressions stored as metadata.
+
+The DSL uses scopes to determine the resolution order of a context-key pair.
+First, the most recent scope is used; if it does not contain the context-key tuple, the next scope is queried.
+For example, a query on a service entity would be resolved in this order: service metadata > interface metadata > node metadata.
+On an interface, it resolves in metadata > interface metadata > node metadata order.
+On the node level, only the node is queried.
+
+The available scopes depend on the environment for which an expression is evaluated; they are documented as appropriate elsewhere in this guide.
+Some environments also provide additional scopes that are not backed by the persisted metadata, but which provide additional metadata related to the current evaluation.
+
+=== Examples
+
+The following placeholder will resolve to the `username` as defined in the requisitioning UI, or an empty value if the `username` is not defined:
+
+[source]
+${requisition:username}
+
+Placeholders can contain optional default values, separated from the main reference with a vertical bar (`|`).
+The following placeholder will resolve to the `username` as defined in the requisitioning UI, or to `admin` if the `username` is not defined:
+
+[source]
+${requisition:username|admin}
+
+You can use fallback context-key pairs in a placeholder to specify other references to fall back to if the primary context-key pair is not defined.
+Separate each reference with a vertical bar (`|`).
+The following placeholder will resolve to the `username` as defined in the requisitioning UI.
+If the `username` is not defined, the fallback `account` reference is used.
+If neither exist, the placeholder defaults to `admin`:
+
+[source]
+${requisition:username|requisition:account|admin}
+
+You can also embed placeholders within each other.
+For example, the embedded placeholder below resolves to the `credentials` as defined in the requisitioning UI, with the node label as a fallback value.
+Its result is used to resolve the outer pattern, and results in the device's final password:
+
+[source]
+${scv:${requisition:credentials|node:label}:password}
+
+=== Test an expression
+
+Test an expression using the following Karaf shell command:
+
+[source, karaf]
+admin@opennms> opennms:metadata-test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
+
+This expression resolves to the following:
+
+[source]
+----
+Meta-Data for node (id=1)
+fruits:
+  apple='green'
+  banana='yellow'
+vegetables:
+  tomato='red'
+---
+Meta-Data for interface (ipAddress=192.168.0.100):
+fruits:
+  apple='brown'
+---
+Meta-Data for service (name=ICMP):
+fruits:
+  apple='red'
+---
+Input: '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
+Output: 'red'
+Details:
+  Part: '${fruits:apple|fruits:banana|vegetables:tomato|blue}' => match='fruits:apple', value='red', scope='SERVICE'
+admin@opennms>
+----
+
+=== Uses
+
+The following {page-component-title} components allow the use of the Metadata DSL:
+
+* <<reference:provisioning/detectors.adoc#ref-provisioning-meta-data, Provisioning detectors>>.
+* <<deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service assurance>>.
+* <<deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance management>>.
+* <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>.
+* <<deep-dive/thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
+* <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.

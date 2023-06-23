@@ -28,22 +28,23 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertNotEquals;
+
+import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * The Test Class for the Index Page.
@@ -98,7 +99,7 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         // try every 5 seconds, for 120 seconds, until the service on 127.0.0.2 has been detected as "down", or fail afterwards
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(driver, 120).until(input -> {
+            new WebDriverWait(driver, Duration.ofSeconds(120)).until(input -> {
                 // refresh page
                 input.get(getBaseUrlInternal() + "opennms/index.jsp");
 
@@ -111,4 +112,35 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         }
     }
 
+    private String getSessionId() {
+        final Set<Cookie> cookies = driver.manage().getCookies();
+        for (final Cookie cookie : cookies) {
+            if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                return cookie.getValue().replaceAll(";.*$","");
+            }
+        }
+        return null;
+    }
+
+    @Test
+    public void testSessionFixation_NMS15310() {
+        logout();
+        final String preLoginSessionId = getSessionId();
+        login();
+        final String postLoginSessionId = getSessionId();
+        assertNotEquals(preLoginSessionId, postLoginSessionId);
+    }
+
+    @Test
+    public void verifyDeepLinks() {
+        logout();
+        driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=999999999");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
+        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
+        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        clickElement(By.name("Login"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='Event ID Not Found']")));
+    }
 }

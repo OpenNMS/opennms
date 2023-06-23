@@ -264,6 +264,11 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
             m_detectors = new LinkedHashMap<>();
         }
         ServiceDetectorRegistry registry = m_serviceRegistry.findProvider(ServiceDetectorRegistry.class);
+        if(registry == null) {
+            // This should only occur on read only web ui (stripped down) instances and prevents a null pointer exception
+            LOG.warn("No ServiceDetectorRegistry found in the ServiceRegistry");
+            return m_detectors;
+        }
         for(String serviceName: registry.getServiceNames()) {
             if(!m_detectors.containsKey(serviceName)) {
                 m_detectors.put(serviceName, registry.getDetectorClassByServiceName(serviceName));

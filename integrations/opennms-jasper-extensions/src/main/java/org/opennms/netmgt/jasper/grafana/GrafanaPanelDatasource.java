@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,6 +60,7 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
     public static final String TITLE_FIELD_NAME = "title";
     public static final String DATASOURCE_FIELD_NAME = "datasource";
     public static final String DESCRIPTION_FIELD_NAME = "description";
+    public static final String ROW_TITLE_FIELD_NAME = "rowTitle";
 
     private final GrafanaClient client;
     private final Dashboard dashboard;
@@ -114,6 +115,8 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
             return currentPanel.getDatasource();
         } else if (Objects.equals(DESCRIPTION_FIELD_NAME, fieldName)) {
             return currentPanel.getDescription();
+        } else if (Objects.equals(ROW_TITLE_FIELD_NAME, fieldName)) {
+            return getRowTitle(currentPanel);
         } else if (Objects.equals(IMAGE_FIELD_NAME, fieldName)) {
             try {
                 maybeRenderPanels();
@@ -147,6 +150,26 @@ public class GrafanaPanelDatasource implements JRRewindableDataSource {
                     query.getFrom().getTime(), query.getTo().getTime(), query.getTimezone(), query.getVariables());
             panelRenders.put(panel, panelImageBytes);
         }
+    }
+
+    /**
+     * Gets the current panel the previous row panel title if it has one.
+     * @param panel
+     * @return String with the row panel title if exists or an empty string if not.
+     */
+    private String getRowTitle(final Panel panel){
+        String currentRowPanel = "";
+        for(final Panel p : this.dashboard.getPanels()){
+            if(p.getType().equals("row")){
+                currentRowPanel = p.getTitle().trim();
+            } else if (p.equals(panel)){
+                return currentRowPanel;
+            } else {
+                // clear the title right after passing the first panel after the row panel.
+                currentRowPanel = "";
+            }
+        }
+        return currentRowPanel;
     }
 
 }

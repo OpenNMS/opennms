@@ -30,6 +30,7 @@ package org.opennms.netmgt.correlation.jmx;
 
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.spring.BeanUtils;
@@ -89,6 +90,11 @@ public class Correlator implements CorrelatorMBean {
     @Override
     public String getStatusText() {
         return Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 
     /**

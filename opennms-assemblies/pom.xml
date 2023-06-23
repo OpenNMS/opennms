@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.assemblies</artifactId>
@@ -24,7 +24,6 @@
   <modules>
     <module>minion</module>
     <module>sentinel</module>
-    <!-- <module>system-report-onejar</module> -->
     <module>version</module>
     <module>webapp-full</module>
     <module>xsds</module>

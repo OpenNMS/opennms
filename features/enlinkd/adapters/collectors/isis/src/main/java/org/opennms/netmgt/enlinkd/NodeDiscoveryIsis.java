@@ -41,7 +41,6 @@ import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,16 +61,13 @@ public final class NodeDiscoveryIsis extends NodeCollector {
 	 * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-	 * @param EnhancedLinkd linkd
-	 * @param LinkableNode node
 	 */
     public NodeDiscoveryIsis(
-            final IsisTopologyService isisTopologyService,
-            final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
-            final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
-    	m_isisTopologyService = isisTopologyService;
+            final NodeCollectionGroupIsis group,
+            final Node node,
+            final int priority) {
+        super(group.getLocationAwareSnmpClient(), node, priority);
+    	m_isisTopologyService = group.getIsisTopologyService();
     }
 
     public void collect() {

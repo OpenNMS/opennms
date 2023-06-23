@@ -1,3 +1,4 @@
+
 [[pagesequencemonitor]]
 = PageSequenceMonitor
 
@@ -70,11 +71,11 @@ With `strict-timeout = false` the next attempt starts right after a failure.
 
 | use-system-proxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
+Configure the system proxy settings via <<operation:deep-dive/admin/configuration/system-properties.adoc#system-properties, system properties>>.
 | false
 |===
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Page parameters
 [options="header"]
@@ -223,7 +224,9 @@ Each page is checked to ensure its HTTP response code fits into the response-ran
 Example uses CentOS/RHEL path name.
 For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
-.Configuration to test the login to the OpenNMS Web application
+Note that you must include the `monitor` section for each service in your definition.
+
+.Configuration to test the login to the {page-component-title} web application
 [source, xml]
 ----
 <service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
@@ -233,32 +236,40 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="ds-name" value="opennmslogin"/>
   <parameter key="page-sequence">
     <page-sequence>
-      <page path="/opennms/login.jsp"
-            port="8980"
-            successMatch="Password" />
-      <page path="/opennms/j_spring_security_check"
-            port="8980"
-            method="POST">
+      <page path="/opennms/login.jsp" <1>
+            port="8980" <2>
+            successMatch="Password" /> <3>
+      <page path="/opennms/j_spring_security_check" <1>
+            port="8980" <2>
+            method="POST"> <4>
         <parameter key="j_username" value="admin"/>
         <parameter key="j_password" value="admin"/>
         <header name="foo" value="bar"/>
       </page>
-      <page path="/opennms/index.jsp"
-            port="8980"
-            successMatch="Log Out" />
-      <page path="/opennms/event/index"
-            port="8980" successMatch="Event Queries" />
-      <page path="/opennms/j_spring_security_logout"
-            port="8980"
-            method="POST"
-            response-range="300-399"
-            locationMatch="/opennms" />
+      <page path="/opennms/index.jsp" <1>
+            port="8980" <2>
+            successMatch="Log Out" /> <3>
+      <page path="/opennms/event/index" <1>
+            port="8980" <2>
+            successMatch="Event Queries" /> <3>
+      <page path="/opennms/j_spring_security_logout" <1>
+            port="8980" <2>
+            method="POST" <4>
+            response-range="300-399" <5>
+            locationMatch="/opennms" /> <6>
     </page-sequence>
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <7>
 ----
+<1> The relative URL to call in the request.
+<2> Host port number to use when connecting.
+<3> Text to look for in the response body.
+<4> HTTP method (*GET* or *POST*).
+<5> Range for allowed HTTP error codes from the response.
+<6> The relative URL that must be located for the request to be successful.
+<7> Required *monitor* section.
 
 .Test with mixing HTTP and HTTPS in a page sequence
 [source, xml]
@@ -270,42 +281,60 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="ds-name" value="opennmslogin"/>
   <parameter key="page-sequence">
     <page-sequence>
-      <page scheme="http"
-            host="ecomm.example.com"
-            port="80"
-            path="/ecomm/jsp/Login.jsp"
-            virtual-host="ecomm.example.com"
-            successMatch="eComm Login"
-            timeout="10000"
-            http-version="1.1"/>
-      <page scheme="https"
-            method="POST"
-            host="ecomm.example.com" port="443"
-            path="/ecomm/controller"
-            virtual-host="ecomm.example.com"
-            successMatch="requesttab_select.gif"
-            failureMessage="Login failed: ${1}"
-            timeout="10000"
-            http-version="1.1">
-        <parameter key="action_name" value="XbtnLogin"/>
-        <parameter key="session_timeout" value=""/>
-        <parameter key="userid" value="EXAMPLE"/>
-        <parameter key="password" value="econ"/>
+      <page scheme="http" <1>
+            host="ecomm.example.com" <2>
+            port="80" <3>
+            path="/ecomm/jsp/Login.jsp" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="eComm Login" <6>
+            timeout="10000" <7>
+            http-version="1.1"/> <8>
+      <page scheme="https" <1>
+            method="POST" <9>
+            host="ecomm.example.com" port="443" <2>
+            path="/ecomm/controller" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="requesttab_select.gif" <6>
+            failureMessage="Login failed: ${1}" <10>
+            timeout="10000" <7>
+            http-version="1.1"> <8>
+        <parameter key="action_name"
+                   value="XbtnLogin"/>
+        <parameter key="session_timeout"
+                   value=""/>
+        <parameter key="userid"
+                   value="EXAMPLE"/>
+        <parameter key="password"
+                   value="econ"/>
       </page>
-      <page scheme="http"
-            host="ecomm.example.com" port="80"
-            path="/econsult/controller"
-            virtual-host="ecomm.example.com"
-            successMatch="You have successfully logged out of eComm"
-            timeout="10000" http-version="1.1">
-        <parameter key="action_name" value="XbtnLogout"/>
+      <page scheme="http" <1>
+            host="ecomm.example.com" <2>
+            port="80" <3>
+            path="/econsult/controller" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="You have successfully logged out of eComm" <6>
+            timeout="10000" <7>
+            http-version="1.1"> <8>
+        <parameter key="action_name"
+                   value="XbtnLogout"/>
       </page>
     </page-sequence>
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <11>
 ----
+<1> Define the URL scheme as *http* or *https*.
+<2> Set host field in HTTP header.
+<3> Host port number to use when connecting.
+<4> The relative URL to call in the request.
+<5> Set the virtual host field in the HTTP header.
+<6> Text to look for in the response body.
+<7> Timeout for the *isReachable* method, in milliseconds.
+<8> HTTP protocol version (0.9, 1.0, or 1.1).
+<9> HTTP method (*GET* or *POST*).
+<10> The failure message constructs the reason code.
+<11> Required *monitor* section.
 
 .Test login with dynamic credentials using session variables
 [source, xml]
@@ -316,70 +345,91 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="ds-name" value="opennmslogin"/>
   <parameter key="page-sequence">
-    <page-sequence name="opennms-login-seq-dynamic-credentials">
-      <page path="/opennms"
-            port="80"
-            virtual-host="demo.opennms.org"
-            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>">
-        <session-variable name="username" match-group="1" />
-        <session-variable name="password" match-group="2" />
+    <page-sequence name="opennms-login-seq-dynamic-credentials"> <1>
+      <page path="/opennms" <2>
+            port="80" <3>
+            virtual-host="demo.opennms.org" <4>
+            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>"> <5>
+        <session-variable name="username"
+                          match-group="1" />
+        <session-variable name="password"
+                          match-group="2" />
       </page>
-      <page path="/opennms/j_acegi_security_check"
-            port="80"
-            virtual-host="demo.opennms.org"
-            method="POST"
-            failureMatch="(?s)Your log-in attempt failed.*Reason: ([^<]*)"
-            failureMessage="Login Failed: ${1}"
-            successMatch="Log out">"
-        <parameter key="j_username" value="${username}" />
-        <parameter key="j_password" value="${password}" />
+      <page path="/opennms/j_acegi_security_check" <2>
+            port="80" <3>
+            virtual-host="demo.opennms.org" <4>
+            method="POST" <6>
+            failureMatch="(?s)Your log-in attempt failed.*Reason: ([^<]*)"<7>
+            failureMessage="Login Failed: ${1}" <8>
+            successMatch="Log out">" <5>
+        <parameter key="j_username"
+                   value="${username}" />
+        <parameter key="j_password"
+                   value="${password}" />
       </page>
-      <page path="/opennms/event/index.jsp"
-            port="80"
-            virtual-host="demo.opennms.org"
-            successMatch="Event Queries" />
-      <page path="/opennms/j_acegi_logout"
-            port="80"
-            virtual-host="demo.opennms.org"
-            successMatch="logged off" />
+      <page path="/opennms/event/index.jsp" <2>
+            port="80" <3>
+            virtual-host="demo.opennms.org" <4>
+            successMatch="Event Queries" /> <5>
+      <page path="/opennms/j_acegi_logout" <2>
+            port="80" <3>
+            virtual-host="demo.opennms.org" <4>
+            successMatch="logged off" /> <5>
     </page-sequence>
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <9>
 ----
+<1> The name of the page sequence.
+<2> The relative URL to call in the request.
+<3> Host port number to use when connecting.
+<4> Set the virtual host field in the HTTP header.
+<5> Text to look for in the response body.
+<6> HTTP method (*GET* or *POST*).
+<7> Text to look for in the response body.
+<8> The failure message constructs the reason code.
+<9> Required *monitor* section.
 
-.Log in to demo.opennms.org without knowing username and password
+.Log in to `demo.opennms.org` without knowing username and password
 [source, xml]
 ----
 <service name="OpenNMS-Demo-Login" interval="300000" user-defined="true" status="on">
   <parameter key="page-sequence">
     <page-sequence>
-      <page path="/opennms"
-            port="80"
-            virtual-host="demo.opennms.org"
-            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>">
-        <session-variable name="username" match-group="1" />
-        <session-variable name="password" match-group="2" />
+      <page path="/opennms" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>"> <4>
+        <session-variable name="username" match-group="1" /> <5>
+        <session-variable name="password" match-group="2" /> <6>
       </page>
-      <page path="/opennms/j_acegi_security_check"
-            port="80"
-            virtual-host="demo.opennms.org"
-            method="POST"
-            successMatch="Log out">"
+      <page path="/opennms/j_acegi_security_check" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            method="POST" <7>
+            successMatch="Log out">" <4>
         <parameter key="j_username" value="${username}" />
         <parameter key="j_password" value="${password}" />
       </page>
-      <page path="/opennms/j_acegi_logout"
-            port="80"
-            virtual-host="demo.opennms.org"
-            successMatch="logged off" />
+      <page path="/opennms/j_acegi_logout" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            successMatch="logged off" /> <4>
     </page-sequence>
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <8>
 ----
+<1> The relative URL to call in the request.
+<2> Host port number to use when connecting.
+<3> Set the virtual host field in the HTTP header.
+<4> Text to look for in the response body.
+<5> Assign the value of a regex match group to a session variable.
+<6> Assign the value of a regex match group to a session variable (in this case, *password*).
+<7> HTTP method (*GET* or *POST*).
+<8> Required *monitor* section.
 
 .Example with per-page response times
 [source, xml]
@@ -390,15 +440,19 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
   <parameter key="ds-name" value="overall"/>
   <parameter key="page-sequence">
     <page-sequence>
-      <page path="/opennms/acegilogin.jsp"
-            port="8980"
-            ds-name="login-page"/>
-      <page path="/opennms/event/index.jsp"
-            port="8980"
-            ds-name="event-page"/>
+      <page path="/opennms/acegilogin.jsp" <1>
+            port="8980" <2>
+            ds-name="login-page"/> <3>
+      <page path="/opennms/event/index.jsp" <1>
+            port="8980" <2>
+            ds-name="event-page"/> <3>
     </page-sequence>
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+<monitor service="OpenNMS-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <4>
 ----
+<1> The relative URL to call in the request.
+<2> Host port number to use when connecting.
+<3> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
+<4> Required *monitor* section.

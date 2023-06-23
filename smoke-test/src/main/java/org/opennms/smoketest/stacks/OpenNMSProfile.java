@@ -35,7 +35,12 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+
+import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 
 import com.google.common.io.Resources;
 
@@ -52,11 +57,13 @@ public class OpenNMSProfile {
     private final boolean jvmDebuggingEnabled;
     private final boolean kafkaProducerEnabled;
     private final List<OverlayFile> files;
+    private final Function<OpenNMSContainer, WaitStrategy> waitStrategy;
 
     private OpenNMSProfile(Builder builder) {
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         kafkaProducerEnabled = builder.kafkaProducerEnabled;
         files = Collections.unmodifiableList(builder.files);
+        waitStrategy = Objects.requireNonNull(builder.waitStrategy);
     }
 
     public static Builder newBuilder() {
@@ -67,6 +74,7 @@ public class OpenNMSProfile {
         private boolean jvmDebuggingEnabled = false;
         private boolean kafkaProducerEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
+        private Function<OpenNMSContainer, WaitStrategy> waitStrategy = OpenNMSContainer.WaitForOpenNMS::new;
 
         /**
          * Enable/disable JVM debugging.
@@ -158,6 +166,11 @@ public class OpenNMSProfile {
             return this;
         }
 
+        public Builder withWaitStrategy(final Function<OpenNMSContainer, WaitStrategy> waitStrategy) {
+            this.waitStrategy = waitStrategy;
+            return this;
+        }
+
         /**
          * Build the profile.
          *
@@ -181,4 +194,7 @@ public class OpenNMSProfile {
         return files;
     }
 
+    public Function<OpenNMSContainer, WaitStrategy> getWaitStrategy() {
+        return waitStrategy;
+    }
 }

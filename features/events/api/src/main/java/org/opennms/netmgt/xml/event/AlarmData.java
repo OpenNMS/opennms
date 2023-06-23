@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,8 @@ package org.opennms.netmgt.xml.event;
 //---------------------------------/
 
 import org.opennms.netmgt.events.api.model.IAlarmData;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -337,6 +339,8 @@ public class AlarmData implements Serializable {
         return hasFields;
     }
     
+    /** @deprecated */
+    @Hidden
     public void setUpdateField(UpdateField[] fields) {
         m_updateFieldList.clear();
         for (int i = 0; i < fields.length; i++) {
@@ -350,6 +354,8 @@ public class AlarmData implements Serializable {
         m_updateFieldList.addAll(fields);
     }
     
+    /** @deprecated */
+    @Hidden
     public void setUpdateFieldCollection(final Collection<UpdateField> fields) {
         if (m_updateFieldList == fields) return;
         m_updateFieldList.clear();

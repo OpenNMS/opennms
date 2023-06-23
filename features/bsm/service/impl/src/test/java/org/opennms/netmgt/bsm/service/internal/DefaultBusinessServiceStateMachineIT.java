@@ -52,6 +52,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
+import org.opennms.netmgt.bsm.test.hierarchies.IpServiceAggregationHierarchy;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
@@ -242,6 +243,16 @@ public class DefaultBusinessServiceStateMachineIT {
         Assert.assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(root)));
+
+        // Reset
+        stateMachine.setBusinessServices(
+                simpleTestHierarchy.getServices().stream().map(s -> wrap(s)).collect(Collectors.toList())
+        );
+
+        // Verify state
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
+        assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(root)));
     }
 
     @Test
@@ -382,6 +393,50 @@ public class DefaultBusinessServiceStateMachineIT {
         assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(bsChild1));
         assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(bsChild2));
         assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(bsParent));
+    }
+
+    /**
+     * See NMS-15124 for details.
+     */
+    @Test
+    public void canReloadGraphWithoutSendingStateChanges() {
+        // Setup the test hierarchy
+        IpServiceAggregationHierarchy testHierarchy = new IpServiceAggregationHierarchy(populator);
+        testHierarchy.getServices().forEach(entity -> businessServiceDao.save(entity));
+
+        BusinessServiceImpl bs = wrap(testHierarchy.getRoot());
+        IPServiceEdgeEntity svc2 = testHierarchy.getIpSvcNode2();
+        IPServiceEdgeEntity svc3 = testHierarchy.getIpSvcNode3();
+
+        // Setup the state machine
+        List<BusinessService> bss = Lists.newArrayList(bs);
+        LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
+        DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
+        stateMachine.setBusinessServices(bss);
+        stateMachine.addHandler(handler, null);
+
+        // Verify the initial state
+        assertEquals(0, handler.getStateChanges().size());
+        assertEquals(DefaultBusinessServiceStateMachine.MIN_SEVERITY, stateMachine.getOperationalStatus(bs));
+
+        // Create a svc down alarm for n2
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(svc2.getIpService(), OnmsSeverity.MINOR));
+        // Create a node down alarm for n3
+        String nodeDownReductionKey = ReductionKeyHelper.getNodeDownReductionKey(svc3.getIpService());
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.NODE_DOWN_EVENT_UEI, OnmsSeverity.MAJOR, nodeDownReductionKey));
+
+        // Verify the updated state
+        assertEquals(2, handler.getStateChanges().size());
+        assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(bs));
+
+        // Reset
+        stateMachine.setBusinessServices(
+                testHierarchy.getServices().stream().map(this::wrap).collect(Collectors.toList())
+        );
+
+        // Expect no state changes and the same state
+        assertEquals(2, handler.getStateChanges().size());
+        assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(bs));
     }
 
     private BusinessServiceImpl wrap(BusinessServiceEntity entity) {

@@ -23,7 +23,7 @@ volumes:<1>
 
 services:
   horizon:<2>
-    image: opennms/horizon:{page-component-version}<3>
+    image: opennms/horizon:{full-display-version}<3>
     container_name: horizon
     environment:
       TZ: 'America/New_York'<4>

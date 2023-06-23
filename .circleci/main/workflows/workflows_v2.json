@@ -1,0 +1,564 @@
+{
+    "bundles": {
+        "build-deploy": {
+            "extends": [
+                "build",
+                "integration-test",
+                "oci",
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "sentinel-deb-build",
+                "sentinel-rpm-build"
+            ]
+        },
+        "smoke": {
+            "extends": [
+                "build",
+                "tarball-assembly-only",
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "rpms": {
+            "extends": [
+                "build",
+                "integration-test",
+                "horizon-rpm-build",
+                "minion-rpm-build",
+                "sentinel-rpm-build"
+            ]
+        },
+        "debs": {
+            "extends": [
+                "build",
+                "integration-test",
+                "horizon-deb-build",
+                "minion-deb-build",
+                "sentinel-deb-build"
+            ]
+        },
+        "oci": {
+            "extends": [
+                "oci-horizon",
+                "oci-minion",
+                "oci-sentinel"
+            ]
+        },
+        "oci-horizon": {
+            "extends": [
+                "tarball-assembly-only",
+                "horizon-image-single-arch",
+                "horizon-image-single-arch-linux-amd64"
+            ]
+        },
+        "oci-minion": {
+            "extends": [
+                "tarball-assembly-only",
+                "minion-image-single-arch",
+                "minion-image-single-arch-linux-amd64"
+            ]
+        },
+        "oci-sentinel": {
+            "extends": [
+                "tarball-assembly-only",
+                "sentinel-image-single-arch",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "build-publish": {
+            "extends": [
+                "build",
+                "rpms",
+                "debs",
+                "oci",
+                "smoke",
+                "merge",
+                "publish",
+                "publish-maven"
+            ]
+        },
+        "merge": {
+            "extends": [
+                "create-merge-foundation-branch",
+                "create-merge-meridian-branch",
+                "merge-foundation-branch",
+                "merge-poweredby-branch"
+            ]
+        },
+        "weekly-coverage": {
+            "extends": [
+                "build",
+                "integration-test-with-coverage",
+                "code-coverage"
+            ]
+        },
+        "master-branch": {
+            "extends": [
+                "tarball-assembly-only",
+                "integration-test"
+            ]
+        },
+        "experimental": {
+            "extends": [
+                "empty"
+            ]
+        }
+    },
+    "individual": {
+        "empty": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "docs": {
+            "job": "build-docs",
+            "context": [
+                "CircleCI"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "ui": {
+            "job": "build-ui",
+            "context": [
+                "CircleCI"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^from-foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "integration-test": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "build"
+            ]
+        },
+        "minion-rpm-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-rpm-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "sentinel-rpm-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "smoke-test-core": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-flaky": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "job": "smoke-test-flaky",
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-minion": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-sentinel": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "sentinel-deb-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "tarball-assembly-only": {
+            "context": [
+                "CircleCI"
+            ],
+            "requires": [
+                "build"
+            ]
+        },
+        "minion-deb-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "horizon-deb-build": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "minion-image-single-arch-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "horizon-image-single-arch-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "sentinel-image-single-arch-linux-amd64": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },
+        "minion-image-single-arch": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "horizon-image-single-arch": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "sentinel-image-single-arch": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64",
+                "linux/arm/v7"
+            ],
+            "requires": [
+                "smoke-test-core",
+                "smoke-test-flaky",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
+            ]
+        },
+        "create-merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "develop"
+                    ],
+                    "only": [
+                        "<< pipeline.parameters.main_branch >>"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "merge-foundation-branch": {
+            "context": [
+                "CircleCI"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "create-merge-meridian-branch": {
+            "context": [
+                "CircleCI"
+            ],
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "merge-poweredby-branch": {
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "publish": {
+            "context": [
+                "CircleCI",
+                "cloudsmith-publish-account",
+                "cosign-signing",
+                "docker-content-trust",
+                "docker-publish-account",
+                "azure-sp-dct"
+            ],
+            "requires": [
+                "horizon-deb-build",
+                "horizon-rpm-build",
+                "horizon-image-single-arch",
+                "minion-deb-build",
+                "minion-rpm-build",
+                "minion-image-single-arch",
+                "sentinel-deb-build",
+                "sentinel-rpm-build",
+                "sentinel-image-single-arch",
+                "integration-test"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/",
+                        "/^foundation.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "publish-maven": {
+            "context": [
+                "CircleCI",
+                "gpg-signing",
+                "OSSRH Principal"
+            ],
+            "requires": [
+                "publish"
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
+        },
+        "integration-test-with-coverage": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account",
+                "SonarCloud"
+            ],
+            "requires": [
+                "build"
+            ]
+        },
+        "code-coverage": {
+            "context": [
+                "CircleCI",
+                "SonarCloud"
+            ],
+            "requires": [
+                "integration-test-with-coverage"
+            ]
+        }
+    }
+}

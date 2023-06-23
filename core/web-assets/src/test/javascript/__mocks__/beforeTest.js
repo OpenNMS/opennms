@@ -1,9 +1,3 @@
-var jQuery = require('jquery');
-global.jQuery = jQuery;
-window.jQuery = jQuery;
-global.$ = jQuery;
-window.$ = jQuery;
-
 require('manifest');
 require('vendor');
 

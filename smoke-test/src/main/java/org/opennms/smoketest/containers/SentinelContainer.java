@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,13 +32,16 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,11 +50,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
@@ -59,10 +60,10 @@ import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TargetRoot;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.opennms.smoketest.utils.RestHealthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
@@ -75,14 +76,14 @@ import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.collect.ImmutableMap;
 
-public class SentinelContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class SentinelContainer extends GenericContainer<SentinelContainer> implements KarafContainer<SentinelContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
     private static final int SENTINEL_JETTY_PORT = 8181;
+    static final String IMAGE = "opennms/sentinel";
     static final String ALIAS = "sentinel";
 
     private final StackModel model;
@@ -90,7 +91,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private final Path overlay;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
-        super("sentinel");
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
@@ -110,15 +111,13 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
+                .withEnv("JACOCO_AGENT_ENABLED", "1")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom -Dorg.opennms.rrd.storeByForeignSource=true")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
                 .waitingFor(new WaitForSentinel(this))
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                })
+                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits)
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -131,6 +130,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         DevDebugUtils.setupMavenRepoBind(this, "/opt/sentinel/.m2");
     }
 
+    @SuppressWarnings("java:S5443")
     private Path writeOverlay() {
         try {
             final Path home = Files.createTempDirectory(ALIAS).toAbsolutePath();
@@ -161,6 +161,12 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
 
         // Copy over the fixed configuration from the class-path
         FileUtils.copyDirectory(new File(MountableFile.forClasspathResource("sentinel-overlay").getFilesystemPath()), home.toFile());
+
+        final Properties sysProps = getSystemProperties();
+        File propsFile = etc.resolve("custom.system.properties").toFile();
+        try (@SuppressWarnings("java:S6300") FileOutputStream fos = new FileOutputStream(propsFile)) {
+            sysProps.store(fos, "Generated");
+        }
 
         Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
@@ -228,9 +234,24 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
             featuresOnBoot.add("sentinel-jsonstore-postgres");
         }
 
+        if (model.isJaegerEnabled()) {
+            featuresOnBoot.add("opennms-core-tracing-jaeger");
+        }
+
         return featuresOnBoot;
     }
 
+    public Properties getSystemProperties() {
+        final Properties props = new Properties();
+
+        if (model.isJaegerEnabled()) {
+            props.put("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces");
+        }
+
+        return props;
+    }
+
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(SENTINEL_SSH_PORT));
     }
@@ -238,6 +259,11 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/sentinel");
     }
 
     public URL getWebUrl() {
@@ -262,41 +288,46 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Sentinel health check...");
-            try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
-                throw new RuntimeException(e);
-            }
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
         }
     }
 
     @Override
     public void afterTest(TestDescription description, Optional<Throwable> throwable) {
+        // not working yet in karaf-started JVMs
+        // KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
-    }
+        Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
+        DevDebugUtils.clearLogs(targetLogFolder);
 
-    private static void copyLogs(SentinelContainer container, String prefix) {
+        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+
+        LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.copyLogs(this,
                 // dest
-                Paths.get("target", "logs", prefix, "sentinel"),
+                targetLogFolder,
                 // source folder
-                Paths.get("/opt", "sentinel", "data", "log"),
+                Paths.get("/opt", ALIAS, "data", "log"),
                 // log files
                 logFiles);
+
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
     }
+
 }

@@ -1,0 +1,193 @@
+
+[[resource-types]]
+= Resource Types
+
+{page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and displaying in the web UI.
+Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
+
+There are two labels for a resource type.
+The first, `label`, defines a string to display in the UI.
+The second, `resourceLabel`, defines the template used when displaying each unique group of measurements name for the resource type.
+
+There are two types of strategy definitions for resource types: the persistence selector strategy, and the storage strategy.
+The persistence selector strategy filters the group indexes down to a subset for storage on disk.
+The storage strategy converts an index into a resource path label for persistence.
+
+Two resource types do not have a `resource-type` definition: `node` and `ifIndex`.
+
+You can define resource types by placing files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`.
+The latter file path is specific to SNMP.
+
+.Example `diskIOIndex` resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`
+[source, xml]
+----
+<resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy">
+    <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')" />
+  </persistenceSelectorStrategy>
+  <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+    <parameter key="sibling-column-name" value="diskIODevice" />
+    <parameter key="replace-all" value="s/^-//" />
+    <parameter key="replace-all" value="s/\s//" />
+    <parameter key="replace-all" value="s/:\\.*//" />
+  </storageStrategy>
+</resourceType>
+----
+
+== Persistence selector strategies
+
+You can configure the following persistence selector strategies to specify how to archive performance metrics:
+
+[cols="2,2"]
+|===
+| Class | Description
+
+| org.opennms.netmgt.collection.support.PersistAllSelectorStrategy
+| Persist all indexes.
+
+| org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy
+| Persist indexes based on JEXL evaluation. +
+This class takes a single parameter, `match-expression`, which defines a JEXL expression.
+On evaluation, this expression should return either `true` (persist index to storage) or `false` (discard data).
+|===
+
+== Storage strategies
+
+You can configure the following storage strategies to specify how to store performance metrics long-term:
+
+[cols="2,2"]
+|===
+| Class | Storage Path Value
+
+| org.opennms.netmgt.collection.support.IndexStorageStrategy
+| Index
+
+| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy
+| Value after JexlExpression evaluation.
+
+| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy
+| Value after JexlExpression evaluation.
+
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy
+| Interface label + '.' + DLCI
+
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy
+| Uses the value from the `hrStorageDescr` column in the `hrStorageTable`, cleaned to make a valid directory name on supported file systems.
+
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy
+| Uses the value from an SNMP lookup of OID in the `sibling-column-name` parameter, cleaned to make a valid directory name on supported file systems.
+
+| org.opennms.protocols.xml.collector.XmlStorageStrategy
+| Index, cleaned to make a valid directory name on supported file systems.
+|===
+
+=== JexlIndexStorageStrategy
+
+The `JexlIndexStorageStrategy` class takes two parameters: `index-format`, which is required, and `clean-output`, which is optional.
+
+[caption=]
+.`JexlIndexStorageStrategy` parameters
+[options="autowidth"]
+|===
+| Parameter | Description
+
+| index-format
+| The JexlExpression to evaluate.
+
+| clean-output
+| Boolean which indicates whether the index value is cleaned up.
+|===
+
+If the `index` value is set to be cleaned up, it will have all whitespace, colons (`:`), forward and back slashes (`/`, `\`), and vertical bars (`|`) replaced with underscores (`_`).
+All equal signs (`=`) will be removed.
+
+To extend this class and create custom storage strategies, you can override the `updateContext` method and set additional key/value pairs to use in your `index-format` template.
+
+.Example custom storage strategy definition
+[source, java]
+----
+public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExampleStorageStrategy.class);
+    public ExampleStorageStrategy() {
+        super();
+    }
+
+    @Override
+    public void updateContext(JexlContext context, CollectionResource resource) {
+        context.set("Example", resource.getInstance());
+    }
+}
+----
+
+=== ObjectNameStorageStrategy
+
+The `ObjectNameStorageStrategy` extends the `JexlIndexStorageStrategy` and, as such, its requirements are the same.
+Extra key/value pairs are added to the JexlContext, which can then be used in the `index-format` template.
+
+The original `index` string is converted to an `ObjectName` and can be referenced as `$\{objectname}`.
+The domain from the `ObjectName` can be referenced as `$\{domain}`.
+All key properties from the `ObjectName` can also be referenced by using `$\{key}`.
+
+You can use this storage strategy with JMX MBean data collections where multiple MBeans can return the same set of attributes.
+
+NOTE: As of OpenNMS Horizon 20, this is supported only when using an HTTP-to-JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
+
+.Example storage storage strategy used with JMX MBean
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
+  <parameter key="index-format" value="$\{domain}_${type}_$\{name}" />
+  <parameter key="clean-output" value="true" />
+</storageStrategy>
+----
+
+In this example, passing an MBean through this storage strategy produces a clean `index` value (for example, `java.lang:type=MemoryPool,name=Survivor Space` will become `java_lang_MemoryPool_Survivor_Space`).
+
+=== HostFileSystemStorageStrategy
+
+The `HostFileSystemStorageStrategy` class takes no parameters and is marked as deprecated.
+You should replace it with the following definition:
+
+.`SiblingColumnStorageStrategy` class definition
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+  <parameter key="sibling-column-name" value="hrStorageDescr" />
+  <parameter key="replace-first" value="s/^-$/_root_fs/" />
+  <parameter key="replace-all" value="s/^-//" />
+  <parameter key="replace-all" value="s/\\s//" />
+  <parameter key="replace-all" value="s/:\\\\.*//" />
+</storageStrategy>
+----
+
+=== SiblingColumnStorageStrategy
+
+The `SiblingColumnStorageStrategy` class replaces `HostFileSystemStorageStrategy`, which is deprecated.
+It takes the following parameters:
+
+[cols="1,3"]
+|===
+| Parameter | Description
+
+| sibling-column-name
+| Name of another `mibObj` in the same group.
+This string value forms the starting point for the index.
+
+| replace-first
+| Specifies a regex replacement to perform against the value of the object that `sibling-column-name` points to.
+Only the first match in the input is replaced.
+
+| replace-all
+| Specifies a global regex replacement to perform against the value of the object that `sibling-column-name` points to.
+Every match in the input is replaced.
+|===
+
+Values for `replace-first` and `replace-all` must match the following pattern: `s/regex/replacement/`.
+If they do not, an error will be thrown.
+
+=== XmlStorageStrategy
+
+The `XmlStorageStrategy` class takes no parameters.
+Its `index` value will have all whitespace, colons (`:`), forward and back slashes (`/`, `\`), and vertical bars (`|`) replaced with underscores (`_`).
+All equal signs (`=`) will be removed.

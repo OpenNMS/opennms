@@ -57,6 +57,10 @@ public class AbstractSpringContextJmxServiceDaemonTest {
         public String getLoggingPrefix() {
             return "thisIsABogusLoggingPrefix";
         }
+
+        @Override
+        public long getStartTimeMilliseconds() { return 0; }
+
     }
 
     public class MockServiceDaemon extends AbstractServiceDaemon {

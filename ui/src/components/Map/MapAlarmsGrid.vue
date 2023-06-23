@@ -108,6 +108,7 @@ const alarmOptions = [
 const alarmOption = ref(alarmOptions[0])
 const all = ref(false)
 const alarmCheckboxes = ref<{ [x: string]: boolean }>({})
+
 const disableAckSelect = computed(() => {
   let hasSelectedCheckbox = false
   for (const key in alarmCheckboxes.value) {
@@ -203,6 +204,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
+@import "@featherds/styles/themes/variables";
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
@@ -222,7 +224,7 @@ thead {
   background: var($surface);
 }
 .select-ack {
-  z-index: 3;
+  z-index: var($zindex-dropdown);
   width: 300px;
   position: absolute;
   right: 30px;

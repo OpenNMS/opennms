@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.kafka.itests;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
@@ -47,19 +47,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.common.ThreadLockingMessageConsumer;
-import org.opennms.core.ipc.sink.kafka.itests.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.kafka.client.KafkaRemoteMessageDispatcherFactory;
-import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.sink.kafka.itests.HeartbeatSinkPerfIT.HeartbeatGenerator;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.Heartbeat;
 import org.opennms.core.ipc.sink.kafka.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +100,20 @@ public class HeartbeatSinkIT {
             .thenReturn(kafkaConfig);
         remoteMessageDispatcherFactory.setConfigAdmin(configAdmin);
         remoteMessageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
+        remoteMessageDispatcherFactory.setIdentity(new MinionIdentity() {
+                    @Override
+                    public String getId() {
+                        return "0";
+                    }
+                    @Override
+                    public String getLocation() {
+                        return "some location";
+                    }
+                    @Override
+                    public String getType() {
+                        return SystemType.Minion.name();
+                    }
+                });
         remoteMessageDispatcherFactory.init();
 
         System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),

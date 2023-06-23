@@ -53,6 +53,13 @@
         <property name="securityDefinitions" ref="securityDefinitionsMap" />
         <property name="customizer" ref="openApiCustomizer" />
     </bean>
+    <!-- Used by MenuRestService -->
+    <bean id="dispatcherServletPath" class="java.lang.String">
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
+    </bean>
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
+        <constructor-arg ref="dispatcherServletPath"/>
+    </bean>
 
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
       <jaxrs:properties>
@@ -66,6 +73,8 @@
         <entry key="search.date-format" value="yyyy-MM-dd'T'HH:mm:ss.SSSZ"/>
         <!-- Do not strip any colons in the timezone (because the timezone is not exactly ISO-8601) -->
         <entry key="search.timezone.support" value="false"/>
+        <!-- see https://issues.apache.org/jira/browse/CXF-8684 -->
+        <entry key="default.wae.mapper.least.specific" value="false"/>
       </jaxrs:properties>
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />

@@ -4,13 +4,13 @@
 sFlow is capable of transporting both telemetry data and flow information.
 {page-component-title} can use both data types and extract and persist accordingly.
 
-See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
 
 
 [[telemetryd-sflow-parser-udp]]
 == sFlow UDP Parser
 
-The sFlow UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-sflow-adapter, sFlow adapter>>.
+The sFlow UDP parser accepts packets received by a <deep-dive/<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<deep-dive/telemetryd-sflow-adapter, sFlow adapter>>.
 
 The sFlow UDP parser supports protocol detection.
 
@@ -38,7 +38,7 @@ The sFlow UDP parser supports protocol detection.
 [[telemetryd-sflow-adapter-flow]]
 == sFlow adapter
 
-The sFlow adapter handles sFlow data received and parsed by the <<telemetryd-sflow-parser, sFlow parser>>.
+The sFlow adapter handles sFlow data received and parsed by the <<deep-dive/telemetryd-sflow-parser, sFlow parser>>.
 Flows are decoded from the messages into the canonical flow format and published to the flow repository.
 
 === Facts
@@ -56,7 +56,7 @@ This adapter does not currently have any configurable parameters.
 [[telemetryd-sflow-adapter-telemetry]]
 == sFlow telemetry adapter
 
-The sFlow telemetry adapter handles sFlow telemetry data received and parsed by the <<telemetryd-sflow-parser-udp, sFlow UDP parser>>.
+The sFlow telemetry adapter handles sFlow telemetry data received and parsed by the <<deep-dive/telemetryd-sflow-parser-udp, sFlow UDP parser>>.
 The telemetry data is forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
 Using the script extension, you can extract the desired metrics from the sFlow messages and persist the results as time series data.
 

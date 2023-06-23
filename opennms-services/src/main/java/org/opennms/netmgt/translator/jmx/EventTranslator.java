@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -118,6 +119,11 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     @Override
     public int getStatus() {
         return getEventTranslator().getStatus();
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 
     private org.opennms.netmgt.translator.EventTranslator getEventTranslator() {

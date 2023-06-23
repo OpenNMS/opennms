@@ -413,7 +413,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testRwsConfiguration() {
-        testConfigFile("rws-configuration.xml");
+        ignoreConfigFile("rws-configuration.xml");
     }
 
     @Test

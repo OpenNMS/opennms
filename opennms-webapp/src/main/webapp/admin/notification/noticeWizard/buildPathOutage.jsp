@@ -93,7 +93,7 @@
       <div class="card-body">
         <div class="form-group">
           <label for="cripIn">Critical Path IP Address</label>
-          <input id="cripIn" type="text" class="form-control" name="criticalIp" value = '<%= (criticalIp != null ? WebSecurityUtils.sanitizeString(criticalIp) : "") %>' maxlength="55" />
+          <input id="cripIn" type="text" class="form-control" name="criticalIp" value = '<%= (criticalIp != null ? WebSecurityUtils.sanitizeString(criticalIp) : "") %>' maxlength="55" autocomplete="off" />
           <p class="form-text text-muted">Enter the critical path IP address in xxx.xxx.xxx.xxx or xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format. (Or leave blank to clear previously set paths.)</p>
         </div>
         <div class="form-group">

@@ -54,7 +54,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -63,10 +62,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
+import org.opennms.netmgt.dao.mock.MockDistPollerDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.xml.event.Event;
@@ -129,7 +128,7 @@ public class ConvertToEventTest {
         // @param len The length of the XML data in the buffer
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
-                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 pkt.getAddress(),
                 pkt.getPort(),
@@ -152,7 +151,7 @@ public class ConvertToEventTest {
 
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
-                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
@@ -175,7 +174,7 @@ public class ConvertToEventTest {
 
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
-                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
@@ -322,7 +321,7 @@ public class ConvertToEventTest {
         LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
         try {
             ConvertToEvent convert = new ConvertToEvent(
-                    DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                    MockDistPollerDao.DEFAULT_DIST_POLLER_ID,
                     MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                     InetAddressUtils.ONE_TWENTY_SEVEN,
                     9999,

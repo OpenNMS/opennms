@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -122,11 +123,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
-        clickMenuItem(mapsMenuName, "Geographical", "node-maps");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
-
-        frontPage();
         findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
         findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
@@ -144,11 +140,17 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
 
+        // Navigation to new Vue UI page from legacy menubar
+        frontPage();
+        clickMenuItemWithIcon("nav-Info-top", "Device Configs", "opennms/ui/index.html#/device-config-backup");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("app")));
+        findElementByXpath("//div[@id='app']//span[text()='Device Configuration']");
+
         Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
             frontPage();
             Thread.sleep(200);
             final String userMenuName = "nav-user-top";
-            clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
+            clickMenuItemWithIcon(userMenuName, "Log Out", "javascript:document.headerLogoutForm.submit()");
             findElementById("input_j_username");
             return null;
         });
@@ -216,7 +218,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Repeat the process altering the offset slightly each time
         final AtomicInteger offset = new AtomicInteger(10);
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {

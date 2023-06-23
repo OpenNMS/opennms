@@ -47,8 +47,6 @@
 
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
 
-  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
-
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl" />
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
     <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
@@ -65,7 +63,17 @@
 
   <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 
-  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
+  <bean id="timeseriesWriterConfig" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriterConfig">
+    <property name="bufferSize" value="${org.opennms.timeseries.config.buffer_size:-1}" />
+    <property name="numWriterThreads" ref="timeseries.writer_threads" />
+    <property name="bufferType" value="${org.opennms.timeseries.config.buffer_type:RINGBUFFER}" />
+    <property name="ringBufferSize" ref="timeseries.ring_buffer_size" /><!-- deprecated: use bufferSize instead -->
+    <property name="batchSize" value="${org.opennms.timeseries.config.offheap.batch_size:8192}" />
+    <property name="path" value="${org.opennms.timeseries.config.offheap.path:/tmp}" />
+    <property name="maxFileSize" value="${org.opennms.timeseries.config.offheap.max_file_size:-1}" />
+  </bean>
+
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" destroy-method="destroy" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

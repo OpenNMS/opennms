@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.passive.jmx;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -93,6 +94,11 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     @Override
     public int getStatus() {
         return getPassiveStatusKeeper().getStatus();
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 
     private PassiveStatusKeeper getPassiveStatusKeeper() {

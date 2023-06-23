@@ -2,7 +2,20 @@
 [[ref-daemon-config-files-trapd]]
 = Trapd
 
-Handles processing of xref:operation:events/sources/snmp-traps.adoc[SNMP traps] into events.
+Handles processing of xref:operation:deep-dive/events/sources/snmp-traps.adoc[SNMP traps] into events.
+Based around traditional UDP-based SNMP traps, it receives traps that remote devices create.
+It enables OpenNMS to receive SNMP traps and convert them into events and, if configured accordingly, convert those events into alarms and notifications.
+Its functionality is similar to how xref:reference:daemons/daemon-config-files/syslogd.adoc[syslogd] handles syslog entries.
+
+Trapd supports V1 traps, V2 traps and notifications, and V3 traps and notifications.
+It also accepts traps with any community name (V1, V2c).
+You can use that community name in event definitions as part of a mask.
+
+== How it works
+
+When an SNMP trap arrives, trapd parses the message, comparing the sender to known nodes.
+If the sender is not a monitored node and the `new-suspect-on-trap` parameter is set to `true`, {page-component-title} sends an event to xref:operation:deep-dive/provisioning/auto-discovery.adoc[discover] the node.
+Otherwise, {page-component-title} tags the trap to the monitored node, broadcasts it to eventd, and the trap becomes a {page-component-title} event.
 
 .Trapd configuration file overview
 [options="header"]
@@ -35,3 +48,24 @@ Files in this folder must be specified as an include directive in `eventconf.xml
 | trapd.log
 | Logs relating to trapd server events.
 |===
+
+== Additional information
+
+For information on how to automate alarms and reduce the number of messages, see https://opennms.discourse.group/t/syslogd-automations/1454[Syslogd Automations] on Discourse.
+
+You can configure the eventd subsystem to discard unwanted SNMP traps.
+To do so, use the `discardtraps` logmsg.
+See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
+
+Note that for V3, you must specify the SNMPv3 credentials used to authenticate and decode V3 traps in `trapd-configuration.xml`, as in the following example:
+
+[source, xml]
+----
+<trapd-configuration snmp-trap-port="162" new-suspect-on-trap="true">
+  <snmpv3-user security-name="opennms" auth-passphrase="0p3nNMSv3" auth-protocol="MD5"
+      privacy-passphrase="0p3nNMSv3" privacy-protocol="DES"/>
+  <snmpv3-user security-name="sample-name" auth-passphrase="secret" auth-protocol="MD5"
+      privacy-passphrase="super-secret" privacy-protocol="DES"/>
+</trapd-configuration>
+----
+

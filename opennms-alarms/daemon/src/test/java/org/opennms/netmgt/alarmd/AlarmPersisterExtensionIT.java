@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
@@ -46,6 +46,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -97,12 +98,16 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
 
     private MockDatabase m_database;
 
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
     @Before
     public void setUp() {
         // Async.
         m_eventMgr.setSynchronous(false);
 
         // Events need database IDs to make alarmd happy
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
         m_eventMgr.setEventWriter(m_database);
 
         // Events need to real nodes too

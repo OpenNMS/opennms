@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.tracing</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.tracing</groupId>
@@ -15,7 +15,7 @@
   <description>OSGi wrapper for Jaeger Tracer.</description>
 
   <properties>
-    <apacheThriftVersion>0.12.0</apacheThriftVersion>
+    <apacheThriftVersion>0.18.1</apacheThriftVersion>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -41,8 +41,6 @@
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
                   <exclude>commons-codec:commons-codec</exclude>
-                  <exclude>com.squareup.okhttp3:okhttp</exclude>
-                  <exclude>com.squareup.okio:okio</exclude>
                 </excludes>
               </artifactSet>
               <filters>
@@ -65,12 +63,16 @@
               io.opentracing.util,
               io.opentracing,
               io.opentracing.propagation,
-              io.opentracing.tag
+              io.opentracing.tag,
+              javax.net,
+              javax.net.ssl
             </Import-Package>
             <Export-Package>
               io.jaegertracing,
               io.jaegertracing.internal,
-              io.jaegertracing.internal.reporters
+              io.jaegertracing.internal.propagation,
+              io.jaegertracing.internal.reporters,
+              io.jaegertracing.spi
             </Export-Package>
           </instructions>
           <unpackBundle>true</unpackBundle>
@@ -83,7 +85,7 @@
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-client</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.thrift</groupId>
@@ -93,12 +95,12 @@
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-core</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
     <dependency>
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-thrift</artifactId>
-      <version>${jeagertracingVersion}</version>
+      <version>${jaegertracingVersion}</version>
     </dependency>
   </dependencies>
 </project>

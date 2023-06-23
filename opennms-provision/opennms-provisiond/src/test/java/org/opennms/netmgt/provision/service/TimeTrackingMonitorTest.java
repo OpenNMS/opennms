@@ -43,7 +43,7 @@ public class TimeTrackingMonitorTest {
         TimeTrackingMonitor monitor = new TimeTrackingMonitor("test", registry);
         DeleteOperation dummyOperation = new DeleteOperation(0, null, null, null);
         Resource dummyResource = new PathResource(".");
-        NodeScan dummyNodeScan = new NodeScan(0, null, null, null, null, null, null, null, null, monitor);
+        NodeScan dummyNodeScan = new NodeScan(0, null, null, null, null, null, null, null, null, monitor, null);
         monitor.start();
 
         monitor.beginAuditNodes();

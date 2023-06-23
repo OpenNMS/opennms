@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2016 The OpenNMS Group, Inc.
+* @copyright 2016-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -20,6 +20,10 @@
     'ngSanitize',
     'onmsDateFormatter'
   ])
+
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }])
 
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider

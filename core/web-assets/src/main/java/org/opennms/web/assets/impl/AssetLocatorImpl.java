@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -92,7 +92,7 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
     public AssetLocatorImpl() {
         m_filesystemPath = System.getProperty("org.opennms.web.assets.path");
         m_useMinified = Boolean.parseBoolean(System.getProperty("org.opennms.web.assets.minified", "true"));
-        m_reload = SystemProperties.getLong("org.opennms.web.assets.reload", 5l);
+        m_reload = SystemProperties.getLong("org.opennms.web.assets.reload", 5000l);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
             m_executor = Executors.newSingleThreadScheduledExecutor();
             m_executor.scheduleAtFixedRate(() -> {
                 reload();
-            }, m_reload, m_reload, TimeUnit.MINUTES);
+            }, m_reload, m_reload, TimeUnit.MILLISECONDS);
         }
 
         // always load at least once

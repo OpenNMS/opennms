@@ -323,9 +323,9 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
         Map<String, String> emails = new TreeMap<String, String>();
 
         try {
-            for (String key : getTargetNames(targets)) {
-                if (key.indexOf("@") > -1) {
-                    emails.put(key, key);
+            for (Target target : targets) {
+                if (target.getCommands().size() == 1 && "email".equals(target.getCommands().get(0))) {
+                    emails.put(target.getName(), target.getName());
                 }
             }
         } catch (Throwable e) {
@@ -339,6 +339,9 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
     public Collection<String> getTargetNames(Collection<Target> targets) {
         Collection<String> targetNames = new ArrayList<>();
         for (Target target : targets) {
+            if (target.getCommands().size() == 1 && "email".equals(target.getCommands().get(0))) {
+                continue;
+            }
             targetNames.add(target.getName());
         }
         return targetNames;

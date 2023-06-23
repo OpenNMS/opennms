@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.api-layer</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.api-layer</groupId>
@@ -133,6 +133,12 @@
             <artifactId>org.opennms.features.topologies.service.api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>config</artifactId>
+            <version>${opennmsApiVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

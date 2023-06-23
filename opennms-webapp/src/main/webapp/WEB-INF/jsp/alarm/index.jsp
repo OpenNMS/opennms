@@ -62,8 +62,9 @@
       	<span>Alarm Queries</span>
       </div>
       <div class="card-body">
-        <form action="alarm/detail.htm" method="get" role="form" class="pull-right">
-          <div class="form-group">
+        <form action="alarm/detail.htm" method="post" role="form" class="pull-right">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <div class="form-group">
             <label for="byalarmid_id">Alarm ID</label>
               <div class="input-group">
                 <input type="text" class="form-control" name="id" id="byalarmid_id"/>

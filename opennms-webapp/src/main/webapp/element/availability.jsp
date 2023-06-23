@@ -259,6 +259,7 @@
 </c:url>
 
 <%@page import="org.opennms.core.resource.Vault"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
@@ -270,7 +271,7 @@
 </jsp:include>
 
 <div class="onms">
-  <h2>Node: ${model.label} (ID: ${model.id})</h2>
+  <h2>Node: <%=WebSecurityUtils.sanitizeString((String) nodeModel.get("label")) %> (ID: ${model.id})</h2>
 
   <!-- Availability box -->
   <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >

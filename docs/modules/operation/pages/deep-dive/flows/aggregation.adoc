@@ -1,0 +1,29 @@
+
+= Aggregate Flows with REST API
+
+The flow query engine supports rendering the top _N_ metrics from pre-aggregated documents stored in Elasticsearch.
+You can use these statistics to help alleviate computation load on the Elasticsearch cluster, particularly in environments with large volumes of flows (more than 10,000 per second).
+To use this functionality, you must <<deep-dive/flows/basic.adoc#kafka-forwarder-config, enable the Kafka forwarder>> and set up the streaming analytics tool to process flows and persist aggregates in Elasticsearch.
+
+Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
+
+[options="autowidth"]
+|===
+| Property  | Description   | Default
+
+| alwaysUseRawForQueries
+| Use raw flow documents to respond to all queries instead of aggregated flows.
+| true
+
+| alwaysUseAggForQueries
+| Use aggregated flow documents to respond to all queries instead of raw flows.
+| false
+
+| timeRangeDurationAggregateThresholdMs
+| Queries with time range filters that have a duration greater than this value will use aggregated flows when possible.
+| 120000 (2 minutes)
+
+| timeRangeEndpointAggregateThresholdMs
+| Queries with time range filters that have an endpoint that is older than this value will use aggregated flows when possible.
+| 604800000 (7 days)
+|===

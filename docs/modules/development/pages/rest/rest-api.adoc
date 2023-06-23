@@ -1,126 +1,197 @@
-[[rest-api]]
+
 = REST API
 
-A RESTful interface is a web service conforming to the REST architectural style as described in link:http://oreilly.com/catalog/9780596529260[_RESTful Web Services_].
+A RESTful interface is a web service conforming to the REST architectural style as described in http://oreilly.com/catalog/9780596529260[_RESTful Web Services_].
 This section describes the RESTful interface for {page-component-title}.
 
-== ReST URL
+== REST URL
 
-The base URL for REST calls is: http://opennmsserver:8980/opennms/rest/
-
-For instance, http://localhost:8980/opennms/rest/alarms/ will give you the current alarms in the system.
+The base URL for REST calls is `http://opennmsserver:8980/opennms/rest/`.
+For instance, `http://localhost:8980/opennms/rest/alarms/` will give you the current alarms in the system.
 
 == Authentication
 
 Use HTTP basic authentication to provide a valid username and password.
-By default you will not receive a challenge, so you must configure your REST client library to send basic authentication proactively.
+By default, you will not receive a challenge, so you must configure your REST client library to send basic authentication proactively.
 
-== Data Format
+== Data format
 
-Jersey lets REST calls to be made using either XML or JSON.
-By default, returns a request to the API in XML.
-XML is delivered without namespaces.
+Jersey enables {page-component-title} to create REST calls using either XML or JSON.
+By default, it returns a request to the API as XML data, delivered without namespaces.
 
-NOTE: If a namespace is added manually, in order to use a XML tool to validate against the XSD (like xmllint) it won't be preserved when OpenNMS updates that file.
-      The same applies to comments.
+NOTE: If a namespace is added manually (for example, to use an XML tool like xmllint to validate against the XSD), it won't be preserved when OpenNMS updates the file that contains that namespace.
 
-To get JSON-encoded responses one has to send the following header with the request: `Accept: application/json`.
+To receive JSON-encoded responses, you must send the `Accept: application/json` header with the request.
 
-== Standard Parameters
+== Standard parameters
 
-The following are standard parameters available on most resources (noted below):
+The following are standard parameters available on most resources:
 
-.REST standard parameter for resources
-[options="header, %autowidth"]
+[cols="1,4"]
 |===
-| Parameter   | Description
-| `limit`     | integer, limiting the number of results. This is particularly handy on events and notifications, where an accidental call with no limit could result in many thousands of results being returned, killing either the client or the server. If set to 0, then no limit applied.
-| `offset`    | integer, being the numeric offset into the result set from which results should start being returned. For example, if there are 100 result entries, offset is 15, and limit is 10, then entries 15-24 will be returned. Used for pagination
-2+| *Filtering*: All properties of the entity being accessed can be specified as parameters in either the URL (for GET) or the form value (for PUT and POST). If so, the value will be used to add a filter to the result. By default, the operation is equality, unless the `comparator` parameter is sent, in which case it applies to *all* comparisons in the filter. Multiple properties will result in an `AND` operation between the filter elements. Available comparators are:
-| `eq`        | Checks for equality
-| `ne`        | Checks for non-equality
-| `ilike`     | Case-insensitive wildcarding (`%` is the wildcard)
-| `like`      | Case-sensitive wildcarding (`%` is the wildcard)
-| `gt`        | Greater than
-| `lt`        | Less than
-| `ge`        | Greater than or equal
-| `le`        | Less than or equal
+| Parameter | Description
+
+| limit
+| An integer that limits the number of results returned.
+This is particularly useful for events and notifications, where sending an accidental call with no limit could result in thousands of results being returned.
+Such a load could negatively affect the client or the server. +
+If set to `0`, no limit is applied.
+
+| offset
+| An integer representing the numeric offset from which results should start being returned from the total set of results.
+For example, if there are 100 result entries total, the `offset` is `15`, and the `limit` is `10`, then entries 15-24 will be returned.
+Used for pagination.
+
+2+| *Filtering*: You can specify all properties of the entity being accessed as parameters in either the URL (for GET) or the form value (for PUT and POST).
+If the properties are specified as parameters, their values will be used to add filters to the result set.
+By default, the operation is equality, unless the `comparator` parameter is sent.
+In that case, `comparator` applies to all comparisons in the filter. +
+Specifying multiple properties will result in an implicit `AND` operator between the elements.
+
+| eq
+| Checks for equality.
+
+| ne
+| Checks for non-equality.
+
+| ilike
+| Case-insensitive wildcarding (`%` is the wildcard).
+
+| like
+| Case-sensitive wildcarding (`%` is the wildcard).
+
+| gt
+| Greater than.
+
+| lt
+| Less than.
+
+| ge
+| Greater than or equal to.
+
+| le
+| Less than or equal to.
+
+2+| *Ordering*: Define the `orderBy` and `order` parameters in a request to sort results by a specified parameter.
+By default, the results are ordered by ascending.
+
+| orderBy
+| Defines the parameter by which to sort the results of a request (for example, the ID).
+
+| order
+| Defines the method used to sort request results (either ascending or descending).
 |===
 
-If the value `null` is passed for a given property, then the obvious operation will occur (comparator will be ignored for that property).
-`notnull` is handled similarly.
+If `null` is passed as the value for a property, then the obvious operation will occur.
+In other words, the comparator will be ignored for that property.
+`notnull` is handled similarly when passed as a property variable.
 
-* *Ordering*: If the parameter `orderBy` is specified, results will be ordered by the named property.
-Default is ascending, unless the `order` parameter is set to `desc` (any other value will default to ascending)
+== Standard filter examples
 
-== Standard Filter Examples
+Using `/events` as a base, the following table shows examples of REST calls with defined filters:
 
-Take `/events` as an example.
-
-[options="header, %autowidth"]
+[cols="2,2"]
 |===
-| Resource                                                                           | Description
-| `/events?eventUei=uei.opennms.org/internal/rtc/subscribe`                          | Returns the first 10 events with the rtc subscribe UEI, (10 being the default limit for events).
-| `/events?eventUei=uei.opennms.org/internal/rtc/subscribe&limit=0`                  | Returns *all* the rtc subscribe events (potentially quite a few).
-| `/events?id=100&comparator=gt`                                                     | Returns the first 10 events with an ID greater than 100.
-| `/events?eventAckTime=notnull`                                                     | Returns the first 10 events that have a non-null Ack time (i.e., those that have been acknowledged).
-| `/events?eventAckTime=notnull&id=100&comparator=gt&limit=20`                       | Returns the first 20 events that have a non-null Ack time and an ID greater than 100. Note that the notnull value causes the comparator to be ignored for eventAckTime.
-| `/events?eventAckTime=2008-07-28T04:41:30.530%2B12:00&id=100&comparator=gt&limit=20` | Returns the first 20 events that have were acknowledged after 28th July 2008 at 4:41 a.m. (+12:00), and an ID greater than 100.  Note that the same comparator applies to both property comparisons. Also note that you must URL encode the plus sign when using GET.
-| `/events?orderBy=id&order=desc`                                                    | Returns the 10 latest events inserted (probably, unless you've been messing with the IDs).
+| Resource  | Description
+
+| /events?eventUei=uei.opennms.org/internal/rtc/subscribe
+| Returns the first 10 events with the rtc subscribe UEI.
+`10` is the default limit for events.
+
+| /events?eventUei=uei.opennms.org/internal/rtc/subscribe&limit=0
+| Returns all rtc subscribe events.
+This could potentially return quite a few results, and may impact performance.
+
+| /events?id=100&comparator=gt
+| Returns the first 10 events with an `ID` greater than 100.
+
+| /events?eventAckTime=notnull
+| Returns the first 10 events that have a non-null `AckTime` (in other words, those that have been acknowledged).
+
+| /events?eventAckTime=notnull&id=100&comparator=gt&limit=20
+| Returns the first 20 events that have a non-null `AckTime` and an `ID` greater than `100`.
+Note that the `notnull` value causes the comparator to be ignored for `eventAckTime`.
+
+| /events?eventAckTime=2008-07-28T04:41:30.530%2B12:00&id=100&comparator=gt&limit=20
+| Returns the first 20 events that were acknowledged after July 28, 2008 at 4:41 a.m. (+12:00), and that have an `ID` greater than `100`. +
+Note that the same comparator applies to both property comparisons.
+You must also URL encode the plus sign (`+`) when using GET.
+
+| /events?orderBy=id&order=desc
+| Returns the 10 latest events inserted.
 ifndef::opennms-prime[]
-| `/events?location.id=MINION`                                                       | Returns the first 10 events associated with some node in location 'MINION'
+
+| /events?location.id=MINION
+| Returns the first 10 events associated with a node in the `MINION` location.
 endif::opennms-prime[]
 |===
 
-== HTTP Return Codes
+== HTTP return codes
 
-The following apply for OpenNMS Horizon 18 and newer.
+The following apply to OpenNMS Horizon versions 18.0+:
 
-* DELETE requests return a 202 (ACCEPTED) if they are performed asynchronously, otherwise they return a 204 (NO_CONTENT) on success.
-* All the PUT requests return a 204 (NO_CONTENT) on success.
-* All the POST requests that can either add or update an entity return a 204 (NO_CONTENT) on success.
-* All the POST associated to resource addition return a 201 (CREATED) on success.
-* All the POST requests where it is required to return an object return a 200 (OK).
-* All the requests excepts GET for the requisitions end-point and the foreign sources definitions end-point return 202 (ACCEPTED). This is because all the requests are actually executed asynchronously and there is no way to know the status of the execution, or wait until the processing is done.
-* If a resource is not modified during a PUT request, a NOT_MODIFIED will be returned. A NO_CONTENT will be returned only on a success operation.
+* DELETE requests return 202 (ACCEPTED) if they are performed asynchronously.
+Otherwise, they return 204 (NO_CONTENT) on success.
+* All PUT requests return 204 (NO_CONTENT) on success.
+* All POST requests that can either add or update an entity return 204 (NO_CONTENT) on success.
+* All POST requests associated with resource addition return 201 (CREATED) on success.
+* All POST requests where it is required to return an object return 200 (OK).
+* All requests except GET for the requisitions endpoint and the foreign sources definitions endpoint return 202 (ACCEPTED).
+This is because the requests are performed asynchronously.
+Because of that, there is no way to know the status of the execution or wait until the processing is done.
+* If a resource is not modified during a PUT request, NOT_MODIFIED is returned.
+NO_CONTENT will be returned only on a successful operation.
 * All GET requests return 200 (OK) on success.
-* All GET requests return 404 (NOT_FOUND) when a single resource does not exist, but will return 400 (BAD_REQUEST) if an intermediate resource doesn't exist. For example, if a specific IP doesn't exist on a valid node, return 404. But if the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
-* If something not expected is received from the Service/DAO Layer when processing any HTTP request, like an exception, a 500 (INTERNAL_SERVER_ERROR) will be returned.
-* Any problem related to the incoming parameters, like validations, generates a 400 (BAD_REQUEST).
+* All GET requests return 404 (NOT_FOUND) when a single resource does not exist, but will return 400 (BAD_REQUEST) if an intermediate resource doesn't exist.
+For example, if a specific IP doesn't exist on a valid node, it returns 404.
+If the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
+* If something not expected is received from the Service or DAO Layer when processing any HTTP request, 500 (INTERNAL_SERVER_ERROR) is returned.
+* Any problem related to incoming parameters (for example, validations) generates 400 (BAD_REQUEST).
 
-== Identifying Resources
+== Identifying resources
 
 Some endpoints deal in resources, which are identified by resource IDs.
-Since every resource is ultimately parented under some node, identifying the node that contains a resource is the first step in constructing a resource ID.
+Since every resource is ultimately parented under a node, identifying the parent node is the first step in constructing a resource ID.
 Two styles are available for identifying the node in a resource ID:
 
-[options="header, %autowidth"]
+[cols="2,3,3"]
 |===
-| Style            | Description                                                                           | Example
-| `node[ID]`       | Identifies a node by its database ID, which is always an integer                      | `node[42]`
-| `node[FS:FID]`   | Identifies a node by its foreign-source name and foreign-ID, joined by a single colon | `node[Servers:115da833-0957-4471-b496-a731928c27dd]`
+| Style | Description   | Example
+
+| node[ID]
+| Identifies a node by its database ID, which is always an integer.
+| node[42]
+
+| node[FS:FID]
+| Identifies a node by its `foreign-source` name and `foreign-ID`, joined by a single colon.
+| node[Servers:115da833-0957-4471-b496-a731928c27dd]
 |===
 
-The node identifier is followed by a period, then a resource-type name and instance name.
+The node identifier is followed by a period, then a resource-type name and an instance name.
 The instance name's characteristics may vary from one resource-type to the next.
 A few examples:
 
-[options="header, %autowidth"]
+[cols="1,3"]
 |===
-| Value                              | Description
-| `nodeSnmp[]`                       | Node-level (scalar) performance data for the node in question.
-                                       This type is the only one where the instance identifier is empty.
-| `interfaceSnmp[eth0-04013f75f101]` | A layer two interface as represented by a row in the SNMP `ifTable`.
-                                       The instance identifier is composed of the interface's `ifName` and its `ifPhysAddress` (if it has one).
-| `dskIndex[_root_fs]`               | The root filesystem of a node running the Net-SNMP management agent.
+| Value | Description
+
+| nodeSnmp[]
+| Node-level (scalar) performance data for the node in question.
+This type is the only one where the instance identifier is empty.
+
+| interfaceSnmp[eth0-04013f75f101]
+| A layer 2 interface as represented by a row in the SNMP `ifTable`.
+The instance identifier is composed of the interface's `ifName` and its `ifPhysAddress` (if it has one).
+
+| dskIndex[_root_fs]
+| The root filesystem of a node running the Net-SNMP management agent.
 |===
 
-Putting it all together, here are a few well-formed resource IDs:
+Putting these two parts together, here are some examples of well-formed resource IDs:
 
 * `node[1].nodeSnmp[]`
 * `node[42].interfaceSnmp[eth0-04013f75f101]`
 * `node[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`
-
 
 == REST API Explorer
 
@@ -128,15 +199,15 @@ You can view endpoints and API reference documentation directly in the new UI wi
 
 The Open API documentation provides information on the available operations and their parameters, and also lets you try some of the operations in your current environment.
 
-To access it, navigate to the new UI and select "Endpoints".
+To access it, navigate to the new UI and select *Endpoints*.
 
-.Endpoints menu
-image::horizon:development:rest/api-explorer-navigation.png[240,240]
+.OpenNMS UI sidebar
+image::horizon:development:rest/api-explorer-navigation.png["OpenNMS navigation sidebar. Endpoints is highlighted.", 240]
 
 You will then see the REST API Explorer.
 
 .OpenNMS REST API Explorer
-image::horizon:development:rest/rest-api-explorer.png[]
+image::horizon:development:rest/rest-api-explorer.png["OpenNMS UI displaying the REST API Explorer"]
 
 The left pane displays all the possible endpoints that you can view and try out.
 
@@ -148,7 +219,5 @@ The response status and response time are displayed and you can use the tabs to 
 
 Most `POST` and `PUT` commands require additional JSON request data; the API Explorer will generally display the schema and some sample JSON for the particular request.
 
-.Sending REST Request in API Explorer
-image::horizon:development:rest/rest-api-explorer-request.png[]
-
-
+.Sending a REST request in the API Explorer
+image::horizon:development:rest/rest-api-explorer-request.png["OpenNMS UI displaying the REST API Explorer. A REST request has been sent, and its results are shown."]

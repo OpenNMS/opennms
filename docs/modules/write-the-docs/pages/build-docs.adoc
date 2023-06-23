@@ -1,0 +1,46 @@
+
+= Build the Documentation
+
+This section describes how to build the OpenNMS documentation locally.
+We recommend that you do this to test major changes, particularly if adding a lot of new content or making significant revisions to existing content.
+
+== Clone the repository
+
+If you already know how to use Git, this is going to sound very familiar:
+
+. Install Git.
+. Locate the OpenNMS repository that you want to write documentation for (for example, the https://github.com/OpenNMS/opennms[core OpenNMS repository]) and https://help.github.com/articles/fork-a-repo/[fork it].
+. Use Git to clone the repository (the original or the fork, as appropriate) to your local system:
++
+[source, console]
+git clone <repo URL>
+
+If the project that you are working on already has version branches, then you will want to set up local copies of those as well.
+
+After you have cloned the repository to your local system, you can track its branches with the following command:
+
+[source, console]
+git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
+
+== Install Antora
+
+To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.
+
+=== Build the documentation
+
+Transform the Antora repository into a documentation site using the `make docs` command.
+Antora creates an archive of the documentation in `build/site.zip`, and an extracted version in `public/index.html`.
+You can open the latter directly in your browser.
+
+The generic path to a given version of the documentation is `<docs_repo_dir>/build/site/<distro>/<branch_dir_name>`.
+
+== Run Antora in Docker
+
+You can also build the docs using a containerized version of Antora.
+To do so, run the following command in the repository's root folder:
+
+.Generate `antora-playbook-local.yml` file
+[source, console]
+docker run --rm -v $(pwd):/antora opennms/antora:3.1.1-b8850 --stacktrace generate antora-playbook-local.yml
+
+NOTE: You must have Docker installed to build the documentation using this method.

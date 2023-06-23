@@ -158,8 +158,8 @@ public class DataCollectionConfigResourceTest {
         final DataCollectionConfigImpl config = (DataCollectionConfigImpl) response.getEntity();
         assertEquals(2, config.getSnmpCollections().length);
         System.err.println(JaxbUtils.marshal(config));
-        assertEquals(164, config.getSnmpCollections()[0].getDataCollectionGroups()[0].getResourceTypes().length);
-        assertEquals(164, config.getSnmpCollections()[1].getDataCollectionGroups()[0].getResourceTypes().length);
+        assertEquals(163, config.getSnmpCollections()[0].getDataCollectionGroups()[0].getResourceTypes().length);
+        assertEquals(163, config.getSnmpCollections()[1].getDataCollectionGroups()[0].getResourceTypes().length);
     }
     
 }

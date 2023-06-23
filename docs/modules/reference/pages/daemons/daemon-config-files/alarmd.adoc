@@ -3,7 +3,7 @@
 = Alarmd
 
 The alarm daemon handles alarm workflows.
-It manages the xref:operation:alarms/introduction.adoc[alarm] state based on generated events.
+It manages the xref:operation:deep-dive/alarms/introduction.adoc[alarm] state based on generated events.
 
 .Alarmd configuration file overview
 [options="header"]

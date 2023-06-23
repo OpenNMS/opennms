@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.scriptd.jmx;
 
+import org.apache.commons.lang.NotImplementedException;
+
 /**
  * <p>Scriptd class.</p>
  *
@@ -91,5 +93,10 @@ public class Scriptd implements ScriptdMBean {
     @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    @Override
+    public long getStartTimeMilliseconds() {
+        throw new NotImplementedException();
     }
 }

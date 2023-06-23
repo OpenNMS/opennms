@@ -37,17 +37,17 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.XmlHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.opentracing.References;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapExtractAdapter;
-import org.opennms.core.xml.XmlHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.opentracing.propagation.TextMap;
+import io.opentracing.propagation.TextMapAdapter;
 
 /**
  * Distribute tracing needs span contexts to be transmitted between processes.
@@ -70,7 +70,7 @@ public class TracingInfoCarrier implements TextMap {
 
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
-        throw new UnsupportedOperationException();
+        return tracingInfoMap.entrySet().iterator();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class TracingInfoCarrier implements TextMap {
                                                                   String reference) {
         // Extract base tracer context from TracingMetadata
         Tracer.SpanBuilder spanBuilder;
-        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingMetadata));
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingMetadata));
         if (context != null &&
                 (References.CHILD_OF.equals(reference) || References.FOLLOWS_FROM.equals(reference))) {
             spanBuilder = tracer.buildSpan(tracingOperationKey).addReference(reference, context);

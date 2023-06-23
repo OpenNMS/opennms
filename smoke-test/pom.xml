@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>30.0.3-SNAPSHOT</version>
+  <version>31.0.3-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
+  <url>http://opennms.org/</url>
+  <description>Smoke Test APIs for OpenNMS</description>
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License</name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
+      <comments>
+        This Maven metadata is provided for informational purposes only. For specific licensing
+        questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
+      </comments>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Jira</system>
+    <url>http://issues.opennms.org/</url>
+ </issueManagement>
+  <ciManagement>
+    <system>CircleCI</system>
+    <url>https://app.circleci.com/pipelines/github/OpenNMS/opennms</url>
+  </ciManagement>
+  <developers>
+    <developer>
+      <id>rangerrick</id>
+      <name>Benjamin Reed</name>
+      <email>ranger@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Developer</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
+    <url>https://github.com/OpenNMS/opennms</url>
+  </scm>
   <properties>
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
@@ -12,23 +51,34 @@
     <camelVersion>2.19.1</camelVersion>
     <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
+    <groovyVersion>2.5.16</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.12.3</jackson2Version>
+    <jackson2Version>2.14.2</jackson2Version>
     <jersey.version>2.36</jersey.version>
+    <junit5Version>5.9.2</junit5Version>
     <karafVersion>4.3.6</karafVersion>
-    <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.15.3</testcontainers.version>
+    <selenium.version>4.6.0</selenium.version>
+    <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
+         for the same version of selenium specified in selenium.version above.
+         https://github.com/seleniumhq-community/docker-seleniarm/releases -->
+    <seleniarm.version>4.6.0-20221104</seleniarm.version>
+    <slf4jVersion>2.0.7</slf4jVersion>
+    <testcontainers.version>1.18.3</testcontainers.version>
+    <netty4Version>4.1.93.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
+    <okhttpVersion>3.10.0</okhttpVersion>
+    <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
+    <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
     <argLineDocumentBuilder>-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</argLineDocumentBuilder>
     <argLineSAXParser>-Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</argLineSAXParser>
 
     <!-- set memory and use XML overrides -->
-    <argLine>-Xms1g -Xmx1g -XX:+UseG1GC ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=/dev/./urandom</argLine>
+    <argLine>${argLineMemory} ${argLineDocumentBuilder} ${argLineSAXParser} -Djava.security.egd=file:/dev/./urandom</argLine>
   </properties>
   <build>
     <testResources>
@@ -67,6 +117,7 @@
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
             <skipTests>${skip.surefire.tests}</skipTests>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
@@ -75,7 +126,10 @@
           <version>${failsafeVersion}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
-            <systemPropertyVariables/>
+            <systemPropertyVariables>
+              <seleniarm.version>${seleniarm.version}</seleniarm.version>
+              <coverage>${coverage}</coverage>
+            </systemPropertyVariables>
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
               Bamboo and Sonar tally the test results properly.
@@ -88,6 +142,7 @@
             <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
             <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
             <reuseForks>false</reuseForks>
+            <trimStackTrace>false</trimStackTrace>
 
             <argLine>${argLine}</argLine>
           </configuration>
@@ -100,9 +155,84 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.8</version>
+          <executions>
+          <execution>
+            <id>copy-jar-with-dependencies</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.plugins.cloud</groupId>
+                  <artifactId>it-test</artifactId>
+                  <version>${cloudPluginAssemblyVersion}</version>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <destFileName>org.opennms.plugins.cloud-mock-with-dependencies.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/cloud-mock-with-dependencies</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+            </configuration>
+          </execution>
+            <execution>
+              <id>copy-kar</id>
+              <phase>process-resources</phase>
+              <goals><goal>copy</goal></goals>
+              <configuration>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>org.opennms.plugins.cloud.assembly</groupId>
+                    <artifactId>org.opennms.plugins.cloud.assembly.kar</artifactId>
+                    <version>${cloudPluginAssemblyVersion}</version>
+                    <type>kar</type>
+                    <destFileName>org.opennms.plugins.cloud-assembly.kar</destFileName>
+                    <outputDirectory>${project.build.directory}/plugin-cloud-assembly</outputDirectory>
+                  </artifactItem>
+                </artifactItems>
+                <stripVersion>true</stripVersion>
+                <stripClassifier>true</stripClassifier>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <failOnError>true</failOnError>
+          <doclint>none</doclint>
+        </configuration>
+      </plugin>
       <plugin>
          <inherited>false</inherited>
          <groupId>org.apache.maven.plugins</groupId>
@@ -136,7 +266,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
@@ -279,6 +409,40 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+          <value>true</value>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.simplify4u.plugins</groupId>
+            <artifactId>sign-maven-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <skipNoKey>false</skipNoKey>
+                  <keyId>701E145FE26283F8C073BAAE697677243260D071</keyId>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <dependencyManagement>
     <dependencies>
@@ -304,6 +468,11 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-csv</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-smile</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
@@ -315,6 +484,16 @@
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-guava</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
@@ -332,14 +511,65 @@
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-paranamer</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.12</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.13</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty4Version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-xml</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-json</artifactId>
+        <version>${groovyVersion}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <version>${junit5Version}</version>
+      <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit5Version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-migrationsupport</artifactId>
+      <version>${junit5Version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>hamcrest-jackson</artifactId>
@@ -458,6 +688,12 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>
       <version>4.1.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -604,12 +840,12 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.11.3</version>
+      <version>1.15.3</version>
     </dependency>
     <dependency>
-      <groupId>com.jcraft</groupId>
+      <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.55</version>
+      <version>0.2.6</version>
     </dependency>
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
@@ -624,16 +860,36 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>fluent-hc</artifactId>
-      <version>4.5.13</version>
+      <version>4.5.14</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.18.0</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4jVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.processing</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -690,6 +946,10 @@
           <groupId>xerces</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -706,6 +966,10 @@
           <groupId>xerces</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -717,10 +981,18 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- for FileEditorIT -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttpVersion}</version>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>
       <id>central</id>
+      <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
       <snapshots>
         <enabled>false</enabled>
@@ -728,14 +1000,16 @@
     </repository>
     <repository>
       <id>opennms-repo</id>
-      <url>https://maven.opennms.org/content/groups/opennms.org-release/</url>
+      <name>OpenNMS Mega-Repository</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
       <id>opennms-snapshots</id>
-      <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+      <name>OpenNMS Snapshot Maven Mega-Repository</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -744,4 +1018,15 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>opennms-ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 </project>

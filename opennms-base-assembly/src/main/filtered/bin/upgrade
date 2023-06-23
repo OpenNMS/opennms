@@ -3,8 +3,12 @@
 INCOMING_ARGS=("$@")
 
 JAVA_OPTIONS="-Xmx512m"
-# shellcheck disable=SC2154
-OPENNMS_HOME="${install.dir}"
+
+if [ -d '${install.dir}' ]; then
+    # shellcheck disable=SC2154
+    OPENNMS_HOME="${install.dir}"
+fi
+
 [ -z "$RUNAS" ] && RUNAS=opennms
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
@@ -20,7 +24,7 @@ if [ "$myuser" != "$RUNAS" ]; then
 		_cmd=("$RUNUSER" "-u" "$RUNAS" -- "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
 	fi
-	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+	echo "ERROR: you should run this script as ${RUNAS}, not '${myuser}'." >&2
     echo "       To correct this, try 'sudo -u ${RUNAS} $0 $@'" >&2
     echo "       If you wish for OpenNMS to run as ${myuser} instead," >&2
     echo "       create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'." >&2

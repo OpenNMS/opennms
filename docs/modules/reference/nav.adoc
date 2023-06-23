@@ -15,6 +15,11 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/tuning-kafka.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
+** xref:configuration/selinux.adoc[]
+** xref:configuration/receive-snmp-traps.adoc[]
+** xref:configuration/install-jdbc-driver.adoc[]
+
+
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectors/http.adoc[]
@@ -29,7 +34,6 @@
 ** xref:performance-data-collection/collectors/wmi.adoc[]
 ** xref:performance-data-collection/collectors/wsman.adoc[]
 ** xref:performance-data-collection/collectors/xml.adoc[]
-** xref:performance-data-collection/collectors/xmp.adoc[]
 
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]
@@ -43,6 +47,7 @@
 ** xref:service-assurance/monitors/DhcpMonitor.adoc[]
 ** xref:service-assurance/monitors/DiskUsageMonitor.adoc[]
 ** xref:service-assurance/monitors/DnsMonitor.adoc[]
+** xref:service-assurance/monitors/DskTableMonitor.adoc[]
 ** xref:service-assurance/monitors/DNSResolutionMonitor.adoc[]
 ** xref:service-assurance/monitors/FtpMonitor.adoc[]
 ** xref:service-assurance/monitors/HostResourceSwRunMonitor.adoc[]
@@ -81,13 +86,13 @@
 ** xref:service-assurance/monitors/StrafePingMonitor.adoc[]
 ** xref:service-assurance/monitors/SystemExecuteMonitor.adoc[]
 ** xref:service-assurance/monitors/TcpMonitor.adoc[]
+** xref:service-assurance/monitors/TrivialTimeMonitor.adoc[]
 ** xref:service-assurance/monitors/VmwareCimMonitor.adoc[]
 ** xref:service-assurance/monitors/VmwareMonitor.adoc[]
 ** xref:service-assurance/monitors/WebMonitor.adoc[]
 ** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 ** xref:service-assurance/monitors/WmiMonitor.adoc[]
 ** xref:service-assurance/monitors/WsManMonitor.adoc[]
-** xref:service-assurance/monitors/XmpMonitor.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
@@ -146,6 +151,7 @@
 *** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[Reverse DNS]
 *** xref:provisioning/detectors/SnmpDetector.adoc[SNMP]
 *** xref:provisioning/detectors/TcpDetector.adoc[TCP]
+*** xref:provisioning/detectors/TrivialTimeDetector.adoc[]
 *** xref:provisioning/detectors/WebDetector.adoc[Web]
 *** xref:provisioning/detectors/Win32ServiceDetector.adoc[Win32 Service]
 *** xref:provisioning/detectors/WmiDetector.adoc[WMI]
@@ -176,6 +182,6 @@
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/ticketer.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
-** xref:operation:admin/logging/introduction.adoc[]
+** xref:daemons/daemon-config-files/vacuumd.adoc[]
 
 * xref:glossary.adoc[]

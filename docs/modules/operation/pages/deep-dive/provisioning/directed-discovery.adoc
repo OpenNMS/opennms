@@ -1,0 +1,74 @@
+
+[[directed-discovery]]
+= Directed Discovery
+
+Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
+
+NOTE: Two other methods of manually adding nodes (quick adding a node and manually adding an interface) are in the process of being deprecated.
+We do not recommend using these features.
+
+Make sure you complete the tasks in xref:quick-start/inventory.adoc[] before adding nodes.
+
+[[requisition-add-nodes]]
+== Add nodes through the requisition UI
+
+Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requisition-create, create a requisition>>.
+
+. Log in to the {page-component-title} web UI.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, click *Manage Provisioning Requisitions*.
+. Find the requisition that you want to add nodes to and click *Edit* beside its name.
+. Click *Add Node*.
+{page-component-title} automatically generates the foreign ID used to identify the node.
+. Enter the appropriate information in each of the tabs:
++
+[options="autowidth"]
+|===
+| Tab   | Settings
+
+| Basic Information
+| *Required:* Auto-generated foreign ID, node label +
+*Optional:* Minion location, building, city
+
+| <<deep-dive/service-assurance/path-outages#ga-service-assurance-path-outage, Path Outage>>
+| Parent foreign source, parent foreign ID, parent node label
+
+| Interfaces
+| Interface IP addresses, description, SNMP primary, services, actions
+
+| Assets
+| Pre-defined metadata types (name, value, actions)
+
+| Categories
+| Category name for node type (for example, Routers, Production)
+
+| Meta-Data
+| Customized asset information (scope, interface, service, and so on)
+|===
+
+. Repeat these steps for each node that you want to add.
+. Click *Return* to view the list of nodes in the requisition.
+. Click *Synchronize* to add the new nodes to the {page-component-title} database.
+
+== Add nodes via REST API
+
+You can use the REST API to add nodes to your {page-component-title} database.
+There are endpoints for both xref:development:rest/nodes.adoc[individual nodes] and xref:development:rest/requisitions.adoc[entire requisitions].
+
+[[requisition-new-suspect]]
+== Add nodes via newSuspect events
+
+You can use `$\{OPENNMS_HOME}/bin/send-event.pl` to generate `newSuspect` events:
+
+[source, console]
+----
+# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address uei.opennms.org/internal/discovery/newSuspect <1>
+----
+
+<1> Replace `ip-address` with the IP address that you want to use for discovery.
+
+The events trigger provisiond to check the IP address specified in the command above.
+
+NOTE: This adds the discovered node directly into your {page-component-title} database.
+We strongly recommend that you use <<requisition-add-nodes, requisitions>> when adding individual IP addresses.
+This will make it easier to manage nodes over time.

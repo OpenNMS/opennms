@@ -9,11 +9,15 @@
         http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
         http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
-
     <cm:property-placeholder id="timeseriesProperties" persistent-id="org.opennms.timeseries" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="ring_buffer_size" value="8192" />
+            <cm:property name="ring_buffer_size" value="8192" /><!-- deprecated: use bufferSize instead -->
+            <cm:property name="buffer_size" value="-1" />
             <cm:property name="writer_threads" value="16" />
+            <cm:property name="buffer_type" value="RINGBUFFER" />
+            <cm:property name="batch_size" value="8192" />
+            <cm:property name="path" value="/tmp" />
+            <cm:property name="max_file_size" value="-1" />
 
             <cm:property name="cache.timeseriesPersisterMetaTagCache.expireAfterRead" value="300" />
             <cm:property name="cache.timeseriesPersisterMetaTagCache.maximumSize" value="8192" />
@@ -98,25 +102,29 @@
     </bean>
     <service interface="org.opennms.netmgt.timeseries.stats.StatisticsCollector" ref="statisticsCollector" />
 
-    <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" destroy-method="destroy">
-        <argument value="${ring_buffer_size}"/>
-        <argument value="${writer_threads}"/>
-        <argument ref="metricRegistry"/>
-        <property name="timeSeriesStorage" ref="timeseriesStorageManager"/>
-        <property name="stats" ref="statisticsCollector"/>
-    </bean>
-
     <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader">
         <argument ref="nodeDao"/>
         <argument ref="sessionUtils"/>
         <argument ref="entityScopeProvider"/>
     </bean>
 
-    <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory">
-        <argument ref="timeseriesWriter"/>
+    <bean id="timeseriesWriterConfig" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriterConfig">
+        <property name="bufferSize" value="${buffer_size}" />
+        <property name="numWriterThreads" value="${writer_threads}" />
+        <property name="bufferType" value="${buffer_type}" />
+        <property name="ringBufferSize" value="${ring_buffer_size}" />
+        <property name="batchSize" value="${batch_size}" />
+        <property name="path" value="${path}" />
+        <property name="maxFileSize" value="${max_file_size}" />
+    </bean>
+
+    <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" destroy-method="destroy">
+        <argument ref="timeseriesStorageManager"/>
+        <argument ref="statisticsCollector"/>
         <argument ref="metaTagDataLoader"/>
         <argument ref="timeseriesPersisterMetaTagCache"/>
         <argument ref="metricRegistry"/>
+        <argument ref="timeseriesWriterConfig"/>
     </bean>
 
     <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timeseriesPersisterFactory">

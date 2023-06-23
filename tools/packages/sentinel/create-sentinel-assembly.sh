@@ -53,42 +53,25 @@ case "${CIRCLE_BRANCH}" in
 esac
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
-echo "=== Building checkstyle & root POM ==="
-"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PRODUCTION --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
+echo "=== Building root POM ==="
+"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PRODUCTION --projects org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
 
-get_maven_artifact() {
-	xsltproc "${MYDIR}/get-id.xsl" "$1/pom.xml" || exit 1
-}
-
-get_maven_artifacts() {
-	pushd "$1" >/dev/null 2>&1
-		find . -name pom.xml | while read -r POM; do
-			DIR="$(dirname "$POM")"
-			get_maven_artifact "$DIR"
-		done | tr '\n' ',' | sed -e 's/,$//'
-	popd >/dev/null 2>&1
-}
-
-COMPILE_PROJECTS="$(get_maven_artifacts features/sentinel)"
-ASSEMBLY_PROJECTS="org.opennms.assemblies:org.opennms.assemblies.sentinel"
+COMPILE="./compile.pl"
 
 echo ""
-PROJECTS=""
 if [ $SKIP_COMPILE -eq 1 ]; then
 	echo "=== Compiling Assemblies ==="
-	PROJECTS="${ASSEMBLY_PROJECTS}"
 	OPTS_PROFILES="${OPTS_PROFILES} -PskipCompile"
+	COMPILE="./assemble.pl"
 else
 	echo "=== Compiling Projects + Assemblies ==="
-	PROJECTS="${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}"
 fi
 
-echo "Projects: ${PROJECTS}"
 echo ""
-./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_PRODUCTION $OPTS_ASSEMBLIES \
+"$COMPILE" $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_PRODUCTION $OPTS_ASSEMBLIES \
 	-DvaadinJavaMaxMemory=${CCI_VAADINJAVAMAXMEM:-1g} \
 	-DmaxCpus=${CCI_MAXCPU:-2} \
-	--projects "${PROJECTS}" \
+	--projects "org.opennms.assemblies:org.opennms.assemblies.sentinel" \
 	--also-make \
 	install --builder smart --threads ${CCI_MAXCPU:-2}
 

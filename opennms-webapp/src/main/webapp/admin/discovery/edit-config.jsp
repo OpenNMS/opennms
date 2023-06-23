@@ -331,7 +331,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr>
-					  <td><%=urls[i].getUrl()%></td>
+					  <td><%=urls[i].getUrl().get()%></td>
 					  <td><%=urls[i].getTimeout().isPresent() ? "" + urls[i].getTimeout().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>

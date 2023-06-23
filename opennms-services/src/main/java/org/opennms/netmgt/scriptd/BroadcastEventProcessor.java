@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.scriptd;
 
+import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -60,6 +61,14 @@ final class BroadcastEventProcessor implements AutoCloseable, EventListener {
     BroadcastEventProcessor(Executor executor) {
         // set up the executable queue first
         m_executor = executor;
+
+        // do we need to run at all?
+        ScriptdConfigFactory aFactory = ScriptdConfigFactory.getInstance();
+        if(aFactory.getEventScripts().isEmpty() && aFactory.getStopScripts().isEmpty()
+            && aFactory.getStartScripts().isEmpty() && aFactory.getReloadScripts().isEmpty()) {
+            LOG.debug("No scriptd scripts are configured; not subscribing to events");
+            return;
+        }
 
         // subscribe for all events
         EventIpcManagerFactory.init();

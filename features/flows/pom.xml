@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Flows (Parent)</name>
   <modules>
     <module>api</module>
+    <module>processing</module>
     <module>classification</module>
     <module>elastic</module>
     <module>itests</module>

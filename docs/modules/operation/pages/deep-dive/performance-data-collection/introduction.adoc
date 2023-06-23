@@ -1,0 +1,17 @@
+
+[[performance-management]]
+= Performance Management
+
+{page-component-title} uses xref:reference:daemons/daemon-config-files/collectd.adoc[collectd] to collect performance data.
+Collectd schedules data collection on network entities using management agents and protocol-specific collectors (SNMP, HTTPS, JMX, and so on).
+Each collector has its own associated configuration file that defines its parameters.
+
+.Overview of associated files and collectd configuration
+image::performance-management/01_collectd-overview.png["UML-style diagram describing the relationships and interactions among configuration items and outputs associated with collectd", 800]
+
+These topics describe how to manage performance data collection:
+
+* xref:deep-dive/performance-data-collection/collectd/configuration.adoc[Collectd configuration].
+* <<reference:performance-data-collection/introduction.adoc#ref-performance-data-collectors, Collection for specific protocols>>.
+* xref:deep-dive/performance-data-collection/resource-types.adoc[Resource type management].
+* xref:deep-dive/performance-data-collection/collectd/collect-admin.adoc[Collectd administration] (logging, graphing, and event properties).

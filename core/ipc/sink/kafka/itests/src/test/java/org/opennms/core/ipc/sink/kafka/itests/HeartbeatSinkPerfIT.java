@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.kafka.itests;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -56,6 +56,8 @@ import org.opennms.core.ipc.sink.kafka.itests.heartbeat.HeartbeatModule;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +121,20 @@ public class HeartbeatSinkPerfIT {
             .thenReturn(kafkaConfig);
         messageDispatcherFactory.setConfigAdmin(configAdmin);
         messageDispatcherFactory.setTracerRegistry(new MockTracerRegistry());
+        messageDispatcherFactory.setIdentity(new MinionIdentity() {
+            @Override
+            public String getId() {
+                return "0";
+            }
+            @Override
+            public String getLocation() {
+                return "some location";
+            }
+            @Override
+            public String getType() {
+                return SystemType.Minion.name();
+            }
+        });
         messageDispatcherFactory.init();
 
         System.setProperty(String.format("%sbootstrap.servers", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),

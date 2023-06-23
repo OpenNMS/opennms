@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -58,6 +58,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -121,6 +122,9 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     @Autowired
     private AlarmLifecycleListenerManager m_alarmLifecycleListenerManager;
 
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
     private MockDatabase m_database;
 
     private List<List<OnmsAlarm>> m_snapshots = new ArrayList<>();
@@ -138,6 +142,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         // Async.
         m_eventMgr.setSynchronous(false);
 
+        m_database.setDistPoller(m_distPollerDao.whoami().getId());
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);
 

@@ -99,7 +99,7 @@ public class ServiceTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        nodes = createNodes(6);
+        nodes = createNodes();
         isiselements = Arrays.asList(
                                      createIsIsElement(0,nodes.get(0), "nomatch0"),
                                      createIsIsElement(1,nodes.get(1), "1.3"),
@@ -136,7 +136,7 @@ public class ServiceTest {
                          );
 
 
-        List<InetAddress> addresses = createInetAddresses(6);
+        List<InetAddress> addresses = createInetAddresses();
 
         ospfLinks = Arrays.asList(
                 createOspfLink(24, nodes.get(0), addresses.get(0), addresses.get(5)),
@@ -258,20 +258,20 @@ public class ServiceTest {
         return new OspfLinkTopologyEntity(id, node.getId(), ipAddress, InetAddressUtils.addr("255.255.255.252"),remoteAddress, -1);
     }
 
-    private List<InetAddress> createInetAddresses(int amount) {
+    private List<InetAddress> createInetAddresses() {
         List<InetAddress> addresses = new ArrayList<>();
         InetAddress address = InetAddresses.forString("0.0.0.0");
         addresses.add(address);
-        for (int i = 1; i < amount; i++) {
+        for (int i = 1; i < 6; i++) {
             address = InetAddresses.increment(address);
             addresses.add(address);
         }
         return addresses;
     }
 
-    private List<OnmsNode> createNodes(int amount) {
+    private List<OnmsNode> createNodes() {
         ArrayList<OnmsNode> nodes = new ArrayList<>();
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < 6; i++) {
             OnmsNode node = new OnmsNode();
             node.setId(i);
             nodes.add(node);

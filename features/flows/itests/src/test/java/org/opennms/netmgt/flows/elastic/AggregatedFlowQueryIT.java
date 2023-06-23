@@ -28,26 +28,29 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.mock;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.net.MalformedURLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+
+import javax.script.ScriptEngineManager;
 
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.testing.TestPipeline;
@@ -58,11 +61,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
-import org.joda.time.Instant;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
@@ -74,26 +76,30 @@ import org.opennms.nephron.NephronOptions;
 import org.opennms.nephron.Pipeline;
 import org.opennms.nephron.UnalignedFixedWindows;
 import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
+import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
-import org.opennms.netmgt.flows.api.NodeInfo;
-import org.opennms.netmgt.flows.api.ProcessingOptions;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
-import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
+import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
+import org.opennms.netmgt.flows.processing.FlowBuilder;
+import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -116,17 +122,12 @@ public class AggregatedFlowQueryIT {
 
     private ElasticFlowRepository flowRepository;
     private SmartQueryService smartQueryService;
-    private MockDocumentForwarder documentForwarder = new MockDocumentForwarder();
     private RawFlowQueryService rawFlowQueryService;
     private AggregatedFlowQueryService aggFlowQueryService;
+    private DocumentEnricherImpl documentEnricher;
 
     @Before
-    public void setUp() throws MalformedURLException, FlowException, ExecutionException, InterruptedException {
-        final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
-        final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-
-        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-
+    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
@@ -157,10 +158,28 @@ public class AggregatedFlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(false);
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
-            new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings, mock(FlowThresholding.class), 0, 0);
-        flowRepository.setEnableFlowForwarding(true);
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+            new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
+
+        final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
+                                                                         FilterService.NOOP);
+
+        documentEnricher = new DocumentEnricherImpl(metricRegistry,
+                                                    new MockNodeDao(),
+                                                    new MockIpInterfaceDao(),
+                                                    new MockInterfaceToNodeCache(),
+                                                    new MockSessionUtils(),
+                                                    classificationEngine,
+                                                    new CacheConfigBuilder()
+                                                        .withName("flows.node")
+                                                        .withMaximumSize(1000)
+                                                        .withExpireAfterWrite(300)
+                                                        .build(), 0,
+                                                    new DocumentMangler(new ScriptEngineManager()));
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));
@@ -175,8 +194,8 @@ public class AggregatedFlowQueryIT {
     // align the shift to 10 millis because that makes testing the output by ES simpler (that is calculated for step=10)
     private static long OFFSET = (SHIFT / 10 + 1) * 10 + 60000;
 
-    private Date date(long millis) {
-        return new Date(OFFSET + millis);
+    private Instant date(long millis) {
+        return Instant.ofEpochMilli(OFFSET + millis);
     }
 
     @Test
@@ -366,8 +385,7 @@ public class AggregatedFlowQueryIT {
     @Test
     public void canGetDscps() throws Exception {
 
-        final List<FlowDocument> flows = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", NODE_ID)
+        final List<Flow> flows = new FlowBuilder()
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
@@ -704,8 +722,8 @@ public class AggregatedFlowQueryIT {
         //
         //   53.8461 + 21.2904 = 75.1365
         final double error = 1E-8;
-        var startHttps = date(13).getTime() / 10;
-        var endHttps = date(45).getTime() / 10;
+        var startHttps = date(13).toEpochMilli() / 10;
+        var endHttps = date(45).toEpochMilli() / 10;
         var expectedTimestamps = LongStream.range(startHttps, endHttps + 1).mapToObj(l -> Long.valueOf(l * 10)).toArray(l -> new Long[l]);
         assertThat(timestamps, contains(expectedTimestamps));
         assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936,
@@ -759,8 +777,7 @@ public class AggregatedFlowQueryIT {
     }
 
     private void loadDefaultFlows() throws FlowException {
-        final List<FlowDocument> flows = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", NODE_ID)
+        final List<Flow> flows = new FlowBuilder()
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
@@ -800,15 +817,13 @@ public class AggregatedFlowQueryIT {
         this.loadFlows(flows, 28);
     }
 
-    private void loadFlows(final List<FlowDocument> flowDocuments, long expectedNumFlowSummaries) throws FlowException {
-        final List<Flow> flows = new ArrayList<>();
-        for (FlowDocument flow : flowDocuments) {
-            TestFlow testFlow = new TestFlow(flow);
-            flow.setFlow(testFlow);
-            flows.add(testFlow);
-        }
-        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null),
-                               ProcessingOptions.builder().build());
+    private void loadFlows(final List<Flow> flows, long expectedNumFlowSummaries) throws FlowException {
+        final var enriched = this.documentEnricher.enrich(flows,
+                                                          new FlowSource("test",
+                                                                         "127.0.0.1",
+                                                                         null));
+
+        flowRepository.persist(enriched);
 
         // Retrieve all the flows we just persisted
         await().atMost(60, TimeUnit.SECONDS).until(() -> rawFlowQueryService.getFlowCount(Collections.singletonList(
@@ -819,11 +834,11 @@ public class AggregatedFlowQueryIT {
         // -> the NephronOptions available at runtime must be defined when the pipeline is created
         //    (cf. the "TestPipeline p" defined above)
         NephronOptions options = PipelineOptionsFactory.as(NephronOptions.class);
-        doPipeline(documentForwarder.getFlows().stream()
+        doPipeline(enriched.stream()
                 .map( flow -> {
                     flow.setExporterNodeInfo(new NodeInfo() {
                         @Override
-                        public Integer getNodeId() {
+                        public int getNodeId() {
                             return 1;
                         }
 
@@ -861,7 +876,7 @@ public class AggregatedFlowQueryIT {
         TestStream.Builder<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStreamBuilder = TestStream.create(new FlowDocumentProtobufCoder());
         for (org.opennms.netmgt.flows.persistence.model.FlowDocument flow : flows) {
             flowStreamBuilder = flowStreamBuilder.addElements(TimestampedValue.of(flow,
-                    new Instant(flow.getLastSwitched().getValue() + timestampOffsetMillis)));
+                    new org.joda.time.Instant(flow.getLastSwitched().getValue() + timestampOffsetMillis)));
         }
         TestStream<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStream = flowStreamBuilder.advanceWatermarkToInfinity();
 

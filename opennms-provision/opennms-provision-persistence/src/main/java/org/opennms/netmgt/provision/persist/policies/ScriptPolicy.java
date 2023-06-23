@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.ScriptUtil;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.slf4j.Logger;
@@ -88,12 +89,16 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
         this.m_scriptPath = scriptPath;
     }
 
-    private CompiledScript compileScript(final String script) throws IOException, ScriptException {
+    protected CompiledScript compileScript(final String script) throws IOException, ScriptException {
         if (script == null) {
             throw new IllegalArgumentException("Script must not be null");
         }
 
         final File scriptFile = m_scriptPath.resolve(script).toFile();
+
+        if (!ScriptUtil.isDescendantOf(m_scriptPath, scriptFile.toPath())) {
+            throw new IOException("The location of the script must not be outside " + m_scriptPath + ".");
+        }
 
         if (!scriptFile.canRead()) {
             throw new IllegalStateException("Cannot read script at '" + scriptFile + "'.");
@@ -159,7 +164,7 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
         } catch (IOException e) {
             LOG.warn("Error while opening script file {}.", m_script, e);
         } catch (Exception e) {
-            LOG.warn("Unkown error while applying script.", e);
+            LOG.warn("Unknown error while applying script.", e);
         }
 
         return node;

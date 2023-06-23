@@ -29,8 +29,10 @@
 package org.opennms.netmgt.config.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -43,9 +45,12 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 public interface CollectdConfigFactory {
 	void reload() throws IOException;
 	void saveCurrent() throws IOException;
-	CollectdConfiguration getCollectdConfig();
+	CollectdConfiguration getLocalCollectdConfig();
+	public Integer getThreads();
 	boolean packageExists(String name);
 	Package getPackage(final String name);
+	public List<Package> getPackages();
+	public List<Collector> getCollectors();
 	boolean domainExists(final String name);
 	boolean isServiceCollectionEnabled(final OnmsMonitoredService service);
 	boolean isServiceCollectionEnabled(final OnmsIpInterface iface, final String svcName);
@@ -53,4 +58,5 @@ public interface CollectdConfigFactory {
 	boolean interfaceInFilter(String iface, Package pkg);
 	boolean interfaceInPackage(final String iface, Package pkg);
 	boolean interfaceInPackage(final OnmsIpInterface iface, Package pkg);
+	void setExternalData(final List<Package> packages, final List<Collector> collectors);
 }

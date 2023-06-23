@@ -1,52 +1,93 @@
 
-[[system-requirements-core]]
 = Minimum System Requirements
 
-[options="header, autowidth"]
+Your system must meet the following minimum specifications to run {page-component-title}:
+
+[options="autowidth"]
 |===
-|                        | Just testing*           | Minimum server specification**
-| *CPU*                  | 2 GHz dual core x86_64  | 3 GHz quad core x86_64 and above
-| *RAM*                  | 4 GB (physical)         | 16 GB (physical) and above
-| *Storage (disk space)* | 50 GB HDD, SSD          | 1 TB with SSD and above
+|   | Just Testing ^1^   | Minimum Server Specification ^2^
+
+s| CPU
+| 2GHz dual core x86_64
+| 3GHz quad core x86_64 and above
+
+s| RAM
+| 4GB (physical)
+| 16GB (physical) and above
+
+s| Storage (disk space)
+| 50-GB HDD, SSD
+| 1TB with SSD and above
 |===
 
-*You can install the packages and the services start. +
-**Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
+. You can install the packages, and the {page-component-title} services start.
+. Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
 
 [[operating-systems-core]]
 == Operating systems
 
-OpenNMS {page-component-title} requires one of the following operating systems.
-See the release notes for information about platform support changes, including deprecated platforms.
+OpenNMS {page-component-title} requires one of the following operating systems:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
-| Operating System        | Compatible Versions (64-bit)
-| RHEL                    | {compatible-rhel7} +
-                            {compatible-rhel8}
-| CentOS                  | {compatible-centos7} +
-                            {compatible-centos-stream}
+| Operating System  | Compatible Versions (64-bit)
+
+| RHEL
+| {compatible-rhel7} +
+{compatible-rhel8} +
+{compatible-rhel9}
+
+| CentOS
+| {compatible-centos7} +
+{compatible-centos-stream}
+
 ifeval::["{page-component-title}" == "Horizon"]
-| Debian                  | {compatible-debian}
-| Ubuntu                  | {compatible-ubuntu}
+| Debian
+| {compatible-debian}
+
+| Ubuntu
+| {compatible-ubuntu}
 endif::[]
+
+| Rocky Linux
+| {compatible-rocky-linux}
 |===
 
-[[system-components-core]]
+See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
+
 == Compatibility
 
-{page-component-title} {full-display-version} is compatible with the following components:
+{page-component-title} {full-display-version} is compatible with the following components.
+Components marked with an asterisk are required:
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
-| Component               | Version Compatibility
-| OpenNMS Helm            | {compatible-opennms-helm}
-| OpenNMS Plugin API      | {compatible-oia}
-| Cassandra               | {compatible-cassandra}
-| Elasticsearch           | {compatible-elasticsearch}
-| Java Development Kit    | {compatible-javajdk}
-| Kafka                   | {compatible-kafka}
-| PostgreSQL              | {compatible-postgresql}
-| RRDTool                 | {compatible-rrdtool}
-| Browser                 | Latest link:https://www.mozilla.org[Mozilla Firefox] or link:https://www.google.com/intl/en_us/chrome/[Google Chrome]
+| Component | Version Compatibility
+
+| OpenNMS plugin for Grafana
+| {compatible-opennms-plugin}
+
+| OpenNMS Plugin API
+| {compatible-oia}
+
+| Cassandra
+| {compatible-cassandra}
+
+| Elasticsearch
+| {compatible-elasticsearch}
+
+| Java Development Kit *
+| {compatible-javajdk}
+
+| Kafka
+| {compatible-kafka}
+
+| PostgreSQL *
+| {compatible-postgresql}
+
+| RRDTool *
+| {compatible-rrdtool}
+
+| Browser *
+| Latest https://www.mozilla.org[Mozilla Firefox] or https://www.google.com/intl/en_us/chrome/[Google Chrome]
 |===

@@ -1,0 +1,658 @@
+
+= Glossary
+
+This glossary supplements the OpenNMS Group Editorial Style Guide.
+While it might be useful to consult when writing or editing documentation, it is for reference only.
+
+NOTE: If you want to review docs for the Horizon project, we recommend that you reference this glossary.
+
+== Numbers/Symbols
+
+*:: The corresponding phrase is "wildcard" or "asterisk."
+
++:: The corresponding phrase is "plus sign."
+It can be used in the UI to represent the "expand" command for a list or collapsible element.
+
+-:: The corresponding phrase is "minus sign."
+It can be used in the UI to represent the "collapse" command for a list or collapsible element.
+
+== A
+
+a versus an:: Use the article "a" before words that begin with consonants.
++
+Use "an" before words that begin with vowels, an "ef" sound (as in "an FAQ"), or an unsounded "h" (as in "an hour").
+
+-able:: Do not add "-able" as a suffix when the result is not a real word.
+Consult a <<overview.adoc#ga-opennms-docs-dictionaries, dictionary>> to see if the final construction is a valid use of the suffix.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| orderable
+| doable
+
+|
+| scalable
+|===
+
+[[glossary-abort]] abort:: Avoid.
+Use "end" for operations, "exit" for programs, "stop" for hardware operations, and "cancel" for requests or processes.
+
+[[glossary-above-below]] above, below:: Avoid when referring to information in text.
+Instead, use "preceding" and "following" (or "previous" and "next") if you cannot make specific cross-references.
+
+acronyms:: Ensure that acronyms reflect industry standards.
+Do not create your own acronyms--they may overlap with existing terms and cause confusion.
+
+[[glossary-active-inactive]] active, inactive:: Do not use to describe options, functions, or items that users can select.
+Use <<glossary-available-unavailable, "available" and "unavailable">> instead.
+
+admin:: Unless referring to a permissions role (for example, "the Admin role"), do not use initial capitalization.
+
+affect, effect:: Use "affect" (verb) to mean "influence."
+Use "effect" (noun) to mean "result."
++
+.Use of "affect" and "effect" in sentences
+====
+Even minor changes affect the performance of the database.
+
+Even minor changes have an effect on the performance of the database.
+====
+
+[[glossary-all-always]] all, always:: Do not use.
+Avoid all-encompassing terms unless they are accurate descriptions.
+
+and/or:: Avoid using this construction.
+Choose either "and" or "or," or rewrite the sentence.
++
+If avoiding the construction makes a sentence long or cumbersome, however, its use is acceptable.
++
+.Use of "or" and "and/or" in sentences
+====
+You can save the document under its current name or under a new name.
+
+Will the new version contain information on how to write object-oriented code and/or use the class libraries?
+====
+
+[[glossary-available-unavailable]] available, unavailable:: Use to describe options or functions that users can select and deselect.
+Do not use <<glossary-active-inactive, "active," "inactive,">> <<glossary-enabled-disabled, "enabled," or "disabled.">>
++
+See also <<glossary-dimmed, dimmed>>.
+
+== B
+
+back up, back out:: Verb; two words.
++
+.Use of "back up" and "back out" in sentences
+====
+Do you plan to back up your files?
+
+If something goes wrong, you can back out.
+====
+
+backup, backout:: Noun and adjective.
++
+.Use of "backup" and "backout" in sentences
+====
+Did you create a backup for that?
+
+We need a backout plan.
+====
+
+[[glossary-box]] box:: When referencing the UI, use "box" instead of "<<glossary-field, field>>" to refer to any box except a check box, a <<glossary-lists, list>>, or a menu box.
+
+[[glossary-button]] button:: Do not use the words "the" and "button" when referring to named buttons.
+If you refer to an unnamed button or an icon in the interface, use the tooltip name along with "the" and "button."
+
+== C
+
+can versus may:: Use "can" instead of "may."
+"Can" implies ability, while "may" implies permission.
++
+Use "might" instead of "may" when implying uncertainty or a conditional situation.
++
+.Use of "can" and "might" in sentences
+====
+You can enter any alphanumeric character.
+
+The list might take a few seconds to appear if you are part of a large group.
+====
+
+case:: Use "case sensitive" and "not case sensitive."
+Use a hyphen when writing "case-sensitive" as an adjective (for example, "your case-sensitive password").
+
+choose:: Use when the reader must make a decision, as opposed to <<glossary-select, selecting>> (not picking) an item from a list to carry out a decision already made.
+
+[[glossary-clear]] clear:: Use for check boxes instead of "deselect," "turn off," "unmark," "uncheck," or "unselect."
++
+When referring to the act of removing highlighting from a selection or removing the check or filler from a check box or radio button, express the act in positive terms.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Deselect the *Activate* check box.
+| Clear the *Activate* check box.
+|===
+
+[[glossary-click]] click:: Use to refer to choosing a command, <<glossary-option, option>>, or <<glossary-button, button>> using the mouse.
++
+Do not use "click on" or "left-click."
+Use "<<glossary-right-click, right-click>>" or "double-click" as necessary.
+
+[[glossary-client-server-client-server-based]] client, server client, server-based:: All lowercase.
++
+Do not use "client" to refer to a <<glossary-customer, customer>>.
+
+close:: Verb used to describe ending a session.
++
+When referring to a Close button represented with an `X` in the UI, write "the *Close* button (X)," where (X) is an image of the button.
+The image does not need alt text, as it would be redundant.
+
+combo box:: A text box with a list box attached.
+The list is always visible.
+Because users can either type or select their choice, you can use "<<glossary-enter, enter>>" to describe the action.
++
+Always bold the name of a combo box and refer to it as a box (for example, "the *Font* box").
+
+[[glossary-context-menu]] context menu:: The menu that appears when you right-click something.
+Do not use "right-click menu."
+
+crash:: Do not use to describe a program failing.
+Instead, use "exit," "quit," or "stopped responding."
++
+See <<glossary-abort, abort>>.
+
+current window:: Do not use.
+Use "active window" or "open window" instead.
+
+[[glossary-cursor]] cursor:: The cursor is the pointer that appears on the screen and moves according to the movements of the mouse.
+A cursor takes on different shapes (different arrows, a hand with a pointing finger, and so on) according to its context.
+The <<glossary-mouse, mouse>> is the device that the user moves on the desk to control the cursor.
++
+In general, do not refer to the mouse or the cursor.
+Instead, tell the user what to do and assume they know how to do it.
++
+Do not use "pointer."
+Do not refer to specific shapes of the cursor, unless they are directly relevant to the task at hand.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Click the right button on the mouse and select *Print*.
+| Right-click and choose *Print*.
+
+| Use the pointer to click *Submit*.
+| Click *Submit*.
+|===
+
+[[glossary-customer]] customer:: A person who purchases or uses our software.
+Do not use "<<glossary-client-server-client-server-based, client>>" as a synonym for "customer."
+
+== D
+
+[[glossary-default]] default:: Use as a noun or adjective only.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| The client's name defaults into the field.
+| The default entry in the box is the client's name.
+|===
+
+[[glossary-desktop]] desktop:: The background display on a monitor.
+Do not use "<<glossary-host, host>>," "workstation," "<<glossary-box, box>>," "node," or "machine."
+
+[[glossary-dimmed]] dimmed:: Use instead of "grayed" if you must describe the appearance of an unavailable command or item.
+Use along with "appears," as in "the unavailable item appears dimmed."
+
+display:: Use as a transitive verb or noun referring generically to the visual output device and its technology (for example, "a flat-panel display").
+
+drop-down:: Adjective.
+Use only if necessary to describe how an item such as a menu works or what it looks like.
+Its use is acceptable if necessary to describe the type of item, as in "a drop-down arrow" or "drop-down menu."
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Choose a location from the *Data Center* drop-down.
+| Choose a location from the *Data Center* list.
+|===
+
+drop-down arrow:: When referring to an arrow that becomes a drop-down list, indicate which list the user can view by clicking the arrow (for example, "Click the *Size* arrow for more options").
++
+Refer to the arrow using its hovertext name.
+
+== E
+
+en dash (–):: Use an en dash to indicate an inclusive range.
+
+em dash (--):: Use an em dash to set apart a phrase, similar to the use of parentheses.
+Do not put a space between the em dash and adjacent words.
++
+.Use of em dashes in a sentence
+====
+Everything you see--from the UI to the Minion appliance--is Horizon.
+====
+
+email:: Use "email" (lowercase _e_, not hyphenated).
+Capitalize only if used at the beginning of a sentence, included in a title, or as a label on a window or screen.
+Avoid using as a verb.
+
+[[glossary-empty]] empty:: Use to describe a database field, rather than "blank."
+Do not use to describe a field that is actually <<glossary-null, null>>.
+
+[[glossary-enabled-disabled]] enabled, disabled:: Do not use to describe items that users can or cannot select.
+Use <<glossary-available-unavailable, "available" and "unavailable">> instead.
+
+end user versus end-user:: For nouns, use "end user" (two words).
+For adjectives, use "end-user" (hyphenated).
++
+.Use of "end user" and "end-user" in sentences
+====
+The end user of this product ...
+
+We will provide end-user training.
+====
+
+ensure:: Generally, use "ensure" rather than "assure," "insure," or "make sure."
++
+"Ensure" means "to make sure, certain, or safe."
++
+"Assure" refers to setting someone's mind at ease.
++
+"Insure" refers to providing insurance coverage.
++
+"Make sure" is an imperative phrase.
+
+[[glossary-enter]] enter:: Do not use as a synonym for "<<glossary-type, type>>," except to indicate that a user can interact with the UI through multiple methods, such as typing text or clicking a selection from a list.
+
+== F
+
+fewer, less:: Use "fewer" when you can count a set of items.
+Use "less" when you cannot.
++
+.Use of "fewer" and "less" in a sentence
+====
+If you crush fewer grapes, you will make less wine.
+====
+
+[[glossary-field]] field:: Do not use; instead, use "<<glossary-box, box>>" or an appropriate descriptor for the UI element.
+
+field labels:: Always use exact wording to refer to a field on a screen.
+Do not truncate, abbreviate, or take shortcuts.
++
+Field labels are written using initial capitalization and the default paragraph font, even if the actual label on the UI capitalizes only the first word.
+If the user is clicking a UI element, its name should be bolded.
++
+.Formatting of a reference to a field label
+====
+Click *Procedure Code and Modifier Inquiry* to look up the correct procedure code.
+====
+
+free text versus freetext:: For nouns, use "free text" (for example, "enter free text").
+For adjectives, use "freetext" (for example, "a freetext entry").
+
+freeze:: Avoid; use "stopped responding" instead.
++
+See <<glossary-abort, abort>>.
+
+== G
+
+[[glossary-geolocation]] geolocation:: The actual physical location of a monitored node, represented by its latitude and longitude.
+
+gigabyte:: One gigabyte is equal to 1,073,741,824 bytes, or 1,024 megabytes.
+Use the standards outlined below:
++
+* Abbreviate as "GB," not "G," "gig," "Gb," or "Gbyte."
+* When first mentioned, spell it out and include the abbreviation in parentheses.
+* Do not include a space between a numeral and "GB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.
+* If used as a noun in measurements, add "of" to form a prepositional phrase.
++
+.Use of "gigabyte" and "GB" in sentences
+====
+10 gigabytes (GB)
+
+10-GB hard disk
+
+You will need to free 1GB of hard disk space.
+====
+
+Git versus git:: Use "Git" (capitalized) to refer to the version control software.
++
+Use "git" to refer to the command line instructions for the version control software.
+
+== H
+
+hang:: Avoid; use "exit," "quit," or "stopped responding" instead.
++
+See <<glossary-abort, abort>>.
+
+home page:: Two words, lowercase.
+Use to refer to the opening page of a website.
+
+[[glossary-host]] host:: Also "<<glossary-desktop, desktop>>" or "workstation."
+Do not use "<<glossary-box, box>>," "node," or "machine."
+
+hover:: Avoid using to refer to the action of using the cursor to activate something on the screen.
+Instead, assume that the user knows how to activate the screen element in question.
+Use "point to" if the user is unlikely to know.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Hover your cursor over the menu bar, then click *Reports*.
+| On the Workflows menu, choose *Check Status*, then click *Reports*.
+|===
+
+== I
+
+icon:: Use only to describe a graphical representation of an object that the user can select and open, such as a drive, disk, folder, document, or program.
+When referring to an icon, bold its name.
++
+For UI elements that are identified by a graphic instead of label text, use the most descriptive term available (for example, "<<glossary-button, button>>," "<<glossary-box, box>>," "check box").
+To refer to the graphic itself, if there is no other identifying label, use "symbol" (for example, "the warning symbol").
+
+ID, IDs:: All caps, unless referring to a field name that is formatted differently on the UI.
+
+in versus on:: "On" is preferred to "in" when referring to UI components, disks, hardware platforms, the screen itself, a network, and the web.
+Do not use "on" when referring to user actions, such as "<<glossary-click, click>>."
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| In the Details screen, click *Snapshot*.
+| On the Details screen, click *Snapshot*.
+
+| In the toolbar, click *Action Items*.
+| On the toolbar, click *Action Items*.
+
+| Click on *OK*.
+| Click *OK*.
+|===
+
+== K
+
+kilobyte:: One kilobyte is equal to 1,024 bytes.
+Use the standards outlined below:
++
+* Abbreviate as "KB," not "K," "kilo," "Kb," or "Kbyte."
+* When first mentioned, spell it out and include the abbreviation in parentheses.
+* Do not include a space between the numeral and "KB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.
+* If used as a noun in measurements, add "of" to form a prepositional phrase.
++
+.Use of "kilobyte" and "KB" in sentences
+====
+10 kilobytes (KB)
+
+10-KB hard disk
+
+You will need to free 1KB of hard disk space.
+====
+
+== L
+
+left, right:: When referring to an area of a screen, use "left" and "right," not "left-hand side" or "right-hand side."
++
+Use only <<glossary-upper-lower, "upper" and "lower">> to express vertical alignment, and include a hyphen (for example, "the upper-right corner of the screen").
+
+[[glossary-lists]] list:: Do not use to refer to a <<glossary-menu, menu>>.
+Do not use "pull-down list."
+
+[[glossary-location]] location:: Also refers to <<glossary-monitoring-location, monitoring location>>.
+Do not use to refer to <<glossary-geolocation, geolocation>>.
+
+lookup versus look up:: For nouns and adjectives, use "lookup" (one word).
+For verbs, use "look up" (two words).
++
+.Use of "lookup" and "look up" in sentences
+====
+A lookup window appears.
+
+Click *Search* to look up an error code.
+====
+
+== M
+
+main:: Use instead of "master" to refer to the base branch of a Git repository, unless the branch is named "master."
+
+megabyte:: One megabyte is equal to 1,048,576 bytes, or 1,024 kilobytes.
+Use the standards outlined below:
++
+* Abbreviate as "MB," not "M," "meg," "Mb," or "Mbyte."
+* When first mentioned, spell it out and include the abbreviation in parentheses.
+* Do not include a space between the numeral and "MB," except when the measurement is used as an adjective preceding a noun.
+In that case, use a hyphen.
+* If used as a noun in measurements, add "of" to form a prepositional phrase.
++
+.Use of "megabyte" and "MB" in sentences
+====
+10 megabytes (MB)
+
+10-MB hard disk
+
+You will need to free 1MB of hard disk space.
+====
+
+[[glossary-menu]] menu:: A list of items (not <<glossary-option, options>>) on the menu bar.
+Do not use "pull-down menu."
++
+Do not use to refer to <<glossary-lists, lists>>.
++
+Use <<glossary-available-unavailable, "available" and "unavailable">> to refer to the status of menu items.
++
+See <<glossary-context-menu, context menu>>.
+
+[[glossary-monitoring-location]] monitoring location:: Also referred to as "Minion location" or "<<glossary-location, location>>."
++
+Do not use to refer to <<glossary-geolocation, geolocation>>.
+
+[[glossary-mouse]] mouse:: The device that the user moves on their desk to control the <<glossary-cursor, cursor>>.
++
+In general, do not refer to the mouse or the cursor.
+Instead, tell the user what to do and assume they know how to do it.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Click the right button on the mouse and select *Print*.
+| Right-click and select *Print*.
+
+| Use the pointer to click *Submit*.
+| Click *Submit*.
+|===
+
+== N
+
+need:: Use instead of "must have" or "necessary."
+Use "if needed" or "as needed" rather than "if you need to."
+
+never:: Avoid unless it is an accurate description.
++
+See <<glossary-all-always, all and always>>.
+
+[[glossary-null]] null:: Use to describe a database field that is `null`.
+If the database field is empty, use "<<glossary-empty, empty>>" instead, not "blank."
+
+== O
+
+on-site versus on site:: Hyphenate "on-site" when using the phrase as a compound adjective.
+With verbs, use "on site" (two words).
++
+.Use of "on-site" and "on site" in sentences
+====
+There will be an on-site meeting.
+
+Training is provided on site.
+====
+
+only:: "Only" is a modifier, and should be used as such.
+
+[[glossary-option]] option:: Use instead of "<<glossary-radio-button, radio button>>," unless describing the element type in developer content.
+Use "<<glossary-select, select>>" and "<<glossary-clear, clear>>" to describe interacting with an option.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Click the *I Agree* radio button.
+| Click the *I Agree* option.
+|===
+
+== P
+
+platform:: A generic term for the back-end hardware, software, and services that support the operation of a portal.
+
+pre-:: A prefix meaning "before."
+This prefix is usually affixed to words without using a hyphen (for example, "prefix," "predate").
+Use a hyphen in the following cases:
++
+* Where excluding the hyphen might lead to a mispronunciation or misunderstanding of the word (for example, "pre-judicial," meaning "before being a judge," could be read as "prejudicial," which has a very different meaning).
+* Before a character other than a letter (for example, "pre-1960").
+* Before a proper noun (for example, "pre-World War I").
+
+preset:: Initial, default settings configured in a freshly installed program.
++
+Compare to <<glossary-default, default>>.
+
+press:: Verb to use when referring to a keyboard key.
+Use instead of "depress," "strike," or "hit."
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Hit kbd:[Enter] to continue.
+| Press kbd:[Enter] to continue.
+|===
+
+product, project:: The official terms for our software.
+Do not use "application," "component," or "program."
+
+prompts and labels:: Do not include the punctuation from a prompt or field label on the UI, or from the default entry associated with the prompt or field label.
+An exception to this rule is when the prompt or field label ends in a question mark.
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Type *your name* in the User: box.
+| Type your name in the *User* box.
+
+| You must type "Y" in the *Display Template* box.
+| You must type "Y" in the *Display Template?* box.
+|===
+
+== R
+
+[[glossary-radio-button]] radio button:: Use only to describe the element itself in developer content when referring to the type of buttons available.
+Otherwise, use "<<glossary-option, option>>."
++
+[options="autowidth"]
+|===
+| Incorrect | Correct
+
+| Click the *I Agree* radio button.
+| Select the *I Agree* option.
+|===
+
+release:: Refers to the iteration of software.
+Capitalize when referring to a specific release (for example, "Release 30.1").
+
+[[glossary-right-click]] right-click:: Verb used to describe the mouse action that displays the <<glossary-context-menu, context menu>>.
+Hyphenated.
+
+roll out versus rollout:: Refers to the process of installing or upgrading end-user offices.
++
+For verbs, use "roll out" (two words).
+For nouns and adjectives, use "rollout" (one word).
++
+.Use of "roll out" and "rollout" in sentences
+====
+We will roll out to those offices in May.
+
+A rollout task.
+====
+
+run:: Use to tell readers what to do with programs, macros, and so on.
+
+== S
+
+[[glossary-screen]] screen:: Use to refer to the graphic portion of a visual output device.
+Avoid using to refer to UI elements.
++
+A program can be described as "running in fullscreen mode."
+
+see:: As a general rule, use to direct the reader to a cross-reference.
+
+[[glossary-select]] select:: Verb.
+Use to describe interactions with check boxes and choices on a <<glossary-menu, menu>> or <<glossary-lists, list>>.
+Use "<<glossary-clear, clear>>" instead of "unselect."
++
+Compare with <<glossary-click, click>>.
+
+since:: Use only in relation to time.
+Do not use as a synonym for "because."
+
+Start button:: Capitalize references to the *Start* menu and the *Start* button on the Windows taskbar.
+Do not refer to the *Start* button as "the Windows *Start* button."
+
+== T
+
+that:: Use to introduce an essential clause.
+When referring to people, use "who" instead (for example, "users who," not "users that").
+
+there versus their versus they're:: "There" can be used as an adverb that indicates a place or a point, a pronoun that introduces a sentence in which the verb precedes the subject, or a noun that indicates the place.
++
+.Use of "there" in sentences
+====
+They went there.
+
+There is no denying his skill.
+
+I've been there.
+====
++
+"Their" is the possessive form of "they" (for example, "their experience").
++
+"They're" is a contraction of "they are" (for example, "they're going out").
+
+[[glossary-type]] type:: Use instead of "type in" or "<<glossary-enter, enter>>" when referring to information that a user must type, such as a password.
++
+For information that a user can either type or select from a list, you can use either "type" or "enter."
+
+== U
+
+UNIX:: Not "Unix."
+
+[[glossary-upper-lower]] upper, lower:: Use when referring to a vertical position on a screen.
+Always include a hyphen when using "upper-left" or "upper-right."
+
+user name versus username:: When referring to a user's name, use "user name."
++
+When referring to the name that a user needs to sign in, use "username."
+
+== W
+
+want:: Avoid if possible.
+Use instead of "wish" or "desire."
+
+web:: Use "web" (lowercase) when referring to the World Wide Web.
+Do not use "Web" (uppercase).
+
+Wi-Fi:: Capitalize and use a hyphen.
+Do not use "WiFi" or "wifi."
+
+[[glossary-window]] window:: Do not use unless "<<glossary-screen, screen>>" does not apply.
+
+window titles:: Use the exact name of the window if there is one displayed on the screen.
+Use initial capitalization for the title, but lowercase for the word "window" (for example, "the Ref/Auth Inquiry window").

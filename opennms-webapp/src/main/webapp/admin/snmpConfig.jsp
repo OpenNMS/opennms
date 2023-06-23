@@ -32,6 +32,7 @@
 <%@page import="com.google.common.base.Strings"%>
 <%@page import="org.opennms.web.svclayer.model.SnmpInfo"%>
 <%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page language="java" contentType="text/html" session="true"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
@@ -204,7 +205,7 @@
       };
 
       // Get all available locations
-      $.get('api/v2/monitoringLocations', function(locationList) {
+      $.get('api/v2/monitoringLocations?limit=0', function(locationList) {
           if (locationList && locationList.location && locationList.location.length > 0) {
               updateLocations(locationList.location);
           }
@@ -283,6 +284,7 @@ if (request.getAttribute("success") != null) {
       </div>
       <div class="card-body">
         <form role="form" class="form" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <div class="form-group form-row">
             <label for="lookup_ipAddress" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
             IP Address
@@ -345,6 +347,7 @@ if (request.getAttribute("success") != null) {
 
 <form role="form" class="form-horizontal" method="post" name="snmpConfigForm"
   action="admin/snmpConfig?action=add" onsubmit="return verifySnmpConfig();">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <div class="row">
   <div class="col-md-6">
@@ -494,7 +497,7 @@ if (request.getAttribute("success") != null) {
           Read Community String
           </label>
           <div class="col-sm-8">
-            <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=readCommunityString%>">
+            <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=WebSecurityUtils.sanitizeString(readCommunityString)%>">
             <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
           </div>
         </div>
@@ -504,7 +507,7 @@ if (request.getAttribute("success") != null) {
           Write Community String
           </label>
           <div class="col-sm-8">
-            <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=writeCommunityString%>">
+            <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=WebSecurityUtils.sanitizeString(writeCommunityString)%>">
             <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
           </div>
         </div>

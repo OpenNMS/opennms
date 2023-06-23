@@ -2,6 +2,11 @@
   <div class="card">
     <div class="feather-row">
       <div class="feather-col-12">
+        <BreadCrumbs :items="breadcrumbs" />
+      </div>
+    </div>
+    <div class="feather-row">
+      <div class="feather-col-12">
         <div class="dcb-container">
           <div class="table-container">
             <div class="title-search">
@@ -24,10 +29,21 @@ import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { BreadCrumb } from '@/types'
 
 const store = useStore()
 
-onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups'))
+const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+
+const breadcrumbs = computed<BreadCrumb[]>(() => {
+  return [
+    { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+    { label: 'Device Config Backup', to: '#', position: 'last' }
+  ]
+})
+
+onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups', true))
 </script>
 
 <style scoped lang="scss">

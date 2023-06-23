@@ -5,17 +5,21 @@ Obtain or modify the status of a set of monitored services based on a given sear
 
 Examples:
 
-* /ifservices?node.label=onms-prd-01
-* /ifservices?ipInterface.ipAddress=192.168.32.140
-* /ifservices?category.name=Production
-* /ifservices?status=A
+* `/ifservices?node.label=onms-prd-01`
+* `/ifservices?ipInterface.ipAddress=192.168.32.140`
+* `/ifservices?category.name=Production`
+* `/ifservices?status=A`
 
-== GETs (Reading Data)
+== GET (reading data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Monitored Services API GET function
+[options="autowidth"]
 |===
-| Resource        | Description
-| `/ifservices`   | Get all configured monitored services for the given search criteria.
+| Resource  | Description
+
+| /ifservices
+| Get all configured monitored services for the given search criteria.
 |===
 
 Example:
@@ -27,12 +31,16 @@ Get the forced unmanaged services for the nodes that belong to the requisition n
 curl -u admin:admin "http://localhost:8980/opennms/rest/ifservices?status=F&node.foreignSource=Servers"
 ----
 
-== PUTs (Modifying Data)
+== PUT (modifying data)
 
-[options="header", cols="5,10"]
+[caption=]
+.Monitored Services API PUT function
+[options="autowidth"]
 |===
-| Resource       | Description
-| `/ifservices/` | Update all configured monitored services for the given search criteria.
+| Resource  | Description
+
+| /ifservices/
+| Update all configured monitored services for the given search criteria.
 |===
 
 Example:

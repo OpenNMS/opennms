@@ -80,7 +80,7 @@ public class Migrator {
     private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "10.0"));
-    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "15.0"));
+    private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "16.0"));
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
@@ -453,6 +453,7 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             st.execute("CREATE USER " + getUserForONMSDB() + " WITH PASSWORD '" + getDatabasePassword() + "'");
+            st.execute("GRANT USAGE, CREATE ON SCHEMA public TO " + getUserForONMSDB());
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {

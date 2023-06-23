@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.perspectivepoller;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -151,6 +152,9 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     @Autowired
     private OutageDao outageDao;
 
+    @Autowired
+    private DistPollerDao distPollerDao;
+
     private PerspectivePollerd perspectivePollerd;
 
     private OnmsMonitoredService node1icmp;
@@ -173,6 +177,7 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     public void setUp() throws Exception {
         this.databasePopulator.populateDatabase();
 
+        this.database.setDistPoller(distPollerDao.whoami().getId());
         this.eventIpcManager.setEventWriter(this.database);
 
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
@@ -256,7 +261,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
         final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
         final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
         final int nodeId = this.node1icmp.getNodeId();
         final InetAddress ipAddress = this.node1icmp.getIpAddress();
@@ -304,14 +308,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     @Test
     public void testCloseOutageOnUnschedule() throws Exception {
         this.perspectivePollerd.start();
-
-        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
-        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
-
-        final int nodeId = this.node1icmp.getNodeId();
-        final InetAddress ipAddress = this.node1icmp.getIpAddress();
-        final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
         final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
         await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
@@ -596,10 +592,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         // load the thresholds.xml and thresd-configuration.xml configuration
         this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
         this.threshdDao.overrideConfig(getClass().getResourceAsStream("/threshd-configuration.xml"));
-
-        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
-        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
-        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
         final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
 

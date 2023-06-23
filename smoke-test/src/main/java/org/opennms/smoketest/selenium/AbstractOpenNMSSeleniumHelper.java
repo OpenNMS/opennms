@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -148,8 +149,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             }
             getDriver().manage().window().setPosition(new Point(0,0));
             getDriver().manage().window().maximize();
-            wait = new WebDriverWait(getDriver(), TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
-            requisitionWait = new WebDriverWait(getDriver(), TimeUnit.SECONDS.convert(REQ_TIMEOUT, TimeUnit.MILLISECONDS));
+            wait = new WebDriverWait(getDriver(), Duration.ofMillis(LOAD_TIMEOUT));
+            requisitionWait = new WebDriverWait(getDriver(), Duration.ofMillis(REQ_TIMEOUT));
 
             login();
 
@@ -232,7 +233,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected WebDriverWait waitFor(final long seconds) {
-        return new WebDriverWait(getDriver(), seconds);
+        return new WebDriverWait(getDriver(), Duration.ofSeconds(seconds));
     }
 
     protected void waitForClose(final By selector) {
@@ -280,8 +281,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
         enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-        findElementByName("Login").click();
+        clickElement(By.name("Login"));
 
+        wait.until((WebDriver driver) -> {
+            return ! driver.getCurrentUrl().contains("login.jsp");
+        });
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
         invokeWithImplicitWait(0, () -> {
             try {
@@ -317,7 +321,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void logout() {
-        getDriver().get(getBaseUrlInternal() + "opennms/j_spring_security_logout");
+        getElementWithoutWaiting(By.name("headerLogoutForm")).submit();
         waitForLogin();
     }
 
@@ -422,8 +426,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void setChecked(final By by) {
-        LOG.debug("setChecked: locator=", by);
-        final WebElement element = getDriver().findElement(by);
+        LOG.debug("setChecked: locator={}", by);
+        final var element = scrollToElement(by);
         if (element.isSelected()) {
             return;
         } else {
@@ -432,8 +436,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void setUnchecked(final By by) {
-        LOG.debug("setUnchecked: locator=", by);
-        final WebElement element = getDriver().findElement(by);
+        LOG.debug("setUnchecked: locator={}", by);
+        final var element = scrollToElement(by);
         if (element.isSelected()) {
             element.click();
         } else {
@@ -454,7 +458,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         // Repeat the process altering the offset slightly everytime
         final AtomicInteger offset = new AtomicInteger(10);
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
         Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
 
@@ -579,6 +583,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             @Override public Boolean call() throws Exception {
                 waitForElement(textInput).clear();
                 waitForElement(textInput).click();
+                waitForElement(textInput).sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.BACK_SPACE);
                 waitForValue(textInput, "");
                 waitForElement(textInput).sendKeys(text);
                 // Click on the item that appears
@@ -809,12 +814,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         boolean found = false;
         int count = 0;
 
-        final WebDriverWait shortWait = new WebDriverWait(getDriver(), 10);
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
 
         do {
             LOG.debug("enterText({},{}): {}", selector, text, ++count);
             // Clear the element content and then confirm it's really clear
             waitForElement(selector).clear();
+            waitForElement(selector).click();
             waitForValue(selector, "");
 
             // Click the element to make sure it's still got the focus
@@ -892,7 +898,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected static WebElement scrollToElement(final WebDriver driver, final WebElement element) {
         LOG.debug("scrollToElement: element={}", element);
 
-        final List<Integer> bounds = getBoundedRectangleOfElement(driver, element);
+        final List<Integer> bounds = getAbsoluteBoundedRectangleOfElement(driver, element);
         final int windowHeight = driver.manage().window().getSize().getHeight();
         final JavascriptExecutor je = (JavascriptExecutor)driver;
         je.executeScript("window.scrollTo(0, " + (bounds.get(1) - (windowHeight/2)) + ");");
@@ -932,10 +938,29 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     private WebElement doScroll(final WebDriver driver, final WebElement element) {
         try {
-            final List<Integer> bounds = getBoundedRectangleOfElement(driver, element);
-            final int windowHeight = driver.manage().window().getSize().getHeight();
+            final List<Integer> bounds = getAbsoluteBoundedRectangleOfElement(driver, element);
+            final var windowSize = driver.manage().window().getSize();
             final JavascriptExecutor je = (JavascriptExecutor)driver;
-            je.executeScript("window.scrollTo(0, " + (bounds.get(1) - (windowHeight/2)) + ");");
+
+            // If the left and right bounds of the element are within the width of the page, don't scroll (keep x = 0)
+            final int x;
+            if (bounds.get(0) < windowSize.width && (bounds.get(0) + bounds.get(2)) < windowSize.width) {
+                x = 0;
+            }  else {
+                x = bounds.get(0) - (windowSize.width / 2);
+            }
+
+            // Same as above
+            final int y;
+            if (bounds.get(1) < windowSize.height && (bounds.get(1) + bounds.get(3)) < windowSize.height) {
+                y = 0;
+            } else {
+                y = bounds.get(1) - (windowSize.height / 2);
+            }
+
+            je.executeScript("window.scrollTo(" + x + ", " + y + ");");
+            LOG.debug("doScroll: element={}, x={}, y={}, windowSize={}x{}, bounds={}",
+                    element, x, y, windowSize.width, windowSize.height, bounds);
             return element;
         } catch (final Exception e) {
             return null;
@@ -975,16 +1000,17 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     @SuppressWarnings("unchecked")
-    protected static List<Integer> getBoundedRectangleOfElement(final WebDriver driver, final WebElement we) {
-        LOG.debug("getBoundedRectangleOfElement: element={}", we);
+    protected static List<Integer> getAbsoluteBoundedRectangleOfElement(final WebDriver driver, final WebElement we) {
         final JavascriptExecutor je = (JavascriptExecutor)driver;
         final List<String> bounds = (ArrayList<String>) je.executeScript(
                 "var rect = arguments[0].getBoundingClientRect();" +
-                        "return [ '' + parseInt(rect.left), '' + parseInt(rect.top), '' + parseInt(rect.width), '' + parseInt(rect.height) ]", we);
-        final List<Integer> ret = new ArrayList<>();
+                        "return [ '' + parseInt(rect.left + window.scrollX), '' + parseInt(rect.top + window.scrollY), '' + parseInt(rect.width), '' + parseInt(rect.height) ]", we);
+        assertEquals("bounding box array size returned from Javascript", 4, bounds.size());
+        final List<Integer> ret = new ArrayList<>(bounds.size());
         for (final String entry : bounds) {
             ret.add(Integer.valueOf(entry));
         }
+        LOG.debug("getAbsoluteBoundedRectangleOfElement: element={}, ret={}", we, ret);
         return ret;
     }
 
@@ -1005,7 +1031,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             try {
                 element = findElementById(id);
             } catch (final Throwable t) {
-                LOG.warn("Failed to locate id=" + id, t);
+                LOG.warn("Failed to locate id={}", id, t);
             }
 
             final long waitUntil = System.currentTimeMillis() + 60000;
@@ -1021,7 +1047,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     wait.until(ExpectedConditions.elementToBeClickable(By.id(id)));
                     element = findElementById(id);
                 } catch (final Throwable t) {
-                    LOG.warn("Failed to locate id=" + id, t);
+                    LOG.warn("Failed to locate id={}", id, t);
                 }
             }
             sleepQuietly(50);
@@ -1217,13 +1243,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void createRequisition(final String foreignSource) {
-        LOG.debug("Creating empty requisition: " + foreignSource);
+        LOG.debug("Creating empty requisition: {}", foreignSource);
         final String emptyRequisition = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2013-03-29T11:36:55.901-04:00\" foreign-source=\"" + foreignSource + "\" last-import=\"2016-03-29T10:40:23.947-04:00\"></model-import>";
         createRequisition(foreignSource, emptyRequisition, 0);
     }
 
     protected void createRequisition(final String foreignSource, final String xml, final int expectedNodes) {
-        LOG.debug("Creating requisition from XML: " + foreignSource);
+        LOG.debug("Creating requisition from XML: {}", foreignSource);
         try {
             final String foreignSourceUrlFragment = URLEncoder.encode(foreignSource, "UTF-8");
 
@@ -1465,7 +1491,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     return true;
                 }
             } catch (final Exception e) {
-                LOG.warn("WaitForNodesInRequisition: foreignSource={}, expectedNodes={}: Failed to get nodes in requisition {}.", m_foreignSource, m_numberToMatch, e);
+                LOG.warn("WaitForNodesInRequisition: foreignSource={}, expectedNodes={}: Failed to get nodes in requisition.", m_foreignSource, m_numberToMatch, e);
             }
             return null;
         }

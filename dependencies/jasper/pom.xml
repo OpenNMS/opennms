@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -109,19 +109,10 @@
     </dependency>
   </dependencies>
   <repositories>
-    <repository>
-      <id>jasperreports</id>
-      <url>https://maven.opennms.org/content/repositories/jasperreports/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+    <!-- jaspersoft's cert expired 2023-04-03, use our copy of the olap4j jar for now -->
     <repository>
       <id>jaspersoft-third-party</id>
-      <url>https://maven.opennms.org/content/repositories/jaspersoft-third-party/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
+      <url>https://maven.opennms.org/repository/thirdparty/</url>
     </repository>
   </repositories>
 </project>

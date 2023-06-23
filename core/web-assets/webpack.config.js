@@ -9,11 +9,12 @@ var fs = require('fs');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 var AssetsPlugin = require('assets-webpack-plugin');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
 var TerserPlugin = require("terser-webpack-plugin");
+
 var createVariants = require('parallel-webpack').createVariants;
 var clonedeep = require('lodash.clonedeep');
 
@@ -229,7 +230,8 @@ var config = {
   entry: allEntries,
   output: {
     path: distdir,
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    hashFunction: 'sha256',
   },
   target: 'web',
   module: {
@@ -479,21 +481,10 @@ function createConfig(options) {
   }));
 
   if (options.production !== 'vaadin') {
-    myconf.module.rules.unshift({
-      // run eslint on typescript files before rendering
-      enforce: 'pre',
-      test: /\.(js|ts)x?$/,
-      use: [
-        {
-          loader: 'eslint-loader',
-          options: {
-            cache: true,
-            failOnError: true
-          }
-        }
-      ],
-      exclude: [/node_modules/]
-    });
+    myconf.plugins.unshift(new ESLintPlugin({
+      cache: true,
+      failOnError: true,
+    }));
 
     myconf.optimization = {
       runtimeChunk: {
@@ -547,8 +538,6 @@ function createConfig(options) {
         compress: true
       }
     }));
-  } else {
-    //myconf.plugins.push(new BundleAnalyzerPlugin());
   }
 
   myconf.plugins.push(new AssetsPlugin({

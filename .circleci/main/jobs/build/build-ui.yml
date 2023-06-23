@@ -1,0 +1,9 @@
+jobs:
+  build-ui:
+    executor: ui-executor
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            cd ui && yarn install && yarn test && yarn build

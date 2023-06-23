@@ -32,14 +32,6 @@ import java.util.Set;
 
 public class MacCloud implements Topology {
 
-    public static MacCloud create(Set<String> macs) {
-        
-        if (macs != null && macs.size() > 0)
-            return new MacCloud(macs);
-        return null;
-        
-    }
-
     private final Set<String> m_macs;
 
     public Set<String> getMacs() {
@@ -47,7 +39,7 @@ public class MacCloud implements Topology {
     }
 
 
-    private MacCloud(Set<String> macs) {
+    public MacCloud(Set<String> macs) {
         super();
         m_macs = macs;
     }

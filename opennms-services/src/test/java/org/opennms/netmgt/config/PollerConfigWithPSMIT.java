@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -109,7 +110,8 @@ public class PollerConfigWithPSMIT {
         PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
-        ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitor("MQ_API_DirectRte_v2");
+        ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitorLocator("MQ_API_DirectRte_v2").orElseThrow()
+                                                    .getServiceMonitor(factory.getServiceMonitorRegistry());
         Assert.assertNotNull(monitor);
         Package pkg = PollerConfigFactory.getInstance().getPackage("MapQuest");
         Assert.assertNotNull(pkg);

@@ -82,6 +82,7 @@ public class FilesystemRestService {
 
     private static final Set<String> SUPPORTED_FILE_EXTENSIONS = ImmutableSet.of("xml",
             "properties",
+            "boot",
             "cfg",
             "drl",
             "groovy",

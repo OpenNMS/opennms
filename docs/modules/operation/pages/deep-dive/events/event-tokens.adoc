@@ -1,0 +1,167 @@
+
+= Replacement Tokens
+
+You can use replacement tokens (event substitution tokens) to insert additional relevant information into event descriptions, log messages, operator instructions, and automatic actions.
+The tokens are replaced by values from the event when its text is generated.
+Not all events will have values for all tokens, and some tokens refer specifically to information available only in events derived from SNMP traps.
+
+NOTE: Parameter descriptions use percentage signs (`%`) as delimiters to mark a replacement variable.
+If a literal percentage sign appears in your description, you must escape it with another percentage sign (for example, `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`).
+
+== Tokens
+
+You can use the following replacement tokens in {page-component-title}:
+
+[options="autowidth"]
+|===
+| Parameter | Description
+
+| %eventid%
+| Event's numeric database ID.
+
+| %uei%
+| Event's unique event identifier.
+
+| %source%
+| Source of the event (which {page-component-title} daemon created it).
+
+| %descr%
+| Event description.
+
+| %logmsg%
+| Event's log message.
+
+| %time%
+| The time at which the event occurred.
+
+| %shorttime%
+| The time at which the event occurred, formatted as `DateFormat.SHORT`.
+This provides a completely numeric date and time.
+
+| %nodeid%
+| Numeric node ID of the device that caused the event, if any.
+
+| %nodelabel%
+| Label for the node identified by `%nodeid%`, if available.
+
+| %nodelocation%
+| Location for the node identified by `%nodeid%`, if available.
+
+| %host%
+| The host on which the event was generated.
+
+| %interface%
+| IP interface associated with the event, if any.
+
+| %foreignsource%
+| Requisition name for the node identified by `%nodeid%`, if available.
+
+| %ifindex%
+| The interface's SNMP `ifIndex`.
+
+| %interfaceresolve%
+| Performs a reverse lookup on the `%interface%` parameter and returns its name, if available.
+
+| %service%
+| Service associated with the event, if any.
+
+| %severity%
+| Event's severity level.
+
+| %snmphost%
+| The host of the SNMP agent that generated the event.
+
+| %id%
+| Event's SNMP enterprise OID.
+
+| %trapoid%
+| Event's full trap OID.
+
+| %idtext%
+| Event's decoded (human-readable) SNMP enterprise OID.
+
+| %ifalias%
+| The interface's SNMP `ifAlias`.
+
+| %generic%
+| Event's generic trap-type number.
+
+| %specific%
+| Event's specific trap-type number.
+
+| %community%
+| Trap's community string.
+
+| %version%
+| Trap's SNMP version.
+
+| %snmp%
+| The SNMP information associated with the event.
+
+| %operinstruct%
+| Event's operator instructions.
+
+| %mouseovertext%
+| Event's mouse-over text.
+
+| %tticketid%
+| Event's trouble ticket ID, if available.
+
+| %primaryinterface%
+| The primary interface IP address for the node identified by `%nodeid%`, if available.
+|===
+
+== Asset tokens
+
+A node may have additional asset records stored in {page-component-title}.
+You can access these records using the `%asset%` token (for example, `%asset[token]%`, which returns the value of the `token` asset field, or "Unknown" if it does not exist).
+
+== Hardware tokens
+
+A node may have additional hardware details stored in {page-component-title}.
+You can access these details using the `%hardware%` token (for example, `%hardware[token]%`, which returns the value of the `token` field from the node's hardware inventory).
+
+== Parameter tokens
+
+Many events store additional information in their parameters (see <<deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>>).
+These parameters may start as SNMP variable bindings (varbinds).
+
+You can access event parameters using the `%parm%` token, which can take several forms:
+
+[options="autowidth"]
+|===
+| Example   | Description
+
+| %parm[all]%
+| Space-separated list of all parameter values in the form of `parmName1="parmValue1" parmName2="parmValue2"`, and so on.
+
+| %parm[values-all]%
+| Space-separated list of all parameter values (not including their names) that are associated with the event.
+
+| %parm[names-all]%
+| Space-separated list of all parameter names (not including their values) that are associated with the event.
+
+| %parm[<name>]%
+| Value of the `<name>` parameter, if it exists.
+
+| %parm[##]%
+| Total number of parameters (integer).
+
+| %parm[#<num>]%
+| Value of parameter number `<num>` (1-indexed).
+
+| %parm[name-#<num>]%
+| Name of parameter number `<num>` (1-indexed).
+|===
+
+== eventconf.xml elements
+
+The following elements in `eventconf.xml` accept replacement tokens:
+
+* `descr`
+* `logmsg`
+* `operinstruct`
+* `autoaction`
+* `operaction` (`/menu`)
+* `tticket`
+* `alarm-data`

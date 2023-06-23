@@ -269,7 +269,11 @@ public class FilesystemPermissionValidator {
 
         @Override
         public FileVisitResult visitFileFailed(final Path file, final IOException exc) throws IOException {
-            if (failure.get() == null) {
+            if (SKIP_PATHS.contains(file.getFileName())) {
+                return FileVisitResult.CONTINUE;
+            }
+
+        	if (failure.get() == null) {
                 failure.set(new FilesystemPermissionException(file, user));
             }
             return FileVisitResult.TERMINATE;

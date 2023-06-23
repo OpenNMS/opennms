@@ -87,7 +87,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 
     @Override
     public boolean contributesTo(String namespace) {
-        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
+        return (namespace != null ? namespace.startsWith(CONTRIBUTES_TO_NAMESPACE) : false);
     }
 
     /**
@@ -254,7 +254,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
     	LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-		IpLikeHopCriteria criterion = createCriteria(searchResult);
+		IpLikeHopCriteria criterion = createCriteria(searchResult, container);
 		container.addCriteria(criterion);
 		
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -297,7 +297,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 
 	@Override
 	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
-		IpLikeHopCriteria criteria = createCriteria(input);
+		IpLikeHopCriteria criteria = createCriteria(input, container);
 		return criteria;
 	}
 
@@ -325,7 +325,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
         return null;
     }
 
-	private IpLikeHopCriteria createCriteria(SearchResult searchResult) {
-		return new IpLikeHopCriteria(searchResult, this.ipInterfaceProvider);
+	private IpLikeHopCriteria createCriteria(SearchResult searchResult, GraphContainer graphContainer) {
+		return new IpLikeHopCriteria(searchResult, this.ipInterfaceProvider, graphContainer);
 	}
 }

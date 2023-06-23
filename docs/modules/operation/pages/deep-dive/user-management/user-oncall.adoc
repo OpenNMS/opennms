@@ -1,0 +1,30 @@
+
+= On-Call Roles
+
+On-call roles let you assign a predefined <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> to an existing group of users.
+A common use case is to have system engineers in on-call rotations with a defined schedule.
+
+For each on-call role, a user is designated as a supervisor.
+They are responsible for the group of users assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
+The supervisor's account must have admin privileges.
+
+== Assign a group to an on-call role
+
+Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
+After you have created the group, follow these steps to assign it to an on-call role:
+
+. Log in as a user with admin permissions.
+. Click the *gear* symbol at the top-right of the screen.
+. Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure On-Call Roles].
+. Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
+The description should be meaningful (for example, describe the team that the on-call role has been created for).
+. Click *Save*.
+. In the calendar, select a date and click the *add* symbol (*+*).
+. Specify the user and designate an on-call schedule.
+. Click *Save*.
++
+.Example on-call schedule configuration
+image::users/on-call-schedule.png["Example on-call schedule settings for a single user"]
+
+. Repeat as necessary for other dates and users.
+. Click *Done* to apply the changes.

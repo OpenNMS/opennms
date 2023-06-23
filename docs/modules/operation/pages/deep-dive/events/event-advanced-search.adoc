@@ -1,0 +1,68 @@
+
+= Advanced Event Search
+
+When searching your environment's events list, you may want to customize your query to narrow your search.
+The {page-component-title} Event Detail page has a button to filter your searches based on different criteria:
+
+[cols="1,3"]
+|===
+| Criteria  | Description
+
+| Event ID
+| Performs an `equals` filter on the event ID.
+
+| Node Label Contains
+| Performs a `substring` filter on the node label. +
+To negate this search, prefix the input text with an exclamation mark (`!`).
+This returns only results that do not contain the provided input text.
+
+| Event Text Contains
+| Performs a `substring` filter on both the log message and the description. +
+To negate this search, prefix the input text with an exclamation mark (`!`).
+This returns only results that do not contain the provided input text.
+
+| TCP/IP Address Like
+| Performs an `IPLIKE` on the provided IP address. +
+To negate this search, prefix the input text with an exclamation mark (`!`).
+This returns only results that do not satisfy the `IPLIKE` function.
+
+| Node Location
+| Select an option from the drop-down list to filter results to only one node location.
+Choose *Any* to return all results.
+
+| System ID
+| Select an option from the drop-down list to filter results to only one system ID.
+Choose *Any* to return all results.
+
+| Severity
+| Filters events based on their severity.
+This is a multi-select checkbox. +
+Select the <<deep-dive/events/event-configuration.adoc#severities, severities>> that you want to filter by.
+By default, they are unselected; this returns all events.
+Selecting one or more severities restricts your search results to those selected.
+
+| Service
+| Filters events based on the alarm service.
+This is a multi-select checkbox. +
+Select the services that you want to filter by.
+By default, they are unselected; this returns all events.
+Selecting one or more services restricts your search results to those selected.
+
+| Exact Event UEI
+| Performs an `equals` filter on the event UEI.
+
+| Relative Time
+| Filters the results based on a time relative to now (for example, within the last four days).
+
+| Sort By
+| Sorts the results in ascending or descending order for the selected field name.
+
+| Number of Events per Page
+| The number of events shown per page.
+
+| Events After
+| Select a timestamp to show events after the defined time.
+
+| Events Before
+| Select a timestamp to show events before the defined time.
+|===

@@ -64,13 +64,13 @@ public class BridgeMacLink implements Serializable{
     public enum BridgeMacLinkType {
         BRIDGE_LINK(1), BRIDGE_FORWARDER(2);
 
-        private int m_type;
+        private final int m_type;
 
         BridgeMacLinkType(int type) {
             m_type = type;
         }
 
-        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+        protected static final Map<Integer, String> s_typeMap = new HashMap<>();
 
         static {
             s_typeMap.put(1, "bridge-link");
@@ -153,7 +153,7 @@ public class BridgeMacLink implements Serializable{
 		m_bridgePort = bridgePort;
 	}
 
-    @Column(name="bridgePortIfIndex", nullable = true)
+    @Column(name="bridgePortIfIndex")
 	public Integer getBridgePortIfIndex() {
 		return m_bridgePortIfIndex;
 	}
@@ -164,7 +164,7 @@ public class BridgeMacLink implements Serializable{
 	}
 
 
-    @Column(name = "bridgePortIfName", length = 32, nullable = true)
+    @Column(name = "bridgePortIfName", length = 32)
 	public String getBridgePortIfName() {
 		return m_bridgePortIfName;
 	}
@@ -174,7 +174,7 @@ public class BridgeMacLink implements Serializable{
 		m_bridgePortIfName = bridgePortIfName;
 	}
 
-    @Column(name="vlan", nullable = true)
+    @Column(name="vlan")
 	public Integer getVlan() {
 		return m_vlan;
 	}
@@ -229,26 +229,23 @@ public class BridgeMacLink implements Serializable{
 	
 	@Override
 	public String toString() {
-            StringBuffer strbfr = new StringBuffer();
-    
-            strbfr.append("maclink: nodeid:["); 
-            strbfr.append(getNode().getId());
-            strbfr.append("], bridgeport:[");
-            strbfr.append(getBridgePort());
-            strbfr.append("], ifindex:[");
-            strbfr.append(getBridgePortIfIndex());
-            strbfr.append("], vlan:[");
-            strbfr.append(getVlan());
-            strbfr.append("],");
-            strbfr.append(getMacAddress());
-            strbfr.append(",");
-            strbfr.append(BridgeMacLinkType.
-                          getTypeString(
-                                        getLinkType().
-                                        getValue()));
-            strbfr.append("]");
 
-	        return strbfr.toString();
+        return "maclink: nodeid:[" +
+                getNode().getId() +
+                "], bridgeport:[" +
+                getBridgePort() +
+                "], ifindex:[" +
+                getBridgePortIfIndex() +
+                "], vlan:[" +
+                getVlan() +
+                "]," +
+                getMacAddress() +
+                "," +
+                BridgeMacLinkType.
+                        getTypeString(
+                                getLinkType().
+                                        getValue()) +
+                "]";
         }
 
 	public void merge(BridgeMacLink element) {

@@ -111,6 +111,8 @@
         <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
         <exclude>org.springframework:*</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
+        <exclude>io.pyroscope:agent</exclude>
+        <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>
@@ -121,6 +123,24 @@
       <includes>
         <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
         <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>pyroscope-agent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>io.pyroscope:agent:jar</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>jacoco-agent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>org.jacoco:org.jacoco.agent:jar:runtime</include>
       </includes>
     </dependencySet>
   </dependencySets>

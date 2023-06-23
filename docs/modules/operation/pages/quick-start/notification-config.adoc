@@ -1,0 +1,56 @@
+
+= Step 8: Configure Notifications
+
+This section describes how to configure and customize your {page-component-title} notifications.
+
+NOTE: This step is separate from xref:quick-start/notifications.adoc[setting up default notifications].
+We assume that you have followed the previous steps and are ready to proceed to more in-depth work with notifications.
+
+Now that you have xref:quick-start/baseline.adoc[established your environment's baseline], you can configure custom notifications based on your notes.
+Establishing notifications that are tailored for your environment and monitoring requirements lets the right people see and respond to the right issues in a timely manner.
+
+Here, we will describe how to configure event notifications.
+You can configure event notifications to provide coverage of specific unique event identifiers (UEIs), allowing for granular control of incoming information.
+You can define multiple notifications for the same UEI to use different destination paths.
+
+By default, {page-component-title} uses the destination path of all notifications matching the event's UEI.
+You can configure xref:reference:daemons/daemon-config-files/notifd.adoc[notifd] to process only the destination path of the first matching notification by editing `$\{OPENNMS_HOME}/etc/notifd-configuration.xml` and setting `match-all="false"` in the top-level `notifd-configuration` element.
+
+NOTE: Changes to `$\{OPENNMS_HOME}/etc/destinationPaths.xml` happen immediately, with no need to restart {page-component-title}.
+
+== Configure event notifications
+
+An event notification defines a destination path and message template for a specific UEI.
+It is possible to define multiple notifications for the same UEI to use different filters, destination paths, and message templates.
+
+Follow these steps to configure event notifications:
+
+. Click the *gear* symbol in the top-right of the screen.
+. Under Event Management, click menu:Configure Notifications[Configure Event Notifications].
+A list of events that are configured for notifications is displayed.
+. Click *Add New Event Notification*, select the UEI that will trigger a notification, and click *Next*.
+** (Optional) Build a rule to match a subset of IP addresses or services, and click menu:Validate Rule Results[Next] or *Skip Results Validation*.
+If you do not build a rule, notifications will be generated for all monitored IP addresses.
+. In the *Choose Path* page, specify information to include in the notification, including the destination path, subject (for email messages), body text, and so on.
+. Click *Finish*.
+
+NOTE: Event notification configuration is stored in `$\{OPENNMS_HOME}/etc/notifications.xml`.
+Changes to this file happen immediately, with no need to restart {page-component-title}.
+
+=== Filter rules
+
+Filter rules let you define which notifications to send or save.
+They work alongside your event notification configuration to enable better, more fine-tuned control over the notifications that you receive.
+
+By default, the filter rule configured in `$\{OPENNMS_HOME}/etc/notifications.xml` (for example, `<rule>IPADDR != '0.0.0.0'</rule>`) does not have the `strict` flag enabled.
+This means that if there is an event that is not associated with a node or interface (and therefore no `IPADDR` value), it will bypass validation and the notification would be processed.
+A strict rule (for example, `<rule strict="true">IPADDR != '0.0.0.0'</rule>`) will always be evaluated, and if there is no node or interface associated with the event, the notification will not be saved.
+
+== Beyond Quick Start
+
+For more information on notifications, refer to xref:deep-dive/notifications/introduction.adoc[Notifications] in the Deep Dive section.
+The following topics are covered in the documentation:
+
+* xref:deep-dive/notifications/concepts.adoc[Concepts] (events, UEIs, on-call roles, and so on)
+* xref:deep-dive/notifications/configuration.adoc#path-outage-notification[Path outages]
+* xref:deep-dive/notifications/commands.adoc[Notification commands]

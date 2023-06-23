@@ -145,6 +145,10 @@ public class CollectionSetDTO implements CollectionSet {
         return timestamp;
     }
 
+    public void setCollectionAgent(CollectionAgentDTO agent) {
+        this.agent = agent;
+    }
+
     private Set<CollectionResource> buildCollectionResources() {
         final Set<CollectionResource> collectionResources = new LinkedHashSet<>();
         for (CollectionResourceDTO entry : this.collectionResources) {

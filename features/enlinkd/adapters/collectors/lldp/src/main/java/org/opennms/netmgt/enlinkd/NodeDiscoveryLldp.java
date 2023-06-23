@@ -42,7 +42,6 @@ import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,12 +77,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
      *
      */
     public NodeDiscoveryLldp(
-            final LldpTopologyService lldpTopologyService,
-            final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial,
-            final Node node) {
-        super(locationAwareSnmpClient, interval, initial,node);
-    	m_lldpTopologyService = lldpTopologyService;
+            final NodeCollectionGroupLldp group,
+            final Node node,
+            final int priority) {
+        super(group.getLocationAwareSnmpClient(), node, priority);
+    	m_lldpTopologyService = group.getLldpTopologyService();
     }
 
     public void collect() {

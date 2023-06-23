@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,13 +128,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
         final var iface = findMatchingInterface(ipAddress, location, null);
-        PollerConfig pollerConfig;
-        try {
-            pollerConfig = this.getPollerConfig();
-        } catch (IOException e) {
-            LOG.error("Exception while retrieving pollerConfig", e);
-            return new ArrayList<>();
-        }
+
         return iface
                 // Get all device config services defined for this interface
                 .getMonitoredServices().stream()
@@ -141,13 +137,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .flatMap(svc -> pollerConfig.findService(InetAddressUtils.str(svc.getIpAddress()), svc.getServiceName()).stream())
 
                 // Filter for the device config monitor
-                .filter(match -> {
-                    ServiceMonitor serviceMonitor = pollerConfig.getServiceMonitor(match.service.getName());
-                    if (serviceMonitor != null) {
-                        return serviceMonitor.getClass().getCanonicalName().equals(DEVICE_CONFIG_SERVICE_CLASS_NAME);
-                    }
-                    return false;
-                })
+                .filter(match -> pollerConfig.getServiceMonitorLocator(match.service.getName())
+                                             .map(loc -> Objects.equals(loc.getServiceLocatorKey(), DEVICE_CONFIG_SERVICE_CLASS_NAME))
+                                             .orElse(false))
 
                 // Resolve the parameters
                 .map(match -> {
@@ -188,7 +180,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         final var match = getPollerConfig().findService(ipAddress, serviceName)
                 .orElseThrow(IllegalArgumentException::new);
 
-        final var monitor = getPollerConfig().getServiceMonitor(match.service.getName());
+        final var monitor = getPollerConfig().getServiceMonitorLocator(match.service.getName())
+                .orElseThrow(IllegalArgumentException::new);
 
         final AbstractMap.SimpleImmutableEntry<Boolean, MonitoredService> boundServicePair = sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsIpInterface ipInterface = findMatchingInterface(ipAddress, location, serviceName);
@@ -221,7 +214,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             return locationAwarePollerClient.poll()
                     .withService(service)
                     .withAdaptor(serviceMonitorAdaptor)
-                    .withMonitor(monitor)
+                    .withMonitorLocator(monitor)
                     .withPatternVariables(match.patternVariables)
                     .withAttributes(match.service.getParameterMap())
                     .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
@@ -230,7 +223,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             // No persistence of config.
             return locationAwarePollerClient.poll()
                     .withService(service)
-                    .withMonitor(monitor)
+                    .withMonitorLocator(monitor)
                     .withPatternVariables(match.patternVariables)
                     .withAttributes(match.service.getParameterMap())
                     .withAttribute(DeviceConfigConstants.TRIGGERED_POLL, "true")
@@ -271,10 +264,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 
-    public PollerConfig getPollerConfig() throws IOException {
-        if (this.pollerConfig == null) {
-            this.pollerConfig = ReadOnlyPollerConfigManager.create();
-        }
-        return this.pollerConfig;
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        this.pollerConfig = pollerConfig;
+    }
+
+    public PollerConfig getPollerConfig() {
+        return pollerConfig;
     }
 }

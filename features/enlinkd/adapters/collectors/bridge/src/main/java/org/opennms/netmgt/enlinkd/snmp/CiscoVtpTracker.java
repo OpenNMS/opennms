@@ -48,7 +48,7 @@ public final class CiscoVtpTracker extends AggregateTracker
 	public final static	String	VTP_VERSION	= "vtpVersion";
 	
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
-		/**
+		/*
 		 * vtpVersion OBJECT-TYPE
     	 * SYNTAX          INTEGER  {
          *               one(1),
@@ -62,12 +62,12 @@ public final class CiscoVtpTracker extends AggregateTracker
          *	"The version of VTP in use on the local system.  A device
          *	will report its version capability and not any particular
          *	version in use on the device. If the device does not support
-         *	vtp, the version is none(3)." 
+         *	vtp, the version is none(3)."
 		 */
 		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,VTP_VERSION,".1.3.6.1.4.1.9.9.46.1.1.1")
 	};
 
-    private SnmpStore m_store;
+    private final SnmpStore m_store;
 	
 	/**
 	 * <P>The class constructor is used to initialize the collector
@@ -76,7 +76,6 @@ public final class CiscoVtpTracker extends AggregateTracker
 	 * data has been collected the passed signaler object is <EM>notified</em>
 	 * using the notifyAll() method.</P>
 	 *
-	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public CiscoVtpTracker() {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));

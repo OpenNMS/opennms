@@ -11,7 +11,7 @@ This monitor tries to retrieve configuration from the network device and shows t
 | `org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor`
 |===
 
-== Configuration and Use
+== Configuration and use
 
 .Monitor-specific parameters for the DeviceConfigMonitor
 [cols="1,3,1"]
@@ -24,21 +24,21 @@ This monitor tries to retrieve configuration from the network device and shows t
 3+| *Required*
 
 | script-file
-| Script file to use to retrieve configuration. 
+| Script file to use to retrieve configuration.
 Place script files in the `etc/device-config` folder.
-Find example script files in `etc/examples/device-config` folder with `.dcb` extension. 
-Overwrite script file name in metadata as `dcb:script-file`. 
+Find example script files in `etc/examples/device-config` folder with `.dcb` extension.
+Overwrite script file name in metadata as `dcb:script-file`.
 Don't include `.dcb` extension when specifying the file name in metadata.
 | default.dcb
 
 | username
-| Username for SSH login. 
+| Username for SSH login.
 Overwrite in metadata as `dcb:username`.
-Note that you can use xref:operation:meta-data.adoc#ga-metadata-scv[Secure Credentials Vault (SCV) metadata].
+Note that you can use xref:operation:deep-dive/meta-data.adoc#ga-metadata-scv[Secure Credentials Vault (SCV) metadata].
 | admin
 
 | password
-| Password for SSH login. 
+| Password for SSH login.
 Overwrite in metadata as `dcb:password`.
 Note that you can use Secure Credentials Vault (SCV) metadata.
 | admin
@@ -52,7 +52,7 @@ Overwrite in metadata as `dcb:config-type`.
 | default
 
 | ssh-port
-| SSH port for the target device. 
+| SSH port for the target device.
 Overwrite in meatadata as `dcb:ssh-port`.
 | 22
 
@@ -71,7 +71,7 @@ Overwrite in metadata as `dcb:ssh-timeout`.
 | Maximum retention period after which configs without any updates will be deleted from database.
 Overwrite in metadata as `dcb:retention-period`.
 Specified in ISO-8601 period format `PnYnMnD` and `PnW`.
-Defaults to `P1Y` (1 Year). 
+Defaults to `P1Y` (1 Year).
 Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.
 | P1Y
 
@@ -94,8 +94,6 @@ Example: `P20Y2M25D` means 20 years, 2 months, and 25 days.
 | _Default login shell_
 
 |===
-
-
 
 == Schedule and interval
 

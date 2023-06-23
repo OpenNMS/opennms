@@ -1,0 +1,102 @@
+jobs:
+  publish:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: small
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - shallow-clone
+      - setup_remote_docker
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - cached-download:
+          url: https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
+          file: /usr/local/bin/notary
+      - download-download-artifacts
+      - run:
+          name: download resources from parent jobs
+          command: |
+            for TYPE in oci rpm deb yml; do
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --ci \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+               "${TYPE}" \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+              download-artifacts.pl \
+                --vault-layout \
+                --include-failed \
+                --ci \
+                --workflow="${CIRCLE_WORKFLOW_ID}" \
+                --match="sbom" \
+               xml \
+               "${CIRCLE_BRANCH}" \
+               /tmp/artifacts
+            done
+      - run:
+          name: Import OCI Files
+          command: |
+            find /tmp/artifacts/oci -name \*.oci | while read -r OCI; do
+              docker image load --quiet -i "${OCI}"
+            done
+      - run:
+          name: Publish to Docker Hub
+          command: .circleci/scripts/publish-dockerhub.sh
+      - run:
+          name: Publish to Cloudsmith
+          command: .circleci/scripts/publish-cloudsmith.sh
+      - run:
+          name: Publish to Azure
+          command: .circleci/scripts/publish-azure.sh
+  publish-maven:
+    executor: build-executor
+    resource_class: xlarge
+    steps:
+      - cached-checkout
+      - attach_workspace:
+          at: ~/
+      - restore-maven-cache
+      - run:
+          name: Deploy to Maven Central
+          command: |
+            ulimit -n 65536 || :
+            mkdir -p ~/.m2
+            echo "${GPG_SECRET_KEY}" | base64 -d > ~/.m2/sign-key.asc
+            export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            # release branches should enable extra "production" stuff like license indexing
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*|"develop")
+                # allow these branches to pass through, everything else should skip
+                ;;
+              *)
+                echo "deployment should only happen on major release branches"
+                exit 0
+                ;;
+            esac
+            cd deploy
+            ../compile.pl \
+              -s settings.xml \
+              -DskipTests=true \
+              -DskipITs=true \
+              -DskipSurefire=true \
+              -DskipFailsafe=true \
+              -Dbuild.skip.tarball=true \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=2g \
+              -DmaxCpus=8 \
+              -Prun-expensive-tasks \
+              -Pproduction \
+              -Prelease \
+              --batch-mode \
+              -DnexusUrl="https://oss.sonatype.org/" \
+              -DserverId="opennms-ossrh" \
+              -DautoReleaseAfterClose=true \
+              install \
+              org.sonatype.plugins:nexus-staging-maven-plugin:deploy \
+              || exit 1

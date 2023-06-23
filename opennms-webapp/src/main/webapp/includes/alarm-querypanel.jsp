@@ -35,7 +35,8 @@
 	import="org.opennms.web.alarm.AlarmUtil"
 %>
 
-<form class="form-inline" name="alarm_search" action="alarm/query" method="get" onsubmit="return Blank_TextField_Validator()">
+<form class="form-inline" name="alarm_search" action="alarm/query" method="post" onsubmit="return Blank_TextField_Validator()">
+	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	<div class="input-group">
 		<input class="form-control" type="text" name="alarmtext" placeholder="Alarm Text"/>
 		<select class="form-control custom-select" id="relativetime" name="relativetime">

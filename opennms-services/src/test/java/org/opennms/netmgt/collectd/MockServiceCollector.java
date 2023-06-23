@@ -51,9 +51,9 @@ public class MockServiceCollector implements ServiceCollector {
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) {
-        String testKey = (String)parameters.get(CollectdIntegrationTest.TEST_KEY_PARM_NAME);
+        String testKey = (String)parameters.get(CollectdMoreIT.TEST_KEY_PARM_NAME);
         if (testKey != null) {
-            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
+            CollectdMoreIT.setServiceCollectorInTest(testKey, this);
         }
         s_collectCount++;
 

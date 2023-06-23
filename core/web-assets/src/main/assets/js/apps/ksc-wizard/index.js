@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2016-2017 The OpenNMS Group, Inc.
+* @copyright 2016-2022 The OpenNMS Group, Inc.
 */
 
 'use strict';
@@ -19,6 +19,10 @@ angular.module('onms-ksc-wizard', [
   'ui.bootstrap',
   'angular-growl'
 ])
+
+.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}])
 
 .config(['growlProvider', function(growlProvider) {
   growlProvider.globalTimeToLive(3000);
@@ -58,8 +62,8 @@ angular.module('onms-ksc-wizard', [
     var resources = [];
     switch (level) {
       case 0:
-        $http.get('rest/resources?depth=0').success(function(data) {
-          $scope.resources = data.resource;
+        $http.get('rest/resources?depth=0').then(function(response) {
+          $scope.resources = response.data.resource;
           $scope.filteredResources = angular.copy($scope.resources);
           $scope.updateResources();
         });
@@ -70,8 +74,8 @@ angular.module('onms-ksc-wizard', [
         } else {
           $scope.selectedNode = angular.copy($scope.selectedResource);
         }
-        $http.get('rest/resources/' + $scope.getSelectedId()).success(function(data) {
-          $scope.resources = data.children.resource;
+        $http.get('rest/resources/' + $scope.getSelectedId()).then(function(response) {
+          $scope.resources = response.data.children.resource;
           $scope.filteredResources = angular.copy($scope.resources);
           $scope.updateResources();
         });
@@ -149,11 +153,10 @@ angular.module('onms-ksc-wizard', [
           className: 'btn-success',
           callback: function() {
             $http.put('rest/ksc/reloadConfig')
-              .success(function() {
+              .then(function() {
                 growl.success('The configuration has been reloaded.');
-              })
-              .error(function(msg) {
-                growl.error(msg);
+              }, function(response) {
+                growl.error(response.data);
               });
           }
         },
@@ -226,14 +229,14 @@ angular.module('onms-ksc-wizard', [
     $scope.kscNumPages = Math.ceil($scope.kscTotalItems / $scope.kscPageSize);
   };
 
-  $http.get('rest/resources?depth=0').success(function(data) {
-    $scope.resources = data.resource;
+  $http.get('rest/resources?depth=0').then(function(response) {
+    $scope.resources = response.data.resource;
     $scope.filteredResources = angular.copy($scope.resources);
     $scope.updateResources();
   });
 
-  $http.get('rest/ksc').success(function(data) {
-    $scope.reports = data.kscReport;
+  $http.get('rest/ksc').then(function(response) {
+    $scope.reports = response.data.kscReport;
     $scope.filteredReports = angular.copy($scope.reports);
     $scope.updateReports();
   });

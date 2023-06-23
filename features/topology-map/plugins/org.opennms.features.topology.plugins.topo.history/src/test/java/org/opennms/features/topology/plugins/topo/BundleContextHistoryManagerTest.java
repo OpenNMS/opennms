@@ -368,7 +368,7 @@ public class BundleContextHistoryManagerTest  {
 
         // Initializing available (initial) Criteria
         this.startingCriteria.put(CriteriaTypes.category, new CategoryHopCriteria(sResultCategory, vertexProvider, graphContainerMock));
-        this.startingCriteria.put(CriteriaTypes.ipLike, new IpLikeHopCriteria(sResultIpLike, ipInterfaceProvider));
+        this.startingCriteria.put(CriteriaTypes.ipLike, new IpLikeHopCriteria(sResultIpLike, ipInterfaceProvider, graphContainerMock));
         this.startingCriteria.put(CriteriaTypes.alarm, new AlarmHopCriteria(new AlarmSearchProvider(alarmProvider).new AlarmSearchResult(sResultAlarm), alarmProvider));
     }
 

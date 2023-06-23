@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,7 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -47,10 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -66,15 +66,13 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 import org.testcontainers.utility.MountableFile;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.google.common.base.Strings;
 
-public class MinionContainer extends GenericContainer implements KarafContainer, TestLifecycleAware {
+public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
@@ -87,56 +85,72 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private static final int MINION_JETTY_PORT = 8181;
 
     static final String ALIAS = "minion";
+    static final String IMAGE = "opennms/minion";
 
     private final StackModel model;
 
     private final String id;
     private final String location;
-    private final GenericContainer container;
+    private final MinionProfile profile;
+    private final Path overlay;
 
-    private MinionContainer(final StackModel model, final String id, final String location, final Function<MinionContainer, WaitStrategy> waitStrategy) {
-        super("minion");
+    public MinionContainer(final StackModel model, final MinionProfile profile) {
+        super(IMAGE);
         this.model = Objects.requireNonNull(model);
-        this.id = Objects.requireNonNull(id);
-        this.location = Objects.requireNonNull(location);
+        this.profile = Objects.requireNonNull(profile);
+        this.id = Objects.requireNonNull(profile.getId());
+        this.location = Objects.requireNonNull(profile.getLocation());
 
-        this.container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
-                .withCreateContainerCmdModifier(cmd -> {
-                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
+        this.overlay = writeOverlay();
+
+        Integer[] tcpPorts = {
+                MINION_DEBUG_PORT,
+                MINION_SSH_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_IPFIX_TCP_PORT,
+                MINION_JETTY_PORT,
+        };
+        int[] udpPorts = {
+                MINION_SYSLOG_PORT,
+                MINION_SNMP_TRAP_PORT,
+                MINION_TELEMETRY_FLOW_PORT,
+                MINION_TELEMETRY_JTI_PORT,
+                MINION_TELEMETRY_NXOS_PORT,
+        };
+
+        withExposedPorts(tcpPorts)
+                .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
-                    TestContainerUtils.exposePortsAsUdp(createCmd, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT);
+                    TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
-                .withEnv("JAVA_OPTS", "-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JACOCO_AGENT_ENABLED", "1")
+                .withEnv("JAVA_OPTS", "-Xms1g -Xmx1g -Djava.security.egd=file:/dev/./urandom")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
-                .waitingFor(Objects.requireNonNull(waitStrategy).apply(this));
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
+                .addFileSystemBind(overlay.toString(),
+                "/opt/minion-etc-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
-    }
 
-    public MinionContainer(final StackModel model, final MinionProfile profile) {
-        this(model, profile.getId(), profile.getLocation(), profile.getWaitStrategy());
-
-        container.addFileSystemBind(writeMinionConfig(profile).toString(),
-                "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        if (profile.isLegacy()) {
+            for (final Map.Entry<String, String> entry : profile.getLegacyConfiguration().entrySet()) {
+                addEnv(entry.getKey(), entry.getValue());
+            }
+        } else {
+            addFileSystemBind(writeMinionConfig(profile).toString(),
+                    "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        }
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "*:" + MINION_DEBUG_PORT);
-        }
-    }
-
-    public MinionContainer(final StackModel model, final Map<String, String> configuration) {
-        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"), WaitForMinion::new);
-
-        for(final Map.Entry<String, String> entry : configuration.entrySet()) {
-            container.addEnv(entry.getKey(), entry.getValue());
         }
     }
 
@@ -193,18 +207,56 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpc, Map.class));
         }
+
+        if (model.isJaegerEnabled()) {
+            String jaeger = "{\n" +
+                    "\t\"system\": {\n" +
+                    "\t\t\"properties\": {\n" +
+                    "\t\t\t\"JAEGER_ENDPOINT\": \"" + JaegerContainer.getThriftHttpURL() + "\"\n" +
+                    "\t\t}\n" +
+                    "\t}\n" +
+                    "}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(jaeger, Map.class));
+        }
+    }
+
+    private Path writeOverlay() {
+        try {
+            final Path home = Files.createTempDirectory(ALIAS).toAbsolutePath();
+            writeOverlay(home, profile);
+            return home;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeOverlay(Path home, MinionProfile profile) throws IOException {
+        // Allow other users to read the folder
+        OverlayUtils.setOverlayPermissions(home);
+
+        // Copy the files from the profile *first*
+        // If this test class writes something, we expect it to be there
+        OverlayUtils.copyFiles(profile.getFiles(), home);
     }
 
     public InetSocketAddress getSyslogAddress() {
         return new InetSocketAddress(getContainerIpAddress(), TestContainerUtils.getMappedUdpPort(this, MINION_SYSLOG_PORT));
     }
 
+    @Override
     public InetSocketAddress getSshAddress() {
         return new InetSocketAddress(getContainerIpAddress(), getMappedPort(MINION_SSH_PORT));
     }
 
+    @Override
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
+    }
+
+
+    @Override
+    public Path getKarafHomeDirectory() {
+        return Path.of("/opt/minion");
     }
 
     public URL getWebUrl() {
@@ -256,42 +308,46 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
-            try {
-                RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-                await().atMost(5, MINUTES)
-                        .pollInterval(10, SECONDS)
-                        .ignoreExceptions()
-                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("{} rest health check did not finish after {} minutes.", ALIAS, 5);
-                throw new RuntimeException(e);
-            }
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
         }
     }
 
     @Override
     public void afterTest(TestDescription description, Optional<Throwable> throwable) {
+        // not working yet in karaf-started JVMs
+        // getCoverage(description.getFilesystemFriendlyName());
         retainLogsfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
     }
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
-        LOG.info("Triggering thread dump...");
-        DevDebugUtils.triggerThreadDump(this);
-        LOG.info("Gathering logs...");
-        copyLogs(this, prefix);
-    }
+        Path targetLogFolder = Paths.get("target", "logs", prefix, "minion");
+        DevDebugUtils.clearLogs(targetLogFolder);
 
-    private static void copyLogs(MinionContainer container, String prefix) {
+        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+
+        LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
-        DevDebugUtils.copyLogs(container,
+        DevDebugUtils.copyLogs(this,
                 // dest
-                Paths.get("target", "logs", prefix, "minion"),
+                targetLogFolder,
                 // source folder
                 Paths.get("/opt", "minion", "data", "log"),
                 // log files
                 logFiles);
+
+        LOG.info("Log directory: {}", targetLogFolder.toUri());
+        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        if (threadDump != null) {
+            LOG.info("Thread dump: {}", threadDump.toUri());
+        }
     }
 
     public String getId() {

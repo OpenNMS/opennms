@@ -4,7 +4,7 @@ require('../services/Requisitions');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -16,6 +16,10 @@ require('../services/Requisitions');
   const detectorView = require('../../views/detector.html');
 
   angular.module('onms-requisitions')
+
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }])
 
   /**
   * @ngdoc controller

@@ -28,6 +28,7 @@
 
 package org.opennms.features.datachoices.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
@@ -35,41 +36,12 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
-
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.karaf.features.Dependency;
-import org.apache.karaf.features.Feature;
-import org.apache.karaf.features.FeaturesService;
-import org.opennms.core.db.DataSourceFactoryBean;
-import org.opennms.core.utils.SystemInfoUtils;
-import org.opennms.core.utils.TimeSeries;
-import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.MonitoringSystemDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
-import org.opennms.core.ipc.sink.common.SinkStrategy;
-import org.opennms.core.rpc.common.RpcStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -79,6 +51,49 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.sql.DataSource;
+
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.karaf.features.Dependency;
+import org.apache.karaf.features.Feature;
+import org.apache.karaf.features.FeaturesService;
+import org.opennms.core.db.DataSourceFactoryBean;
+import org.opennms.core.ipc.sink.common.SinkStrategy;
+import org.opennms.core.rpc.common.RpcStrategy;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
+import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.ServiceConfigFactory;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
@@ -100,6 +115,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final int MAX_DEP_RECURSION_DEPTH = 2;
     private static final String OIA_FEATURE_NAME = "opennms-integration-api";
     private static final String API_LAYER_FEATURE_NAME = "opennms-api-layer";
+
+    public static final String APPLIANCE_VIRTUAL_OID = ".1.3.6.1.4.1.5813.42.5.1";
+    public static final String APPLIANCE_MINI_OID = ".1.3.6.1.4.1.5813.42.5.2";
+    public static final String APPLIANCE_1U_OID = ".1.3.6.1.4.1.5813.42.5.3";
 
     private String m_url;
 
@@ -127,6 +146,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
+    private DeviceConfigDao m_deviceConfigDao;
+
     private FeaturesService m_featuresService;
 
     private ProvisiondConfigurationDao m_provisiondConfigurationDao;
@@ -137,10 +158,19 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private NotifdConfigFactory m_notifdConfigFactory;
 
+    private UsageAnalyticDao m_usageAnalyticDao;
+
     private GroupFactory m_groupFactory;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
+
+    private ApplicationDao m_applicationDao;
+    
     private boolean m_useSystemProxy = true; // true == legacy behaviour
+
+    private OutageDao m_outageDao;
+
+    private NotificationDao m_notificationDao;
 
     public synchronized void init() {
         if (m_timer != null) {
@@ -248,6 +278,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
+        usageStatisticsReport.setApplications(m_applicationDao.countAll());
+        usageStatisticsReport.setOutages(m_outageDao.currentOutageCount());
+        usageStatisticsReport.setNotifications(m_notificationDao.countAll());
+        
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -267,11 +301,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
+        // DCB statistics
+        usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
+        usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
+        usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
+        usageStatisticsReport.setApplianceCounts(this.getApplianceCountByModel());
+        // Container
+        usageStatisticsReport.setInContainer(this.isContainerized());
 
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
     }
+
+    private boolean isContainerized() {
+        final boolean inPodman = new File("/run/.containerenv").exists();
+        final boolean inDocker = new File("/.dockerenv").exists();
+        return inPodman || inDocker;
+    }
+
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
         setSystemJmxAttributes(usageStatisticsReport);
         setOpenNmsJmxAttributes(usageStatisticsReport);
@@ -461,6 +510,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         return oiaDependentFeatures;
     }
 
+    private Map<String, Long> getApplianceCountByModel() {
+        Map<String, Long> appliances = new HashMap();
+        var oidMap = m_nodeDao.getNumberOfNodesBySysOid();
+        appliances.put("virtualAppliance",  oidMap.containsKey(APPLIANCE_VIRTUAL_OID) ? oidMap.get(APPLIANCE_VIRTUAL_OID) : 0L);
+        appliances.put("applianceMini",     oidMap.containsKey(APPLIANCE_MINI_OID)    ? oidMap.get(APPLIANCE_MINI_OID)    : 0L);
+        appliances.put("appliance1U",       oidMap.containsKey(APPLIANCE_1U_OID)      ? oidMap.get(APPLIANCE_1U_OID)      : 0L);
+        return appliances;
+    }
+
     public void setUrl(String url) {
         m_url = url;
     }
@@ -509,10 +567,20 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_businessServiceEdgeDao = businessServiceDao;
     }
 
+    public void setOutageDao(OutageDao outageDao){
+        m_outageDao = outageDao;
+    }
+
+    public void setNotificationDao(NotificationDao notificationDao){
+        m_notificationDao = notificationDao;
+    }
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }
-
+    
+    public void setApplicationDao(ApplicationDao applicationDao){
+        m_applicationDao = applicationDao;
+    }
     public void setUseSystemProxy(boolean useSystemProxy){
         m_useSystemProxy = useSystemProxy;
     }
@@ -527,6 +595,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setDataSourceFactoryBean(DataSourceFactoryBean dataSourceFactoryBean) {
         m_dataSourceFactoryBean = dataSourceFactoryBean;
+    }
+
+    public void setUsageAnalyticDao(UsageAnalyticDao usageAnalyticDao) {
+        m_usageAnalyticDao = usageAnalyticDao;
     }
 
     private void gatherProvisiondData(final UsageStatisticsReportDTO usageStatisticsReport) {
@@ -567,6 +639,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public ForeignSourceRepository getDeployedForeignSourceRepository() {
         return m_deployedForeignSourceRepository;
+    }
+
+    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
+        this.m_deviceConfigDao = deviceConfigDao;
     }
 
     private int getDestinationPathCount(){

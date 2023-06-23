@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
@@ -58,6 +59,7 @@ import org.opennms.core.mate.api.Scope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -89,6 +91,8 @@ import org.opennms.netmgt.model.perspectivepolling.Location;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +101,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.google.common.base.Strings;
 
 
 /**
@@ -109,7 +115,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @Transactional(readOnly=true)
 public class NetworkElementFactory implements InitializingBean, NetworkElementFactoryInterface {
-    
+
+    @Autowired
+    private EventConfDao eventConfDao;
+
     @Autowired
     private NodeDao m_nodeDao;
     
@@ -1078,5 +1087,22 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName) {
         return this.m_entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
+    }
+
+    public Set<String> getResolvingUeisForAlarmUei(final String uei) {
+        return eventConfDao.getRootEvents().forEachEvent(new TreeSet<>(), new Events.EventCallback<Set<String>>() {
+            @Override
+            public Set<String> process(final Set<String> ueis, final Event event) {
+                if (event.getAlarmData() != null &&
+                    event.getAlarmData().getAlarmType() == 2 &&
+                    !Strings.isNullOrEmpty(event.getAlarmData().getClearKey())) {
+                    final String arr[] = event.getAlarmData().getClearKey().split(":");
+                    if (arr.length > 0 && uei.equals(arr[0])) {
+                        ueis.add(arr[0]);
+                    }
+                }
+                return ueis;
+            }
+        });
     }
 }

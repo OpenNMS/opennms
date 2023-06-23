@@ -70,11 +70,13 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
-import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
+import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
+import org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Timer;
@@ -101,10 +103,13 @@ import org.springframework.test.context.ContextConfiguration;
 public class PollableServiceConfigIT {
 
     @Autowired
-    private LocationAwarePollerClient m_locationAwarePollerClient;
+    private LocationAwarePollerClientImpl m_locationAwarePollerClient;
     
     @Autowired
     private OverrideablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private PollerClientRpcModule m_pollerClientRpcModule;
 
     private ServiceMonitorAdaptor m_serviceMonitorAdaptor = (svc, parameters, status) -> status;
 
@@ -122,6 +127,9 @@ public class PollableServiceConfigIT {
         PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);
         IOUtils.closeQuietly(is);
+
+        m_locationAwarePollerClient.setRegistry(factory.getServiceMonitorRegistry());
+        m_pollerClientRpcModule.setServiceMonitorRegistry(factory.getServiceMonitorRegistry());
 
         PersisterFactory persisterFactory = new MockPersisterFactory();
 
@@ -163,7 +171,8 @@ public class PollableServiceConfigIT {
         final Timer timer = mock(Timer.class);
 
         final PollerRequestBuilder pollerRequestBuilder = mock(PollerRequestBuilder.class);
-        when(pollerRequestBuilder.withMonitor(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withMonitorLocator(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withMonitorClassName(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withService(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withTimeToLive(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withAdaptor(any())).thenReturn(pollerRequestBuilder);
@@ -176,7 +185,7 @@ public class PollableServiceConfigIT {
                 persisterFactory, thresholdingService, locationAwarePollerClient, m_pollOutagesDao, m_serviceMonitorAdaptor);
         psc.poll();
 
-        verify(pollerRequestBuilder).withMonitor(factory.getServiceMonitor("HTTP"));
+        verify(pollerRequestBuilder).withMonitorLocator(factory.getServiceMonitorLocator("HTTP").orElseThrow());
     }
 
     /**
@@ -198,7 +207,7 @@ public class PollableServiceConfigIT {
         Mockito.when(
                 client.poll()
                     .withService(any())
-                    .withMonitor(any())
+                    .withMonitorLocator(any())
                     .withTimeToLive(any())
                     .withAttributes(any())
                     .withAdaptor(any())
@@ -219,6 +228,8 @@ public class PollableServiceConfigIT {
         when(pkg.findService("SVC")).thenReturn(Optional.of(new Package.ServiceMatch(pkg, configuredSvc)));
 
         PollerConfig pollerConfig = mock(PollerConfig.class);
+        when(pollerConfig.getServiceMonitorLocator(any())).thenReturn(Optional.of(mock(ServiceMonitorLocator.class)));
+
         Timer timer = mock(Timer.class);
         PersisterFactory persisterFactory = new MockPersisterFactory();
         ThresholdingService thresholdingService = mock(ThresholdingService.class);

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.enlinkd</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.enlinkd</groupId>
@@ -13,6 +13,7 @@
   <modules>
     <module>common</module>
     <module>collectors</module>
+    <module>discovers</module>
     <module>updaters</module>
   </modules>
 </project>

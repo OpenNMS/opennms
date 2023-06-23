@@ -1,0 +1,23 @@
+jobs:
+  build-docs:
+    executor: docs-executor
+    steps:
+      - cached-checkout
+      - run:
+          name: Validate Xrefs in docs
+          command: |
+            NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
+      - run:
+          name: Build docs with Antora
+          command: | 
+             DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --stacktrace generate antora-playbook-local.yml
+      - run:
+          name: Rename Site zip file to include the version
+          command: | 
+             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+             mkdir ~/artifacts
+             cp ~/project/build/site.zip ~/artifacts/site-$OPENNMS_VERSION.zip
+      - store_artifacts:
+          path: ~/artifacts
+          destination: /
+    

@@ -28,15 +28,17 @@
 
 package org.opennms.smoketest.topo;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -96,6 +98,9 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         topologyUIPage.open();
         // Select EnLinkd, otherwise the "GraphML Topology Provider (test-graph)" is always pre-selected due to history restoration
         topologyUIPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        // if Layers is opened then close to set initial condition
+        topologyUIPage.closeLayerSelectionComponent();
+        assertTrue(!topologyUIPage.isLayoutComponentVisible());
     }
 
     @After
@@ -136,6 +141,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
         // Switch Layer
         topologyUIPage.selectLayer("Markets");
+        assertTrue(topologyUIPage.isLayoutComponentVisible());
         assertEquals(0, topologyUIPage.getSzl());
         assertEquals(1, topologyUIPage.getFocusedVertices().size());
         assertEquals("North 4", topologyUIPage.getFocusedVertices().get(0).getLabel());
@@ -200,13 +206,17 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         assertEquals(false, topologyUIPage.getSaveLayoutButton().isEnabled()); // it should be disabled after save
     }
 
-    @Test
     /**
      * This method tests whether the GraphMLTopologyProvider can work with categories - searching, collapsing and expanding
      */
+
+    @Test
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.defaultFocus();
+
         topologyUIPage.selectLayer("Markets");
+        assertTrue(topologyUIPage.isLayoutComponentVisible());
         topologyUIPage.setSzl(0);
         topologyUIPage.clearFocus();
 
@@ -316,7 +326,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     /**
      * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
      */
-    private void createDummyNodes() throws IOException, InterruptedException {
+    private void        createDummyNodes() throws IOException, InterruptedException {
 
         // First node has foreign ID "node1", label - "North 2" and category "Routers"
         // Second node has foreign ID "node2", label - "North 3" and categories "Routers" and "Servers"

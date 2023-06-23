@@ -1,0 +1,6 @@
+docs:
+- 'docs/*'
+- 'docs/**/*'
+- 'opennms-doc/*'
+- 'opennms-doc/**/*'
+- '**/*.adoc'

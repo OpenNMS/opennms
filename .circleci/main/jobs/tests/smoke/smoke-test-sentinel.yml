@@ -1,0 +1,21 @@
+ jobs:
+  smoke-test-sentinel:
+    executor: smoke-test-executor
+    parallelism: 4
+    resource_class: medium+
+    steps:
+      - run:
+          name: "skip if flaky tests are enabled"
+          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky-smoke >>"
+      - when:
+          condition:
+            not:
+              or:
+                - << pipeline.parameters.trigger-flaky-smoke >>
+                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
+          steps:
+            - cached-checkout
+            - attach_workspace:
+                at: ~/
+            - run-smoke-tests:
+                suite: sentinel

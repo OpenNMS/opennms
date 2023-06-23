@@ -1,19 +1,19 @@
 
-= Resource Management Tool (resourcecli)
+= Resource Management Tool
 
-The resourcecli tool simplifies the process of listing or manually deleting collected data (resources) of a {page-component-title} instance.
-
-With RRDTool- or JRobin-based storage, this process is easy: traverse the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories.
+The resource management tool, resourcecli, simplifies the process of listing or manually deleting a {page-component-title} instance's collected data (resources).
+With RRDTool- or JRobin-based storage, this process is easy: you simply traverse the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories.
 The `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
 
 Newts-based storage stores and indexes the data remotely on a Cassandra cluster.
 In this case, you must query the cluster for available resources.
-To delete resources you must gather and remove the data and all generated indexes.
+To delete resources, you must gather and remove the data and all generated indexes.
 
 The resourcecli tool works with Newts-based storage as well as with RRDTool and JRobin files.
 
 == Use
-The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory.
+
+The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory:
 
 [source, console]
 ----
@@ -25,13 +25,11 @@ TIP: When invoked without parameters, the usage and help information is printed.
 
 The resourcecli tool uses subcommands for the different tasks.
 Each of these subcommands provides different options and parameters.
-The command line tool accepts the following subcommands.
+The command line tool accepts the following subcommands:
 
-[options="header"]
-[cols="1,3"]
+[options="autowidth"]
 |===
-| Subcommand
-| Description
+| Subcommand  | Description
 
 | list
 | Queries a {page-component-title} server for available resources.
@@ -45,12 +43,9 @@ The command line tool accepts the following subcommands.
 
 The following global options are available in each of the subcommands of the tool:
 
-[options="header"]
-[cols="1,3,1"]
+[options="autowidth"]
 |===
-| Option/Argument
-| Description
-| Default
+| Option and Argument | Description | Default
 
 | --help
 | Displays help and exits.
@@ -69,10 +64,10 @@ The following global options are available in each of the subcommands of the too
 | \http://localhost:8980/opennms
 |===
 
-== Subcommand: list
+=== List subcommand
 
-This subcommand queries a {page-component-title} instance for its available resources.
-The following example queries the local {page-component-title} instance with the credentials `admin/secret`.
+The `list` subcommand queries a {page-component-title} instance for its available resources.
+The following example queries the local {page-component-title} instance with the credentials `admin/secret`:
 
 [source, console]
 ----
@@ -91,10 +86,10 @@ node[70]
 <output omitted>
 ----
 
-== Subcommand: show
+=== Show subcommand
 
-This subcommand shows details for a given resource.
-The following example displays details for the resource identified by resourceId `node[70]`.
+The `show` subcommand displays details for a given resource.
+The following example displays details for the resource identified by resourceId `node[70]`:
 
 [source, console]
 ----
@@ -118,41 +113,32 @@ Attributes:
   Strings:
 ----
 
-The following options are available for the _show_ subcommand:
+The following option is available for the `show` subcommand:
 
-[options="header"]
-[cols="1,3,1"]
+[options="autowidth"]
 |===
-| Option/Argument
-|Description
-| Default
+| Option | Description
 
 | <resource>
-| The resourceId of the resource to display.
-| -
+| The `resourceId` of the resource to display.
 |===
 
-== Subcommand: delete
+=== Delete subcommand
 
-Use this subcommand to delete a given resource and its child resources.
-The following example deletes the resource identified by resourceId `node[70]`.
-When successful, this command does not generate any output.
+You can use the `delete` subcommand to delete a given resource and its child resources.
+The following example deletes the resource identified by resourceId `node[70]`:
 
 [source, console]
-----
 $ ./resourcecli --username admin --password secret delete node[70]
-----
 
-The following options are available for the _delete_ subcommand:
+When it is successful, the command does not generate an output.
 
-[options="header"]
-[cols="1,3,1"]
+The following option is available for the `delete` subcommand:
+
+[options="autowidth"]
 |===
-| Option/Argument
-| Description
-| Default
+| Option | Description
 
 | <resource>
-| The resourceId of the resource to be deleted.
-| -
+| The `resourceId` of the resource to be deleted.
 |===

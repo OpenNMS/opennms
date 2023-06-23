@@ -1,0 +1,32 @@
+commands:
+  extract-pom-version:
+      description: "Extracting Maven POM version"
+      steps:
+        - run:
+            name: Extract Maven POM version
+            command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
+  download-download-artifacts:
+    steps:
+      - run:
+          name: download the download-artifacts.pl script and its dependencies
+          command: |
+            do_sudo() {
+              local _sudo="$(command -v sudo)"
+              if [ -x "${_sudo}" ]; then
+                "${_sudo}" "$@"
+              else
+                "$@"
+              fi
+            }
+
+            if [ ! -x /usr/local/bin/download-artifacts.pl ]; then
+              do_sudo wget https://raw.githubusercontent.com/OpenNMS/opennms-repo/master/script/download-artifacts.pl -O /usr/local/bin/download-artifacts.pl
+              do_sudo chmod a+x /usr/local/bin/download-artifacts.pl
+            fi
+
+            do_sudo apt-get -y --allow-releaseinfo-change update && \
+              do_sudo apt-get -y -q --no-install-recommends install \
+                libdatetime-format-iso8601-perl \
+                libjson-pp-perl \
+                libwww-perl \
+                liblwp-protocol-https-perl

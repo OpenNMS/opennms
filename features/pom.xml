@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -98,7 +98,6 @@
 
     <!-- Topology Map -->
     <module>topology-map</module>
-    <module>vaadin-node-maps</module>
 
     <!-- webapps -->
     <module>root-webapp</module>
@@ -184,5 +183,10 @@
     <module>ui-extension</module>
     <!-- Configuration Manager -->
     <module>config</module>
+
+    <!-- Usage Analytics -->
+    <module>usageanalytics</module>
+    
+    <module>inmemory-timeseries-plugin</module>
   </modules>
 </project>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features.device-config</artifactId>
         <groupId>org.opennms.features</groupId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -43,6 +43,11 @@
         <dependency>
             <groupId>org.opennms.features.device-config</groupId>
             <artifactId>org.opennms.features.device-config.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.usageanalytics</groupId>
+            <artifactId>org.opennms.features.usageanalytics.api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -90,6 +95,12 @@
         <dependency>
             <groupId>org.opennms.features.device-config.persistence</groupId>
             <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.usageanalytics</groupId>
+            <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

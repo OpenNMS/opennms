@@ -64,7 +64,9 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Example: Using check_apt with NRPE
 
-This example shows how to configure the NrpeMonitor running the check_apt command on a configured NRPE.
+This example shows how to configure the NrpeMonitor running the `check_apt` command on a configured NRPE.
+
+Note that you must include the `monitor` section in your definition.
 
 .Configuration of the NRPE check command on the agent in 'nrpe.cfg'
 [source,bash]

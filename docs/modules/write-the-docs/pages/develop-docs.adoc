@@ -1,0 +1,79 @@
+
+= Develop Documentation
+
+There are different ways to contribute documentation, each suitable for different use cases:
+
+* Publish tutorials and "how to"s in our https://opennms.discourse.group/c/knowledgebase[Discourse knowledge base].
+For example, you may want to describe how to use the Net-SNMP agent and the OpenNMS SNMP monitor to solve a special use case.
+This is a great way to help other OpenNMS users who might have similar questions, because we sometimes cross-reference these articles in official documentation.
+* Contribute formal technical documentation related to the source code on https://github.com/OpenNMS/opennms[GitHub].
+* Pick up `quickwin-docs` issues from our Jira Documentation backlog.
+These are issues that should require only a short amount of time to address.
+* Review, suggest improvements for, and provide comments on existing documentation.
+* Report bugs, errors, or areas for improvement.
+
+All formal technical documentation should follow a basic structure:
+
+* A descriptive title (for example, "Create a Minion" or "SnmpCollector").
+* A brief description of the subject being documented.
+* Procedure steps and technical content such as parameters, configuration, and examples, as appropriate.
+
+Minimize the use of screenshots; they should be included only to illustrate a concept that may be difficult to understand, or something that is not easy to locate in the UI.
+See the <<write-docs.adoc#ga-opennms-docs-images, Images>> section for more information.
+
+[[ga-opennms-docs-repo-structure]]
+== Documentation file structure
+
+All OpenNMS projects that have documentation include it in the `docs` directory.
+Within this directory, you will find the `./modules` directory, which contains all technical documentation associated with the source code in the repository.
+The `./modules` directory may have more nested directories to create a hierarchy for the content (for example, components and subcomponents).
+
+You will find `.adoc` files in the `./pages` directory or one of its subdirectories, and image files in the `./images` directory or one of its subdirectories.
+The following table describes the documentation modules for the Horizon project:
+
+[options="autowidth"]
+|===
+| Directory | Contents
+
+| docs/modules/deployment
+| Documentation on how to install and configure Horizon on different operating systems.
+
+| docs/modules/development
+| Documentation for those who want to develop Horizon.
+
+| docs/modules/operation
+| Documentation for administrators to configure, optimize, and run Horizon.
+
+| docs/modules/reference
+| Glossary and miscellaneous configuration topics.
+
+| docs/modules/releasenotes
+| Changelog and release notes.
+
+| docs/modules/write-the-docs
+| Documentation on how to write documentation for the Horizon project.
+|===
+
+NOTE: Documentation for other OpenNMS projects (for example, `opennms-alec`) follows a similar hierarchy, as appropriate for the project.
+
+Every new directory or `.adoc` file must be included in the general structure of the documentation, defined by the `nav.adoc` files:
+
+. Create a new `.adoc` file (in this example, `dosc/modules/operation/pages/meta-data.adoc`).
+. Open the directory's `nav.adoc` file (in this example, `docs/modules/operation/nav.adoc`).
+. Add a new bullet list entry linking to the new page.
++
+In this example, `meta-data.adoc` is located in the main `/operation/pages` directory, so you should add it as a level-one list item.
+If the document is located in a sub-directory (for example, `/operation/pages/admin`), you should add it as a level-two list item, and so on.
+To add a new level-one list item, use the following syntax:
++
+.Level-one `nav.adoc` list item with defined hyperlink text
+[source, asciidoc]
+----
+* xref:meta-data.adoc[Meta Data]
+----
++
+If you choose not to define the hyperlink text within the square brackets, the link will use the top-level heading in the specified file.
+
+. Save your changes and commit them to your active repository branch.
+
+To test your changes locally, xref:build-docs.adoc[build the documentation].

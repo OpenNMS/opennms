@@ -80,11 +80,11 @@ public class DefaultDataCollectionConfigDaoIT {
     @Test
     public void testNewStyle() throws Exception {
         DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
-        executeTests(dao, 86);
+        executeTests(dao, 84);
         SnmpCollection def =  dao.getContainer().getObject().getSnmpCollection("default");
         Assert.assertEquals(0, def.getResourceTypes().size());
         SnmpCollection rt =  dao.getContainer().getObject().getSnmpCollection("__resource_type_collection");
-        Assert.assertEquals(86, rt.getResourceTypes().size());
+        Assert.assertEquals(84, rt.getResourceTypes().size());
         Assert.assertEquals(0, rt.getSystems().getSystemDefs().size());
         Assert.assertEquals(0, rt.getGroups().getGroups().size());
     }
@@ -92,7 +92,7 @@ public class DefaultDataCollectionConfigDaoIT {
     @Test
     public void testOldStyle() throws Exception {
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
-        executeTests(oldDao, 82);
+        executeTests(oldDao, 80);
     }
 
     @Test
@@ -203,7 +203,6 @@ public class DefaultDataCollectionConfigDaoIT {
         Assert.assertEquals(expectedCount, resourceTypesMap.size());
         Assert.assertTrue(resourceTypesMap.containsKey("frCircuitIfIndex")); // Used resource type
         Assert.assertTrue(resourceTypesMap.containsKey("wmiTcpipNetworkInterface")); // Unused resource type
-        Assert.assertTrue(resourceTypesMap.containsKey("xmpFilesys")); // Unused resource type
     }
 
     private void executeMibObjectsTest(DefaultDataCollectionConfigDao dao, String systemOid, int expectedCount) {

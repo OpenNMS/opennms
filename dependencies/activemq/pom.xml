@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -17,6 +17,11 @@
       <version>${activemqVersion}</version>
       <scope>compile</scope>
       <exclusions>
+        <!-- Exclude org.apache.velocity:velocity as the 2.x version is at org.apache.velocity:velocity-engine-core -->
+        <exclusion>
+          <groupId>org.apache.velocity</groupId>
+          <artifactId>velocity</artifactId>
+        </exclusion>
         <!-- Exclude all Felix, Karaf, Jetty, and Pax dependencies since they are part of the OSGi container -->
         <exclusion>
           <groupId>org.apache.aries.blueprint</groupId>
@@ -138,93 +143,10 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--
-      This is causing problems when building the Remote Poller JNLP since it is a
-      compile dependency on an XML artifact. Exclude it for now since we cannot
-      load ActiveMQ inside Karaf right now because of Spring version conflicts
-      anyway.
-
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-karaf</artifactId>
-      <version>${activemqVersion}</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-      <exclusions>
-        <!- - Exclude all Felix, Karaf, Jetty, and Pax dependencies since they are part of the OSGi container - ->
-        <exclusion>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.apache.felix.framework</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.apache.felix.bundlerepository</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.karaf.shell</groupId>
-          <artifactId>org.apache.karaf.shell.console</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-websocket</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.eclipse.jetty.aggregate</groupId>
-          <artifactId>jetty-all</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.eclipse.jetty.aggregate</groupId>
-          <artifactId>jetty-all-server</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.ops4j.pax.logging</groupId>
-          <artifactId>pax-logging-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.ops4j.pax.logging</groupId>
-          <artifactId>pax-logging-service</artifactId>
-        </exclusion>
-        <!- - Exclude all logging APIs since they are provided by the container - ->
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <!- - Exclude legacy Spring artifacts - ->
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-expression</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.expression</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity-engine-core</artifactId>
     </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jackson1-dependencies</artifactId>

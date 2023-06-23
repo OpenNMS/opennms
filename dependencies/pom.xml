@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -24,6 +24,7 @@
     <module>groovy</module>
     <module>hibernate</module>
     <module>jackson1</module>
+    <module>jackson2</module>
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
@@ -33,7 +34,6 @@
     <module>jinterop</module>
     <module>jmx</module>
     <module>jna</module>
-    <module>jnlp</module>
     <module>jradius</module>
     <module>jradius-extended</module>
     <module>jrobin</module>

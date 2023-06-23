@@ -80,12 +80,12 @@
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
-			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
 			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-			for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+			for (Package thisPackage : collectdConfig.getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 
@@ -118,6 +118,7 @@
 	<div class="card-header">
 		<h4 class="pull-left">Scheduled Outages</h4>
     <form role="form" class="form-inline pull-right" action="admin/sched-outages/editoutage.jsp" method="post" >
+	  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="addNew" value="true" />
 		<div class="input-group">
 			<input type="text" class="form-control" value="New Name" size="40" name="newName" />
@@ -163,7 +164,7 @@
 					PollerConfigFactory.init(); //Force init
 			
 					List<String> pollingOutages = new ArrayList<>();
-					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+					for (final org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
 						pollingOutages.addAll(pkg.getOutageCalendars());
 					}
 
@@ -174,7 +175,7 @@
 			
 					List<String> collectionOutages = new ArrayList<>();
 					CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-					for (Package thisPackage : collectdConfig.getCollectdConfig().getPackages()) {
+					for (Package thisPackage : collectdConfig.getPackages()) {
 						collectionOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			

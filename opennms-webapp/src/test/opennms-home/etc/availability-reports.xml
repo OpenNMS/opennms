@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<report id="defaultCalendarReport" 
 		type="calendar">
-		<logo>${install.etc.dir}/reports/logo.gif</logo>
+		<logo>${install.etc.dir}/reports/logo.png</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>
@@ -18,7 +18,7 @@
 	</report>
 	<report id="defaultClassicReport" 
 		type="classic">
-		<logo>${install.etc.dir}/reports/logo.gif</logo>
+		<logo>${install.etc.dir}/reports/logo.png</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>

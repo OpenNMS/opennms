@@ -41,16 +41,18 @@ import org.opennms.netmgt.model.ReadOnlyEntity;
 public class IpInterfaceTopologyEntity {
     private final Integer id;
     private final InetAddress ipAddress;
+    private final InetAddress netMask;
     private final String isManaged;
     private final PrimaryType isSnmpPrimary;
     private final Integer nodeId;
     private final Integer snmpInterfaceId;
 
     public IpInterfaceTopologyEntity(Integer id,
-            InetAddress ipAddress, String isManaged, PrimaryType isSnmpPrimary, Integer nodeId,
+            InetAddress ipAddress, InetAddress netMask, String isManaged, PrimaryType isSnmpPrimary, Integer nodeId,
             Integer snmpInterfaceId){
         this.id = id;
         this.ipAddress = ipAddress;
+        this.netMask = netMask;
         this.isManaged = isManaged;
         this.isSnmpPrimary = isSnmpPrimary;
         this.nodeId = nodeId;
@@ -58,15 +60,16 @@ public class IpInterfaceTopologyEntity {
     }
 
     public IpInterfaceTopologyEntity(Integer id,
-            InetAddress ipAddress, String isManaged, String snmpPrimary, Integer nodeId,
+            InetAddress ipAddress, InetAddress netMask, String isManaged, String snmpPrimary, Integer nodeId,
             Integer snmpInterfaceId){
-        this(id, ipAddress, isManaged, PrimaryType.get(snmpPrimary), nodeId, snmpInterfaceId);
+        this(id, ipAddress, netMask, isManaged, PrimaryType.get(snmpPrimary), nodeId, snmpInterfaceId);
     }
 
     public static IpInterfaceTopologyEntity create(OnmsIpInterface ipInterface) {
         return new IpInterfaceTopologyEntity(
                 ipInterface.getId(),
                 ipInterface.getIpAddress(),
+                ipInterface.getNetMask(),
                 ipInterface.getIsManaged(),
                 ipInterface.getIsSnmpPrimary(),
                 Optional.ofNullable(ipInterface.getNode()).map(OnmsNode::getId).orElse(null),
@@ -86,6 +89,10 @@ public class IpInterfaceTopologyEntity {
 
     public InetAddress getIpAddress() {
         return ipAddress;
+    }
+
+    public InetAddress getNetMask() {
+        return netMask;
     }
 
     public String getIsManaged() {
@@ -117,6 +124,7 @@ public class IpInterfaceTopologyEntity {
         return "IpInterfaceTopologyEntity{" +
                 "id=" + id +
                 ", ipAddress=" + ipAddress +
+                ", netMask=" + netMask +
                 ", isManaged='" + isManaged + '\'' +
                 ", isSnmpPrimary=" + isSnmpPrimary +
                 ", nodeId=" + nodeId +

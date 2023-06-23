@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.nb;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -36,39 +40,115 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 
 public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
+    //NMS0001
+    public static final String FROH_IP = "192.168.239.51";
+    public static final String FROH_NAME = "froh";
+    public static final String FROH_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt";
+    public static final String FROH_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
 
+    public static final Map<InetAddress,Integer> FROH_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String> FROH_IF_IFALIAS_MAP = new HashMap<>();
+    public static final Map<InetAddress,InetAddress> FROH_IP_MK_MAP = new HashMap<>();
+
+    public static final String OEDIPUS_IP = "192.168.239.62";
+    public static final String OEDIPUS_NAME = "oedipus";
+    public static  final String OEDIPUS_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt";
+    public static  final String OEDIPUS_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    public static final Map<InetAddress,Integer> OEDIPUS_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> OEDIPUS_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> OEDIPUS_IP_MK_MAP = new HashMap<>();
+
+    public static final String SIEGFRIE_IP = "192.168.239.54";
+    public static final String SIEGFRIE_NAME = "siegfrie";
+    public static  final String SIEGFRIE_SNMP_RESOURCE = "classpath:/linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt";
+    public static  final String SIEGFRIE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
+
+    public static final Map<InetAddress,Integer> SIEGFRIE_IP_IF_MAP =  new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFNAME_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFDESCR_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_MAC_MAP = new HashMap<>();
+    public static  final Map<Integer,String> SIEGFRIE_IF_IFALIAS_MAP = new HashMap<>();
+    public static  final Map<InetAddress,InetAddress> SIEGFRIE_IP_MK_MAP = new HashMap<>();
+    //public static final String FROH_ISIS_SYS_ID     = "000110088500";
+    //public static final String OEDIPUS_ISIS_SYS_ID  = "000110255062";
+    public static final String SIEGFRIE_ISIS_SYS_ID = "000110255054";
 
     static {
     try {
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.13"), 696);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.5"), 663);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.8.1"), 612);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.11.1"), 616);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("21.1.1.2"), 757);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.1"), 665);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.10.1"), 615);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.1.2"), 606);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.9.1"), 613);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.246.16.245"), 608);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.123.1"), 668);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.17"), 698);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.6.1"), 614);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.5.1"), 610);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.10.10.10"), 639);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.77.17"), 687);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.6"), 599);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.246.250.252"), 618);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.255.3.51"), 16);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.2.2"), 607);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.51"), 13);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.7.1"), 611);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.3.1"), 609);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.12.1"), 617);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.9"), 693);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.2"), 600);
+        FROH_IF_IFNAME_MAP.put(21,"lo0.16384");
+        FROH_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        OEDIPUS_IF_IFNAME_MAP.put(21,"lo0.16384");
+        OEDIPUS_IF_IFDESCR_MAP.put(21,"lo0.16384");
+        SIEGFRIE_IF_IFNAME_MAP.put(21,"lo0.16384");
+        SIEGFRIE_IF_IFDESCR_MAP.put(21,"lo0.16384");
+
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.1.2"), 606);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.1.2"), InetAddressUtils.addr("255.255.255.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.2.2"), 607);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.2.2"), InetAddressUtils.addr("255.255.255.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.77.17"), 687);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.77.17"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.1"), 665);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.88.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.5"), 663);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.88.5"), InetAddressUtils.addr("255.255.255.255"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.9"), 693);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.88.9"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.13"), 696);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.88.13"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.17"), 698);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.0.88.17"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.2"), 600);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.1.3.2"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.6"), 599);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.1.3.6"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.10.10.10"), 639);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.10.10.10"), InetAddressUtils.addr("255.255.255.255"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.246.16.245"), 608);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.246.16.245"), InetAddressUtils.addr("255.255.255.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.246.250.252"), 618);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.246.250.252"), InetAddressUtils.addr("255.255.255.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.255.3.51"), 16);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("10.255.3.51"), InetAddressUtils.addr("255.255.255.255"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("21.1.1.2"), 757);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("21.1.1.2"), InetAddressUtils.addr("255.255.255.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.3.1"), 609);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.3.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.5.1"), 610);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.5.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.6.1"), 614);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.6.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.7.1"), 611);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.7.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.8.1"), 612);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.8.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.9.1"), 613);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.9.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.10.1"), 615);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.10.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.11.1"), 616);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.11.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.12.1"), 617);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.12.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.123.1"), 668);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("66.3.123.1"), InetAddressUtils.addr("255.255.255.252"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 18);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        FROH_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.51"), 13);
+        FROH_IP_MK_MAP.put(InetAddressUtils.addr("192.168.239.51"), InetAddressUtils.addr("255.255.255.128"));
     FROH_IF_IFNAME_MAP.put(529, "ge-1/1/1");
     FROH_IF_IFDESCR_MAP.put(529, "ge-1/1/1");
     FROH_IF_IFNAME_MAP.put(565, "pe-1/0/10");
@@ -81,7 +161,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(10, "pime");
     FROH_IF_IFNAME_MAP.put(668, "irb.66");
     FROH_IF_IFDESCR_MAP.put(668, "irb.66");
-    FROH_IF_NETMASK_MAP.put(668, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(562, "lc-1/3/0");
     FROH_IF_IFDESCR_MAP.put(562, "lc-1/3/0");
     FROH_IF_IFNAME_MAP.put(507, "pfe-1/0/0");
@@ -96,12 +175,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(574, "gr-1/1/10");
     FROH_IF_IFNAME_MAP.put(599, "ae1.0");
     FROH_IF_IFDESCR_MAP.put(599, "ae1.0");
-    FROH_IF_NETMASK_MAP.put(599, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(700, "ge-1/0/2.104");
     FROH_IF_IFDESCR_MAP.put(700, "ge-1/0/2.104");
     FROH_IF_IFNAME_MAP.put(610, "irb.202");
     FROH_IF_IFDESCR_MAP.put(610, "irb.202");
-    FROH_IF_NETMASK_MAP.put(610, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(523, "ge-1/0/7");
     FROH_IF_IFDESCR_MAP.put(523, "ge-1/0/7");
     FROH_IF_IFNAME_MAP.put(545, "ge-1/2/5");
@@ -116,7 +193,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(527, "lc-1/0/0.32769");
     FROH_IF_IFNAME_MAP.put(663, "lo0.336");
     FROH_IF_IFDESCR_MAP.put(663, "lo0.336");
-    FROH_IF_NETMASK_MAP.put(663, InetAddressUtils.addr("255.255.255.255"));
     FROH_IF_IFNAME_MAP.put(594, "lt-1/3/10");
     FROH_IF_IFDESCR_MAP.put(594, "lt-1/3/10");
     FROH_IF_IFNAME_MAP.put(570, "lt-1/0/10");
@@ -131,13 +207,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(561, "ge-1/3/9");
     FROH_IF_IFNAME_MAP.put(693, "ge-1/0/5.73");
     FROH_IF_IFDESCR_MAP.put(693, "ge-1/0/5.73");
-    FROH_IF_NETMASK_MAP.put(693, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(600, "ae2.0");
     FROH_IF_IFDESCR_MAP.put(600, "ae2.0");
-    FROH_IF_NETMASK_MAP.put(600, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(757, "irb.990");
     FROH_IF_IFDESCR_MAP.put(757, "irb.990");
-    FROH_IF_NETMASK_MAP.put(757, InetAddressUtils.addr("255.255.255.0"));
     FROH_IF_IFNAME_MAP.put(560, "ge-1/3/8");
     FROH_IF_IFDESCR_MAP.put(560, "ge-1/3/8");
     FROH_IF_IFNAME_MAP.put(582, "gr-1/2/10");
@@ -152,7 +225,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(756, "ge-1/1/9.990");
     FROH_IF_IFNAME_MAP.put(696, "ge-1/0/7.74");
     FROH_IF_IFDESCR_MAP.put(696, "ge-1/0/7.74");
-    FROH_IF_NETMASK_MAP.put(696, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(506, "pfh-1/0/0");
     FROH_IF_IFDESCR_MAP.put(506, "pfh-1/0/0");
     FROH_IF_IFNAME_MAP.put(549, "ge-1/2/9");
@@ -175,12 +247,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(652, "ge-1/1/4.32767");
     FROH_IF_IFNAME_MAP.put(612, "irb.204");
     FROH_IF_IFDESCR_MAP.put(612, "irb.204");
-    FROH_IF_NETMASK_MAP.put(612, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(644, "ge-1/3/8.32767");
     FROH_IF_IFDESCR_MAP.put(644, "ge-1/3/8.32767");
     FROH_IF_IFNAME_MAP.put(665, "ge-1/0/2.336");
     FROH_IF_IFDESCR_MAP.put(665, "ge-1/0/2.336");
-    FROH_IF_NETMASK_MAP.put(665, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(682, "lt-1/0/10.72");
     FROH_IF_IFDESCR_MAP.put(682, "lt-1/0/10.72");
     FROH_IF_IFNAME_MAP.put(515, "pfe-1/3/0.16383");
@@ -203,7 +273,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(579, "ud-1/1/10");
     FROH_IF_IFNAME_MAP.put(607, "irb.1");
     FROH_IF_IFDESCR_MAP.put(607, "irb.1");
-    FROH_IF_NETMASK_MAP.put(607, InetAddressUtils.addr("255.255.255.0"));
     FROH_IF_IFNAME_MAP.put(691, "lsi.1");
     FROH_IF_IFDESCR_MAP.put(691, "lsi.1");
     FROH_IF_IFNAME_MAP.put(537, "ge-1/1/9");
@@ -216,7 +285,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(649, "ge-1/0/7.32767");
     FROH_IF_IFNAME_MAP.put(698, "ge-1/0/7.75");
     FROH_IF_IFDESCR_MAP.put(698, "ge-1/0/7.75");
-    FROH_IF_NETMASK_MAP.put(698, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(622, "ge-1/0/9.32767");
     FROH_IF_IFDESCR_MAP.put(622, "ge-1/0/9.32767");
     FROH_IF_IFNAME_MAP.put(505, "demux0");
@@ -235,7 +303,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(745, "ge-1/3/9.1");
     FROH_IF_IFNAME_MAP.put(13, "fxp0.0");
     FROH_IF_IFDESCR_MAP.put(13, "fxp0.0");
-    FROH_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.255.128"));
     FROH_IF_IFNAME_MAP.put(509, "pfe-1/2/0");
     FROH_IF_IFDESCR_MAP.put(509, "pfe-1/2/0");
     FROH_IF_IFNAME_MAP.put(690, "ge-1/1/1.32767");
@@ -273,10 +340,8 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(501, "cbp0");
     FROH_IF_IFNAME_MAP.put(614, "irb.206");
     FROH_IF_IFDESCR_MAP.put(614, "irb.206");
-    FROH_IF_NETMASK_MAP.put(614, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(613, "irb.205");
     FROH_IF_IFDESCR_MAP.put(613, "irb.205");
-    FROH_IF_NETMASK_MAP.put(613, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(753, "ge-1/1/9.1");
     FROH_IF_IFDESCR_MAP.put(753, "ge-1/1/9.1");
     FROH_IF_IFNAME_MAP.put(542, "ge-1/2/2");
@@ -302,14 +367,12 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(576, "vt-1/1/10");
     FROH_IF_IFNAME_MAP.put(611, "irb.203");
     FROH_IF_IFDESCR_MAP.put(611, "irb.203");
-    FROH_IF_NETMASK_MAP.put(611, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(704, "ge-1/3/9.707");
     FROH_IF_IFDESCR_MAP.put(704, "ge-1/3/9.707");
     FROH_IF_IFNAME_MAP.put(543, "ge-1/2/3");
     FROH_IF_IFDESCR_MAP.put(543, "ge-1/2/3");
     FROH_IF_IFNAME_MAP.put(616, "irb.208");
     FROH_IF_IFDESCR_MAP.put(616, "irb.208");
-    FROH_IF_NETMASK_MAP.put(616, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(817, "ge-1/3/9.32767");
     FROH_IF_IFDESCR_MAP.put(817, "ge-1/3/9.32767");
     FROH_IF_IFNAME_MAP.put(709, "ge-1/3/9.712");
@@ -324,10 +387,8 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(532, "ge-1/1/4");
     FROH_IF_IFNAME_MAP.put(16, "lo0.0");
     FROH_IF_IFDESCR_MAP.put(16, "lo0.0");
-    FROH_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     FROH_IF_IFNAME_MAP.put(617, "irb.209");
     FROH_IF_IFDESCR_MAP.put(617, "irb.209");
-    FROH_IF_NETMASK_MAP.put(617, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(588, "pd-1/3/10");
     FROH_IF_IFDESCR_MAP.put(588, "pd-1/3/10");
     FROH_IF_IFNAME_MAP.put(516, "ge-1/0/0");
@@ -350,7 +411,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(563, "lc-1/3/0.32769");
     FROH_IF_IFNAME_MAP.put(639, "ge-1/0/8.0");
     FROH_IF_IFDESCR_MAP.put(639, "ge-1/0/8.0");
-    FROH_IF_NETMASK_MAP.put(639, InetAddressUtils.addr("255.255.255.255"));
     FROH_IF_IFNAME_MAP.put(581, "pe-1/2/10");
     FROH_IF_IFDESCR_MAP.put(581, "pe-1/2/10");
     FROH_IF_IFNAME_MAP.put(567, "ip-1/0/10");
@@ -359,7 +419,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(601, "ge-1/0/0.0");
     FROH_IF_IFNAME_MAP.put(18, "em0.0");
     FROH_IF_IFDESCR_MAP.put(18, "em0.0");
-    FROH_IF_NETMASK_MAP.put(18, InetAddressUtils.addr("255.0.0.0"));
     FROH_IF_IFNAME_MAP.put(593, "mt-1/3/10");
     FROH_IF_IFDESCR_MAP.put(593, "mt-1/3/10");
     FROH_IF_IFNAME_MAP.put(521, "ge-1/0/5");
@@ -368,7 +427,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(573, "pe-1/1/10");
     FROH_IF_IFNAME_MAP.put(609, "irb.201");
     FROH_IF_IFDESCR_MAP.put(609, "irb.201");
-    FROH_IF_NETMASK_MAP.put(609, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(556, "ge-1/3/4");
     FROH_IF_IFDESCR_MAP.put(556, "ge-1/3/4");
     FROH_IF_IFNAME_MAP.put(707, "ge-1/3/9.710");
@@ -382,7 +440,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(535, "ge-1/1/7");
     FROH_IF_IFNAME_MAP.put(687, "lt-1/0/10.4168");
     FROH_IF_IFDESCR_MAP.put(687, "lt-1/0/10.4168");
-    FROH_IF_NETMASK_MAP.put(687, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(559, "ge-1/3/7");
     FROH_IF_IFDESCR_MAP.put(559, "ge-1/3/7");
     FROH_IF_IFNAME_MAP.put(531, "ge-1/1/3");
@@ -409,7 +466,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(544, "ge-1/2/4");
     FROH_IF_IFNAME_MAP.put(606, "irb.0");
     FROH_IF_IFDESCR_MAP.put(606, "irb.0");
-    FROH_IF_NETMASK_MAP.put(606, InetAddressUtils.addr("255.255.255.0"));
     FROH_IF_IFNAME_MAP.put(539, "lc-1/1/0.32769");
     FROH_IF_IFDESCR_MAP.put(539, "lc-1/1/0.32769");
     FROH_IF_IFNAME_MAP.put(548, "ge-1/2/8");
@@ -424,7 +480,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(557, "ge-1/3/5");
     FROH_IF_IFNAME_MAP.put(615, "irb.207");
     FROH_IF_IFDESCR_MAP.put(615, "irb.207");
-    FROH_IF_NETMASK_MAP.put(615, InetAddressUtils.addr("255.255.255.252"));
     FROH_IF_IFNAME_MAP.put(619, "ge-1/1/2.32767");
     FROH_IF_IFDESCR_MAP.put(619, "ge-1/1/2.32767");
     FROH_IF_IFNAME_MAP.put(592, "vt-1/3/10");
@@ -451,12 +506,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_IFDESCR_MAP.put(569, "mt-1/0/10");
     FROH_IF_IFNAME_MAP.put(618, "irb.300");
     FROH_IF_IFDESCR_MAP.put(618, "irb.300");
-    FROH_IF_NETMASK_MAP.put(618, InetAddressUtils.addr("255.255.255.0"));
     FROH_IF_IFNAME_MAP.put(638, "ge-1/3/9.4");
     FROH_IF_IFDESCR_MAP.put(638, "ge-1/3/9.4");
     FROH_IF_IFNAME_MAP.put(608, "irb.200");
     FROH_IF_IFDESCR_MAP.put(608, "irb.200");
-    FROH_IF_NETMASK_MAP.put(608, InetAddressUtils.addr("255.255.255.0"));
     FROH_IF_IFNAME_MAP.put(666, "pd-1/3/10.32769");
     FROH_IF_IFDESCR_MAP.put(666, "pd-1/3/10.32769");
     FROH_IF_IFNAME_MAP.put(522, "ge-1/0/6");
@@ -621,17 +674,27 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IF_MAC_MAP.put(546, "0021590e43e5");
     FROH_IF_MAC_MAP.put(741, "0021590e429a");
     FROH_IF_MAC_MAP.put(618, "0021590e47f0");
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.10"), 575);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.5"), 578);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.255.0.62"), 16);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.62"), 13);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.6"), 515);
-    OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.6"), 515);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.6"), InetAddressUtils.addr("255.255.255.252"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.10"), 575);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.6"), InetAddressUtils.addr("255.255.255.252"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.5"), 578);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.6"), InetAddressUtils.addr("255.255.255.252"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("10.255.0.62"), 16);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("10.255.0.62"), InetAddressUtils.addr("255.255.255.255"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 16);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        OEDIPUS_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.62"), 13);
+        OEDIPUS_IP_MK_MAP.put(InetAddressUtils.addr("192.168.239.62"), InetAddressUtils.addr("255.255.255.128"));
+
     OEDIPUS_IF_IFNAME_MAP.put(515, "ge-0/0/0.0");
     OEDIPUS_IF_IFDESCR_MAP.put(515, "ge-0/0/0.0");
-    OEDIPUS_IF_NETMASK_MAP.put(515, InetAddressUtils.addr("255.255.255.252"));
     OEDIPUS_IF_IFNAME_MAP.put(506, "ge-0/0/2.0");
     OEDIPUS_IF_IFDESCR_MAP.put(506, "ge-0/0/2.0");
     OEDIPUS_IF_IFNAME_MAP.put(528, "pc-0/2/0.16383");
@@ -660,7 +723,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     OEDIPUS_IF_IFDESCR_MAP.put(12, "mtun");
     OEDIPUS_IF_IFNAME_MAP.put(14, "fxp1.0");
     OEDIPUS_IF_IFDESCR_MAP.put(14, "fxp1.0");
-    OEDIPUS_IF_NETMASK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
     OEDIPUS_IF_IFNAME_MAP.put(509, "ge-0/0/1");
     OEDIPUS_IF_IFDESCR_MAP.put(509, "ge-0/0/1");
     OEDIPUS_IF_IFNAME_MAP.put(541, "ge-0/1/1.0");
@@ -674,11 +736,9 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     OEDIPUS_IF_IFDESCR_MAP.put(583, "ge-0/2/2.100");
     OEDIPUS_IF_IFNAME_MAP.put(13, "fxp0.0");
     OEDIPUS_IF_IFDESCR_MAP.put(13, "fxp0.0");
-    OEDIPUS_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.255.128"));
     OEDIPUS_IF_IFNAME_MAP.put(16, "lo0.0");
     OEDIPUS_IF_IFDESCR_MAP.put(16, "lo0.0");
     OEDIPUS_IF_IFALIAS_MAP.put(16, "NPE");
-    OEDIPUS_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     OEDIPUS_IF_IFNAME_MAP.put(522, "pc-0/1/0.16383");
     OEDIPUS_IF_IFDESCR_MAP.put(522, "pc-0/1/0.16383");
     OEDIPUS_IF_IFNAME_MAP.put(587, "pfh-0/0/0.16383");
@@ -689,7 +749,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     OEDIPUS_IF_IFDESCR_MAP.put(539, "ge-0/0/1.0");
     OEDIPUS_IF_IFNAME_MAP.put(578, "ae1.0");
     OEDIPUS_IF_IFDESCR_MAP.put(578, "ae1.0");
-    OEDIPUS_IF_NETMASK_MAP.put(578, InetAddressUtils.addr("255.255.255.252"));
     OEDIPUS_IF_IFNAME_MAP.put(8, "gre");
     OEDIPUS_IF_IFDESCR_MAP.put(8, "gre");
     OEDIPUS_IF_IFNAME_MAP.put(513, "pc-0/0/0");
@@ -737,7 +796,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     OEDIPUS_IF_IFDESCR_MAP.put(585, "ge-0/2/3.1");
     OEDIPUS_IF_IFNAME_MAP.put(575, "ae0.0");
     OEDIPUS_IF_IFDESCR_MAP.put(575, "ae0.0");
-    OEDIPUS_IF_NETMASK_MAP.put(575, InetAddressUtils.addr("255.255.255.252"));
     OEDIPUS_IF_IFNAME_MAP.put(2, "fxp1");
     OEDIPUS_IF_IFDESCR_MAP.put(2, "fxp1");
     OEDIPUS_IF_MAC_MAP.put(516, "001f12accbf1");
@@ -770,16 +828,41 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     OEDIPUS_IF_MAC_MAP.put(575, "001f12accbf0");
     OEDIPUS_IF_MAC_MAP.put(570, "001f12accbf0");
     OEDIPUS_IF_MAC_MAP.put(507, "001f12acc800");
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.255.0.54"), 16);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.9"), 533);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.22"), 572);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.1"), 552);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("151.1.1.1"), 573);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.2"), 504);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.54"), 13);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
-    SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
+    /*
+    1.3.6.1.2.1.4.20.1.3.10.0.0.4 = IpAddress: 255.0.0.0
+.1.3.6.1.2.1.4.20.1.3.10.1.0.2 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.1.0.9 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.1.0.22 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.1.3.1 = IpAddress: 255.255.255.252
+.1.3.6.1.2.1.4.20.1.3.10.255.0.54 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.127.0.0.1 = IpAddress: 255.255.255.255
+.1.3.6.1.2.1.4.20.1.3.128.0.0.1 = IpAddress: 192.0.0.0
+.1.3.6.1.2.1.4.20.1.3.128.0.0.4 = IpAddress: 192.0.0.0
+.1.3.6.1.2.1.4.20.1.3.151.1.1.1 = IpAddress: 255.255.255.0
+.1.3.6.1.2.1.4.20.1.3.192.168.239.54 = IpAddress: 255.255.255.128
+     */
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 14);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.0.0.4"), InetAddressUtils.addr("255.0.0.0"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.2"), 504);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.2"), InetAddressUtils.addr("255.255.255.252"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.9"), 533);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.9"), InetAddressUtils.addr("255.255.255.252"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.0.22"), 572);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.0.22"), InetAddressUtils.addr("255.255.255.252"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.1"), 552);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.1.3.1"), InetAddressUtils.addr("255.255.255.252"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("10.255.0.54"), 16);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("10.255.0.54"), InetAddressUtils.addr("255.255.255.255"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("127.0.0.1"), 21);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("127.0.0.1"), InetAddressUtils.addr("255.255.255.255"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.1"), 14);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.1"), InetAddressUtils.addr("192.0.0.0"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 14);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("128.0.0.4"), InetAddressUtils.addr("192.0.0.0"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("151.1.1.1"), 573);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("151.1.1.1"), InetAddressUtils.addr("255.255.255.0"));
+        SIEGFRIE_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.54"), 13);
+        SIEGFRIE_IP_MK_MAP.put(InetAddressUtils.addr("192.168.239.54"), InetAddressUtils.addr("255.255.255.128"));
     SIEGFRIE_IF_IFNAME_MAP.put(511, "ge-0/1/0");
     SIEGFRIE_IF_IFDESCR_MAP.put(511, "ge-0/1/0");
     SIEGFRIE_IF_IFNAME_MAP.put(508, "ge-0/0/2.0");
@@ -805,19 +888,16 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_IFDESCR_MAP.put(4, "lsi");
     SIEGFRIE_IF_IFNAME_MAP.put(14, "fxp1.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(14, "fxp1.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(14, InetAddressUtils.addr("255.0.0.0"));
     SIEGFRIE_IF_IFNAME_MAP.put(534, "ae1");
     SIEGFRIE_IF_IFDESCR_MAP.put(534, "ae1");
     SIEGFRIE_IF_IFNAME_MAP.put(506, "pc-0/0/0");
     SIEGFRIE_IF_IFDESCR_MAP.put(506, "pc-0/0/0");
     SIEGFRIE_IF_IFNAME_MAP.put(13, "fxp0.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(13, "fxp0.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(13, InetAddressUtils.addr("255.255.255.128"));
     SIEGFRIE_IF_IFNAME_MAP.put(520, "ge-0/2/1");
     SIEGFRIE_IF_IFDESCR_MAP.put(520, "ge-0/2/1");
     SIEGFRIE_IF_IFNAME_MAP.put(504, "ge-0/0/0.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(504, "ge-0/0/0.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(504, InetAddressUtils.addr("255.255.255.252"));
     SIEGFRIE_IF_IFNAME_MAP.put(22, "lo0.16385");
     SIEGFRIE_IF_IFDESCR_MAP.put(22, "lo0.16385");
     SIEGFRIE_IF_IFNAME_MAP.put(512, "ge-0/1/0.0");
@@ -852,7 +932,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_IFDESCR_MAP.put(510, "pc-0/0/0.16383");
     SIEGFRIE_IF_IFNAME_MAP.put(552, "ae2.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(552, "ae2.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(552, InetAddressUtils.addr("255.255.255.252"));
     SIEGFRIE_IF_IFNAME_MAP.put(505, "ge-0/0/3");
     SIEGFRIE_IF_IFDESCR_MAP.put(505, "ge-0/0/3");
     SIEGFRIE_IF_IFNAME_MAP.put(5, "dsc");
@@ -862,7 +941,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_IFALIAS_MAP.put(532, "ToOidepus-ae0");
     SIEGFRIE_IF_IFNAME_MAP.put(573, "ge-0/2/3.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(573, "ge-0/2/3.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(573, InetAddressUtils.addr("255.255.255.0"));
     SIEGFRIE_IF_IFNAME_MAP.put(9, "ipip");
     SIEGFRIE_IF_IFDESCR_MAP.put(9, "ipip");
     SIEGFRIE_IF_IFNAME_MAP.put(516, "ge-0/1/3");
@@ -871,12 +949,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_IFDESCR_MAP.put(10, "pime");
     SIEGFRIE_IF_IFNAME_MAP.put(572, "ge-0/1/3.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(572, "ge-0/1/3.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(572, InetAddressUtils.addr("255.255.255.252"));
     SIEGFRIE_IF_IFNAME_MAP.put(11, "pimd");
     SIEGFRIE_IF_IFDESCR_MAP.put(11, "pimd");
     SIEGFRIE_IF_IFNAME_MAP.put(533, "ae0.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(533, "ae0.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(533, InetAddressUtils.addr("255.255.255.252"));
     SIEGFRIE_IF_IFNAME_MAP.put(522, "ge-0/2/3");
     SIEGFRIE_IF_IFDESCR_MAP.put(522, "ge-0/2/3");
     SIEGFRIE_IF_IFALIAS_MAP.put(522, "To_Spacey_eth3");
@@ -887,7 +963,6 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_IFALIAS_MAP.put(501, "ToPenelope-102");
     SIEGFRIE_IF_IFNAME_MAP.put(16, "lo0.0");
     SIEGFRIE_IF_IFDESCR_MAP.put(16, "lo0.0");
-    SIEGFRIE_IF_NETMASK_MAP.put(16, InetAddressUtils.addr("255.255.255.255"));
     SIEGFRIE_IF_IFNAME_MAP.put(7, "tap");
     SIEGFRIE_IF_IFDESCR_MAP.put(7, "tap");
     SIEGFRIE_IF_MAC_MAP.put(573, "001f12acc041");
@@ -927,15 +1002,15 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     }
     
     public OnmsNode getFroh() {
-        return getNode(FROH_NAME,FROH_SYSOID,FROH_IP,FROH_IP_IF_MAP,FROH_IF_IFNAME_MAP,FROH_IF_MAC_MAP,FROH_IF_IFDESCR_MAP,FROH_IF_IFALIAS_MAP);
+        return getNode(FROH_NAME,FROH_SYSOID,FROH_IP,FROH_IP_IF_MAP,FROH_IF_IFNAME_MAP,FROH_IF_MAC_MAP,FROH_IF_IFDESCR_MAP,FROH_IF_IFALIAS_MAP, FROH_IP_MK_MAP);
     }    
 
     public OnmsNode getOedipus() {
-        return getNode(OEDIPUS_NAME,OEDIPUS_SYSOID,OEDIPUS_IP,OEDIPUS_IP_IF_MAP,OEDIPUS_IF_IFNAME_MAP,OEDIPUS_IF_MAC_MAP,OEDIPUS_IF_IFDESCR_MAP,OEDIPUS_IF_IFALIAS_MAP);
+        return getNode(OEDIPUS_NAME,OEDIPUS_SYSOID,OEDIPUS_IP,OEDIPUS_IP_IF_MAP,OEDIPUS_IF_IFNAME_MAP,OEDIPUS_IF_MAC_MAP,OEDIPUS_IF_IFDESCR_MAP,OEDIPUS_IF_IFALIAS_MAP, OEDIPUS_IP_MK_MAP);
     }    
 
     public OnmsNode getSiegFrie() {
-        return getNode(SIEGFRIE_NAME,SIEGFRIE_SYSOID,SIEGFRIE_IP,SIEGFRIE_IP_IF_MAP,SIEGFRIE_IF_IFNAME_MAP,SIEGFRIE_IF_MAC_MAP,SIEGFRIE_IF_IFDESCR_MAP,SIEGFRIE_IF_IFALIAS_MAP);
+        return getNode(SIEGFRIE_NAME,SIEGFRIE_SYSOID,SIEGFRIE_IP,SIEGFRIE_IP_IF_MAP,SIEGFRIE_IF_IFNAME_MAP,SIEGFRIE_IF_MAC_MAP,SIEGFRIE_IF_IFDESCR_MAP,SIEGFRIE_IF_IFALIAS_MAP,SIEGFRIE_IP_MK_MAP);
     }    
 
 }

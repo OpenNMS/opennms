@@ -30,6 +30,8 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+
 import com.google.gson.annotations.SerializedName;
 
 public enum Locality {
@@ -46,5 +48,17 @@ public enum Locality {
 
     public String getValue() {
         return value;
+    }
+
+    public static Locality from(EnrichedFlow.Locality locality) {
+        if (locality == null) {
+            return null;
+        }
+
+        switch (locality) {
+            case PUBLIC: return Locality.PUBLIC;
+            case PRIVATE: return Locality.PRIVATE;
+            default: throw new IllegalStateException();
+        }
     }
 }

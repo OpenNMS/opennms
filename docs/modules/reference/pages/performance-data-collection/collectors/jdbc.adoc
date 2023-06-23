@@ -4,7 +4,7 @@
 The JDBCCollector collects performance data via JDBC drivers.
 Attributes are retrieved using SQL queries.
 The JDBC driver for PostgreSQL is included with {page-component-title}.
-Any other JDBC drivers must be manually loaded to collect from other types of database servers (see xref:deployment:core/install-jdbc-driver.adoc[Install JDBC driver on OpenNMS {page-component-title} Core] and xref:deployment:minion/installing-jdbc-driver.adoc[Install JDBC driver on Minion]).
+Any other JDBC drivers must be manually loaded to collect from other types of database servers (see xref:reference:configuration/install-jdbc-driver.adoc[] and xref:deployment:minion/installing-jdbc-driver.adoc[]).
 
 == Collector facts
 
@@ -65,7 +65,7 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 == JDBC collection configuration
 
-Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 JDBC collections are defined in `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`.
 

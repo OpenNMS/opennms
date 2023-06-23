@@ -1,0 +1,12 @@
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP" up-values="1" down-values="2" useCriteriaFilters="true">
+   <node-outage>
+      <critical-service name="ICMP"/>
+      <critical-service name="SNMP"/>
+   </node-outage>
+   <package name="whole-subnet">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="192.168.1.1" end="192.168.1.254"/>
+      <include-range begin="::1" end="::1"/>
+      <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on" port="161" timeout="1000" retry="1" max-vars-per-pdu="10" />
+  </package>
+</snmp-interface-poller-configuration>

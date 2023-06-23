@@ -192,7 +192,8 @@
   </p>
 <% } %> 
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
-          <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
           <input type="hidden" name="redirectParms" value="<c:out value="<%=request.getQueryString()%>"/>" />
           <%=org.opennms.web.api.Util.makeHiddenTags(request)%>
       <table class="table table-sm table-bordered severity">

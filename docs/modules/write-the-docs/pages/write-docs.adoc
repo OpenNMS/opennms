@@ -1,0 +1,377 @@
+
+:imagesdir: write-the-docs:images
+
+= Write the Documentation
+
+When writing documentation, place a single sentence on each line.
+This makes it easy to move content around, and to spot long or fragmented sentences.
+This will also allow us to assign comments on a single sentence in GitHub for easier review and merging.
+
+Sentences should be concise, easy to read, and written in the present tense.
+Refer to the reader in the second-person ("you"); this gives our documentation a personable tone.
+
+Avoid the use of abbreviations, especially those derived from Latin (for example, "e.g.," "i.e.," and "etc.").
+You should also avoid certain terms because of their cultural history (for example, "abort," "hang," "master," and "slave").
+For more information, see the Linguistic Society of America's https://www.linguisticsociety.org/resource/guidelines-inclusive-language[Guidelines for Inclusive Language].
+
+Make sure that there are no trailing spaces at the end of each line.
+A single space will automatically be added between each sentence when the documentation is built; including trailing spaces affects this spacing.
+
+Use commas to separate words and clauses in a simple series of three or more items (for example, "the mouse, the desktop, and the computer").
+Always include a comma before the conjunction.
+
+== Text formatting conventions
+
+The OpenNMS documentation uses the following conventions:
+
+* File names and paths are written as \`poller-configuration.xml` (rendered as `poller-configuration.xml`).
+* Bold field names, button and icon names, and words that require strong emphasis using the \*Bold* syntax (rendered as *Bold*).
+* Italicize words that require emphasis using the \_Italics_ syntax (rendered as _Italics_).
+* Write command line commands and configuration file lines as \`command` (rendered as `command`).
+Note that the contents will not be parsed.
+* You can force line breaks by including `+` at the end of a line, followed by a line break.
++
+[source, asciidoc]
+----
+This is the first line +
+and this is a forced second line.
+----
+
+Always leave a blank line at the beginning and end of a new `.adoc` file.
+Start the content on line 2, setting a relative path to the images directory (if applicable) to allow image rendering on GitHub:
+
+[source, asciidoc]
+----
+:imagesdir: relative/path/to/images/dir
+----
+
+Because curly braces (`{ }`) are used for AsciiDoc attributes, everything inside the braces will be treated as an attribute.
+To include braces without setting attributes, you must escape the opening brace by typing `\{`.
+If you do not escape the opening brace, the braces and the text inside them will not be rendered in the final documentation build.
+
+== Headings and document structure
+
+Each document begins with headings from level one (the document title):
+
+[source, asciidoc]
+----
+= The Document Title
+----
+
+When writing a document's title, capitalize the following:
+
+* The initial letter of the first word in the title.
+* The initial letter in all principal words—that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
+* All prepositions with five or more letters.
+* Any preposition that is part of a compound verb (for example, "Backing Up Files").
+* Both words in a hyphenated compound (for example, "Year-End Processing"); exceptions are short articles, such as "of-the" in "Run-of-the-Mill."
+
+Subsequent headings should use the following syntax:
+
+[source, asciidoc]
+----
+== Subheading one
+
+... content here ...
+
+=== Sub-subheading one
+
+... content here ...
+----
+
+Make sure that headings are brief, specific, and descriptive (for example, "Install server software").
+Headings should be capitalized as follows:
+
+* The initial letter of the first word in the heading.
+* The initial letter in all proper nouns.
+
+In some cases, sections in the document also need to have assigned IDs; this depends on where they fit in the overall structure.
+If you want to have a link to specific content, that content _must_ have an ID.
+A missing ID in a mandatory place causes the docs build to fail.
+
+== IDs and links
+
+Use the target's assigned ID to link to other parts of the documentation.
+To refer to a target's assigned ID, use the following syntax:
+
+[source, asciidoc]
+<<doc-guidelines-links, Link name>>
+
+If you need to link to another document and want to modify the link text, use the following syntax:
+
+[source, asciidoc]
+----
+xref:link/to/doc.adoc[Document Name]
+
+<<link/to/doc.adoc#tag-id, Section title>>
+----
+
+To include an external link, use the following syntax:
+
+.Include external link with defined hyperlink text
+[source, asciidoc]
+http://www.opennnms.com[Link text here]
+
+Links should have descriptive hyperlink text associated with them, and should avoid generic phrases (for example, "Click here").
+This helps with search engine optimization.
+
+When inserting an external link to the OpenNMS documentation (for example, linking to the main docs from another project), you should link to the latest version of the page.
+To do so, replace the version number in the URL with `latest` (`\https://docs.opennms.com/horizon/latest/index.html`).
+Linking to the latest documentation ensures that, when new versions are released, individual cross-reference links do not need to be updated.
+
+NOTE: If you do link to documentation for a specific project version, that link will be valid only for as long as that version is officially supported.
+
+== Lists
+
+Vertical lists provide clarity, emphasis, and order in documents, and can improve the visual impact when properly formatted.
+List items can be sentences, phrases, or single words.
+Sequential lists are numbered, and non-sequential lists are not.
+
+When writing a list, follow these guidelines:
+
+* Introduce the list using a complete sentence, followed by a colon (`:`).
+Do not treat the list as an extension of this sentence; that is, do not use semicolons or commas to end items, and don't insert "and" or "or" before the last item.
+* Capitalize the initial letter of the first word of each item in the list.
+* End all items with a period if one or more of the items contains a verb.
+* Use parallel structure for all items in a list.
+
+== Tables
+
+Tables present structured information, and can improve the visual impact of a document when formatted properly.
+
+When creating a table, follow these guidelines:
+
+* Capitalize the initial letter of all principal words in column headings—that is, words that are not articles ("the," "an," "a"), conjunctions ("and," "but," "or"), or prepositions.
+* In most cases, do not use end punctuation for column headings, with the exception of ellipses (`...`) when the items in the column complete the phrase begun in the heading.
+* For items within a column (with the exception of the heading), use periods for whole sentences only (strings of words that include at least one verb).
+
+In most cases, the "Description" column should appear immediately following the item being described.
+
+Construct tables using the following syntax:
+
+.Construct table with three columns
+[source, asciidoc]
+----
+[options="autowidth"]
+|===
+| Parameter | Description   | Default Value
+
+| myFirstParam
+| My first long description.
+| myDefault
+
+| mySecondParam
+| My second long description.
+| myDefault
+|===
+----
+
+This renders as follows:
+
+[options="autowidth"]
+|===
+| Parameter | Description   | Default Value
+
+| myFirstParam
+| My first long description.
+| myDefault
+
+| mySecondParam
+| My second long description.
+| myDefault
+|===
+
+For tables that are made up of more than two columns, use a separate line for each cell's content and include a blank line to separate rows, as in the code sample above.
+
+For content that has required and optional elements, use the following syntax:
+
+.Construct table with required and optional elements
+[source, asciidoc]
+----
+[options="autowidth"]
+|===
+| Parameter | Description   | Default Value
+
+3+|*Required*
+
+| myFirstParam
+| My first long description.
+| myDefault
+
+| mySecondParam
+| My second long description.
+| myDefault
+
+3+|*Optional*
+
+| myThirdParam
+| My third long description.
+| myDefault
+|===
+----
+
+Tables should have alt text associated with them.
+This allows screen readers to provide users with more context for the information being presented.
+Alt text should succinctly convey the table's content and function, and should not be redundant.
+If it would be redundant, omit it.
+
+== Code snippets
+
+You can include code snippets, configuration settings, or source code files in documentation.
+To enable syntax highlighting, provide the appropriate language parameter; this works for source code and configuration settings.
+
+WARNING: Use explicitly-defined code snippets as sparsely as possible.
+Code becomes obsolete very quickly, and directing to archaic practices is detrimental for users.
+
+To include code snippets, use the following syntax:
+
+.Include code snippet
+[source, asciidoc]
+....
+[source, language]
+----
+example code here
+----
+....
+
+If there is no suitable syntax highlighter for the language used, simply omit it, as in the previous example.
+The following syntax highlighters are available:
+
+* Bash, Console, or Shell
+* Groovy
+* Java
+* Javascript
+* JSON
+* Karaf
+* Properties
+* Python
+* SQL
+* XML
+* YAML or YML
+
+== Admonitions
+
+Use admonitions to define specific sections such as Notes, Tips, and Important information.
+Use them sparingly to draw the reader's attention to important text that may otherwise be overlooked.
+
+Admonitions can include multiple lines of text by using the forced new line syntax (`+`, followed by a line break).
+
+Remember to write the admonition type in full caps; it does not render properly otherwise.
+
+IMPORTANT: There is no easy way to add new admonition types.
+Do not create your own for inclusion in the OpenNMS documentation.
+
+.Include a Note admonition
+[source, asciidoc]
+NOTE: This is a note.
+
+A Note renders as follows:
+
+NOTE: This is a note.
+
+.Include a Tip admonition
+[source, asciidoc]
+TIP: This is a tip.
+
+A Tip renders as follows:
+
+TIP: This is a tip.
+
+.Include an Important note
+[source, asciidoc]
+IMPORTANT: This is an important hint.
+
+An Important note renders as follows:
+
+IMPORTANT: This is an important hint.
+
+.Include a Caution note
+[source, asciidoc]
+CAUTION: This is a cautionary note.
+
+A Caution note renders as follows:
+
+CAUTION: This is a cautionary note.
+
+.Include a Warning
+[source, asciidoc]
+WARNING: This is a warning.
+
+A Warning renders as follows:
+
+WARNING: This is a warning.
+
+[[ga-opennms-docs-images]]
+== Images
+
+Images may be useful to help explain and visualize complex problems, but they can clutter a document.
+When considering whether you should add an image to a document, determine whether the image itself is necessary by asking yourself if the reader is already looking at the software in question.
+Is there a button that is hard to find or a complicated screen that needs explanation?
+Additionally, consider how much of the image is text-based.
+Don't insert images of tables or text that the reader must read to understand the rest of the document.
+
+Minimize the use of screenshots.
+Include screenshots only to illustrate a concept that may be difficult to understand, or something that is not easy to locate in the UI.
+
+NOTE: All images share the same namespace.
+The best practice is to use unique identifiers for all image files.
+Image files should be in the `.png` format.
+
+To include an image file in a doc, make sure that it resides in the appropriate `./images` directory relative to the document that you are including it in (see the <<develop-docs.adoc#ga-opennms-docs-repo-structure, repository file structure>> section).
+Where possible, include the source file in the `./images` directory as well; this allows other contributors to update it in the future.
+
+Insert an image into a document using the following syntax:
+
+[source, asciidoc]
+----
+.This is the image caption
+image::docs/image.png["Image alt text", width]
+----
+
+The image path for all images that you include is relative to the `.adoc` file where the image is referenced.
+
+Images should have alt text associated with them.
+This allows screen readers to provide users with information about the image and its role in the document.
+Alt text should succinctly convey the image's content and function.
+
+== Attributes
+
+You can use common attributes to automatically render certain text.
+Some of these include the following:
+
+* `\{version}` - The current version of the OpenNMS software
+* `\{page-component-title}` - The name of the product (Horizon or Meridian)
+
+For a complete list of attributes, see the repository's `antora.yml` file.
+
+AsciiDocs also includes common attributes that can be used:
+
+* `\{docdir}` - The document's root directory.
+* `\{nbsp}` - Inserts a non-breaking space.
+
+== Comments
+
+A separate build of the OpenNMS documentation exists that includes comments.
+When comments are used, they are rendered with a yellow background.
+
+This build doesn't run by default, but after a normal build, you can use the `make annotated` command to create a local build.
+The resulting "annotated" docs render the full manual as a single page, allowing you to easily search for content.
+
+To write a comment, use the following syntax:
+
+[source, asciidoc]
+----
+// this is a comment
+----
+
+To write a comment block, use the following syntax:
+
+[source, asciidoc]
+----
+////
+The note included here will still be processed, but will not be rendered in the output.
+That said, missing includes here still break the build!
+////
+----
+
+Comments are not visible in the normal build, and comment blocks will not be included in the output of any build.

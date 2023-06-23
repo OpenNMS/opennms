@@ -28,6 +28,12 @@ include::../../time-sync.adoc[]
 
 [{tabs}]
 ====
+CentOS/RHEL 9::
++
+--
+include::centos-rhel9/install-sentinel.adoc[]
+--
+
 CentOS/RHEL 8::
 +
 --
@@ -86,4 +92,4 @@ TIP: By default the Karaf Shell is restricted to 127.0.0.1.
 
 == Set up flow processing
 
-To set up flow processing with Sentinel, see xref:operation:flows/sentinel/sentinel.adoc#flows-scaling[scale flows data].
+To set up flow processing with Sentinel, see xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[scale flows data].

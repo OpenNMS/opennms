@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -59,6 +59,11 @@
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>de.ruedigermoeller</groupId>
+      <artifactId>fst</artifactId>
+      <version>${fstVersion}</version>
+    </dependency>
 
     <!-- Dependencies used -->
     <dependency>
@@ -77,8 +82,9 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
-      <artifactId>common</artifactId>
+      <artifactId>config</artifactId>
       <version>${opennmsApiVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -101,6 +107,11 @@
     <dependency>
       <groupId>net.agkn</groupId>
       <artifactId>hll</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Testing -->
@@ -141,18 +152,11 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.snmp-collector</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  <repositories>
-    <!-- Required for OIA snapshots -->
-    <repository>
-      <id>sonatype.org-snapshot</id>
-      <url>https://maven.opennms.org/content/groups/sonatype.org-snapshot/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

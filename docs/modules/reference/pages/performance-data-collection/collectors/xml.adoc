@@ -3,24 +3,16 @@
 
 The XmlCollector collects and extracts metrics from XML and JSON documents.
 
-== Configuration and use
+== Collector facts
 
 [options="autowidth"]
 |===
 | Class Name            | `org.opennms.protocols.xml.collector.XmlCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration Files   | $OPENNMS_HOME/etc/xml-datacollection-config.xml +
-                          $OPENNMS_HOME/etc/xml-datacollection.d/*.xml
+| Configuration Files   | $\{OPENNMS_HOME}/etc/xml-datacollection-config.xml +
+                          $\{OPENNMS_HOME}/etc/xml-datacollection.d/*.xml
 |===
-
-=== Limitations on Minion
-
-The following handlers are not currently supported on Minion:
-
-* DefaultJsonCollectionHandler
-* Sftp3gppXmlCollectionHandler
-* Sftp3gppVTDXmlCollectionHandler
 
 == Configuration and use
 
@@ -63,12 +55,11 @@ If the root element is an array, it will be wrapped in an object accessible as `
 
 == XML collection configuration
 
-Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files.
 
-XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
+XML collections are defined in `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml` and groups are defined in `$\{OPENNMS_HOME}/etc/xml-datacollection/`.
 
-This snippet provides a collection definition named `xml-opennms-nodes`:
-
+.Sample collection definition named `xml-opennms-nodes`
 [source, xml]
 ----
 <xml-collection name="xml-opennms-nodes">
@@ -80,15 +71,39 @@ This snippet provides a collection definition named `xml-opennms-nodes`:
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
-    <request method="GET">
-      <parameter name="use-system-proxy" value="true"/>
-    </request>
     <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
   </xml-source>
 </xml-collection>
 ----
 
-The request element can have the following optional child elements:
+The `url` attribute of the `<xml-source>` supports node and IpInterface <<reference:configuration/filters/parameters.adoc#filter-parameters, field placeholders>>, though it does not support metadata tokens.
+
+.The referenced `opennms-nodes.xml` file
+[source, xml]
+----
+<xml-groups>
+    <xml-group name="nodes" resource-type="node" resource-xpath="/nodes">
+        <xml-object name="totalCount" type="GAUGE" xpath="@totalCount"/>
+    </xml-group>
+</xml-groups>
+----
+
+=== Customize the source request
+
+If you need to customize the request to pull raw data, you can add a `<request>` element within the `<xml-source>` block.
+
+[source, xml]
+----
+  <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
+    <request method="GET">
+      <parameter name="disable-ssl-verification" value="true"/>
+      <parameter name="use-system-proxy" value="true"/>
+    </request>
+    <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
+  </xml-source>
+----
+
+The request element can have the following optional child `<parameter>` elements:
 
 [options="header"]
 [cols="1,3,2"]
@@ -111,22 +126,15 @@ The request element can have the following optional child elements:
 
 | use-system-proxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
+Configure the system proxy settings via <<operation:deep-dive/admin/configuration/system-properties.adoc#system-properties, system properties>>.
 | false
+
+| xslt-source-file
+| Full path to XSLT file to transform XML data before processing to collection definitions.
+| n/a
 |===
 
-The referenced `opennms-nodes.xml` file contains:
-
-[source, xml]
-----
-<xml-groups>
-    <xml-group name="nodes" resource-type="node" resource-xpath="/nodes">
-        <xml-object name="totalCount" type="GAUGE" xpath="@totalCount"/>
-    </xml-group>
-</xml-groups>
-----
-
-== HTTP headers
+=== HTTP headers
 
 If the endpoint being collected requires additional headers, you can add them as part of the `<request>` object.
 
@@ -141,13 +149,58 @@ If the endpoint being collected requires additional headers, you can add them as
   </xml-source>
 ----
 
-== Test XML collection via Karaf
+=== Retrieve data from a POST request
 
-With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
+If your XML data needs to be retrieved via a POST instead of a GET, you can specify the body content of the request.
 
-[source, console]
+.`application/form-urlencoded`
+[source, xml]
 ----
-opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+  <xml-source url="http://{ipaddr}/post-example">
+    <request method="POST">
+      <content type='application/x-www-form-urlencoded'><![CDATA[
+        <form-fields>
+          <form-field name='firstName'>John</form-field>
+          <form-field name='lastName'>Doe</form-field>
+        </form-fields>
+      ]]></content>
+    </request>
+    <import-groups>xml-datacollection/my-groups.xml</import-groups>
+  </xml-source>
+----
+
+.`application/xml`
+[source, xml]
+----
+  <xml-source url="http://{ipaddr}/post-example">
+    <request method="POST">
+      <content type='application/xml'><![CDATA[
+        <person>
+          <firstName>John</firstName>
+          <lastName>Doe</lastName>
+        </person>
+      ]]></content>
+    </request>
+    <import-groups>xml-datacollection/my-groups.xml</import-groups>
+  </xml-source>
+----
+
+.`application/json`
+[source, xml]
+----
+  <xml-source url="http://{ipaddr}/post-example">
+    <request method="POST">
+      <content type='application/json'><![CDATA[
+        {
+          person: {
+            firstName: 'John',
+            lastName: 'Doe'
+          }
+        }
+      ]]></content>
+    </request>
+    <import-groups>xml-datacollection/my-groups.xml</import-groups>
+  </xml-source>
 ----
 
 == Mapping values
@@ -193,3 +246,12 @@ The following group configuration allows you to persist the `input` values as in
 <2> In this example we associate `aaa` to `10` and `bbb` to `20`.
 <3> Define a default value by omitting the `from` attribute in a `xml-mapping` definition.
 In this example `ccc` will be associated with the default value of `1000`.
+
+== Test XML collection via Karaf
+
+With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
+
+[source, karaf]
+----
+opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+----

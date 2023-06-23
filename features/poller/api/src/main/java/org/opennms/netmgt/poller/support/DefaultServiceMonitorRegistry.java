@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -68,7 +67,7 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
 
     private static final ServiceLoader<ServiceMonitor> s_serviceMonitorLoader = ServiceLoader.load(ServiceMonitor.class);
 
-    private final Map<String, CompletableFuture<ServiceMonitor>> m_monitorsByClassName = new HashMap<>();
+    private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 
     public DefaultServiceMonitorRegistry() {
         for (ServiceMonitor serviceMonitor : s_serviceMonitorLoader) {
@@ -88,12 +87,7 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
                         serviceMonitor, properties);
                 return;
             }
-            CompletableFuture<ServiceMonitor> future = m_monitorsByClassName.get(className);
-            if(future == null) {
-                future = new CompletableFuture<>();
-                m_monitorsByClassName.put(className, future);
-            }
-            future.complete(serviceMonitor);
+            m_monitorsByClassName.put(className, serviceMonitor);
         }
     }
 
@@ -112,13 +106,8 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     }
     
     @Override
-    public synchronized CompletableFuture<ServiceMonitor> getMonitorFutureByClassName(String className) {
-        CompletableFuture<ServiceMonitor> future = m_monitorsByClassName.get(className);
-        if(future == null) {
-            future = new CompletableFuture<>();
-            m_monitorsByClassName.put(className, future);
-        }
-        return future;
+    public synchronized ServiceMonitor getMonitorByClassName(String className) {
+        return m_monitorsByClassName.get(className);
     }
 
     @Override

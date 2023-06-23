@@ -74,4 +74,6 @@ public interface BaseOnmsMBean {
      */
     String getStatusText();
 
+    long getStartTimeMilliseconds();
+
 }

@@ -10,6 +10,10 @@ const _ = require('lodash');
 
   angular.module('onms-requisitions')
 
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }])
+
   /**
   * @ngdoc controller
   * @name MetaDataController

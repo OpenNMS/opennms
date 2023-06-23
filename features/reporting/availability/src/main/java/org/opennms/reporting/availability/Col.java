@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Class Col.
@@ -172,12 +174,13 @@ public class Col implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vColTitle
      * @throws IndexOutOfBoundsException if the index given is outside
      * the bounds of the collection
      */
+    @Hidden
     public void setColTitle(final int index, final String vColTitle) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this.colTitleList.size()) {
@@ -189,9 +192,10 @@ public class Col implements java.io.Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vColTitleArray
      */
+    @Hidden
     public void setColTitle(final String[] vColTitleArray) {
         //-- copy array
         colTitleList.clear();
@@ -221,6 +225,7 @@ public class Col implements java.io.Serializable {
      * 
      * @param colTitleList the Vector to set.
      */
+    @Hidden
     public void setColTitleCollection(final java.util.List<String> colTitleList) {
         this.colTitleList = colTitleList;
     }

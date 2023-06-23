@@ -1,6 +1,8 @@
+
 .xref:development.adoc[]
 
 * xref:build-from-source.adoc[]
+** xref:source-copyright.adoc[Copyright Conventions and Guidelines]
 
 * xref:osgi/osgi-and-opennms.adoc[]
 
@@ -20,7 +22,7 @@
 
 * xref:rest/rest-api.adoc[]
 ** xref:rest/osgi.adoc[]
-** xref:rest/implemented.adoc[]
+** xref:rest/implemented.adoc[Interfaces]
 *** xref:rest/acknowledgements.adoc[]
 *** xref:rest/alarm_statistics.adoc[]
 *** xref:rest/alarms.adoc[]
@@ -29,6 +31,7 @@
 *** xref:rest/categories.adoc[]
 *** xref:rest/config_management.adoc[]
 *** xref:rest/device_config.adoc[]
+*** xref:rest/discovery.adoc[]
 *** xref:rest/flows.adoc[]
 *** xref:rest/classifications.adoc[]
 *** xref:rest/foreign_sources.adoc[]
@@ -65,12 +68,6 @@
 *** xref:rest/situation-feedback.adoc[]
 
 * xref:oia/introduction.adoc[]
-
-* xref:docs/introduction.adoc[]
-** xref:docs/writing.adoc[]
-** xref:docs/images.adoc[]
-** xref:docs/include-source.adoc[]
-** xref:docs/build-docs.adoc[]
 
 * xref:amqp/introduction.adoc[]
 ** xref:amqp/event_forwarder.adoc[]

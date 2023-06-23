@@ -28,26 +28,20 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 
-public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
+public interface LldpLinkDao extends LinkDao<LldpLink, Integer> {
 
     LldpLink get(OnmsNode node, Integer lldpLocalPortNum);
 
     LldpLink get(Integer nodeId, Integer lldpLocalPortNum);
-    
-    List<LldpLink> findByNodeId(Integer nodeId);
 
     List<LldpLink> findLinksForIds(List<Integer> ids);
 
-    void deleteByNodeIdOlderThen(Integer nodeId, Date now);
-
-    void deleteByNodeId(Integer nodeId);
+    Integer getIfIndex(Integer nodeid, String portId);
 
 }

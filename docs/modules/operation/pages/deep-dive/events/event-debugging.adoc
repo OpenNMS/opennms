@@ -1,0 +1,127 @@
+
+= Event Troubleshooting
+
+This section describes how to troubleshoot events in {page-component-title}.
+
+== Debugging
+
+When debugging events, it may be helpful to lower the minimum severity at which eventd will log from the default level of `WARN`.
+To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the following line:
+
+[source, xml]
+<KeyValuePair key="eventd" value="WARN" />
+
+Changes to `log42.xml` will take effect within 60 seconds with no further action needed.
+
+At the `DEBUG` level, eventd will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
+On busy systems, this setting may create so much noise as to be impractical.
+In these cases, you can get terse event summaries by setting eventd to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+
+[[send-event]]
+== Manually send events
+
+You can manually create and send an event to trigger processes inside of {page-component-title} through the UI or using the <<event-utility, `send-event.pl` utility>>.
+In most cases, you would do this to reload daemon configuration without having to restart {page-component-title}.
+
+[[send-event-ui]]
+To manually send an event in the web UI, follow these steps:
+
+. Click the *gear* symbol in the top-right corner of the screen.
+. Under Event Management, select *Manually Send an Event*.
+. Select an event from the *Event* list, and specify additional information (UUID, node ID, parameters, severity, and so on).
+. Click *Send Event*.
+. To view the event, click menu:Status[Events] in the top menu bar, and click *All Events*.
+The event that you created is shown at the top of the list.
+
+[[event-utility]]
+=== send-event.pl utility
+
+In addition to manually adding events, you can also use the `send-event.pl` utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
+For example, you can use the utility to do the following:
+
+* Create a new suspect event every time you add a new resource.
+* Clear out alarms.
+* Open a ticket in your integrated ticketing system.
+* Send a notification reminder to order new ink cartridges when your printer is out of toner.
+
+Commands for the utility should follow the `$\{OPENNMS_HOME}/bin/send-event.pl <uei> [host:port] [options]` format.
+The `host:port` defines the hostname and port to send the event; by default, it points to the local host.
+
+You can find UEIs and their associated parameters in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` (see xref:deep-dive/events/event-configuration.adoc[]).
+
+[caption=]
+.`send-event.pl` parameters
+[cols="1,3"]
+|===
+| Name/Alias    | Description
+
+2+|*Required*
+
+| uei
+| Unique event identifier (UEI) indicating the type of event.
+You can view UEIs in `eventd-configuration.xml`.
+You can also define your own UEIs.
+
+2+|*Optional*
+
+| -d (--description)
+| Description for the event browser.
+
+| -f (--ifindex)
+| `ifIndex` of the associated service.
+
+| -h (--help)
+| Help message for the script (the content from this table).
+
+| -i (--interface)
+| IP address of associated interface.
+
+| -l (--logmsg)
+| A short log message for the event browser (secure field by default).
+
+| -n (--nodeid)
+| Database ID of associated node (or use `foreignSource`, `foreignId` parameters).
+
+| -p (-parameter)
+| Parameter in `key=value` form (for example, `-p 'url \http://www.opennms.com/'`).
+
+| -s (--service)
+| Name of the associated service.
+
+| -x (--severity)
+| Severity of the event: +
+1 = Indeterminate +
+2 = Cleared +
+3 = Normal +
+4 = Warning +
+5 = Minor +
+6 = Major +
+7 = Critical +
+
+| -t (--timezone)
+| Your time zone.
+
+| -v (--verbose)
+| Print the raw XML that is generated.
+
+| -V (--version)
+| Print version and exit successfully.
+|===
+
+Note that parameter descriptions use the percentage sign (`%`) as a delimiter to mark a replacement variable (see xref:deep-dive/events/event-tokens.adoc[]).
+If a literal percent sign appears in your description, you must escape it with a `%` (for example, `'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`).
+
+=== Example
+
+Send an event to reload the eventd configuration:
+
+[source, console]
+$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig
+
+== Karaf Shell
+
+Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
+This command is useful to display event definitions that may not be easily accessible on disk, or to verify that particular events were actually loaded:
+
+[source, karaf]
+opennms:show-event-config -u uei.opennms.org/alarms

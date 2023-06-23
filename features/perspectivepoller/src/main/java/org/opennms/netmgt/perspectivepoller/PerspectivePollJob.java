@@ -71,7 +71,7 @@ public class PerspectivePollJob implements Job {
         backend.getLocationAwarePollerClient().poll()
                 .withService(svc.getMonitoredService())
                 .withTimeToLive(svc.getServiceConfig().getInterval())
-                .withMonitor(svc.getServiceMonitor())
+                .withMonitorLocator(svc.getServiceMonitorLocator())
                 .withAttributes(svc.getServiceConfig().getParameterMap())
                 .withPatternVariables(svc.getPatternVariables())
                 .execute()

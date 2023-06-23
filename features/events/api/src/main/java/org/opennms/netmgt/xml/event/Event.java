@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,6 +62,8 @@ import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
 import org.opennms.netmgt.events.api.model.IEvent;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -1352,12 +1354,13 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param index
 	 * @param vAutoaction
 	 * @throws IndexOutOfBoundsException
 	 *             if the index given is outside the bounds of the collection
 	 */
+    @Hidden
 	public void setAutoaction(final int index, final Autoaction vAutoaction) throws IndexOutOfBoundsException {
 		// check bounds for index
 		if (index < 0 || index >= _autoactionList.size()) {
@@ -1369,9 +1372,10 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param vAutoactionArray
 	 */
+    @Hidden
 	public void setAutoaction(final Autoaction[] vAutoactionArray) {
 		// -- copy array
 		_autoactionList.clear();
@@ -1404,6 +1408,7 @@ public class Event implements Message,Serializable {
 	 * @param autoactionList
 	 *            the Vector to set.
 	 */
+    @Hidden
 	public void setAutoactionCollection(final List<Autoaction> autoactionList) {
 		_autoactionList = autoactionList;
 	}
@@ -1464,12 +1469,13 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param index
 	 * @param vForward
 	 * @throws IndexOutOfBoundsException
 	 *             if the index given is outside the bounds of the collection
 	 */
+    @Hidden
 	public void setForward(final int index, final Forward vForward) throws IndexOutOfBoundsException {
 		// check bounds for index
 		if (index < 0 || index >= _forwardList.size()) {
@@ -1481,9 +1487,10 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param vForwardArray
 	 */
+    @Hidden
 	public void setForward(final Forward[] vForwardArray) {
 		// -- copy array
 		_forwardList.clear();
@@ -1516,6 +1523,7 @@ public class Event implements Message,Serializable {
 	 * @param forwardList
 	 *            the Vector to set.
 	 */
+    @Hidden
 	public void setForwardCollection(final List<Forward> forwardList) {
 		_forwardList = forwardList;
 	}
@@ -1568,12 +1576,13 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param index
 	 * @param vLoggroup
 	 * @throws IndexOutOfBoundsException
 	 *             if the index given is outside the bounds of the collection
 	 */
+    @Hidden
 	public void setLoggroup(final int index, final String vLoggroup) throws IndexOutOfBoundsException {
 		// check bounds for index
 		if (index < 0 || index >= _loggroupList.size()) {
@@ -1585,9 +1594,10 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param vLoggroupArray
 	 */
+    @Hidden
 	public void setLoggroup(final String[] vLoggroupArray) {
 		// -- copy array
 		_loggroupList.clear();
@@ -1620,6 +1630,7 @@ public class Event implements Message,Serializable {
 	 * @param loggroupList
 	 *            the Vector to set.
 	 */
+    @Hidden
 	public void setLoggroupCollection(final List<String> loggroupList) {
 		_loggroupList = loggroupList;
 	}
@@ -1682,12 +1693,13 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param index
 	 * @param vOperaction
 	 * @throws IndexOutOfBoundsException
 	 *             if the index given is outside the bounds of the collection
 	 */
+    @Hidden
 	public void setOperaction(final int index, final Operaction vOperaction) throws IndexOutOfBoundsException {
 		// check bounds for index
 		if (index < 0 || index >= _operactionList.size()) {
@@ -1699,9 +1711,10 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param vOperactionArray
 	 */
+    @Hidden
 	public void setOperaction(final Operaction[] vOperactionArray) {
 		// -- copy array
 		_operactionList.clear();
@@ -1734,6 +1747,7 @@ public class Event implements Message,Serializable {
 	 * @param operactionList
 	 *            the Vector to set.
 	 */
+    @Hidden
 	public void setOperactionCollection(final List<Operaction> operactionList) {
 		_operactionList = operactionList;
 	}
@@ -1770,12 +1784,13 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param index
 	 * @param vScript
 	 * @throws IndexOutOfBoundsException
 	 *             if the index given is outside the bounds of the collection
 	 */
+    @Hidden
 	public void setScript(final int index, final Script vScript) throws IndexOutOfBoundsException {
 		// check bounds for index
 		if (index < 0 || index >= _scriptList.size()) {
@@ -1787,9 +1802,10 @@ public class Event implements Message,Serializable {
 
 	/**
 	 * 
-	 * 
+	 * @deprecated
 	 * @param vScriptArray
 	 */
+    @Hidden
 	public void setScript(final Script[] vScriptArray) {
 		// -- copy array
 		_scriptList.clear();
@@ -1822,6 +1838,7 @@ public class Event implements Message,Serializable {
 	 * @param scriptList
 	 *            the Vector to set.
 	 */
+    @Hidden
 	public void setScriptCollection(final List<Script> scriptList) {
 		_scriptList = scriptList;
 	}

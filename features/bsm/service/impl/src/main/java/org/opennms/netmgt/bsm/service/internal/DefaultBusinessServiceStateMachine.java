@@ -94,10 +94,16 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private final ReadWriteLock m_rwLock = new ReentrantReadWriteLock();
     private BusinessServiceGraph m_g = new BusinessServiceGraphImpl(Collections.emptyList());
 
+    private boolean m_recordAndDeferStatusUpdates = false;
+    private final Map<GraphVertex, StatusUpdate> m_statusUpdatesByVertex = new LinkedHashMap<>();
+
     @Override
     public void setBusinessServices(List<BusinessService> businessServices) {
         m_rwLock.writeLock().lock();
         try {
+            // Defer status updates until we've processed the whole graph
+            m_recordAndDeferStatusUpdates = true;
+
             // Create a new graph
             BusinessServiceGraph g = new BusinessServiceGraphImpl(businessServices);
 
@@ -127,6 +133,16 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 }
             }
             m_g = g;
+
+            // Stop recording, and release the status updates
+            m_recordAndDeferStatusUpdates = false;
+            for (StatusUpdate statusUpdate : m_statusUpdatesByVertex.values()) {
+                for (BusinessServiceStateChangeHandler handler : m_handlers) {
+                    handler.handleBusinessServiceStateChanged(statusUpdate.graph, statusUpdate.vertex.getBusinessService(),
+                            statusUpdate.vertex.getStatus(), statusUpdate.previousStatus);
+                }
+            }
+            m_statusUpdatesByVertex.clear();
         } finally {
             m_rwLock.writeLock().unlock();
         }
@@ -285,12 +301,19 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             if (previousVertex != null && vertex.getStatus().equals(previousVertex.getStatus())) {
                 // The vertex for this business service in the previous graph
                 // had the same status, don't issue any notifications
+                if (m_recordAndDeferStatusUpdates) {
+                    m_statusUpdatesByVertex.remove(vertex);
+                }
                 return;
             }
         }
 
-        for (BusinessServiceStateChangeHandler handler : m_handlers) {
-            handler.handleBusinessServiceStateChanged(graph, businessService, vertex.getStatus(), previousStatus);
+        if (m_recordAndDeferStatusUpdates) {
+            m_statusUpdatesByVertex.computeIfAbsent(vertex, v -> new StatusUpdate(graph, v, previousStatus));
+        } else {
+            for (BusinessServiceStateChangeHandler handler : m_handlers) {
+                handler.handleBusinessServiceStateChanged(graph, businessService, vertex.getStatus(), previousStatus);
+            }
         }
     }
 
@@ -572,5 +595,17 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     private List<GraphVertex> calculateImpact(GraphVertex vertex) {
         return GraphAlgorithms.calculateImpact(m_g, vertex);
+    }
+
+    private static class StatusUpdate {
+        private final BusinessServiceGraph graph;
+        private final GraphVertex vertex;
+        private final Status previousStatus;
+
+        public StatusUpdate(BusinessServiceGraph graph, GraphVertex vertex, Status previousStatus) {
+            this.graph = graph;
+            this.vertex = vertex;
+            this.previousStatus = previousStatus;
+        }
     }
 }

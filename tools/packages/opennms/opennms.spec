@@ -65,10 +65,12 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
+Requires:		opennms-plugin-cloud >= 1.0.0
 Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
+
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -93,13 +95,14 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp >= 2.0.0
-Requires:	jicmp >= 2.0.0
-Requires(pre):	jicmp6 >= 2.0.0
-Requires:	jicmp6 >= 2.0.0
+Requires(pre):	jicmp >= 3.0.0
+Requires:	jicmp >= 3.0.0
+Requires(pre):	jicmp6 >= 3.0.0
+Requires:	jicmp6 >= 3.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
+Provides:	opennms-plugin-api = %{opa_version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
@@ -208,8 +211,6 @@ Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xmp
-Requires:	%{name}-plugin-protocol-xmp
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
 
@@ -420,19 +421,6 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %{extrainfo2}
 
 
-%package plugin-protocol-xmp
-Summary:	XMP Poller
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-xmp
-The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-collector-juniper-tca
 Summary:	Juniper TCA Collector
 Group:		Applications/System
@@ -557,7 +545,9 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.version="%{version}-%{release}" \
 	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" \
+	-Denable.license=true \
 	-Dinstall.bin.dir="%{bindir}" \
+	-Dinstall.pid.file=/var/run/opennms/opennms.pid \
 	-Dbuild=all \
 	-Dbuild.profile=full \
 	-Prun-expensive-tasks \
@@ -646,8 +636,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
-	grep -v 'xmp-config.xml' | \
-	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
@@ -671,8 +659,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xmp-config.xml' | \
-	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/bin ! -type d | \
@@ -684,10 +670,11 @@ find %{buildroot}%{sharedir} ! -type d | \
 	grep -v 'etc-pristine' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
-	grep -v 'xmp-config.xsd' | \
-	grep -v 'xmp-datacollection-config.xsd' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
+	sort >> %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/agent ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
@@ -703,18 +690,17 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
-	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'opennms-vtdxml-collector-handler' | \
 	grep -v 'provisioning-adapter' | \
 	grep -v 'vtd-xml' | \
-	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
-# Put the etc, lib, and system subdirectories into the package
-find %{buildroot}%{instprefix}/bin \
+# Put the agent, bin, etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/agent \
+	%{buildroot}%{instprefix}/bin \
 	%{buildroot}%{instprefix}/contrib \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
@@ -741,7 +727,7 @@ find %{buildroot}%{jettydir} ! -type d | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	sort >> %{_tmppath}/files.jetty
+	sort > %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/hawtio' | \
@@ -869,14 +855,6 @@ rm -rf %{buildroot}
 %{instprefix}/lib/*jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
-%files plugin-protocol-xmp
-%defattr(664 opennms opennms 775)
-%config(noreplace) %{instprefix}/etc/xmp*.xml
-%{instprefix}/lib/org.opennms.protocols.xmp-*.jar
-%{instprefix}/lib/xmp-*.jar
-%{sharedir}/etc-pristine/xmp*.xml
-%{sharedir}/xsds/xmp*.xsd
-
 %files plugin-collector-juniper-tca
 %defattr(664 opennms opennms 775)
 %config(noreplace) %{instprefix}/etc/tca*.xml
@@ -974,12 +952,6 @@ else
 fi
 
 rm -f $ROOT_INST/etc/configured
-for dir in /etc /etc/rc.d; do
-	if [ -d "${dir}/init.d" ]; then
-		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
-		break
-	fi
-done
 
 for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
@@ -1083,9 +1055,6 @@ fi
 
 %post plugin-protocol-radius
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-radius"
-
-%post plugin-protocol-xmp
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-xmp"
 
 %post plugin-collector-juniper-tca
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-juniper-tca"

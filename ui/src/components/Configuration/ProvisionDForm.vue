@@ -11,6 +11,7 @@
     />
     <div class="flex-center">
       <FeatherSelect
+        data-test="external-source-select"
         class="side-input full-width mb-m"
         textProp="name"
         label="External Source"

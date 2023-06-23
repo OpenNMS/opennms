@@ -1,0 +1,23 @@
+
+= Step 6: Establish a Baseline
+
+This section describes how to establish a baseline for your {page-component-title} instance.
+Determining your environment's baseline operating state will help you evaluate how effective your notification rules are, your network's peak operating times, and other useful metrics.
+
+== Determine your environment's "normal"
+
+The major step in establishing a baseline for your {page-component-title} instance is observing it.
+Once the instance is set up and its environment configured, let it run for a bit--preferably a week, or up to a month.
+This will let {page-component-title} collect data in the background while your network experiences its usual traffic.
+
+Note the notifications and alerts you receive during this observation period.
+Are they helpful, considering the type of traffic your network sees?
+Are there events that should be alerted for, but the default settings don't cover them?
+Are all of the network's nodes being monitored properly?
+
+Decide what you need to see to properly maintain your environment without overwhelming yourself with notifications and alerts.
+
+== Next steps
+
+After your {page-component-title} instance has had time to run and collect data, you can update and customize its configuration settings.
+This is covered in steps 7 and 8 of this guide.

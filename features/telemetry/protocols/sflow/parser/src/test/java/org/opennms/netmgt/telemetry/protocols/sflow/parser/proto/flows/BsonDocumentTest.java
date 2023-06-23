@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
+import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.net.Inet4Address;
@@ -43,7 +47,6 @@ import org.bson.BsonDocumentWriter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlow;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
@@ -206,31 +209,31 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = createSampledIpv4();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
-        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV4_STR, sFlow.getDstAddr());
         Assert.assertEquals(null, sFlow.getDstAs());
         Assert.assertEquals(null, sFlow.getDstMaskLen());
         Assert.assertEquals(new Integer(DST_PORT), sFlow.getDstPort());
         Assert.assertEquals(null, sFlow.getEngineType());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
         Assert.assertEquals(1, sFlow.getFlowRecords());
         Assert.assertEquals(0, sFlow.getFlowSeqNum());
         Assert.assertEquals(new Integer(INPUT), sFlow.getInputSnmp());
         Assert.assertEquals(new Integer(4), sFlow.getIpProtocolVersion());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
-        Assert.assertEquals(Flow.NetflowVersion.SFLOW, sFlow.getNetflowVersion());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
+        Assert.assertEquals(NetflowVersion.SFLOW, sFlow.getNetflowVersion());
         Assert.assertEquals(null, sFlow.getNextHop());
         Assert.assertEquals(new Integer(OUTPUT), sFlow.getOutputSnmp());
         Assert.assertEquals(new Long(1), sFlow.getPackets());
         Assert.assertEquals(new Integer(PROTOCOL), sFlow.getProtocol());
-        Assert.assertEquals(Flow.SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
+        Assert.assertEquals(SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
         Assert.assertEquals(new Double(2.0), sFlow.getSamplingInterval());
         Assert.assertEquals(SRC_IPV4_STR, sFlow.getSrcAddr());
         Assert.assertEquals(null, sFlow.getSrcAs());
         Assert.assertEquals(null, sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(SRC_PORT), sFlow.getSrcPort());
         Assert.assertEquals(new Integer(TCP_FLAGS), sFlow.getTcpFlags());
-        Assert.assertEquals(CURRENT_TIME_MILLIS, sFlow.getTimestamp());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getTimestamp());
         Assert.assertEquals(new Integer(TOS), sFlow.getTos());
         Assert.assertEquals(null, sFlow.getVlan());
     }
@@ -240,31 +243,31 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = createSampledIpv6();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
-        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV6_STR, sFlow.getDstAddr());
         Assert.assertEquals(null, sFlow.getDstAs());
         Assert.assertEquals(null, sFlow.getDstMaskLen());
         Assert.assertEquals(new Integer(DST_PORT), sFlow.getDstPort());
         Assert.assertEquals(null, sFlow.getEngineType());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
         Assert.assertEquals(1, sFlow.getFlowRecords());
         Assert.assertEquals(0, sFlow.getFlowSeqNum());
         Assert.assertEquals(new Integer(INPUT), sFlow.getInputSnmp());
         Assert.assertEquals(new Integer(6), sFlow.getIpProtocolVersion());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
-        Assert.assertEquals(Flow.NetflowVersion.SFLOW, sFlow.getNetflowVersion());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
+        Assert.assertEquals(NetflowVersion.SFLOW, sFlow.getNetflowVersion());
         Assert.assertEquals(null, sFlow.getNextHop());
         Assert.assertEquals(new Integer(OUTPUT), sFlow.getOutputSnmp());
         Assert.assertEquals(new Long(1), sFlow.getPackets());
         Assert.assertEquals(new Integer(PROTOCOL), sFlow.getProtocol());
-        Assert.assertEquals(Flow.SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
+        Assert.assertEquals(SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
         Assert.assertEquals(new Double(2.0), sFlow.getSamplingInterval());
         Assert.assertEquals(SRC_IPV6_STR, sFlow.getSrcAddr());
         Assert.assertEquals(null, sFlow.getSrcAs());
         Assert.assertEquals(null, sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(SRC_PORT), sFlow.getSrcPort());
         Assert.assertEquals(new Integer(TCP_FLAGS), sFlow.getTcpFlags());
-        Assert.assertEquals(CURRENT_TIME_MILLIS, sFlow.getTimestamp());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getTimestamp());
         Assert.assertEquals(new Integer(TOS), sFlow.getTos());
         Assert.assertEquals(null, sFlow.getVlan());
     }
@@ -274,31 +277,31 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = createSampledHeaderIpv4();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
-        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV4_STR, sFlow.getDstAddr());
         Assert.assertEquals(null, sFlow.getDstAs());
         Assert.assertEquals(null, sFlow.getDstMaskLen());
         Assert.assertEquals(new Integer(DST_PORT), sFlow.getDstPort());
         Assert.assertEquals(null, sFlow.getEngineType());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
         Assert.assertEquals(1, sFlow.getFlowRecords());
         Assert.assertEquals(0, sFlow.getFlowSeqNum());
         Assert.assertEquals(new Integer(INPUT), sFlow.getInputSnmp());
         Assert.assertEquals(new Integer(4), sFlow.getIpProtocolVersion());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
-        Assert.assertEquals(Flow.NetflowVersion.SFLOW, sFlow.getNetflowVersion());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
+        Assert.assertEquals(NetflowVersion.SFLOW, sFlow.getNetflowVersion());
         Assert.assertEquals(null, sFlow.getNextHop());
         Assert.assertEquals(new Integer(OUTPUT), sFlow.getOutputSnmp());
         Assert.assertEquals(new Long(1), sFlow.getPackets());
         Assert.assertEquals(new Integer(PROTOCOL), sFlow.getProtocol());
-        Assert.assertEquals(Flow.SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
+        Assert.assertEquals(SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
         Assert.assertEquals(new Double(2.0), sFlow.getSamplingInterval());
         Assert.assertEquals(SRC_IPV4_STR, sFlow.getSrcAddr());
         Assert.assertEquals(null, sFlow.getSrcAs());
         Assert.assertEquals(null, sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(SRC_PORT), sFlow.getSrcPort());
         Assert.assertEquals(new Integer(TCP_FLAGS), sFlow.getTcpFlags());
-        Assert.assertEquals(CURRENT_TIME_MILLIS, sFlow.getTimestamp());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getTimestamp());
         Assert.assertEquals(new Integer(TOS), sFlow.getTos());
         Assert.assertEquals(new Integer(SRC_VLAN), sFlow.getVlan());
     }
@@ -308,31 +311,31 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = createSampledHeaderIpv6();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
-        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV6_STR, sFlow.getDstAddr());
         Assert.assertEquals(null, sFlow.getDstAs());
         Assert.assertEquals(null, sFlow.getDstMaskLen());
         Assert.assertEquals(new Integer(DST_PORT), sFlow.getDstPort());
         Assert.assertEquals(null, sFlow.getEngineType());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getFirstSwitched());
         Assert.assertEquals(1, sFlow.getFlowRecords());
         Assert.assertEquals(0, sFlow.getFlowSeqNum());
         Assert.assertEquals(new Integer(INPUT), sFlow.getInputSnmp());
         Assert.assertEquals(new Integer(6), sFlow.getIpProtocolVersion());
-        Assert.assertEquals(new Long(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
-        Assert.assertEquals(Flow.NetflowVersion.SFLOW, sFlow.getNetflowVersion());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getLastSwitched());
+        Assert.assertEquals(NetflowVersion.SFLOW, sFlow.getNetflowVersion());
         Assert.assertEquals(null, sFlow.getNextHop());
         Assert.assertEquals(new Integer(OUTPUT), sFlow.getOutputSnmp());
         Assert.assertEquals(new Long(1), sFlow.getPackets());
         Assert.assertEquals(new Integer(PROTOCOL), sFlow.getProtocol());
-        Assert.assertEquals(Flow.SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
+        Assert.assertEquals(SamplingAlgorithm.Unassigned, sFlow.getSamplingAlgorithm());
         Assert.assertEquals(new Double(2.0), sFlow.getSamplingInterval());
         Assert.assertEquals(SRC_IPV6_STR, sFlow.getSrcAddr());
         Assert.assertEquals(null, sFlow.getSrcAs());
         Assert.assertEquals(null, sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(SRC_PORT), sFlow.getSrcPort());
         Assert.assertEquals(new Integer(TCP_FLAGS), sFlow.getTcpFlags());
-        Assert.assertEquals(CURRENT_TIME_MILLIS, sFlow.getTimestamp());
+        Assert.assertEquals(Instant.ofEpochMilli(CURRENT_TIME_MILLIS), sFlow.getTimestamp());
         Assert.assertEquals(new Integer(TOS), sFlow.getTos());
         Assert.assertEquals(new Integer(SRC_VLAN), sFlow.getVlan());
     }
@@ -393,7 +396,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
-        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.INGRESS, sFlow.getDirection());
     }
 
     @Test
@@ -407,7 +410,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
-        Assert.assertEquals(Flow.Direction.EGRESS, sFlow.getDirection());
+        Assert.assertEquals(Direction.EGRESS, sFlow.getDirection());
     }
 
     /**

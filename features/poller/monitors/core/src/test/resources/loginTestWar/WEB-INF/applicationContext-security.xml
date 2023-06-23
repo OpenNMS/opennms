@@ -3,12 +3,23 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
-  <http pattern="/**" auto-config='true'>
+  <http pattern="/**" auto-config="true" use-expressions="false">
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
     <intercept-url pattern="/**" access="ROLE_USER" />
-    <form-login default-target-url="/login.html"/>
+    <form-login default-target-url="/login.html"
+      username-parameter="j_username"
+      password-parameter="j_password"
+      login-processing-url="/j_spring_security_check"
+    />
+    <logout logout-url="/j_spring_security_logout" />
   </http>
+
+  <http-firewall ref="httpFirewall" />
+  <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall" />
 
   <authentication-manager>
     <authentication-provider>

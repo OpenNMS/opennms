@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * The varbinds from the trap
@@ -224,12 +226,13 @@ public class Parms implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param index
      * @param vParm
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
+    @Hidden
     public void setParm(
             final int index,
             final org.opennms.netmgt.xml.event.Parm vParm)
@@ -244,9 +247,10 @@ public class Parms implements Serializable {
 
     /**
      * 
-     * 
+     * @deprecated
      * @param vParmArray
      */
+    @Hidden
     public void setParm(
             final org.opennms.netmgt.xml.event.Parm[] vParmArray) {
         //-- copy array

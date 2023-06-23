@@ -39,8 +39,13 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms13923NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-import static org.junit.Assert.*;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_NAME;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_IP;
+import static org.opennms.netmgt.nb.Nms13923NetworkBuilder.srv005_RESOURCE;
 
 public class Nms13923EnIT extends EnLinkdBuilderITCase {
         
@@ -69,8 +74,7 @@ public class Nms13923EnIT extends EnLinkdBuilderITCase {
 
         final OnmsNode srv005 = m_nodeDao.findByForeignId("linkd", srv005_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(srv005.getId()));
-
+        m_linkd.reload();
 
         assertTrue(m_linkd.runSingleSnmpCollection(srv005.getId()));
         assertEquals(1, m_lldpElementDao.countAll());

@@ -27,8 +27,8 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.awaitility.Awaitility.with;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -37,9 +39,19 @@ import org.opennms.netmgt.enlinkd.model.SnmpInterfaceTopologyEntity;
 public interface NodeTopologyService extends TopologyService {
 
     List<Node> findAllSnmpNode();
+    Set<SubNetwork> findAllSubNetwork();
+    Set<SubNetwork> findAllLegalSubNetwork();
+    Set<SubNetwork> findAllPointToPointSubNetwork();
+    Set<SubNetwork> findAllLegalPointToPointSubNetwork();
+    Set<SubNetwork> findAllLoopbacks();
+    Set<SubNetwork> findAllLegalLoopbacks();
+
+    Map<Integer, Integer> getNodeidPriorityMap(ProtocolSupported protocol);
 
     Node getSnmpNode(int nodeid);
-    
+    Set<SubNetwork> getSubNetworks(int nodeid);
+    Set<SubNetwork> getLegalSubNetworks(int nodeid);
+
     List<NodeTopologyEntity> findAllNode();
 
     List<IpInterfaceTopologyEntity> findAllIp();

@@ -161,6 +161,21 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         }
     }
 
+    @Override
+    public void deleteCredentials(final String alias) {
+        try {
+            synchronized (m_credentialsCache) {
+                m_keystore.deleteEntry(alias);
+                m_credentialsCache.remove(alias);
+            }
+
+            writeKeystoreToDisk();
+
+        } catch (final KeyStoreException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
     private void writeKeystoreToDisk() {
         try (OutputStream os = new FileOutputStream(m_keystoreFile)) {
             m_keystore.store(os, m_password);

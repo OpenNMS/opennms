@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,10 @@
  *******************************************************************************/
 
 --%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
-    String title = org.opennms.web.api.Util.getParameter(request, "title", "Undefined");
-    String type = org.opennms.web.api.Util.getParameter(request, "type");
+    String title = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "title", "Undefined"));
+    String type = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "type"));
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">

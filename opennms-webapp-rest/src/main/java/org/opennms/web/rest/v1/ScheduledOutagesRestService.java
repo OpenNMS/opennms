@@ -349,7 +349,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (Package pkg : m_collectdConfigFactory.getCollectdConfig().getPackages()) {
+            for (Package pkg : m_collectdConfigFactory.getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }
@@ -378,7 +378,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getConfiguration().getPackages()) {
+            for (org.opennms.netmgt.config.poller.Package pkg : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

@@ -38,19 +38,22 @@ IMPORTS
    NOTIFICATION-GROUP                  FROM SNMPv2-CONF;
 
 openNMS MODULE-IDENTITY
-    LAST-UPDATED "201112210000Z"		-- 21 December 2011
+    LAST-UPDATED "202210311700Z"		-- 31 October 2022
     ORGANIZATION "The OpenNMS Group, Inc."
-    CONTACT-INFO "Tarus Balog
+    CONTACT-INFO "Jeff Gehlbach
                   The OpenNMS Group, Inc.
-                  112 Fawn Forest Lane
-                  Pittsboro NC 27312
+                  3000 RDU Center Dr, Suite 200
+                  Morrisville NC 27560
                   Phone: +1 919 533 0160
-                  Email: tarus@opennms.com
-                  WEB: www.opennms.org"
+                  Email: jeffg@opennms.com
+                  WEB: www.opennms.com"
     DESCRIPTION
      "The MIB module for OpenNMS, the world's first enterprise-grade
       open-source network management application platform"
 -- Revision history
+    REVISION "202210311700Z"
+    DESCRIPTION
+     "Added products branch with appliance sysObjectIDs"
 
     REVISION "201112210000Z"
     DESCRIPTION
@@ -94,6 +97,21 @@ syslogMessageObjects	OBJECT IDENTIFIER
 
 correlatedEventObjects	OBJECT IDENTIFIER
 							::= { eventsSpecific 3 }
+
+opennmsProducts		OBJECT IDENTIFIER
+							::= { openNMS 42 }
+
+appliance		OBJECT IDENTIFIER
+							::= { opennmsProducts 5 }
+
+virtualAppliance	OBJECT IDENTIFIER
+							::= { appliance 1 }
+
+applianceMini		OBJECT IDENTIFIER
+							::= { appliance 2 }
+
+appliance1U		OBJECT IDENTIFIER
+							::= { appliance 3 }
 
 eventsAlarms	OBJECT IDENTIFIER
 	::= { data 3 }														

@@ -1,0 +1,66 @@
+
+[[foreign-source-definition]]
+= Foreign Source Definition
+
+The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
+Policies determine entity persistence and set attributes on the discovered entities that control {page-component-title} management behavior.
+Provisiond applies the existing default foreign source definition unless you choose to modify it.
+
+This section describes how to edit the default foreign source definition.
+
+== Edit detectors and set scan interval
+
+To edit service detectors and set an automatic scan interval, follow these steps:
+
+. Log in to the {page-component-title} web UI.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
++
+.Default foreign source definition page
+image::provisioning/FS_def.png["Page displaying detectors included in the default foreign source definition"]
++
+NOTE: The page displays a list of service detectors and a tab to view and define policies.
+Provisiond scans the services according to the order in which detectors appear in the list.
+
+** Click *Edit* beside a service detector's name to edit its parameters.
+To add more parameters (retries, timeout, port, and so on), click *Add Parameter* and define its name and value.
+** Click *Move* to move a service detector.
+** Click *Delete* to delete a service detector.
+** To undo a change, click *Reset to Default* at the top-right of the screen.
++
+NOTE: This will undo all changes and revert the service detector to its default state.
+
+. Click *Save*.
+. (Optional) Update the scan interval using one of the following:
++
+* w: weeks
+* d: days
+* h: hours
+* m: minutes
+* s: seconds
+* ms: milliseconds
++
+For example, to prompt a scan every 6 days and 53 minutes, enter `6d53m`.
+Type `0` to disable automatic scanning.
+
+. Click *Save*.
+
+== Create a policy
+
+To create a policy for a foreign source definition, follow these steps:
+
+. Log in to the {page-component-title} web UI.
+. Click the *gear* symbol in the top-right of the screen.
+. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
+. Navigate to the Policies tab.
+. Click *Add Policy*, type a name for the new policy, select its class from the *Class* list, and enter any required information.
++
+You can type a space in any of the boxes to display a list of their options.
+
+** (Optional) Click *Add Parameter* to add more parameters to the class definition (retries, timeout, port, and so on).
+. Click *Save*.
+. Repeat these steps for any additional policies that you want to add.
+. Click *Save* to save the foreign source definition.
+
+NOTE: To return to the default foreign source definition, click *Reset to Default*.
+This will reset any changes that you have made to the definition.

@@ -14,7 +14,7 @@ The tests require Docker images to run. There are two alternatives to get them, 
 You can pull existing images down with:
 ```
 export VERSION=XX.X.X
-docker pull opennms/horizon-core-web:$VERSION
+docker pull opennms/horizon:$VERSION
 docker pull opennms/minion:$VERSION
 docker pull opennms/sentinel:$VERSION
 ```
@@ -24,23 +24,17 @@ docker pull opennms/sentinel:$VERSION
 And then tag them for the tests:
 ```
 export VERSION=XX.X.X
-docker tag opennms/horizon-core-web:XX.X.X horizon
-docker tag opennms/minion:XX.X.X minion
-docker tag opennms/sentinel:XX.X.X sentinel
+docker tag opennms/horizon:XX.X.X opennms/horizon
+docker tag opennms/minion:XX.X.X opennms/minion
+docker tag opennms/sentinel:XX.X.X opennms/sentinel
 ```
 
-### B) Pull images from build artifacts
+### b) Pull images from build artifacts
 
 ```
-export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
-wget $ARTIFACT_URL/horizon.oci
-wget $ARTIFACT_URL/minion.oci
-wget $ARTIFACT_URL/sentinel.oci
-```
-
-> Login to CircleCI and locate the build for the actual artifact URLs
-
-```
+wget https://raw.githubusercontent.com/OpenNMS/opennms-repo/master/script/download-artifacts.pl
+cpan DateTime::Format::ISO8601 HTTP::Request JSON::PP LWP LWP::Protocol::https URI::Escape
+perl download-artifacts.pl oci <branch-name>
 docker image load -i horizon.oci
 docker image load -i minion.oci
 docker image load -i sentinel.oci
@@ -71,11 +65,13 @@ To fix this issue you have change the tmpdir path for Java with:
 mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
 ```
 
-### Run tests from local tarball
+### Run tests from local Docker image
 
 If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
-Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
-Smoke tests will run the image named `horizon` in your local Docker image repo.
+In `opennms-container/horizon` run `make` to create `opennms/horizon:latest` in your local Docker image repo.
+Smoke tests will run against this image in your local Docker image repo.
+When you want to use the latest **published** Horizon docker image, make sure to remove the local image with `docker image rm opennms/horizon:latest`.
+You can do the same for the Minion and Sentinel.
 
 ## Writing system tests
 

@@ -1,0 +1,29 @@
+
+= Collectd Administration
+
+This section describes reference and administrative information associated with the collectd service.
+
+== Configuration and log files
+
+[cols="2,3"]
+|===
+| File  | Description
+
+| $OPENNMS_HOME/etc/collectd-configuration.xml
+| Configuration file for global collectd daemon and collectors configuration (see <<deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring collectd>>).
+
+| $OPENNMS_HOME/logs/collectd.log
+| Log file for all collectors and the global collectd service.
+
+| $OPENNMS_HOME/etc/snmp-graph.properties
+| RRD graph definitions to render performance data measurements in the web UI.
+
+| $OPENNMS_HOME/etc/snmp-graph.properties.d
+| Directory with RRD graph definitions for devices and applications to render performance data measurements in the web UI.
+
+| $OPENNMS_HOME/etc/events/opennms.events.xml
+| Event definitions for {page-component-title} system events, including collectd.
+
+| $OPENNMS_HOME/etc/resource-types.d
+| Directory to store generic resource type definitions (see xref:deep-dive/performance-data-collection/resource-types.adoc[]).
+|===

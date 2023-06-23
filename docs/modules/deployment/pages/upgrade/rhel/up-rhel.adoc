@@ -1,6 +1,5 @@
 
-Your {page-component-title} repository is defined in your `/etc/yum.repos.d/` directory.
-
+Your {page-component-title} repository is defined in the `/etc/yum.repos.d/` directory.
 ifeval::["{page-component-title}" == "Horizon"]
 The file may be named `opennms-repo-stable-<OSversion>.repo`, but it is not guaranteed to be.
 endif::[]
@@ -8,12 +7,11 @@ ifeval::["{page-component-title}" == "Meridian"]
 The file may be named `{page-component-title}.repo`, but it is not guaranteed to be.
 endif::[]
 
-. Sudo to root.
-
+. Log in as the root user or elevate your permissions to be the root user
 ifeval::["{page-component-title}" == "Meridian"]
 . Open your {page-component-title} repository config file with a text editor.
-Change the repository's `baseurl` from the old release family to the new release family.
-The `baseurl` should resemble /https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel8.
+. Change the repository's `baseurl` from the old release family to the new release family.
+The `baseurl` should resemble `/https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/{latest-meridian-stable}/stable/rhel8`.
 The `REPO_USER` and `REPO_PASS` values are your {page-component-title} subscription credentials.
 endif::[]
 
@@ -32,7 +30,7 @@ yum-config-manager --enable opennms-repo-stable-*
 yum clean all
 ----
 
-. Make a backup copy of your OpenNMS config:
+. Make a backup copy of your config:
 +
 [source, console]
 ----
@@ -61,16 +59,16 @@ yum-config-manager --disable opennms-repo-stable-*
 yum -y install java-11-openjdk java-11-openjdk-devel
 ----
 
-. Execute `runjava` to set the JVM that {page-component-title} will use:
+. Use the `runjava` command to set the JVM that {page-component-title} will use:
 +
 [source, console]
 ----
 ${OPENNMS_HOME}/bin/runjava -s
 ----
 
-. Check for configuration file changes, and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
+. Check for configuration file changes and update accordingly using the files you backed up in xref:deployment:upgrade/diff.adoc#run_diff[identify changed configuration files].
 +
-NOTE: If you upgrade in place, OpenNMS renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
+NOTE: If you upgrade in place, {page-component-title} renames any shipped config that conflicts with an existing user-modified config to `.rpmnew` or `.rpmsave`.
 Inspect these files manually and reconcile any differences.
 Use `diff -Bbw` and `diff -y` to look for changes.
 If any `.rpmnew` or `.rpmsave` files exist within the configuration directory, services will not start.
@@ -83,7 +81,7 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 +
 The upgrade may take some time.
-An `Updgrade completed successfully!` message confirms that the upgrade has completed.
+An "Upgrade completed successfully!" message confirms that the upgrade has completed.
 If you do not get this message, check the output of the install command for any errors.
 
 . Clear the Karaf cache:
@@ -93,16 +91,16 @@ If you do not get this message, check the output of the install command for any 
 yes | ${OPENNMS_HOME}/bin/fix-karaf-setup.sh
 ----
 
-. Start OpenNMS {page-component-title}:
+. Start {page-component-title}:
 +
 [source, console]
 ----
 systemctl start opennms.service
 ----
 +
-NOTE: `tail -F $\{OPENNMS_HOME}/logs/manager.log` illustrates the {page-component-title} startup progress.
+TIP: `tail -F $\{OPENNMS_HOME}/logs/manager.log` shows the {page-component-title} startup progress.
 
-. The upgrade completes and operation resumes.
+. The upgrade is completed and operation resumes.
 
-IMPORTANT: Make sure you clear your browser's cache before using the {page-component-title} web UI against the upgraded version.
+IMPORTANT: Make sure that you clear your browser's cache before using the {page-component-title} web UI against the upgraded version.
 This is especially important for pages that use JavaScript heavily (for example, the Requisitions UI).

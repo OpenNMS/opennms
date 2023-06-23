@@ -1,0 +1,36 @@
+
+= Step 1: First-Time Sign In
+
+As part of the installation process, we recommend logging in using the default `admin` account.
+If you have not already done so, sign in for the first time, opt in or out of usage statistics data collection, and change the `admin` account password to a secure one (see xref:deployment:core/getting-started.adoc#ga-data-choices[First-time sign in and data choices]).
+
+This section describes how to create a personal user account.
+We recommend that you do not use the default `admin` user account for day-to-day activities, but instead xref:deep-dive/user-management/user-config.adoc[create specific users] with the Admin role and other permissions, as appropriate.
+This helps to keep track of who has performed tasks (for example, clearing alarms or creating notifications), set up personalized notification workflows, and group users into teams to help delegate areas of responsibility.
+
+For additional information on user management, including user groups, user configuration, and security roles, see xref:deep-dive/user-management/user-config.adoc[User Management] in the Deep Dive section.
+
+[[create-user]]
+== Create a new user
+
+For the purpose of this Quick Start guide, create one new user account for yourself, assign it the Admin role, and configure your email address and any other relevant contact information.
+You will need this account for the next step in this guide.
+
+Follow these steps to create your user account:
+
+. Click the *gear* symbol at the top-right of the screen.
+. Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
+. On the Users and Groups page, click *Configure Users*.
+. Click *Add New User*.
+. Specify a user ID and password, confirm the password, and click *OK*.
+. Enter your information:
+** In the User Information section, type your name in the *Full Name* box.
+** In the Security Roles section, select `ROLE_ADMIN` in the *Available Roles* list and click *Add >>*.
+*** (Optional) Add xref:deep-dive/user-management/security-roles.adoc[other security roles].
+** In the Notification Information section, type your email address in the *Email* box.
+*** (Optional) Add other contact information (for example, a mobile phone number) as desired.
+. Click *Finish* at the bottom of the screen to create the account.
+
+WARNING: Do not delete the default `admin` and `rtc` user accounts.
+The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+You should still change the password of the `admin` user to be more secure.

@@ -1,0 +1,308 @@
+commands:
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - run:
+            name: git clone
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+              git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
+              if [ -n "${CIRCLE_TAG}" ]; then
+                git checkout --force "${CIRCLE_TAG}"
+                git reset --hard "${CIRCLE_SHA1}"
+              else
+                git checkout --force -B "${CIRCLE_BRANCH}" "${CIRCLE_SHA1}"
+              fi
+  cached-checkout:
+      description: "Checkout with caching"
+      steps:
+        - restore_cache:
+            keys:
+              - source-v4-{{ .Branch }}-{{ .Revision }}
+              - source-v4-{{ .Branch }}-
+        - checkout
+        - run:
+            name: git config merge.renameLimit
+            command: git config merge.renameLimit 999999
+        - run:
+            name: git fetch origin
+            command: |
+              git remote prune origin || :
+              git fetch origin
+  save-cached-checkout:
+      description: "Cache a checkout"
+      steps:
+        - save_cache:
+            key: source-v4-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - ".git"
+  checkout-for-pushing:
+      description: "Configure a cached checkout that can push upstream"
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+        - checkout
+        - run:
+            name: Create git identity
+            command: |
+              git config user.email "cicd-system@opennms.com"
+              git config user.name "CI/CD System"
+  cached-download:
+      description: Download with wget or curl
+      parameters:
+        url:
+          type: string
+        file:
+          type: string
+      steps:
+        - run:
+            name: create checksum file
+            command: echo "<< parameters.url >>|||<< parameters.file >>" > /tmp/download-parameters.txt
+        - restore_cache:
+            keys:
+              - cached-download-v1-{{ checksum "/tmp/download-parameters.txt" }}
+        - run:
+            name: download (if necessary)
+            command: |
+              WGET="$(command -v wget || :)"
+              CURL="$(command -v curl || :)"
+              SUDO="$(command -v sudo || :)"
+ 
+              if [ ! -e "<< parameters.file >>" ]; then
+                if [ -x "${WGET}" ]; then
+                  if [ -x "${SUDO}" ]; then
+                    "${SUDO}" wget --quiet "<< parameters.url >>" -O "<< parameters.file >>"
+                  else
+                    wget --quiet "<< parameters.url >>" -O "<< parameters.file >>"
+                  fi
+                elif [ -x "${CURL}" ]; then
+                  if [ -x "${SUDO}" ]; then
+                    "${SUDO}" curl -sSf -L  "<< parameters.url >>" -o "<< parameters.file >>"
+                  else
+                    curl -sSf -L "<< parameters.url >>" -o "<< parameters.file >>"
+                  fi
+                else
+                  echo "unable to locate wget or curl, make sure one is installed before using cached-download"
+                  exit 1
+                fi
+ 
+                case "<< parameters.file >>" in
+                  */bin/*)
+                    if [ -x "${SUDO}" ]; then
+                      sudo chmod a+x "<< parameters.file >>"
+                    else
+                      chmod a+x "<< parameters.file >>"
+                    fi
+                    ;;
+                esac
+              fi
+        - save_cache:
+            key: cached-download-v1-{{ checksum "/tmp/download-parameters.txt" }}
+            paths:
+              - << parameters.file >>
+
+  restore-nodejs-cache:
+      description: "NodeJS: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key
+            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
+        - restore_cache:
+            keys:
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-
+  save-nodejs-cache:
+    description: "NodeJS: Save cache"
+    steps:
+      - run:
+          description: clean up cache tmp directory
+          command: rm -rf ~/.npm/_cacache/tmp
+      - save_cache:
+          key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          paths:
+            - ~/.npm
+  restore-sonar-cache:
+      description: "Sonar: Restore sonar cache"
+      steps:
+        - restore_cache:
+            keys:
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v5-{{ .Branch }}-
+              - sonar-cache-v5-
+  save-sonar-cache:
+      description: "Sonar: Save sonar cache"
+      steps:
+        - save_cache:
+            key: sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+            paths:
+              - /tmp/sonar-cache
+  cache-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      source_path:
+        description: the source directory to cache
+        type: string
+    steps:
+      - run:
+          name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
+          command: |
+            TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            mkdir -p "${TARGET_PATH}"
+            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
+            find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
+      - save_cache:
+          key: << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - "/tmp/<< parameters.cache_prefix >>"
+  restore-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      target_path:
+        description: the target directory to restore into
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache_prefix >>-v4-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
+      - when:
+          condition: << parameters.target_path >>
+          steps:
+            - run:
+                name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
+                command: |
+                  SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
+                  TARGET_PATH="$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')"
+                  mkdir -p "${TARGET_PATH}"
+                  rsync -ar "${SOURCE_PATH}/" "${TARGET_PATH}/"
+
+  save-artifacts:
+    description: Save Artifacts and Store Artifact Metadata
+    parameters:
+      path:
+        type: string
+      location:
+        type: string
+    steps:
+      - store_artifacts:
+          path: "<< parameters.path >>/"
+          destination: "<< parameters.location >>"
+      - run:
+          name: "enumerate artifacts in << parameters.location >>"
+          command: |
+            mkdir -p ~/.artifacts
+            chmod 777 ~/.artifacts
+            if [ ! -d << parameters.path >> ] || [ "$(find << parameters.path >> -type f | wc -l)" -eq 0 ]; then
+              echo "warning: no files found in <<parameters.path >>"
+              exit 0
+            fi
+            if [ -e ~/.artifacts/<< parameters.location >>.txt ]; then
+              echo "artifact file ~/.artifacts/<< parameters.location >>.txt already exists -- location must be unique"
+              exit 1
+            fi
+            curl \
+              -sS \
+              -L \
+              -H "Accept: application/json" \
+              -H "Content-Type: application/json" \
+              -H "Circle-Token: ${CIRCLE_TOKEN}" \
+              -X GET \
+              "https://circleci.com/api/v2/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/artifacts" \
+            | grep -o 'https://[^"]*' \
+            | grep "/<< parameters.location >>/" \
+            > ~/.artifacts/<< parameters.location >>.txt
+            cat ~/.artifacts/<< parameters.location >>.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .artifacts/<< parameters.location >>.txt
+
+  # always use attach_workspace to root=~ first
+  fetch-artifacts:
+    description: Download Artifacts from a Previous Job
+    parameters:
+      path:
+        type: string
+      location:
+        type: string
+    steps:
+      - run:
+          name: "download artifacts for << parameters.location >> to << parameters.path >>"
+          command: |
+            mkdir -p << parameters.path >> ~/.artifacts
+            chmod 777 << parameters.path >> ~/.artifacts
+            cd << parameters.path >>
+            if [ -e ~/.artifacts/<< parameters.location >>.txt ]; then
+              while read URL; do
+                echo "- $URL"
+                curl \
+                  -sS \
+                  -L \
+                  -O \
+                  -H "Circle-Token: ${CIRCLE_TOKEN}" \
+                  "${URL}"
+              done \
+                < ~/.artifacts/<< parameters.location >>.txt
+            else
+              echo "artifact file ~/.artifacts/<< parameters.location >>.txt does not exist"
+              exit 1
+            fi
+            cd -
+
+  persist-project-changes:
+    description: persist project changes to the workspace, skipping files that come from git
+    steps:
+      - fix-workspace-permissions:
+          path: project
+      - run:
+          name: prep the working directory
+          command: |
+            WORKSPACE="/tmp/extracted-workspace"
+            mkdir -p "${WORKSPACE}/project"
+
+            cd ~/project
+            git clean -dx --dry-run | grep -v __pycache__ | sed -e 's,^Would remove ,,' > "${WORKSPACE}.filelist"
+            tar -cf - --files-from "${WORKSPACE}.filelist" | tar -xf - -C "${WORKSPACE}/project"
+      - persist_to_workspace:
+          root: /tmp/extracted-workspace/
+          paths:
+            - project
+
+  fix-workspace-permissions:
+    description: fix permissions of a path to be compatible with the docker cimg `circleci` user
+    parameters:
+      path:
+        description: the path that should be fixed, relative to `~`
+        type: string
+    steps:
+      - run:
+          name: change ownership to `circleci` user in << parameters.path >>
+          command: |
+            SUDO="$(command -v sudo || :)"
+            CIRCLE_USER="$(id -u -n circleci 2>/dev/null || echo 3434)"
+            CIRCLE_GROUP="$(id -g -n circleci 2>/dev/null || echo 3434)"
+
+            cd ~
+            if [ ! -x "<< parameters.path >>" ]; then
+              echo "WARNING: << parameters.path >> does not exist, but we are trying to chown it. This is probably not great. Exiting."
+              exit 0
+            fi
+            if [ -n "$SUDO" ]; then
+              "$SUDO" chown -R "${CIRCLE_USER}:${CIRCLE_GROUP}" "<< parameters.path >>"
+              "$SUDO" chmod -R ug+rw "<< parameters.path >>"
+              "$SUDO" find "<< parameters.path >>" -type d -print0 | "$SUDO" xargs -0 chmod ug+xs
+            else
+              chown -R "${CIRCLE_USER}:${CIRCLE_GROUP}" "<< parameters.path >>"
+              chmod -R ug+rw "<< parameters.path >>"
+              find "<< parameters.path >>" -type d -print0 | xargs -0 chmod ug+xs
+            fi

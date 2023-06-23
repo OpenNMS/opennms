@@ -75,6 +75,7 @@
       </div>
       <div class="card-body">
         <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm();" action="account/selfService/newPasswordAction">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">
           <div class="form-group">

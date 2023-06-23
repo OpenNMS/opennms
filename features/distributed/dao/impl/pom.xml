@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.dao</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.distributed</groupId>
@@ -37,7 +37,8 @@
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
                             org.opennms.netmgt.telemetry.protocols.bmp.persistence.api,
-                            org.opennms.features.deviceconfig.persistence.api
+                            org.opennms.features.deviceconfig.persistence.api,
+                            org.opennms.features.usageanalytics.api
                         </Export-Package>
                         <Import-Package>
                             com.google.common.base,
@@ -90,6 +91,9 @@
                             org.opennms.core.sysprops,
 
                             org.opennms.features.reporting.model,
+                            org.opennms.features.deviceconfig.persistence.api,
+                            org.opennms.features.usageanalytics.api,
+
                             org.opennms.netmgt.collection.api,
                             org.opennms.netmgt.collection.core,
                             org.opennms.netmgt.collection.support,
@@ -139,7 +143,6 @@
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
                             org.opennms.netmgt.telemetry.protocols.bmp.persistence.api,
-                            org.opennms.features.deviceconfig.persistence.api,
 
                             org.springframework.stereotype,
                             org.springframework.transaction,
@@ -190,7 +193,8 @@
                             org.opennms.netmgt.endpoints.grafana.persistence.impl,
                             org.opennms.netmgt.flows.classification.persistence.impl,
                             org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl,
-                            org.opennms.features.deviceconfig.persistence.impl
+                            org.opennms.features.deviceconfig.persistence.impl,
+                            org.opennms.features.usageanalytics.impl
                         </Private-Package>
                     </instructions>
                 </configuration>
@@ -208,13 +212,14 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.opennms.features.distributed:org.opennms.features.distributed.dao-api</include>
                                     <include>org.opennms:opennms-dao</include>
+                                    <include>org.opennms.features.distributed:org.opennms.features.distributed.dao-api</include>
                                     <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.impl</include>
                                     <include>org.opennms.features.endpoints.grafana.persistence:org.opennms.features.endpoints.grafana.persistence.impl</include>
                                     <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.impl</include>
                                     <include>org.opennms.features.telemetry.protocols.bmp.persistence:org.opennms.features.telemetry.protocols.bmp.persistence.impl</include>
                                     <include>org.opennms.features.device-config.persistence:org.opennms.features.device-config.persistence.impl</include>
+                                    <include>org.opennms.features.usageanalytics:org.opennms.features.usageanalytics.impl</include>
                                 </includes>
                             </artifactSet>
                             <transformers>
@@ -279,6 +284,11 @@
         <dependency>
             <groupId>org.opennms.features.device-config.persistence</groupId>
             <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.usageanalytics</groupId>
+            <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

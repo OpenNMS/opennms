@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -61,19 +60,20 @@ public class AlarmStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdStatusProvider m_statusProvider;
+    private LinkdTopologyFactory m_topologyFactory;
     private BackendGraph m_graph;
     
     @Before
     public void setUp() {
         m_alarmDao = mock(AlarmDao.class);
-        m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
         m_graph = mock(BackendGraph.class);
+        m_topologyFactory = mock(LinkdTopologyFactory.class);
+        m_statusProvider = new LinkdStatusProvider(m_alarmDao, m_topologyFactory);
     }
     
     @After
     public void tearDown() throws Exception {
-        verifyNoMoreInteractions(m_graph);
     }
     
     @Test
@@ -84,7 +84,7 @@ public class AlarmStatusProviderTest {
         List<VertexRef> vertexList = Lists.newArrayList(vertex, vertex2, vertex3);
 
         when(m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(any())).thenReturn(createNormalAlarmSummaryList());
-
+        when(m_graph.getNamespace()).thenReturn("nodes");
         Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_graph, vertexList, new Criteria[0]);
         assertEquals(3, statusMap.size());
         assertEquals(vertex, statusMap.keySet().stream().sorted(Comparator.comparing(Ref::getId)).collect(Collectors.toList()).get(0));

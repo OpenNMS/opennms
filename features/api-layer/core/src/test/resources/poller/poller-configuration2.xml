@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller/api">
+    <package name="example2">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="2.2.2.2"/>
+        <include-range begin="2.2.2.2" end="254.254.254.254"/>
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+        </rrd>
+        <service name="DNS" interval="300000" user-defined="false" enabled="true">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="5000"/>
+            <parameter key="port" value="53"/>
+            <parameter key="lookup" value="localhost"/>
+            <parameter key="fatal-response-codes" value="2,3,5"/><!-- ServFail, NXDomain, Refused -->
+            <parameter key="rrd-repository" value="/share/rrd/response"/>
+            <parameter key="rrd-base-name" value="dns"/>
+            <parameter key="ds-name" value="dns"/>
+        </service>
+        <service name="SMTP" interval="300000" user-defined="false" enabled="true">
+            <pattern><![CDATA[^abc.*def$]]></pattern>
+            <parameter key="retry" value="1"/>
+            <parameter key="timeout" value="3000"/>
+            <parameter key="port" value="25"/>
+            <parameter key="rrd-repository" value="/share/rrd/response"/>
+            <parameter key="rrd-base-name" value="smtp"/>
+            <parameter key="ds-name" value="smtp"/>
+        </service>
+
+        <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+
+        <downtime interval="30001" begin="0" end="300001"/><!-- 30s, 0, 5m -->
+        <downtime interval="300001" begin="300001" end="43200001"/><!-- 5m, 5m, 12h -->
+        <downtime interval="600001" begin="43200001" end="432000001"/><!-- 10m, 12h, 5d -->
+        <downtime begin="432000001" delete="managed"/><!-- anything after 5 days delete -->
+
+    </package>
+
+    <package name="passive-service-example3" perspective-only="true">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <rrd step="123">
+            <rra>RRA:MIN:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+        </rrd>
+        <service name="NON-IP" interval="30000" user-defined="false" enabled="true"/>
+        <downtime interval="15000" begin="0" end="300000"/>        <!-- 15s, 0, 5m -->
+        <downtime interval="30000" begin="300000" end="43200000"/>    <!-- 30s, 5m, 12h -->
+        <downtime interval="300000" begin="43200000" end="432000000"/>    <!-- 5m, 12h, 5d -->
+        <downtime begin="432000000" delete="managed"/>            <!-- anything after 5 days delete -->
+    </package>
+
+    <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor"/>
+    <monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor">
+        <parameter key="param1" value="value1" />
+        <parameter key="param2" value="value2" />
+        <parameter key="param3"/>
+    </monitor>
+
+</poller-configuration>

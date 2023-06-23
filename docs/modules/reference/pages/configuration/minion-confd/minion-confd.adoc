@@ -165,14 +165,14 @@ Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.
 ----
 system:
     properties:
-        jaeger-agent-host: "<host>"
+        JAEGER_AGENT_HOST: "<host>"
         org.opennms.snmp.snmp4j.allowSNMPv2InV1: true
         # Any other keys necessary can be specified here
 ----
 
 Writes the specified configuration settings to `$\{MINION/HOME}/etc/confd.system.properties`.
 `$\{MINION/HOME}/ect/confd.system.properties` is automatically appended to `etc/system.properties`.
-If the `jaeger-agent-host` key is specified, `$\{MINION/HOME}/etc/featuresBoot.d/jaeger.boot` is also updated.
+If the `JAEGER_AGENT_HOST` or `JAEGER_ENDPOINT` keys are specified, `$\{MINION/HOME}/etc/featuresBoot.d/jaeger.boot` is also updated.
 
 === Karaf properties
 

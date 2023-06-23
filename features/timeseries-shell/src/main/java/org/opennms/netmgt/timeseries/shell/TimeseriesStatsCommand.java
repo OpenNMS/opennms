@@ -57,7 +57,7 @@ public class TimeseriesStatsCommand implements Action {
 
 
     @Override
-    public Object execute() {
+    public Object execute() throws Exception {
         PrintStream out = System.out;
         out.println("Active TimeSeriesStorage plugin:");
         out.println(storageManager.get().getClass().getName());

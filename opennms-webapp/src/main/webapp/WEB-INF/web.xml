@@ -18,6 +18,10 @@
   <display-name>opennms</display-name>
 
   <session-config>
+    <cookie-config>
+      <http-only>true</http-only>
+      <comment>__SAME_SITE_STRICT__</comment>
+    </cookie-config>
     <session-timeout>-1</session-timeout>
   </session-config>
 
@@ -68,17 +72,6 @@
     </init-param>
   </filter>
 
-  <!-- this filter prevents leaking sessionids to caches, see https://issues.opennms.org/browse/NMS-10704 -->
-  <filter>
-    <filter-name>jSessionIdNoCacheFilter</filter-name>
-    <filter-class>org.opennms.web.security.JSessionIdNoCacheFilter</filter-class>
-    <!-- optional, defaults to JSESSIONID
-    <init-param>
-      <param-name>sessionIdName</param-name>
-      <param-value>JSESSIONID</param-value>
-    </init-param> -->
-  </filter>
-
   <filter>
     <!--  note the name of this filter is important and is used in the app contexts -->
     <filter-name>springSecurityFilterChain</filter-name>
@@ -103,6 +96,81 @@
     <description>Filter out invalid file:// Origin: header to avoid CORS issues with Compass</description>
     <filter-name>Origin Filter</filter-name>
     <filter-class>org.opennms.web.api.OriginHeaderFilter</filter-class>
+  </filter>
+
+  <filter>
+    <description>Set Content-Security-Policy header</description>
+    <filter-name>Content-Security-Policy-Filter</filter-name>
+    <filter-class>org.opennms.web.servlet.AddHeaderFilter</filter-class>
+    <init-param>
+      <description>Sets the header key.</description>
+      <param-name>key</param-name>
+      <param-value>Content-Security-Policy</param-value>
+    </init-param>
+    <init-param>
+      <description>Sets the header value.</description>
+      <param-name>value</param-name>
+      <param-value>default-src 'none' ; frame-src 'self' ; manifest-src 'self' ; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' https://fonts.googleapis.com  https://fonts.gstatic.com; connect-src 'self' ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; base-uri 'self' ; form-action 'self' ; img-src 'self' https://tiles.opennms.org  https://*.tile.openstreetmap.org data:</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <description>Set X-Content-Type-Options header</description>
+    <filter-name>X-Content-Type-Options-Filter</filter-name>
+    <filter-class>org.opennms.web.servlet.AddHeaderFilter</filter-class>
+    <init-param>
+      <description>Sets the header key.</description>
+      <param-name>key</param-name>
+      <param-value>X-Content-Type-Options</param-value>
+    </init-param>
+    <init-param>
+      <description>Sets the header value.</description>
+      <param-name>value</param-name>
+      <param-value>nosniff</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <description>Set Referrer-Policy header</description>
+    <filter-name>Referrer-Policy-Filter</filter-name>
+    <filter-class>org.opennms.web.servlet.AddHeaderFilter</filter-class>
+    <init-param>
+      <description>Sets the header key.</description>
+      <param-name>key</param-name>
+      <param-value>Referrer-Policy</param-value>
+    </init-param>
+    <init-param>
+      <description>Sets the header value.</description>
+      <param-name>value</param-name>
+      <param-value>no-referrer</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <description>Set Permissions-Policy header</description>
+    <filter-name>Permissions-Policy-Filter</filter-name>
+    <filter-class>org.opennms.web.servlet.AddHeaderFilter</filter-class>
+    <init-param>
+      <description>Sets the header key.</description>
+      <param-name>key</param-name>
+      <param-value>Permissions-Policy</param-value>
+    </init-param>
+    <init-param>
+      <description>Sets the header value.</description>
+      <param-name>value</param-name>
+      <param-value>accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <description>Set Strict-Transport-Security header</description>
+    <filter-name>Strict-Transport-Security-Filter</filter-name>
+    <filter-class>org.opennms.web.servlet.AddStrictTransportSecurityHeaderFilter</filter-class>
+    <init-param>
+      <description>This defines how long in seconds a browser should default to access the OpenNMS Web-UI via HTTPS.</description>
+      <param-name>maxAge</param-name>
+      <param-value>63072000</param-value>
+    </init-param>
   </filter>
 
   <!-- NOTE, this filter is not mapped to anything by default.  To enable CORS for ReST,
@@ -198,12 +266,32 @@
   <!-- WARMERGE: insert filter -->
 
   <filter-mapping>
-    <filter-name>characterEncodingFilter</filter-name>
+    <filter-name>Content-Security-Policy-Filter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
-    <filter-name>jSessionIdNoCacheFilter</filter-name>
+    <filter-name>X-Content-Type-Options-Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Referrer-Policy-Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Strict-Transport-Security-Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Permissions-Policy-Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 

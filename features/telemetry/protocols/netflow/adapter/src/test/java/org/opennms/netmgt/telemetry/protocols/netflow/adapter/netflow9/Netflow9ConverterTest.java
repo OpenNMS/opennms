@@ -34,7 +34,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils.buildAndSerialize;
+
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,22 +51,20 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class Netflow9ConverterTest {
-
-    private NetflowConverter nf9Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow9Flows() {
@@ -73,7 +73,7 @@ public class Netflow9ConverterTest {
         assertThat(flows, hasSize(5));
         // Verify a flow
         Flow flow = flows.get(4);
-        assertThat(flow.getNetflowVersion(), is(Flow.NetflowVersion.V9));
+        assertThat(flow.getNetflowVersion(), is(NetflowVersion.V9));
         assertThat(flow.getSrcAddr(), equalTo("10.1.20.85"));
         assertThat(flow.getSrcAddrHostname(), equalTo(Optional.empty()));
         assertThat(flow.getSrcPort(), equalTo(137));
@@ -84,10 +84,10 @@ public class Netflow9ConverterTest {
         assertThat(flow.getBytes(), equalTo(156L));
         assertThat(flow.getInputSnmp(), equalTo(369098754));
         assertThat(flow.getOutputSnmp(), equalTo(0));
-        assertThat(flow.getFirstSwitched(), equalTo(1524773519000L)); // Thu Apr 26 16:11:59 EDT 2018
-        assertThat(flow.getLastSwitched(), equalTo(1524773527000L)); // Thu Apr 26 16:12:07 EDT 2018
+        assertThat(flow.getFirstSwitched(), equalTo(Instant.ofEpochMilli(1524773519000L))); // Thu Apr 26 16:11:59 EDT 2018
+        assertThat(flow.getLastSwitched(), equalTo(Instant.ofEpochMilli(1524773527000L))); // Thu Apr 26 16:12:07 EDT 2018
         assertThat(flow.getPackets(), equalTo(2L));
-        assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
+        assertThat(flow.getDirection(), equalTo(Direction.INGRESS));
         assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
         assertThat(flow.getNextHopHostname(), equalTo(Optional.empty()));
         assertThat(flow.getVlan(), nullValue());
@@ -116,15 +116,8 @@ public class Netflow9ConverterTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(session, header, buffer);
                 packet.getRecords().forEach(rec -> {
-
-                    final FlowMessage flowMessage;
-                    try {
-                        flowMessage = buildAndSerialize(Protocol.NETFLOW9, rec).build();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
+                    final FlowMessage flowMessage = new Netflow9MessageBuilder().buildMessage(rec, (address) -> Optional.empty()).build();
+                    flows.add(new NetflowMessage(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

@@ -348,7 +348,7 @@ public class DestinationWizardServlet extends HttpServlet {
             for (int i = 0; i < targets.length; i++) {
                 String name = targets[i].getName();
                 // don't overwrite the email target command
-                if (targets[i].getName().indexOf("@") == -1) {
+                if (!(targets[i].getCommands().size() == 1 && "email".equals(targets[i].getCommands().get(0)))) {
                     targets[i].clearCommands();
                     String[] commands = request.getParameterValues(name + "Commands");
                     for (int j = 0; j < commands.length; j++) {

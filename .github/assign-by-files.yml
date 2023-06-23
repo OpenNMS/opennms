@@ -7,3 +7,7 @@
 
 "docs/**/*":
   - Bonrob2
+
+".circleci/**/*":
+  - RangerRick
+  - mershad-manesh

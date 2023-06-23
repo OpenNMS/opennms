@@ -1,0 +1,77 @@
+
+= Beyond the Quick Start Guide
+
+After you finish following the steps in this Quick Start guide, your {page-component-title} instance should be set up and monitoring your network.
+Of course, there is still much more that you can do to customize {page-component-title} to suit your needs.
+You can explore the Deep Dive section to learn more.
+
+This section includes suggested topics that supplement the guide.
+
+== User management
+
+We covered creating and setting up an admin user account in xref:quick-start/users.adoc[].
+You may want to create and set up additional user accounts with different permissions.
+These topics expand on those covered in the Quick Start guide:
+
+* xref:deep-dive/user-management/user-config.adoc[Create users] and xref:deep-dive/user-management/security-roles.adoc[assign permissions].
+* xref:deep-dive/user-management/user-groups.adoc[Create and maintain user groups].
+* xref:deep-dive/user-management/user-oncall.adoc[Define on-call roles and schedules].
+
+== Provision inventory
+
+We covered initial inventory provisioning in xref:quick-start/inventory.adoc[].
+You may want to provision new nodes and iterate on the work that you did in the Quick Start guide.
+These topics serve as starting points for more information:
+
+* xref:deep-dive/provisioning/auto-discovery.adoc[Set up auto discovery].
+* xref:deep-dive/provisioning/directed-discovery.adoc[Set up directed discovery].
+* xref:deep-dive/provisioning/foreign-source.adoc[Define a foreign source].
+
+== Performance management
+
+In xref:quick-start/performance-data.adoc[], we covered how to set up your {page-component-title} environment for basic performance data collection.
+You may want to collect more data to help you better understand what is happening in your network and create more representative visualizations.
+You can look through these topics to learn more:
+
+* xref:deep-dive/performance-data-collection/data-types.adoc[Learn about data types].
+* xref:deep-dive/performance-data-collection/resource-types.adoc[Learn about resource types].
+* xref:deep-dive/performance-data-collection/snmp-index.adoc[Create custom resource types].
+
+== Thresholding
+
+xref:quick-start/thresholding.adoc[] covered how to set up event thresholds in your {page-component-title} instance.
+For more information and concepts that extend the Quick Start guide, see the following pages:
+
+* xref:deep-dive/thresholds/datasource.adoc[Thresholding tasks].
+* xref:deep-dive/thresholds/thresh-group.adoc[Create threshold groups].
+* xref:deep-dive/thresholds/troubleshoot.adoc[Manage and troubleshoot thresholds].
+
+== Service availability
+
+In xref:quick-start/service-assurance.adoc[], we covered how to track the availability of your services with pollerd.
+The following topics are starting points for establishing more complex monitoring environments:
+
+* xref:deep-dive/service-assurance/configuration.adoc[Configure and modify pollerd behavior].
+* xref:deep-dive/service-assurance/polling-packages.adoc[Group service configurations into polling packages].
+* xref:deep-dive/service-assurance/path-outages.adoc[Set up path outages].
+* xref:deep-dive/service-assurance/downtime-model.adoc[Detect short service outages with downtime models].
+
+== Notifications
+
+We covered how to configure notifications in xref:quick-start/notifications.adoc[] and xref:quick-start/notification-config.adoc[].
+Beyond that, you can review the xref:deep-dive/notifications/bonus-strategies.adoc[bonus notification strategies] to set up routing to Slack and Mattermost.
+
+== Customize {page-component-title} home page
+
+We covered visualizations in xref:quick-start/visualize-data.adoc[], but you can do much more to display your data--including customizing your {page-component-title} home page.
+For more information, see xref:deep-dive/visualizations/grafana-dashboard-box.adoc[] in the Deep Dive section.
+
+== Explore the Deep Dive section
+
+To learn more about any of the topics covered in the Quick Start guide, you can explore their corresponding documentation in the xref:deep-dive/introduction.adoc[] section.
+Deep Dive topics are referenced in each of the Quick Start pages; they can provide a starting point.
+
+== Explore the Reference section
+
+The Reference section provides information on {page-component-title} collectors, service monitors, and daemons.
+This includes details on configuration settings and files, as well as parameters associated with the components.

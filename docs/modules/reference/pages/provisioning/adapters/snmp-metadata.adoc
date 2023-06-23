@@ -7,7 +7,7 @@ The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used 
 
 [source, xml]
 ----
-<snmp-metadata-config>
+<snmp-metadata-config updateBehavior="replace">
     <config tree=".1.2.3.4" name="myHardware" sysObjectId="~^\.4\.3\.2\.1.*">
         <entry tree=".1" name="someKey"/>
         <entry tree=".2" name="otherKey"/>
@@ -31,6 +31,25 @@ The top-level element will be named `myHardware`.
 The provisioning adapter automatically appends the `.0` value to single-entry OIDs per normal SNMP specification.
 In some edge cases, you will need to specify the entire OID statically to retrieve a single piece of data.
 Specifying the attribute `exact="true"` allows you to specify the entire OID.
+
+There is also an optional `resultsBehavior` attribute that you can use to specify how the adapter should update the node's metadata. 
+The table below outlines the behavior of each option:
+[options="header", cols="1,2"]
+|===
+| Value
+| Description
+
+| replace
+| Default behavior. 
+The adapter will replace the node's metadata `snmp` context with the data retrieved from the node.
+
+| update
+| The adapter will update the node's metadata `snmp` context with the data retrieved from the node.
+
+ New values will be added, existing values will be updated, and values not present in the retrieved data will be left unchanged.
+
+ NOTE: This behavior can leave old values in the metadata context if the retrieved data does not contain the same keys.
+|===
 
 Based on this example and under the assumption that a node provides corresponding data, the following metadata entries will be produced:
 

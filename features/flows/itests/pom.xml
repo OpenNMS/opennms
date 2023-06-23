@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -13,7 +13,7 @@
     <name>OpenNMS :: Features :: Flows :: Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <nephronVersion>0.3.0</nephronVersion>
+        <nephronVersion>0.3.1</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
     </properties>
     <build>
@@ -48,7 +48,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
-                <version>1.5</version>
+                <version>1.7</version>
                 <configuration>
                     <alias>localhost</alias>
                     <keysize>2048</keysize>
@@ -94,6 +94,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.flows</groupId>
+            <artifactId>org.opennms.features.flows.processing</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
             <version>2.11.0</version>
@@ -121,7 +129,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.jayway.awaitility</groupId>
+            <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
@@ -293,6 +301,19 @@
             <groupId>org.opennms.features.scv</groupId>
             <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- used by test runtime SSL bits -->
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>${snappyJavaVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

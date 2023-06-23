@@ -28,21 +28,6 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.netmgt.config.utils.ConfigUtils;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.util.StringUtils;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,6 +53,22 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.StringUtils;
 
 @XmlRootElement(name = "events")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -167,7 +168,7 @@ public class Events implements Serializable {
         return m_ordering;
     }
 
-    Resource getRelative(final Resource baseRef, final String relative) {
+    public static Resource getRelative(final Resource baseRef, final String relative) {
         try {
             if (relative.startsWith("classpath:")) {
                 return RESOURCE_LOADER.getResource(relative);
@@ -310,6 +311,25 @@ public class Events implements Serializable {
         return null;
     }
 
+    public Set<Event> findMatchingEvents(final EventCriteria criteria) {
+        final Set<Event> results = new HashSet<>();
+        for (final Event event : m_events) {
+            if (criteria.matches(event)) {
+                results.add(event);
+            }
+        }
+
+        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            final Events events = loadedEvents.getValue();
+            final Set<Event> moreResults = events.findMatchingEvents(criteria);
+            if (moreResults != null) {
+                results.addAll(moreResults);
+            }
+        }
+
+        return results;
+    }
+
     public Event findFirstMatchingEvent(final EventCriteria criteria) {
         for (final Event event : m_events) {
             if (criteria.matches(event)) {
@@ -325,9 +345,7 @@ public class Events implements Serializable {
             }
         }
 
-
         return null;
-
     }
 
     public <T> T forEachEvent(final T initial, final EventCallback<T> callback) {

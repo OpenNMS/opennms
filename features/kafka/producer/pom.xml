@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.kafka</artifactId>
-    <version>30.0.3-SNAPSHOT</version>
+    <version>31.0.3-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -21,15 +21,13 @@
   <packaging>bundle</packaging>
 
   <build>
-    <!-- Enable below extension and plugin when you need to generate java source files from proto -->
-
-<!--    <extensions>
+    <extensions>
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.2</version>
+        <version>${osMavenPluginVersion}</version>
       </extension>
-    </extensions>-->
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -43,6 +41,7 @@
           </instructions>
         </configuration>
       </plugin>
+    <!-- Enable when you need to generate java source files from proto -->
 <!--      <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
@@ -200,7 +199,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.jayway.awaitility</groupId>
+      <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>

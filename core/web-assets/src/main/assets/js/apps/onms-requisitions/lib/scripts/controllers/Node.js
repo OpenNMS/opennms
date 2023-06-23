@@ -7,7 +7,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014 The OpenNMS Group, Inc.
+* @copyright 2014-2022 The OpenNMS Group, Inc.
 */
 
 (function() {
@@ -26,6 +26,10 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
   const nodeCategoriesView = require('../../views/node-categories.html');
 
   angular.module('onms-requisitions')
+
+  .config(['$locationProvider', function($locationProvider) {
+    $locationProvider.hashPrefix('');
+  }])
 
   /**
   * @ngdoc controller

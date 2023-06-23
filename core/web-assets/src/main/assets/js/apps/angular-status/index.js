@@ -36,7 +36,9 @@ angular.module(MODULE_NAME, [
     'ui.bootstrap',
     'onms.elementList',
     'onms.pagination'
-]).directive('onmsStatusList', () => {
+]).config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}]).directive('onmsStatusList', () => {
         return {
             restrict: 'E',
             transclude: true,

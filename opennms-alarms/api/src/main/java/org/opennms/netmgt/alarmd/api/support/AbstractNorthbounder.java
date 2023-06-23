@@ -274,8 +274,8 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
     /**
      * Creates the mapping.
      *
-     * @param alarmMappings the alarm mappings
      * @param alarm the northbound alarm
+     * @param dateFormat 
      * @return the mapping object
      */
     protected Map<String, Object> createMapping(NorthboundAlarm alarm, String dateFormat) {
@@ -333,7 +333,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
             mapping.put("foreignId", "");
         }
 
-        String poller = alarm.getPoller() == null ? DistPollerDao.DEFAULT_DIST_POLLER_ID : alarm.getPoller().getId();
+        String poller = alarm.getPoller() == null ? "00000000-0000-0000-0000-000000000000" : alarm.getPoller().getId();
         mapping.put("distPoller", poller);
 
         String service = alarm.getService() == null ? "" : alarm.getService();

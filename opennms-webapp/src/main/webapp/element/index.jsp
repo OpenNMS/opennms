@@ -76,7 +76,8 @@
           </ul>
         </div>
           <%-- Search by name --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+          <form role="form" class="form-group" action="element/nodeList.htm" method="post">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="byname_nodename">Name containing</label>
               <div class="input-group">
@@ -88,7 +89,8 @@
           </form>
 
           <%-- Search by ip --%>
-          <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+          <form role="form" class="form-group" action="element/nodeList.htm" method="post">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="byip_iplike">TCP/IP Address like</label>
               <div class="input-group">
@@ -101,6 +103,7 @@
 
           <%-- Search by mib2 param --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label class="hidden-sm hidden-md hidden-lg">System attribute</label>
               <div class="input-group">
@@ -124,6 +127,7 @@
 
         <%-- Search by interface param --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label class="hidden-sm hidden-md hidden-lg">Interface attribute</label>
               <div class="input-group">
@@ -145,6 +149,7 @@
 
         <%-- Search by location --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="bymonitoringLocation_monitoringLocation">Location:</label>
               <div class="input-group">
@@ -162,6 +167,7 @@
 
         <%-- Search by service --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="byservice_service">Providing service</label>
               <div class="input-group">
@@ -179,6 +185,7 @@
 
         <%-- Search by MAC --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="bymac_maclike">MAC Address like</label>
               <div class="input-group">
@@ -191,6 +198,7 @@
 
         <%-- Search by foreign source --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="byfs_foreignSource">Foreign Source name like</label>
               <div class="input-group">
@@ -203,6 +211,7 @@
 
           <%-- Search by flow data --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="hidden" name="listInterfaces" value="false"/>
               <label for="byflows_flows">Flows</label>
               <div class="input-group">
@@ -243,6 +252,7 @@
         </div>
 
         <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <input type="hidden" name="column" value="category"/>
             <label for="bycat_value">Category</label>
             <div class="input-group">
@@ -259,6 +269,7 @@
 
             <%-- Search by field --%>
           <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <label for="byfield_column">Field</label>
               <div class="input-group">
                   <select id="byfield_column" class="form-control custom-select" name="column">

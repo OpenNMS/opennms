@@ -90,10 +90,14 @@
       </thead>
       <tbody>
         <tr v-for="node in nodes" :key="node.id" @dblclick="doubleClickHandler(node)">
-          <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
+          <td class="first-td" :class="nodeLabelAlarmSeverityMap[node.label]">
+            <a href="#" @click.prevent="onNodeIdClick(node.id)">{{ node.id }}</a>
+          </td>
           <td>{{ node.foreignSource }}</td>
           <td>{{ node.foreignId }}</td>
-          <td>{{ node.label }}</td>
+          <td>
+            <a href="#" @click.prevent="onNodeLabelClick(node.label)">{{ node.label }}</a>
+          </td>
           <td>{{ node.labelSource }}</td>
           <td v-date>{{ node.lastCapabilitiesScan }}</td>
           <td>{{ node.primaryInterface }}</td>
@@ -114,7 +118,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const store = useStore()
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
 
 const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
@@ -142,6 +146,15 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   }
   sortStates[`${sortObj.property}`] = sortObj.value
   store.dispatch('mapModule/setNodeSortObject', sortObj)
+}
+
+const onNodeIdClick = (nodeId: string) => {
+  const searchTerm = `nodeid == ${nodeId}`
+  store.dispatch('mapModule/setNodeSearchTerm', searchTerm)
+}
+
+const onNodeLabelClick = (label: string) => {
+  store.dispatch('mapModule/setNodeSearchTerm', label)
 }
 
 onMounted(() => {

@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.camel.itests;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.util.ArrayList;

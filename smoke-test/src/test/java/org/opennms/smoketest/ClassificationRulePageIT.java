@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -445,7 +446,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
         public Page open() {
             driver.get(url);
-            new WebDriverWait(driver, 15).until((driver) -> getTabs().size() == expectedTabs.size());
+            new WebDriverWait(driver, Duration.ofSeconds(15)).until((driver) -> getTabs().size() == expectedTabs.size());
             return this;
         }
 
@@ -539,7 +540,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
         public void click() {
             getElement().click();
-            new WebDriverWait(driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
@@ -635,7 +636,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     sleep(DEFAULT_WAIT_TIME);
 
                     // Verify the tab was actually enabled/disabled
-                    new WebDriverWait(driver, 5)
+                    new WebDriverWait(driver, Duration.ofSeconds(5))
                             .until(input -> {
                                 final Group group = tab.getGroup(name);
                                 return enabled == group.isEnabled();
@@ -763,7 +764,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
         // Ensure dialog closes
         private void ensureClosed() {
-            execute(() -> new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id("ruleModal"), 0)));
+            execute(() -> new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.numberOfElementsToBe(By.id("ruleModal"), 0)));
         }
 
         private void setInput(String id, String input) {
@@ -810,7 +811,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     .open(() -> {
                         // Click add rule button
                         clickElement(By.id("action.addRule"));
-                        new WebDriverWait(driver, 5).until(pageContainsText("Create Classification Rule"));
+                        new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Create Classification Rule"));
                     });
         }
 
@@ -819,7 +820,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     .open(() -> {
                         // click edit button
                         findElementById("action." + position + ".edit").click();
-                        new WebDriverWait(driver, 5).until(pageContainsText("Edit Classification Rule"));
+                        new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Edit Classification Rule"));
                     });
         }
 
@@ -860,7 +861,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             execute(() -> {
                 final String deleteActionId = "action." + position + ".delete";
                 findElementById(deleteActionId).click();
-                new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
+                new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
                 return null;
             });
         }
@@ -874,7 +875,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             sleep(DEFAULT_WAIT_TIME);
 
             // Verify the page is actually active
-            execute(() -> new WebDriverWait(driver, 5).until(
+            execute(() -> new WebDriverWait(driver, Duration.ofSeconds(5)).until(
                             ExpectedConditions.visibilityOf(
                                     findElementByXpath("//li[contains(@class, 'active')]/a[contains(text(), '" + page + "')]"))));
         }

@@ -35,7 +35,7 @@ import org.opennms.core.mate.api.ContextKey;
 public class FlowSource {
     private final String location;
     private final String sourceAddress;
-    private ContextKey contextKey;
+    private final ContextKey contextKey;
 
     public FlowSource(final String location, final String sourceAddress, final ContextKey contextKey) {
         this.location = Objects.requireNonNull(location);

@@ -13,6 +13,7 @@
       <include-collection dataCollectionGroup="AKCP sensorProbe"/>
       <include-collection dataCollectionGroup="Alvarion"/>
       <include-collection dataCollectionGroup="APC"/>
+      <include-collection dataCollectionGroup="Aruba"/>
       <include-collection dataCollectionGroup="Ascend"/>
       <include-collection dataCollectionGroup="Asterisk"/>
       <include-collection dataCollectionGroup="Bluecat"/>
@@ -60,6 +61,7 @@
       <include-collection dataCollectionGroup="Network Appliance"/>
       <include-collection dataCollectionGroup="Nortel"/>
       <include-collection dataCollectionGroup="Novell"/>
+      <include-collection dataCollectionGroup="OpenNMS Appliances"/>
       <include-collection dataCollectionGroup="PaloAlto"/>
       <include-collection dataCollectionGroup="pfSense"/>
       <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
@@ -84,7 +86,6 @@
       <include-collection dataCollectionGroup="VMware6"/>
       <include-collection dataCollectionGroup="VMware7"/>
       <include-collection dataCollectionGroup="WMI"/>
-      <include-collection dataCollectionGroup="XMP"/>
       <include-collection dataCollectionGroup="Zertico"/>
       <include-collection dataCollectionGroup="Zeus"/>
    </snmp-collection>

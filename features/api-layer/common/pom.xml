@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.api-layer</artifactId>
-        <version>30.0.3-SNAPSHOT</version>
+        <version>31.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.api-layer</groupId>
@@ -57,19 +57,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.integration.api</groupId>
-            <artifactId>api</artifactId>
-            <version>${opennmsApiVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>oia-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
+        <!-- add this explicitly to be sure it's marked as scope:compile -->
         <dependency>
             <groupId>org.opennms.integration.api</groupId>
             <artifactId>common</artifactId>
             <version>${opennmsApiVersion}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.health</groupId>
             <artifactId>org.opennms.core.health.api</artifactId>
-	        <version>${project.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -108,13 +110,4 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>sonatype.org-snapshot</id>
-            <name>Sonatype OSS Snapshots Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-    </repositories>
 </project>

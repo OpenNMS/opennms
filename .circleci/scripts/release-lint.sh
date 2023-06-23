@@ -1,7 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-OPENNMS_FULL_VERSION="$1"; shift
-TYPE="$1"; shift
+if [ -n "$1" ]; then
+  OPENNMS_FULL_VERSION="$1"; shift
+fi
+
+if [ -n "$1" ]; then
+  TYPE="$1"; shift
+fi
 
 set -e
 
@@ -27,6 +32,14 @@ case "$OPENNMS_FULL_VERSION" in
     WARN=0
     ;;
 esac
+
+echo "* validating copyright display"
+CURRENT_YEAR="$(date '+%Y')"
+JSP_COUNT="$(grep -c "2002-${CURRENT_YEAR}" opennms-webapp/src/main/webapp/{about,includes}/*.jsp | grep -c -v -E ':0$' || :)"
+if [ "${JSP_COUNT}" -eq 0 ]; then
+  echo "  WARNING: JSP files in opennms-webapp/src/main/webapp/about and opennms-webapp/src/main/webapp/includes are missing ${CURRENT_YEAR} in their copyright notices."
+  FAILED=1
+fi
 
 echo "* validating documentation"
 DOCDIR="opennms-doc/releasenotes/src/asciidoc"
