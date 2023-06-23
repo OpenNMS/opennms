@@ -29,8 +29,9 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -99,8 +100,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
      * @param managed a boolean.
      * @param status a int.
+     * @param dnsLookups the list of DNS lookup futures.
      */
-    public void foundInterface(InetAddress addr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
+    public void foundInterface(InetAddress addr, Object descr, final PrimaryType primaryType, boolean managed, int status, final Set<CompletableFuture<Void>> dnsLookups) {
         
         if (addr == null) {
             LOG.error("Found interface on node {} with an empty/invalid ipaddr! Ignoring!", m_node.getLabel());
@@ -111,10 +113,6 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
 
-        if (addr != null && System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-            m_currentInterface.setIpHostName(getProvisionService().getHostnameResolver().getHostname(addr, m_node.getLocation().getLocationName()));
-        }
-
         if (PrimaryType.PRIMARY.equals(primaryType)) {
             if (addr != null) {
                 m_scanManager = new ScanManager(getProvisionService().getLocationAwareSnmpClient(), addr);
@@ -124,6 +122,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this
         //interface to the node.
         m_node.addIpInterface(m_currentInterface);
+
+        if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
+            dnsLookups.add(CompletableFuture.supplyAsync(() -> getProvisionService().getHostnameResolver().getHostname(addr, m_node.getLocation().getLocationName())).thenAccept(s -> m_node.getInterfaceWithAddress(addr).setIpHostName(s)));
+        }
     }
 	
     /**
