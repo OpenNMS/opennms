@@ -16,6 +16,8 @@ org.opennms.core.ipc.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:90
 <2> Ensure that messages are not consumed from Kafka for Sink until the system has fully initialized. Default is 60 seconds.
 <3> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
+NOTE: Enabling Kafka requires that Kafka be installed and running.
+
 NOTE: If you set more than one Kafka node as `bootstrap.servers`, the driver attempts to connect to the first entry.
       If that is successful, the client discovers and knows the whole broker topology.
       The other entries are used only if the connection to the first entry fails.
