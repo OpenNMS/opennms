@@ -1,7 +1,8 @@
 
 = Enable the Kafka Producer
 
-The Kafka Producer is disabled by default and can be enabled as follows.  Enabling the Kafka Producer requires that Kafka be installed and running.
+The Kafka Producer is disabled by default and can be enabled as follows.
+Enabling the Kafka Producer requires that you have a Kafka cluster installed and running.
 
 First, log in to the Karaf shell of your {page-component-title} instance and configure the Kafka client settings to point to your Kafka broker.
 See link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs] for a complete list of available options.
