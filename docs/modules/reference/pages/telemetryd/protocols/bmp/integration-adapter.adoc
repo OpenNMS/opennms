@@ -1,0 +1,33 @@
+
+[[telemetryd-openbmp-integration-adapter]]
+= OpenBMP Integration Adapter
+
+The OpenBMP integration adapter can integrate with an existing https://github.com/OpenBMP[OpenBMP] installation.
+It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
+
+This setup replaces the collector component of OpenBMP.
+
+== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter`
+|===
+
+== Configuration and use
+
+.Optional parameters for the OpenBMP Integration Adapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+| kafka.*
+| Uses options to create OpenBMP Kafka producer.
+Enables all known Kafka settings, but with `kafka.` prefixed.
+| n/a
+
+| topicPrefix
+| Prefix used before each Kafka topic.
+| n/a
+|===

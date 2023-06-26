@@ -1,0 +1,35 @@
+
+[[telemetryd-bmp-peer-status-adapter]]
+= BMP Peer Status Adapter
+
+The BMP peer status adapter creates events for peer status changes.
+It handles BMP Peer Up and Down messages that the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and converts to {page-component-title} events.
+{page-component-title} associates the created events with the router sending the messages.
+This router must exist as regular node in {page-component-title}.
+
+The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peerDown`.
+
+{page-component-title} uses the IP address exporting BMP messages to associate a router with the particular {page-component-title} node.
+In addition, the node's metadata can specify a BGP ID, which will then be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node that has stored the queried BGP ID as a value in exactly this key.
+
+== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter`
+|===
+
+== Configuration and use
+
+.Optional parameters for the BMP telemetry adapter
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| metaDataNodeLookup
+| Enables lookup using BGP IDs.
+| n/a
+|===
