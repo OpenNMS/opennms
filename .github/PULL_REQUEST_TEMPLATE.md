@@ -5,12 +5,13 @@
 
 ### Contribution Checklist
 
-* Please [make an issue in the OpenNMS issue tracker](https://issues.opennms.org) if there isn't one already.<br />Once there is an issue, please:
+* Please [make an issue in the OpenNMS issue tracker](https://opennms.atlassian.net/) if there isn't one already.<br />Once there is an issue, please:
   1. update the title of this PR to be in the format: `${JIRA-ISSUE-NUMBER}: subject of pull request`
-  2. update the JIRA link at the bottom of this comment to refer to the real issue number
+  2. update the Jira link at the bottom of this comment to refer to the real issue number
   3. prefix your commit messages with the issue number, if possible
-  4. once you've created this PR, please link to it in a comment in the JIRA issue
+  4. once you've created this PR, please link to it in a comment in the Jira issue
   Don't worry if this sounds like a lot, we can help you get things set up properly.
+* **If this code is likely to affect the UI, did you name your branch with `-smoke` in it to trigger smoke tests?**
 * If this is a new or updated feature, is there documentation for the new behavior?
 * If this is new code, are there unit and/or integration tests?
 * If this PR targets a `foundation-*` branch, does it try to avoid changing files in `$OPENNMS_HOME/etc/`?
@@ -33,5 +34,5 @@ Thanks for taking time to contribute!
 
 ### External References
 
-* JIRA (Issue Tracker): http://issues.opennms.org/browse/${JIRA-ISSUE-NUMBER}
+* Jira (Issue Tracker): https://opennms.atlassian.net/browse/${JIRA-ISSUE-NUMBER}
 
