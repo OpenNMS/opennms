@@ -6,7 +6,7 @@ During the poll, it attempts to connect on the specified port and then authentic
 If the authentication is successful, then the service is considered up.
 Optionally, a remote command to execute can be provided and if that is successful, the service is considered up.
 
-== MinaSshMonitor vs SshMonitor
+== MinaSshMonitor vs. SshMonitor
 
 The MinaSshMonitor tests connecting and authenticating to a node via SSH.
 The SshMonitor only tests that the SSH port is accepting connections.
