@@ -49,6 +49,7 @@ You can configure the following persistence selector strategies to specify how t
 | Persist indexes based on JEXL evaluation. +
 This class takes a single parameter, `match-expression`, which defines a JEXL expression.
 On evaluation, this expression should return either `true` (persist index to storage) or `false` (discard data).
+Note that `match-expression` works only on string attributes.
 |===
 
 == Storage strategies
