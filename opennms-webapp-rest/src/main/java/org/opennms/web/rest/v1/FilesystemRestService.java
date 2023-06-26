@@ -66,6 +66,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,15 @@ public class FilesystemRestService {
             "groovy",
             "bsh",
             "dcb");
+    private static final java.nio.file.Path USERS_XML;
+
+    static {
+        try {
+            USERS_XML = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
     private final java.nio.file.Path etcPristineFolder = Paths.get(System.getProperty("opennms.home"), "share", "etc-pristine");
@@ -104,8 +114,9 @@ public class FilesystemRestService {
 
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
+                    .filter(p -> !p.equals(USERS_XML) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
                     .map(p -> etcFolder.relativize(p).toString())
-                    .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
+                    .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p, securityContext))
                     .sorted()
                     .collect(Collectors.toList());
         } catch (IOException e) {
@@ -113,8 +124,8 @@ public class FilesystemRestService {
         }
     }
 
-    public boolean doesFileExistAndMatchContentsWithEtcPristine(String file) {
-        final java.nio.file.Path etcPath = ensureFileIsAllowed(file);
+    public boolean doesFileExistAndMatchContentsWithEtcPristine(String file, final SecurityContext securityContext) {
+        final java.nio.file.Path etcPath = ensureFileIsAllowed(file, securityContext);
         final java.nio.file.Path etcPristinePath = etcPristineFolder.resolve(file);
         if (!Files.exists(etcPristinePath)) {
             return false;
@@ -135,7 +146,7 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for retrieving help.");
         }
-        ensureFileIsAllowed(fileName);
+        ensureFileIsAllowed(fileName, securityContext);
         return this.getClass().getResourceAsStream("/help/" + fileName + ".md");
     }
 
@@ -157,7 +168,7 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for reading files.");
         }
-        return fileContents(ensureFileIsAllowed(fileName));
+        return fileContents(ensureFileIsAllowed(fileName, securityContext));
     }
 
     @POST
@@ -170,7 +181,7 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for uploading file contents.");
         }
-        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
+        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName, securityContext);
 
         // Write the contents a temporary file
         final File tempFile = File.createTempFile("upload-", targetPath.getFileName().toString());
@@ -202,7 +213,7 @@ public class FilesystemRestService {
         if (!securityContext.isUserInRole(Authentication.ROLE_FILESYSTEM_EDITOR)) {
             throw new ForbiddenException("FILESYSTEM EDITOR role is required for deleting file contents.");
         }
-        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
+        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName, securityContext);
         Files.delete(targetPath);
         return String.format("Successfully deleted to '%s'.", targetPath);
     }
@@ -227,9 +238,14 @@ public class FilesystemRestService {
         return SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(path.getFileName().toString()));
     }
 
-    private java.nio.file.Path ensureFileIsAllowed(String fileName) {
+    private java.nio.file.Path ensureFileIsAllowed(String fileName, SecurityContext securityContext) {
         final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
         final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
+
+        if (fileNormalized.equals(USERS_XML) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
+        }
+
         if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
             throw new BadRequestException("Cannot access files outside of folder! Filename given: " + fileName);
         }
