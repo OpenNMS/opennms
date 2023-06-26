@@ -9,7 +9,7 @@ Optionally, a remote command to execute can be provided and if that is successfu
 == MinaSshMonitor vs. SshMonitor
 
 The MinaSshMonitor tests connecting and authenticating to a node via SSH.
-The SshMonitor only tests that the SSH port is accepting connections.
+The xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] only tests that the SSH port is accepting connections.
 
 == Monitor facts
 
