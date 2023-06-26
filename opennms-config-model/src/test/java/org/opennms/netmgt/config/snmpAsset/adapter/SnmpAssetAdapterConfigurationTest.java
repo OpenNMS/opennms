@@ -83,3 +83,4 @@ public class SnmpAssetAdapterConfigurationTest extends XmlTestNoCastor<SnmpAsset
         return config;
     }
 }
+

@@ -712,3 +712,4 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         }
     }
 }
+

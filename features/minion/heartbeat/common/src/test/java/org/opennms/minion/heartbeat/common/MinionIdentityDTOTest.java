@@ -62,3 +62,4 @@ public class MinionIdentityDTOTest extends XmlTestNoCastor<MinionIdentityDTO> {
         });
     }
 }
+

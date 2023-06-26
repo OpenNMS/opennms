@@ -389,3 +389,4 @@ public class DnsRequisitionUrlConnectionIT {
         resourceStream.close();
     }
 }
+

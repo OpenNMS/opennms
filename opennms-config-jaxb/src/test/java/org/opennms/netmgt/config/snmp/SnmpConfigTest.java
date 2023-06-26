@@ -356,3 +356,4 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
     }
 
 }
+

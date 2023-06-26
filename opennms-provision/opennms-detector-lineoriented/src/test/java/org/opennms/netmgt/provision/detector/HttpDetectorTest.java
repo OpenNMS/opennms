@@ -251,3 +251,4 @@ public class HttpDetectorTest {
         return future.isServiceDetected();
     }
 }
+

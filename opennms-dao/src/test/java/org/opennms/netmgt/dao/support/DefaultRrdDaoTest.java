@@ -257,3 +257,4 @@ public class DefaultRrdDaoTest {
         return m_dao.getRrdBaseDirectory().toPath().toAbsolutePath().resolve(((RrdGraphAttribute)attr).getRrdRelativePath()).toString();
     }
     }
+

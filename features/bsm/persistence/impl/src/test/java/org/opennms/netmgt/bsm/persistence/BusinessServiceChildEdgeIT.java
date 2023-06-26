@@ -128,3 +128,4 @@ public class BusinessServiceChildEdgeIT {
         assertEquals(0, m_businessServiceEdgeDao.countAll());
     }
 }
+

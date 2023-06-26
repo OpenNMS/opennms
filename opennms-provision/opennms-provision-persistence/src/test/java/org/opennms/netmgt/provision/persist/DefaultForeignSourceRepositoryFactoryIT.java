@@ -81,3 +81,4 @@ public class DefaultForeignSourceRepositoryFactoryIT extends ForeignSourceReposi
         assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof QueueingForeignSourceRepository);
     }
 }
+

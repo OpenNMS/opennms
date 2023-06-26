@@ -94,3 +94,4 @@ public class RwsNbInventoryReportTest extends XmlTestNoCastor<RwsNbinventoryrepo
         return report;
     }
 }
+

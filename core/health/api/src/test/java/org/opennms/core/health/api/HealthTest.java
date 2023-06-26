@@ -50,3 +50,4 @@ public class HealthTest {
         assertThat(h2.get().getRight().getStatus(), Matchers.is(Status.values()[Status.values().length - 1]));
     }
 }
+

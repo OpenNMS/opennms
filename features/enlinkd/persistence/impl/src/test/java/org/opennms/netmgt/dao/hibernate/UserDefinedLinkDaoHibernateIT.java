@@ -121,3 +121,4 @@ public class UserDefinedLinkDaoHibernateIT {
         assertThat(userDefinedLinkDao.findAll(), hasSize(0));
     }
 }
+

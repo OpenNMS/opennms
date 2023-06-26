@@ -163,3 +163,4 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
         Assert.assertEquals(0, oldDefaultLocation);
     }
 }
+

@@ -149,3 +149,4 @@ public class EventFactoryIT {
         assertThat(events[2].uei, equalTo("uei.opennms.org/test3"));
     }
 }
+

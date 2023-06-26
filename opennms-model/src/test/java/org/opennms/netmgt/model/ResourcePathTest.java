@@ -73,3 +73,4 @@ public class ResourcePathTest {
         fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
     }
 }
+

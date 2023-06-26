@@ -262,3 +262,4 @@ public class NewtsResourceStorageDaoTest {
         m_indexedPaths.clear();
     }
 }
+

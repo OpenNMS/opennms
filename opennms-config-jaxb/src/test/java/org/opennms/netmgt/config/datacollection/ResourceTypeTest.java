@@ -61,3 +61,4 @@ public class ResourceTypeTest extends XmlTestNoCastor<ResourceType> {
 
 
 }
+

@@ -124,3 +124,4 @@ public class BusinessServiceSearchProviderIT {
         Assert.assertEquals(1, result.size());
     }
 }
+

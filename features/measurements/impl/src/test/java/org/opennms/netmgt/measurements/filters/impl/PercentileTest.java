@@ -102,3 +102,4 @@ public class PercentileTest extends AnalyticsFilterTest {
         }
     }
 }
+

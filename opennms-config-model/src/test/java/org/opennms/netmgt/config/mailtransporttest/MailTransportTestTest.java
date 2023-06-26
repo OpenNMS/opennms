@@ -98,3 +98,4 @@ public class MailTransportTestTest extends XmlTestNoCastor<MailTransportTest> {
     }
 
 }
+

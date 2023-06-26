@@ -54,3 +54,4 @@ public class DecodeTest extends XmlTestNoCastor<Decode> {
 	}
 
 }
+

@@ -142,3 +142,4 @@ public class TimeseriesPersisterIT {
         assertEquals(900, row.getValue(), 0.00001);
     }
 }
+

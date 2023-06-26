@@ -178,3 +178,4 @@ public class DefaultRemoteRepositoryConfigDaoTest implements InitializingBean {
         assertEquals("Get CONNECT remote repository by ID", "connectreporting", m_remoteRepositoryConfigDao.getRepositoryById("connectreporting").getRepositoryId());
     }
 }
+

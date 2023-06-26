@@ -354,3 +354,4 @@ public class SyslogSinkConsumerNewSuspectIT {
         return event;
     }
 }
+

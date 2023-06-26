@@ -99,3 +99,4 @@ public class WmiCollectorComplianceTest extends CollectorComplianceTest {
         WmiDataCollectionConfigFactory.setInstance(dataCollectionConfigFactory);
     }
 }
+

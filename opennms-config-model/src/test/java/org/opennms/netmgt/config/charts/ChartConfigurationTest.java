@@ -93,3 +93,4 @@ public class ChartConfigurationTest extends XmlTestNoCastor<ChartConfiguration> 
         return chartConfig;
     }
 }
+

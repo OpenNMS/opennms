@@ -637,3 +637,4 @@ public class CollectionResourceWrapperIT {
         return resourceStorageDao;
     }
 }
+

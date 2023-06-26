@@ -89,3 +89,4 @@ public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
         assertMockEndpointsSatisfied();
     }
 }
+

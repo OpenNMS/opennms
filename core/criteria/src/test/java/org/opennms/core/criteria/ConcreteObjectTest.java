@@ -96,3 +96,4 @@ public class ConcreteObjectTest {
 	    assertEquals(InetAddress.class, crit.getType("ipInterface.ipAddress"));
 	}
 }
+

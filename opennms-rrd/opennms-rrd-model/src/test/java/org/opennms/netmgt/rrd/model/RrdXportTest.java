@@ -59,3 +59,4 @@ public class RrdXportTest {
         Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
     }
 }
+

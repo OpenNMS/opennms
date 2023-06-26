@@ -118,3 +118,4 @@ public class XmlFileSanitizerTest {
         xmlFileSanitizer.getSanitizedResource(file);
     }
 }
+

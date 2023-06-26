@@ -446,3 +446,4 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		assertEquals(null, config.getWriteCommunity());
 	}
 }
+

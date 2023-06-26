@@ -132,3 +132,4 @@ public class FilterTest {
 		Assert.assertEquals(false, filter.apply("Fulda"));
 	}
 }
+

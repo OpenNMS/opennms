@@ -34,3 +34,4 @@ public class SnmpCollectorIT extends AbstractSnmpCollectorIT {
         return new SnmpCollector();
     }
 }
+

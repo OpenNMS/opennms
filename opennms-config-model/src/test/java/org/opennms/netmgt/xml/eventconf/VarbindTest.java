@@ -67,3 +67,4 @@ public class VarbindTest extends XmlTestNoCastor<Varbind> {
 	}
 
 }
+

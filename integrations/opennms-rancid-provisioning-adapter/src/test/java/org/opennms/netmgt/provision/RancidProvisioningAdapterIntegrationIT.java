@@ -109,3 +109,4 @@ public class RancidProvisioningAdapterIntegrationIT implements InitializingBean 
         m_adapter.addNode(nodes.get(0).getId());
     }
 }
+

@@ -54,3 +54,4 @@ public class ImmutableAutoAcknowledgeTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

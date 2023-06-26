@@ -100,3 +100,4 @@ public class ActiveMQDetectorTest implements InitializingBean {
         m_detector.dispose();
     }
 }
+

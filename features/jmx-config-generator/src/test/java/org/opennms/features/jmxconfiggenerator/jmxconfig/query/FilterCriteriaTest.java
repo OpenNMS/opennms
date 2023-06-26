@@ -62,3 +62,4 @@ public class FilterCriteriaTest {
         validateFullParsing(input, null);
     }
 }
+

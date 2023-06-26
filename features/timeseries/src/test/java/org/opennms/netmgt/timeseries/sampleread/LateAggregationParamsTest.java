@@ -85,3 +85,4 @@ public class LateAggregationParamsTest {
         assertEquals(LateAggregationParams.MIN_STEP_MS, lag.step);
     }
 }
+

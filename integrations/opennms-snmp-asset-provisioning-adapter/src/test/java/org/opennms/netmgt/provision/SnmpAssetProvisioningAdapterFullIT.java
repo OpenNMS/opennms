@@ -275,3 +275,4 @@ public class SnmpAssetProvisioningAdapterFullIT implements InitializingBean {
 		}
 	}
 }
+

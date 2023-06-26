@@ -374,3 +374,4 @@ public class FusedForeignSourceRepositoryIT extends ForeignSourceRepositoryTestC
         return node;
     }
 }
+

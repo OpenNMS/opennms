@@ -280,3 +280,4 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPost("/groups", group, 201, "/groups/" + groupname);
     }
 }
+

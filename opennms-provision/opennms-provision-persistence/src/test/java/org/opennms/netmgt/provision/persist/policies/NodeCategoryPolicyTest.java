@@ -106,3 +106,4 @@ public class NodeCategoryPolicyTest implements InitializingBean {
     }
 
 }
+

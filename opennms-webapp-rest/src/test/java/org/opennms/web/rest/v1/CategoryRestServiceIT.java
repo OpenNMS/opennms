@@ -229,3 +229,4 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createCategory(cat);
     }
 }
+

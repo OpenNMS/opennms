@@ -198,3 +198,4 @@ public class ManagedDroolsContextIT {
         }
     }
 }
+

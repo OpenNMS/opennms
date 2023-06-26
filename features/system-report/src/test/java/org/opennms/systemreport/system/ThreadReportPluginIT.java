@@ -57,3 +57,4 @@ public class ThreadReportPluginIT extends ReportPluginITCase {
         assertTrue(contents.contains("/sun.management.ThreadImpl.dumpAllThreads"));
     }
 }
+

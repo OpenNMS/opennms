@@ -94,3 +94,4 @@ public class Nms7467EnIT extends EnLinkdBuilderITCase {
         }
     }
 }
+

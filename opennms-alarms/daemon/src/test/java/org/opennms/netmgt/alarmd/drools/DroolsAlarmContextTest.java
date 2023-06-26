@@ -66,3 +66,4 @@ public class DroolsAlarmContextTest {
         assertThat(DroolsAlarmContext.shouldUpdateAlarmForSnapshot(a3, a3), equalTo(false));
     }
 }
+

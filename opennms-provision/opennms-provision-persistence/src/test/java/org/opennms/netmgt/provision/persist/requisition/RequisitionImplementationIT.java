@@ -215,3 +215,4 @@ public class RequisitionImplementationIT implements InitializingBean, Applicatio
         assertNotNull(m_repositories);
     }
 }
+

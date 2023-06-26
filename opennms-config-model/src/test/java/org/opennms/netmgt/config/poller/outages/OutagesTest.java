@@ -71,3 +71,4 @@ public class OutagesTest extends XmlTestNoCastor<Outages> {
     }
 
 }
+

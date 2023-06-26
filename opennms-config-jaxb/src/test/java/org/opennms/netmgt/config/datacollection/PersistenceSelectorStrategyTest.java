@@ -55,3 +55,4 @@ public class PersistenceSelectorStrategyTest extends XmlTestNoCastor<Persistence
 
 
 }
+

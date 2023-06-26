@@ -169,3 +169,4 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
     }
 }
+

@@ -133,3 +133,4 @@ public class CachingForeignSourceRepositoryIT extends ForeignSourceRepositoryTes
         assertTrue("foreign source must be tagged as default", defaultForeignSource.isDefault());
     }
 }
+

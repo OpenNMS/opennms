@@ -65,3 +65,4 @@ public class ResourceTypeMapperTest {
         assertEquals("indexed", rt.getName());
     }
 }
+

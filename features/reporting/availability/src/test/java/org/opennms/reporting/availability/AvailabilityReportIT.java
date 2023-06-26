@@ -333,3 +333,4 @@ public class AvailabilityReportIT extends TestCase {
     }
 
 }
+

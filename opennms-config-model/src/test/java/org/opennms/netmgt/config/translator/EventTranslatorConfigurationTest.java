@@ -110,3 +110,4 @@ public class EventTranslatorConfigurationTest extends XmlTestNoCastor<EventTrans
         return config;
     }
 }
+

@@ -141,3 +141,4 @@ public class NewtsConverterTest {
         Assert.assertEquals(23, samples.size());
     }
 }
+

@@ -92,3 +92,4 @@ public class PasswordEncryptionTest {
         Assert.assertEquals("defaultPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
     }
 }
+

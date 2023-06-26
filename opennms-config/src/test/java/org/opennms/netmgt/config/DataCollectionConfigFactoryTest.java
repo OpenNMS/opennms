@@ -267,3 +267,4 @@ public class DataCollectionConfigFactoryTest {
     }
 
 }
+

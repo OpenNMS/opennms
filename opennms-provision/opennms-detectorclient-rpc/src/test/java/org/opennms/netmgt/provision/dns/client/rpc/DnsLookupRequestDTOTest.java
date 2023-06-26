@@ -60,3 +60,4 @@ public class DnsLookupRequestDTOTest extends XmlTestNoCastor<DnsLookupRequestDTO
     }
 
 }
+

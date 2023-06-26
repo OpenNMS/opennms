@@ -76,3 +76,4 @@ public class FrameRelayStorageStrategyTest {
         verify(service, times(2)).getSnmpInterfaceLabel(2);
     }
 }
+

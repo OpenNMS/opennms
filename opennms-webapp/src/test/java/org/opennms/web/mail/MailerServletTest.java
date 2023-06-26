@@ -93,3 +93,4 @@ public class MailerServletTest {
         servlet.doPost(request, response);
     }
 }
+

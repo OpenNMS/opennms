@@ -135,3 +135,4 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
         throw new IllegalStateException("Can't find an available network port");
     }
 }
+

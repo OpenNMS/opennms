@@ -190,3 +190,4 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 		sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack", 403);
 	}
 }
+

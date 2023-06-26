@@ -90,3 +90,4 @@ public class NodeSnmpResourceTypeTest {
         return nodeResourceType.createResourceForNode(node);
     }
 }
+

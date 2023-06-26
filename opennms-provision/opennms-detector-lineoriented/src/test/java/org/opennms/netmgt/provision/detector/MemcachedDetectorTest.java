@@ -143,3 +143,4 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 }
+

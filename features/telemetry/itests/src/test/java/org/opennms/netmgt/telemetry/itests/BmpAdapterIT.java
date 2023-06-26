@@ -247,3 +247,4 @@ public class BmpAdapterIT {
         assertThat(eventCaptor.getValue().getNodeid(), is(2L));
     }
 }
+

@@ -168,3 +168,4 @@ public class ResourceTreeWalkerTest {
         verify(m_visitor, times(4)).visit(any(OnmsResource.class));
     }
 }
+

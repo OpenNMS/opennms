@@ -82,3 +82,4 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
     }
 
 }
+

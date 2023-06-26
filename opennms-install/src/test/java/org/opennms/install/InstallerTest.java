@@ -205,3 +205,4 @@ public class InstallerTest {
         assertTrue(userManager.comparePasswords("admin", "foobar"));
     }
 }
+

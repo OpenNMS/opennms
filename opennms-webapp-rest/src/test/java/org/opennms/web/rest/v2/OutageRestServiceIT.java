@@ -92,3 +92,4 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
 }
+

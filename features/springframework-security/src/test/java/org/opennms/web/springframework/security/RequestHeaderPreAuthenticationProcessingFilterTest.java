@@ -53,3 +53,4 @@ public class RequestHeaderPreAuthenticationProcessingFilterTest {
         assertThat(authorities, contains(new SimpleGrantedAuthority("user"), new SimpleGrantedAuthority("admin")));
     }
 }
+

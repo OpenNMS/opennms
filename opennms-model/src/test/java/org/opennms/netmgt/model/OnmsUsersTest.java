@@ -82,3 +82,4 @@ public class OnmsUsersTest extends XmlTestNoCastor<OnmsUserList> {
 
 
 }
+

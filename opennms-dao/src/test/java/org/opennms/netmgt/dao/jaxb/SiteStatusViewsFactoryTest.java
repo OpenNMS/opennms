@@ -60,3 +60,4 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 	}
 
 }
+

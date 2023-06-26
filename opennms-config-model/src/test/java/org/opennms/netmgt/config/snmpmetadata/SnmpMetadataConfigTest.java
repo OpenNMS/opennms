@@ -118,3 +118,4 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
         return snmpMetadataConfig;
     }
 }
+

@@ -114,3 +114,4 @@ public class GroupValidatorIT {
         return new RuleBuilder().withDstAddress("127.0.0.1").withName("dummy").build();
     }
 }
+

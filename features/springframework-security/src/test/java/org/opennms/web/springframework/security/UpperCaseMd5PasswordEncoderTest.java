@@ -36,3 +36,4 @@ public class UpperCaseMd5PasswordEncoderTest extends TestCase {
 		assertEquals("encoded admin password", "21232F297A57A5A743894A0E4A801FC3", encoder.encodePassword("admin", null));
 	}
 }
+

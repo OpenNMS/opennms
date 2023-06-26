@@ -136,3 +136,4 @@ public class GraphMLEdgeStatusProviderIT {
                                                                        .style("stroke-width", "3em"))));
     }
 }
+

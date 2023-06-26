@@ -61,3 +61,4 @@ public class OnmsApplicationTest {
         JsonTest.assertJsonEquals("{\"name\" : \"Dummy\", \"id\" : 100, \"perspectiveLocations\" : []}}", applicationString);
     }
 }
+

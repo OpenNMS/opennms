@@ -353,3 +353,4 @@ public class RrdStatisticAttributeVisitorTest {
         verify(m_statisticVisitor, times(3)).visit(any(OnmsAttribute.class), eq(2.0));
     }
 }
+

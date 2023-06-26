@@ -61,3 +61,4 @@ public class SnmpObjIdTest {
         assertThat(mib2.isSuccessorOf(ifIndex), equalTo(false));
     }
 }
+

@@ -54,3 +54,4 @@ public class ManagedObjectXmlTest extends XmlTestNoCastor<ManagedObject> {
         });
     }
 }
+

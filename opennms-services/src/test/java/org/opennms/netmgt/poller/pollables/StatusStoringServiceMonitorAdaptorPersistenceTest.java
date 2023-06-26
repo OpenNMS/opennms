@@ -183,3 +183,4 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         return tempFolder.getRoot().toPath().resolve("status").toAbsolutePath();
     }
 }
+

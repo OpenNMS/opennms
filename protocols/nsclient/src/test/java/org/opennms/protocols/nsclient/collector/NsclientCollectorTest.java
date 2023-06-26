@@ -140,3 +140,4 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     }
 
 }
+

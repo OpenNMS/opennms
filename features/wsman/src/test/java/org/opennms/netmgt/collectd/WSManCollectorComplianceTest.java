@@ -92,3 +92,4 @@ public class WSManCollectorComplianceTest extends CollectorComplianceTest {
                 .build();
     }
 }
+

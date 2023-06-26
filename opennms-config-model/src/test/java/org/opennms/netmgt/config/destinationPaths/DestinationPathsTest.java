@@ -110,3 +110,4 @@ public class DestinationPathsTest extends XmlTestNoCastor<DestinationPaths> {
         }, });
     }
 }
+

@@ -103,3 +103,4 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
         }});
     }
 }
+

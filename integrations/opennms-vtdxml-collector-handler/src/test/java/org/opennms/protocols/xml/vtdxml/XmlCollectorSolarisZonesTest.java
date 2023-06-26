@@ -82,3 +82,4 @@ public class XmlCollectorSolarisZonesTest extends AbstractVTDXmlCollectorTest {
     }
 
 }
+

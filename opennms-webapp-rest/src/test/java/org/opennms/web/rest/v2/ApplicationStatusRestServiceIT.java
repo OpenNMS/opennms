@@ -304,3 +304,4 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         Assert.assertEquals(end, object4.getLong("end"));
     }
 }
+

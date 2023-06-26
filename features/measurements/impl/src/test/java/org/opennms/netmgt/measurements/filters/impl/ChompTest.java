@@ -117,3 +117,4 @@ public class ChompTest extends AnalyticsFilterTest {
         getFilterEngine().filter(filterDef, table);
     }
 }
+

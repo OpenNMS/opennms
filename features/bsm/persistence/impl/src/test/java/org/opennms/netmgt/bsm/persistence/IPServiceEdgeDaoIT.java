@@ -147,3 +147,4 @@ public class IPServiceEdgeDaoIT {
         assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServiceEdges().size());
     }
 }
+

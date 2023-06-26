@@ -60,3 +60,4 @@ public class VarbindsdecodeTest extends XmlTestNoCastor<Varbindsdecode> {
 	}
 
 }
+

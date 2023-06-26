@@ -55,3 +55,4 @@ public class ImmutableForwardTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

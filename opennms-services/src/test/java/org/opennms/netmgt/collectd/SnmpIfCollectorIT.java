@@ -218,3 +218,4 @@ public class SnmpIfCollectorIT extends SnmpCollectorITCase {
 
     
 }
+

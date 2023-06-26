@@ -213,3 +213,4 @@ public abstract class AbstractVTDXmlCollectorTest {
         return new File(m_temporaryFolder.getRoot(), "snmp");
     }
 }
+

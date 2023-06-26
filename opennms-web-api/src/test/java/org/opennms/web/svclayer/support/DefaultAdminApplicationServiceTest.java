@@ -84,3 +84,4 @@ public class DefaultAdminApplicationServiceTest {
         assertEquals(EventConstants.APPLICATION_DELETED_EVENT_UEI, argument.getValue().getUei());
     }
 }
+

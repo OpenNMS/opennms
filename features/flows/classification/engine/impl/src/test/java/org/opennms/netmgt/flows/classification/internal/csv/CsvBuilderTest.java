@@ -76,3 +76,4 @@ public class CsvBuilderTest {
         assertEquals(expectedCsv, actualCsv);
     }
 }
+

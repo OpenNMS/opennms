@@ -62,3 +62,4 @@ public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO
     }
 
 }
+

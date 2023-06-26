@@ -86,3 +86,4 @@ public class XsdModelConverterTest {
         Assert.assertTrue("Should exclude max", excludeItem.isMaxExclusive());
     }
 }
+

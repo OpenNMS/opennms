@@ -82,3 +82,4 @@ public class ReportsListTest extends XmlTestNoCastor<ReportsList> {
         return reports;
     }
 }
+

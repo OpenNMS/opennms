@@ -69,3 +69,4 @@ public class RTCConfigurationTest extends XmlTestNoCastor<RTCConfiguration> {
         });
     }
 }
+

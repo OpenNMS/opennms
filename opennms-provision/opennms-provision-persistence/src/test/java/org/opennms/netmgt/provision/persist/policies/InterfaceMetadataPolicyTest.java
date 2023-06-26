@@ -140,3 +140,4 @@ public class InterfaceMetadataPolicyTest implements InitializingBean {
         return newNodes;
     }
 }
+

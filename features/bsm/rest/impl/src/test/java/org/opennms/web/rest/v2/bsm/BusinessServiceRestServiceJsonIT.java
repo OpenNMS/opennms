@@ -55,3 +55,4 @@ public class BusinessServiceRestServiceJsonIT extends AbstractBusinessServiceRes
         return getJsonObject(mapper, url, Collections.emptyMap(), expectedStatus, expectedClass);
     }
 }
+

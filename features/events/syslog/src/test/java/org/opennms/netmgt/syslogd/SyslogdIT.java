@@ -482,3 +482,4 @@ public class SyslogdIT implements InitializingBean {
     }
 
 }
+

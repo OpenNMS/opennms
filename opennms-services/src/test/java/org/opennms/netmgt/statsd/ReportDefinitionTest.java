@@ -315,3 +315,4 @@ public class ReportDefinitionTest {
         return packageReport;
     }
 }
+

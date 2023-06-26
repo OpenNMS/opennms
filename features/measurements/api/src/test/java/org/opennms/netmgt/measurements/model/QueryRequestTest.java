@@ -73,3 +73,4 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
         }});
     }
 }
+

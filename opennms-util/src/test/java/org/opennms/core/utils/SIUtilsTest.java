@@ -82,3 +82,4 @@ public class SIUtilsTest extends TestCase {
         assertEquals("1"+symbols.getDecimalSeparator()+"2 kbps", SIUtils.getHumanReadableIfSpeed(1200L));
     }
 }
+

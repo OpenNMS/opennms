@@ -120,3 +120,4 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("Bar", xml);
     }
 }
+

@@ -254,3 +254,4 @@ public class TcaDataCollectionConfigTest {
 		return myDiff;
 	}
 }
+

@@ -73,3 +73,4 @@ public class ThresholdingConfigPersistenceIT {
                                 ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent());
     }
 }
+

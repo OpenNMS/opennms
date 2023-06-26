@@ -274,3 +274,4 @@ public class IfTttDaemonTest {
         return true;
     }
 }
+

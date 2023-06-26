@@ -60,3 +60,4 @@ public class ImmutableSnmpTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

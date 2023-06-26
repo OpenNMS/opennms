@@ -400,3 +400,4 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
     }
 
 }
+

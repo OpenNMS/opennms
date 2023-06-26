@@ -67,3 +67,4 @@ public class YesNoDeserializerTest {
         return parser;
     }
 }
+

@@ -102,3 +102,4 @@ public class XmlCollector3GPPTest extends AbstractVTDXmlCollectorTest {
     }
 
 }
+

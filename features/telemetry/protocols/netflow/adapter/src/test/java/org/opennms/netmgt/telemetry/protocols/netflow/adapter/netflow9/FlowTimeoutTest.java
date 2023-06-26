@@ -107,3 +107,4 @@ public class FlowTimeoutTest {
         assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
     }
 }
+

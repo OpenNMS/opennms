@@ -336,3 +336,4 @@ public class AnnotationIT implements InitializingBean {
 		}
 	}
 }
+

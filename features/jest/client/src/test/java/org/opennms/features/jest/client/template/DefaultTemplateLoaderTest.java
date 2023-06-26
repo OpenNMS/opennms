@@ -66,3 +66,4 @@ public class DefaultTemplateLoaderTest {
         loader.load(new Version(6,2,3), "/non-existent-template");
     }
 }
+

@@ -57,3 +57,4 @@ public class GraphConfigGeneratorTest {
         Assert.assertNotNull(snmpGraph);
     }
 }
+

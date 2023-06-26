@@ -67,3 +67,4 @@ public class SystemReportPluginIT {
         return "Not a string resource.";
     }
 }
+

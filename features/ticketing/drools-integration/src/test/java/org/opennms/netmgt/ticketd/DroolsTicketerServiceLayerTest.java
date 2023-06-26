@@ -210,3 +210,4 @@ public class DroolsTicketerServiceLayerTest {
         }).when(m_alarmEntityNotifier).didChangeTicketStateForAlarm(m_alarm, prevState);
     }
 }
+

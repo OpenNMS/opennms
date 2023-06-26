@@ -147,3 +147,4 @@ public class AggregateTrackerProxyTest {
         assertThat(gatherer.getResults(), hasSize(0));
     }
 }
+

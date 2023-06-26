@@ -301,3 +301,4 @@ public class LocationMonitorRulesIT extends CorrelationRulesTestCase {
     }
 
 }
+

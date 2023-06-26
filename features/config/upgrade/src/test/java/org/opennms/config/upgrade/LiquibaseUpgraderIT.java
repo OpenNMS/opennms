@@ -285,3 +285,4 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         return files.size() == 1 && files.get(0).isFile();
     }
 }
+

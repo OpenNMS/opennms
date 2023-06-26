@@ -55,3 +55,4 @@ public class ImmutableLogMsgTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

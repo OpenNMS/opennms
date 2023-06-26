@@ -72,3 +72,4 @@ public class SyslogYearCompleterTest {
         assertEquals(expectedYear, syslog.getYear());
     }
 }
+

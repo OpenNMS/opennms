@@ -78,3 +78,4 @@ public class EventMapperTest {
         assertThat(eventDTO.getLabel(), equalTo("some-label"));
     }
 }
+

@@ -145,3 +145,4 @@ public class ForeignSourceConfigRestServiceIT extends AbstractSpringJerseyRestTe
     }
 
 }
+

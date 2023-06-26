@@ -78,3 +78,4 @@ public class UsersPropertiesFileSanitizerTest {
         assertTrue(content.contains("roleName"));
     }
 }
+

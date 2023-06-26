@@ -177,3 +177,4 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.getEventDao().flush();
     }
 }
+

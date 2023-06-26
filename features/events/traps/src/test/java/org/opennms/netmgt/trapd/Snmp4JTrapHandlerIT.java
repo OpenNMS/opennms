@@ -109,3 +109,4 @@ public class Snmp4JTrapHandlerIT extends TrapHandlerITCase {
         assertEquals(all + 3, TrapSinkConsumer.trapdInstrumentation.getTrapsReceived());
     }
 }
+

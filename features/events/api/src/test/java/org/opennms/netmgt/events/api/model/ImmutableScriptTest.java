@@ -54,3 +54,4 @@ public class ImmutableScriptTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

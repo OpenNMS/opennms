@@ -118,3 +118,4 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }
+

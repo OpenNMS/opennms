@@ -73,3 +73,4 @@ public class AttribTest extends XmlTestNoCastor<Attrib> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

@@ -55,3 +55,4 @@ public class WSManDataCollectionConfigDaoJaxbTest {
         assertTrue("agent should be matched", WSManDataCollectionConfigDaoJaxb.isAgentSupportedBySystemDefinition(sysDef, agent, config, node));
     }
 }
+

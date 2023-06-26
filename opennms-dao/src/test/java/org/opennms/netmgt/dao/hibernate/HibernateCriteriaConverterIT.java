@@ -131,3 +131,4 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
         assertEquals(Integer.valueOf(1), nodes.get(0).getId());
     }
 }
+

@@ -71,3 +71,4 @@ public class WmiAgentConfigTest  extends TestCase {
     }
 
 }
+

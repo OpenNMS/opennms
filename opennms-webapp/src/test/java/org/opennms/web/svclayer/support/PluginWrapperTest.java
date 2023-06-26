@@ -53,3 +53,4 @@ public class PluginWrapperTest {
         assertFalse("type should not be required", wrapper.getRequired().get("type"));
     }
 }
+

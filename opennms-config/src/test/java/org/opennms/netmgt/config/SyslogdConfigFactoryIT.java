@@ -132,3 +132,4 @@ public class SyslogdConfigFactoryIT {
         Assert.assertEquals(8, countMatch);
     }
 }
+

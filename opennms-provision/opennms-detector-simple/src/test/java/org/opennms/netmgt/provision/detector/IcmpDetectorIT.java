@@ -126,3 +126,4 @@ public class IcmpDetectorIT {
         throw new IllegalStateException("Pinger factory for testing is not a normal AbstractPingerFactory!");
     }
 }
+

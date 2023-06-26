@@ -161,3 +161,4 @@ public class SyntaxToEventTest {
 		assertEquals("4C:66:41:D9:9A:F6", parm.getValue().getContent());
 	}
 }
+

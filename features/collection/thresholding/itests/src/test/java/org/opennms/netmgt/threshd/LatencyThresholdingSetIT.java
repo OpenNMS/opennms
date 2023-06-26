@@ -611,3 +611,4 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         return collectionSet;
     }
 }
+

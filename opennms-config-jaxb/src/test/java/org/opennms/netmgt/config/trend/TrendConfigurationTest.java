@@ -101,3 +101,4 @@ public class TrendConfigurationTest extends XmlTestNoCastor<TrendConfiguration> 
         return trendConfiguration;
     }
 }
+

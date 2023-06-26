@@ -112,3 +112,4 @@ public class ConfigSwaggerConverterAllIT {
                 "/opennms/rest/cm/schema/vacuumd2#/components/schemas/VacuumdConfiguration", ref2);
     }
 }
+

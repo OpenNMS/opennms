@@ -48,3 +48,4 @@ public class InstallerJniTest extends TestCase {
         m_installer.pingLocalhost();
     }
 }
+

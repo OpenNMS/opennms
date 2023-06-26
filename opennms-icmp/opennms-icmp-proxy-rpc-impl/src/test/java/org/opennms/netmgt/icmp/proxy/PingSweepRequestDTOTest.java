@@ -71,3 +71,4 @@ public class PingSweepRequestDTOTest extends XmlTestNoCastor<PingSweepRequestDTO
     }
 
 }
+

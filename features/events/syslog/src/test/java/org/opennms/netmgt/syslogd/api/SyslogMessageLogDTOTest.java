@@ -69,3 +69,4 @@ public class SyslogMessageLogDTOTest extends XmlTestNoCastor<SyslogMessageLogDTO
         });
     }
 }
+

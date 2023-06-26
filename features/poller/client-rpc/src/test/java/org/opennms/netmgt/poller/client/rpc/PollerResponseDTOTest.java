@@ -99,3 +99,4 @@ public class PollerResponseDTOTest extends XmlTestNoCastor<PollerResponseDTO> {
         return dto;
     }
 }
+

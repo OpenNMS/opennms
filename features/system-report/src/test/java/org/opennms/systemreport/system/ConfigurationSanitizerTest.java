@@ -86,3 +86,4 @@ public class ConfigurationSanitizerTest {
         Mockito.verify(usersPropertiesFileSanitizer).getSanitizedResource(file);
     }
 }
+

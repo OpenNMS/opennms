@@ -108,3 +108,4 @@ public class TransactionAwareBeanProxyFactoryIT {
         new TransactionAwareBeanProxyFactory(transactionOperations).createProxy(new Dummy());
     }
 }
+

@@ -123,3 +123,4 @@ public class WsmanDatacollectionConfigTest extends XmlTestNoCastor<WsmanDatacoll
         return wsmanDatacollectionConfig;
     }
 }
+

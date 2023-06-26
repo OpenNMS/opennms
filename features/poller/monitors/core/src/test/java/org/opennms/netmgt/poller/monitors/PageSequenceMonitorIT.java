@@ -379,3 +379,4 @@ public class PageSequenceMonitorIT {
         assertNotNull(status2.getReason());
     }
 }
+

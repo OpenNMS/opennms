@@ -72,3 +72,4 @@ public class SnmpResultXmlTest extends XmlTestNoCastor<SnmpResult> {
         return result;
     }
 }
+

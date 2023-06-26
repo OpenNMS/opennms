@@ -187,3 +187,4 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
     }
     
 }
+

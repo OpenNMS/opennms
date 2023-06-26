@@ -92,3 +92,4 @@ public class ReferenceFactoryBeanTest implements InitializingBean {
     }
 
 }
+

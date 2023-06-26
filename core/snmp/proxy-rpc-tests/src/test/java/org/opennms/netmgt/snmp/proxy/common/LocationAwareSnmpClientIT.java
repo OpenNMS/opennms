@@ -243,3 +243,4 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         ExpectedResults.compareToKnownIpAddressList(tracker.getIpAddresses());
     }
 }
+

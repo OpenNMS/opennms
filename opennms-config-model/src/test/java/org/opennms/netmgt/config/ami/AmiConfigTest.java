@@ -80,3 +80,4 @@ public class AmiConfigTest extends XmlTestNoCastor<AmiConfig> {
                 "target/classes/xsds/ami-config.xsd", }, });
     }
 }
+

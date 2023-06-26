@@ -66,3 +66,4 @@ public class StringReplaceOperationTest extends TestCase {
     }
 
 }
+

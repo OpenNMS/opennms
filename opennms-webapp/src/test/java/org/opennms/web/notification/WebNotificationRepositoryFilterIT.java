@@ -177,3 +177,4 @@ public class WebNotificationRepositoryFilterIT implements InitializingBean {
         assertEquals(1, notifs.length);
     }
 }
+

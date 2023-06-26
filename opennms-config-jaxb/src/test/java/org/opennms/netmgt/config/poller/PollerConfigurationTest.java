@@ -650,3 +650,4 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return config;
     }
 }
+

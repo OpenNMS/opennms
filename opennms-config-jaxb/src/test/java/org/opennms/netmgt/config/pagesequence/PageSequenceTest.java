@@ -119,3 +119,4 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
         return ps;
     }
 }
+

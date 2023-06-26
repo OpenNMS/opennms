@@ -230,3 +230,4 @@ public class DefaultClassificationEngineTest {
         new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("Test", "0-10000")), FilterService.NOOP);
     }
 }
+

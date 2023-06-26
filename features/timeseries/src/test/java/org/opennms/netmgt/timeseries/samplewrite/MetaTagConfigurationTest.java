@@ -62,3 +62,4 @@ public class MetaTagConfigurationTest {
         assertTrue(metaTagConfiguration.isCategoriesEnabled());
     }
 }
+

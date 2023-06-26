@@ -164,3 +164,4 @@ public class DiscoveryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(sendPost("/discovery", oneTimeScan, 200, null));
     }
 }
+

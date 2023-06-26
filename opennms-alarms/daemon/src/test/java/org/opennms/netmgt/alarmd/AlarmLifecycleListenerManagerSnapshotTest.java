@@ -139,3 +139,4 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
         assertThat(newUpdateOrDeleteDuringSnapshot.get(), equalTo(2));
     }
 }
+

@@ -55,3 +55,4 @@ public class StorageStrategyTest extends XmlTestNoCastor<StorageStrategy> {
 
 
 }
+

@@ -119,3 +119,4 @@ public class GpDetectorTest implements InitializingBean {
         m_detector.getClient().connect(InetAddress.getLocalHost(), 1234, 1000);
     }
 }
+

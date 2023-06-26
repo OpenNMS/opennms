@@ -253,3 +253,4 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml.contains("<ipAddress/>"));
     }
 }
+

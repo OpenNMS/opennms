@@ -88,3 +88,4 @@ public class ViewinfoTest extends XmlTestNoCastor<Viewinfo> {
         return viewInfo;
     }
 }
+

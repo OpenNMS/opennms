@@ -134,3 +134,4 @@ public class SnmpAssetProvisioningAdapterIT implements InitializingBean {
 		// TODO: Add assertions to check that the deleteNode() adapter call updated the asset record
 	}
 }
+

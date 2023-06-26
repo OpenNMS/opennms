@@ -203,3 +203,4 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         assertEquals(1649961.9593111263, ifInOctetsColumn[ifInOctetsColumn.length-1], 0.0001);
     }
 }
+

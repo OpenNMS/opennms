@@ -97,3 +97,4 @@ public class GraphMLSearchProviderTest {
         Assert.assertEquals(5, results.size());
     }
 }
+

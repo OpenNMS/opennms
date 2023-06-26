@@ -194,3 +194,4 @@ public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
 
 
 }
+

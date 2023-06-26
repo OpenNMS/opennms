@@ -69,3 +69,4 @@ public class BooleanTypeTest extends AbstractTypeTest {
         return new BooleanType(nodes);
     }
 }
+

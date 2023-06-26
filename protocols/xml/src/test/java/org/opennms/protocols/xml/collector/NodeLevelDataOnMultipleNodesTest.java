@@ -247,3 +247,4 @@ public class NodeLevelDataOnMultipleNodesTest {
         return new File(m_temporaryFolder.getRoot(), "snmp");
     }
 }
+

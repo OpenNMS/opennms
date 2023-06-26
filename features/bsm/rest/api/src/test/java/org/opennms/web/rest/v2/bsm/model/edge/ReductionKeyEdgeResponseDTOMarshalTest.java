@@ -101,3 +101,4 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
         }});
     }
 }
+

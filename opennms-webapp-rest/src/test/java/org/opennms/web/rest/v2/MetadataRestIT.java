@@ -192,3 +192,4 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
         ), JAXB.unmarshal(new StringSource(xml), OnmsMetaDataList.class));
     }
 }
+

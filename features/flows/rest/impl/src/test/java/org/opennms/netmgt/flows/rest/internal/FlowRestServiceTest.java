@@ -126,3 +126,4 @@ public class FlowRestServiceTest {
         assertThat(flowGraphUrlInfo.getFlowGraphUrl(), equalTo("https://grafana:3000/d/eWsVEL6zz/flows?orgId=1&var-node=1&var-interface=2&from=3&to=4"));
     }
 }
+

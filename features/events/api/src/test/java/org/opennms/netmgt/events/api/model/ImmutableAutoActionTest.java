@@ -54,3 +54,4 @@ public class ImmutableAutoActionTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

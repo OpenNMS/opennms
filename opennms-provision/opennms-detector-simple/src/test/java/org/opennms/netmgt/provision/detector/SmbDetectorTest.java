@@ -61,3 +61,4 @@ public class SmbDetectorTest {
         //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 }
+

@@ -76,3 +76,4 @@ public class ServletInitializerIT {
         assertEquals("y", System.getProperty("y"));
     }
 }
+

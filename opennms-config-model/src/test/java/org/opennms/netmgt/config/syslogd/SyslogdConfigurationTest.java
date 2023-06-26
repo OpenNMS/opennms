@@ -99,3 +99,4 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
         assertEquals("Critical", match.getSeverities().get(0));
     }
 }
+

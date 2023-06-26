@@ -60,3 +60,4 @@ public class RTCManagerIT {
 		rtc.start();
 	}
 }
+

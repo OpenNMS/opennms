@@ -46,3 +46,4 @@ public class HashUtilTest {
         System.out.printf("Hash for content of %s: %s%n", xsdName, hash);
     }
 }
+

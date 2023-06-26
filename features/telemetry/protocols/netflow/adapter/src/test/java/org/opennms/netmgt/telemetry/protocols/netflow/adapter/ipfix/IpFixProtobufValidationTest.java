@@ -152,3 +152,4 @@ public class IpFixProtobufValidationTest {
         return flows;
     }
 }
+

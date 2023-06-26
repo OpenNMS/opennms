@@ -112,3 +112,4 @@ public class EchoRpcIT extends org.opennms.core.rpc.camel.EchoRpcIT {
                 new MockMinionIdentity(REMOTE_LOCATION_NAME), tracerRegistry);
     }
 }
+

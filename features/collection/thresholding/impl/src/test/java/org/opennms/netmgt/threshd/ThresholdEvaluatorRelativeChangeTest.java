@@ -384,3 +384,4 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
 				.evaluate(-10.0));
     }
 }
+

@@ -50,3 +50,4 @@ public class PassiveStatusTest extends TestCase {
     }
 
 }
+

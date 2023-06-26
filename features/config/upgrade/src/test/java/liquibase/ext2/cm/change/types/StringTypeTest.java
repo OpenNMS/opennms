@@ -70,3 +70,4 @@ public class StringTypeTest extends AbstractTypeTest {
         return new StringType(nodes);
     }
 }
+

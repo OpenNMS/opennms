@@ -86,3 +86,4 @@ public class CorrelatorEngineAdapterTest {
         verify(eventIpcManager, times(2)).addEventListener(any(EventListener.class), any(String.class));
     }
 }
+

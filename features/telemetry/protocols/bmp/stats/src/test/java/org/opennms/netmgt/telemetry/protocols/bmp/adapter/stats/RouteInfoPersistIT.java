@@ -75,3 +75,4 @@ public class RouteInfoPersistIT {
                 .until(() -> bmpRouteInfoDao.countAll() >= 2704);
     }
 }
+

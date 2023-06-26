@@ -117,3 +117,4 @@ public class NotifdMetaDataIT {
         Assert.assertEquals("This is an awesome text message.", map.get(NotificationManager.PARAM_TEXT_MSG));
     }
 }
+

@@ -92,3 +92,4 @@ public class DefaultJavamailConfigurationDaoIT implements InitializingBean {
     }
     
 }
+

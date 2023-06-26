@@ -164,3 +164,4 @@ public class OutlierFilterIT extends AnalyticsFilterTest {
         // No exception should be thrown
     }
 }
+

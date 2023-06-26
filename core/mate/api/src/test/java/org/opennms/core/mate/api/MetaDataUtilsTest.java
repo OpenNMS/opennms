@@ -119,3 +119,4 @@ public class MetaDataUtilsTest {
         assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
     }
 }
+

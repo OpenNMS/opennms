@@ -95,3 +95,4 @@ public class JaxbResourceConfigurationTest {
         assertEquals("vmware4", config.getPackages().get(0).getName());
     }
 }
+

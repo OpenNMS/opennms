@@ -49,3 +49,4 @@ public class ZookeeperDomainManagerFactoryTest {
                 instanceOf(ZookeeperDomainManager.class));
     }
 }
+

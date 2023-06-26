@@ -60,3 +60,4 @@ public class LinkedPairGeneratorTest {
         assertEquals(Pair.of("2", "3"), gen.next());
     }
 }
+

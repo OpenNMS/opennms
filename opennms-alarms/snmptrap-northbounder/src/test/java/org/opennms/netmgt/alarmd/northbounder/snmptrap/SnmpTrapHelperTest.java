@@ -115,3 +115,4 @@ public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
     }
 
 }
+

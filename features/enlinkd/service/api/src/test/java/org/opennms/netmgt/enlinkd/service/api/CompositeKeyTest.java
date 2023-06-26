@@ -49,3 +49,4 @@ public class CompositeKeyTest {
         assertNotEquals(same1, different);
     }
 }
+

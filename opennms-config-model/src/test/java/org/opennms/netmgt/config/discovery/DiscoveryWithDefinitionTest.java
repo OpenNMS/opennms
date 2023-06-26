@@ -110,3 +110,4 @@ public class DiscoveryWithDefinitionTest extends XmlTestNoCastor<DiscoveryConfig
         });
     }
 }
+

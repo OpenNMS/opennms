@@ -82,3 +82,4 @@ public class PrometheusDatacollectionConfigTest extends XmlTestNoCastor<Promethe
         return config;
     }
 }
+

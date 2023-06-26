@@ -269,3 +269,4 @@ public class CategoryModelIT implements TemporaryDatabaseAware<MockDatabase> {
 		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 	}
 }
+

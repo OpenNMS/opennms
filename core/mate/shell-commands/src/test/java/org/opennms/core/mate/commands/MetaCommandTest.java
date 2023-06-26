@@ -70,3 +70,4 @@ public class MetaCommandTest {
         assertThat(systemOutRule.getLog(), not(containsString("Raleigh")));
     }
 }
+

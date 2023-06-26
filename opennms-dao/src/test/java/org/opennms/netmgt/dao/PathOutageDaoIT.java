@@ -188,3 +188,4 @@ public class PathOutageDaoIT implements InitializingBean {
         assertEquals(2, m_pathOutageDao.countAll());
     }
 }
+

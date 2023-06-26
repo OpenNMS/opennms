@@ -241,3 +241,4 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 		}
 	}
 }
+

@@ -121,3 +121,4 @@ public class GenericURLConnectionTest extends TestCase {
         assertEquals("Full path", m_genericURLConnection.getURL().getPath(), "/path1/path2");
     }
 }
+

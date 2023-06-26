@@ -88,3 +88,4 @@ public class SyslogdConfigurationGroupTest extends XmlTestNoCastor<SyslogdConfig
         return configGroup;
     }
 }
+

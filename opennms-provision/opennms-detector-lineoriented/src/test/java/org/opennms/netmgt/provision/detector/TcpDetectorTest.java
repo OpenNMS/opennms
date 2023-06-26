@@ -310,3 +310,4 @@ public class TcpDetectorTest {
         return m_banner;
     }
 }
+

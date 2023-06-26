@@ -183,3 +183,4 @@ public class PollerConfigReloadIT {
         assertEquals("IPADDR IPLIKE 2.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
     }
 }
+

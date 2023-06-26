@@ -136,3 +136,4 @@ public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
         "";
     }
 }
+

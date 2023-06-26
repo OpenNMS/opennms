@@ -114,3 +114,4 @@ public class Sftp3gppUrlConnectionTest {
         Assert.assertTrue(t2 - t1 == Long.parseLong(c.getQueryMap().get("step")) * 1000);
     }
 }
+

@@ -170,3 +170,4 @@ public class ResponseTimeResourceTypeTest {
         verify(ipInterfaceDao, times(1)).get(any(OnmsNode.class), anyString());
     }
 }
+

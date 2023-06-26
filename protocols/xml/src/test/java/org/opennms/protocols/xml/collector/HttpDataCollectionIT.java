@@ -320,3 +320,4 @@ public class HttpDataCollectionIT {
         return new File(m_temporaryFolder.getRoot(), "snmp");
     }
 }
+

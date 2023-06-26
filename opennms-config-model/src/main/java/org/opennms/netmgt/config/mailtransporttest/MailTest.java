@@ -92,3 +92,4 @@ public class MailTest implements Serializable {
     }
 
 }
+

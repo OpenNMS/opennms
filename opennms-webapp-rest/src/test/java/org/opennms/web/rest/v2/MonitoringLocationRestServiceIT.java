@@ -220,3 +220,4 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
                    is(LOCATION_COUNT));
     }
 }
+

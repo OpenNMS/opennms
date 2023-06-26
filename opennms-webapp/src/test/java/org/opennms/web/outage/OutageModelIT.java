@@ -84,3 +84,4 @@ public class OutageModelIT implements TemporaryDatabaseAware<MockDatabase> {
 		OutageModel.getCurrentOutagesForNode(1);
 	}
 }
+

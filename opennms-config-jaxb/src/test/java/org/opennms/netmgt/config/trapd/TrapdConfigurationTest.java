@@ -241,3 +241,4 @@ public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> 
 	    }
 
 }
+

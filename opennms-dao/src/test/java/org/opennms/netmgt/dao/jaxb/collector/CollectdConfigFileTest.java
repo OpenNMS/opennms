@@ -71,3 +71,4 @@ public class CollectdConfigFileTest extends TestCase {
     }
 
 }
+

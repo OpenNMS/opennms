@@ -73,3 +73,4 @@ public class AlarmDataTest extends XmlTestNoCastor<AlarmData> {
 	}
 
 }
+

@@ -297,3 +297,4 @@ public class JEXLExpressionEngineEnhancedTest {
 		return results.getColumns().get("y");
 	}
 }
+

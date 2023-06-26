@@ -136,3 +136,4 @@ public class OnmsAssetRecordTest {
         Assert.assertEquals(building, rec1.getBuilding());
     }
 }
+

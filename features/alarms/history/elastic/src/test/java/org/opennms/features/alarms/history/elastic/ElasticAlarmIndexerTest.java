@@ -85,3 +85,4 @@ public class ElasticAlarmIndexerTest {
         assertThat(elasticAlarmIndexer.getDocumentIfNeedsIndexing(alarm).isPresent(), is(equalTo(false)));
     }
 }
+

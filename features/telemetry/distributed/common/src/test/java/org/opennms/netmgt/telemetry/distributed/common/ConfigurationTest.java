@@ -76,3 +76,4 @@ public class ConfigurationTest {
         Assert.assertEquals("success", adapter.getParameterMap().get("dotted.key"));
     }
 }
+

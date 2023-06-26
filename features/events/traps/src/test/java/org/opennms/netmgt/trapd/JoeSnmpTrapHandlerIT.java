@@ -44,3 +44,4 @@ public class JoeSnmpTrapHandlerIT extends TrapHandlerITCase {
     }
 
 }
+

@@ -67,3 +67,4 @@ public class NMS14084IT extends XmlCollectorITCase {
         validateJrb(new File(getSnmpRootDirectory(), "1/input/bla/xml-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{400.0, 40.0, 40.0});
     }
 }
+

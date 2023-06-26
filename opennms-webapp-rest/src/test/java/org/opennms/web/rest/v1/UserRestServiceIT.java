@@ -344,3 +344,4 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         sendPost(hashPassword ? "/users?hashPassword=true" : "/users", userXml, statusCode, expectedUrlSuffix);
     }
 }
+

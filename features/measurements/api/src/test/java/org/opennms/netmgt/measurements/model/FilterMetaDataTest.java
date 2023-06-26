@@ -74,3 +74,4 @@ public class FilterMetaDataTest extends XmlTestNoCastor<FilterMetaData> {
         }});
     }
 }
+

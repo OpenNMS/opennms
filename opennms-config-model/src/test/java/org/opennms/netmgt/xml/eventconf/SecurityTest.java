@@ -63,3 +63,4 @@ public class SecurityTest extends XmlTestNoCastor<Security> {
 	}
 
 }
+

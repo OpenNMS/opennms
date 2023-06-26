@@ -126,3 +126,4 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
     }
 }
+

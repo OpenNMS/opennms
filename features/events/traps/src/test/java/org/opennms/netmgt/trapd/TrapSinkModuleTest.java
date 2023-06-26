@@ -58,3 +58,4 @@ public class TrapSinkModuleTest {
         Assert.assertNotEquals(module.hashCode(), mockModule.hashCode());
     }
 }
+

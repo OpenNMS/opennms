@@ -700,3 +700,4 @@ public class BsmdIT {
         return new BusinessServiceImpl(businessServiceManager, entity);
     }
 }
+

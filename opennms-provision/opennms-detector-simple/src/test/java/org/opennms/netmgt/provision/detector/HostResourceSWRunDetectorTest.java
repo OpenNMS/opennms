@@ -115,3 +115,4 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
         assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 }
+

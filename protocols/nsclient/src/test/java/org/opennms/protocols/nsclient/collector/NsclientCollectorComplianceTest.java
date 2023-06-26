@@ -93,3 +93,4 @@ public class NsclientCollectorComplianceTest extends CollectorComplianceTest {
         NSClientDataCollectionConfigFactory.setInstance(dataCollectionConfigFactory);
     }
 }
+

@@ -66,3 +66,4 @@ public class ThreshdConfigurationTest extends XmlTestNoCastor<ThreshdConfigurati
         });
     }
 }
+

@@ -67,3 +67,4 @@ public class NMS14559IT extends JsonCollectorITCase {
     }
 
 }
+

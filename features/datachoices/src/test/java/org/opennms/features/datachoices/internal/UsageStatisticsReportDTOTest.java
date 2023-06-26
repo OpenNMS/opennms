@@ -134,3 +134,4 @@ public class UsageStatisticsReportDTOTest {
         assertEquals(expectedJson, actualJson);
     }
 }
+

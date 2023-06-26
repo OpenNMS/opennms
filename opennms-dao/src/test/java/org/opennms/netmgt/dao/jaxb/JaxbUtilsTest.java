@@ -277,3 +277,4 @@ public class JaxbUtilsTest {
 		assertEquals(1302631500000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
 }
+

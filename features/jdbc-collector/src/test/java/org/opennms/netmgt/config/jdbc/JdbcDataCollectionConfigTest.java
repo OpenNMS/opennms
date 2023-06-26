@@ -193,3 +193,4 @@ public class JdbcDataCollectionConfigTest {
         return myDiff;
     }
 }
+

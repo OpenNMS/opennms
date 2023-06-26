@@ -57,3 +57,4 @@ public class PostgresBlobStoreIT extends BaseBlobStoreIT {
         serializingBlobStore = new SerializingBlobStore<>(postgresBlobStore, String::getBytes, String::new);
     }
 }
+

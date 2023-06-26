@@ -99,3 +99,4 @@ public class NumberTypeTest extends AbstractTypeTest {
         return new NumberType(nodes);
     }
 }
+

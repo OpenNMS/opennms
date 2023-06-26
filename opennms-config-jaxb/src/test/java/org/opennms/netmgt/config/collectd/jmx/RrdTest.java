@@ -71,3 +71,4 @@ public class RrdTest extends XmlTestNoCastor<Rrd> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

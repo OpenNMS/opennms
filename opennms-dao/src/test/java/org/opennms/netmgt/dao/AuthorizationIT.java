@@ -226,3 +226,4 @@ public class AuthorizationIT implements InitializingBean {
         ((AlarmDaoHibernate)m_alarmDao).getHibernateTemplate().execute(cb);
     }
 }
+

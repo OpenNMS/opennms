@@ -166,3 +166,4 @@ public class C3P0ConnectionFactoryIT extends TestCase {
         }
     }
 }
+

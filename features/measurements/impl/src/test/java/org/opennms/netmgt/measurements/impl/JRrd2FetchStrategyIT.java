@@ -54,3 +54,4 @@ public class JRrd2FetchStrategyIT {
                 rrdsBySource, constants, metadata);
     }
 }
+

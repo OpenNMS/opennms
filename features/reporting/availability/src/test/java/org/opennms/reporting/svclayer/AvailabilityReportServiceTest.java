@@ -87,3 +87,4 @@ public class AvailabilityReportServiceTest implements InitializingBean {
     }
 
 }
+

@@ -121,3 +121,4 @@ public class VacuumdConfigurationTest extends
                         "target/classes/xsds/vacuumd-configuration.xsd" } });
     }
 }
+

@@ -198,3 +198,4 @@ public class NaggingNotificationsIT extends DroolsExampleIT {
                 .findFirst().orElseThrow(() -> new RuntimeException("No nag event found for: " + alarm));
     }
 }
+

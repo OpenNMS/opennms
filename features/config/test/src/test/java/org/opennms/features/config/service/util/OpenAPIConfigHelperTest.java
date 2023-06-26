@@ -64,3 +64,4 @@ public class OpenAPIConfigHelperTest {
         Assert.assertEquals("obj1 should contain digit", 1, subObject.get("digit"));
     }
 }
+

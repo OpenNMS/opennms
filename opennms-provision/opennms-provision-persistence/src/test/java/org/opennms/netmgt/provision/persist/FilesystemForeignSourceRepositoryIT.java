@@ -141,3 +141,4 @@ public class FilesystemForeignSourceRepositoryIT extends ForeignSourceRepository
         assertTrue("foreign source must be tagged as default", defaultForeignSource.isDefault());
     }
 }
+

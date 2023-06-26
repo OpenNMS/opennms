@@ -235,3 +235,4 @@ public class DocumentEnricherTest {
                       .where(EnrichedFlow::getLastSwitched, Matchers.is(flow3.getLastSwitched().plus(3600_000L, ChronoUnit.MILLIS)))));
     }
 }
+

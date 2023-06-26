@@ -56,3 +56,4 @@ public class SimpleLogMessageTest {
         return BaseLogMessage.parseTimestamp(dateString);
     }
 }
+

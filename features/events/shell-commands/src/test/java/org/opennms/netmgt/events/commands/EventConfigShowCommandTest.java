@@ -83,3 +83,4 @@ public class EventConfigShowCommandTest {
         Mockito.verify(mockEventConfDao, times(1)).getEvents(ueiValue);
     }
 }
+

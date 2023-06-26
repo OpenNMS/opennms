@@ -392,3 +392,4 @@ public class JdbcFilterDaoIT implements InitializingBean {
         assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
     }
 }
+

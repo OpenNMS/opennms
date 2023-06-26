@@ -51,3 +51,4 @@ public class PendingPollEventTest {
         assertFalse("pending should be false: " + ppe.isPending(), ppe.isPending());
     }
 }
+

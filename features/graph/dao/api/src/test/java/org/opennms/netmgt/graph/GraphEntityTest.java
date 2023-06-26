@@ -46,3 +46,4 @@ public class GraphEntityTest {
         Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));
     }
 }
+

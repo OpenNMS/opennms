@@ -51,3 +51,4 @@ public class SnmpInformantOidResolverTest {
         Assert.assertEquals("Broadcom NetLink (TM)-Gigabit-Ethernet", SnmpInformantOidResolver.asciiOidToString("38.66.114.111.97.100.99.111.109.32.78.101.116.76.105.110.107.32.40.84.77.41.45.71.105.103.97.98.105.116.45.69.116.104.101.114.110.101.116"));
     }
 }
+

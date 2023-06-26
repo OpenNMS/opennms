@@ -77,3 +77,4 @@ public class NumericNodeLevelDataTest extends JsonCollectorITCase {
     }
 
 }
+

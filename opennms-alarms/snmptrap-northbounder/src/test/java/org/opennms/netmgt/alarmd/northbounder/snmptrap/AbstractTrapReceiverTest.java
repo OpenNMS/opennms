@@ -149,3 +149,4 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     }
 
 }
+

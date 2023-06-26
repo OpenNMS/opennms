@@ -162,3 +162,4 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
         validateRrd(file, dsnames, dsvalues);
     }
 }
+

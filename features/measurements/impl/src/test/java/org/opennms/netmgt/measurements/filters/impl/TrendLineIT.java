@@ -62,3 +62,4 @@ public class TrendLineIT extends AnalyticsFilterTest {
         }
     }
 }
+

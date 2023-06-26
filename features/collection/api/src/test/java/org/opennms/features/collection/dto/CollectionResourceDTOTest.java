@@ -65,3 +65,4 @@ public class CollectionResourceDTOTest extends XmlTestNoCastor<CollectionResourc
         });
     }
 }
+

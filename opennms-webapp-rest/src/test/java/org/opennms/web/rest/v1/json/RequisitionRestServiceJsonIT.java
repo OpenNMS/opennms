@@ -578,3 +578,4 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         return req;
     }
 }
+

@@ -494,3 +494,4 @@ public class AlarmDaoIT implements InitializingBean {
 		assertThat(alarmFromDb.getDetails().get("k3"), nullValue());
 	}
 }
+

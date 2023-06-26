@@ -40,3 +40,4 @@ public class EnumTest {
         assertEquals(SortColumn.TOTALCOLLECTS, SortColumn.valueOf(param));
     }
 }
+

@@ -46,3 +46,4 @@ public class OpenNMSJaasBrokerPluginTest {
         assertEquals(null, OpenNMSJaasAuthenticationBroker.getAddressFromConnectionString("not-tcp://some-string"));
     }
 }
+

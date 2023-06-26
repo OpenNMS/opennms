@@ -250,3 +250,4 @@ public class EifTranslatorTest {
         assertEquals("NodeId "+e.getNodeid()+" must equal 3","3",e.getNodeid().toString());
     }
 }
+

@@ -109,3 +109,4 @@ public class MicroblogClientTest {
          assertTrue(auth.getUrl() + " should contain twitter.com/", auth.getUrl().contains("twitter.com/"));
     }
 }
+

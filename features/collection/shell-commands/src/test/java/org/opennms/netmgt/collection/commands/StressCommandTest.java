@@ -83,3 +83,4 @@ public class StressCommandTest {
         Assert.assertEquals("metric_0_0b41af1fa521", group.getAttributes().stream().findFirst().get().getName());
     }
 }
+

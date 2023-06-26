@@ -124,3 +124,4 @@ public class SnmpRequestDTOTest extends XmlTestNoCastor<SnmpRequestDTO> {
         return snmpRequest;
     }
 }
+

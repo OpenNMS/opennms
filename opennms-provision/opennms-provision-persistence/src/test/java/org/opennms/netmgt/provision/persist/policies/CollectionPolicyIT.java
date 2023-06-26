@@ -179,3 +179,4 @@ public class CollectionPolicyIT implements InitializingBean {
     }
 
 }
+

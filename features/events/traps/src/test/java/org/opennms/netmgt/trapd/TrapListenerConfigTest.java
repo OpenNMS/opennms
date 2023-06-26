@@ -104,3 +104,4 @@ public class TrapListenerConfigTest {
         Assert.assertEquals(result.getSnmpV3Users(), trapListenerConfig.getSnmpV3Users());
     }
 }
+

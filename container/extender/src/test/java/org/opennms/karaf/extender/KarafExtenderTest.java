@@ -163,3 +163,4 @@ public class KarafExtenderTest {
         assertEquals(Collections.emptyList(), karafExtender.getRepositories());
     }
 }
+

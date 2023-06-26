@@ -84,3 +84,4 @@ public class SentinelPollOutagesDaoTest {
         return mapper.writeValueAsString(outageConfig);
     }
 }
+

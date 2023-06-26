@@ -50,3 +50,4 @@ public class PDFReportRendererTest extends TestCase {
         );
     }
 }
+

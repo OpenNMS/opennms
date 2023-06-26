@@ -72,3 +72,4 @@ public class GlobalTest extends XmlTestNoCastor<Global> {
 	}
 
 }
+

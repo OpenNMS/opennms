@@ -90,3 +90,4 @@ public class FetchResultsTest {
         assertEquals(99d, table.get(2L, "y"), delta);
     }
 }
+

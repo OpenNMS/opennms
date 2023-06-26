@@ -45,3 +45,4 @@ public class MeasurementApiClientTest {
         Assert.assertTrue(MeasurementApiClient.isAuthenticationRequired("dummy", "dummy"));
     }
 }
+

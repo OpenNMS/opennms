@@ -61,3 +61,4 @@ public class VmwareImportRequestTest extends XmlTestNoCastor<VmwareImportRequest
     }
 
 }
+

@@ -254,3 +254,4 @@ public class MeasurementQueryExecutorRemoteIT extends AbstractMeasurementQueryEx
         Assert.assertEquals(22245.5417010936, forecasts.get(328, "fit"), 0.00001);
     }
 }
+

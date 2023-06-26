@@ -101,3 +101,4 @@ public class DefaultCategoryConfigDaoTest extends TestCase {
 	}
 
 }
+

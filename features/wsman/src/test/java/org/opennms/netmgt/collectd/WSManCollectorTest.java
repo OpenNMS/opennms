@@ -335,3 +335,4 @@ public class WSManCollectorTest {
         group.addAttrib(attr);
     }
 }
+

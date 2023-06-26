@@ -57,3 +57,4 @@ public class FilterDefTest extends XmlTestNoCastor<FilterDef> {
         }});
     }
 }
+

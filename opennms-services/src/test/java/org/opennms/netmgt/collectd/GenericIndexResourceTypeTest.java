@@ -80,3 +80,4 @@ public class GenericIndexResourceTypeTest {
         return new GenericIndexResourceType(null, null, rt);
     }
 }
+

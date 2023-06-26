@@ -74,3 +74,4 @@ public class StatsdIT implements InitializingBean {
         m_statsd.unscheduleReports();
     }
 }
+

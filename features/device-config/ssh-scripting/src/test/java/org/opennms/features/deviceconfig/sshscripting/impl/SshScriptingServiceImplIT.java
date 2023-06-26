@@ -315,3 +315,4 @@ public class SshScriptingServiceImplIT {
         assertThat(result5.isSuccess(), is(false));
     }
 }
+

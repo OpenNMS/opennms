@@ -116,3 +116,4 @@ public class LegacyLocalJasperReportsDaoTest implements InitializingBean {
         assertNotNull("Test to retrieve not-online-sample-report", m_localJasperReportsDao.getTemplateStream("not-online-sample-report"));
     }
 }
+

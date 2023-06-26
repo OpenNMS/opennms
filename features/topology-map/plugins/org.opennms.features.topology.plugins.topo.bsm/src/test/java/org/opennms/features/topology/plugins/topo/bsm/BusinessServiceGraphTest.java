@@ -106,3 +106,4 @@ public class BusinessServiceGraphTest {
         Assert.assertSame(rkVertex3, businessServiceGraph.getVertex(rkVertex3));
     }
 }
+

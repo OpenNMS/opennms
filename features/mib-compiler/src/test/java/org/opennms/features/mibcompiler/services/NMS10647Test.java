@@ -92,3 +92,4 @@ import org.opennms.features.mibcompiler.api.MibParser;
         Assert.assertTrue(pattern.matcher(parser.getFormattedErrors()).find());
     }
 }
+

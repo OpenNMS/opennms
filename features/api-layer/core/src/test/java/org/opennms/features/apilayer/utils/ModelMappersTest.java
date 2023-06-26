@@ -429,3 +429,4 @@ public class ModelMappersTest {
         assertThat(apiAlarm.getLastEvent(), nullValue());
     }
 }
+

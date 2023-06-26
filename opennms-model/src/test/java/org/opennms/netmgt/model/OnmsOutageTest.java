@@ -187,3 +187,4 @@ public class OnmsOutageTest {
         return type;
     }
 }
+

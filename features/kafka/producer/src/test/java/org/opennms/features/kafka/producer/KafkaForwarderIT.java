@@ -750,3 +750,4 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         mockDatabase = database;
     }
 }
+

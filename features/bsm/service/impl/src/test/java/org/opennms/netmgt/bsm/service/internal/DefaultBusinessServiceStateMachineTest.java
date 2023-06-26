@@ -261,3 +261,4 @@ public class DefaultBusinessServiceStateMachineTest {
         assertTrue(pngFile.getAbsolutePath() + " should exist.", pngFile.exists());
     }
 }
+

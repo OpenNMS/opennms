@@ -55,3 +55,4 @@ public class CollectTest extends XmlTestNoCastor<Collect> {
 
 
 }
+

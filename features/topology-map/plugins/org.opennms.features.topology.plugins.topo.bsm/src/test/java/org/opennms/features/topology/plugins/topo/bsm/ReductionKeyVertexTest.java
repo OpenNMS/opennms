@@ -43,3 +43,4 @@ public class ReductionKeyVertexTest {
         assertEquals("interfaceDown:162.243.42...", ReductionKeyVertex.getLabelFromReductionKey("uei.opennms.org/nodes/interfaceDown::2:162.243.42.216"));
     }
 }
+

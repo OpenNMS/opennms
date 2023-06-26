@@ -134,3 +134,4 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
         return alarm;
     }
 }
+

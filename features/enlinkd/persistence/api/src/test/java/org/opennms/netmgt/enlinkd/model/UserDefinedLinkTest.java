@@ -90,3 +90,4 @@ public class UserDefinedLinkTest extends XmlTest<UserDefinedLink> {
         // ignore this since we don't implement equals and hashCode on the Hibernate entity bean
     }
 }
+

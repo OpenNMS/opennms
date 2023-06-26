@@ -75,3 +75,4 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 	}
 
 }
+

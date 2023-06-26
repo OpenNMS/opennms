@@ -105,3 +105,4 @@ public class VmwareCimCollectorComplianceTest extends CollectorComplianceTest {
                 .build();
     }
 }
+

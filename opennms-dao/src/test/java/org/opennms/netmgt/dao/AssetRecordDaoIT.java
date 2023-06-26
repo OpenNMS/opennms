@@ -210,3 +210,4 @@ public class AssetRecordDaoIT implements InitializingBean {
         }
 
 }
+

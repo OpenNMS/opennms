@@ -82,3 +82,4 @@ public class DatabaseSchemaTest extends XmlTestNoCastor<DatabaseSchema> {
         return schema;
     }
 }
+

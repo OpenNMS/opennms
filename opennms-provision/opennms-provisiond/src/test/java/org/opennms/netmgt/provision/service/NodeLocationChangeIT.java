@@ -202,3 +202,4 @@ public class NodeLocationChangeIT {
         return m_nodeDao;
     }
 }
+

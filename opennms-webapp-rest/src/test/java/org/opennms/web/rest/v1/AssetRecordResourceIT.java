@@ -123,3 +123,4 @@ public class AssetRecordResourceIT extends AbstractSpringJerseyRestTestCase {
 
 }
 
+

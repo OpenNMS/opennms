@@ -63,3 +63,4 @@ public class ActiondConfigurationTest extends XmlTestNoCastor<ActiondConfigurati
         });
     }
 }
+

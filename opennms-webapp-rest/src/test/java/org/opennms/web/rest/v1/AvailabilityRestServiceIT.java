@@ -151,3 +151,4 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         Assert.assertTrue(an.toString() + " != " + restNode.toString(), an.equals(restNode));
     }
 }
+

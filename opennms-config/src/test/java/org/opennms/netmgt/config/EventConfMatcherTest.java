@@ -161,3 +161,4 @@ public class EventConfMatcherTest {
         assertThat(event.getAlarmData(), notNullValue());
     }
 }
+

@@ -96,3 +96,4 @@ public class GraphmlRepositoryImplTest {
         Assert.assertThat(Files.exists(Paths.get(buildGraphCfgFilepath(NAME))), Matchers.is(false));
     }
 }
+

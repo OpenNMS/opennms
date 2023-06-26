@@ -81,3 +81,4 @@ public class LoopDetectorTest implements InitializingBean {
         
     }
 }
+

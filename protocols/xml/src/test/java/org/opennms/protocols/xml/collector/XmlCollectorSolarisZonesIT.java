@@ -108,3 +108,4 @@ public class XmlCollectorSolarisZonesIT extends XmlCollectorITCase {
     }
 
 }
+

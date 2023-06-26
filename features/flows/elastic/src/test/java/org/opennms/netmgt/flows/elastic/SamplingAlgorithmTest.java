@@ -73,3 +73,4 @@ public class SamplingAlgorithmTest {
         SamplingAlgorithm.from(illegalValue);
     }
 }
+

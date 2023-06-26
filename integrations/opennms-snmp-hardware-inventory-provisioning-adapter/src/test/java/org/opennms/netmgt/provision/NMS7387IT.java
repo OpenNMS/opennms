@@ -53,3 +53,4 @@ public class NMS7387IT extends AbstractSingleHardwareAdapterTest {
     }
 
 }
+

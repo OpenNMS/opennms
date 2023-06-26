@@ -171,3 +171,4 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 		 */
 	}
 }
+

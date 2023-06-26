@@ -48,3 +48,4 @@ public class GenericVertexTest {
         assertThrowsException(InvalidNamespaceException.class, () -> GenericVertex.builder().namespace("$invalid$").build());
     }
 }
+

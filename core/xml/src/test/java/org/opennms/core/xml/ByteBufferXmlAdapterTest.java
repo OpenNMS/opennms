@@ -71,3 +71,4 @@ public class ByteBufferXmlAdapterTest {
         assertArrayEquals(new byte[]{42}, bytes);
     }
 }
+

@@ -134,3 +134,4 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
         await().until(tracker::getLog, contains("Test1"));
     }
 }
+

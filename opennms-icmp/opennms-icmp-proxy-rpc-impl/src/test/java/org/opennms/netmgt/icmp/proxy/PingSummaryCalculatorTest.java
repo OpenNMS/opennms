@@ -86,3 +86,4 @@ public class PingSummaryCalculatorTest {
         return new PingSummaryCalculator(sequences);
     }
 }
+

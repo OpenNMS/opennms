@@ -188,3 +188,4 @@ public class RecordSerdesTest {
         return buffer.toString();
     }
 }
+

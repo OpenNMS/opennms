@@ -122,3 +122,4 @@ public class DiscoveryWithDetectorsIT {
         m_discovery.stop();
     }
 }
+

@@ -218,3 +218,4 @@ public class WillItUnmarshalCoverageMetaIT {
         assertTrue("File is not covered: " + file, COVERED_FILES.contains(file));
     }
 }
+

@@ -81,3 +81,4 @@ public class AckdConfigurationTest extends XmlTestNoCastor<AckdConfiguration> {
                         "target/classes/xsds/ackd-configuration.xsd" } });
     }
 }
+

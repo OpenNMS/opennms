@@ -35,3 +35,4 @@ public class UtilTest {
         Assert.assertEquals(Double.NaN, Util.convertStringToDouble("NaN"), 0.001);
     }
 }
+

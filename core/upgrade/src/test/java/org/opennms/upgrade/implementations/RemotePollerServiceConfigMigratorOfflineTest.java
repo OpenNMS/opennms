@@ -154,3 +154,4 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         FileUtils.copyFile(new File(testFile), new File("target/home/etc/service-configuration.xml"));
     }
 }
+

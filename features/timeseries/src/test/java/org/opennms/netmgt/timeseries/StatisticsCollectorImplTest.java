@@ -83,3 +83,4 @@ public class StatisticsCollectorImplTest {
         return metric.getIntrinsicTags().size() + metric.getMetaTags().size() + metric.getExternalTags().size(); // intrinsic tag count is always 2
     }
 }
+

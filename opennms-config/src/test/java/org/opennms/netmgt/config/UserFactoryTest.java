@@ -103,3 +103,4 @@ public class UserFactoryTest {
 		UserFactory.init();
 	}
 }
+

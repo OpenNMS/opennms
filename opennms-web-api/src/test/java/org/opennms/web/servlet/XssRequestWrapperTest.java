@@ -75,3 +75,4 @@ public class XssRequestWrapperTest {
         assertTrue(messages.contains("Sanitization. Param seems safe: foo[0]=bar"));
     }
 }
+

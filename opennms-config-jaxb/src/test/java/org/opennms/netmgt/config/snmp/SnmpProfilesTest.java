@@ -132,3 +132,4 @@ public class SnmpProfilesTest  extends XmlTestNoCastor<SnmpProfiles> {
                 "target/classes/xsds/snmp-config.xsd"}});
     }
 }
+

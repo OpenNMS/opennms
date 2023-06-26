@@ -49,3 +49,4 @@ public class MemoryTwinBrokerIT extends AbstractTwinBrokerIT {
         return new MemoryTwinSubscriber(this.broker, identity.getLocation());
     }
 }
+

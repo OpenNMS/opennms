@@ -332,3 +332,4 @@ public class BmpMessagePersisterIT {
     }
 
 }
+

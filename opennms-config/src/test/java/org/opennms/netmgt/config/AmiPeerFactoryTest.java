@@ -404,3 +404,4 @@ public class AmiPeerFactoryTest {
         assertEquals("192.168.0.100", AmiPeerFactory.getAmiConfig().getDefinitions().get(0).getRanges().get(0).getEnd());
     }
 }
+

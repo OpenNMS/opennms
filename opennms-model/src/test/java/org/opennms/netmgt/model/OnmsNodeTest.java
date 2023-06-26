@@ -94,3 +94,4 @@ public class OnmsNodeTest {
         assertFalse(xml.contains("xmlns.opennms.org")); // blows up!
     }
 }
+

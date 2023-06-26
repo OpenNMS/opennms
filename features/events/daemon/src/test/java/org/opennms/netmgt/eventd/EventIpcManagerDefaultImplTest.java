@@ -826,3 +826,4 @@ public class EventIpcManagerDefaultImplTest {
         locker.release();
     }
 }
+

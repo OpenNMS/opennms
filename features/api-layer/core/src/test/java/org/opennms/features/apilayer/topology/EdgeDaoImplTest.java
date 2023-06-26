@@ -131,3 +131,4 @@ public class EdgeDaoImplTest {
         assertThat(edgeDao.getProtocols(), hasItems(TopologyProtocol.CDP, TopologyProtocol.ISIS));
     }
 }
+

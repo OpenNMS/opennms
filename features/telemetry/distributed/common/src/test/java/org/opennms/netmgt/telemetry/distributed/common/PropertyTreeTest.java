@@ -109,3 +109,4 @@ public class PropertyTreeTest {
         assertEquals(ImmutableMap.of("a.b", "1", "a.c", "2"), props.getFlatMap("x", "y", "z"));
     }
 }
+

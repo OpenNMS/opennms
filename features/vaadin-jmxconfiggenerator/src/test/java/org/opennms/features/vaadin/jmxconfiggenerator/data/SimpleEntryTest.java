@@ -45,3 +45,4 @@ public class SimpleEntryTest {
 		Assert.assertEquals(one.hashCode(), two.hashCode());
 	}
 }
+

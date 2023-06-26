@@ -89,3 +89,4 @@ public class JUnitSnmpAgentExecutionListenerIT {
     	return SnmpUtils.getValueFactory().getOctetString(s.getBytes());
     }
 }
+

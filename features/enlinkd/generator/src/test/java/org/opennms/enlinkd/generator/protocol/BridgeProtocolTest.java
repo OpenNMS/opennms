@@ -54,3 +54,4 @@ public class BridgeProtocolTest {
         assertEquals(expected, settings.getAmountNodes());
     }
 }
+

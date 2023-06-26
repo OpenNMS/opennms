@@ -112,3 +112,4 @@ public class TimeseriesPersistOperationBuilderTest {
         Assert.assertEquals(attributeType.getName(), tag.getValue());
     }
 }
+

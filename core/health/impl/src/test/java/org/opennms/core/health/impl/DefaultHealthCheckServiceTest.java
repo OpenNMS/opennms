@@ -180,3 +180,4 @@ public class DefaultHealthCheckServiceTest {
         Assert.assertEquals(1, healthCheckService.filterChecksWithTags(checks, tags).size());
     }
 }
+

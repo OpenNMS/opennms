@@ -208,3 +208,4 @@ public class AbstractMeasurementQueryExecutorTest {
         LOG.info("CSV creation time: {} ms", (System.currentTimeMillis() - start));
     }
 }
+

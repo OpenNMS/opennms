@@ -56,3 +56,4 @@ public class IpListTest extends XmlTestNoCastor<IpList> {
 
 
 }
+

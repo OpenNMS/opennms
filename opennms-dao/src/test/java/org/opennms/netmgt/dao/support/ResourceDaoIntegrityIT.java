@@ -330,3 +330,4 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         System.setProperty("org.opennms.rrd.storeByForeignSource", Boolean.toString(storeByForeignSource));
     }
 }
+

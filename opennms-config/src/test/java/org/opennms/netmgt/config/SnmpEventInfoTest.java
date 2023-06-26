@@ -2215,3 +2215,4 @@ public class SnmpEventInfoTest {
 		assertEquals(initial, second);
 	}
 }
+

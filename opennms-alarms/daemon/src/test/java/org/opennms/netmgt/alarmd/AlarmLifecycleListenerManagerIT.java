@@ -327,3 +327,4 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         m_database = database;
     }
 }
+

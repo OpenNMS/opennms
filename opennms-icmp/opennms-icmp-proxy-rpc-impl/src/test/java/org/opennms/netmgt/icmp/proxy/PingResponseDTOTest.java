@@ -61,3 +61,4 @@ public class PingResponseDTOTest extends XmlTestNoCastor<PingResponseDTO> {
 }
 
 
+

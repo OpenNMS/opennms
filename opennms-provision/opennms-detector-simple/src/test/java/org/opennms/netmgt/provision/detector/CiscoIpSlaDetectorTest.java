@@ -98,3 +98,4 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
     }
 
 }
+

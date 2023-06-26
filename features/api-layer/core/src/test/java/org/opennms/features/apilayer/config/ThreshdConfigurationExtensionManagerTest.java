@@ -192,3 +192,4 @@ public class ThreshdConfigurationExtensionManagerTest {
         assertThat(threshdConfiguration.getPackages(), hasSize(0));
     }
 }
+

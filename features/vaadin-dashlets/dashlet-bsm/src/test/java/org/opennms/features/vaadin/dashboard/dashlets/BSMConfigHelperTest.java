@@ -60,3 +60,4 @@ public class BSMConfigHelperTest {
         Assert.assertEquals(BusinessServiceSearchCriteriaBuilder.Sequence.Descending, businessServiceSearchCriteria.getSequence());
     }
 }
+

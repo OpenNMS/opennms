@@ -87,3 +87,4 @@ public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
         assertTrue(engine.getInterestingEvents().contains(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI));
     }
 }
+

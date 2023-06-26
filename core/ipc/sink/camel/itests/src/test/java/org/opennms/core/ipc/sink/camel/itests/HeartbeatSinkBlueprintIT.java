@@ -191,3 +191,4 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         // consumerManager.unregisterConsumer(consumer);
     }
 }
+

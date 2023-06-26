@@ -189,3 +189,4 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
         m_database = database;
     }
 }
+

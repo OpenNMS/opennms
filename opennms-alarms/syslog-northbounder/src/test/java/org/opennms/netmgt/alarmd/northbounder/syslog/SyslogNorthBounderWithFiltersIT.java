@@ -171,3 +171,4 @@ public class SyslogNorthBounderWithFiltersIT extends SyslogNorthBounderIT {
     }
 
 }
+

@@ -236,3 +236,4 @@ public class EventsXmlTest extends XmlTest<Events> {
 	}
 
 }
+

@@ -196,3 +196,4 @@ public class ClassificationRuleDaoIT {
         assertThat(ruleDao.findByDefinition(tmpRule, staticGroup), is(anotherRule));
     }
 }
+

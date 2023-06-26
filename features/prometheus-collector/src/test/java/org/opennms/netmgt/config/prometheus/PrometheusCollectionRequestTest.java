@@ -65,3 +65,4 @@ public class PrometheusCollectionRequestTest extends XmlTestNoCastor<PrometheusC
         return collectionRequestDTO;
     }
 }
+

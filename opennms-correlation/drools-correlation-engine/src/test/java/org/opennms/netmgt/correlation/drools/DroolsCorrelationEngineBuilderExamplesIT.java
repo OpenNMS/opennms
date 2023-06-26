@@ -73,3 +73,4 @@ public class DroolsCorrelationEngineBuilderExamplesIT {
                 mockCorrelator.getEngines().size() > 0);
     }
 }
+

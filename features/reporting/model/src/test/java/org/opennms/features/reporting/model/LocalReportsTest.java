@@ -83,3 +83,4 @@ public class LocalReportsTest extends XmlTestNoCastor<LocalReports> {
         return reports;
     }
 }
+

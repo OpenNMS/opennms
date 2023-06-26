@@ -523,3 +523,4 @@ public class VEProviderGraphContainerTest {
 		m_expectedEdgeStyles.clear();
 	}
 }
+

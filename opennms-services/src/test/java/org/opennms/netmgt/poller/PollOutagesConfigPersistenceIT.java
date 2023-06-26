@@ -120,3 +120,4 @@ public class PollOutagesConfigPersistenceIT {
                         ConfigDaoConstants.JSON_KEY_STORE_CONTEXT).isPresent());
     }
 }
+

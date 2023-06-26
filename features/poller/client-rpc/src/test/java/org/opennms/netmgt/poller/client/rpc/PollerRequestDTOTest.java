@@ -134,3 +134,4 @@ public class PollerRequestDTOTest extends XmlTestNoCastor<PollerRequestDTO> {
         return dto;
     }
 }
+

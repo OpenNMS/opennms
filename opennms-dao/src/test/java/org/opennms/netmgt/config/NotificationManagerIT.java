@@ -588,3 +588,4 @@ public class NotificationManagerIT implements InitializingBean {
         }
     }
 }
+

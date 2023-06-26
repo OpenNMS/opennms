@@ -57,3 +57,4 @@ public class DnsLookupResponseDTOTest extends XmlTestNoCastor<DnsLookupResponseD
     }
 
 }
+

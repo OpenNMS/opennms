@@ -47,3 +47,4 @@ public class WSManConfigDaoJaxbTest {
         assertEquals("http://172.23.1.2:5985/ws-man", endpoint.getUrl().toString());
     }
 }
+

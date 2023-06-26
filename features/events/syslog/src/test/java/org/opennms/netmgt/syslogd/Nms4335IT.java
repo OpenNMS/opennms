@@ -226,3 +226,4 @@ public class Nms4335IT implements InitializingBean {
         return m_eventIpcManager.getEventAnticipator().getAnticipatedEventsReceived();
     }
 }
+

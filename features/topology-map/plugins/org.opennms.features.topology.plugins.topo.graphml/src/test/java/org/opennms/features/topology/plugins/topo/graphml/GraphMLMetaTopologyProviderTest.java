@@ -112,3 +112,4 @@ public class GraphMLMetaTopologyProviderTest {
         Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, GraphMLMetaTopologyProvider.getBreadcrumbStrategy("Shortest_Path_To_Root"));
     }
 }
+

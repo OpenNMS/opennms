@@ -46,3 +46,4 @@ public class SummaryTest {
         Assert.assertEquals("111", summary.getLabels().get("one"));
     }
 }
+

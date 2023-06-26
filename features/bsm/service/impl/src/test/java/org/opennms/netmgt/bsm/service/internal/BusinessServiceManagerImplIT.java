@@ -366,3 +366,4 @@ public class BusinessServiceManagerImplIT {
         return new IpServiceImpl(businessServiceManager, monitoredServiceDao.get(ipServiceId));
     }
 }
+

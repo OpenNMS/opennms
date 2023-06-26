@@ -99,3 +99,4 @@ public class HwEntityAttributeTypeDaoIT implements InitializingBean {
     }
 
 }
+

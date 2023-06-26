@@ -90,3 +90,4 @@ public class IPAddrRangeTest extends TestCase {
         assertEquals(BigInteger.ONE, v6singleton.size());
     }
 }
+

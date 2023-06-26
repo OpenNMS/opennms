@@ -109,3 +109,4 @@ public class Sftp3gppUtilsTest {
         assertEquals(filename, Sftp3gppUtils.getLastFilename(blobStore, serviceName, path, targetPath));
     }
 }
+

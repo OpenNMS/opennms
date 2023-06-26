@@ -104,3 +104,4 @@ public class ThresholdingSessionIT implements TemporaryDatabaseAware<MockDatabas
     }
 
 }
+

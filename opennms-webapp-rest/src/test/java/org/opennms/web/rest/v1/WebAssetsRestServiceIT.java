@@ -99,3 +99,4 @@ public class WebAssetsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(js.contains("console.log"));
     }
 }
+

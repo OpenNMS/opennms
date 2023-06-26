@@ -437,3 +437,4 @@ public class AlarmRepositoryIT implements InitializingBean {
         assertEquals(true, after.get(2).isAcknowledged());
     }
 }
+

@@ -551,3 +551,4 @@ public class FakeXsdForTest implements Serializable {
         this._batchInterval = _batchInterval;
     }
 }
+

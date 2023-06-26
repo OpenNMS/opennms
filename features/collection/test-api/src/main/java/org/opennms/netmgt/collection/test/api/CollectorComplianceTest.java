@@ -224,3 +224,4 @@ public abstract class CollectorComplianceTest {
         BeanUtils.setStaticApplicationContext(null);
     }
 }
+

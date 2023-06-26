@@ -168,3 +168,4 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
     }
 
 }
+

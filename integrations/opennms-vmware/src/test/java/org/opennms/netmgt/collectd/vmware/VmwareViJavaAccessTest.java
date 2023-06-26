@@ -556,3 +556,4 @@ public class VmwareViJavaAccessTest {
         verify(mockServiceInstance, atLeastOnce()).getAboutInfo();
     }
 }
+

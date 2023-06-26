@@ -460,3 +460,4 @@ public class DefaultTicketerServiceLayerTest {
         verify(m_ticketerPlugin, atLeastOnce()).saveOrUpdate(any(Ticket.class));
     }
 }
+

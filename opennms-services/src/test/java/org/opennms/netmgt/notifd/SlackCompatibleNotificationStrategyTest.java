@@ -116,3 +116,4 @@ public class SlackCompatibleNotificationStrategyTest {
         return String.format("%s.%s", systemPropertiesPrefix, name);
     }
 }
+

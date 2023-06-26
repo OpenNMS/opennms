@@ -93,3 +93,4 @@ public class DominoIIOPDetectorTest {
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("1.1.1.1")));
     }
 }
+

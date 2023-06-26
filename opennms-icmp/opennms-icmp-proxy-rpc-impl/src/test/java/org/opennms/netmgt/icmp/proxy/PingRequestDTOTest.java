@@ -65,3 +65,4 @@ public class PingRequestDTOTest extends XmlTestNoCastor<PingRequestDTO> {
         return requestDTO;
     }
 }
+

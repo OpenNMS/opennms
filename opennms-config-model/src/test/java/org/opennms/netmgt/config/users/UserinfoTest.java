@@ -87,3 +87,4 @@ public class UserinfoTest extends XmlTestNoCastor<Userinfo> {
         });
     }
 }
+

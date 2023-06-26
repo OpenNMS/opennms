@@ -213,3 +213,4 @@ public class DefaultGlobalReportRepositoryTest {
         m_globalReportRepository = globalReportRepository;
     }
 }
+

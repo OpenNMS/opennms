@@ -55,3 +55,4 @@ public class NSClientAgentConfigTest extends XmlTestNoCastor<NSClientAgentConfig
         });
     }
 }
+

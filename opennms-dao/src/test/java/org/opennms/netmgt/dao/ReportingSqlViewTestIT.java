@@ -87,3 +87,4 @@ public class ReportingSqlViewTestIT {
         Assert.assertNotNull(jdbcTemplate.queryForList("SELECT nodelabel,ipaddr,servicename FROM node_ip_services;"));
     }
 }
+

@@ -208,3 +208,4 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
         assertEquals("-5", context.getProperty("CamelLogDebugBodyMaxChars"));
     }
 }
+

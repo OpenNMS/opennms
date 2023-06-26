@@ -115,3 +115,4 @@ public class MeasurementDataSourceTest {
         Assert.assertEquals(value, ds.getFieldValue(MeasurementDataSource.createField(fieldName, clazz)));
     }
 }
+

@@ -111,3 +111,4 @@ public class OpenNMSConfigurationTest {
         assertNull(entries);
     }
 }
+

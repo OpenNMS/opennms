@@ -93,3 +93,4 @@ public class BeanFieldCopyUtilTest<T> {
         Assert.assertNotSame("Object reference should be different", config, dest);
     }
 }
+

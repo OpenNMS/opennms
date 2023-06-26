@@ -103,3 +103,4 @@ public class AgentConfigurationResourceIT extends AbstractSpringJerseyRestTestCa
     }
 
 }
+

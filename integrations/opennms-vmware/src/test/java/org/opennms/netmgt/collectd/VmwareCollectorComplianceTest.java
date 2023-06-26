@@ -105,3 +105,4 @@ public class VmwareCollectorComplianceTest extends CollectorComplianceTest {
                 .build();
     }
 }
+

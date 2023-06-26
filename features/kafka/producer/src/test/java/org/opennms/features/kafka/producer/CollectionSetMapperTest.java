@@ -87,3 +87,4 @@ public class CollectionSetMapperTest {
         assertThat(collectionSetResource.getInterface().getInstance(), Matchers.is("25"));
     }
 }
+

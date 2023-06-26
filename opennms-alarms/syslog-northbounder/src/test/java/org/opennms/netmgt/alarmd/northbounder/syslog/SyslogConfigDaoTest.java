@@ -258,3 +258,4 @@ public class SyslogConfigDaoTest {
     }
 
 }
+

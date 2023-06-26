@@ -225,3 +225,4 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, m_isisLinkDao.countAll());
     }
 }
+

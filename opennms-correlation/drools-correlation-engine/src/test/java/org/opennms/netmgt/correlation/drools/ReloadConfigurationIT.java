@@ -284,3 +284,4 @@ public class ReloadConfigurationIT {
         m_eventIpcMgr.send(event);
     }
 }
+

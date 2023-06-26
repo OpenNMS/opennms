@@ -220,3 +220,4 @@ public class BulkingIT {
         elasticSearchRule.stopServer();
     }
 }
+

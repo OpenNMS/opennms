@@ -110,3 +110,4 @@ public abstract class DroolsExampleIT {
         }
     }
 }
+

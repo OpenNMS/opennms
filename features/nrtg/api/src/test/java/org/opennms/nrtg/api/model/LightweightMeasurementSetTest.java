@@ -81,3 +81,4 @@ public class LightweightMeasurementSetTest {
         Assert.assertEquals(metrics.size(), 0);
     }
 }
+

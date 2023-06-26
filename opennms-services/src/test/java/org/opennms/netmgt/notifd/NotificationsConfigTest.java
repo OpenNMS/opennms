@@ -53,3 +53,4 @@ public class NotificationsConfigTest {
         assertTrue(n.getTextMessage().contains("\n"));
     }
 }
+

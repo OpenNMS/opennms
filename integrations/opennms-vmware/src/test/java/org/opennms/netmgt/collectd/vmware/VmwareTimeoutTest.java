@@ -312,3 +312,4 @@ public class VmwareTimeoutTest {
         Assert.assertEquals(1500, dummyServiceInstance.dummyConnectTimeout);
     }
 }
+

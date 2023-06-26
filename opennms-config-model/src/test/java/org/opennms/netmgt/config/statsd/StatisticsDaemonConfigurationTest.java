@@ -92,3 +92,4 @@ public class StatisticsDaemonConfigurationTest extends XmlTestNoCastor<Statistic
     }
 
 }
+

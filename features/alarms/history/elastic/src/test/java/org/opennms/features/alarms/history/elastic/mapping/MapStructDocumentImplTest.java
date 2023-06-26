@@ -66,3 +66,4 @@ public class MapStructDocumentImplTest {
         assertThat(documentDTO.getIpAddress(), equalTo("127.0.0.1"));
     }
 }
+

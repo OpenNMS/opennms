@@ -69,3 +69,4 @@ public class FusionRulesIT extends CorrelationRulesTestCase {
             .getEvent();
     }
 }
+

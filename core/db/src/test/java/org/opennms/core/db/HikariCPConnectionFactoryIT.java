@@ -168,3 +168,4 @@ public class HikariCPConnectionFactoryIT {
     }
 
 }
+

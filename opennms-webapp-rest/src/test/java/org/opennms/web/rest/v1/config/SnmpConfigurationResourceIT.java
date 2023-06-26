@@ -75,3 +75,4 @@ public class SnmpConfigurationResourceIT extends AbstractSpringJerseyRestTestCas
         assertTrue(xml.contains("read-community=\"public\""));
     }
 }
+

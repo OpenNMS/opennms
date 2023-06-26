@@ -977,3 +977,4 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         return String.format("items %d-%d/%d", startIndex, endIndex, count);
     }
 }
+

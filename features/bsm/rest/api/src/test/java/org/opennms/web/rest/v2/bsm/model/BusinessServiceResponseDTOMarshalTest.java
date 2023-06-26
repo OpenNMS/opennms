@@ -367,3 +367,4 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         return responseDTO;
     }
 }
+

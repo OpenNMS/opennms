@@ -81,3 +81,4 @@ public class OnmsGroupsTest extends XmlTestNoCastor<OnmsGroupList> {
 
 
 }
+

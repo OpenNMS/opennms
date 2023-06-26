@@ -232,3 +232,4 @@ public class GraphMLVertexStatusProviderIT {
         return new AlarmSummary(nodeId, label, new Date(), maxSeverity, count);
     }
 }
+

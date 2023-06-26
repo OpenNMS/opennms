@@ -487,3 +487,4 @@ public class JRobinRrdStrategyTest {
         return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);
     }
 }
+

@@ -305,3 +305,4 @@ public class CollectdExternalIT implements TemporaryDatabaseAware<MockDatabase> 
         this.db = database;
     }
 }
+

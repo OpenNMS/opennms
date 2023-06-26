@@ -544,3 +544,4 @@ public class BufferParserTest {
 		assertEquals("%AUTHPRIV-3-SYSTEM_MSG", event.getParm("process").getValue().getContent());
 	}
 }
+

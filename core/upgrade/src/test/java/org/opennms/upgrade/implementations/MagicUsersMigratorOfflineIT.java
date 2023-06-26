@@ -205,3 +205,4 @@ public class MagicUsersMigratorOfflineIT {
         return null;
     }
 }
+

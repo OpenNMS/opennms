@@ -227,3 +227,4 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         }});
     }
 }
+

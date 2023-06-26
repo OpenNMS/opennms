@@ -100,3 +100,4 @@ public class HttpDatacollectionConfigTest extends XmlTestNoCastor<HttpDatacollec
             "target/classes/xsds/http-datacollection-config.xsd", }, });
     }
 }
+

@@ -52,3 +52,4 @@ public class HighestSeverityAboveTest {
                 Status.MINOR, Status.MAJOR, Status.WARNING, Status.CRITICAL))).get().getStatus());
     }
 }
+

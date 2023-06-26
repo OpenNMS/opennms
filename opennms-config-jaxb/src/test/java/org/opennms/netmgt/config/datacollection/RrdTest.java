@@ -55,3 +55,4 @@ public class RrdTest extends XmlTestNoCastor<Rrd> {
 
 
 }
+

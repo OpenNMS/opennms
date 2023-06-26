@@ -96,3 +96,4 @@ public class SFlowConverterTest {
         assertThat(flows.size(), is(5));
     }
 }
+

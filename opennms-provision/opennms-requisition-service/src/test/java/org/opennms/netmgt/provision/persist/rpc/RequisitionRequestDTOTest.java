@@ -56,3 +56,4 @@ public class RequisitionRequestDTOTest extends XmlTestNoCastor<RequisitionReques
     }
 
 }
+

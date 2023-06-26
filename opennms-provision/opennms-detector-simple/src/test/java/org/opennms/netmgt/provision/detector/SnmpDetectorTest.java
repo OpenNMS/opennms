@@ -206,3 +206,4 @@ public class SnmpDetectorTest {
         assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }
+

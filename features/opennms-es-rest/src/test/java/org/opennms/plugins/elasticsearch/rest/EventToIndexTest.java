@@ -69,3 +69,4 @@ public class EventToIndexTest {
         assertEquals(2, json.keySet().size());
     }
 }
+

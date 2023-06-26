@@ -54,3 +54,4 @@ public class AttributeNameValidatorTest {
 		NameValidatorTest.validate(validator, FAIL, false);
 	}
 }
+

@@ -376,3 +376,4 @@ public class BeanWrapperVisitorTest {
         return event;
     }
 }
+

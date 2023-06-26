@@ -232,3 +232,4 @@ public class HeartbeatConsumerIT {
 
 
 }
+

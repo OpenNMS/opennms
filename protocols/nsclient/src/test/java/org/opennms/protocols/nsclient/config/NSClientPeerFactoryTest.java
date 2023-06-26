@@ -375,3 +375,4 @@ public class NSClientPeerFactoryTest {
         assertEquals("192.168.0.100", factory.getConfig().getDefinition().get(0).getRange().get(0).getEnd());
     }
 }
+

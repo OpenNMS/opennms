@@ -114,3 +114,4 @@ public class SnmpPollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_database = database;
     }
 }
+

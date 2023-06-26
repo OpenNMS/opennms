@@ -231,3 +231,4 @@ public class IfTttConfigTest extends XmlTestNoCastor<IfTttConfig> {
     }
 }
 
+

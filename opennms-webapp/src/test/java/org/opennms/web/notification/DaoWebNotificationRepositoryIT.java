@@ -127,3 +127,4 @@ public class DaoWebNotificationRepositoryIT implements InitializingBean {
         assertEquals("TestUser", notif[0].m_responder);
     }
 }
+

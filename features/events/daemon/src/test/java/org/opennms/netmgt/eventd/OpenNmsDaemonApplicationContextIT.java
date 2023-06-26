@@ -65,3 +65,4 @@ public class OpenNmsDaemonApplicationContextIT implements InitializingBean {
         // Just testing @Autowired EventIpcManager
     }
 }
+

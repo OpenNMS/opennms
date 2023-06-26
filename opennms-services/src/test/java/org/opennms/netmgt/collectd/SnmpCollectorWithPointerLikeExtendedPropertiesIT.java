@@ -256,3 +256,4 @@ public class SnmpCollectorWithPointerLikeExtendedPropertiesIT implements Initial
         m_context = context;
     }
 }
+

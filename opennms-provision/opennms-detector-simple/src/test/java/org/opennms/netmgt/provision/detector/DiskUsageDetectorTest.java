@@ -96,3 +96,4 @@ public class DiskUsageDetectorTest implements InitializingBean {
         assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }
+

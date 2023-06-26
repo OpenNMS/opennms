@@ -59,3 +59,4 @@ public class XMPPNotificationTest {
         m_xmppManager.sendGroupChat("test@conference.jabber.example.com", "This is a conference test.");
     }
 }
+

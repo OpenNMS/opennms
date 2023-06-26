@@ -76,3 +76,4 @@ public class ImmutableMaskTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

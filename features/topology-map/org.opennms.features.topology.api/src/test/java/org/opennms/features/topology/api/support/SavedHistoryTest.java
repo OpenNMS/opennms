@@ -141,3 +141,4 @@ public class SavedHistoryTest {
 		Assert.assertEquals(history2.getFragment(), history3.getFragment());
 	}
 }
+

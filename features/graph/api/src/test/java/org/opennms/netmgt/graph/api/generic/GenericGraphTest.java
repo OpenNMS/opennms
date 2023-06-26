@@ -200,3 +200,4 @@ public class GenericGraphTest {
         assertThrowsException(InvalidNamespaceException.class, () -> GenericVertex.builder().namespace("$invalid$").build());
     }
 }
+

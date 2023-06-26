@@ -131,3 +131,4 @@ public class ResourceTypeFilteringResourceVisitorTest {
         filteringVisitor.visit(resource);
     }
 }
+

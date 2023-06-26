@@ -62,3 +62,4 @@ public class BusinessServiceListDTOMarshalTest extends MarshalAndUnmarshalTest<B
         }});
     }
 }
+

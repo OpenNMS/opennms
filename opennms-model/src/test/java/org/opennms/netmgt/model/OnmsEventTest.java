@@ -99,3 +99,4 @@ public class OnmsEventTest {
         return param;
     }
 }
+

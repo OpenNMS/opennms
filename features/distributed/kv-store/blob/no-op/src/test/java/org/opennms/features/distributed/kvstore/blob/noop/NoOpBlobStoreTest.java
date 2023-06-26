@@ -47,3 +47,4 @@ public class NoOpBlobStoreTest {
         assertThat(result.isPresent(), is(false));
     }
 }
+

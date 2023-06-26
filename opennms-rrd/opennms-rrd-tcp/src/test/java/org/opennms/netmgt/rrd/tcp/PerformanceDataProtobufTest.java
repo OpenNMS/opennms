@@ -67,3 +67,4 @@ public class PerformanceDataProtobufTest {
         assertEquals(expectedReadings, actualReadings);
     }
 }
+

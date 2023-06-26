@@ -125,3 +125,4 @@ public class MiscExamplesIT extends DroolsExampleIT {
         return alarm;
     }
 }
+

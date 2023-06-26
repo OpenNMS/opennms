@@ -62,3 +62,4 @@ public class CachingFilterServiceTest {
         Mockito.verify(filterService, Mockito.times(1)).matches(Mockito.anyString(), Mockito.anyString());
     }
 }
+

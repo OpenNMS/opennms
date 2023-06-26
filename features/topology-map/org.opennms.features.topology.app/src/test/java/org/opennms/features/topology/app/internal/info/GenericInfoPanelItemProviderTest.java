@@ -156,3 +156,4 @@ public class GenericInfoPanelItemProviderTest {
         Assert.assertFalse(context.containsKey("node"));
     }
 }
+

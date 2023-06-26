@@ -109,3 +109,4 @@ public class DataCollectionConfigTest extends XmlTestNoCastor<DataCollectionConf
     }
 
 }
+

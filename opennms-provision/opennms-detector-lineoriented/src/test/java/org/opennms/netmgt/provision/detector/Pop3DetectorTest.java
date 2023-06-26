@@ -122,3 +122,4 @@ public class Pop3DetectorTest {
         return future.isServiceDetected();
     }
 }
+

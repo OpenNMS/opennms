@@ -242,3 +242,4 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
         m_mockSnmpDataProvider = provider;
     }
 }
+

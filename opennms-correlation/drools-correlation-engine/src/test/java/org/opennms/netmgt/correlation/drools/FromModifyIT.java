@@ -55,3 +55,4 @@ public class FromModifyIT extends CorrelationRulesTestCase {
         verify(engine);
     }
 }
+

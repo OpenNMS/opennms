@@ -144,3 +144,4 @@ public class ElasticAlarmIndexerIT {
         return alarm;
     }
 }
+

@@ -114,3 +114,4 @@ public class InfoRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue("info should contain services", xml.contains("\"Eventd\":\"running\""));
     }
 }
+

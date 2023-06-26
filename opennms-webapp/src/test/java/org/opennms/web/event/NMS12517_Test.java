@@ -50,3 +50,4 @@ public class NMS12517_Test {
         assertEquals("filter?filter=eventtext%3D%27%C3%B6%C3%A4%C3%BC%26lt%3B%26gt%3B%27", response.getHeader("Location"));
     }
 }
+

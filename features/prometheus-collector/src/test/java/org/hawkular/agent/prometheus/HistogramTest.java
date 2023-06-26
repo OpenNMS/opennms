@@ -46,3 +46,4 @@ public class HistogramTest {
         Assert.assertEquals("111", histogram.getLabels().get("one"));
     }
 }
+

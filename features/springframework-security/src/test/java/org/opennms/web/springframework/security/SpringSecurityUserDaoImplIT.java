@@ -186,3 +186,4 @@ public class SpringSecurityUserDaoImplIT implements InitializingBean {
         throw new AssertionError("role " + role + " was not found in " + authorities);
     }
 }
+

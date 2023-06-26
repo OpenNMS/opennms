@@ -359,3 +359,4 @@ public class ThresholdingIT {
         await().atMost(60, TimeUnit.SECONDS).until(this.thresholding::getExporterKeys, hasSize(0));
     }
 }
+

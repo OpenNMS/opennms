@@ -101,3 +101,4 @@ public class SnmpInterfacePollerConfigurationTest extends XmlTestNoCastor<SnmpIn
     }
 }
 
+

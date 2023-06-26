@@ -100,3 +100,4 @@ public class MessageTest {
                 "up\t8\t93cd8f2759d4cf2e033c7a0584d0bfe7\t93cd8f2759d4cf2e033c7a0584d0bfe8\tie1-fd1\t10.10.10.10\t10.10.10.1\t2020-02-23 13:55:23.795452\t0\t\t0:0\t179\t651337\t\t0\t\t\t\t\t0\t0\t0\t0\t0\t\t0\t0\t0\t0\t0\t\n"));
     }
 }
+

@@ -75,3 +75,4 @@ public class XmlCollectorNodeLevelIT extends XmlCollectorITCase {
     }
 
 }
+

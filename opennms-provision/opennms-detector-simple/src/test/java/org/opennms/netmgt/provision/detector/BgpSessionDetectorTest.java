@@ -96,3 +96,4 @@ public class BgpSessionDetectorTest implements InitializingBean {
         assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }
+

@@ -91,3 +91,4 @@ public class TrendConfigurationIT {
         connection.close();
     }
 }
+

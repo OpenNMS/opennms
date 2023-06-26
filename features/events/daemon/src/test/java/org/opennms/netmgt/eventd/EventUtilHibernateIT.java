@@ -277,3 +277,4 @@ public class EventUtilHibernateIT {
         assertEquals("This string has a primary interface set to 192.168.1.1 and the interface set to 10.10.10.10.", string);
     }
 }
+

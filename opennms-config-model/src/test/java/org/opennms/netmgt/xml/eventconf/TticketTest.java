@@ -59,3 +59,4 @@ public class TticketTest extends XmlTestNoCastor<Tticket> {
 	}
 
 }
+

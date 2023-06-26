@@ -84,3 +84,4 @@ public class PercentilePerfTest extends AnalyticsFilterTest {
         System.out.printf("%d values processed in: %.2f seconds\n", N, (double)delta / 1000d);
     }
 }
+

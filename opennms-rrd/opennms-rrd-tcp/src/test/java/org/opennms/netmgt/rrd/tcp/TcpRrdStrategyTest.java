@@ -246,3 +246,4 @@ public class TcpRrdStrategyTest {
         return m_fileAnticipator.expecting(rrdDir, rrdFileBase + RRD_EXTENSION);
     }
 }
+

@@ -205,3 +205,4 @@ public class TopReportPluginIT {
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
     }
 }
+

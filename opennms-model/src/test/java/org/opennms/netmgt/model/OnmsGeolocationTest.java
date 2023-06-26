@@ -128,3 +128,4 @@ public class OnmsGeolocationTest {
         assertEquals(m_expectedAddress, m_geolocation.asAddressString());
     }
 }
+

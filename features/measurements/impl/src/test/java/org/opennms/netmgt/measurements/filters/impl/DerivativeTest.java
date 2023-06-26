@@ -95,3 +95,4 @@ public class DerivativeTest extends AnalyticsFilterTest {
         }
     }
 }
+

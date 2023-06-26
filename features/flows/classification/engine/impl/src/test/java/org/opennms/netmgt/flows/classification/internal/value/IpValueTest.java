@@ -175,3 +175,4 @@ public class IpValueTest {
         assertThat(value.isInRange(IpAddr.of("2001:0DB8:0:CD30::2")), is(false));
     }
 }
+

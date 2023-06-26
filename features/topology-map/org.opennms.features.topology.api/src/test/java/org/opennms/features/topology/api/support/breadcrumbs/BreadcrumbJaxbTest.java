@@ -54,3 +54,4 @@ public class BreadcrumbJaxbTest extends XmlTestNoCastor<Breadcrumb> {
         };
     }
 }
+

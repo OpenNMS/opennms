@@ -72,3 +72,4 @@ public class TableUtilsTest {
                 .collect(Collectors.toList());
     }
 }
+

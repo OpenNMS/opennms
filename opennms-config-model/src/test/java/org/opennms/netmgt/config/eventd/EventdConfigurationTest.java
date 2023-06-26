@@ -77,3 +77,4 @@ public class EventdConfigurationTest extends XmlTestNoCastor<EventdConfiguration
         });
     }
 }
+

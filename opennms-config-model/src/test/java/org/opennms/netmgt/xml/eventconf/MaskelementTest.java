@@ -61,3 +61,4 @@ public class MaskelementTest extends XmlTestNoCastor<Maskelement> {
 	}
 
 }
+

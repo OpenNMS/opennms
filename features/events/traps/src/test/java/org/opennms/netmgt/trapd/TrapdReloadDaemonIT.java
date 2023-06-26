@@ -159,3 +159,4 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         throw new IllegalStateException("Can't find an available network port");
     }
 }
+

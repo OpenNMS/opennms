@@ -73,3 +73,4 @@ public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpS
         }});
     }
 }
+

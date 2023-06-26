@@ -109,3 +109,4 @@ public class XmlCollectorNamespaceTest extends XmlCollectorITCase {
     }
 
 }
+

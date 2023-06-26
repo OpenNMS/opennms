@@ -113,3 +113,4 @@ public class ConvertOldDataCollectionToNewDataCollectionTest {
         assertTrue(Arrays.equals(expected, results.toArray()));
     }
 }
+

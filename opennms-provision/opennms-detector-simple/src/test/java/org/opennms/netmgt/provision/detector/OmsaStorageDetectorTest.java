@@ -97,3 +97,4 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         assertFalse(m_detector.detect(m_request).isServiceDetected());
     }
 }
+

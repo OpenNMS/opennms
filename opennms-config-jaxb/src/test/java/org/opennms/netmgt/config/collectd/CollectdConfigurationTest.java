@@ -147,3 +147,4 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
         return config;
     }
 }
+

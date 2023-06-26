@@ -223,3 +223,4 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
         verifyAnticipated(finishedNotifs, 3000);
     }
 }
+

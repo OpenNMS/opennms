@@ -48,3 +48,4 @@ public class GenericElementTest {
     	assertEquals(1, element.getProperties().size());
     }
 }
+

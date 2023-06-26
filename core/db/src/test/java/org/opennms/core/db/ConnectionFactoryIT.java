@@ -195,3 +195,4 @@ public class ConnectionFactoryIT extends TestCase {
 		}
 	}
 }
+

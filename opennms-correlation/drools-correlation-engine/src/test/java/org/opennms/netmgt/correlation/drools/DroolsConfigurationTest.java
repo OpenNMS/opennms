@@ -153,3 +153,4 @@ public class DroolsConfigurationTest extends XmlTest<EngineConfiguration> {
 
 
 }
+

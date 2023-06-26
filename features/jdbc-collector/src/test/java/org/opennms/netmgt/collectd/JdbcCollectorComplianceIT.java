@@ -92,3 +92,4 @@ public class JdbcCollectorComplianceIT extends CollectorComplianceTest {
     }
 
 }
+

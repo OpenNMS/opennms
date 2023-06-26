@@ -144,3 +144,4 @@ public class IpInterfaceDaoHibernateIT implements InitializingBean {
     }
 
 }
+

@@ -156,3 +156,4 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         consumerManager.unregisterConsumer(consumer);
     }
 }
+

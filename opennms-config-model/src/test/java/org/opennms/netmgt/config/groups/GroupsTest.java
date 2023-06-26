@@ -98,3 +98,4 @@ public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
         });
     }
 }
+

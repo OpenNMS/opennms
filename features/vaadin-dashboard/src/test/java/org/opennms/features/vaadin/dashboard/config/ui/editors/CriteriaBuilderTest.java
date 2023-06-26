@@ -140,3 +140,4 @@ public class CriteriaBuilderTest {
         testDateRestriction("Lt(lastEventTime,2019-06-20T20:45:15.123%2B09:00)", customDate3, true);
     }
 }
+

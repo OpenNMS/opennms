@@ -634,3 +634,4 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
                 0.0);
     }
 }
+

@@ -72,3 +72,4 @@ public class ApproveAbsolutePathAliasesTest {
         }), equalTo(false));
     }
 }
+

@@ -823,3 +823,4 @@ public class HttpMonitorIT {
         assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:@dm1n"));
     }
 }
+

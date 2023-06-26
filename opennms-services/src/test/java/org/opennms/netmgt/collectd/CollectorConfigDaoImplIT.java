@@ -104,3 +104,4 @@ public class CollectorConfigDaoImplIT extends TestCase {
         }
     }
 }
+

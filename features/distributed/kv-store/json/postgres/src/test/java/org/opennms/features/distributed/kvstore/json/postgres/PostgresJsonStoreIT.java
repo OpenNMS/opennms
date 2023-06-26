@@ -116,3 +116,4 @@ public class PostgresJsonStoreIT {
         assertThat(postgresJsonStore.getLastUpdated(key, context), equalTo(OptionalLong.empty()));
     }
 }
+

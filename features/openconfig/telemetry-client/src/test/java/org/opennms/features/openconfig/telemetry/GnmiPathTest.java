@@ -63,3 +63,4 @@ public class GnmiPathTest {
         Assert.assertEquals("25", gnmiPath.getElemList().get(1).getKeyOrDefault("ifIndex", "nothing"));
     }
 }
+

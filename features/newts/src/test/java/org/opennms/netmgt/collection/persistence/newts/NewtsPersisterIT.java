@@ -131,3 +131,4 @@ public class NewtsPersisterIT {
         assertEquals(900, row.getElement("metric").getValue().doubleValue(), 0.00001);
     }
 }
+

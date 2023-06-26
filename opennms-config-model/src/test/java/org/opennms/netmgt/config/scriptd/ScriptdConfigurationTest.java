@@ -96,3 +96,4 @@ public class ScriptdConfigurationTest extends XmlTestNoCastor<ScriptdConfigurati
         return config;
     }
 }
+

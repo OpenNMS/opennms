@@ -185,3 +185,4 @@ public class OnmsHwEntityTest {
         return 10 + (int)(Math.random()*100); 
     }
 }
+

@@ -178,3 +178,4 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 				+ "\n     }";
 	}
 }
+

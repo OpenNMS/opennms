@@ -120,3 +120,4 @@ public class JsonCollectorSolarisZonesIT extends JsonCollectorITCase {
     }
 
 }
+

@@ -51,3 +51,4 @@ public class RangeTest extends XmlTestNoCastor<Range> {
 	}
 
 }
+

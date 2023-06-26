@@ -73,3 +73,4 @@ public class CompMemberTest extends XmlTestNoCastor<CompMember> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

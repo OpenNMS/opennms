@@ -136,3 +136,4 @@ public class UserDefinedLinkRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
 }
+

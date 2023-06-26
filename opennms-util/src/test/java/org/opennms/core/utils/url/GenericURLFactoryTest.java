@@ -102,3 +102,4 @@ public class GenericURLFactoryTest {
         Assert.assertNull(m_genericURLFactory.createURLStreamHandler("noclass"));
     }
 }
+

@@ -142,3 +142,4 @@ public class TrapListenerTest {
             .until(() -> listener.isRegisteredForTraps());
     }
 }
+

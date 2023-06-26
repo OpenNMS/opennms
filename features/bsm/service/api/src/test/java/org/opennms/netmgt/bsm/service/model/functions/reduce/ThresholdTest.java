@@ -55,3 +55,4 @@ public class ThresholdTest {
         return t.reduce(StatusUtils.toListWithIndices(Arrays.asList(statuses))).get().getStatus();
     }
 }
+

@@ -164,3 +164,4 @@ public class OverrideablePollOutagesDaoImplTest {
         System.out.println("Test took " + (end-start) + " ms");
     }
 }
+

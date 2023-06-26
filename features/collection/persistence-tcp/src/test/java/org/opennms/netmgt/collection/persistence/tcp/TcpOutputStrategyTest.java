@@ -215,3 +215,4 @@ public class TcpOutputStrategyTest {
         collectionSet.visit(persister);
     }
 }
+

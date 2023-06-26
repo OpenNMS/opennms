@@ -99,3 +99,4 @@ public class WmiConfigTest extends XmlTestNoCastor<WmiConfig> {
         return config;
     }
 }
+

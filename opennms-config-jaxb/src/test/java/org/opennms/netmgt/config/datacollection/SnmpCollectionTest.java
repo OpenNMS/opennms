@@ -78,3 +78,4 @@ public class SnmpCollectionTest extends XmlTestNoCastor<SnmpCollection> {
 
 
 }
+

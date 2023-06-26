@@ -261,3 +261,4 @@ public class OSGiVerticesUpdateManagerTest {
         return vertices;
     }
 }
+

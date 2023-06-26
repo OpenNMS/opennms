@@ -427,3 +427,4 @@ public class EventConstantsTest {
         assertNotNull(caught);
     }
 }
+

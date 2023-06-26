@@ -43,3 +43,4 @@ public class DefaultVariableNameExpansionTest {
         Assert.assertEquals("fooCRITICALbarMAJORabc10def20xyz", variableNameExpansion.replace(string2));
     }
 }
+

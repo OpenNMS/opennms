@@ -151,3 +151,4 @@ public class ApplicationStatusEnrichmentTest {
 
 }
 
+

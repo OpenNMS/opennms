@@ -200,3 +200,4 @@ public class DiscoveryIntegrationIT {
         anticipator.verifyAnticipated();
     }
 }
+

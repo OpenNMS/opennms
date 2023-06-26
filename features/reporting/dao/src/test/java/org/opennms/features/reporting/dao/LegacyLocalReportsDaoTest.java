@@ -177,3 +177,4 @@ public class LegacyLocalReportsDaoTest implements InitializingBean {
         assertFalse("Third report is online test", m_legacyLocalReportsDao.getReports().get(2).getOnline());
     }
 }
+

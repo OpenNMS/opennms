@@ -271,3 +271,4 @@ public class LegacyLocalReportRepositoryTest {
         m_legacyLocalReportRepository = legacyLocalReportRepository;
     }
 }
+

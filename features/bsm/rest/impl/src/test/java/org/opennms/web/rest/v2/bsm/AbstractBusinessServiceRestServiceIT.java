@@ -599,3 +599,4 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
         Assert.assertEquals("so friendly", responseDTO.getReductionKeys().get(0).getFriendlyName());
     }
 }
+

@@ -53,3 +53,4 @@ public class WsmanEndpointUtilsTest {
         assertEquals(expectedEndpoint.getConnectionTimeout(), actualEndpoint.getConnectionTimeout());
     }
 }
+

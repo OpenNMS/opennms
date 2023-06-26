@@ -81,3 +81,4 @@ public class HttpCollectorComplianceTest extends CollectorComplianceTest {
         HttpCollectionConfigFactory.setInstance(configFactory);
     }
 }
+

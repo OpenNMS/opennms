@@ -474,3 +474,4 @@ public class WmiPeerFactoryTest extends TestCase {
     }
 
 }
+

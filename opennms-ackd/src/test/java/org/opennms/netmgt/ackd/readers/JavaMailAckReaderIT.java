@@ -485,3 +485,4 @@ public class JavaMailAckReaderIT implements InitializingBean {
     }
 
 }
+

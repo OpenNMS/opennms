@@ -46,3 +46,4 @@ public class BulkUtilsTest {
         Assert.assertNull(exception.getCause().getCause());
     }
 }
+

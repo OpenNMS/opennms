@@ -76,3 +76,4 @@ public class OnmsIpInterfaceTest extends TestCase {
 		}
 	}
 }
+

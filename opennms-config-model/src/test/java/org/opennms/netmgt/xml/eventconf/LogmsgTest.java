@@ -59,3 +59,4 @@ public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
 	}
 
 }
+

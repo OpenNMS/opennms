@@ -115,3 +115,4 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
         assertEquals(1, receivedEvents.size());
     }
 }
+

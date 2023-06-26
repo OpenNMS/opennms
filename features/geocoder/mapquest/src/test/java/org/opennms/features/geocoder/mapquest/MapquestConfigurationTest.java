@@ -81,3 +81,4 @@ public class MapquestConfigurationTest {
         Assert.assertEquals(configuration, clonedConfiguration);
     }
 }
+

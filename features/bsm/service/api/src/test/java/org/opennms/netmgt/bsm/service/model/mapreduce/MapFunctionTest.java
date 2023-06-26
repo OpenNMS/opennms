@@ -84,3 +84,4 @@ public class MapFunctionTest {
         Assert.assertEquals(Status.CRITICAL, increase.map(Status.CRITICAL).get());
     }
 }
+

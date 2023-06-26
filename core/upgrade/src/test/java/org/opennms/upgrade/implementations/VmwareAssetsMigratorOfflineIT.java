@@ -140,3 +140,4 @@ public class VmwareAssetsMigratorOfflineIT implements TemporaryDatabaseAware<Tem
         assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaretopologyinfo')", Boolean.class));
     }
 }
+

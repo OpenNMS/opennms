@@ -149,3 +149,4 @@ public class TrapDTOMapperTest {
 		assertTrue(trapDto.getCreationTime() >= testStartTime);
 	}
 }
+

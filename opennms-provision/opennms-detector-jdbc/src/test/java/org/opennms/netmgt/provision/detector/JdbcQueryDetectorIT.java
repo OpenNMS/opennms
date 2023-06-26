@@ -136,3 +136,4 @@ public class JdbcQueryDetectorIT implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
     }
 }
+

@@ -60,3 +60,4 @@ public class XmlConfigDefinitionTest {
         def.validate("{\"test\": 11}");
     }
 }
+

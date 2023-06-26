@@ -313,3 +313,4 @@ public class MeasurementApiConnectorIT {
                 .withHeader("Accept-Charset", WireMock.equalTo(StandardCharsets.UTF_8.name()));
     }
 }
+

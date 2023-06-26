@@ -694,3 +694,4 @@ public class JmsNorthBounderIT {
                 + "</jms-northbounder-config>\n" + "";
     }
 }
+

@@ -47,3 +47,4 @@ public class SnmpInfoTest {
         assertEquals(snmp, retrieved);
     }
 }
+

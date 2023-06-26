@@ -78,3 +78,4 @@ public class LoopPluginTest extends TestCase {
     }
 
 }
+

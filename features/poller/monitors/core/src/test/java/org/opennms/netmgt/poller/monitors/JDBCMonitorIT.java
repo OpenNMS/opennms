@@ -94,3 +94,4 @@ public class JDBCMonitorIT {
         assertTrue(subbedParams.get("subbed-url").toString().equals("localhost"));
     }
 }
+

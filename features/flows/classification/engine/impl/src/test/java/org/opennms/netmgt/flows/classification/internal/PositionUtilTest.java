@@ -95,3 +95,4 @@ public class PositionUtilTest {
         return createAndAddGroup(position, "group"+position);
     }
 }
+

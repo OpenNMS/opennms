@@ -54,3 +54,4 @@ public class ImmutableTticketTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

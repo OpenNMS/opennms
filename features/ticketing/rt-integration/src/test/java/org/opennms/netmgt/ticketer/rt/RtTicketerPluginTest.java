@@ -150,3 +150,4 @@ public class RtTicketerPluginTest extends TestCase {
     }
 
 }
+

@@ -52,3 +52,4 @@ public class InetAddressUserTypeTest {
         verify(rs, atLeastOnce()).getString("ipAddr");
     }
 }
+

@@ -230,3 +230,4 @@ public class NotesDetectorTest implements InitializingBean {
         return future.isServiceDetected();
     }
 }
+

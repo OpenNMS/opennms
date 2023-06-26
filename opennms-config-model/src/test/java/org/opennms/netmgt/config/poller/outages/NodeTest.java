@@ -56,3 +56,4 @@ public class NodeTest extends XmlTestNoCastor<Node> {
     }
 
 }
+

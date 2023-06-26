@@ -268,3 +268,4 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         assertThat(queryString, Matchers.not(Matchers.containsString("alert('foo')>")));
     }
 }
+

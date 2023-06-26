@@ -122,3 +122,4 @@ public class TemporaryDatabasePostgreSQLIT {
         assertEquals("liquibase configuration hash", temp.generateLiquibaseHash(), temp.generateLiquibaseHash());
     }
 }
+

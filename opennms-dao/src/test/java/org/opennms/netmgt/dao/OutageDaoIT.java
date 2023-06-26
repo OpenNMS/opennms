@@ -604,3 +604,4 @@ public class OutageDaoIT implements InitializingBean {
         return ipInterface;
     }
 }
+

@@ -463,3 +463,4 @@ public class BundleContextHistoryManagerTest  {
                 thenReturn(new File(DATA_FILE_NAME));
     }
 }
+

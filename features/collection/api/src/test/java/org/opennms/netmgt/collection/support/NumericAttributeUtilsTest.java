@@ -63,3 +63,4 @@ public class NumericAttributeUtilsTest {
         assertEquals(-0.04, NumericAttributeUtils.parseNumericValue("-4e-2"), delta);
     }
 }
+

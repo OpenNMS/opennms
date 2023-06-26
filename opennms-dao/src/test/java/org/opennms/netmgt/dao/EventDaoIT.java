@@ -425,3 +425,4 @@ public class EventDaoIT implements InitializingBean {
         events = m_eventDao.findMatching(cb.toCriteria());
     }
 }
+

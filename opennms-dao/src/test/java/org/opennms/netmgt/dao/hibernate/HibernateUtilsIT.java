@@ -110,3 +110,4 @@ public class HibernateUtilsIT implements InitializingBean {
     }
 
 }
+

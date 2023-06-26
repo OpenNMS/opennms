@@ -67,3 +67,4 @@ public class ApplicationResponseDTOMarshalTest extends MarshalAndUnmarshalTest<A
         }});
     }
 }
+

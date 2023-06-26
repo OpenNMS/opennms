@@ -49,3 +49,4 @@ public class SuggestionCompleterTest {
         assertEquals(expectation, result);
     }
 }
+

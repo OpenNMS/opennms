@@ -87,3 +87,4 @@ public class ServiceConfigurationTest extends
                 "target/classes/xsds/service-configuration.xsd", }, });
     }
 }
+

@@ -66,3 +66,4 @@ public class CachingTemplateLoaderTest {
         verify(actualTemplateLoader, times(2)).load(any(), anyString());
     }
 }
+

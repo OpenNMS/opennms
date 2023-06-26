@@ -74,3 +74,4 @@ public class ProvisiondConfigurationTest extends CmConfigTest<ProvisiondConfigur
         return config;
     }
 }
+

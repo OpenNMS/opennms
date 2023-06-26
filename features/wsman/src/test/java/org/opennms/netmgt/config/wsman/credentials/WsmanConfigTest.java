@@ -82,3 +82,4 @@ public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
         return wsmanConfig;
     }
 }
+

@@ -72,3 +72,4 @@ public class TimeseriesStorageManagerImplTest {
         assertThrows(StorageException.class, manager::get);
     }
 }
+

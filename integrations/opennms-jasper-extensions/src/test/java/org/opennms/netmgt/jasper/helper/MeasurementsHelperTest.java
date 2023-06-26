@@ -46,3 +46,4 @@ public class MeasurementsHelperTest {
         Assert.assertEquals("nodeSource[opennms.local:20150824000000]", MeasurementsHelper.getNodeOrNodeSourceDescriptor("11", "opennms.local", "20150824000000"));
     }
 }
+

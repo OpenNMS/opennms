@@ -94,3 +94,4 @@ public class LdapMonitorIT {
         assertTrue(subbedParams.get("subbed-dn").toString().equals("localhost"));
     }
 }
+

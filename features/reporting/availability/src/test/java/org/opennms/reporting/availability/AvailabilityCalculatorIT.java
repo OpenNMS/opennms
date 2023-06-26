@@ -345,3 +345,4 @@ public class AvailabilityCalculatorIT extends TestCase {
     }
 
 }
+

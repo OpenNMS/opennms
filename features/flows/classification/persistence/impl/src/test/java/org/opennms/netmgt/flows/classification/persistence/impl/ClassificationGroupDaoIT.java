@@ -152,3 +152,4 @@ public class ClassificationGroupDaoIT {
         assertThat(rule2.getDstPort(), is("80"));
     }
 }
+

@@ -118,3 +118,4 @@ public class StatisticsReportDaoIT implements InitializingBean {
         m_statisticsReportDao.save(report);
     }
 }
+

@@ -83,3 +83,4 @@ public class OnmsSeverityTest extends TestCase {
     }
 
 }
+

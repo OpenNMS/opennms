@@ -293,3 +293,4 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }
+

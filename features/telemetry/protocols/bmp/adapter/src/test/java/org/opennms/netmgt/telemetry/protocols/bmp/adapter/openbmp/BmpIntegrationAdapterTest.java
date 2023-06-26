@@ -375,3 +375,4 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         // pass
     }
 }
+

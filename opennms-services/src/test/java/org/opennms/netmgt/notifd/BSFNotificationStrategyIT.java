@@ -114,3 +114,4 @@ public class BSFNotificationStrategyIT {
         assertEquals(0, bsfNotificationStrategy.send(arguments));
     }
 }
+

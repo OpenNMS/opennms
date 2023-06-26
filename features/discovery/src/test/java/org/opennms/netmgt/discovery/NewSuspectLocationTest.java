@@ -77,3 +77,4 @@ public class NewSuspectLocationTest {
         assertTrue("logmsg must contain location", event.getLogmsg().getContent().contains("in location " + CUSTOM_LOCATION + " and"));
     }
 }
+

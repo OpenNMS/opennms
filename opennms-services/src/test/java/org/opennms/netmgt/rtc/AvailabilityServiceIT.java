@@ -302,3 +302,4 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
         assertEquals(availability, node.getNodevalue(), 0.0001);
     }
 }
+

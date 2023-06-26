@@ -148,3 +148,4 @@ public class BusinessServiceEdgeDaoIT {
         assertEquals(0, m_businessServiceEdgeDao.countAll());
     }
 }
+

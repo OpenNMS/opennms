@@ -86,3 +86,4 @@ public class CompAttribTest extends XmlTestNoCastor<CompAttrib> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

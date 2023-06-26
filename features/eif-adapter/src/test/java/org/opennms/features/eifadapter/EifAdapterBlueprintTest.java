@@ -170,3 +170,4 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
         }
     }
 }
+

@@ -252,3 +252,4 @@ public class EventdIT implements InitializingBean {
         m_eventdIpcMgr.sendNow(e.getEvent());
     }
 }
+

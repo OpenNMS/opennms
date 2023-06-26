@@ -77,3 +77,4 @@ public class TimeTrackingMonitorTest {
         Assert.assertTrue(monitor.getEndTime().after(monitor.getStartTime()));
     }
 }
+

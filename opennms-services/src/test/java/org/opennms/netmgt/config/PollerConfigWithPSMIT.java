@@ -125,3 +125,4 @@ public class PollerConfigWithPSMIT {
         Assert.assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
 }
+

@@ -104,3 +104,4 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
         return config;
     }
 }
+

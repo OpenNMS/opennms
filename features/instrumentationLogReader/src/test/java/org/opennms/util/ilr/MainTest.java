@@ -91,3 +91,4 @@ public class MainTest {
         assertEquals("TOTALCOLLECTS", main.getCollector().m_sortColumn.toString());
      }
 }
+

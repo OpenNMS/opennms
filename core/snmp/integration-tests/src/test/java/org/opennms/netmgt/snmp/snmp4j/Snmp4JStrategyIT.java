@@ -318,3 +318,4 @@ public class Snmp4JStrategyIT extends MockSnmpAgentITCase {
     	return m_strategy.getValueFactory().getOctetString(val.getBytes());
     }
 }
+

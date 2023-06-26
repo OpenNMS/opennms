@@ -89,3 +89,4 @@ public class DiscoveryConfigDetectorsTest {
         assertEquals(1, detectors.size());
     }
 }
+

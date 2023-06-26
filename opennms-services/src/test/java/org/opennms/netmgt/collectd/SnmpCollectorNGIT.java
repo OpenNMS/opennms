@@ -35,3 +35,4 @@ public class SnmpCollectorNGIT extends AbstractSnmpCollectorIT {
         return new SnmpCollectorNG();
     }
 }
+

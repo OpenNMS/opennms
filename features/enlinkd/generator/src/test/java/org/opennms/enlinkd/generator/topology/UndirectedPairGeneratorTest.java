@@ -72,3 +72,4 @@ public class UndirectedPairGeneratorTest {
         assertEquals(Pair.of("1", "3"), gen.next());
     }
 }
+

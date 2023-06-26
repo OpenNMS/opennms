@@ -106,3 +106,4 @@ public abstract class AbstractLayoutTest {
 
     protected abstract VertexRef getDefaultFocus();
 }
+

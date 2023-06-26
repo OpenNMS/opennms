@@ -74,3 +74,4 @@ public class GroupTest extends XmlTestNoCastor<Group> {
 
 
 }
+

@@ -161,3 +161,4 @@ public class SnmpNodeScannerTest implements InitializingBean {
         assertEquals("root@@no.where", m_scanContext.getSysContact());
     }
 }
+

@@ -65,3 +65,4 @@ public class RancidConfigurationTest extends XmlTestNoCastor<RancidConfiguration
         return config;
     }
 }
+

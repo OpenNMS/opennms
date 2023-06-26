@@ -69,3 +69,4 @@ public class DataCollectionConfigDaoIT {
        System.err.println("Test took " + ((end - start)/1000) + " us");
    }
 }
+

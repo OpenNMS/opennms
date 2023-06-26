@@ -169,3 +169,4 @@ public class DNSAddressRequestTest extends TestCase {
         throw new Exception("Should have caught an IOException for NXDomain!");
     }
 }
+

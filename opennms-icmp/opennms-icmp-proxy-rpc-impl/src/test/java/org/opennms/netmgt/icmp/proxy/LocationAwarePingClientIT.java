@@ -166,3 +166,4 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
         });
     }
 }
+

@@ -260,3 +260,4 @@ public class TimeseriesResourceStorageDaoTest {
         }).when(searcher).search(any(ResourcePath.class), anyInt());
     }
 }
+

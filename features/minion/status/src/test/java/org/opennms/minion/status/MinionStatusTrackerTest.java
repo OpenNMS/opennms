@@ -592,3 +592,4 @@ public class MinionStatusTrackerTest {
         return m_serviceTypes.get(serviceName);
     }
 }
+

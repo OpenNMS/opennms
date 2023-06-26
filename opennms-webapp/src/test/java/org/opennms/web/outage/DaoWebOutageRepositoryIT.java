@@ -278,3 +278,4 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         assertEquals(2, count);
     }
 }
+

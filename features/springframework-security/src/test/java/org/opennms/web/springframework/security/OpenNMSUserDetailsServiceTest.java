@@ -95,3 +95,4 @@ public class OpenNMSUserDetailsServiceTest {
 		ta.verifyAnticipated();
 	}
 }
+

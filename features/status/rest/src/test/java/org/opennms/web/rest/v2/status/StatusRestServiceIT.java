@@ -92,3 +92,4 @@ public class StatusRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(request, 200);
     }
 }
+

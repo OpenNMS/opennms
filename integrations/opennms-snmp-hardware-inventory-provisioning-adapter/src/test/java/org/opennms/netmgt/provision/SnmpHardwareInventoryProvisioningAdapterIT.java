@@ -267,3 +267,4 @@ public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingB
     }
 
 }
+

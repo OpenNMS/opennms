@@ -555,3 +555,4 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         assertEquals(2, events2.length);
     }
 }
+

@@ -227,3 +227,4 @@ public class UdpSessionManagerTest {
         testIpFixSessionKeys(remoteAddress1, localAddress1, remoteAddress4, localAddress2, false);
     }
 }
+

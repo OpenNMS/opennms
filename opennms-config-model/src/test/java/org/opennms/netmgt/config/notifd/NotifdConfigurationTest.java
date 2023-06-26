@@ -102,3 +102,4 @@ public class NotifdConfigurationTest extends XmlTestNoCastor<NotifdConfiguration
         return config;
     }
 }
+

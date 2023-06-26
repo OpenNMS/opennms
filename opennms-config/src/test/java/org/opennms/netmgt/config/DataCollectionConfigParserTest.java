@@ -325,3 +325,4 @@ public class DataCollectionConfigParserTest {
     }
 
 }
+

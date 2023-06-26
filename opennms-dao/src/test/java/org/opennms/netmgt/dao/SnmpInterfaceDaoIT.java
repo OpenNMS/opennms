@@ -92,3 +92,4 @@ public class SnmpInterfaceDaoIT implements InitializingBean {
 	}
 
 }
+

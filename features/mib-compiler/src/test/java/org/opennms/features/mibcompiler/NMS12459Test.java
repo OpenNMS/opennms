@@ -62,3 +62,4 @@ public class NMS12459Test {
         Assert.assertThat(parser.getFormattedErrors(), containsString("mandatory is not a valid StatusV2"));
     }
 }
+

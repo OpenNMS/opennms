@@ -87,3 +87,4 @@ public class IfTttTriggerTest {
         ifTttTrigger.key(TEST_KEY).event(TEST_EVENT).value1("abc1").value2("will-be-overwritten").value2("abc2").value3("abc3").trigger();
     }
 }
+

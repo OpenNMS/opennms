@@ -97,3 +97,4 @@ public class EchoRpcThreadIT extends org.opennms.core.rpc.camel.EchoRpcThreadIT 
     }
 
 }
+

@@ -91,3 +91,4 @@ public class UsageAnalyticDaoIT {
         LOG.info("Test finished");
     }
 }
+

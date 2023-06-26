@@ -76,3 +76,4 @@ public class RancidListReportTest extends XmlTestNoCastor<RwsRancidlistreport> {
         return report;
     }
 }
+

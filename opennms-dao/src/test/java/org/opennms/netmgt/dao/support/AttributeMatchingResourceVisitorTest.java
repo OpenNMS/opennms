@@ -131,3 +131,4 @@ public class AttributeMatchingResourceVisitorTest {
         verify(m_attributeVisitor, never()).visit(any(OnmsAttribute.class));
     }
 }
+

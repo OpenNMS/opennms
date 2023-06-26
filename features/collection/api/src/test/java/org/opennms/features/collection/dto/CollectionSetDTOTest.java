@@ -167,3 +167,4 @@ public class CollectionSetDTOTest extends XmlTestNoCastor<CollectionSetDTO> {
                 .build();
     }
 }
+

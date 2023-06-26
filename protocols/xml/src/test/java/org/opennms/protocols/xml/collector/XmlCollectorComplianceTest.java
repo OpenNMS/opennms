@@ -80,3 +80,4 @@ public class XmlCollectorComplianceTest extends CollectorComplianceTest {
                 .build();
     }
 }
+

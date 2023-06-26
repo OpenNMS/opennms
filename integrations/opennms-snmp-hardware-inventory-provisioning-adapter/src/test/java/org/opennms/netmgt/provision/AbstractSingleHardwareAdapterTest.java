@@ -162,3 +162,4 @@ public abstract class AbstractSingleHardwareAdapterTest implements InitializingB
     }
 
 }
+

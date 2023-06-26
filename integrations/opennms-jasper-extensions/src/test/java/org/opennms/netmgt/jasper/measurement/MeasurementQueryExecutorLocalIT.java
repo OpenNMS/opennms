@@ -108,3 +108,4 @@ public class MeasurementQueryExecutorLocalIT extends AbstractMeasurementQueryExe
         verifyHttpCalls(0);
     }
 }
+

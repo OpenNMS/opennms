@@ -101,3 +101,4 @@ public class RequisitionNodeTest {
         Mockito.verify(assetMock).validate();
     }
 }
+

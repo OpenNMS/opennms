@@ -81,3 +81,4 @@ public class NameCutterTest {
         Assert.assertEquals("AllIdentTokeniCount", nameCutter.trimByCamelCase("AllIdentityTokenizedCount", 19));
     }
 }
+

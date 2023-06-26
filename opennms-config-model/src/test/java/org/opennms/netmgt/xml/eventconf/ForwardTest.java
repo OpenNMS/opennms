@@ -58,3 +58,4 @@ public class ForwardTest extends XmlTestNoCastor<Forward> {
 	}
 
 }
+

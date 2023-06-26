@@ -105,3 +105,4 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
     }
 
 }
+

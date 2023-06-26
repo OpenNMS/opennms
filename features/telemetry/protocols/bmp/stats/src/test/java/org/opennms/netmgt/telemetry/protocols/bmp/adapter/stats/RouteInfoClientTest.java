@@ -49,3 +49,4 @@ public class RouteInfoClientTest {
         assertThat(routeInfoList, Matchers.hasSize(2705));
     }
 }
+

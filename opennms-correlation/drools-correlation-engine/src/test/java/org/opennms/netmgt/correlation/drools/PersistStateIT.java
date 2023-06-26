@@ -132,3 +132,4 @@ public class PersistStateIT extends CorrelationRulesTestCase {
         return wmInventory.toString();
     }
 }
+

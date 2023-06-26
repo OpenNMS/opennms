@@ -59,3 +59,4 @@ public class EventsMapperTest {
         Assert.assertThat(events.size(), Matchers.is(1));
     }
 }
+

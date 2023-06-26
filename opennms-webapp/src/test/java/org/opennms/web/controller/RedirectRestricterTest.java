@@ -85,3 +85,4 @@ public class RedirectRestricterTest {
         fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
     }
 }
+

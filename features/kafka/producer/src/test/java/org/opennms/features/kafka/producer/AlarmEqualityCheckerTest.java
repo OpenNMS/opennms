@@ -73,3 +73,4 @@ public class AlarmEqualityCheckerTest {
         assertThat(alarmEqualityChecker.equalsExcludingOnBoth(alarmA, alarmB), is(equalTo(true)));
     }
 }
+

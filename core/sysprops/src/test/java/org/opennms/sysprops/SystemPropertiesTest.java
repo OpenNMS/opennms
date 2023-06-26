@@ -80,3 +80,4 @@ public class SystemPropertiesTest {
         assertEquals(Integer.valueOf(42), SystemProperties.getInteger(KEY, defaultValue));
     }
 }
+

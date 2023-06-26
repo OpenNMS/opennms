@@ -52,3 +52,4 @@ public class JAXBResourceLocationAdapterTest {
         Assert.assertEquals(location, location2);
     }
 }
+

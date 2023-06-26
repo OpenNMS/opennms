@@ -483,3 +483,4 @@ public class PrometheusCollectorIT {
     }
 
 }
+

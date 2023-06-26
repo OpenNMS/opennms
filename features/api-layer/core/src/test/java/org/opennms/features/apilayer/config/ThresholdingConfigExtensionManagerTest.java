@@ -192,3 +192,4 @@ public class ThresholdingConfigExtensionManagerTest {
         assertThat(basethresholddef.getValue(), equalTo(value));
     }
 }
+

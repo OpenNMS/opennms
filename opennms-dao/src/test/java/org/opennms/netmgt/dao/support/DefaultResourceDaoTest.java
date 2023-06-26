@@ -489,3 +489,4 @@ public class DefaultResourceDaoTest {
         return ip;
     }
 }
+

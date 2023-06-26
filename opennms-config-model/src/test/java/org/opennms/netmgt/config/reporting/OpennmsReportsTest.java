@@ -88,3 +88,4 @@ public class OpennmsReportsTest extends XmlTestNoCastor<OpennmsReports> {
         return reports;
     }
 }
+

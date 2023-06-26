@@ -97,3 +97,4 @@ public class PropertiesCacheTest {
         Assert.assertEquals(1L, propertiesCache.m_cache.size());
     }
 }
+

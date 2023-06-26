@@ -57,3 +57,4 @@ public class AlarmDataXmlTest extends XmlTestNoCastor<AlarmData> {
         });
     }
 }
+

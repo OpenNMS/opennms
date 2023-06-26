@@ -117,3 +117,4 @@ public class DiscoveryConfigurationConvertionTest {
         Assert.assertEquals("url", d2.getIncludeUrls().get(0).getUrl().get());
     }
 }
+

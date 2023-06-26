@@ -127,3 +127,4 @@ public class JavaSendMailerTest {
         assertEquals("root@foo.bar.com", mimeMessage.getReplyTo()[0].toString());
     }
 }
+

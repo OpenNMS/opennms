@@ -97,3 +97,4 @@ public class DataCollectionConfigResourceIT extends AbstractSpringJerseyRestTest
     }
 
 }
+

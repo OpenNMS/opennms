@@ -96,3 +96,4 @@ public class JaxbUtilsUnmarshalProcessorTest {
 		System.out.println("RATE: " + ((double)(numberOfMessages - warmUp)/ (double)(end - begin)) + "/ms");
 	}
 }
+

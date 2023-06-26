@@ -140,3 +140,4 @@ public class TrapdConfigReloadIT {
 				  user.getPrivacyProtocol());
 	}
 }
+

@@ -1276,3 +1276,4 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 
 
 }
+

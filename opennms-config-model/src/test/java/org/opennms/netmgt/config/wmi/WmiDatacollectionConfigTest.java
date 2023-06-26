@@ -93,3 +93,4 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
             "target/classes/xsds/wmi-datacollection.xsd", }, });
     }
 }
+

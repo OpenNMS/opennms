@@ -130,3 +130,4 @@ public class GzipEncodingRestIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(xml, ungzippedXml);
     }
 }
+

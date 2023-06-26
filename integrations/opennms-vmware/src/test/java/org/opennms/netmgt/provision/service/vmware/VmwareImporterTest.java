@@ -54,3 +54,4 @@ public class VmwareImporterTest {
         vmwareImporter.getRequisitionInterface(requisitionNode, null);
     }
 }
+

@@ -313,3 +313,4 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         Assert.assertEquals("false", sendRequest(GET, "/sched-outages/interfaceInOutage/1.1.1.1", 200));
     }
 }
+

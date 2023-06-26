@@ -68,3 +68,4 @@ public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> 
         });
     }
 }
+

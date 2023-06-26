@@ -55,3 +55,4 @@ public class ConversationKeyUtilsTest {
         assertThat(actualKey, equalTo(expectedKey));
     }
 }
+

@@ -54,3 +54,4 @@ public class RepositoryTest {
         assertEquals(new URI("file:/other@id=other@snapshots"), snapshotRepo.toMavenUri());
     }
 }
+

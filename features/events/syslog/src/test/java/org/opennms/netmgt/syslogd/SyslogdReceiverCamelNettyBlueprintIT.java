@@ -72,3 +72,4 @@ public class SyslogdReceiverCamelNettyBlueprintIT extends CamelBlueprintTest {
         // TODO: Perform integration testing
     }
 }
+

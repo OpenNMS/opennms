@@ -60,3 +60,4 @@ public class OperactionTest extends XmlTestNoCastor<Operaction> {
 	}
 
 }
+

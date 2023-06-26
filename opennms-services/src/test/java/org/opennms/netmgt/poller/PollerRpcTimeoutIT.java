@@ -307,3 +307,4 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         assertEquals("Dispatched message count was not zero", 0, dispatchCount.intValue());
     }
 }
+

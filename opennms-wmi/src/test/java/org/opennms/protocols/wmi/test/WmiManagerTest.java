@@ -357,3 +357,4 @@ public class WmiManagerTest extends TestCase {
 	}
 
 }
+

@@ -392,3 +392,4 @@ public class GenericIndexResourceTypeTest {
         return file;
     }
 }
+

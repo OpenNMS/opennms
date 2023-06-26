@@ -116,3 +116,4 @@ public class CriteriaIT implements InitializingBean {
 
     }
 }
+

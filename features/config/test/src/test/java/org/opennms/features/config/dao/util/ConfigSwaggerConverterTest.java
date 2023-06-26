@@ -92,3 +92,4 @@ public class ConfigSwaggerConverterTest {
         JSONAssert.assertEquals(expectedSwaggerJson, openapiStr, true);
     }
 }
+

@@ -189,3 +189,4 @@ public class RemedyTicketerPluginTest extends TestCase {
 	}
 
 }
+

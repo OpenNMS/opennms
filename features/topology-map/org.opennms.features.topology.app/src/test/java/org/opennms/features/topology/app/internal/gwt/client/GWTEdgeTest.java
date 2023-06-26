@@ -83,3 +83,4 @@ public class GWTEdgeTest {
         assertEquals(3, GWTEdge.getPathMultiplier(5, 6), delta);
     }
 }
+

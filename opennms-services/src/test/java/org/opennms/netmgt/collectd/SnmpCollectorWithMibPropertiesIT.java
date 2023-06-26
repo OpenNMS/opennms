@@ -328,3 +328,4 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         m_context = context;
     }
 }
+

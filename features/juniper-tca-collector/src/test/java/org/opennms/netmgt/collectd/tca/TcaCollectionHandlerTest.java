@@ -70,3 +70,4 @@ public class TcaCollectionHandlerTest {
         assertEquals(timestamp, handler.getLastTimestamp(resource));
     }
 }
+

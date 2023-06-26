@@ -152,3 +152,4 @@ public class AspectJIT implements InitializingBean {
         return new EventBuilder(uei, "Test").getEvent();
     }
 }
+

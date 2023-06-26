@@ -41,3 +41,4 @@ public class DatacollectionGroupValidationTest {
         JaxbUtils.unmarshal(DatacollectionGroup.class, xmlStr);
     }
 }
+

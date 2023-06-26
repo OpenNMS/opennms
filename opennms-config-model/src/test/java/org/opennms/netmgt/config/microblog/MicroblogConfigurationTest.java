@@ -76,3 +76,4 @@ public class MicroblogConfigurationTest extends XmlTestNoCastor<MicroblogConfigu
         return config;
     }
 }
+

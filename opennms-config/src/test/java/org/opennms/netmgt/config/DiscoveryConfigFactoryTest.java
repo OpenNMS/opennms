@@ -250,3 +250,4 @@ public class DiscoveryConfigFactoryTest {
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.151"), null));
     }
 }
+

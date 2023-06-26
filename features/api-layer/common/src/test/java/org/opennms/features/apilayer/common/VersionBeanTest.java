@@ -63,3 +63,4 @@ public class VersionBeanTest {
         assertThat(versionA, equalTo(versionC));
     }
 }
+

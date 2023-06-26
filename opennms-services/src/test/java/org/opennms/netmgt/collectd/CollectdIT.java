@@ -442,3 +442,4 @@ public class CollectdIT {
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
     }
 }
+

@@ -67,3 +67,4 @@ public class CorrelationTest extends XmlTestNoCastor<Correlation> {
 	}
 
 }
+

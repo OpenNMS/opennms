@@ -147,3 +147,4 @@ public class InMemoryMapBlobStoreTest {
     private class TestException extends RuntimeException {
     }
 }
+

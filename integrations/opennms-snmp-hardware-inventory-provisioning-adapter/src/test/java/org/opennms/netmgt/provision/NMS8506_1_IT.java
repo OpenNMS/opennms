@@ -54,3 +54,4 @@ public class NMS8506_1_IT extends AbstractSingleHardwareAdapterTest {
     }
 
 }
+

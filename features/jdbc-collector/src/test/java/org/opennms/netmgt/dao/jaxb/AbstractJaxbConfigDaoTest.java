@@ -99,3 +99,4 @@ public class AbstractJaxbConfigDaoTest extends TestCase {
         }
     }
 }
+

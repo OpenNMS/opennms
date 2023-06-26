@@ -65,3 +65,4 @@ public class ImmutableCorrelationTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

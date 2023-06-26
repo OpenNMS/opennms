@@ -117,3 +117,4 @@ public class HibernateEventWriterTest {
         verify(transactionManager, times(1)).execute(any());
     }
 }
+

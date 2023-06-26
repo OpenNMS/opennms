@@ -77,3 +77,4 @@ public class MapFunctionDTOMarshalTest extends MarshalAndUnmarshalTest<MapFuncti
         }});
     }
 }
+

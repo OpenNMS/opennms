@@ -149,3 +149,4 @@ public class JCEKSSecureCredentialsVaultTest {
         assertEquals(credentials1, scv2.getCredentials("http")) ;
     }
 }
+

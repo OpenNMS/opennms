@@ -145,3 +145,4 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     }
 
 }
+

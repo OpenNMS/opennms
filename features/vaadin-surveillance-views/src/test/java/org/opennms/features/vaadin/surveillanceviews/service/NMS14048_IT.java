@@ -111,3 +111,4 @@ public class NMS14048_IT implements InitializingBean {
         Assert.assertTrue("Availability must not exceed 100%.", nodeRtcList.get(0).getAvailability() <= 100.0);
     }
 }
+

@@ -144,3 +144,4 @@ public class TrapNotificationSerializationTest {
 	}
 
 }
+

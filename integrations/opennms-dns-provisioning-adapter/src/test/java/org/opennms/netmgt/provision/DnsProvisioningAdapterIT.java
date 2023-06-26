@@ -129,3 +129,4 @@ public class DnsProvisioningAdapterIT implements InitializingBean {
         m_adapter.processPendingOperationForNode(m_deleteOperation);
     }
 }
+

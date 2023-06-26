@@ -88,3 +88,4 @@ public class ReductionFunctionDaoIT {
         assertEquals(0, m_reductionFunctionDao.countAll()); 
     }
 }
+

@@ -178,3 +178,4 @@ public class ResourceAttributeFilteringResourceVisitorTest {
         filteringVisitor.visit(resource);
     }
 }
+

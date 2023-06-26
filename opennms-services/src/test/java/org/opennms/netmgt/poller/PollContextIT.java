@@ -406,3 +406,4 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         Assert.assertEquals(EventConstants.PARM_VALUE_PATHOUTAGE, nodeEvent.getParm(EventConstants.PARM_LOSTSERVICE_REASON).getValue().getContent());
     }
 }
+

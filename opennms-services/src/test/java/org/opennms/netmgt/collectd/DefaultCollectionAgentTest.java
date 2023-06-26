@@ -115,3 +115,4 @@ public class DefaultCollectionAgentTest {
         assertEquals(node.getId().intValue(), agent.getNodeId());
     }
 }
+

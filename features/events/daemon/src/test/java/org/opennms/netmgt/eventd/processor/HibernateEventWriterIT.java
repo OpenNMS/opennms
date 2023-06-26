@@ -384,3 +384,4 @@ public class HibernateEventWriterIT {
         assertEquals("event service ID", new Integer(serviceId), jdbcTemplate.queryForObject("select serviceID from events", Integer.class));
     }
 }
+

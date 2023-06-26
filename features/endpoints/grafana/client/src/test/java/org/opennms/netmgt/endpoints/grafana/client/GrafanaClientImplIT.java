@@ -116,3 +116,4 @@ public class GrafanaClientImplIT {
         return container.getPanels().stream().map(Panel::getTitle).collect(Collectors.toList());
     }
 }
+

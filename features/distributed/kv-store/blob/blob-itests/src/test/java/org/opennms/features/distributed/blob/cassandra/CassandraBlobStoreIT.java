@@ -196,3 +196,4 @@ public class CassandraBlobStoreIT extends BaseBlobStoreIT {
         };
     }
 }
+

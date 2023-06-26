@@ -75,3 +75,4 @@ public class RangedValueTest {
         new RangedValue("");
     }
 }
+

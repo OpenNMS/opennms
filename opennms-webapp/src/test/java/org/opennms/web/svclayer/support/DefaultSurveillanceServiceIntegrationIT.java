@@ -100,3 +100,4 @@ public class DefaultSurveillanceServiceIntegrationIT implements InitializingBean
         assertEquals("default", table.getTitle());
     }
 }
+

@@ -59,3 +59,4 @@ public class ScriptTest extends XmlTestNoCastor<Script> {
 	}
 
 }
+

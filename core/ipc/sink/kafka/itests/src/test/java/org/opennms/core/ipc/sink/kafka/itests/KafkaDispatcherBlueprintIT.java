@@ -80,3 +80,4 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
 
     }
 }
+

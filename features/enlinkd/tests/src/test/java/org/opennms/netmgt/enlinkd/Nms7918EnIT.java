@@ -1638,3 +1638,4 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(count,m_bridgeMacLinkDao.countAll());
     }
 }
+

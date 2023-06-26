@@ -73,3 +73,4 @@ public class ReportdConfigurationTest extends XmlTestNoCastor<ReportdConfigurati
         return config;
     }
 }
+

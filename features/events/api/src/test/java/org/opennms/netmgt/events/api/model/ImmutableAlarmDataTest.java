@@ -85,3 +85,4 @@ public class ImmutableAlarmDataTest {
         XmlTest.assertXmlEquals(expectedXml, convertedXml);
     }
 }
+

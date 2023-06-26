@@ -99,3 +99,4 @@ public class MbeanTest extends XmlTestNoCastor<Mbean> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

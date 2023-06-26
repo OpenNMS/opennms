@@ -62,3 +62,4 @@ public class CollectorRequestDTOTest extends XmlTestNoCastor<CollectorRequestDTO
         });
     }
 }
+

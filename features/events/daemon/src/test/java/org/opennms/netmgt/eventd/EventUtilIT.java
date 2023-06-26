@@ -360,3 +360,4 @@ public class EventUtilIT {
         assertEquals("", testString);
     }
 }
+

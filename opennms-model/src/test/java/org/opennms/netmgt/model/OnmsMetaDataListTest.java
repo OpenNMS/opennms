@@ -55,3 +55,4 @@ public class OnmsMetaDataListTest extends MarshalAndUnmarshalTest<OnmsMetaDataLi
         }});
     }
 }
+

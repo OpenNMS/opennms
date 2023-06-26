@@ -150,3 +150,4 @@ public class MenuBuilderTest {
         return new SimpleMenuItem(label);
     }
 }
+

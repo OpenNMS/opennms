@@ -277,3 +277,4 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         System.setProperty("opennms.home", previousOpennmsHome);
     }
 }
+

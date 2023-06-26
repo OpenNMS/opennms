@@ -145,3 +145,4 @@ public class RadiusAuthenticationProviderTest {
 		provider.retrieveUser(m_username, token);
 	}
 }
+

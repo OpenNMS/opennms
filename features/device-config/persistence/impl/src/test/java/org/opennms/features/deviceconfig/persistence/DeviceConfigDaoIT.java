@@ -309,3 +309,4 @@ public class DeviceConfigDaoIT {
         return interfaces;
     }
 }
+

@@ -135,3 +135,4 @@ public class SurveillanceViewConfigurationTest extends XmlTestNoCastor<Surveilla
     }
 }
 
+

@@ -116,3 +116,4 @@ public class ApplicationEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         }});
     }
 }
+

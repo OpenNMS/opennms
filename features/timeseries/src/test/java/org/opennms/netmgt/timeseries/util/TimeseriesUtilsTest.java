@@ -66,3 +66,4 @@ public class TimeseriesUtilsTest {
         assertEquals(ResourcePath.fromString(""), TimeseriesUtils.toResourcePath("")); // last element is treated as the name and not part of path
     }
 }
+

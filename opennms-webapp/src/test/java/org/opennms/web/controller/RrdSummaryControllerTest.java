@@ -102,3 +102,4 @@ public class RrdSummaryControllerTest {
         assertEquals(0, summary.getResources().size());
     }
 }
+

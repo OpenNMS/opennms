@@ -169,3 +169,4 @@ public class SearchPropertiesIT extends AbstractSpringJerseyRestTestCase {
         }
     }
 }
+

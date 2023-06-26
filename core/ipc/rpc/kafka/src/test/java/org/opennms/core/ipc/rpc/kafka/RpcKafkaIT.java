@@ -395,3 +395,4 @@ public class RpcKafkaIT {
         return kafkaRpcServer;
     }
 }
+

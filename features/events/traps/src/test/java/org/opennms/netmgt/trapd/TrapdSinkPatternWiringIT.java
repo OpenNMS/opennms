@@ -147,3 +147,4 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
         return "OSGI-INF/blueprint/blueprint-empty.xml";
     }
 }
+

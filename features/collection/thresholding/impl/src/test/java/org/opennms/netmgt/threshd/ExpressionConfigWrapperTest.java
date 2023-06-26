@@ -180,3 +180,4 @@ public class ExpressionConfigWrapperTest {
         Assert.assertEquals(160.0, wrapper.interpolateAndEvaluate(values, scope).value, 0.0);
     }
 }
+

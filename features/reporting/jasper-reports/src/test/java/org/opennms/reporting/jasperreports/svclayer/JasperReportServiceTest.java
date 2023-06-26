@@ -175,3 +175,4 @@ public class JasperReportServiceTest implements InitializingBean {
         Assert.assertEquals("This is a test with number 10", JasperReportService.evaluateToString(report, new JRDesignExpression("$P{COMPLEX}")));
     }
 }
+

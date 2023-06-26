@@ -67,3 +67,4 @@ public class DetectorRequestDTOTest extends XmlTestNoCastor<DetectorRequestDTO> 
         return dto;
     }
 }
+

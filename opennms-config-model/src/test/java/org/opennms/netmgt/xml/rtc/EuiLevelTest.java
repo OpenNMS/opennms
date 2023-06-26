@@ -85,3 +85,4 @@ public class EuiLevelTest extends XmlTestNoCastor<EuiLevel> {
         });
     }
 }
+

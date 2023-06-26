@@ -812,3 +812,4 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         return m_serviceTypeDao;
     }
 }
+

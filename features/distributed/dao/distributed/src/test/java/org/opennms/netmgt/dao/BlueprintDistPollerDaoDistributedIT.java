@@ -102,3 +102,4 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
         assertEquals(OnmsMonitoringSystem.TYPE_MINION, poller.getType());
     }
 }
+

@@ -75,3 +75,4 @@ public class NavBarControllerTest {
         assertTrue(headerHtml.contains("<nav"));
     }
 }
+

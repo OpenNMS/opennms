@@ -90,3 +90,4 @@ public class NotificationsTest extends XmlTestNoCastor<Notifications> {
         return notifications;
     }
 }
+

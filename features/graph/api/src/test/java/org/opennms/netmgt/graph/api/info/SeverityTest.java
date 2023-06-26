@@ -97,3 +97,4 @@ public class SeverityTest {
         assertThat(Severity.createFrom(OnmsSeverity.CRITICAL), Matchers.is(Severity.Critical));
     }
 }
+

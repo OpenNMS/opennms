@@ -114,3 +114,4 @@ public class AlarmStatisticsServiceIT implements InitializingBean {
         assertEquals(1, count);
     }
 }
+

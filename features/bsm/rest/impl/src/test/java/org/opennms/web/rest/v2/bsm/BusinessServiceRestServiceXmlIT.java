@@ -55,3 +55,4 @@ public class BusinessServiceRestServiceXmlIT extends AbstractBusinessServiceRest
         return getXmlObject(context, url, Collections.emptyMap(), expectedStatus, expectedClass);
     }
 }
+

@@ -125,3 +125,4 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
         }});
     }
 }
+

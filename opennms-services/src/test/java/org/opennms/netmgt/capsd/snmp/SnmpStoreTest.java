@@ -64,3 +64,4 @@ public class SnmpStoreTest extends TestCase {
         assertEquals("ifAlias value", ifAliasValue, store.getDisplayString(ifAliasName));
     }
 }
+

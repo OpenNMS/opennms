@@ -66,3 +66,4 @@ public abstract class EchoRpcBlueprintIT extends CamelBlueprintTest {
         assertEquals(expectedResponse, actualResponse);
     }
 }
+

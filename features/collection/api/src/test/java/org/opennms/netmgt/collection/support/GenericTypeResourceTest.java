@@ -98,3 +98,4 @@ public class GenericTypeResourceTest {
         return elements[elements.length - 1];
     }
 }
+

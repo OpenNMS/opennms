@@ -87,3 +87,4 @@ public class ThresholdingConfigTest extends XmlTestNoCastor<ThresholdingConfig> 
         });
     }
 }
+

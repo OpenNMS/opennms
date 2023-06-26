@@ -69,3 +69,4 @@ public class JMXDataCollectionConfigDaoTest {
         Assert.assertEquals(16, config.getJmxCollection("ActiveMQ").getMbeanCount());
     }
 }
+

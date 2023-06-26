@@ -91,3 +91,4 @@ public class PrometheusCollectorComplianceIT extends CollectorComplianceTest {
                 .build();
     }
 }
+

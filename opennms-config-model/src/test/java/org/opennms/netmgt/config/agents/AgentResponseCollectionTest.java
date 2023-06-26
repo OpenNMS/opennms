@@ -82,3 +82,4 @@ public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCo
                 null, }, });
     }
 }
+

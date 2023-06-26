@@ -67,3 +67,4 @@ public class RwsConfigurationTest extends XmlTestNoCastor<RwsConfiguration> {
         return config;
     }
 }
+

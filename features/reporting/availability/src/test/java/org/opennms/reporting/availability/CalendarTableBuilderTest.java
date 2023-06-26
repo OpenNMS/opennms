@@ -103,3 +103,4 @@ public class CalendarTableBuilderTest extends TestCase {
 		return cal.get(Calendar.DAY_OF_WEEK);
 	}
 }
+

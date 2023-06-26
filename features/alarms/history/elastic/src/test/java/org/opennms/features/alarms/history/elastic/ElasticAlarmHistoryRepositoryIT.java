@@ -287,3 +287,4 @@ public class ElasticAlarmHistoryRepositoryIT {
         a.setCounter(a.getCounter() + 1);
     }
 }
+

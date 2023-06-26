@@ -79,3 +79,4 @@ public class AMQPAlarmNorthbounderBlueprintTest extends CamelBlueprintTest {
         assertMockEndpointsSatisfied();
     }
 }
+

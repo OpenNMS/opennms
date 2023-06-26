@@ -65,3 +65,4 @@ public class OnmsDaoContainerTest {
         Assert.assertEquals(1, items.size());
     }
 }
+

@@ -248,3 +248,4 @@ public class DNSResolutionMonitorIT {
         assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
     }
 }
+

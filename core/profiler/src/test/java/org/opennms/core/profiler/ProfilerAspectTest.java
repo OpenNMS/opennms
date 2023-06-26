@@ -53,3 +53,4 @@ public class ProfilerAspectTest {
         Assert.assertEquals("13s 106ms", humanReadable(13106));
     }
 }
+

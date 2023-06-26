@@ -47,3 +47,4 @@ public class ConfigurationReloadEventCallbackTest {
         Mockito.verify(eventForwarder, Mockito.times(1)).sendNow(Mockito.any(Event.class));
     }
 }
+

@@ -174,3 +174,4 @@ public class NotificationDaoIT implements InitializingBean {
         m_notificationDao.findMatching(builder.toCriteria());
     }
 }
+

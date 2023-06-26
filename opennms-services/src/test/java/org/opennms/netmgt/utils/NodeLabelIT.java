@@ -102,3 +102,4 @@ public class NodeLabelIT implements InitializingBean {
         assertEquals(jdbcLabelComputed.toString(), daoLabelComputed.toString());
     }
 }
+

@@ -436,3 +436,4 @@ public class DeviceConfigMonitorAdaptorIT {
         nodeDao.save(node);
     }
 }
+

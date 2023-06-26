@@ -137,3 +137,4 @@ public class DefaultStatisticsReportServiceTest {
         verify(m_statisticsReportDao, atLeastOnce()).load(anyInt());
     }
 }
+

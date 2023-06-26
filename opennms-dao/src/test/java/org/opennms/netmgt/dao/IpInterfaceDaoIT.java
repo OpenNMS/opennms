@@ -216,3 +216,4 @@ public class IpInterfaceDaoIT implements InitializingBean {
         assertNull(itf2);
     }
 }
+

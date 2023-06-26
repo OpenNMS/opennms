@@ -130,3 +130,4 @@ public class NodeMetadataPolicyTest implements InitializingBean {
         return m_nodes.stream().map(n -> p.apply(n, new HashMap<>())).collect(Collectors.toList());
     }
 }
+

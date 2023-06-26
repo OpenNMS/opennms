@@ -63,3 +63,4 @@ public class ServiceConfigurationPublicConstructorIT extends PublicConstructorTe
 		return retval;
 	}
 }
+

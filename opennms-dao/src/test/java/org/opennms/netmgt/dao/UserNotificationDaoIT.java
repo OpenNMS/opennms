@@ -155,3 +155,4 @@ public class UserNotificationDaoIT implements InitializingBean {
         assertEquals(userNotif.getUserId(), "OpenNMS User");
     }
 }
+

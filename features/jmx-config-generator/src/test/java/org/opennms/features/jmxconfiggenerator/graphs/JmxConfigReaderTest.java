@@ -71,3 +71,4 @@ public class JmxConfigReaderTest {
         Assert.assertNotNull(snmpGraphConfig);
     }
 }
+

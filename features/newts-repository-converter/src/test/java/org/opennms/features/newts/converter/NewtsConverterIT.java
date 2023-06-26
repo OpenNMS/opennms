@@ -617,3 +617,4 @@ public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabas
     @Test public void test111() throws Exception { execute(true,  true,  true ); }
 
 }
+

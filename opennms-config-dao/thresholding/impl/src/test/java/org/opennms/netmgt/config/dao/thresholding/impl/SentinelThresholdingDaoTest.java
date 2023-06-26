@@ -81,3 +81,4 @@ public class SentinelThresholdingDaoTest {
         return mapper.writeValueAsString(thresholdingConfig);
     }
 }
+

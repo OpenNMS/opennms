@@ -74,3 +74,4 @@ public class ColumnTest extends TestCase {
         assertTrue("old column should equal new column", oldColumn.equals(newColumn));
     }
 }
+

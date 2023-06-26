@@ -95,3 +95,4 @@ public class DefaultForeignSourceServiceTest {
         assertTrue(fs.isDefault());
     }
 }
+

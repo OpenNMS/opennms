@@ -241,3 +241,4 @@ public class CollapsibleGraphTest {
 		assertTrue(vertices.contains(new DefaultVertexRef("nodes", "v4")));
 	}
 }
+

@@ -80,3 +80,4 @@ public class GroupsTest extends XmlTestNoCastor<Groups> {
 
 
 }
+

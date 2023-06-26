@@ -162,3 +162,4 @@ public class ProtobufMapperIT {
         assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
     }
 }
+

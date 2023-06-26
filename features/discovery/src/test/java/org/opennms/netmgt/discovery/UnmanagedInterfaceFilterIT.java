@@ -123,3 +123,4 @@ public class UnmanagedInterfaceFilterIT implements InitializingBean {
 		assertTrue(m_filter.matches(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "10.1.2.4"));
 	}
 }
+

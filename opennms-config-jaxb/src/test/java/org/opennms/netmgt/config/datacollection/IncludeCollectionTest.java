@@ -58,3 +58,4 @@ public class IncludeCollectionTest extends XmlTestNoCastor<IncludeCollection> {
 
 
 }
+

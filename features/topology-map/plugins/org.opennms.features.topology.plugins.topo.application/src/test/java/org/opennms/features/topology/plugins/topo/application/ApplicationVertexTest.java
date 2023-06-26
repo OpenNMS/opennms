@@ -63,3 +63,4 @@ public class ApplicationVertexTest {
         return new LegacyApplicationVertex(id, id);
     }
 }
+

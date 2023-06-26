@@ -136,3 +136,4 @@ public class DiscoveryConfigurationTest extends XmlTestNoCastor<DiscoveryConfigu
     }
 
 }
+

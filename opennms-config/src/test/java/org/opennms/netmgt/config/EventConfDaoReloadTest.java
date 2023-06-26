@@ -280,3 +280,4 @@ public class EventConfDaoReloadTest {
         assertEquals(3, eventConfDao.getAllEvents().size());
     }
 }
+

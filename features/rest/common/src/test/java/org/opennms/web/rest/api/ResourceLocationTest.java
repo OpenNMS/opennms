@@ -62,3 +62,4 @@ public class ResourceLocationTest {
         Assert.assertFalse("HashCode is equal, but should not be equal", location1.hashCode() == location4.hashCode());
     }
 }
+

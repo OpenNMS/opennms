@@ -44,3 +44,4 @@ public class DuplicateTreeMapTest extends TestCase {
         assertEquals("list item zero content", "foo", list.get(0));
     }
 }
+

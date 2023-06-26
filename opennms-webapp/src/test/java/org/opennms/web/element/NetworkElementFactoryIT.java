@@ -209,3 +209,4 @@ public class NetworkElementFactoryIT implements InitializingBean {
         assertEquals(1, nodes.size());
     }
 }
+

@@ -116,3 +116,4 @@ public class JmxCollectionTest extends XmlTestNoCastor<JmxCollection> {
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }
+

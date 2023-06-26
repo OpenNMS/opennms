@@ -91,3 +91,4 @@ public class NotificationCommandsTest extends XmlTestNoCastor<NotificationComman
         return commands;
     }
 }
+

@@ -107,3 +107,4 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
     }
 
 }
+

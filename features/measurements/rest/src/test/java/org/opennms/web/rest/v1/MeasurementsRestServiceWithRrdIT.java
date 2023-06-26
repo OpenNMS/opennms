@@ -153,3 +153,4 @@ public class MeasurementsRestServiceWithRrdIT extends MeasurementsRestServiceITC
         assertEquals(67872.22455490529, columns.get("ifInOctetsMax")[idx], 0.0001);
     }
 }
+

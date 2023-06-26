@@ -111,3 +111,4 @@ public class LabelSearchProviderTest {
         assertEquals(expectations, results);
     }
 }
+

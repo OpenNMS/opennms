@@ -149,3 +149,4 @@ public class MSExchangeDetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(m_pop3Server.getInetAddress()));
     }
 }
+

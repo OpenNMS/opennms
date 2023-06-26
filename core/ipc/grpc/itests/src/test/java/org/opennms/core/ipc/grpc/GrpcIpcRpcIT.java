@@ -246,3 +246,4 @@ public class GrpcIpcRpcIT {
         throw new IllegalStateException("Can't find an available network port");
     }
 }
+

@@ -83,3 +83,4 @@ public class JsonCollectorArrayIT extends JsonCollectorITCase {
         validateJrb(new File(getSnmpRootDirectory(), "1/jsonArrayStats/works/json-array-stats.jrb"), new String[] {"val"}, new Double[] {1337.0});
     }
 }
+

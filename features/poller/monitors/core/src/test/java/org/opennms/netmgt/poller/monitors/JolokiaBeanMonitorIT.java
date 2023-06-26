@@ -94,3 +94,4 @@ public class JolokiaBeanMonitorIT {
         assertTrue(subbedParams.get("subbed-auth-username").toString().equals("localhost"));
     }
 }
+

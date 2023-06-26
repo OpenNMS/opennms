@@ -89,3 +89,4 @@ public class MapFunctionDaoIT {
         assertEquals(0, m_mapFunctionDao.countAll()); 
     }
 }
+

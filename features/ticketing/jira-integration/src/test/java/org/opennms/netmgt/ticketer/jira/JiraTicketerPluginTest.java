@@ -139,3 +139,4 @@ public class JiraTicketerPluginTest {
         assertEquals(ticket.getSummary(), newTicket.getSummary());
     }
 }
+

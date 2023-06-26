@@ -117,3 +117,4 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
     }
 
 }
+

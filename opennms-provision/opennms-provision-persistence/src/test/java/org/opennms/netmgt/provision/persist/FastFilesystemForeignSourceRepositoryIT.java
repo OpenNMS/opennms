@@ -188,3 +188,4 @@ public class FastFilesystemForeignSourceRepositoryIT extends ForeignSourceReposi
         assertTrue("foreign source must be tagged as default", defaultForeignSource.isDefault());
     }
 }
+
