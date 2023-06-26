@@ -23,6 +23,7 @@ If that is successful, the client discovers and knows the whole broker topology.
 The other entries are used only if the connection to the first entry fails.
 
 Any valid Kafka configuration property can be set with the `org.opennms.core.ipc.kafka` prefix.
+
 .Example config using SASL/SCRAM with TLS.
 [source, kafka.properties]
 ----
