@@ -59,7 +59,7 @@ You can continue to use the filter as-is; no changes are needed to use this fore
 
 The filter that depends on the `R` package will be discontinued in a future release.
 
-=== Enhanced Linkd Improvements
+=== Enhanced Linkd improvements
 
 Enlinkd has been refactored, improving performance, fixing bugs, and adding a number of new features, most notably new Karaf command-line tools:
 
@@ -70,12 +70,12 @@ Enlinkd has been refactored, improving performance, fixing bugs, and adding a nu
 * enlinkd-reload-topology: refresh topology to force an update based on enlinkd data
 * enlinkd-snmp-collect: perform an Enlinkd SNMP group/table collection
 
-=== Poll Status History Enabled By Default
+=== Poll Status History enabled by default
 
 Our service monitor infrastructure has had support for storing the up/down history of poll status, but it is now enabled by default, including graph definitions for all included services.
 This allows you to get historical availability per-service beyond 24 hours.
 
-=== Experimental Asynchronous Polling
+=== Experimental asynchronous polling
 
 The poller engine has been updated to support asynchronous polling, allowing OpenNMS to use fewer Pollerd threads to handle the same amount of load.
 This will become the default in a future Horizon release.
