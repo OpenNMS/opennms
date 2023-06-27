@@ -4,7 +4,7 @@
 
 Horizon 32 features a slew of bug fixes and a number of major improvements, most notably the introduction of JDK17 support, and a major uplift in the Newts backend.
 
-The codename for Horizon 32.0.0 is https://wikipedia.org/wiki/$$TBD$$[_Coming Soon_].
+The codename for Horizon 32.0.0 is https://volt.fm/genre/3379/cavernous-death-metal[Cavernous Death Metal].
 
 === Enhancement
 
