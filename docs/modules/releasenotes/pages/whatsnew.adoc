@@ -106,7 +106,7 @@ Use `org.opennms.newts.config.connections-per-host` to configure the number of c
 Because of an upgrade of the Dropwizard Metrics library, some JMX MBeans object names have changed.
 The built-in data collection configurations have been updated to use the new object names, and will continue to work as-is.
 If you have other collections, or you are otherwise relying on MBeans, you may need to adjust the object references there.
-For example, org.opennms.newts:name=search.update` has become `org.opennms.newts:name=search.update,type=timers`, and the `type` attribute has been added to the object.
+For example, `org.opennms.newts:name=search.update` has become `org.opennms.newts:name=search.update,type=timers`, and the `type` attribute has been added to the object.
 
 === Important internal updates
 
