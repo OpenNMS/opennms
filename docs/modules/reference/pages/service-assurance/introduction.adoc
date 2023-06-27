@@ -54,6 +54,10 @@ These minimum configuration parameters are available in all monitors and describ
 | Base directory of an RRD repository in which to store this service monitor's response-time samples.
 | null
 
+| rrd-status
+| Enable xref:operation:deep-dive/service-assurance/polling-packages.adoc#service-status-persistence[service status persistence]
+| false
+
 | thresholding-enabled
 | Whether collected response time should be tested against thresholds.
 | false
@@ -124,4 +128,3 @@ Note that all service definitions must include the `monitor` section.
 <monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
 ----
 <1> Required *monitor* section.
-
