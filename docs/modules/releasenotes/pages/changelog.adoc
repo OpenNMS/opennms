@@ -72,7 +72,7 @@ The codename for Horizon 32.0.0 is https://volt.fm/genre/3379/cavernous-death-me
 * Karaf SSH locks up if connections are terminated improperly (Issue https://issues.opennms.org/browse/NMS-15714[NMS-15714])
 * Vue menubar logo link should go to 'homeUrl' (Issue https://issues.opennms.org/browse/NMS-15721[NMS-15721])
 * https redirection is partially broken (Issue https://issues.opennms.org/browse/NMS-15732[NMS-15732])
-* Startup taking > 10 minutes on fresh 32.0.0 builds (Issue https://issues.opennms.org/browse/NMS-15751[NMS-15751])
+* Startup taking > 10 minutes on fresh 32.0.1-SNAPSHOT builds (Issue https://issues.opennms.org/browse/NMS-15751[NMS-15751])
 * Docs need updating to include support for Kafka 3 (Issue https://issues.opennms.org/browse/NMS-15777[NMS-15777])
 * Add /usr/lib64/jvm to find-java.sh search paths (Issue https://issues.opennms.org/browse/NMS-15784[NMS-15784])
 
