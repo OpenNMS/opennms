@@ -2,7 +2,8 @@
 [[ga-alarm-history]]
 = Alarm History
 
-The alarm history feature integrates with Elasticsearch to provide long-term storage and maintain a history of alarm state changes.
+Alarms are deleted from the {page-component-title} database as they clear or become stale.
+If you would like to keep an historical record of alarm data, you can enable the alarm history feature to provide long-term storage and maintain a history of alarm state changes in Elasticsearch.
 When it is enabled, alarms are indexed in Elasticsearch when they are created, deleted, or when any interesting fields (for example, Ticket State, Sticky Memo) on the alarm are updated.
 Alarms are indexed so that operators can answer the following questions:
 
