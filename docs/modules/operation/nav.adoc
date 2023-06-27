@@ -103,10 +103,9 @@
 *** xref:deep-dive/events/event-advanced-search.adoc[]
 
 ** xref:deep-dive/alarms/introduction.adoc[]
-*** xref:deep-dive/alarms/alarmd.adoc[]
 *** xref:deep-dive/alarms/configuring-alarms.adoc[]
-*** xref:deep-dive/alarms/alarm-notes.adoc[]
-*** xref:deep-dive/alarms/alarm-related-events.adoc[]
+*** xref:deep-dive/alarms/alarm-example.adoc[]
+*** xref:deep-dive/alarms/alarm-handling.adoc[]
 *** xref:deep-dive/alarms/alarm-sound-flash.adoc[]
 *** xref:deep-dive/alarms/history.adoc[]
 *** xref:deep-dive/alarms/alarm-advanced-search.adoc[]
