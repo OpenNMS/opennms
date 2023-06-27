@@ -38,8 +38,11 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -48,8 +51,11 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.provision.persist.JSR223ScriptCache;
 
 public class ScriptPolicyTest {
+
+    private final JSR223ScriptCache scriptCache = new JSR223ScriptCache();
 
     @BeforeClass
     public static void beforeClass() {
@@ -61,6 +67,7 @@ public class ScriptPolicyTest {
         final ScriptPolicy p = new ScriptPolicy(Paths.get("/", "opt", "opennms").toAbsolutePath());
         p.compileScript("../policy.groovy");
     }
+
 
     @Test
     public void testScriptPolicy() throws Exception {
@@ -124,6 +131,7 @@ public class ScriptPolicyTest {
         when(mockNodeDao.get(Mockito.eq(2))).thenReturn(node2);
         p.setNodeDao(mockNodeDao);
         p.setSessionUtils(new MockSessionUtils());
+        p.setScriptCache(scriptCache);
 
         node1 = p.apply(node1, Collections.emptyMap());
 
@@ -181,6 +189,7 @@ public class ScriptPolicyTest {
         when(mockNodeDao.get(Mockito.eq(1))).thenReturn(node1);
         p.setNodeDao(mockNodeDao);
         p.setSessionUtils(new MockSessionUtils());
+        p.setScriptCache(new JSR223ScriptCache());
 
         // create script file's content and modify lastModified
         createScriptFile(scriptFile, 1, false);
@@ -214,6 +223,42 @@ public class ScriptPolicyTest {
         }
         if (preserveLastModified) {
             file.setLastModified(lastModified);
+        }
+    }
+
+    /**
+     * Used to reproduce NMS-15798.
+     *
+     * Java 11 running with w/ cmdline: -ea -Xms64m -Xmx64m -XX:MaxMetaspaceSize=32M -Dgroovy.use.classvalue=true
+     * JVM will eventually OOM. Heap/metaspace is filled w/ Groovy related classloader objects.
+     * @throws Exception
+     */
+    @Test
+    @Ignore("local debugging only - don't run in CI")
+    public void testGroovyMemoryLeak() throws Exception {
+        while (true) {
+            List<Thread> threads = new LinkedList<>();
+            for (int i = 0; i < 10; i++) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try  {
+                            testScriptPolicy();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                threads.add(t);
+            }
+            for (Thread t : threads) {
+                t.run();
+            }
+            for (Thread t : threads) {
+                t.join();
+            }
+            System.gc();
+            System.out.println("Heap size: " + Runtime.getRuntime().totalMemory());
         }
     }
 }
