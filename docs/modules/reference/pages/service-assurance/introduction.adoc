@@ -54,6 +54,10 @@ These minimum configuration parameters are available in all monitors and describ
 | Base directory of an RRD repository in which to store this service monitor's response-time samples.
 | null
 
+| rrd-status
+| Enable link:operation:deep-dive/service-assurance/polling-packages.adoc#service-status-persistence[service status persistence]
+| true
+
 | thresholding-enabled
 | Whether collected response time should be tested against thresholds.
 | false
