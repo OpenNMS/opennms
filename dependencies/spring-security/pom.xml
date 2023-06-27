@@ -21,6 +21,38 @@
       <version>${springSecurityVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.unboundid</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ldapsdk</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.directory.server</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.directory.shared</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.aspectj</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
         </exclusion>
@@ -33,7 +65,7 @@
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <artifactId>*</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -47,7 +79,23 @@
       <version>${springSecurityVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.aspectj</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.security</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -57,6 +105,14 @@
       <artifactId>spring-security-acl</artifactId>
       <version>${springSecurityVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.ehcache</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
@@ -68,6 +124,14 @@
       <artifactId>spring-security-taglibs</artifactId>
       <version>${springSecurityVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>*</artifactId>
@@ -106,6 +170,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson2-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
