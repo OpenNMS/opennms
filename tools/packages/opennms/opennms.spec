@@ -487,10 +487,8 @@ if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
-OPTS_UPDATE_POLICY="-DupdatePolicy=never"
 if [ "%{enable_snapshots}" = 1 ]; then
 	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 fi
 
 OPTS_PRODUCTION=""
