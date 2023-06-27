@@ -57,6 +57,9 @@ public class StringIntervalAdapter extends XmlAdapter<String, Duration> {
     /** {@inheritDoc} */
     @Override
     public Duration unmarshal(final String v) {
+        if (v == null) {
+            return null;
+        }
         if ("0".equals(v.trim())) {
             return Duration.ZERO;
         }
