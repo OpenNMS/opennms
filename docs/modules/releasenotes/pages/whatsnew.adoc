@@ -27,7 +27,7 @@ This allows us to introduce the following functionality:
 See https://docs.datastax.com/en/developer/java-driver/4.0/manual/core/configuration/[Configuration] in the official DataStax documentation for details.
 
 . Configure all driver settings using an external file.
-To do so, set the following system properties in `newts-on-cassandra.conf`:
+To do so, set the following system properties in `$\{OPENNMS_HOME}/etc/opennms.properties.d/newts.properties`:
 +
 [source, properties]
 ----
