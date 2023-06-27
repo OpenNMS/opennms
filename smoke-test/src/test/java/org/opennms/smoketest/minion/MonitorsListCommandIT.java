@@ -75,6 +75,7 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.TcpMonitor",
             "org.opennms.netmgt.poller.monitors.MemcachedMonitor",
             "org.opennms.netmgt.poller.monitors.ImapMonitor",
+            "org.opennms.netmgt.poller.monitors.MinaSshMonitor",
             "org.opennms.netmgt.poller.monitors.SshMonitor", 
             "org.opennms.netmgt.poller.monitors.PageSequenceMonitor",
             "org.opennms.netmgt.poller.monitors.LaTableMonitor", 

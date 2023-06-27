@@ -1,6 +1,6 @@
 name: "Auto Assign Pull Request"
 on:
-  pull_request:
+  pull_request_target:
     # types: [review_requested, ready_for_review, opened, synchronize, reopened]
     branches:
       - develop

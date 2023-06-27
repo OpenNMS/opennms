@@ -197,9 +197,9 @@
     <feature name="ssh" description="Provide an SSHd server on Karaf" version="${karafSshdVersion}">
         <feature>shell</feature>
         <feature>jaas</feature>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
         <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}</bundle>
