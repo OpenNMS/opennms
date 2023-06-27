@@ -49,7 +49,7 @@ The codename for Horizon 32.0.0 is https://wikipedia.org/wiki/$$TBD$$[_Coming So
 
 === Bug
 
-* Multiple OpenNMS feature stop working when the  Events Forwarder cannot push content to Elasticsearch (Issue https://issues.opennms.org/browse/NMS-13019[NMS-13019])
+* Multiple OpenNMS feature stop working when the Events Forwarder cannot push content to Elasticsearch (Issue https://issues.opennms.org/browse/NMS-13019[NMS-13019])
 * rest api wrong LinkdTopologyProvider graphs (Issue https://issues.opennms.org/browse/NMS-14329[NMS-14329])
 * Inconsistent references to JMXCollect/Monitor for "password-clear"/"password_clear" (Issue https://issues.opennms.org/browse/NMS-14884[NMS-14884])
 * Docker images for Horizon 30.0.4 and later no longer have an editor or a modern pager (Issue https://issues.opennms.org/browse/NMS-14946[NMS-14946])
