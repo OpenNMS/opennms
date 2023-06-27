@@ -14,6 +14,10 @@
 Horizon 32 adds support for running on JDK 17, while retaining support for JDK 11.
 We are not (yet) taking advantage of JDK 17 specific features, but the new JDK provides a bunch of performance improvements under the covers that benefit any application running on it.
 
+=== Kafka version 3.x
+
+Documentation has been updated to indicate that Kafka version 3 is supported for the message broker.
+
 === Newts: DataStax driver for Cassandra upgrade
 
 The DataStax driver for Cassandra was updated from version 3.x to 4.x.
