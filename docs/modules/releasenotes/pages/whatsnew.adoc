@@ -93,6 +93,10 @@ Existing installs respect the setting in effect before upgrading.
 
 For more details, see the xref:deployment:core/getting-started.adoc#usage-statistics[admin guide].
 
+=== Additional self-monitoring
+
+Additional JDBC collections for tracking database performance have been added to the built-in monitoring of the localhost node.
+
 == Breaking changes
 
 === Newts: DataStax driver for Cassandra upgrade
