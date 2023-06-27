@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service.operations;
 
 import static org.awaitility.Awaitility.await;
 
+import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +41,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.service.HostnameResolver;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
@@ -50,15 +52,20 @@ public class SaveOrUpdateOperationTest {
         final ProvisionService provisionService = Mockito.mock(ProvisionService.class);
         final LocationAwareSnmpClient locationAwareSnmpClient = Mockito.mock(LocationAwareSnmpClient.class);
         Mockito.when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
-        Mockito.when(provisionService.getHostnameResolver()).thenReturn((addr, location) -> {
-            while (blocked) {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        Mockito.when(provisionService.getHostnameResolver()).thenReturn(new HostnameResolver() {
+            @Override
+            public CompletableFuture<String> getHostnameAsync(InetAddress addr, String location) {
+                return CompletableFuture.supplyAsync(() -> {
+                    while (blocked) {
+                        try {
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return location + "-" + InetAddressUtils.str(addr);
+                });
             }
-            return location + "-" + InetAddressUtils.str(addr);
         });
 
         return provisionService;

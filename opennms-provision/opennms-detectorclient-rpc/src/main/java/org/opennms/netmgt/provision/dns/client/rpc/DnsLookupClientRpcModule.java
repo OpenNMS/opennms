@@ -38,14 +38,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Address;
 
+import io.github.resilience4j.bulkhead.ThreadPoolBulkhead;
+import io.github.resilience4j.bulkhead.ThreadPoolBulkheadConfig;
+
 public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequestDTO, DnsLookupResponseDTO> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DnsLookupClientRpcModule.class);
 
     public static final String RPC_MODULE_ID = "DNS";
 
-    public DnsLookupClientRpcModule() {
+    private final ThreadPoolBulkhead threadPoolBulkhead;
+
+    public DnsLookupClientRpcModule(final int maxThreadPoolSize, final int queueCapacity) {
         super(DnsLookupRequestDTO.class, DnsLookupResponseDTO.class);
+
+        final ThreadPoolBulkheadConfig threadPoolBulkheadConfig = ThreadPoolBulkheadConfig.custom()
+                .queueCapacity(queueCapacity)
+                .maxThreadPoolSize(maxThreadPoolSize)
+                .build();
+
+        this.threadPoolBulkhead = ThreadPoolBulkhead.of("dns-lookup-rpc-module", threadPoolBulkheadConfig);
+
+        LOG.debug("Configuring ThreadPoolBulkhead: maxThreadPoolSize={}, queueSize={}", maxThreadPoolSize, queueCapacity);
     }
 
     @Override
@@ -60,36 +74,31 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        final CompletableFuture<DnsLookupResponseDTO> future = new CompletableFuture<>();
-        try {
-            final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
-            final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
-            final QueryType queryType = request.getQueryType();
-            if (queryType.equals(QueryType.LOOKUP)) {
-                dto.setHostResponse(addr.getHostAddress());
-            } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
-                // Attempt to retrieve the fully qualified domain name for this IP address
-                String hostName = addr.getCanonicalHostName();
-                if (InetAddressUtils.str(addr).equals(hostName)) {
-                    // The given host name matches the textual representation of
-                    // the IP address, which means that the reverse lookup failed
-                    // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
-                    // to have a corresponding A record in order to succeed, so we
-                    // try using dnsjava's implementation to work around this
-                    try {
-                        hostName = Address.getHostName(addr);
-                    } catch (UnknownHostException e) {
-                        LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
-                                + "Using the textual representation of the IP address.", addr);
+        return this.threadPoolBulkhead.submit(() -> {
+                final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
+                final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
+                final QueryType queryType = request.getQueryType();
+                if (queryType.equals(QueryType.LOOKUP)) {
+                    dto.setHostResponse(addr.getHostAddress());
+                } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
+                    // Attempt to retrieve the fully qualified domain name for this IP address
+                    String hostName = addr.getCanonicalHostName();
+                    if (InetAddressUtils.str(addr).equals(hostName)) {
+                        // The given host name matches the textual representation of
+                        // the IP address, which means that the reverse lookup failed
+                        // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
+                        // to have a corresponding A record in order to succeed, so we
+                        // try using dnsjava's implementation to work around this
+                        try {
+                            hostName = Address.getHostName(addr);
+                        } catch (UnknownHostException e) {
+                            LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
+                                    + "Using the textual representation of the IP address.", addr);
+                        }
                     }
+                    dto.setHostResponse(hostName);
                 }
-                dto.setHostResponse(hostName);
-            }
-            future.complete(dto);
-        } catch (Exception e) {
-            future.completeExceptionally(e);
-        }
-        return future;
+                return dto;
+        }).toCompletableFuture();
     }
-
 }

@@ -124,7 +124,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.addIpInterface(m_currentInterface);
 
         if (System.getProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "true").equalsIgnoreCase("true")) {
-            dnsLookups.add(CompletableFuture.supplyAsync(() -> getProvisionService().getHostnameResolver().getHostname(addr, m_node.getLocation().getLocationName())).thenAccept(s -> m_node.getInterfaceWithAddress(addr).setIpHostName(s)));
+            dnsLookups.add(getProvisionService().getHostnameResolver().getHostnameAsync(addr, m_node.getLocation().getLocationName()).thenAccept(s -> m_node.getInterfaceWithAddress(addr).setIpHostName(s)));
         }
     }
 	

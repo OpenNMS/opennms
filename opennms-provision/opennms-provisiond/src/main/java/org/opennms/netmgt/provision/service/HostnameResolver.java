@@ -29,7 +29,26 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface HostnameResolver {
-    public String getHostname(final InetAddress addr, final String location);
+    Logger LOG = LoggerFactory.getLogger(HostnameResolver.class);
+
+    default String getHostname(final InetAddress addr, final String location) {
+        try {
+            final String result = getHostnameAsync(addr, location).get();
+            LOG.debug("Reverse lookup returned {} for {} at location {}", result, addr, location);
+            return result;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.warn("Reverse lookup failed for {} at location {}. Using IP address as hostname.", addr, location);
+            return InetAddressUtils.str(addr);
+        }
+    }
+
+    CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location);
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import static org.awaitility.Awaitility.await;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,15 +58,20 @@ public class RequisitionAccountantTest {
         final ProvisionService provisionService = Mockito.mock(ProvisionService.class);
         final LocationAwareSnmpClient locationAwareSnmpClient = Mockito.mock(LocationAwareSnmpClient.class);
         Mockito.when(provisionService.getLocationAwareSnmpClient()).thenReturn(locationAwareSnmpClient);
-        Mockito.when(provisionService.getHostnameResolver()).thenReturn((addr, location) -> {
-            while (blocked) {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+        Mockito.when(provisionService.getHostnameResolver()).thenReturn(new HostnameResolver() {
+            @Override
+            public CompletableFuture<String> getHostnameAsync(InetAddress addr, String location) {
+                return CompletableFuture.supplyAsync(()-> {
+                    while (blocked) {
+                        try {
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return location + InetAddressUtils.str(addr);
+                });
             }
-            return location + InetAddressUtils.str(addr);
         });
 
         final ImportOperationsManager importOperationsManager = Mockito.mock(ImportOperationsManager.class);
