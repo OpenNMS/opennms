@@ -88,3 +88,29 @@ For a large number of devices, you may want to set the `scan-interval` to `0` to
 NOTE: Even if `scan-interval` is set to `0`, new nodes added to a requisition are scanned during import.
 You can also disable this scan by setting `scan-interval` to `-1`.
 
+=== Tuning DNS reverse lookups
+
+During the provisioning process hostnames are determined for each interface IP address by a DNS reverse lookups.
+A thread pool is used to allow concurrent DNS lookups.
+This thread pool can be configured by the following properties:
+
+.Thread pool configuration parameters for DNS lookups
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default value
+
+| org.opennms.netmgt.provision.dns.client.rpc.maxThreadPoolSize
+| Maximum thread pool size.
+|
+64
+| org.opennms.netmgt.provision.dns.client.rpc.queueCapacity
+| Maximum queue size for pending DNS lookups.
+|
+4096
+|===
+
+NOTE: DNS reverse lookups can be disabled completely by setting the property `org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames` to `false`.
+

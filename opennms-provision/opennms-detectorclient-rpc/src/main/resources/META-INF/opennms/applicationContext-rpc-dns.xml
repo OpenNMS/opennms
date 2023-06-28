@@ -12,8 +12,8 @@
 	<context:annotation-config />
 
     <bean id="dnsLookupClientRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" >
-        <constructor-arg value="64"/>   <!-- maxThreadPoolSize -->
-        <constructor-arg value="1024"/> <!-- queueCapacity -->
+        <constructor-arg value="${org.opennms.netmgt.provision.dns.client.rpc.maxThreadPoolSize:4096}"/>
+        <constructor-arg value="${org.opennms.netmgt.provision.dns.client.rpc.queueCapacity:64}"/>
     </bean>
     
     <bean id="locationAwareDnsClient" class="org.opennms.netmgt.provision.dns.client.rpc.LocationAwareDnsLookupClientRpcImpl" />
