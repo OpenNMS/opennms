@@ -113,6 +113,13 @@
     <repository>
       <id>jaspersoft-third-party</id>
       <url>https://maven.opennms.org/repository/thirdparty/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>

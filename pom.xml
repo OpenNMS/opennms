@@ -1574,6 +1574,7 @@
     <!-- whether to enable snapshot dependencies when building -->
     <enable.snapshots>false</enable.snapshots>
 
+    <updatePolicy>interval:480</updatePolicy> <!-- 8 hours, only used for snapshot repos -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
@@ -1856,12 +1857,13 @@
         </plugins>
       </build>
       <repositories>
-        <!-- Disable snapshots for our own artifacts for release bulds -->
+        <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
           <id>opennms-ossrh</id>
           <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
-            <enabled>false</enabled>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
           </releases>
           <snapshots>
             <enabled>false</enabled>
@@ -1957,8 +1959,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1970,6 +1977,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1980,6 +1988,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -1991,8 +2000,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
         <pluginRepository>
@@ -2004,6 +2018,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>

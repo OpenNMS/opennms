@@ -59,6 +59,7 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
     </repository>
   </repositories>
