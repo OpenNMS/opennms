@@ -39,10 +39,18 @@ public class StringIntervalPropertyEditor extends PropertyEditorSupport implemen
     /** {@inheritDoc} */
     @Override
     public void setAsText(final String text) throws IllegalArgumentException {
-        if ("0".equals(text)) {
-            setValue(Duration.ZERO);
+        if (text == null) {
+            setValue(null);
         } else {
-            setValue(StringIntervalAdapter.DEFAULT_PERIOD_FORMATTER.parsePeriod(text).toStandardDuration());
+            if ("0".equals(text.trim())) {
+                setValue(Duration.ZERO);
+            } else {
+                if ("-1".equals(text.trim())) {
+                    setValue(Duration.ZERO.minus(1000));
+                } else {
+                    setValue(StringIntervalAdapter.DEFAULT_PERIOD_FORMATTER.parsePeriod(text.trim()).toStandardDuration());
+                }
+            }
         }
     }
 
