@@ -1,4 +1,10 @@
-<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller" threads="30" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" pathOutageEnabled="false">
+<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller"
+      threads="30"
+      asyncPollingEngineEnabled="true"
+      maxConcurrentAsyncPolls="200"
+      nextOutageId="SELECT nextval('outageNxtId')"
+      serviceUnresponsiveEnabled="false"
+      pathOutageEnabled="false">
    <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
       <critical-service name="ICMP"/>
    </node-outage>
