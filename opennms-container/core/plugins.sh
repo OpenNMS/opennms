@@ -19,7 +19,7 @@ mkdir ~/test
 cd ~/test || exit
 artifact_urls=$(cloudsmith list packages --query="opennms-alec-plugin version:$ALEC_VERSION format:rpm" opennms/common -F json  | jq -r '.data[].cdn_url')
 for url in $artifact_urls; do 
- curl -L -O "$url"
+ curl -sSF -L -O "$url"
 done
 rpm2cpio *-alec-plugin*.rpm | cpio -id
 find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
