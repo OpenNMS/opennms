@@ -31,7 +31,7 @@ cd ~/test || exit
 
 artifact_urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:rpm" opennms/common -F json  | jq -r '.data[].cdn_url')
 for url in $artifact_urls; do
-    curl -L -O "$url"
+    curl -sSF -L -O "$url"
 done
 rpm2cpio *-plugin-cloud*.rpm | cpio -id
 find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
@@ -42,25 +42,25 @@ rm -r test
 cd $DEPLOY_FOLDER || exit 
 if [ $CORTEX_VERSION == "latest" ]
 then
- artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+ artifact_urls=$(curl -sSF https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
 else
- artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
+ artifact_urls=$(curl -sSF https://api.github.com/repos/OpenNMS/opennms-cortex-tss-plugin/releases | jq -r '.[] | select(.tag_name=="$CORTEX_VERSION") | .assets[0].browser_download_url')
 fi
 if [ -n "$artifact_urls" ]; then
  for url in $artifact_urls; do
-    curl -L -O "$url"
+    curl -sSF -L -O "$url"
  done
 fi
 
 cd $DEPLOY_FOLDER || exit 
 if [ $VELOCLOUD_VERSION == "latest" ]
 then
- artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
+ artifact_urls=$(curl -sSF https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[0].assets[0].browser_download_url')
 else
- artifact_urls=$(curl --silent https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
+ artifact_urls=$(curl -sSF https://api.github.com/repos/OpenNMS/opennms-velocloud-plugin/releases | jq -r '.[] | select(.tag_name=="$VELOCLOUD_VERSION") | .assets[0].browser_download_url')
 fi
 if [ -n "$artifact_urls"  ]; then
  for url in $artifact_urls; do
-    curl -L -O "$url"
+    curl -sSF -L -O "$url"
  done
 fi
