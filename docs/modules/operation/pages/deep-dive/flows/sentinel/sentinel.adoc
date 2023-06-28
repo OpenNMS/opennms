@@ -2,11 +2,11 @@
 [[flows-scaling]]
 = Scale Flow Processing with Sentinel
 
-When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add Sentinel(s) to do the processing instead.
+When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add one or more Sentinels to do the processing instead.
 Sentinel can do the following:
 
-* Persist network flow messages with Sentinel to Elasticsearch
 * Consume flow messages from Minions through a message broker (ActiveMQ or Apache Kafka)
+* Persist network flow messages to Elasticsearch
 * Generate and send events to the {page-component-title} core instance via message broker
 
 .Flow integration with Sentinel
@@ -18,12 +18,14 @@ Make sure you have the following:
 
 * xref:operation:deep-dive/flows/basic.adoc#flows-basic[Basic flows environment] set up
 * xref:deployment:sentinel/runtime/install.adoc#install-sentinel[Sentinel installed] on your system
-* PostgreSQL, Elasticsearch, and REST endpoint to {page-component-title} core instance running and reachable from the Sentinel node
-* Message broker (ActiveMQ or Apache Kafka) running and reachable from the Sentinel node
-* Credentials for authentication configured for the REST endpoint in the {page-component-title} core instance, message broker, Elasticsearch, and the PostgreSQL database
+* PostgreSQL, Elasticsearch, and REST endpoint to {page-component-title} core instance running and reachable from the Sentinel node(s)
+* Message broker (ActiveMQ or Apache Kafka) running and reachable from the Sentinel node(s)
+* Credentials for authentication configured for the message broker, Elasticsearch, and the PostgreSQL database
 
-NOTE: You must set configuration in the `etc` directory relative to the {page-component-title} Sentinel home directory.
-      Depending on your operating system, the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+NOTE: You must set configuration in the `etc` directory relative to the {page-component-title} Sentinel home directory `$\{SENTINEL_HOME}`.
+Depending on your operating system, the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+
+Repeat the following steps on each Sentinel node.
 
 == Configure access to PostgreSQL database
 
@@ -68,13 +70,16 @@ config:property-set connTimeout 30000<4>
 config:property-set readTimeout 60000<5>
 config:update
 ----
-
-<1> Add the URL to the Elasticsearch cluster.
-<2> Select an index strategy.
+<1> Replace with a URL to the Elasticsearch cluster.
+<2> Specify an index strategy.
 <3> Set number of replicas; 0 is a default.
 In production you should have at least 1.
 <4> Timeout, in milliseconds, Sentinel waits to connect to the Elasticsearch cluster.
 <5> Read timeout when data is fetched from the Elasticsearch cluster.
+
+Additional configuration properties are documented in <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>>.
+Be sure to also set the `indexPrefix` property when using a single Elasticsearch cluster with multiple {page-component-title} instances.
+If you set the `indexPrefix` property, all Sentinel instances on the same {page-component-title} instance should use the same value.
 
 == Set up message broker
 
