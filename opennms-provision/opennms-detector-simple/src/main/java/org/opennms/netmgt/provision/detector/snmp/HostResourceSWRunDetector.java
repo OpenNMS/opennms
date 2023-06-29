@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,21 +105,21 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         //
         configureAgentPTR(agentConfig);
 
-        LOG.debug("capsd: service= SNMP address={}", agentConfig);
+        LOG.debug("provisiond: service= SNMP address={}", agentConfig);
 
         // Establish SNMP session with interface
         //
         final String hostAddress = InetAddressUtils.str(agentConfig.getAddress());
 		try {
-            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
+            LOG.debug("HostResourceSWRunDetector.detect: SnmpAgentConfig address: {}", agentConfig);
 
             if (serviceName == null) {
-                LOG.warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
+                LOG.warn("HostResourceSWRunDetector.detect: No Service Name Defined! ");
                 return status;
             }
 
             // This returns two maps: one of instance and service name, and one of instance and status.
-            Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(getServiceNameOid()));
+            Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSWRunDetector", SnmpObjId.get(getServiceNameOid()));
 
             // Iterate over the list of running services
             for(Entry<SnmpInstId, SnmpValue> entry  : nameResults.entrySet()) {
@@ -126,16 +127,18 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, StringUtils.stripExtraQuotes(value.toString())) && !status) {
-                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={} service name={} value={}", hostAddress, serviceName, value);
+                    LOG.debug("HostResourceSWRunDetector succeeded, addr={} service name={} value={}", hostAddress, serviceName, value);
                     status = true;
                     break;
                 }
             }
 
-        } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number {}", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
+        } catch (NumberFormatException nfe) {
+            LOG.warn("Number operator used on a non-number {}", nfe.getMessage());
+        } catch (IllegalArgumentException iae) {
+            LOG.warn("Invalid SNMP Criteria: {}", iae.getMessage());
+        } catch (IOException ioe) {
+            LOG.warn("I/O exception occured with error message: {}, addr={}, service name={}", ioe.getMessage(), hostAddress, serviceName);
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface {}", hostAddress, t);
         }
