@@ -8,7 +8,6 @@ export OPTS_ASSEMBLIES="-Passemblies"
 export OPTS_PROFILES="-Prun-expensive-tasks"
 
 OPTS_ENABLE_SNAPSHOTS=""
-OPTS_UPDATE_POLICY="-DupdatePolicy=never"
 OPTS_PRODUCTION=""
 
 TOPDIR="$(pwd)"
@@ -34,7 +33,6 @@ do
 			;;
 		s)
 			OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-			OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 			;;
 		c)
 			SKIP_COMPILE=1
@@ -54,7 +52,15 @@ esac
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
 echo "=== Building root POM ==="
-"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PRODUCTION --projects org.opennms:opennms install --builder smart --threads ${CCI_MAXCPU:-2}
+"${TOPDIR}/compile.pl" \
+	$OPTS_SKIP_TESTS \
+	$OPTS_SKIP_TARBALL \
+	$OPTS_ENABLE_SNAPSHOTS \
+	$OPTS_PRODUCTION \
+	--projects org.opennms:opennms \
+	--builder smart \
+	--threads ${CCI_MAXCPU:-2} \
+	install
 
 COMPILE="./compile.pl"
 
@@ -69,12 +75,21 @@ else
 fi
 
 echo ""
-"${COMPILE}" $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_PRODUCTION $OPTS_ASSEMBLIES \
+"${COMPILE}" \
+	$OPTS_MAVEN \
+	$OPTS_SKIP_TESTS \
+	$OPTS_SKIP_TARBALL \
+	$OPTS_ENABLE_SNAPSHOTS \
+	$OPTS_PROFILES \
+	$OPTS_PRODUCTION \
+	$OPTS_ASSEMBLIES \
 	-DvaadinJavaMaxMemory=${CCI_VAADINJAVAMAXMEM:-1g} \
 	-DmaxCpus=${CCI_MAXCPU:-2} \
 	--projects "org.opennms.assemblies:org.opennms.assemblies.minion" \
 	--also-make \
-	install --builder smart --threads ${CCI_MAXCPU:-2}
+	--builder smart \
+	--threads ${CCI_MAXCPU:-2} \
+	install
 
 echo "=== Finished ==="
 echo "Your tarball is in:" opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz

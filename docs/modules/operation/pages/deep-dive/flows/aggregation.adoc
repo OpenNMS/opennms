@@ -5,7 +5,7 @@ The flow query engine supports rendering the top _N_ metrics from pre-aggregated
 You can use these statistics to help alleviate computation load on the Elasticsearch cluster, particularly in environments with large volumes of flows (more than 10,000 per second).
 To use this functionality, you must <<deep-dive/flows/basic.adoc#kafka-forwarder-config, enable the Kafka forwarder>> and set up the streaming analytics tool to process flows and persist aggregates in Elasticsearch.
 
-Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
+Set the following properties in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
 [options="autowidth"]
 |===

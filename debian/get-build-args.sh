@@ -9,9 +9,9 @@ if [ -f "$OPENNMS_SETTINGS_XML" ]; then
 fi
 
 if [ -z "$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then
-  ARGS+=(-Denable.snapshots=true -DupdatePolicy=always)
+  ARGS+=(-Denable.snapshots=true)
 else
-  ARGS+=(-Denable.snapshots=false -DupdatePolicy=never)
+  ARGS+=(-Denable.snapshots=false)
 fi
 
 case "${CIRCLE_BRANCH}" in
