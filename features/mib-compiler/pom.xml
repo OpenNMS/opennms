@@ -16,7 +16,7 @@
     <bundle.symbolicName>org.opennms.features.mib-compiler</bundle.symbolicName>
     <bundle.namespace>org.opennms.features</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jsmiparser.version>0.13</jsmiparser.version>
+    <jsmiparser.version>0.14</jsmiparser.version>
   </properties>
 
   <build>
