@@ -1502,7 +1502,7 @@
     <!-- other plugin versions -->
     <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
@@ -1596,7 +1596,7 @@
     <cassandraVersion>4.15.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.15</commonsCodecVersion>
+    <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
