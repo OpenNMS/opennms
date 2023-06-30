@@ -85,6 +85,23 @@ To do so, add a service parameter to the appropriate services in `poller-configu
 </service>
 ----
 
+The value stored is an enum value based on the status of the polled service.
+If the poller service is not able to run, such as due to an error in the monitor config, the stored value will be `NaN`.
+
+[options="autowidth"]
+|===
+| Monitor Response | Stored Value
+
+| Available
+| 1
+
+| Unavailable
+| 0
+
+| Unresponsive
+| -1
+|===
+
 == Overlapping services
 
 Because you can specify multiple polling packages, you can use the same service (like ICMP) multiple times.
