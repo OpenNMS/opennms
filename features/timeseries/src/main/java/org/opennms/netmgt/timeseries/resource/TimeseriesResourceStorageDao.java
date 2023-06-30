@@ -256,7 +256,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         final String childEls[] = child.elements();
         final String parentEls[] = parent.elements();
 
-        if (childEls.length <= parentEls.length) {
+        if (childEls == null || parentEls == null || childEls.length <= parentEls.length) {
             return null;
         }
 
