@@ -1,6 +1,7 @@
 
 [[install-minion]]
 = Install Minion
+:description: How to install OpenNMS Minion on CentOS/RHEL 7-9, Debian/Ubuntu, Docker, and configure with message brokers: Kafka, ActiveMQ, Embedded ActiveMQ, gRPC.
 
 [[objectives]]
 == Objectives
