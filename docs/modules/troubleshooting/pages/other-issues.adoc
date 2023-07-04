@@ -97,15 +97,15 @@ To do so, enable deadlock detection with the following:
 # echo 'org.opennms.core.db.deadlock.detection=true' >> /opt/opennms/etc/opennms.properties.d/db.properties
 ----
 
-And restart {page-component-title} for the changes to become effective.
+Restart {page-component-title} for the changes to become effective.
 
-Once enabled, you should see the following appear in the logs:
+Once enabled, you should see the following in the logs:
 [source, shell]
 ----
 2023-07-03 21:38:49,874 ERROR [Main] o.o.c.d.HikariCPConnectionFactory: Deadlock detection is enabled.
 ----
 
-Possible deadlocks will be logged with a message similar to:
+Possible deadlocks will be logged with a message similar to the following:
 [source, shell]
 ---
 2023-07-03 21:39:52,357 ERROR [Main] o.o.c.d.HikariCPConnectionFactory: Possible database deadlock detected: Attempting to acquire connection in thread while existing transaction active.
@@ -123,5 +123,5 @@ java.lang.Exception: Possible deadlock
         at org.opennms.netmgt.dao.hibernate.DefaultSessionUtils.withManualFlush(DefaultSessionUtils.java:81) ~[opennms-dao-31.0.3-SNAPSHOT.jar:?]
 ---
 
-These messages and stack traces should be inspected further to see if there are any potential problems.
+Inspect these messages and stack traces further to see if there are any potential problems.
 Some of the messages may be false positives.
