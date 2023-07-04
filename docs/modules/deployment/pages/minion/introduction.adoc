@@ -1,6 +1,6 @@
 
 = Minion
-:description: Learn about the OpenNMS Minion: benefits, how it works, with architecture diagram with three Minions.
+:description: Learn about the OpenNMS Minion: benefits, how it works. Includes architecture diagram with three Minions.
 
 A Minion is an instance of the Karaf OSGi runtime that enables {page-component-title} to monitor devices and services in locations that it otherwise cannot reach.
 Minions communicate with these remote devices while {page-component-title} performs coordination and task delegation.

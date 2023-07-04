@@ -1,6 +1,7 @@
 
 [[upgrade-basic]]
 = Basic Upgrade Steps
+:description: Basic steps to upgrade OpenNMS Horizon or Meridian, including PostgreSQL upgrade and configuration.
 
 This procedure describes how to do a basic {page-component-title} upgrade.
 You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one {page-component-title} instance, have more complex database migration requirements, or depending on the age of current version).

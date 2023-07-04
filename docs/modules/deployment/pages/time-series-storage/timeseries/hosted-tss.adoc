@@ -1,6 +1,7 @@
 
 ifeval::["{page-component-title}" == "Meridian"]
 = OpenNMS Time Series DB
+:description: How to deploy the OpenNMS Time Series DB for a scalable time series database to store and persist performance metrics Meridian collects.
 
 The OpenNMS Time Series DB is a cloud-hosted service that provides a scalable time series database to store and persist performance metrics that {page-component-title} collects from monitored devices.
 

@@ -1,5 +1,6 @@
 
 = Enable Time Series Integration Layer
+:description: How to configure OpenNMS Horizon or Meridian to use the time series integration layer to support other time series databases.
 
 Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 

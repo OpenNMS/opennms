@@ -1,5 +1,6 @@
 [[git-diff]]
 = Manage Configuration Changes with Git
+:description: How to use Git to manage OpenNMS configuration file changes to assist with Horizon or Meridian upgrades.
 
 This content was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
 

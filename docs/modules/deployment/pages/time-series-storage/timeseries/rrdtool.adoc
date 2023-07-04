@@ -1,9 +1,10 @@
 = RRDtool
+:description: Install and configure RRDtool for OpenNMS on RHEL, Centos, and Debian.
 
 Many open source applications use link:http://oss.oetiker.ch/rrdtool[RRDtool], which is the de-facto open standard for time series data.
 This section describes how to install RRDtool and how to configure your {page-component-title} Core instance to use it.
 
-WARNING: This guide does not cover data migration from JRobin to RRDTool.
+WARNING: This guide does not cover data migration from JRobin to RRDtool.
 
 Configurations must in the `etc` directory relative to the {page-component-title} Core home directory.
 Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
@@ -37,12 +38,12 @@ rrd.binary=/usr/bin/rrdtool<5>
 
 <1> Set JNI RRD strategy class instead of JRobin.
 <2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDTool.
-<4> This is optional; use RRDTool to render graphs.
+<3> Use the JRRD library to interface with RRDtool.
+<4> This is optional; use RRDtool to render graphs.
 If unset, keep Backshift as default.
-<5> Path to the RRDTool binary file.
+<5> Path to the RRDtool binary file.
 
-TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
      `response-adhoc-graph.properties`, +
      `response-graph.properties`, +
      `snmp-adhoc-graph.properties`, +
@@ -60,7 +61,7 @@ sudo systemctl restart opennms
 find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
-NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+NOTE: The first data collection creates RRDtool files with extension `.rrd`.
       JRobin files with extension `.jrb` are not updated.
       JRobin files are not deleted automatically.
       You must delete them manually.
@@ -93,12 +94,12 @@ rrd.binary=/usr/bin/rrdtool<5>
 
 <1> Set JNI RRD strategy class instead of JRobin.
 <2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDTool.
-<4> This is optional; use RRDTool to render graphs.
+<3> Use the JRRD library to interface with RRDtool.
+<4> This is optional; use RRDtool to render graphs.
 If unset, keep Backshift as default.
-<5> Path to the RRDTool binary file.
+<5> Path to the RRDtool binary file.
 
-TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
      `response-adhoc-graph.properties`, +
      `response-graph.properties`, +
      `snmp-adhoc-graph.properties`, +
@@ -116,7 +117,7 @@ sudo systemctl restart opennms
 find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
-NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+NOTE: The first data collection creates RRDtool files with extension `.rrd`.
       JRobin files with extension `.jrb` are not updated.
       JRobin files are not deleted automatically.
       You must delete them manually.
@@ -148,12 +149,12 @@ rrd.binary=/usr/bin/rrdtool<5>
 
 <1> Set JNI RRD strategy class instead of JRobin.
 <2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDTool.
-<4> This is optional; use RRDTool to render graphs.
+<3> Use the JRRD library to interface with RRDtool.
+<4> This is optional; use RRDtool to render graphs.
 If unset, keep Backshift as default
-<5> Path to the RRDTool binary file.
+<5> Path to the RRDtool binary file.
 
-TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
+TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
      `response-adhoc-graph.properties`, +
      `response-graph.properties`, +
      `snmp-adhoc-graph.properties`, +
@@ -171,7 +172,7 @@ sudo systemctl restart opennms
 find /usr/share/opennms/share/rrd -iname "*.rrd"
 ----
 
-NOTE: The first data collection creates RRDTool files with extension `.rrd`.
+NOTE: The first data collection creates RRDtool files with extension `.rrd`.
       JRobin files with extension `.jrb` are not updated.
       JRobin files are not deleted automatically.
       You must delete them manually.

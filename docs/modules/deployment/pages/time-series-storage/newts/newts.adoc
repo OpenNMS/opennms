@@ -1,6 +1,7 @@
 
 [[newts-configure]]
 = Configure {page-component-title} to Use Newts
+:description: How to set up OpenNMS Newts, a time-series data store based on Apache Cassandra, for horizontal scaling.
 
 This section describes how to configure your {page-component-title} instance to use Newts.
 
