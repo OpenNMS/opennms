@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 import org.slf4j.Logger;
@@ -44,6 +45,8 @@ import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * A factory for creating HikariCPConnection objects.
@@ -54,6 +57,8 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
 
     /** The Constant LOG. */
     public static final Logger LOG = LoggerFactory.getLogger(HikariCPConnectionFactory.class);
+
+    private static final boolean DEADLOCK_DETECTION_ENABLED = Boolean.getBoolean("org.opennms.core.db.deadlock.detection");
 
     /** The data source. */
     private HikariDataSource m_pool;
@@ -67,6 +72,9 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     public HikariCPConnectionFactory(final JdbcDataSource dataSource) throws PropertyVetoException, SQLException {
         super(dataSource);
+        if (DEADLOCK_DETECTION_ENABLED) {
+            LOG.error("Deadlock detection is enabled.");
+        }
     }
 
     /* (non-Javadoc)
@@ -97,6 +105,11 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     @Override
     public Connection getConnection() throws SQLException {
+        if (DEADLOCK_DETECTION_ENABLED && TransactionSynchronizationManager.isSynchronizationActive()) {
+            LOG.error("Possible database deadlock detected: " +
+                    "Attempting to acquire connection in thread while existing transaction active.",
+                    new Exception("Possible deadlock"));
+        }
         return m_pool.getConnection();
     }
 
