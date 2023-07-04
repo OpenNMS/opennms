@@ -148,14 +148,16 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
 
         String nodeCriteria = null;
         if (resource.getParent() != null) {
-            String[] resourcePathArray = resource.getParent().elements();
-            if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
-                    && resourcePathArray.length == 3) {
-                // parent denotes nodeCriteria, form fs:fid
-                nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
-            } else if (checkNumeric(resourcePathArray[0])) {
-                // parent denotes nodeId
-                nodeCriteria = resourcePathArray[0];
+            final String[] resourcePathArray = resource.getParent().elements();
+            if (resourcePathArray != null) {
+                if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
+                        && resourcePathArray.length == 3) {
+                    // parent denotes nodeCriteria, form fs:fid
+                    nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
+                } else if (checkNumeric(resourcePathArray[0])) {
+                    // parent denotes nodeId
+                    nodeCriteria = resourcePathArray[0];
+                }
             }
         }
         return nodeCriteria;
