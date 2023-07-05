@@ -1,6 +1,7 @@
 
 [[install-minion]]
 = Install Minion
+:description: How to install OpenNMS Minion on CentOS/RHEL 7-9, Debian/Ubuntu, Docker, and configure with message brokers: Kafka, ActiveMQ, Embedded ActiveMQ, gRPC.
 
 [[objectives]]
 == Objectives
@@ -101,9 +102,9 @@ If you have a firewall running on your host, allow `8201/tcp` to grant access to
 
 == Configure connectivity to the core instance
 
-Set configuration settings in the {page-component-title} `etc` directory.
-We reference `etc` relative to the OpenNMS {page-component-title} core home directory.
-Depending on your operating system, the home directory is `/usr/share/opennms` for Debian and Ubuntu or `/opt/opennms` for CentOS and RHEL.
+Set configuration settings in the Minion `etc` directory.
+We reference `etc` relative to the OpenNMS Minion home directory.
+Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu or `/opt/minion` for CentOS and RHEL.
 
 [{tabs}]
 ====

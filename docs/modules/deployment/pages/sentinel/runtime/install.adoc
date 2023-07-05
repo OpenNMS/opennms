@@ -1,5 +1,6 @@
 [[install-sentinel]]
-= Installing Sentinel Runtime
+= Install Sentinel Runtime
+:description: Set up OpenNMS Sentinel (for scaling and streaming telemetry) on RHEL, CentOS, Debian, and Ubuntu.
 
 [[objectives]]
 == Objectives

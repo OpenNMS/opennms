@@ -1,6 +1,7 @@
 
 [[newts-monitor]]
 = Newts Monitoring
+:description: Metrics OpenNMS collects to monitor Newts on a Cassandra node: memtables data, latency, pending operations, disk space usage, and more.
 
 This section describes the metrics that {page-component-title} collects to monitor the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on a Cassandra node.
 

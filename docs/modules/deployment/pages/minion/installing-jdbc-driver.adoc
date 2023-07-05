@@ -1,6 +1,7 @@
 
 [[install-jdbc-driver]]
 = Install JDBC Driver on Minion
+:description: How to install JDBC driver on an OpenNMS Minion with MySQL and Karaf.
 
 To detect, poll, or collect any JDBC service, you must install the corresponding JDBC driver.
 

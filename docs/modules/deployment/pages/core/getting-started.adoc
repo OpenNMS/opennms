@@ -1,6 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
+:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 7-9, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance.
 It describes how to do the following tasks:

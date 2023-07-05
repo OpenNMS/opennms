@@ -1,5 +1,6 @@
 [[backup]]
 = Back up OpenNMS {page-component-title}
+:description: How to backup OpenNMS Horizon or Meridian components.
 
 This section describes a basic backup process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations, and the database are backed up during this process.
