@@ -1,6 +1,7 @@
 
 [[ts-integration-layer]]
 = Time Series Integration Layer
+:description: Overview of OpenNMS Horizon or Meridian using the Time Series Integration Layer to support other time series databases (experimental): In Memory, InfluxDB, TimescaleDB, Cortex.
 
 This section describes how to configure {page-component-title} to use the Time Series Integration Layer.
 

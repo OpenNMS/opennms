@@ -1,5 +1,6 @@
 [[git-upgrade]]
 = Upgrade {page-component-title} with Git
+:description: How to use Git to upgrade OpenNMS Horizon or Meridian.
 
 This content was originally written on the OpenNMS Discourse forum (see https://opennms.discourse.group/t/managing-configuration-changes-with-git/2327[Managing Configuration Changes with Git]).
 Follow the directions here to upgrade with Git if you xref:deployment:upgrade/git-diff.adoc#git-diff[use Git to manage configuration changes].

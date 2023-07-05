@@ -1,6 +1,7 @@
 
 [[cassandra-monitor]]
 = Cassandra Monitoring
+:description: Metrics OpenNMS collects from a Cassandra cluster: client connections, thread pools, JVM metrics, dropped messages, and more.
 
 This section describes some of the metrics that {page-component-title} collects from a Cassandra cluster.
 JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} in order to collect these metrics (see https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX Authentication and Authorization] in the Cassandra documentation).
