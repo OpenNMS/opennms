@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,13 +58,13 @@ import org.slf4j.LoggerFactory;
  * <p>AsyncBasicDetectorMinaImpl class.</p>
  *
  * @author Donald Desloge
- * @version $Id: $
  */
+@SuppressWarnings("java:S119")
 public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends AsyncBasicDetector<Request, Response> {
     
     private static final Logger LOG = LoggerFactory.getLogger(AsyncBasicDetectorMinaImpl.class);
     
-    private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
+    private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<>();
     private IoFilterAdapter m_filterLogging = null;
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8));
     
@@ -102,7 +102,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param <Request> a Request object.
      * @param <Response> a Response object.
      */
-    public AsyncBasicDetectorMinaImpl(final String serviceName, final int port) {
+    protected AsyncBasicDetectorMinaImpl(final String serviceName, final int port) {
         super(serviceName, port);
         m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
@@ -115,7 +115,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @param timeout a int.
      * @param retries a int.
      */
-    public AsyncBasicDetectorMinaImpl(final String serviceName, final int port, final int timeout, final int retries){
+    protected AsyncBasicDetectorMinaImpl(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
         m_connectionFactory = ConnectionFactory.getFactory(getTimeout());
     }
@@ -145,41 +145,33 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             // but that was leaking file handles all over the place. This way gives
             // us per-connection settings without the overhead of creating new
             // Connectors each time
-            IoSessionInitializer<ConnectFuture> init = new IoSessionInitializer<ConnectFuture>() {
-
-                @Override
-                public void initializeSession(IoSession session, ConnectFuture future) {
-                    // Add filters to the session
-                    if(isUseSSLFilter()) {
-                        final SslFilter filter = new SslFilter(c);
-                        // as far as I can tell, Mina 2.2 handles this automatically based on the session
-                        // filter.setUseClientMode(true);
-                        session.getFilterChain().addFirst("SSL", filter);
-                    }
-                    session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
-                    session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
-
-                    // Make the minimum idle timeout 1 second
-                    int idleTimeInSeconds = Math.max(1, Math.round(getIdleTime() / 1000.0f));
-                    // Set all of the idle time limits. Make sure to specify values in
-                    // seconds!!!
-                    session.getConfig().setReaderIdleTime(idleTimeInSeconds);
-                    session.getConfig().setWriterIdleTime(idleTimeInSeconds);
-                    session.getConfig().setBothIdleTime(idleTimeInSeconds);
+            IoSessionInitializer<ConnectFuture> init = (session, future) -> {
+                // Add filters to the session
+                if(isUseSSLFilter()) {
+                    final SslFilter filter = new SslFilter(c);
+                    // as far as I can tell, Mina 2.2 handles this automatically based on the session
+                    // filter.setUseClientMode(true);
+                    session.getFilterChain().addFirst("SSL", filter);
                 }
+                session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
+                session.getFilterChain().addLast( "codec", getProtocolCodecFilter());
+
+                // Make the minimum idle timeout 1 second
+                int idleTimeInSeconds = Math.max(1, Math.round(getIdleTime() / 1000.0f));
+                // Set all of the idle time limits. Make sure to specify values in
+                // seconds!!!
+                session.getConfig().setReaderIdleTime(idleTimeInSeconds);
+                session.getConfig().setWriterIdleTime(idleTimeInSeconds);
+                session.getConfig().setBothIdleTime(idleTimeInSeconds);
             };
 
             // Start communication
             final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
             final ConnectFuture cf = m_connectionFactory.connect(socketAddress, init, createDetectorHandler(detectFuture));
             cf.addListener(retryAttemptListener(detectFuture, socketAddress, init, getRetries()));
-        } catch (KeyManagementException e) {
+        } catch (Exception e) {
             detectFuture.setException(e);
-        } catch (NoSuchAlgorithmException e) {
-            detectFuture.setException(e);
-        } catch (Throwable e) {
-            detectFuture.setException(e);
-        }
+        }  
 
         return detectFuture;
     }
@@ -189,6 +181,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @throws NoSuchAlgorithmException 
      * @throws KeyManagementException 
      */
+    @SuppressWarnings("java:S4423") // be permissive as far as what we allow detecting
     private static final SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
         final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -207,26 +200,22 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @return IoFutureListener<ConnectFuture>
      */
     private final IoFutureListener<ConnectFuture> retryAttemptListener(final DetectFutureMinaImpl detectFuture, final InetSocketAddress address, final IoSessionInitializer<ConnectFuture> init, final int retryAttempt) {
-        return new IoFutureListener<ConnectFuture>() {
+        return future -> {
+            final Throwable cause = future.getException();
 
-            @Override
-            public void operationComplete(ConnectFuture future) {
-                final Throwable cause = future.getException();
-
-                if (cause != null) {
-                    if (cause instanceof IOException) {
-                        if (retryAttempt == 0) {
-                            LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
-                            detectFuture.setServiceDetected(false);
-                        } else {
-                            LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
-                            future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
-                            future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
-                        }
-                    } else {
-                        LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
+            if (cause != null) {
+                if (cause instanceof IOException) {
+                    if (retryAttempt == 0) {
+                        LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
                         detectFuture.setServiceDetected(false);
+                    } else {
+                        LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
+                        future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
+                        future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
+                } else {
+                    LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
+                    detectFuture.setServiceDetected(false);
                 }
             }
         };
