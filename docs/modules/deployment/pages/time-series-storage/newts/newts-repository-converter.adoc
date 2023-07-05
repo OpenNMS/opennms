@@ -1,7 +1,8 @@
 
 = RRD/JRB to Newts Migration Utility
+:description: Learn how to migrate existing RRDtool or JRobin-based data to an OpenNMS Newts time series database schema.
 
-Use this utility to migrate existing RRDTool- or JRobin-based data to a Newts cluster.
+Use this utility to migrate existing RRDtool- or JRobin-based data to a Newts cluster.
 The migration process traverses the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories, reads the data and properties files, and persists this data to Newts.
 
 == Migration

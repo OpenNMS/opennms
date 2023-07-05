@@ -1,5 +1,6 @@
 
 = Cortex Time Series Plugin
+:description: Configuration and deployment for the OpenNMS Cortex Time Series plugin via Karaf shel or CFG file.
 
 The Cortex Time Series plugin enables {page-component-title} to persist time series performance and latency data to Cortex.
 The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].

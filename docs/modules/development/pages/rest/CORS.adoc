@@ -9,12 +9,12 @@ This section describes CORS (Cross-Origin Resource Sharing), a standard mechanis
 
 By default, many browsers implement a same origin policy, which prevents making requests to a resource on an origin that's different from the source origin.
 
-For example, a request originating from a page served from http://www.opennms.com to a resource on http://www.adventuresinoss.com would be considered a cross-origin request.
+For example, a request originating from a page served from https://www.opennms.com to a resource on https://www.adventuresinoss.com would be considered a cross-origin request.
 
 For further details, see:
 
 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS[Mozilla's HTTP access control (CORS)]
-* http://www.w3.org/TR/cors/[W3C's CORS Specification]
+* https://www.w3.org/TR/cors/[W3C's CORS Specification]
 
 == How can I enable CORS support?
 
