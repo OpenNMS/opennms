@@ -152,7 +152,8 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                     // Add filters to the session
                     if(isUseSSLFilter()) {
                         final SslFilter filter = new SslFilter(c);
-                        filter.setUseClientMode(true);
+                        // as far as I can tell, Mina 2.2 handles this automatically based on the session
+                        // filter.setUseClientMode(true);
                         session.getFilterChain().addFirst("SSL", filter);
                     }
                     session.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new SlightlyMoreVerboseLoggingFilter() );
