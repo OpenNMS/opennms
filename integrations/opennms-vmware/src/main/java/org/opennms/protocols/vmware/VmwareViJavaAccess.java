@@ -57,8 +57,13 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
+
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
@@ -174,8 +179,9 @@ public class VmwareViJavaAccess implements AutoCloseable {
                 if (vmwareServer == null) {
                     logger.error("Error getting credentials for VMware management server '{}'.", m_hostname);
                 } else {
-                    this.m_username = vmwareServer.getUsername();
-                    this.m_password = vmwareServer.getPassword();
+                    final Scope scvScope = new SecureCredentialsVaultScope(JCEKSSecureCredentialsVault.defaultScv());
+                    this.m_username = Interpolator.interpolate(vmwareServer.getUsername(), scvScope).output;
+                    this.m_password = Interpolator.interpolate(vmwareServer.getPassword(), scvScope).output;
                 }
             }
         }

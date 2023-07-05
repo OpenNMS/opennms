@@ -41,8 +41,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -80,8 +84,9 @@ public abstract class VmwareRequisitionTool {
                 VmwareConfig config = JaxbUtils.unmarshal(VmwareConfig.class, cfg);
                 for (VmwareServer srv : config.getVmwareServerCollection()) {
                     if (srv.getHostname().equals(url.getHost())) {
-                        username = srv.getUsername();
-                        password = srv.getPassword();
+                        final Scope scvScope = new SecureCredentialsVaultScope(JCEKSSecureCredentialsVault.defaultScv());
+                        username = Interpolator.interpolate(srv.getUsername(), scvScope).output;
+                        password = Interpolator.interpolate(srv.getPassword(), scvScope).output;
                     }
                 }
                 if (username == null || password == null) {

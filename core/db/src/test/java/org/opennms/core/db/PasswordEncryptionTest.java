@@ -78,17 +78,17 @@ public class PasswordEncryptionTest {
 
         jdbcDataSource.setUserName("superUsername");
         jdbcDataSource.setPassword("superSecretPassword");
-        Assert.assertEquals("superUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals("superSecretPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("superUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
+        Assert.assertEquals("superSecretPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
 
         jdbcDataSource.setUserName("${scv:scvalias:username}");
         jdbcDataSource.setPassword("${scv:scvalias:password}");
-        Assert.assertEquals(SCV_USERNAME, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals(SCV_PASSWORD, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals(SCV_USERNAME, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
+        Assert.assertEquals(SCV_PASSWORD, jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
 
         jdbcDataSource.setUserName("${scv:unknownalias:username|defaultUsername}");
         jdbcDataSource.setPassword("${scv:unknownalias:password|defaultPassword}");
-        Assert.assertEquals("defaultUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), SCV_FILE, SCV_FILE_PASSWORD));
-        Assert.assertEquals("defaultPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), SCV_FILE, SCV_FILE_PASSWORD));
+        Assert.assertEquals("defaultUsername", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawUserName(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
+        Assert.assertEquals("defaultPassword", jdbcDataSource.interpolateAttribute(jdbcDataSource.getRawPassword(), new JCEKSSecureCredentialsVault(SCV_FILE, SCV_FILE_PASSWORD)));
     }
 }

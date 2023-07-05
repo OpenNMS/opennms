@@ -36,13 +36,14 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
-import org.opennms.netmgt.dao.vmware.VmwareCimDatacollectionConfigDao;
-import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.dao.vmware.VmwareCimDatacollectionConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
@@ -97,7 +98,10 @@ public class VmwareCimCollectorComplianceTest extends CollectorComplianceTest {
         VmwareConfigDao vmwareConfigDao = mock(VmwareConfigDao.class);
         when(vmwareConfigDao.getServerMap()).thenReturn(serverMap);
 
+        JCEKSSecureCredentialsVault jceksSecureCredentialsVault = mock(JCEKSSecureCredentialsVault.class);
+
         return new ImmutableMap.Builder<String, Object>()
+                .put("jceksSecureCredentialsVault", jceksSecureCredentialsVault)
                 .put("nodeDao", nodeDao)
                 .put("vmwareCimDatacollectionConfigDao", vmwareCimDatacollectionConfigDao)
                 .put("vmwareConfigDao", vmwareConfigDao)

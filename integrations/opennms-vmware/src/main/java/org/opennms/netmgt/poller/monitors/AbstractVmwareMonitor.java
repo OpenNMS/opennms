@@ -31,10 +31,14 @@ package org.opennms.netmgt.poller.monitors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -47,6 +51,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
     private final Logger logger = LoggerFactory.getLogger(AbstractVmwareMonitor.class);
+
+    private JCEKSSecureCredentialsVault m_jceksSecureCredentialsVault;
 
     /**
      * the node dao object for retrieving assets
@@ -62,6 +68,10 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
 
     @Override
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        if (m_jceksSecureCredentialsVault == null) {
+            m_jceksSecureCredentialsVault = BeanUtils.getBean("daoContext", "jceksSecureCredentialsVault", JCEKSSecureCredentialsVault.class);
+        }
+
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }
@@ -101,8 +111,9 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
                     if (vmwareServer == null) {
                         logger.error("Error getting credentials for VMware management server '{}'.", vmwareManagementServer);
                     } else {
-                        vmwareMangementServerUsername = vmwareServer.getUsername();
-                        vmwareMangementServerPassword = vmwareServer.getPassword();
+                        final Scope secureCredentialsVaultScope = new SecureCredentialsVaultScope(m_jceksSecureCredentialsVault);
+                        vmwareMangementServerUsername = Interpolator.interpolate(vmwareServer.getUsername(), secureCredentialsVaultScope).output;
+                        vmwareMangementServerPassword = Interpolator.interpolate(vmwareServer.getPassword(), secureCredentialsVaultScope).output;
                     }
                 }
 

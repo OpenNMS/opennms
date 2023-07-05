@@ -39,6 +39,8 @@ public interface EntityScopeProvider {
         String SERVICE = "service";
     }
 
+    Scope getScopeForScv();
+
     Scope getScopeForNode(final Integer nodeId);
 
     Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
