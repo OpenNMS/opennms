@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.KAFKA_COMMON_
 import static org.opennms.core.ipc.common.kafka.KafkaSinkConstants.MESSAGEID_CACHE_CONFIG;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -90,6 +91,7 @@ import io.opentracing.propagation.TextMapAdapter;
 import io.opentracing.util.GlobalTracer;
 
 public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager implements InitializingBean {
+    private static final Duration CONSUMER_POLL_DURATION = Duration.ofMillis(100);
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaMessageConsumerManager.class);
 
@@ -160,7 +162,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             try {
                 consumer.subscribe(Arrays.asList(topic));
                 while (!closed.get()) {
-                    ConsumerRecords<String, byte[]> records = consumer.poll(100);
+                    ConsumerRecords<String, byte[]> records = consumer.poll(CONSUMER_POLL_DURATION);
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             // Parse sink message content from protobuf.
@@ -176,11 +178,13 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                     continue;
                                 }
                                 // Avoid duplicate chunks. discard if chunk is repeated.
-                                if(currentChunkCache.getIfPresent(messageId) == null) {
-                                    currentChunkCache.put(messageId, 0);
-                                }
                                 Integer chunkNum = currentChunkCache.getIfPresent(messageId);
-                                if(chunkNum != null && chunkNum == sinkMessage.getCurrentChunkNumber()) {
+                                if (chunkNum == null) {
+                                    currentChunkCache.put(messageId, 0);
+                                    chunkNum = 0;
+                                }
+
+                                if(chunkNum == sinkMessage.getCurrentChunkNumber()) {
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);

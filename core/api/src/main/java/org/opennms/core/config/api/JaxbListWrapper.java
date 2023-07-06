@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,21 +66,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * }</pre></blockquote>
  */
 @XmlAccessorType(XmlAccessType.NONE)
+@SuppressWarnings("java:S2162")
 public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     private static final long serialVersionUID = 1L;
 
-    private List<T> m_objects = new ArrayList<>();
+    private transient List<T> m_objects = new ArrayList<>();
     private Integer m_totalCount;
     private Integer m_offset = 0;
 
     public List<T> getObjects() {
         return m_objects;
-    };
+    }
+
     public void setObjects(final List<? extends T> objects) {
-        if (objects == m_objects) return;
+        if (m_objects.equals(objects)) {
+            return;
+        }
         m_objects.clear();
         m_objects.addAll(objects);
-    };
+    }
 
     public JaxbListWrapper() {}
     public JaxbListWrapper(final Collection<? extends T> objects) {
@@ -101,7 +105,7 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
 
     @XmlAttribute(name="count")
     public Integer getCount() {
-        if (m_objects.size() == 0) {
+        if (m_objects.isEmpty()) {
             return null;
         } else {
             return m_objects.size();

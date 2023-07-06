@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -41,7 +42,6 @@ import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -79,7 +79,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(header, buffer);
 
-        detectClockSkew(header.unixSecs * 1000L + header.unixNSecs / 1000L, session.getRemoteAddress());
+        detectClockSkew(Duration.ofSeconds(header.unixSecs, header.unixNSecs).toMillis(), session.getRemoteAddress());
 
         return packet;
     }

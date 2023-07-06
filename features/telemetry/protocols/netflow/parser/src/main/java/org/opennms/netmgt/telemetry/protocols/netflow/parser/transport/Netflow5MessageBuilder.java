@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setLongValue;
 
 import java.net.InetAddress;
+import java.time.Duration;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -47,19 +48,15 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
 public class Netflow5MessageBuilder implements MessageBuilder {
-
-    public Netflow5MessageBuilder() {
-    }
-
     @Override
     public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
 
-        Long unixSecs = null;
-        Long unixNSecs = null;
-        Long sysUpTime = null;
-        Long first = null;
-        Long last = null;
+        long unixSecs = 0;
+        long unixNSecs = 0;
+        long sysUpTime = 0;
+        long first = 0;
+        long last = 0;
         InetAddress srcAddr = null;
         InetAddress dstAddr = null;
         InetAddress nextHop = null;
@@ -88,19 +85,7 @@ public class Netflow5MessageBuilder implements MessageBuilder {
                     getUInt32Value(value).ifPresent(builder::setEngineId);
                     break;
                 case "@samplingAlgorithm":
-                    Long saValue = getLongValue(value);
-                    SamplingAlgorithm samplingAlgorithm = SamplingAlgorithm.UNASSIGNED;
-                    if (saValue != null) {
-                        switch (saValue.intValue()) {
-                            case 1:
-                                samplingAlgorithm = SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
-                                break;
-                            case 2:
-                                samplingAlgorithm = SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
-                                break;
-                        }
-                    }
-                    builder.setSamplingAlgorithm(samplingAlgorithm);
+                builder.setSamplingAlgorithm(getSamplingAlgorithm(value));
                     break;
                 case "@samplingInterval":
                     getDoubleValue(value).ifPresent(builder::setSamplingInterval);
@@ -161,14 +146,16 @@ public class Netflow5MessageBuilder implements MessageBuilder {
                     getUInt32Value(value).ifPresent(builder::setDstMaskLen);
                     break;
                 case "egress":
-                    Boolean egress = getBooleanValue(value);
+                    boolean egress = getBooleanValue(value);
                     Direction direction = egress ? Direction.EGRESS : Direction.INGRESS;
                     builder.setDirection(direction);
+                    break;
+                default:
                     break;
             }
         }
 
-        long timeStamp = unixSecs * 1000L + unixNSecs / 1000_000L;
+        long timeStamp = Duration.ofSeconds(unixSecs, unixNSecs).toMillis();
         long bootTime = timeStamp - sysUpTime;
 
         builder.setNetflowVersion(NetflowVersion.V5);
@@ -190,5 +177,23 @@ public class Netflow5MessageBuilder implements MessageBuilder {
         }
 
         return builder;
+    }
+
+    private static SamplingAlgorithm getSamplingAlgorithm(final Value<?> value) {
+        Long saValue = getLongValue(value);
+        SamplingAlgorithm samplingAlgorithm = SamplingAlgorithm.UNASSIGNED;
+        if (saValue != null) {
+            switch (saValue.intValue()) {
+                case 1:
+                    samplingAlgorithm = SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
+                    break;
+                case 2:
+                    samplingAlgorithm = SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return samplingAlgorithm;
     }
 }
