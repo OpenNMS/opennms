@@ -35,6 +35,7 @@ import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,8 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -180,7 +183,64 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
     }
 
     public Path getStatusRoot() {
-        System.err.println(tempFolder.getRoot().toPath().resolve("status").toAbsolutePath());
         return tempFolder.getRoot().toPath().resolve("status").toAbsolutePath();
+    }
+
+    @Test
+    public void test_NMS15820() throws Exception {
+        testParameters("foo", null, "My-Custom-Service", "foo");
+        testParameters("foo", "bar", "My-Custom-Service", "foo");
+        testParameters(null, "bar", "My-Custom-Service", "bar");
+        testParameters(null, null, "My-Custom-Service", "my-custom-service");
+    }
+
+    private void testParameters(final String rrdBaseName, final String dsName, final String svcName, final String expectedName) throws Exception {
+        final Package pkg = new Package();
+
+        final MockNetwork mockNetwork = new MockNetwork().createStandardNetwork();
+        final MockPollerConfig pollerConfig = new MockPollerConfig(mockNetwork);
+
+        final StatusStoringServiceMonitorAdaptor statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
+
+        final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
+                InetAddress.getByName("192.168.1.5"), svcName);
+
+        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+
+        when(this.rrdStrategy.createDefinition(eq("192.168.1.5"),
+                eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                anyList())).thenReturn(null);
+
+        final Map<String, Object> parameters = new TreeMap<>();
+        parameters.put("rrd-repository", getStatusRoot().toString());
+
+        if (rrdBaseName != null) {
+            parameters.put("rrd-base-name", rrdBaseName);
+        }
+
+        if (dsName != null) {
+            parameters.put("ds-name", dsName);
+        }
+
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.available(42.0));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unavailable(""));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unresponsive(""));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unknown(""));
+
+        verify(this.rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(this.rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"),
+                eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                isNull());
+
+        verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+
+        clearInvocations(this.rrdStrategy);
     }
 }

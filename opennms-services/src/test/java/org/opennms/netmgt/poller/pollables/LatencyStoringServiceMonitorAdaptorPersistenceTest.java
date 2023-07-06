@@ -31,9 +31,12 @@ package org.opennms.netmgt.poller.pollables;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -45,6 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -194,5 +198,63 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
             return m_pollStatus;
         }
+    }
+
+    @Test
+    public void test_NMS15820() throws Exception {
+        testParameters("foo", null, "My-Custom-Service", "foo");
+        testParameters("foo", "bar", "My-Custom-Service", "foo");
+        testParameters(null, "bar", "My-Custom-Service", "bar");
+        testParameters(null, null, "My-Custom-Service", "my-custom-service");
+    }
+
+    private void testParameters(final String rrdBaseName, final String dsName, final String svcName, final String expectedName) throws Exception {
+        final Package pkg = new Package();
+
+        final MockNetwork mockNetwork = new MockNetwork().createStandardNetwork();
+        final MockPollerConfig pollerConfig = new MockPollerConfig(mockNetwork);
+
+        final LatencyStoringServiceMonitorAdaptor latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, m_persisterFactory, new MockThresholdingService());
+
+        final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
+                InetAddress.getByName("192.168.1.5"), svcName);
+
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+
+        when(m_rrdStrategy.createDefinition(eq("192.168.1.5"),
+                eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                anyList())).thenReturn(null);
+
+        final Map<String, Object> parameters = new TreeMap<>();
+        parameters.put("rrd-repository", getResponseTimeRoot().toString());
+
+        if (rrdBaseName != null) {
+            parameters.put("rrd-base-name", rrdBaseName);
+        }
+
+        if (dsName != null) {
+            parameters.put("ds-name", dsName);
+        }
+
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.available(42.0));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unavailable(""));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unresponsive(""));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unknown(""));
+
+        verify(m_rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(m_rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"),
+                eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                isNull());
+
+        verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(m_rrdStrategy, atLeastOnce()).openFile(eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+
+        clearInvocations(m_rrdStrategy);
     }
 }
