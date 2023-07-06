@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,18 +37,12 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.util.Assert;
 
-/**
- * <p>BeanUtils class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public abstract class PropertyUtils {
+public interface PropertyUtils {
 
     /**
      * <p>getProperties</p>
@@ -81,14 +75,14 @@ public abstract class PropertyUtils {
         wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
         wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
         wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
-        final Class<?> propType = wrapper.getPropertyType(path);
-        if (propType == null) {
-            // we were unable to find the property
-            Assert.notNull(propType, "propType in BeanUtils is null path: " + path); //for debug purposes
+        try {
+            final Class<?> propType = wrapper.getPropertyType(path);
+            if (!expectedClass.isAssignableFrom(propType)) {
+                throw new IllegalArgumentException("Could not retrieve property of type "+propType+" as type "+expectedClass);
+            }
+        } catch (final BeansException e) {
+            LoggerFactory.getLogger(PropertyUtils.class).warn("propType in BeanUtils is null for path: {}", path);
             return null;
-        }
-        if (!expectedClass.isAssignableFrom(propType)) {
-            throw new IllegalArgumentException("Could not retrieve property of type "+propType+" as type "+expectedClass);
         }
         return (T) wrapper.getPropertyValue(path);
     }

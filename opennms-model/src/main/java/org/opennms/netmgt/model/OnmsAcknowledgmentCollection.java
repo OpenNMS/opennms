@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,6 +48,7 @@ public class OnmsAcknowledgmentCollection extends JaxbListWrapper<OnmsAcknowledg
         super(acks);
     }
 
+    @Override
     @XmlElement(name="onmsAcknowledgment")
     @JsonProperty("onmsAcknowledgment")
     public List<OnmsAcknowledgment> getObjects() {

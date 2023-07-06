@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,14 +49,12 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorith
 
 import com.google.protobuf.UInt32Value;
 
+@SuppressWarnings("java:S109")
 public class Netflow9MessageBuilder implements MessageBuilder {
 
     private Long flowActiveTimeoutFallback;
     private Long flowInactiveTimeoutFallback;
     private Long flowSamplingIntervalFallback;
-
-    public Netflow9MessageBuilder() {
-    }
 
     @Override
     public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
@@ -79,8 +77,8 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long dstVlan = null;
         Long flowActiveTimeout = this.flowActiveTimeoutFallback;
         Long flowInActiveTimeout = this.flowInactiveTimeoutFallback;
-        Long sysUpTime = null;
-        Long unixSecs = null;
+        long sysUpTime = 0;
+        long unixSecs = 0;
         Long firstSwitched = null;
         Long lastSwitched = null;
         Long flowStartMilliseconds = null;
@@ -94,7 +92,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 	    builder.setSamplingInterval(setDoubleValue(this.flowSamplingIntervalFallback));
 	}
 
-        for (Value<?> value : values) {
+        for (final Value<?> value : values) {
             switch (value.getName()) {
                 // Header
                 case "@recordCount":
@@ -116,19 +114,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                     getUInt64Value(value).ifPresent(builder::setNumBytes);
                     break;
                 case "DIRECTION":
-                    Long directionValue = getLongValue(value);
-                    Direction direction = Direction.UNKNOWN;
-                    if (directionValue != null) {
-                        switch (directionValue.intValue()) {
-                            case 0:
-                                direction = Direction.INGRESS;
-                                break;
-                            case 1:
-                                direction = Direction.EGRESS;
-                                break;
-                        }
-                    }
-                    builder.setDirection(direction);
+                builder.setDirection(getDirection(value));
                     break;
                 case "IPV4_DST_ADDR":
                     ipv4DstAddress = getInetAddress(value);
@@ -188,17 +174,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                     getUInt32Value(value).ifPresent(builder::setProtocol);
                     break;
                 case "SAMPLING_ALGORITHM":
-                    Long saValue = getLongValue(value);
-                    SamplingAlgorithm samplingAlgorithm = SamplingAlgorithm.UNASSIGNED;
-                    if (saValue != null) {
-                        if (saValue.intValue() == 1) {
-                            samplingAlgorithm = SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
-                        }
-                        if (saValue.intValue() == 2) {
-                            samplingAlgorithm = SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
-                        }
-                    }
-                    builder.setSamplingAlgorithm(samplingAlgorithm);
+                builder.setSamplingAlgorithm(getSamplingAlgorithm(value));
                     break;
                 case "SAMPLING_INTERVAL":
                     getDoubleValue(value).ifPresent(builder::setSamplingInterval);
@@ -251,13 +227,15 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                 case "egressPhysicalInterface":
                     egressPhysicalInterface = getUInt32Value(value).orElse(null);
                     break;
+                default:
+                    break;
             }
         }
 
-        long timeStampInMsecs = unixSecs != null ? unixSecs * 1000 : 0;
+        long timeStampInMsecs = unixSecs * 1000;
         builder.setTimestamp(timeStampInMsecs);
 
-        long bootTime = sysUpTime != null ? timeStampInMsecs - sysUpTime : timeStampInMsecs;
+        long bootTime = timeStampInMsecs - sysUpTime;
 
         if (firstSwitched != null) {
             builder.setFirstSwitched(setLongValue(firstSwitched + bootTime));
@@ -277,18 +255,14 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         }
 
         // Set input interface
-        first(ingressPhysicalInterface, inputSnmp).ifPresent(ifIndex -> {
-            builder.setInputSnmpIfindex(ifIndex);
-        });
+        first(ingressPhysicalInterface, inputSnmp).ifPresent(builder::setInputSnmpIfindex);
 
         // Set output interface
-        first(egressPhysicalInterface, outputSnmp).ifPresent(ifIndex -> {
-            builder.setOutputSnmpIfindex(ifIndex);
-        });
+        first(egressPhysicalInterface, outputSnmp).ifPresent(builder::setOutputSnmpIfindex);
 
 
         // Set Destination address and host name.
-        first(ipv6DstAddress, ipv4DstAddress).ifPresent(inetAddress -> {
+        first(ipv6DstAddress, ipv4DstAddress).ifPresent((final InetAddress inetAddress) -> {
             enrichment.getHostnameFor(inetAddress).ifPresent(builder::setDstHostname);
             builder.setDstAddress(inetAddress.getHostAddress());
         });
@@ -298,7 +272,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
             builder.setDstMaskLen(setIntValue(dstMaskLen.intValue())));
 
         // Set Source address and host name.
-        first(ipv6SrcAddress, ipv4SrcAddress).ifPresent(inetAddress -> {
+        first(ipv6SrcAddress, ipv4SrcAddress).ifPresent((final InetAddress inetAddress) -> {
             enrichment.getHostnameFor(inetAddress).ifPresent(builder::setSrcHostname);
             builder.setSrcAddress(inetAddress.getHostAddress());
         });
@@ -306,7 +280,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         first(ipv6SrcMask, srcMask).ifPresent(srcMaskLen -> builder.setSrcMaskLen(setIntValue(srcMaskLen.intValue())));
 
         // Set next hop address, hostname.
-        first(ipv6NextHop, ipv4NextHop, bgpIpv6NextHop, bgpIpv4NextHop).ifPresent(inetAddress -> {
+        first(ipv6NextHop, ipv4NextHop, bgpIpv6NextHop, bgpIpv4NextHop).ifPresent((final InetAddress inetAddress) -> {
             enrichment.getHostnameFor(inetAddress).ifPresent(builder::setNextHopHostname);
             builder.setNextHopAddress(inetAddress.getHostAddress());
         });
@@ -324,6 +298,42 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
         builder.setNetflowVersion(NetflowVersion.V9);
         return builder;
+    }
+
+    private static Direction getDirection(final Value<?> value) {
+        Long directionValue = getLongValue(value);
+        Direction direction = Direction.UNKNOWN;
+        if (directionValue != null) {
+            switch (directionValue.intValue()) {
+                case 0:
+                    direction = Direction.INGRESS;
+                    break;
+                case 1:
+                    direction = Direction.EGRESS;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return direction;
+    }
+
+    private static SamplingAlgorithm getSamplingAlgorithm(final Value<?> value) {
+        Long saValue = getLongValue(value);
+        SamplingAlgorithm samplingAlgorithm = SamplingAlgorithm.UNASSIGNED;
+        if (saValue != null) {
+            switch(saValue.intValue()) {
+                case 1:
+                    samplingAlgorithm = SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
+                    break;
+                case 2:
+                    samplingAlgorithm = SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return samplingAlgorithm;
     }
 
     public Long getFlowActiveTimeoutFallback() {
