@@ -78,6 +78,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         final Map<String, Object> constants = Maps.newHashMap();
 
         final List<QueryResource> resources = new ArrayList<>();
+        final List<QueryResource> additionalResources = new ArrayList<>();
 
         final Map<Source, String> rrdsBySource = Maps.newHashMap();
         
@@ -98,7 +99,18 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             final OnmsResource resource = resourceCache.computeIfAbsent(resourceId, r -> m_resourceDao.getResourceById(r));
 
             if (resource == null) {
-                if (relaxed) continue;
+                if (relaxed) {
+                    // Attempt to get parent resource, e.g. the node, to put into response metadata
+                    final OnmsResource parentResource = resourceCache.computeIfAbsent(resourceId, r -> m_resourceDao.getResourceById(r.getParent()));
+
+                    if (parentResource != null) {
+                        final QueryResource parentResourceInfo = getResourceInfo(parentResource, source);
+                        additionalResources.add(parentResourceInfo);
+                    }
+
+                    continue;
+                }
+
                 LOG.error("No resource with id: {}", source.getResourceId());
                 resources.add(null);
                 return null;
@@ -131,6 +143,10 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
                     + File.separator + rrdGraphAttribute.getRrdRelativePath();
 
             rrdsBySource.put(source, rrdFile);
+        }
+
+        if (!additionalResources.isEmpty()) {
+            resources.addAll(additionalResources);
         }
 
         // Fetch
