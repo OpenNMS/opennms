@@ -125,14 +125,18 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return this;
     }
 
-    @Override
-    public Map<String, Object> getInterpolatedAttributes() {
-        return Interpolator.interpolateObjects(this.attributes, new FallbackScope(
+    private Scope getScope() {
+        return new FallbackScope(
                 this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
                 this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
                 this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
                 MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
-        ));
+        );
+    }
+
+    @Override
+    public Map<String, Object> getInterpolatedAttributes() {
+        return Interpolator.interpolateObjects(this.attributes, getScope());
     }
 
     @Override
@@ -180,7 +184,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // such as the agent details and other state related attributes
         // which should be included in the request
         final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(serviceMonitor.getRuntimeAttributes(request, parameters));
+        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {

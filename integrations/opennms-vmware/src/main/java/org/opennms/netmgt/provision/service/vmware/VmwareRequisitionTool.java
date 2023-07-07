@@ -44,9 +44,10 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -72,11 +73,13 @@ public abstract class VmwareRequisitionTool {
             System.exit(1);
         }
 
+        final SecureCredentialsVault secureCredentialsVault = BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
+
         String urlString = arguments.remove(0).replaceFirst("vmware", "http"); // Internal trick to avoid confusions.
         URL url = new URL(urlString);
 
         // Parse vmware-config.xml and retrieve the credentials to avoid initialize Spring
-        if ( ! url.getQuery().contains("username") && url.getUserInfo() == null ) {
+        if (url.getQuery() == null || (!url.getQuery().contains("username") && url.getUserInfo() == null)) {
             File cfg = new File(ConfigFileConstants.getFilePathString(), "vmware-config.xml");
             if (cfg.exists()) {
                 String username = null;
@@ -84,7 +87,7 @@ public abstract class VmwareRequisitionTool {
                 VmwareConfig config = JaxbUtils.unmarshal(VmwareConfig.class, cfg);
                 for (VmwareServer srv : config.getVmwareServerCollection()) {
                     if (srv.getHostname().equals(url.getHost())) {
-                        final Scope scvScope = new SecureCredentialsVaultScope(JCEKSSecureCredentialsVault.defaultScv());
+                        final Scope scvScope = new SecureCredentialsVaultScope(secureCredentialsVault);
                         username = Interpolator.interpolate(srv.getUsername(), scvScope).output;
                         password = Interpolator.interpolate(srv.getPassword(), scvScope).output;
                     }

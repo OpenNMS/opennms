@@ -40,11 +40,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeType;
@@ -85,9 +82,6 @@ import com.vmware.vim25.mo.ManagedEntity;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 public class VmwareCollector extends AbstractRemoteServiceCollector {
-
-    private JCEKSSecureCredentialsVault m_jceksSecureCredentialsVault;
-
     /**
      * logging for VMware data collection
      */
@@ -127,10 +121,6 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      */
     @Override
     public void initialize() throws CollectionInitializationException {
-        if (m_jceksSecureCredentialsVault == null) {
-            m_jceksSecureCredentialsVault = BeanUtils.getBean("daoContext", "jceksSecureCredentialsVault", JCEKSSecureCredentialsVault.class);
-        }
-
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }
@@ -199,12 +189,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
                 if (vmwareServer == null) {
                     throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
                 }
-                final VmwareServer interpolatedVmwareServer = new VmwareServer();
-                interpolatedVmwareServer.setHostname(vmwareServer.getHostname());
-                final Scope secureCredentialsVaultScope = new SecureCredentialsVaultScope(m_jceksSecureCredentialsVault);
-                interpolatedVmwareServer.setUsername(Interpolator.interpolate(vmwareServer.getUsername(), secureCredentialsVaultScope).output);
-                interpolatedVmwareServer.setPassword(Interpolator.interpolate(vmwareServer.getPassword(), secureCredentialsVaultScope).output);
-                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, interpolatedVmwareServer);
+                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, Interpolator.pleaseInterpolate(vmwareServer));
 
                 return null;
             }

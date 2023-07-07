@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
@@ -98,10 +97,7 @@ public class VmwareCollectorComplianceTest extends CollectorComplianceTest {
         VmwareConfigDao vmwareConfigDao = mock(VmwareConfigDao.class);
         when(vmwareConfigDao.getServerMap()).thenReturn(serverMap);
 
-        JCEKSSecureCredentialsVault jceksSecureCredentialsVault = mock(JCEKSSecureCredentialsVault.class);
-
         return new ImmutableMap.Builder<String, Object>()
-                .put("jceksSecureCredentialsVault", jceksSecureCredentialsVault)
                 .put("nodeDao", nodeDao)
                 .put("vmwareDatacollectionConfigDao", vmwareDatacollectionConfigDao)
                 .put("vmwareConfigDao", vmwareConfigDao)
