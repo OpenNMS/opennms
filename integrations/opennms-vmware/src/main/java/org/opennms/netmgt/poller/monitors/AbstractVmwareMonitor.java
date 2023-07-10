@@ -31,10 +31,11 @@ package org.opennms.netmgt.poller.monitors;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -91,8 +92,6 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
 
                 final String vmwareManagedObjectId = onmsNode.getForeignId();
 
-                String vmwareMangementServerUsername = null;
-                String vmwareMangementServerPassword = null;
                 final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
                 if (serverMap == null) {
                     logger.error("Error getting vmware-config.xml's server map.");
@@ -101,16 +100,14 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
                     if (vmwareServer == null) {
                         logger.error("Error getting credentials for VMware management server '{}'.", vmwareManagementServer);
                     } else {
-                        vmwareMangementServerUsername = vmwareServer.getUsername();
-                        vmwareMangementServerPassword = vmwareServer.getPassword();
+                        runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, Interpolator.pleaseInterpolate(vmwareServer.getUsername()));
+                        runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, Interpolator.pleaseInterpolate(vmwareServer.getPassword()));
                     }
                 }
 
                 runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
                 runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_ENTITY_TYPE, vmwareManagedEntityType);
                 runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
-                runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername);
-                runtimeAttributes.put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword);
 
                 return null;
             }

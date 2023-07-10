@@ -92,6 +92,11 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     private SecureCredentialsVault scv;
 
     @Override
+    public Scope getScopeForScv() {
+        return new SecureCredentialsVaultScope(this.scv);
+    }
+
+    @Override
     public Scope getScopeForNode(final Integer nodeId) {
         if (nodeId == null) {
             return EmptyScope.EMPTY;

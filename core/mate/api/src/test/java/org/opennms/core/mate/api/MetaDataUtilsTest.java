@@ -62,6 +62,18 @@ public class MetaDataUtilsTest {
     }
 
     @Test
+    public void testToBeInterpolated() {
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("attribute1", "aaa${ctx1:key1|default}bbb");
+        attributes.put("attribute2", Interpolator.pleaseInterpolate("aaa${ctx1:key1|default}bbb"));
+
+        Map<String, Object> interpolatedAttributes = Interpolator.interpolateAttributes(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
+
+        assertEquals("aaa${ctx1:key1|default}bbb", interpolatedAttributes.get("attribute1"));
+        assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute2"));
+    }
+
+    @Test
     public void testMetaDataInterpolation() {
         final Map<String, Object> attributes = new TreeMap<>();
 
