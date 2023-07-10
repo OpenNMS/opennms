@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-for file in ~/code-coverage/*.zip; do
+find ~/code-coverage -type f -name \*.zip | sort -u | while read -r file; do
     FILENAME="$(basename "$file")"
     NUMBER="$(echo "$FILENAME" | cut -d. -f1 | cut -d- -f2-)"
     echo "* unpacking coverage reports $NUMBER:"
