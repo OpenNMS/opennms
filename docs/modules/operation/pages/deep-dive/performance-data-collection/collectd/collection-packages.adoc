@@ -1,5 +1,6 @@
 
 = Configure Collector Packages
+:description: Configure collector packages in OpenNMS Horizon/Meridian to provide information collectd needs to activate data collection: attributes and guidelines.
 
 Collector packages in `collectd-configuration.xml` contain the information (IP addresses, interfaces, services, and connection parameters) that collectd needs to activate data collection.
 
