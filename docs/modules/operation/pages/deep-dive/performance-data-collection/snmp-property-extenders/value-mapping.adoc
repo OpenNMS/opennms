@@ -1,5 +1,6 @@
 
 = Value Mapping Property Extender
+:description: Value Mapping property extender in OpenNMS Horizon/Meridian works as a lookup table to convert collected values to different data types.
 
 The Value Mapping property extender provides a mechanism that works as a lookup table for converting collected values to a different data type.
 This lets you do things such as map an enumerated set of string values to a corresponding set of integer values, or the other way around.
