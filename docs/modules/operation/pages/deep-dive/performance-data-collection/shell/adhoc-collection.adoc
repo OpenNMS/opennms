@@ -1,6 +1,7 @@
 
 [[ga-performance-mgmt-adhoc-collection]]
 = Ad hoc collection
+:description: opennms:collect Karaf Shell command in OpenNMS Horizon/Meridian to trigger and perform a collection on any of the available collectors.
 
 The `opennms:collect` Karaf Shell command can be used to trigger and perform a collection on any of the available collectors.
 
