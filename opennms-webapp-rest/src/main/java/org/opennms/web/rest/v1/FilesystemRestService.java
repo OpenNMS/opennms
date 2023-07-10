@@ -89,14 +89,18 @@ public class FilesystemRestService {
             "groovy",
             "bsh",
             "dcb");
-    private static final java.nio.file.Path USERS_XML;
+    private final java.nio.file.Path usersXml;
 
-    static {
+    public FilesystemRestService() {
         try {
-            USERS_XML = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
+            this.usersXml = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    FilesystemRestService(final java.nio.file.Path usersXml) {
+        this.usersXml = usersXml;
     }
 
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
@@ -112,7 +116,7 @@ public class FilesystemRestService {
 
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
-                    .filter(p -> !p.equals(USERS_XML) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
+                    .filter(p -> !p.equals(usersXml) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p, securityContext))
                     .sorted()
@@ -240,7 +244,7 @@ public class FilesystemRestService {
         final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
         final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
 
-        if (fileNormalized.equals(USERS_XML) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+        if (fileNormalized.equals(usersXml) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
         }
 
@@ -253,7 +257,7 @@ public class FilesystemRestService {
         return fileNormalized;
     }
 
-    private void maybeValidateXml(File file) {
+    void maybeValidateXml(File file) {
         if (!file.getName().endsWith(".xml")) {
             return;
         }
@@ -261,6 +265,15 @@ public class FilesystemRestService {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
+
+        try {
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (ParserConfigurationException e) {
+            throw new BadRequestException(Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Error configuring parser factory: " + e.getMessage()).build());
+        }
 
         final CapturingErrorHandler errorHandler = new CapturingErrorHandler();
         try {
