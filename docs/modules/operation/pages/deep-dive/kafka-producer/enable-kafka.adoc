@@ -20,7 +20,7 @@ config:property-set bootstrap.servers kafka-server-ip:9092 <1>
 config:update
 ----
 <1> Set the Kafka server IP or hostname by replacing the kafka-server-ip and port of an existing Kafka cluster that you want to connect to.
-    Add multiple hosts in a comma-separated list, for example, `kafka-server-1:9092,kafka-server-2:9092`
+    Add multiple hosts in a comma-separated list; for example, `kafka-server-1:9092,kafka-server-2:9092`
 
 Next, install the `opennms-kafka-producer` feature from that same shell using:
 
