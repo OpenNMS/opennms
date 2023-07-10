@@ -57,7 +57,6 @@
       <feature>opennms-icmp-best</feature>
       <feature>opennms-provisioning-detectors</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
-      <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
       <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
     </feature>
