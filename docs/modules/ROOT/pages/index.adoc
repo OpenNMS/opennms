@@ -1,6 +1,7 @@
 
 [[welcome]]
 = Welcome to the {page-component-title} Documentation
+:description: Overview of OpenNMS Horizon/Meridian documentation including product architecture diagram and how to navigate the documentation.
 
 [options="autowidth"]
 |===

@@ -1,5 +1,6 @@
 [[policies]]
 = Policies
+:description: Overview of policy API in OpenNMS Horizon/Meridian to control persistence of discovered IP and SNMP interface entities.
 
 The Policy API in Provisiond lets you control the persistence of discovered IP and SNMP interface entities and node tags during the scan phase.
 

@@ -1,6 +1,7 @@
 
 [[ga-pollerd-packages]]
 = Poller Packages
+:description: How to group service configurations into polling packages to define more complex monitoring configurations with OpenNMS Horizon/Meridian.
 
 You can group service configurations into polling packages to define more complex monitoring configurations.
 This allows you to assign different service configurations to nodes.
