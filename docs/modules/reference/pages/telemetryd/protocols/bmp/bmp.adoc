@@ -1,0 +1,10 @@
+
+= BGP Monitoring Protocol
+
+The BGP Monitoring Protocol (BMP) provides a convenient interface for obtaining route views.
+The integration in {page-component-title} lets you use these route views, status updates, and statistics for monitoring and management.
+
+.BMP integration overview
+image::bmp/bmp_integration_overview.png[width=70%]
+
+The following sections provide details about associated parsers, adapters, and listeners.

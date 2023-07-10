@@ -255,7 +255,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.11.0</version>
         <configuration>
           <source>11</source>
           <target>11</target>
@@ -994,6 +994,10 @@
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -1002,6 +1006,10 @@
       <id>opennms-repo</id>
       <name>OpenNMS Mega-Repository</name>
       <url>https://maven.opennms.org/repository/everything/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

@@ -702,7 +702,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1502,7 +1502,7 @@
     <!-- other plugin versions -->
     <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
@@ -1574,6 +1574,7 @@
     <!-- whether to enable snapshot dependencies when building -->
     <enable.snapshots>false</enable.snapshots>
 
+    <updatePolicy>interval:480</updatePolicy> <!-- 8 hours, only used for snapshot repos -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
@@ -1596,7 +1597,7 @@
     <cassandraVersion>3.11.2</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.15</commonsCodecVersion>
+    <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
@@ -1614,12 +1615,12 @@
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
-    <curatorVersion>3.2.1</curatorVersion>
-    <curatorTestVersion>5.4.0</curatorTestVersion>
+    <curatorVersion>5.5.0</curatorVersion>
+    <curatorTestVersion>5.5.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
+    <dnsjavaVersion>3.5.2_1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -1651,7 +1652,7 @@
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
-    <ipaddressVersion>5.3.3</ipaddressVersion>
+    <ipaddressVersion>5.4.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.14.2</jackson2Version>
     <snakeyamlVersion>1.33</snakeyamlVersion>
@@ -1706,7 +1707,7 @@
     <kafkaVersion>3.3.1</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
-    <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
+    <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
@@ -1757,7 +1758,7 @@
     <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
-    <sonarVersion>3.7.0.1746</sonarVersion>
+    <sonarVersion>3.9.1.2184</sonarVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
@@ -1852,12 +1853,13 @@
         </plugins>
       </build>
       <repositories>
-        <!-- Disable snapshots for our own artifacts for release bulds -->
+        <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
           <id>opennms-ossrh</id>
           <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
-            <enabled>false</enabled>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
           </releases>
           <snapshots>
             <enabled>false</enabled>
@@ -1953,8 +1955,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1966,6 +1973,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1976,6 +1984,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -1987,8 +1996,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
         <pluginRepository>
@@ -2000,6 +2014,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
@@ -4277,7 +4292,7 @@
       <dependency>
         <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
-        <version>1.2.1</version>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>

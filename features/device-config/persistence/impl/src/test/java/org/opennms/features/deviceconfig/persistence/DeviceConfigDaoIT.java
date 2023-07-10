@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -153,7 +153,11 @@ public class DeviceConfigDaoIT {
 
         // Verify that last failed got updated and it is same as last updated.
         DeviceConfig retrievedConfig = elementWithFailedConfig.get();
-        Assert.assertEquals(retrievedConfig.getLastUpdated(), retrievedConfig.getLastFailed());
+
+        // there can be a few milliseconds jitter in this, so check that it's within 5ms
+        final var lastUpdated = retrievedConfig.getLastUpdated().getTime();
+        final var lastFailed = retrievedConfig.getLastFailed().getTime();
+        Assert.assertTrue("lastUpdated and lastFailed should be within a few milliseconds of each other: lastUpdated=" + lastUpdated + ", lastFailed=" + lastFailed, Math.abs(lastUpdated - lastFailed) <= 5);
     }
 
     @Test

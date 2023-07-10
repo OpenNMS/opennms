@@ -28,7 +28,7 @@ services:
     command: ["-c"]
     volumes:
       - ./minion-config.yaml:/opt/minion/minion-config.yaml<5>
-      - ./scv.jce:/opt/minion/scv.jce<6>
+      #- ./keystore/scv.jce:/opt/minion/scv.jce<6>
     healthcheck:
       test: "/health.sh"<7>
       interval: 30s
@@ -45,6 +45,7 @@ services:
 <4> Optional. Use to control the maximum Java heap size.
 <5> Configuration file for connectivity and features
 <6> Keystore file with encrypted credentials for authenticating broker endpoints.
+Initially this line should be commented out, and will need to be activated after the file has been created on the local system.
 <7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
 <8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the Karaf shell.
 
@@ -88,10 +89,24 @@ netmgt:
 
 TIP: To run with Apache Kafka or configure flow listeners, see the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
 
+Next, we need to create the keystore file and add the credentials for connecting to the core {page-component-title} server.
+
 .Initialize the keystore with credentials
 [source, console]
 ----
-docker-compose run -v $(pwd):/keystore minion -s
+mkdir keystore
+chmod 10001:10001 keystore<1>
+docker-compose run -v $(pwd)/keystore:/keystore minion -s<2>
+----
+<1> Assign permissions so the container user account can write within the directory.
+<2> When prompted, enter the username and password for a `ROLE_MINOIN` user account on the {page-component-title} server.
+You may be prompted for the same username and password twice.
+
+.Edit the `docker-compose.yml` file to uncomment the keystore file
+[source, diff]
+----
+-      #- ./keystore/scv.jce:/opt/minion/scv.jce
++      - ./keystore/scv.jce:/opt/minion/scv.jce
 ----
 
 .Validate your Docker Compose file

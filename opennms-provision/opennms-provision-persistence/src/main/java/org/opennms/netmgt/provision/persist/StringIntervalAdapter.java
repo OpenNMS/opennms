@@ -57,10 +57,16 @@ public class StringIntervalAdapter extends XmlAdapter<String, Duration> {
     /** {@inheritDoc} */
     @Override
     public Duration unmarshal(final String v) {
-        if ("0".equals(v)) {
+        if (v == null) {
+            return null;
+        }
+        if ("0".equals(v.trim())) {
             return Duration.ZERO;
         }
-        return DEFAULT_PERIOD_FORMATTER.parsePeriod(v).toStandardDuration();
+        if ("-1".equals(v.trim())) {
+            return Duration.ZERO.minus(1000);
+        }
+        return DEFAULT_PERIOD_FORMATTER.parsePeriod(v.trim()).toStandardDuration();
     }
 
 }
