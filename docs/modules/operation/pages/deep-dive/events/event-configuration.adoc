@@ -177,4 +177,6 @@ After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of it
 You can trigger a reload of the daemon in the Karaf shell or by issuing the following command on the {page-component-title} server:
 
 [source, console]
-$\{OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+----
