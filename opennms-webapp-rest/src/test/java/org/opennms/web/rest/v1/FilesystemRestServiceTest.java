@@ -42,6 +42,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.xml.XmlTest;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -54,6 +55,7 @@ public class FilesystemRestServiceTest {
 
     @Before
     public void before() throws IOException {
+        XmlTest.initOpennmsHome();
         this.temporarySecretFile = File.createTempFile( "secret-file", "");
         temporarySecretFile.deleteOnExit();
         final BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(temporarySecretFile));
