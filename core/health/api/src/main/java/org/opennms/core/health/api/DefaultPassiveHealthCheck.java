@@ -60,7 +60,7 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
     @Override
     public synchronized void setResponse(Response response) {
-        LOG.debug("Cache response - healthCheck: {}; status: {}; msg: {}", description, response.getStatus(), response.getMessage());
+        LOG.warn("Cache response - healthCheck: {}; status: {}; msg: {}", description, response.getStatus(), response.getMessage());
         cachedResponse = response;
         cachedResponseTimestamp = Instant.now();
     }

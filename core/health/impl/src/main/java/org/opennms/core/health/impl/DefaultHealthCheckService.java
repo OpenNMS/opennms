@@ -146,6 +146,14 @@ public class DefaultHealthCheckService implements HealthCheckService {
     private CompletionStage<Health> runChecks(Context context, List<HealthCheck> checks, ProgressListener listener) {
         return FutureUtils.traverse(checks, check -> completionStage(check, context, listener)).thenApply(list -> {
             var health = new Health(list);
+            for(var pair : list) {
+                if (pair.getRight().isSuccess()) {
+                    LOG.warn("BMRHGA: " + pair.getLeft().getDescription() + ": Success");
+                } else {
+                    LOG.warn("BMRHGA: " + pair.getLeft().getDescription() + ": Failure (msg = '" + pair.getRight().getMessage() + "')");
+                }
+            }
+
             if (listener != null) {
                 listener.onAllHealthChecksCompleted(health);
             }

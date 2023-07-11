@@ -43,10 +43,10 @@ import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.rest.HealthCheckRestService;
-
-import io.vavr.control.Either;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Either;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 

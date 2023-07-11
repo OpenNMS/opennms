@@ -116,26 +116,26 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     if ((b.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
                         break;
                     }
-                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
+                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " (" + b.getSymbolicName() + ") is resolved, but not active"));
                     break;
                 // Waiting for dependencies
                 case Waiting:
                 case GracePeriod:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " (" + b.getSymbolicName() + ") is waiting for dependencies"));
                     break;
                 // Installed, but not yet started
                 case Installed:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " (" + b.getSymbolicName() + ") is not yet started"));
                     break;
                 // Starting
                 case Starting:
-                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
+                    health.add(this, new Response(Starting, "Bundle " + b.getBundleId() + " (" + b.getSymbolicName() + ") is starting"));
                     break;
                 // Stopping, Failed ur Unknown are considered Failures
                 case Stopping:
                 case Failure:
                 case Unknown:
-                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " is not started"));
+                    health.add(this, new Response(Failure, "Bundle " + b.getBundleId() + " (" + b.getSymbolicName() + ") is not started"));
                     break;
             }
         }
