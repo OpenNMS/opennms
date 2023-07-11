@@ -347,12 +347,10 @@ public class QueryManagerDaoImpl implements QueryManager {
         final var ipAddr = pollableService.getAddress();
         final var serviceName = pollableService.getSvcName();
         try {
-            m_transcationOps.execute((TransactionCallback<Object>) transactionStatus -> {
+            var svc = m_transcationOps.execute((TransactionCallback<Object>) transactionStatus -> {
                 final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, ipAddr, serviceName);
                 if (service == null) {
-                    pollableService.delete();
-                    // Throw so we can hit the exception block bellow and re-use the log message
-                    throw new NoSuchElementException("Service no longer exists.");
+                    return null;
                 }
                 if (status.isAvailable()) {
                     service.setLastGood(status.getTimestamp());
@@ -362,8 +360,13 @@ public class QueryManagerDaoImpl implements QueryManager {
                 m_monitoredServiceDao.saveOrUpdate(service);
                 return service;
             });
-            LOG.debug("Successfully updated last good/fail timestamp for service named {} on node id {} and interface {}.",
-                    serviceName, nodeId, ipAddr);
+            if (svc != null) {
+                LOG.debug("Successfully updated last good/fail timestamp for service named {} on node id {} and interface {}.",
+                        serviceName, nodeId, ipAddr);
+            } else {
+                LOG.debug("Service named {} on node id {} and interface {} has status {}. The service has been deleted since the poll was triggered. "
+                + "Last good/fail timestamp will not be updated.", serviceName, nodeId, ipAddr, status);
+            }
         } catch (Exception e) {
             LOG.error("Failed to set the last good/fail timestamp for service named {} on node id {} and interface {} for {}.",
                     serviceName, nodeId,  ipAddr, status, e);

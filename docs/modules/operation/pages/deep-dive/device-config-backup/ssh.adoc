@@ -1,6 +1,7 @@
 
 [[backup-script]]
 = Configure Backup Script
+:description: How to use the SSH scripting engine for device configuration backup and details about vendor TFTP support in OpenNMS Horizon/Meridian.
 
 {page-component-title} uses an SSH scripting engine to run the commands on devices to upload their configuration settings.
 You must create a script for each device type whose configuration you want to back up, and save the scripts in `$\{OPENNMS_HOME}/etc/device-config`.

@@ -29,16 +29,12 @@
 package org.opennms.netmgt.provision.persist.policies;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import javax.script.Compilable;
 import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
@@ -50,13 +46,12 @@ import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ScriptUtil;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.annotations.Require;
+import org.opennms.netmgt.provision.persist.JSR223ScriptCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.google.common.io.Files;
 
 @Component
 /**
@@ -70,10 +65,11 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
     private static final Logger LOG = LoggerFactory.getLogger(ScriptPolicy.class);
 
     private Path m_scriptPath;
-    private final ScriptEngineManager m_scriptManager = new ScriptEngineManager();
-    private long m_lastCompiled = -1;
+
     private String m_script;
-    private CompiledScript m_compiledScript;
+
+    @Autowired
+    private JSR223ScriptCache m_scriptCache;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -104,25 +100,7 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
             throw new IllegalStateException("Cannot read script at '" + scriptFile + "'.");
         }
 
-        if (scriptFile.lastModified() > m_lastCompiled) {
-            final String fileExtension = Files.getFileExtension(scriptFile.getAbsolutePath());
-
-            final ScriptEngine engine = m_scriptManager.getEngineByExtension(fileExtension);
-            if (engine == null) {
-                throw new IllegalStateException("No engine found for file extension: " + fileExtension);
-            }
-
-            if (!(engine instanceof Compilable)) {
-                throw new IllegalStateException("Only engines that can compile scripts are supported.");
-            }
-            final Compilable compilable = (Compilable) engine;
-            try (FileReader reader = new FileReader(scriptFile)) {
-                m_compiledScript = compilable.compile(reader);
-            }
-            m_lastCompiled = scriptFile.lastModified();
-        }
-
-        return m_compiledScript;
+        return m_scriptCache.getCompiledScript(scriptFile);
     }
 
     /**
@@ -297,5 +275,9 @@ public class ScriptPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         m_sessionUtils = sessionUtils;
+    }
+
+    public void setScriptCache(JSR223ScriptCache scriptCache) {
+        m_scriptCache = scriptCache;
     }
 }

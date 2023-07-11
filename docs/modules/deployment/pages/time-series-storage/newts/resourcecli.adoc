@@ -1,5 +1,6 @@
 
 = Resource Management Tool
+:description: How to use the OpenNMS resource management tool to delete the collected data from a Horizon or Meridian instance: RRDtool, JRobin, and Newts.
 
 The resource management tool, resourcecli, simplifies the process of listing or manually deleting a {page-component-title} instance's collected data (resources).
 With RRDTool- or JRobin-based storage, this process is easy: you simply traverse the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories.

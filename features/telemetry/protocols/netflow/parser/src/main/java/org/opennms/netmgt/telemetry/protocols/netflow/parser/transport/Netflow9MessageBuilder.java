@@ -61,6 +61,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
     @Override
     public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
+        builder.setDirection(Direction.UNKNOWN);
 
         InetAddress ipv4DstAddress = null;
         InetAddress ipv6DstAddress = null;
@@ -256,7 +257,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         long timeStampInMsecs = unixSecs != null ? unixSecs * 1000 : 0;
         builder.setTimestamp(timeStampInMsecs);
 
-        long bootTime = timeStampInMsecs - sysUpTime;
+        long bootTime = sysUpTime != null ? timeStampInMsecs - sysUpTime : timeStampInMsecs;
 
         if (firstSwitched != null) {
             builder.setFirstSwitched(setLongValue(firstSwitched + bootTime));

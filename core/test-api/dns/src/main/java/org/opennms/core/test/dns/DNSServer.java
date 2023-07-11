@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -478,17 +478,17 @@ public class DNSServer {
         if (zone != null) {
             return zone.findExactMatch(name, type);
         } else {
-            final RRset[] rrsets;
+            final List<RRset> rrsets;
             final Cache cache = getCache(dclass);
             if (glue) {
                 rrsets = cache.findAnyRecords(name, type);
             } else {
                 rrsets = cache.findRecords(name, type);
             }
-            if (rrsets == null) {
+            if (rrsets == null || rrsets.isEmpty()) {
                 return null;
             } else {
-                return rrsets[0]; /* not quite right */
+                return rrsets.get(0); /* not quite right */
             }
         }
     }
@@ -498,10 +498,7 @@ public class DNSServer {
             if (response.findRRset(name, rrset.getType(), s)) return;
         }
         if ((flags & FLAG_SIGONLY) == 0) {
-            @SuppressWarnings("unchecked")
-            final Iterator<Record> it = rrset.rrs();
-            while (it.hasNext()) {
-                final Record r = it.next();
+            for (final Record r : rrset.rrs()) {
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -510,10 +507,7 @@ public class DNSServer {
             }
         }
         if ((flags & (FLAG_SIGONLY | FLAG_DNSSECOK)) != 0) {
-            @SuppressWarnings("unchecked")
-            final Iterator<Record> it = rrset.sigs();
-            while (it.hasNext()) {
-                final Record r = it.next();
+            for (final Record r : rrset.sigs()) {
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -536,10 +530,7 @@ public class DNSServer {
         final SetResponse sr = cache.lookupRecords(name, Type.NS, Credibility.HINT);
         if (!sr.isDelegation()) return;
         final RRset nsRecords = sr.getNS();
-        @SuppressWarnings("unchecked")
-        final Iterator<Record> it = nsRecords.rrs();
-        while (it.hasNext()) {
-            final Record r = it.next();
+        for (final Record r : nsRecords.rrs()) {
             response.addRecord(r, Section.AUTHORITY);
         }
     }
@@ -552,8 +543,7 @@ public class DNSServer {
 
     private void addAdditional2(final Message response, final int section, final int flags) {
         final Record[] records = response.getSectionArray(section);
-        for (int i = 0; i < records.length; i++) {
-            final Record r = records[i];
+        for (final Record r : records) {
             final Name glueName = r.getAdditionalName();
             if (glueName != null) addGlue(response, glueName, flags);
         }
@@ -622,9 +612,10 @@ public class DNSServer {
                 response.getHeader().setFlag(Flags.AA);
             rcode = addAnswer(response, newname, type, dclass, iterations + 1, flags);
         } else if (sr.isSuccessful()) {
-            final RRset[] rrsets = sr.answers();
-            for (int i = 0; i < rrsets.length; i++)
-                addRRset(name, response, rrsets[i], Section.ANSWER, flags);
+            final List<RRset> rrsets = sr.answers();
+            for (final RRset rrset : rrsets) {
+                addRRset(name, response, rrset, Section.ANSWER, flags);
+            }
             if (zone != null) {
                 addNS(response, zone, flags);
                 if (iterations == 0)
@@ -638,9 +629,9 @@ public class DNSServer {
     byte[] doAXFR(final Name name, final Message query, final TSIG tsig, TSIGRecord qtsig, final Socket s) {
         final Zone zone = m_znames.get(name);
         boolean first = true;
-        if (zone == null)
+        if (zone == null) {
             return errorMessage(query, Rcode.REFUSED);
-        @SuppressWarnings("unchecked")
+        }
         final Iterator<RRset> it = zone.AXFR();
         try {
             final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());

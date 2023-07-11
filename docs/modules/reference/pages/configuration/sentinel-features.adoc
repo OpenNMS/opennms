@@ -1,4 +1,4 @@
-= Sentinel features
+= Sentinel Features
 
 The following list contains some features which may be installed manually:
 

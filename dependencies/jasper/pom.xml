@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>32.0.0</version>
+    <version>32.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -113,6 +113,13 @@
     <repository>
       <id>jaspersoft-third-party</id>
       <url>https://maven.opennms.org/repository/thirdparty/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 </project>

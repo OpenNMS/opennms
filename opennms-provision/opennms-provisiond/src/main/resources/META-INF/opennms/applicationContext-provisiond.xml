@@ -138,11 +138,13 @@
 -->
   		</list>
   	</property>
-  </bean> 
-  
+  </bean>
+
+  <bean id="scriptCache" class="org.opennms.netmgt.provision.persist.JSR223ScriptCache" />
+
   <!--  autowired -->
   <bean id="pluginRegistry" class="org.opennms.netmgt.provision.service.DefaultPluginRegistry" />
-  
+
   <!--  autowired -->
   <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService" />
   

@@ -85,8 +85,7 @@ public class Netflow9ProtobufValidationTest {
             Assert.assertEquals(flows.get(i).getFlowRecords(), jsonFlows.get(i).getFlowRecords());
             Assert.assertEquals(flows.get(i).getTimestamp(), jsonFlows.get(i).getTimestamp());
             Assert.assertEquals(flows.get(i).getBytes(), jsonFlows.get(i).getBytes());
-            Direction direction = jsonFlows.get(i).getDirection() != null ? jsonFlows.get(i).getDirection() : Direction.INGRESS;
-            Assert.assertEquals(flows.get(i).getDirection(), direction);
+            Assert.assertEquals(flows.get(i).getDirection(), jsonFlows.get(i).getDirection());
             Assert.assertEquals(flows.get(i).getFirstSwitched(), jsonFlows.get(i).getFirstSwitched());
             Assert.assertEquals(flows.get(i).getLastSwitched(), jsonFlows.get(i).getLastSwitched());
             Assert.assertEquals(flows.get(i).getDeltaSwitched(), jsonFlows.get(i).getDeltaSwitched());

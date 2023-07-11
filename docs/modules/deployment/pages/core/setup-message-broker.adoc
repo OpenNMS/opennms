@@ -1,5 +1,6 @@
 [[setup-message-broker]]
 = Set up Message Broker
+:description: Learn how to set up and configure the following message brokers in OpenNMS: Kafka, ActiveMQ, Embedded ActiveMQ, and gRPC.
 
 Distributing {page-component-title} components like Minions and Sentinel require a messaging infrastructure.
 This section describes how to set up your {page-component-title} Core instance to use an existing messaging infrastructure based on ActiveMQ or Apache Kafka.

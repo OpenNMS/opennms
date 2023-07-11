@@ -95,7 +95,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
 
     private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
+        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
         String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
 

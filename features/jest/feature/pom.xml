@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jest</artifactId>
-        <version>32.0.0</version>
+        <version>32.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.jest</groupId>
     <artifactId>opennms-jest</artifactId>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <version>1.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

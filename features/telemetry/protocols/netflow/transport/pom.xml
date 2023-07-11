@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.telemetry.protocols.netflow</artifactId>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
-    <version>32.0.0</version>
+    <version>32.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -41,7 +41,7 @@
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.9.0:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.16.3:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.24.0:exe:${os.detected.classifier}</pluginArtifact>
         </configuration>
