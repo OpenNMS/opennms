@@ -60,19 +60,23 @@ public class ConditionalKafkaOffsetContext {
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             final boolean kafkaSinkEnabled = KAFKA.equals(SinkStrategy.getSinkStrategy());
-            if (kafkaSinkEnabled) {
-                // Have to explicitly set disabled to true to disable otherwise defaults to enabled.
-                boolean disabled = Boolean.getBoolean(KAFKA_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
-                if (!disabled) {
-                    disabled = Boolean.getBoolean(KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
-                }
-                final var offsetEnabled = !disabled;
-                try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
-                    LOG.debug("Enable Kafka Offset: {}", offsetEnabled);
-                }
-                return offsetEnabled;
+            if (!kafkaSinkEnabled) {
+                return false;
             }
-            return kafkaSinkEnabled;
+            // Default to enabled, and require an explicit value to disable
+            boolean disabled = Boolean.getBoolean(KAFKA_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
+            if (!disabled) {
+                disabled = Boolean.getBoolean(KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX + "offset.disabled");
+            }
+            final var offsetEnabled = !disabled;
+            try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
+                if (offsetEnabled) {
+                    LOG.debug("Kafka offset provider is enabled.");
+                } else {
+                    LOG.debug("Kafka offset provider is disabled.");
+                }
+            }
+            return offsetEnabled;
         }
     }
 }
