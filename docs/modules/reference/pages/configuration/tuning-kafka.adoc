@@ -68,7 +68,7 @@ Create this file if it does not already exist.
 
 == Disable the Kafka offset provider
 
-{page-component-title} Core automatically monitors consumer offsets on Kafka to provide lag related metrics.
+{page-component-title} Core automatically monitors consumer offsets on Kafka to provide lag-related metrics.
 
 To disable the monitoring of these metrics you can set the following property:
 
