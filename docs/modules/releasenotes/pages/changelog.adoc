@@ -18,6 +18,7 @@ The codename for Horizon 32.0.1 is https://volt.fm/genre/3127/a-cappella[A Cappe
 * Various corrections/clarifications needed in Sentinel install/configure docs (Issue https://issues.opennms.org/browse/NMS-15708[NMS-15708])
 * Memory leak when using Groovy scripts in provisiond ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-15798[NMS-15798])
 * Polling fails when rrd-status is set to true (Issue https://issues.opennms.org/browse/NMS-15806[NMS-15806])
+* ALEC stopped working in 32.0.0 (Issue https://issues.opennms.org/browse/NMS-15808[NMS-15808])
 * Database deadlock triggered by NodeRestService (Issue https://issues.opennms.org/browse/NMS-15816[NMS-15816])
 * Some services do not persist the status (Issue https://issues.opennms.org/browse/NMS-15820[NMS-15820])
 
