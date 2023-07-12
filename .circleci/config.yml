@@ -84,8 +84,6 @@ workflows:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*                trigger-coverage    false
-            .*                trigger-flaky-smoke false
             ((?!docs/).)*     trigger-build       true
             docs/.*           trigger-docs        true
             ui/.*             trigger-ui          true
@@ -105,7 +103,6 @@ workflows:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            .*                trigger-coverage    false
             .*                trigger-flaky-smoke true
             ((?!docs/).)*     trigger-build       true
             docs/.*           trigger-docs        true
