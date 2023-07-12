@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -612,13 +612,13 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
             BeanItem<T> item = null;
             try {
                 item = new BeanItem<T>(m_datasource.createInstance(m_itemClass));
-            } catch (InstantiationException e) {
-                LoggerFactory.getLogger(getClass()).error("Class {} does not have a default constructor. Cannot create an instance.", getItemClass());
-            } catch (IllegalAccessException e) {
-                LoggerFactory.getLogger(getClass()).error("Class {} does not have a public default constructor. Cannot create an instance.", getItemClass());
+            } catch (InstantiationException|IllegalAccessException e) {
+                LoggerFactory.getLogger(getClass()).error("Class {} does not have a valid constructor. Cannot create an instance.", getItemClass());
             }
-            for (Object key : item.getItemPropertyIds()) {
-                m_properties.put(key, item.getItemProperty(key).getType());
+            if (item != null) {
+                for (Object key : item.getItemPropertyIds()) {
+                    m_properties.put(key, item.getItemProperty(key).getType());
+                }
             }
         }
     }

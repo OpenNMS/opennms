@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -123,8 +123,9 @@ public final class SnmpResponseHandler implements SnmpHandler {
         return getResponseString(0);
     }
     
-    public SnmpSyntax getResponseValue(int index) {
-        return getResponseVarBind(index).getValue();
+    public SnmpSyntax getResponseValue(final int index) {
+        final var vb = getResponseVarBind(index);
+        return vb == null ? null : vb.getValue();
     }
     
     public String getResponseString(int index) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,7 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.jrobin.core.RrdException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.newts.support.NewtsUtils;
@@ -514,10 +515,11 @@ public class NewtsConverter implements AutoCloseable {
                 break;
 
             default:
-                file = null;
+                LOG.error("Unhandled storage type: {}", this.storageTool);
+                return;
         }
 
-        if (!Files.exists(file)) {
+        if (file == null || !Files.exists(file)) {
             LOG.error("File not found: {}", file);
             return;
         }
@@ -536,8 +538,7 @@ public class NewtsConverter implements AutoCloseable {
                 default:
                     rrd = null;
             }
-
-        } catch (final Exception e) {
+        } catch (final IOException|RrdException e) {
             LOG.error("Can't parse JRB/RRD file: {}", file, e);
             return;
         }

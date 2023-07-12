@@ -963,6 +963,7 @@ public class ParserStageSequenceBuilder {
 		public Integer getValue(ParserStageState state) {
 			// Trim the leading zeros from this value
 			String value = getAccumulatedValue(state);
+			if (value == null) return null;
 			boolean trimmed = false;
 			while (value.startsWith("0")) {
 				value = value.substring(1);
@@ -1020,6 +1021,7 @@ public class ParserStageSequenceBuilder {
 		 * @param value
 		 * @return
 		 */
+        @SuppressWarnings("java:S2259") // HOW exactly is trimmed nullable? it's a primitive!
 		public static int trimAndConvert(String value) {
 		    if (value == null) {
 		        return 0;

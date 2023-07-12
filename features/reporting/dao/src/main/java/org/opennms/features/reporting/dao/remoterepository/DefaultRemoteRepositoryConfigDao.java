@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -101,13 +101,14 @@ public class DefaultRemoteRepositoryConfigDao implements
             file = m_configResource.getFile();
             Assert.notNull(file, "config file must be set to a non-null value");
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource, e);
+            return;
         }
 
         setRemoteRepositoryConfig(JaxbUtils.unmarshal(RemoteRepositoryConfig.class, file));
         Assert.notNull(m_remoteRepositoryConfig, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
-        logger.debug("Remote repository configuration assigned: '{}'", m_remoteRepositoryConfig.toString());
+        logger.debug("Remote repository configuration assigned: '{}'", m_remoteRepositoryConfig);
 
         //TODO indigo: The jasper report version should be configured here?
         setJasperReportsVersion(m_remoteRepositoryConfig.getJasperReportsVersion());

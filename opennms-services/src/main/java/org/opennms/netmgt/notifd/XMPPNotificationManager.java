@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -157,7 +157,7 @@ public class XMPPNotificationManager {
 			} catch (IOException e) {
 				LOG.warn("{} not readable", ConfigFileConstants.XMPP_CONFIG_FILE_NAME, e);
 			}
-			if (Boolean.getBoolean("useSystemXMPPConfig") || !config.canRead()) {
+			if (Boolean.getBoolean("useSystemXMPPConfig") || config == null || !config.canRead()) {
 				this.props.putAll(System.getProperties());
 			} else {
 				FileInputStream fis = null;

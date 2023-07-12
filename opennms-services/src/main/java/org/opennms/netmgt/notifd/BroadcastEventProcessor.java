@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -471,6 +471,12 @@ public final class BroadcastEventProcessor implements EventListener {
                 noticeQueue = m_noticeQueues.get(queueID);
             }
         }
+
+        if (noticeQueue == null) {
+            LOG.warn("unable to retrieve notification queue for id {}", queueID);
+            return;
+        }
+
         long now = System.currentTimeMillis();
 
         if (getUserManager().hasUser(targetName)) {
@@ -482,10 +488,8 @@ public final class BroadcastEventProcessor implements EventListener {
         } else if (targetName.indexOf('@') > -1) {
             NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
 
-            if (newTask != null) {
-                synchronized (noticeQueue) {
-                    noticeQueue.putItem(now, newTask);
-                }
+            synchronized (noticeQueue) {
+                noticeQueue.putItem(now, newTask);
             }
         } else {
             LOG.warn("Unrecognized target '{}' contained in destinationPaths.xml. Please check the configuration.", targetName);

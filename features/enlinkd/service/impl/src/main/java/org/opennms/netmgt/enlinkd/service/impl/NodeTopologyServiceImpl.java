@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -129,21 +129,18 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
                 .collect(Collectors.toSet());
     }
 
-    private SubNetwork getNextSubnetwork(final Set<SubNetwork> subNetworks) {
+    private static SubNetwork getNextSubnetwork(final Set<SubNetwork> subNetworks) {
         SubNetwork starting = null;
-        for (SubNetwork subnet : subNetworks) {
+        for (final var subnet : subNetworks) {
             if (starting == null) {
                 starting=subnet;
-                continue;
-            }
-            if (starting.getNodeIds().size() < subnet.getNodeIds().size()) {
+            } else  if (starting.getNodeIds().size() < subnet.getNodeIds().size()) {
                 starting = subnet;
-                continue;
-            }
-            if (starting.getNodeIds().size() == subnet.getNodeIds().size()
-                    &&
-                    InetAddressUtils.difference(starting.getNetwork(), subnet.getNetwork()).signum() > 0) {
-                starting = subnet;
+            } else {
+                if (starting.getNodeIds().size() == subnet.getNodeIds().size()
+                        && InetAddressUtils.difference(starting.getNetwork(), subnet.getNetwork()).signum() > 0) {
+                    starting = subnet;
+                }
             }
         }
         return starting;
@@ -193,9 +190,13 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         LOG.info("getNodeidPriorityMap: subnetworks.size: {}",  allLegalSubnets.size());
         int priority = 0;
         int loop = 0;
-        while (allLegalSubnets.size() > 0) {
+        while (!allLegalSubnets.isEmpty()) {
             loop++;
-            SubNetwork start = getNextSubnetwork(allLegalSubnets);
+            final var start = getNextSubnetwork(allLegalSubnets);
+            if (start == null) {
+                LOG.warn("List of legal subnets isn't completely processed, but we were unable to match next subnetwork. Stopping processing. remainder={}", allLegalSubnets);
+                break;
+            }
             allLegalSubnets.remove(start);
             LOG.info("getNodeidPriorityMap: loop-{}: start: {}", loop,  start);
             LOG.info("getNodeidPriorityMap: loop-{}: priority: {}", loop,  priority);

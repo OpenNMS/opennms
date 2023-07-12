@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,7 +73,7 @@ public class PeerHeader {
 
         this.distinguisher = uint64(buffer);
 
-        this.address = this.flags.parsePaddedAddress(buffer);
+        this.address = this.flags == null? null : this.flags.parsePaddedAddress(buffer);
 
         this.as = uint32(buffer);
         this.id = InetAddressUtils.getInetAddress(bytes(buffer, 4));

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ package org.opennms.netmgt.provision.persist.requisition;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -220,12 +221,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
-        result = prime * result + ((m_metaData == null) ? 0 : m_categories.hashCode());
-        result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
-        return result;
+        return Objects.hash(m_categories, m_metaData, m_serviceName);
     }
 
     @Override
@@ -233,23 +229,10 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof RequisitionMonitoredService)) return false;
-        final RequisitionMonitoredService other = (RequisitionMonitoredService) obj;
-        if (m_categories == null) {
-            if (other.m_categories != null) return false;
-        } else if (!m_categories.equals(other.m_categories)) {
-            return false;
-        }
-        if (m_metaData == null) {
-            if (other.m_metaData != null) return false;
-        } else if (!m_metaData.equals(other.m_metaData)) {
-            return false;
-        }
-        if (m_serviceName == null) {
-            if (other.m_serviceName != null) return false;
-        } else if (!m_serviceName.equals(other.m_serviceName)) {
-            return false;
-        }
-        return true;
+        final RequisitionMonitoredService that = (RequisitionMonitoredService) obj;
+        return Objects.deepEquals(this.m_categories, that.m_categories)
+                && Objects.deepEquals(this.m_metaData, that.m_metaData)
+                && Objects.equals(this.m_serviceName, that.m_serviceName);
     }
 
     @Override

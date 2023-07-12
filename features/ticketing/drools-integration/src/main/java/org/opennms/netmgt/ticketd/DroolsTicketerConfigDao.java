@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.ticketd;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -48,8 +49,8 @@ public class DroolsTicketerConfigDao {
 	 * Retrieves the properties defined in the drools-ticketer.properties file.
 	 * 
 	 */
-	private Configuration getProperties() {
-		String propsFile = new String(System.getProperty("opennms.home") + "/etc/drools-ticketer.properties");
+	private static Configuration getProperties() {
+		String propsFile = System.getProperty("opennms.home") + "/etc/drools-ticketer.properties";
 		LOG.debug("loading properties from: {}", propsFile);
 		Configuration config = null;
 		
@@ -63,6 +64,7 @@ public class DroolsTicketerConfigDao {
 	}
 	
 	public File getRulesFile() {
-		return new File(getProperties().getString("drools-ticketer.rules-file"));
+		final var properties = Objects.requireNonNull(getProperties());
+        return new File(properties.getString("drools-ticketer.rules-file"));
 	}
 }

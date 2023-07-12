@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,11 +64,13 @@ import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
 import org.opennms.web.utils.ResponseUtils;
 import org.opennms.web.utils.UriInfoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class ClassificationRestServiceImpl implements ClassificationRestService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ClassificationRestServiceImpl.class);
     private final ClassificationService classificationService;
 
     public ClassificationRestServiceImpl(ClassificationService classificationService) {
@@ -132,6 +134,9 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     @Override
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
+        if (rule == null) {
+            LOG.debug("attempted to save a null rule");
+        }
         rule.setId(null);
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
@@ -166,8 +171,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     @Override
     public Response updateRule(int id, RuleDTO newValue) {
         // Update
-        final Rule rule = classificationService.getRule(id);
-        final Rule newRule = convert(newValue);
+        final Rule rule = Objects.requireNonNull(classificationService.getRule(id));
+        final Rule newRule = Objects.requireNonNull(convert(newValue));
         rule.setProtocol(newRule.getProtocol());
         rule.setDstPort(newRule.getDstPort());
         rule.setDstAddress(newRule.getDstAddress());
@@ -187,7 +192,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         Integer newPosition = newValue.getPosition();
         if(newPosition != null) {
             int oldPosition = rule.getPosition();
-            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+            int newComputedPosition = (newPosition > oldPosition) ? (newPosition + 1) : newPosition;
             rule.setPosition(newComputedPosition);
         }
 
@@ -265,7 +270,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
 
     @Override
     public Response saveGroup(GroupDTO groupDTO) {
-        final Group group = convert(groupDTO);
+        final Group group = Objects.requireNonNull(convert(groupDTO));
         group.setId(null);
         final int groupId = classificationService.saveGroup(group);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);

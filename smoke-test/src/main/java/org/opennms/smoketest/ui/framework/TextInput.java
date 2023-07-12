@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,16 +44,15 @@ public class TextInput extends UiElement {
         final WebElement element = execute(() -> driver.findElement(By.id(elementId)));
         if (!Objects.equals(element.getText(), newInput)) {
             element.clear();
-            if (newInput != null && !newInput.equals("")) {
+            if (newInput != null && !newInput.isEmpty()) {
                 element.sendKeys(newInput);
             }
         }
     }
 
     public void setInput(Integer newInput) {
-        if (newInput == null) {
-            setInput("");
+        if (newInput != null) {
+            setInput(newInput.toString());
         }
-        setInput(newInput.toString());
     }
 }

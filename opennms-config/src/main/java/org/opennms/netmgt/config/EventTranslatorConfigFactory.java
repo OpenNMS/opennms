@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -384,6 +384,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         private Event cloneEvent(Event srcEvent) {
             Event clonedEvent = EventTranslatorConfigFactory.cloneEvent(srcEvent);
+            if (clonedEvent == null) {
+                throw new IllegalStateException("unable to clone event: " + srcEvent);
+            }
             /* since alarmData and severity are computed based on translated information in 
              * eventd using the data from eventconf, we unset it here to eventd
              * can reset to the proper new settings.
