@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config.service;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,11 +38,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlEnum
 public enum InvokeAtType {
     @XmlEnumValue("start")
-    START,
+    START("Start", "Starting"),
     
     @XmlEnumValue("stop")
-    STOP,
+    STOP("Stop", "Stopping"),
     
     @XmlEnumValue("status")
-    STATUS
+    STATUS("Status", "Getting status");
+
+
+    private final String label;
+    private final String presentParticiple;
+
+    InvokeAtType(String label, String presentParticiple) {
+        this.label = Objects.requireNonNull(label);
+        this.presentParticiple = Objects.requireNonNull(presentParticiple);
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getPresentParticiple() { return presentParticiple; }
 }

@@ -50,6 +50,9 @@
               org.apache.activemq.security;resolution:=optional,
               org.opennms.features.activemq.broker.api;resolution:=optional,
               org.opennms.features.activemq.broker.impl;resolution:=optional,
+              <!-- These are only used by the Starter class -->
+              me.tongfei.progressbar;resolution:=optional,
+              me.tongfei.progressbar.wrapped;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
@@ -62,6 +65,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -182,6 +189,10 @@
       <artifactId>org.opennms.features.config.mock</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.tongfei</groupId>
+      <artifactId>progressbar</artifactId>
     </dependency>
   </dependencies>
 </project>

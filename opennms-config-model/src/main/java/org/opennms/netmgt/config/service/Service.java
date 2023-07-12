@@ -89,6 +89,9 @@ public class Service implements Serializable {
         return m_name;
     }
 
+    @XmlTransient
+    public String getShortName() { return m_name.replaceFirst("^OpenNMS:Name=", ""); };
+
     public void setName(final String name) {
         m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
