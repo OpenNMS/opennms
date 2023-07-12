@@ -10,4 +10,6 @@
     <!-- Conditionally load the Kafka Sink -->
     <bean class="org.opennms.core.ipc.sink.kafka.server.ConditionalKafkaSinkContext"/>
 
+    <!-- Conditionally load the Kafka Offset -->
+    <bean class="org.opennms.core.ipc.sink.kafka.server.ConditionalKafkaOffsetContext"/>
 </beans>

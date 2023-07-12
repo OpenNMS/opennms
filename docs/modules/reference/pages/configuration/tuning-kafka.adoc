@@ -65,3 +65,15 @@ single-topic=false
 org.opennms.core.ipc.rpc.kafka.single-topic=false
 ----
 Create this file if it does not already exist.
+
+== Disable the Kafka offset provider
+
+{page-component-title} Core automatically monitors consumer offsets on Kafka to provide lag-related metrics.
+
+To disable the monitoring of these metrics you can set the following property:
+
+.Disable offset provider on `$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties`
+[source, properties]
+----
+org.opennms.core.ipc.kafka.offset.disabled=true
+----
