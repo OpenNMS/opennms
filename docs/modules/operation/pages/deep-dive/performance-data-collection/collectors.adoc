@@ -1,6 +1,7 @@
 
 [[collectors-overview]]
 = Collectors
+:description: Overview of collectors in OpenNMS Horizon/Meridian to gather and store performance metrics via specific agents and protocols.
 
 Collectd uses collectors to gather and store performance metrics via specific agents and protocols.
 This section includes information for the collector types available in {page-component-title}.
