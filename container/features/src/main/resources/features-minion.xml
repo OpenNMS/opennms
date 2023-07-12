@@ -134,7 +134,7 @@
       <feature>opennms-dnsresolver-api</feature>
       <feature>dropwizard-metrics</feature>
       <feature>opennms-util</feature>
-      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
       <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
