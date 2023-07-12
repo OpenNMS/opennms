@@ -14,22 +14,22 @@ filter_exists()
 
 generate_jacoco_report_files()
 {
-  find . -type f '!' -path './.git/*' -name jacoco.xml
+  find . -type f '!' -path './.git/*' -name jacoco.xml | sort -u
 }
 
 generate_junit_report_folders()
 {
-  find . -type d '!' -path './.git/*' -a \( -name surefire-reports\* -o -name failsafe-reports\* \)
+  find . -type d '!' -path './.git/*' -a \( -name surefire-reports\* -o -name failsafe-reports\* \) | sort -u
 }
 
 generate_class_folders()
 {
   generate_junit_report_folders \
     | sed -e 's,/\(surefire-reports\|failsafe-reports\).*$,,' \
-    | sort -u \
     | while read -r DIR; do
       find "$DIR" -maxdepth 1 -type d -name classes
     done \
+    | sort -u \
     | filter_exists
 }
 
@@ -37,10 +37,10 @@ generate_test_class_folders()
 {
   generate_junit_report_folders \
     | sed -e 's,/\(surefire-reports\|failsafe-reports\).*$,,' \
-    | sort -u \
     | while read -r DIR; do
       find "$DIR" -maxdepth 1 -type d -name test-classes
     done \
+    | sort -u \
     | filter_exists
 }
 
@@ -48,11 +48,11 @@ generate_source_folders()
 {
   find . -type d '!' -path './.git/*' -name target \
     | sed -e 's,/target,/src,' \
-    | sort -u \
     | while read -r DIR; do
       echo "${DIR}/main"
       echo "${DIR}/assembly"
     done \
+    | sort -u \
     | filter_exists
 }
 
@@ -60,10 +60,10 @@ generate_test_folders()
 {
   find . -type d '!' -path './.git/*' -name target \
     | sed -e 's,/target,/src,' \
-    | sort -u \
     | while read -r DIR; do
       echo "${DIR}/test"
     done \
+    | sort -u \
     | filter_exists
 }
 

@@ -32,7 +32,7 @@ for TYPE in minion; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
   # in Azure, only push the "branchname-arch" version of the individual ones
-  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | while read -r _file; do
+  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | sort -u | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
     _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _internal_tag="opennms/${_file_tag}"

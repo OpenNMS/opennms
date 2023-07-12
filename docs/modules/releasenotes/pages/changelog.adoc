@@ -1,6 +1,31 @@
 [[release-32-changelog]]
 
 = Changelog
+[[releasenotes-changelog-32.0.1]]
+
+== Release 32.0.1
+
+Horizon 32.0.1 includes several general bug fixes and documentation improvements.
+
+The codename for Horizon 32.0.1 is https://volt.fm/genre/3127/a-cappella[A Cappella].
+
+=== Bug
+
+* Database threads stuck idle_in_transaction (Issue https://issues.opennms.org/browse/NMS-15108[NMS-15108])
+* Use UNKNOWN direction when not set in Netflow 9 or IPFIX template (Issue https://issues.opennms.org/browse/NMS-15134[NMS-15134])
+* Minion connectivity config docs start the user in the wrong directory (Issue https://issues.opennms.org/browse/NMS-15618[NMS-15618])
+* Docs need an update on what a Minion is able to do (Issue https://issues.opennms.org/browse/NMS-15620[NMS-15620])
+* Various corrections/clarifications needed in Sentinel install/configure docs (Issue https://issues.opennms.org/browse/NMS-15708[NMS-15708])
+* Memory leak when using Groovy scripts in provisiond ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-15798[NMS-15798])
+* Polling fails when rrd-status is set to true (Issue https://issues.opennms.org/browse/NMS-15806[NMS-15806])
+* ALEC stopped working in 32.0.0 (Issue https://issues.opennms.org/browse/NMS-15808[NMS-15808])
+* Database deadlock triggered by NodeRestService (Issue https://issues.opennms.org/browse/NMS-15816[NMS-15816])
+* Some services do not persist the status (Issue https://issues.opennms.org/browse/NMS-15820[NMS-15820])
+
+=== Enhancement
+
+* Update to alarm docs (Issue https://issues.opennms.org/browse/NMS-15584[NMS-15584])
+* Update Minion Docker install keystore instructions (Issue https://issues.opennms.org/browse/NMS-15803[NMS-15803])
 
 [[releasenotes-changelog-32.0.0]]
 
