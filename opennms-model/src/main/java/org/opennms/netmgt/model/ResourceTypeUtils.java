@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -198,6 +198,7 @@ public abstract class ResourceTypeUtils {
      */
     public static int getNumPathElementsToNodeLevel(ResourcePath path) {
         final String[] elements = path.elements();
+        if (elements == null) return -1;
         if (elements.length >= 2
                 && ResourceTypeUtils.SNMP_DIRECTORY.equals(elements[0])
                 && !ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(elements[1])) {
