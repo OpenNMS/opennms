@@ -48,3 +48,6 @@ opennms-container/*/tarball/*.tar.gz
 # Python
 *.pyc
 __pycache__
+
+# JavaScript
+.eslintcache
