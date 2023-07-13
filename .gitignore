@@ -55,3 +55,6 @@ __pycache__
 
 # Ignore jenv local version files
 .java-version
+
+# JavaScript
+.eslintcache
