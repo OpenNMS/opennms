@@ -440,11 +440,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    protected String sendRequest(String requestType, String url, Map<?,?> parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, Map<String,?> parameters, int expectedStatus) throws Exception {
         return sendRequest(requestType, url, parameters, expectedStatus, null);
     }
 
-    protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
+    protected String sendRequest(final String requestType, final String url, final Map<String,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

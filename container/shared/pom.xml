@@ -55,7 +55,7 @@
                         <feature>wrapper</feature>
 
                         <!-- OPENNMS: Add Spring features that we need in the base container -->
-                        <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
+                        <!-- These versions match the versions shipped with Apache Karaf -->
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
                         <feature>spring/4.2.9.RELEASE_1</feature>
