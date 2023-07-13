@@ -134,7 +134,9 @@ public class RequisitionAccountant extends AbstractRequisitionVisitor {
     @Override
     public void completeModelImport(Requisition req) {
         LOG.debug("Waiting for {} scheduled DNS lookups, {} DNS lookups pending", dnsLookupsTotal(), dnsLookupsPending());
-        CompletableFuture.allOf(m_dnsLookups.toArray(CompletableFuture[]::new)).join();
+
+        m_dnsLookups.stream().map(CompletableFuture::join);
+
         LOG.debug("All {} scheduled DNS lookups completed", dnsLookupsTotal());
     }
 }

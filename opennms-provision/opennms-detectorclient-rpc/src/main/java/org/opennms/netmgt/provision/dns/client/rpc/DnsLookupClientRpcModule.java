@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.dns.client.rpc;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.core.utils.InetAddressUtils;
@@ -38,28 +40,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.Address;
 
-import io.github.resilience4j.bulkhead.ThreadPoolBulkhead;
-import io.github.resilience4j.bulkhead.ThreadPoolBulkheadConfig;
-
 public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequestDTO, DnsLookupResponseDTO> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DnsLookupClientRpcModule.class);
 
     public static final String RPC_MODULE_ID = "DNS";
 
-    private final ThreadPoolBulkhead threadPoolBulkhead;
+    private final ExecutorService executorService;
 
-    public DnsLookupClientRpcModule(final int maxThreadPoolSize, final int queueCapacity) {
+    public DnsLookupClientRpcModule(final int threadCount) {
         super(DnsLookupRequestDTO.class, DnsLookupResponseDTO.class);
 
-        final ThreadPoolBulkheadConfig threadPoolBulkheadConfig = ThreadPoolBulkheadConfig.custom()
-                .queueCapacity(queueCapacity)
-                .maxThreadPoolSize(maxThreadPoolSize)
-                .build();
+        this.executorService = Executors.newFixedThreadPool(threadCount);
 
-        this.threadPoolBulkhead = ThreadPoolBulkhead.of("dns-lookup-rpc-module", threadPoolBulkheadConfig);
-
-        LOG.debug("Configuring ThreadPoolBulkhead: maxThreadPoolSize={}, queueSize={}", maxThreadPoolSize, queueCapacity);
+        LOG.debug("Configuring fixed-sized ThreadPool using threadCount={}", threadCount);
     }
 
     @Override
@@ -74,7 +68,7 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        return this.threadPoolBulkhead.submit(() -> {
+        return CompletableFuture.supplyAsync(() -> {
                 final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
                 final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
                 final QueryType queryType = request.getQueryType();
@@ -99,6 +93,6 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
                     dto.setHostResponse(hostName);
                 }
                 return dto;
-        }).toCompletableFuture();
+        }, this.executorService);
     }
 }

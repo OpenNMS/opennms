@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,14 @@ public final class DefaultHostnameResolver implements HostnameResolver {
     @Override
     public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
         LOG.debug("Performing reverse lookup on {} at location {}", addr, location);
-        return m_locationAwareDnsLookupClient.reverseLookup(addr, location);
+        return m_locationAwareDnsLookupClient.reverseLookup(addr, location).handle((result, e) -> {
+            if (e == null) {
+                LOG.debug("Reverse lookup returned {} for {} at location {}", result, addr, location);
+                return result;
+            } else {
+                LOG.warn("Reverse lookup failed for {} at location {}. Using IP address as hostname.", addr, location);
+                return InetAddressUtils.str(addr);
+            }
+        });
     }
 }

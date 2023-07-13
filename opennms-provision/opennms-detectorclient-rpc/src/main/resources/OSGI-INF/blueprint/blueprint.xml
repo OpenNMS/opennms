@@ -13,8 +13,7 @@
 
     <cm:property-placeholder id="dnsLookupProperties" persistent-id="org.opennms.netmgt.provision.dns.client.rpc" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="queueCapacity" value="4096"/>
-            <cm:property name="maxThreadPoolSize" value="64"/>
+            <cm:property name="threadCount" value="64"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -28,8 +27,7 @@
 
     <service interface="org.opennms.core.rpc.api.RpcModule">
         <bean class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule">
-            <argument value="${maxThreadPoolSize}"/>
-            <argument value="${queueCapacity}"/>
+            <argument value="${threadCount}"/>
         </bean>
     </service>
 
