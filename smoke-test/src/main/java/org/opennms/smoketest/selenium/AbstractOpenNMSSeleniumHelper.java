@@ -124,6 +124,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public static final String BASIC_AUTH_USERNAME = "admin";
     public static final String BASIC_AUTH_PASSWORD = "admin";
 
+    // username/password combination that triggers the password gate, which prompts
+    // user to change the default "admin" password
+    public static final String PASSWORD_GATE_USERNAME = "admin";
+    public static final String PASSWORD_GATE_PASSWORD = "admin";
+
     public static final String REQUISITION_NAME   = "SeleniumTestGroup";
     public static final String USER_NAME          = "SmokeTestUser";
     public static final String GROUP_NAME         = "SmokeTestGroup";
@@ -286,7 +291,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         wait.until((WebDriver driver) -> {
             return ! driver.getCurrentUrl().contains("login.jsp");
         });
+
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+
         invokeWithImplicitWait(0, () -> {
             try {
                 // Make sure that the 'login-attempt-failed' element is not present
@@ -297,9 +304,20 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             }
         });
 
+        // login with "admin/admin" will result in the passwordGate page, click "Skip" to continue
+        if (BASIC_AUTH_USERNAME.equals(PASSWORD_GATE_USERNAME) && BASIC_AUTH_PASSWORD.equals(PASSWORD_GATE_PASSWORD)) {
+            clickElement(By.id("btn_skip"));
+
+            wait.until((WebDriver driver) -> {
+                return !driver.getCurrentUrl().contains("passwordGate.jsp");
+            });
+        }
+
+        // close the Usage Statistics Sharing dialog if present
         invokeWithImplicitWait(0, () -> {
             try {
                 WebElement element = findElementById("usage-statistics-sharing-modal");
+
                 if (element.isDisplayed()) { // usage statistics modal is visible
                     findElementById("usage-statistics-sharing-notice-dismiss").click(); // close modal
                 }

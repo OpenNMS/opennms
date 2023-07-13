@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -36,29 +36,47 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 
-/**
- * A servlet that handles changing a user's password
- */
-public class NewPasswordActionServlet extends AbstractBasePasswordChangeActionServlet {
+public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionServlet {
     private static final long serialVersionUID = 1L;
 
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initUserFactory("NewPasswordActionServlet");
+        initUserFactory("PasswordGateActionServlet");
 
-        HttpSession userSession = request.getSession(false);
-        UserManager userFactory = UserFactory.getInstance();
+        final String skip = request.getParameter("skip");
 
-        User user = (User) userSession.getAttribute("user.newPassword.jsp");
-        String currentPassword = request.getParameter("currentPassword");
-        String newPassword = request.getParameter("newPassword");
+        if (skip != null && skip.equals("1")) {
+            // skip was clicked, redirect either back to originally requested page or to the main page
+            response.sendRedirect(getRedirectPath(request, response));
+            return;
+        }
+
+        final UserManager userFactory = UserFactory.getInstance();
+        final String userid = request.getRemoteUser();
+        final User user = userFactory.getUser(userid);
 
         readonlyUserCheck(request, user);
 
+        final HttpSession userSession = request.getSession(false);
+        final String currentPassword = request.getParameter("currentPassword");
+        final String newPassword = request.getParameter("newPassword");
+
         verifyAndChangePassword(userFactory, userSession, user,
             request, response, currentPassword, newPassword,
-            "/account/selfService/newPassword.jsp?action=redo");
+            "/account/selfService/passwordGate.jsp?action=redo");
+    }
+
+    private String getRedirectPath(HttpServletRequest request, HttpServletResponse response) {
+        final RequestCache requestCache = new HttpSessionRequestCache();
+        final DefaultSavedRequest savedRequest = (DefaultSavedRequest) requestCache.getRequest(request, response);
+        final String servletPath = savedRequest != null ? savedRequest.getServletPath() : null;
+        final String path = servletPath != null && !servletPath.isEmpty() ? servletPath : "/index.jsp";
+
+        return request.getContextPath() + path;
     }
 }
