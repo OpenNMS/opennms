@@ -712,7 +712,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <configuration>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
@@ -1694,7 +1694,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.6</jschVersion>
-    <jsonVersion>20230227</jsonVersion>
+    <jsonVersion>20230618</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>

@@ -8,6 +8,7 @@ module.exports = {
     'allowImportExportEverywhere': true,
     'ecmaVersion': 2018,
     'sourceType': 'module',
+    'project': true,
   },
   extends: [
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
