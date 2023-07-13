@@ -110,7 +110,7 @@
                         <%-- Standard fields with typeahead suggestions --%>
                         <input type="text" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='text'"
                           typeahead-editable="true" typeahead-min-length="0" ng-pattern="field.pattern"
-                          uib-typeahead="suggestion for suggestion in getSuggestions(field.model) | filter:$viewValue"
+                          uib-typeahead="_.escape(suggestion) for suggestion in getSuggestions(field.model) | filter:$viewValue"
                           ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine }">
                         <%-- Password fields --%>
                         <%-- Set `autocomplete="new-password"` to prevent autocomplete.
