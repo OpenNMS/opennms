@@ -83,12 +83,12 @@
 </c:url>
 <c:url var="interfaceLink" value="element/interface.jsp">
   <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-  <c:param name="intf" value="<%=ipAddr%>"/>
+  <c:param name="intf" value="<%=WebSecurityUtils.sanitizeString(ipAddr)%>"/>
 </c:url>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Interface Deleted" />
-  <jsp:param name="headTitle" value="<%= ipAddr %>" />
+  <jsp:param name="headTitle" value="<%= WebSecurityUtils.sanitizeString(ipAddr) %>" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
   <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
@@ -98,9 +98,9 @@
 <div class="card">
   <div class="card-header">
     <% if (ifIndex == -1) { %>
-    <span>Finished Deleting Interface <%= ipAddr %></span>
+    <span>Finished Deleting Interface <%= WebSecurityUtils.sanitizeString(ipAddr) %></span>
     <% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
-    <span>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></span>
+    <span>Finished Deleting Interface <%= WebSecurityUtils.sanitizeString(ipAddr) %> with ifIndex <%= ifIndex %></span>
     <% } else { %>
     <span>Finished Deleting Interface with ifIndex <%= ifIndex %></span>
     <% } %>

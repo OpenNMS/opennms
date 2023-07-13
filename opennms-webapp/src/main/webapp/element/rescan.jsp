@@ -72,7 +72,7 @@
 	<c:otherwise>
 		<c:url var="interfaceLink" value="element/interface.jsp">
 			<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-			<c:param name="intf" value="<%=ipAddr%>"/>
+			<c:param name="intf" value="<%=WebSecurityUtils.sanitizeString(ipAddr)%>"/>
 		</c:url>
 		<c:set var="returnUrl" value="${interfaceLink}"/>
 		<jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -99,7 +99,7 @@
           <% if( ipAddr==null ) { %>
             node?
           <% } else { %>
-            interface <%=ipAddr%>?
+            interface <%= WebSecurityUtils.sanitizeString(ipAddr) %>?
           <% } %>
         </p>        
         <form method="post" action="element/rescan">
