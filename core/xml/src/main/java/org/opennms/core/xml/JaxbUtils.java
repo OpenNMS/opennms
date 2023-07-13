@@ -305,9 +305,9 @@ public abstract class JaxbUtils {
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
         if (disableDOCTYPE) {
             xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         }
+        xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
         filter.setParent(xmlReader);
