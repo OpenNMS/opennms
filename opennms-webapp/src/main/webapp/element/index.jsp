@@ -36,6 +36,7 @@
 		org.opennms.web.element.*,
 		org.opennms.web.asset.*,
 		org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%!
     protected AssetModel model;
@@ -155,7 +156,7 @@
               <div class="input-group">
                   <select class="custom-select" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
                       <% for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) { %>
-                      <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%>
+                      <option value="<%=WebSecurityUtils.sanitizeString(monitoringLocation.getLocationName())%>"><%=WebSecurityUtils.sanitizeString(monitoringLocation.getLocationName())%>
                       </option>
                       <% } %>
                   </select>

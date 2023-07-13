@@ -44,6 +44,7 @@
   org.opennms.web.admin.discovery.ActionDiscoveryServlet,
   org.opennms.web.admin.discovery.DiscoveryScanServlet
 "%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -146,7 +147,7 @@ function doAddIncludeUrl() {
             <select id="foreignsource" class="form-control custom-select" name="foreignsource">
               <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
               <% for (String key : foreignsources.keySet()) { %>
-                <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
+                <option value="<%=WebSecurityUtils.sanitizeString(key)%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=WebSecurityUtils.sanitizeString(foreignsources.get(key))%></option>
               <% } %>
             </select>
           </div>
@@ -156,7 +157,7 @@ function doAddIncludeUrl() {
           <div class="col-sm-10">
             <select id="location" class="form-control custom-select" name="location">
               <% for (String key : locations.keySet()) { %>
-                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                <option value="<%=WebSecurityUtils.sanitizeString(key)%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=WebSecurityUtils.sanitizeString(locations.get(key))%></option>
               <% } %>
             </select>
           </div>
