@@ -122,7 +122,7 @@ LABEL
 <h3>Node: <%=node_db.getLabel()%></h3>
 
 <% if (task != null) { %>
-  <h2><%=task%></h2>
+  <h2><%= WebSecurityUtils.sanitizeString(task) %></h2>
 <% } %>
 
 <p>

@@ -77,7 +77,7 @@
       action="admin/notification/noticeWizard/notificationWizard" >
   <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_PATH_OUTAGE%>"/>
   <input type="hidden" name="nextPage" value=""/>
-  <input type="hidden" name="returnTo" value="<%= returnTo%>"/>
+  <input type="hidden" name="returnTo" value="<%= WebSecurityUtils.sanitizeString(returnTo) %>"/>
 
     <% String mode = request.getParameter("mode");
        if (mode != null && mode.endsWith("failed")) { %>
