@@ -116,7 +116,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>3.5.2</version>
+      <version>3.5.3</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -1721,7 +1721,7 @@
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.2</mavenApiVersion>
+    <mavenApiVersion>3.9.3</mavenApiVersion>
     <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
