@@ -327,7 +327,8 @@ public class ActionDiscoveryServlet extends HttpServlet {
             }
 
             if (proxy == null) {
-                throw new IllegalStateException("unable to get event proxy");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "unable to get event proxy");
+                return;
             }
 
             EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");
