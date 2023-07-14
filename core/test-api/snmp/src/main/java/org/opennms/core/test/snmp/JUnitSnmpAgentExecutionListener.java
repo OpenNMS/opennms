@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -142,11 +142,11 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         }
 
         // Put the strategy class property back the way it was before the tests.
-        final String strategyClass = (String)testContext.getAttribute(STRATEGY_CLASS_KEY);
+        final Object strategyClass = testContext.getAttribute(STRATEGY_CLASS_KEY);
         if (strategyClass == null) {
             System.clearProperty(STRATEGY_CLASS_PROPERTY);
         } else {
-            System.setProperty(STRATEGY_CLASS_PROPERTY, strategyClass);
+            System.setProperty(STRATEGY_CLASS_PROPERTY, (String)strategyClass);
         }
     }
 

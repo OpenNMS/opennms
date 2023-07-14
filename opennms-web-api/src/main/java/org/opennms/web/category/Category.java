@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -166,7 +166,8 @@ public class Category {
      */
     @XmlAttribute(name="normal-threshold")
     public double getNormalThreshold() {
-        return m_categoryDef == null? null : m_categoryDef.getNormalThreshold();
+        final var ret = m_categoryDef == null? null : m_categoryDef.getNormalThreshold();
+        return ret == null? 0 : ret;
     }
 
     /**
@@ -178,7 +179,8 @@ public class Category {
      */
     @XmlAttribute(name="warning-threshold")
     public double getWarningThreshold() {
-        return m_categoryDef == null? null : m_categoryDef.getWarningThreshold();
+        final var ret = m_categoryDef == null? null : m_categoryDef.getWarningThreshold();
+        return ret == null? 0 : ret;
     }
 
     /**

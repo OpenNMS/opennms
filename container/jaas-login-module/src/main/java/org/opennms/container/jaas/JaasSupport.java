@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.container.jaas;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.web.springframework.security.SpringSecurityUserDao;
@@ -37,55 +39,66 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JaasSupport {
-	private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
+public final class JaasSupport {
+	private static final Logger LOG = LoggerFactory.getLogger(JaasSupport.class);
 
-	private static transient volatile BundleContext m_context;
-	private static transient volatile UserConfig m_userConfig;
-	private static transient volatile GroupDao m_groupDao;
-	private static transient volatile SpringSecurityUserDao m_userDao;
+	private static AtomicReference<BundleContext> m_context = new AtomicReference<>();
+	private static AtomicReference<UserConfig> m_userConfig = new AtomicReference<>();
+	private static AtomicReference<GroupDao> m_groupDao = new AtomicReference<>();
+	private static AtomicReference<SpringSecurityUserDao> m_userDao = new AtomicReference<>();
+
+	private JaasSupport() {}
 
 	public static synchronized void setContext(final BundleContext context) {
-		m_userConfig = null;
-		m_groupDao = null;
-		m_userDao = null;
-		m_context = context;
+	    m_context.set(context);
+		m_userConfig.set(null);
+		m_groupDao.set(null);
+		m_userDao.set(null);
 	}
 
 	public static synchronized BundleContext getContext() {
-		if (m_context == null) {
-			setContext(FrameworkUtil.getBundle(JaasSupport.class).getBundleContext());
-		}
-		return m_context;
+	    final var context = m_context.get();
+	    if (context != null) {
+	        return context;
+	    }
+		setContext(FrameworkUtil.getBundle(JaasSupport.class).getBundleContext());
+		return m_context.get();
 	}
 
 	public static UserConfig getUserConfig() {
-		if (m_userConfig == null) {
-			m_userConfig = getFromRegistry(UserConfig.class);
-		}
-		return m_userConfig;
+	    final var userConfig = m_userConfig.get();
+	    if (userConfig != null) {
+	        return userConfig;
+	    }
+		m_userConfig.set(getFromRegistry(UserConfig.class));
+		return m_userConfig.get();
 	}
 
 	public static SpringSecurityUserDao getSpringSecurityUserDao() {
-		if (m_userDao == null) {
-			m_userDao = getFromRegistry(SpringSecurityUserDao.class);
-		}
-		return m_userDao;
+	    final var userDao = m_userDao.get();
+	    if (userDao != null) {
+	        return userDao;
+	    }
+		m_userDao.set(getFromRegistry(SpringSecurityUserDao.class));
+		return m_userDao.get();
 	}
 
 	public static GroupDao getGroupDao() {
-		if (m_groupDao == null) {
-			m_groupDao = getFromRegistry(GroupDao.class);
-		}
-		return m_groupDao;
+	    final var groupDao = m_groupDao.get();
+	    if (groupDao != null) {
+	        return groupDao;
+	    }
+		m_groupDao.set(getFromRegistry(GroupDao.class));
+		return m_groupDao.get();
 	}
 
 	private static <T> T getFromRegistry(final Class<T> clazz) {
-		if (m_context == null) {
+	    final var context = m_context.get();
+		if (context == null) {
 			LOG.warn("No bundle context.  Unable to get class {} from the registry.", clazz);
 			return null;
 		}
-		final ServiceReference<T> ref = m_context.getServiceReference(clazz);
-		return m_context.getService(ref);
+		final ServiceReference<T> ref = context.getServiceReference(clazz);
+		return context.getService(ref);
 	}
 }
