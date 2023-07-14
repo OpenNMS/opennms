@@ -24,6 +24,41 @@
       <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.3" instance="dhcpSubnetIP" alias="dhcpSubnetSize" type="Gauge"/>
       <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.4" instance="dhcpSubnetIP" alias="dhcpSubnetUsed" type="Gauge"/>
    </group>
+   <group name="bcnDnsServiceStatus" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.1" instance="0" alias="bcnDnsSerOperState" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.2" instance="0" alias="bcnDnsSerNumbOfZone" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.3" instance="0" alias="bcnDnsSerTransRunni" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.4" instance="0" alias="bcnDnsSerTransDefer" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.5" instance="0" alias="bcDnsSerSOAQueInPro" type="gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.6" instance="0" alias="bcnDnsSerQueryLoggi" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.1.7" instance="0" alias="bcnDnsSerDebugLevel" type="integer32"/>
+   </group>
+   <group name="bcnDnsStatServer" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.1" instance="0" alias="bcnDnsStaSrvQrySucc" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.2" instance="0" alias="bcnDnsStaSrvQryRefe" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.3" instance="0" alias="bcDnStaSrvQryNXRSet" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.4" instance="0" alias="bcDnsStaSrvQryNXDom" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.5" instance="0" alias="bcnDnsStaSrvQryRecu" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.6" instance="0" alias="bcnDnsStaSrvQryFail" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.7" instance="0" alias="bcnDnsStaSrvQryFORM" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.8" instance="0" alias="bcnDnsStaSrvQrySERV" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.9" instance="0" alias="bcnDnsStaSrvQryDupl" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.10" instance="0" alias="bcnDnsStaSrvQryDrop" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.11" instance="0" alias="bcDnStaSrvQryAutAns" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.1.12" instance="0" alias="bcDnStaSrvQryNoaAns" type="counter64"/>
+   </group>
+   <group name="bcnDnsStatAllView" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.1" instance="0" alias="bcDnStAlVieQryRTT10" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.2" instance="0" alias="bcDnStAlViQryRTT100" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.3" instance="0" alias="bcDnStAlViQryRTT500" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.4" instance="0" alias="bcDnStAlViQryRTT800" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.5" instance="0" alias="bcDnStAlViQryRTT160" type="counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.2.2.2.6" instance="0" alias="bcDnStAlViQrRT16Plu" type="counter64"/>
+   </group>
+   <group name="bcnDnsNotificationData" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.3.1.1" instance="0" alias="bcnDnsAlarmSeverity" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.3.1.2" instance="0" alias="bcnDnsAlarmInfo" type="octetstring"/>
+   </group>
    <systemDef name="Bluecat">
       <sysoidMask>.1.3.6.1.4.1.8072.3.2.</sysoidMask>
       <collect>
@@ -36,6 +71,10 @@
       <collect>
          <includeGroup>adonisdns</includeGroup>
          <includeGroup>dhcpSubnetIP</includeGroup>
+         <includeGroup>bcnDnsServiceStatus</includeGroup>
+         <includeGroup>bcnDnsStatServer</includeGroup>
+         <includeGroup>bcnDnsStatAllView</includeGroup>
+         <includeGroup>bcnDnsNotificationData</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>
