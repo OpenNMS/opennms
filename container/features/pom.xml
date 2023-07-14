@@ -131,8 +131,6 @@
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <!-- Use a newer version of the karaf-maven-plugin for better error handling -->
-          <version>4.4.3</version>
           <extensions>true</extensions>
           <configuration>
             <skip>${skipTests}</skip>
@@ -220,6 +218,12 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>spring-extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
