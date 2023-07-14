@@ -2,6 +2,7 @@
 [[ga-events-sources-kafka]]
 
 = Kafka Consumer (Events)
+:description: How to create events in OpenNMS Horizon/Meridian by routing them to a specific topic on Kafka: Kafka consumer and topic names.
 
 You can also create events by routing them to a specific topic on Kafka.
 The Kafka Consumer feature allows events to be consumed from a specific topic on Kafka.

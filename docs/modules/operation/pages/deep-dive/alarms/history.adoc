@@ -1,6 +1,7 @@
 
 [[ga-alarm-history]]
 = Alarm History
+:description: How to keep an historical record of alarms in OpenNMS Horizon/Meridian using the alarm history feature: indexing, alarm document fields, and properties.
 
 Alarms are deleted from the {page-component-title} database as they clear or become stale.
 If you would like to keep an historical record of alarm data, you can enable the alarm history feature to provide long-term storage and maintain a history of alarm state changes in Elasticsearch.
