@@ -47,10 +47,11 @@ import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
  * Helper methods for working with Spring beans.
+ * @deprecated this whole way of accessing beans is gone in Spring 5 - move to providing the appropriate annotations to inject what's needed
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
+@Deprecated
 public class BeanUtils implements ApplicationContextAware {
 
     public static final Logger LOG = LoggerFactory.getLogger(BeanUtils.class);
