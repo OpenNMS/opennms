@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ public class OnmsLocationAvailDefinitionList extends JaxbListWrapper<OnmsLocatio
         super(dataPoint);
     }
 
+    @Override
     @XmlElement(name="data")
     @JsonProperty("data")
     public List<OnmsLocationAvailDataPoint> getObjects() {

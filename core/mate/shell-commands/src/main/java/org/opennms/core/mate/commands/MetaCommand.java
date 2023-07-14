@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,7 +55,9 @@ import com.google.common.base.Strings;
 
 @Command(scope = "opennms", name = "metadata-test", description = "Test Meta-Data replacement")
 @Service
+@SuppressWarnings("java:S106")
 public class MetaCommand implements Action {
+    private static final String MATCHER = "^.*([pP]assword|[sS]ecret).*$";
 
     @Reference
     private SessionUtils sessionUtils;
@@ -78,17 +80,15 @@ public class MetaCommand implements Action {
     @Argument(index = 0, name = "expression", description = "Expression to use, e.g. '${context:key|fallback_context:fallback_key|default}'", required = false, multiValued = false)
     private String expression;
 
-    private final String MATCHER = ".*([pP]assword|[sS]ecret).*";
-
     void printScope(final Scope scope) {
         final Map<String, Set<ContextKey>> grouped = scope.keys().stream()
                 .collect(Collectors.groupingBy(ContextKey::getContext, TreeMap::new, Collectors.toCollection(TreeSet::new)));
 
         for (final Map.Entry<String, Set<ContextKey>> group : grouped.entrySet()) {
-            System.out.printf("%s:\n", group.getKey());
+            System.out.printf("%s:%n", group.getKey());
             for (final ContextKey contextKey : group.getValue()) {
                 final boolean omitOutput = (SecureCredentialsVaultScope.CONTEXT.equals(group.getKey()) && SecureCredentialsVaultScope.PASSWORD.equals(contextKey.getKey())) || contextKey.getKey().matches(MATCHER);
-                System.out.printf("  %s='%s'\n", contextKey.getKey(), scope.get(contextKey).map(r -> String.format("%s @ %s", omitOutput ? "<output omitted>" : r.value, r.scopeName)).orElse(""));
+                System.out.printf("  %s='%s'%n", contextKey.getKey(), scope.get(contextKey).map(r -> String.format("%s @ %s", omitOutput ? "<output omitted>" : r.value, r.scopeName)).orElse(""));
             }
         }
     }
@@ -100,7 +100,7 @@ public class MetaCommand implements Action {
         try {
                 final OnmsNode onmsNode = this.nodeDao.get(this.nodeRef);
                 if (onmsNode == null) {
-                    System.out.printf("Cannot find node with ID/FS:FID=%s.\n", this.nodeRef);
+                    System.out.printf("Cannot find node with ID/FS:FID=%s.%n", this.nodeRef);
                     return null;
                 }
 
@@ -109,28 +109,28 @@ public class MetaCommand implements Action {
                 final Scope interfaceScope = this.entityScopeProvider.getScopeForInterface(onmsNode.getId(), this.interfaceAddress);
                 final Scope serviceScope = this.entityScopeProvider.getScopeForService(onmsNode.getId(), InetAddressUtils.getInetAddress(this.interfaceAddress), this.serviceName);
 
-                System.out.printf("---\nMeta-Data for node (id=%d)\n", onmsNode.getId());
+                System.out.printf("---%nMeta-Data for node (id=%d)%n", onmsNode.getId());
                 printScope(nodeScope);
 
                 if (this.interfaceAddress != null) {
-                    System.out.printf("---\nMeta-Data for interface (ipAddress=%s):\n", this.interfaceAddress);
+                    System.out.printf("---%nMeta-Data for interface (ipAddress=%s):%n", this.interfaceAddress);
                     printScope(interfaceScope);
                 }
 
                 if (this.serviceName != null) {
-                    System.out.printf("---\nMeta-Data for service (name=%s):\n", this.serviceName);
+                    System.out.printf("---%nMeta-Data for service (name=%s):%n", this.serviceName);
                     printScope(serviceScope);
                 }
 
-                System.out.printf("---\n");
+                System.out.printf("---%n");
 
                 if (!Strings.isNullOrEmpty(this.expression)) {
                     final Interpolator.Result result = Interpolator.interpolate(this.expression, new FallbackScope(nodeScope, interfaceScope, serviceScope));
-                    System.out.printf("Input: '%s'\nOutput: '%s'\n", this.expression, result.output);
+                    System.out.printf("Input: '%s'%nOutput: '%s'%n", this.expression, result.output);
 
-                    System.out.printf("Details:\n");
+                    System.out.printf("Details:%n");
                     for(final Interpolator.ResultPart resultPart : result.parts) {
-                        System.out.printf("  Part: '%s' => match='%s', value='%s', scope='%s'\n", resultPart.input, resultPart.match, resultPart.value.value, resultPart.value.scopeName);
+                        System.out.printf("  Part: '%s' => match='%s', value='%s', scope='%s'%n", resultPart.input, resultPart.match, resultPart.value.value, resultPart.value.scopeName);
                     }
                 }
                 return null;

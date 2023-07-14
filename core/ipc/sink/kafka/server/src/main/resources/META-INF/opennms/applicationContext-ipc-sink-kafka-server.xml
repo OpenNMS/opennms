@@ -21,10 +21,6 @@
   <onmsgi:service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
 
-  <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
-    <property name="metricRegistry" ref="kafkaLagMetricRegistry"/>
-  </bean>
-
   <!-- Sink Metrics -->
   <bean id="kafkaSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
   <onmsgi:service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
@@ -40,19 +36,6 @@
     </onmsgi:service-properties>
   </onmsgi:service>
 
-  <!-- Kafka Lag Metrics -->
-  <bean id="kafkaLagMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-  <onmsgi:service ref="kafkaLagMetricRegistry" interface="com.codahale.metrics.MetricSet" >
-    <onmsgi:service-properties>
-      <entry>
-        <key><value>name</value></key>
-        <value>Kafka Lag</value>
-      </entry>
-      <entry>
-        <key><value>description</value></key>
-        <value>Metrics related to Kafka Lag</value>
-      </entry>
-    </onmsgi:service-properties>
-  </onmsgi:service>
+
 
 </beans>

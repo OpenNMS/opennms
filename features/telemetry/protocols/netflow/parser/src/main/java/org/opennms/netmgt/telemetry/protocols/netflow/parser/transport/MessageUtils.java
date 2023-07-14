@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,8 +47,7 @@ import com.google.protobuf.DoubleValue;
 import com.google.protobuf.UInt32Value;
 import com.google.protobuf.UInt64Value;
 
-public class MessageUtils {
-
+public interface MessageUtils {
     static Long getLongValue(Value<?> value) {
         if (value instanceof UnsignedValue) {
             UnsignedLong unsignedValue = ((UnsignedValue) value).getValue();
@@ -82,6 +81,7 @@ public class MessageUtils {
         return null;
     }
 
+    @SafeVarargs
     public static <V> Optional<V> first(final V... values) {
         return Stream.of(values)
                 .filter(Objects::nonNull)

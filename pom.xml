@@ -594,7 +594,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1</version>
         <configuration>
           <deployAtEnd>true</deployAtEnd>
           <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
@@ -1348,6 +1348,12 @@
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
       </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <version>${karafMavenPluginVersion}</version>
+        <extensions>true</extensions>
+      </plugin>
     </plugins>
  </build>
 
@@ -1504,7 +1510,7 @@
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
-    <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+    <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
@@ -1610,7 +1616,7 @@
     <commonsLang3Version>3.12.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.9.0</commonsNetVersion>
-    <commonsValidatorVersion>1.6</commonsValidatorVersion>
+    <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
@@ -1687,6 +1693,7 @@
     <jmhVersion>1.36</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
+    <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
@@ -1705,6 +1712,7 @@
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
+    <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
     <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.1</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
@@ -4648,6 +4656,11 @@
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
         <version>${servletApiVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.jnr</groupId>
+        <artifactId>jnr-posix</artifactId>
+        <version>${jnrVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.github.mwiede</groupId>
