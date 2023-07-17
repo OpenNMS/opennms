@@ -213,7 +213,7 @@
     ng-app="${param.ngapp}"
   </c:when>
   <c:otherwise>
-    ng-app="onms.default.apps"
+    ng-non-bindable
   </c:otherwise>
 </c:choose>
 <c:if test="${param.scrollSpy != null}">
