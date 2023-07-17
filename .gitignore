@@ -49,5 +49,6 @@ opennms-container/*/tarball/*.tar.gz
 *.pyc
 __pycache__
 
-# JavaScript
-.eslintcache
+# stuff from post-2019 releases to ignore
+core/web-assets/.eslintcache
+/ui/
