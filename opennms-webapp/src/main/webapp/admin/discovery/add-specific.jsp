@@ -44,6 +44,7 @@
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet
 "%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -162,7 +163,7 @@ function doAddSpecific(){
           <div class="col-sm-10">
             <select id="location" class="form-control custom-select" name="location">
               <% for (String key : locations.keySet()) { %>
-                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                <option value="<%=WebSecurityUtils.sanitizeString(key)%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=WebSecurityUtils.sanitizeString(locations.get(key))%></option>
               <% } %>
             </select>
           </div>

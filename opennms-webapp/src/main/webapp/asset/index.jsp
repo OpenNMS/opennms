@@ -37,6 +37,7 @@
 		org.opennms.web.element.NetworkElementFactory
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%!
     protected AssetModel model;
@@ -115,13 +116,13 @@
             <ul class="list-unstyled mb-0" style="width:48%; margin-right:2%; float:left;">
             <% for( int i=0; i < middle; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
-              <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+              <li> <%=WebSecurityUtils.sanitizeString(asset.getAssetNumber())%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId()))%></a></li>
             <% } %>
             </ul>
             <ul class="list-unstyled mb-0" style="width:50%; float:left;">
             <% for( int i=middle; i < assetCount; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
-              <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+              <li><%=WebSecurityUtils.sanitizeString(asset.getAssetNumber())%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId()))%></a></li>
             <% } %>
             </ul>
           </div> <!-- card-body -->
