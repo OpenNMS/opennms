@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.joda.time.Duration;
 import org.junit.Before;
@@ -147,9 +148,8 @@ public class NodeLocationChangeIT {
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         m_provisionService.setHostnameResolver(new HostnameResolver() {
-            @Override
-            public String getHostname(InetAddress addr, String location) {
-                return "opennms-com";
+            @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                return CompletableFuture.completedFuture("opennms-com");
             }
         });
 

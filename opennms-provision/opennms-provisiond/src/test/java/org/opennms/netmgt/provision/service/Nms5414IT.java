@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -107,9 +108,8 @@ public class Nms5414IT extends ProvisioningITCase {
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
         m_provisioner.getProvisionService().setHostnameResolver(new HostnameResolver() {
-            @Override
-            public String getHostname(InetAddress addr, String location) {
-                return "opennms-com";
+            @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                return CompletableFuture.completedFuture("opennms-com");
             }
         });
     }

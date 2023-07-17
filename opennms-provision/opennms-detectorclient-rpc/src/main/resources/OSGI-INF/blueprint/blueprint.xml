@@ -11,6 +11,12 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <cm:property-placeholder id="dnsLookupProperties" persistent-id="org.opennms.netmgt.provision.dns.client.rpc" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="threadCount" value="64"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
     <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
     <bean id="detectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
     <bean id="detectorRpcModule" class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule" >
@@ -20,7 +26,9 @@
     <service ref="detectorRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
 
     <service interface="org.opennms.core.rpc.api.RpcModule">
-        <bean class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
+        <bean class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule">
+            <argument value="${threadCount}"/>
+        </bean>
     </service>
 
 </blueprint>

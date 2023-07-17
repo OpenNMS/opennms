@@ -11,7 +11,9 @@
 
 	<context:annotation-config />
 
-    <bean id="dnsLookupClientRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
+    <bean id="dnsLookupClientRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" >
+        <constructor-arg value="${org.opennms.netmgt.provision.dns.client.rpc.threadCount:64}"/>
+    </bean>
     
     <bean id="locationAwareDnsClient" class="org.opennms.netmgt.provision.dns.client.rpc.LocationAwareDnsLookupClientRpcImpl" />
     <onmsgi:service interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient" ref="locationAwareDnsClient"/>

@@ -29,7 +29,18 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public interface HostnameResolver {
-    public String getHostname(final InetAddress addr, final String location);
+
+    default String getHostname(final InetAddress addr, final String location) {
+        try {
+            return getHostnameAsync(addr, location).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location);
 }
