@@ -1759,7 +1759,7 @@
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
-    <rocksdbjniVersion>7.4.5</rocksdbjniVersion>
+    <rocksdbjniVersion>8.3.2</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
