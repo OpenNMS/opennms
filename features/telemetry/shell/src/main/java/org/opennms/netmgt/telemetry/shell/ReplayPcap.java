@@ -104,8 +104,8 @@ public class ReplayPcap implements Action {
                     }
                     final UDPPacket udp = (UDPPacket) packet.getPacket(Protocol.UDP);
 
-                    final InetSocketAddress remoteAddress = new InetSocketAddress(InetAddressUtils.getInetAddress(udp.getSourceIP()), udp.getSourcePort());
-                    final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getInetAddress(udp.getDestinationIP()), udp.getDestinationPort());
+                    final InetSocketAddress remoteAddress = new InetSocketAddress(InetAddressUtils.getInetAddress(udp.getParentPacket().getSourceIP()), udp.getSourcePort());
+                    final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getInetAddress(udp.getParentPacket().getDestinationIP()), udp.getDestinationPort());
 
                     final ByteBuf buffer = Unpooled.wrappedBuffer(udp.getPayload().getArray());
                     try {
