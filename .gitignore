@@ -56,3 +56,7 @@ __pycache__
 
 # Ignore jenv local version files
 .java-version
+
+# stuff from post-2019 releases to ignore
+core/web-assets/.eslintcache
+/ui/
