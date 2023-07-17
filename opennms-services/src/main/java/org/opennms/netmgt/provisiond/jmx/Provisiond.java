@@ -288,7 +288,7 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
             case Write:
                 return (ThreadPoolExecutor) (getDaemon().getTaskCoordinatorExecutorService(Write.name));
             default:
-                return null;
+                throw new IllegalArgumentException("unable to get executor for type: " + type);
         }
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -278,6 +278,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             OnmsIpInterface primary = node.getPrimaryInterface();
             if (primary == null && node.getIpInterfaces() != null) {
                 primary = node.getIpInterfaces().iterator().next();
+            }
+
+            if (primary == null) {
+                LOG.debug("Unable to determine interface for node {}, skipping hostname update", node.getId());
+                return;
             }
 
             final InetAddress primaryAddr = primary.getIpAddress();
@@ -1360,6 +1365,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 if (r == null) {
                     r = new Requisition(m_foreignSource);
                 }
+            }
+
+            if (r == null) {
+                LOG.error("Unable to determine requisition for foreign source {}", m_foreignSource);
+                return false;
             }
 
             r.updateDateStamp();

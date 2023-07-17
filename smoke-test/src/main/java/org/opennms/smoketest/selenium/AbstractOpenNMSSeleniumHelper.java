@@ -1050,6 +1050,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     LOG.warn("Failed to locate id={}", id, t);
                 }
             }
+            if (element == null) {
+                throw new IllegalArgumentException("unable to find element to click for id: " + id);
+            }
             sleepQuietly(50);
             element.click();
         } finally {

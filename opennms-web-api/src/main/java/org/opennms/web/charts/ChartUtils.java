@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -293,7 +293,7 @@ public abstract class ChartUtils {
     public static void getBarChart(String chartName, OutputStream out) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        ImageSize imageSize = chartConfig.getImageSize();
+        ImageSize imageSize = chartConfig == null? null : chartConfig.getImageSize();
         int hzPixels;
         int vtPixels;
         
@@ -321,14 +321,14 @@ public abstract class ChartUtils {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        if(chartConfig.getChartBackgroundColor().isPresent()) {
+        if(chartConfig != null && chartConfig.getChartBackgroundColor().isPresent()) {
             setChartBackgroundColor(chartConfig, chart);
         }
         
-        if(chartConfig.getPlotBackgroundColor().isPresent()) {
+        if(chartConfig != null && chartConfig.getPlotBackgroundColor().isPresent()) {
             setPlotBackgroundColor(chartConfig, chart);
         }
-        ImageSize imageSize = chartConfig.getImageSize();
+        ImageSize imageSize = chartConfig == null? null : chartConfig.getImageSize();
         int hzPixels;
         int vtPixels;
         
@@ -381,7 +381,7 @@ public abstract class ChartUtils {
     public static byte[] getBarChartAsPNGByteArray(String chartName) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        ImageSize imageSize = chartConfig.getImageSize();
+        ImageSize imageSize = chartConfig == null? null : chartConfig.getImageSize();
         int hzPixels;
         int vtPixels;
         
@@ -406,7 +406,7 @@ public abstract class ChartUtils {
     public static BufferedImage getChartAsBufferedImage(String chartName) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        ImageSize imageSize = chartConfig.getImageSize();
+        ImageSize imageSize = chartConfig == null? null : chartConfig.getImageSize();
         int hzPixels;
         int vtPixels;
         

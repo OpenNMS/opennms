@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -324,6 +324,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
                 proxy = Util.createEventProxy();
             } catch (Throwable me) {
                 LOG.error(me.getMessage());
+            }
+
+            if (proxy == null) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "unable to get event proxy");
+                return;
             }
 
             EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");

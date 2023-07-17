@@ -92,25 +92,19 @@ public class PaxVaadinBundleTracker extends BundleTracker<Object> {
 				Constructor<?> ctor = null;
 				for (int i = 0; i < ctors.length; i++) {
 					ctor = ctors[i];
-					if (ctor.getGenericParameterTypes().length == 0)
+					if (ctor.getGenericParameterTypes().length == 0) {
 						break;
+					}
+				}
+				if (ctor == null) {
+				    throw new IllegalStateException("unable to locate a suitable constructor");
 				}
 				ctor.setAccessible(true);
 				application = (UI) ctor.newInstance();
 
-			} catch (ClassNotFoundException e) {
+			} catch (final ReflectiveOperationException | SecurityException | IllegalArgumentException | IllegalStateException e) {
 				LOG.error("Could not add bundle: ", e);
-			} catch (SecurityException e) {
-                LOG.error("Could not add bundle: ", e);
-			} catch (IllegalArgumentException e) {
-                LOG.error("Could not add bundle: ", e);
-			} catch (InstantiationException e) {
-                LOG.error("Could not add bundle: ", e);
-			} catch (IllegalAccessException e) {
-                LOG.error("Could not add bundle: ", e);
-			} catch (InvocationTargetException e) {
-                LOG.error("Could not add bundle: ", e);
-			}
+			}     
 
 			final String widgetset = findWidgetset(bundle);
 			if (application != null) {

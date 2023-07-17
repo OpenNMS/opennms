@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -214,19 +214,21 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     protected static String determineExpressionFromUrl(URL url) {
         LOG.info("determineExpressionFromUrl: finding regex as parameter in query string of URL: {}", url);
-        if(getUrlArgs(url) == null) {
+        final var urlArgs = getUrlArgs(url);
+        if(urlArgs == null) {
             return null;
         } else {
-            return getUrlArgs(url).get(EXPRESSION_ARG);
+            return urlArgs.get(EXPRESSION_ARG);
         }
     }
 
     protected static String determineLocationFromUrl(URL url) {
         LOG.info("determineLocationFromUrl: finding regex as parameter in query string of URL: {}", url);
-        if(getUrlArgs(url) == null) {
+        final var urlArgs = getUrlArgs(url);
+        if(urlArgs == null) {
             return null;
         } else {
-            return getUrlArgs(url).get(LOCATION_ARG);
+            return urlArgs.get(LOCATION_ARG);
         }
     }
 

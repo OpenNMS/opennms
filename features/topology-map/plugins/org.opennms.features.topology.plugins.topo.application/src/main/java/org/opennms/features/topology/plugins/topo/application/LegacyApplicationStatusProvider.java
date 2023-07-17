@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,8 +94,11 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
                 Optional<OnmsSeverity> childSeverity = Optional.ofNullable(childStatus)
                         .map(Status::computeStatus)
                         .map(this::createSeverity);
-                if (childSeverity.isPresent() && maxSeverity.isLessThan(childSeverity.get())) {
-                    maxSeverity = createSeverity(childStatus.computeStatus());
+                if (childStatus != null && childSeverity.isPresent() && maxSeverity.isLessThan(childSeverity.get())) {
+                    final OnmsSeverity newSeverity = createSeverity(childStatus.computeStatus());
+                    if (newSeverity != null) {
+                        maxSeverity = newSeverity;
+                    }
                 } else if(!childSeverity.isPresent() || OnmsSeverity.NORMAL.equals(childSeverity.get())) {
                     allChildrenHaveActiveAlarms = false; // at least one child has no active alarm
                 }
@@ -105,7 +108,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
                 }
             }
 
-            if (allChildrenHaveActiveAlarms && maxSeverity.isLessThan(OnmsSeverity.MAJOR)) {
+            if (allChildrenHaveActiveAlarms && (maxSeverity == null || maxSeverity.isLessThan(OnmsSeverity.MAJOR))) {
                 maxSeverity = OnmsSeverity.MAJOR;
             }
 
@@ -159,6 +162,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
     }
 
     private static DefaultStatus createStatus(OnmsSeverity severity, long count) {
+        if (severity == null) return null;
         return new DefaultStatus(severity.getLabel(), count);
     }
 }

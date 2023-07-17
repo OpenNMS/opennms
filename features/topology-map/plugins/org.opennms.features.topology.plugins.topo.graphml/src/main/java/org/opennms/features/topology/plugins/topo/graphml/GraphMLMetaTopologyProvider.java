@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -115,7 +115,9 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 for (org.opennms.features.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
                     final VertexRef sourceVertex = getVertex(eachEdge.getSource());
                     final VertexRef targetVertex = getVertex(eachEdge.getTarget());
-                    if (!sourceVertex.getNamespace().equals(targetVertex.getNamespace())) {
+                    final String sourceNamespace = sourceVertex == null? null : sourceVertex.getNamespace();
+                    final String targetNamespace = targetVertex == null? null : targetVertex.getNamespace();
+                    if (!Objects.equals(sourceNamespace, targetNamespace)) {
                         List<VertexRef> opposites = oppositeVertices.get(sourceVertex);
                         if (opposites == null) {
                             opposites = Lists.newArrayList();

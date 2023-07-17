@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -178,18 +178,22 @@ public abstract class NotifdConfigManager {
 
         boolean parmmatch = false;
         if (notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
-            String notfValue = null;
-            String notfName = notification.getVarbind().getVbname();
+            final var notfValue = notification.getVarbind().getVbvalue();
 
-            if (notification.getVarbind().getVbvalue() != null) {
-                notfValue = notification.getVarbind().getVbvalue();
-            } else {
+            if (notfValue == null) {
                 LOG.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
-                parmmatch = true;
+                return true;
             }
 
+            final var notfName = notification.getVarbind().getVbname();
             for (final Parm parm : event.getParmCollection()) {
+                if (parmmatch) break; // we've already matched, skip processing all this
+
                 final String parmName = parm.getParmName();
+                if (!parmName.equals(notfName)) {
+                    continue;
+                }
+
                 final Value parmValue = parm.getValue();
                 final String parmContent;
                 if (parmValue == null) {
@@ -198,18 +202,16 @@ public abstract class NotifdConfigManager {
                     parmContent = parmValue.getContent();
                 }
 
-                if (parmName.equals(notfName)) {
-                    // regular expression should start with a '~'
-                    if (notfValue.charAt(0) == '~') {
-                       if (parmContent.matches(notfValue.substring(1))) {
-                           parmmatch = true;
-                       }
-                    } else {
-                        if (parmContent.startsWith(notfValue)) {
-                           parmmatch = true;
-                        }
+                // regular expression should start with a '~'
+                if (notfValue.charAt(0) == '~') {
+                   if (parmContent.matches(notfValue.substring(1))) {
+                       parmmatch = true;
+                   }
+                } else {
+                    if (parmContent.startsWith(notfValue)) {
+                       parmmatch = true;
                     }
-		}
+                }
             }
         } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
             parmmatch = true;

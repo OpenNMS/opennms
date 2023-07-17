@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,33 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Maps;
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.Validator.InvalidValueException;
-import com.vaadin.v7.data.validator.StringLengthValidator;
-import com.vaadin.v7.event.FieldEvents;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.Table;
-import com.vaadin.v7.ui.TableFieldFactory;
-import com.vaadin.v7.ui.TextField;
-import org.opennms.features.vaadin.jmxconfiggenerator.Config;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem.AttribType;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
-import org.opennms.netmgt.vaadin.core.UIHelper;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.AttributeNameValidator;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.UniqueAttributeNameValidator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,13 +36,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem.AttribType;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.AttributeNameValidator;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.UniqueAttributeNameValidator;
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+import com.vaadin.v7.data.validator.StringLengthValidator;
+import com.vaadin.v7.event.FieldEvents;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TableFieldFactory;
+import com.vaadin.v7.ui.TextField;
+
 /**
  *
  * @author Markus von Rüden
  */
 public class AttributesTable<T> extends Table implements SelectionValueChangedListener {
+    private static final Logger LOG = LoggerFactory.getLogger(AttributesTable.class);
 
-	private static Object[] computeKey(Object... input) {
+    private static Object[] computeKey(Object... input) {
 		return input;
 	}
 
@@ -317,6 +321,10 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 	}
 
 	private void updateCheckBox(CheckBox checkBox, Object rowId, boolean enabled) {
+	    if (checkBox == null) {
+	        LOG.warn("unhandled checkbox at row {}", rowId);
+	        return;
+	    }
 		checkBox.setValue(enabled);
 		Collection<Field<?>> columns = getFieldsForItemId(rowId);
 		columns.remove(checkBox);
