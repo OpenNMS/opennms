@@ -13,7 +13,6 @@
 		log = bsf.lookupBean("log");
 		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper();
 
-        server(12345);
         source("${install.dir}/etc/scriptd-event-forwarder.bsh");
  
 	</start-script>
