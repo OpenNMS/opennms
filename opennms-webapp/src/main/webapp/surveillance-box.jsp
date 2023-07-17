@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -68,5 +68,5 @@
     </script>
 
     <div id="surveillance-view">
-    <iframe name="surveillance-view-embedded" id="surveillance-iframe" src="vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+    <iframe name="surveillance-view-embedded" id="surveillance-iframe" src="vaadin-surveillance-views?dashboard=false<%= WebSecurityUtils.sanitizeString(viewName) %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
     </div>

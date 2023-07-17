@@ -38,6 +38,7 @@
 <%@page import="org.opennms.netmgt.config.SyslogdConfigFactory"%>
 <%@page import="org.opennms.netmgt.config.TrapdConfigFactory"%>
 <%@page import="java.time.Instant"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -193,7 +194,7 @@
         </tr>
         <tr>
           <th>User&nbsp;Agent:</th>
-          <td><%=request.getHeader( "User-Agent" )%></td>
+          <td><%=WebSecurityUtils.sanitizeString(request.getHeader( "User-Agent" ))%></td>
         </tr>
       </table>
     </div> <!-- panel -->
