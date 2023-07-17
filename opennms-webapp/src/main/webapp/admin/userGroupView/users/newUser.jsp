@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -78,7 +78,7 @@
 <div class="card">
   <div class="card-header">
     <%if ("redo".equals(request.getParameter("action"))) { %>
-      <span>The user <%=request.getParameter("userID")%> already exists.
+      <span>The user <%= WebSecurityUtils.sanitizeString(request.getParameter("userID")) %> already exists.
         Please type in a different user ID.</span>
     <%} else { %>
       <span>Please enter a user ID and password below</span>
