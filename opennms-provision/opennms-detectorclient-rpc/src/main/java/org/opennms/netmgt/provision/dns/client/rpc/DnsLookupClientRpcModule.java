@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.dns.client.rpc;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.core.utils.InetAddressUtils;
@@ -44,8 +46,14 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     public static final String RPC_MODULE_ID = "DNS";
 
-    public DnsLookupClientRpcModule() {
+    private final ExecutorService executorService;
+
+    public DnsLookupClientRpcModule(final int threadCount) {
         super(DnsLookupRequestDTO.class, DnsLookupResponseDTO.class);
+
+        this.executorService = Executors.newFixedThreadPool(threadCount);
+
+        LOG.debug("Configuring fixed-sized ThreadPool using threadCount={}", threadCount);
     }
 
     @Override
@@ -60,36 +68,31 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        final CompletableFuture<DnsLookupResponseDTO> future = new CompletableFuture<>();
-        try {
-            final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
-            final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
-            final QueryType queryType = request.getQueryType();
-            if (queryType.equals(QueryType.LOOKUP)) {
-                dto.setHostResponse(addr.getHostAddress());
-            } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
-                // Attempt to retrieve the fully qualified domain name for this IP address
-                String hostName = addr.getCanonicalHostName();
-                if (InetAddressUtils.str(addr).equals(hostName)) {
-                    // The given host name matches the textual representation of
-                    // the IP address, which means that the reverse lookup failed
-                    // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
-                    // to have a corresponding A record in order to succeed, so we
-                    // try using dnsjava's implementation to work around this
-                    try {
-                        hostName = Address.getHostName(addr);
-                    } catch (UnknownHostException e) {
-                        LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
-                                + "Using the textual representation of the IP address.", addr);
+        return CompletableFuture.supplyAsync(() -> {
+                final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
+                final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();
+                final QueryType queryType = request.getQueryType();
+                if (queryType.equals(QueryType.LOOKUP)) {
+                    dto.setHostResponse(addr.getHostAddress());
+                } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
+                    // Attempt to retrieve the fully qualified domain name for this IP address
+                    String hostName = addr.getCanonicalHostName();
+                    if (InetAddressUtils.str(addr).equals(hostName)) {
+                        // The given host name matches the textual representation of
+                        // the IP address, which means that the reverse lookup failed
+                        // NMS-9356: InetAddress#getCanonicalHostName requires PTR records
+                        // to have a corresponding A record in order to succeed, so we
+                        // try using dnsjava's implementation to work around this
+                        try {
+                            hostName = Address.getHostName(addr);
+                        } catch (UnknownHostException e) {
+                            LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
+                                    + "Using the textual representation of the IP address.", addr);
+                        }
                     }
+                    dto.setHostResponse(hostName);
                 }
-                dto.setHostResponse(hostName);
-            }
-            future.complete(dto);
-        } catch (Exception e) {
-            future.completeExceptionally(e);
-        }
-        return future;
+                return dto;
+        }, this.executorService);
     }
-
 }
