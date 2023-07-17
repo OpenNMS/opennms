@@ -32,7 +32,6 @@ use vars qw(
 	$TESTS
 	$SINGLE_TEST
 	$VERBOSE
-	$JDK9_OR_GT
 	@DEFAULT_GOALS
 	@ARGS
 );
@@ -44,7 +43,6 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 $PATHSEP       = $Config{'path_sep'};
 $SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 $VERBOSE       = undef;
-$JDK9_OR_GT    = undef;
 @DEFAULT_GOALS = ( "install" );
 $MINIMUM_FD    = 20000;
 
@@ -96,6 +94,8 @@ my $RCCS = "512m";
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 	$MAVEN_OPTS = "-Xmx${MEM} -XX:ReservedCodeCacheSize=${RCCS}";
+	# Number of retries, ref: https://github.com/apache/maven-wagon/blob/wagon-3.4.2/wagon-providers/wagon-http/src/site/apt/index.apt#L77
+	$MAVEN_OPTS = "${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
@@ -229,20 +229,6 @@ if (defined $JAVA_HOME and $JAVA_HOME ne "") {
 	info("Using \$JAVA_HOME=$JAVA_HOME");
 	$ENV{'JAVA_HOME'} = $JAVA_HOME;
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
-
-        my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
-        if ($shortversion >= 9) {
-                $JDK9_OR_GT = 1;
-        };
-}
-
-if ($JDK9_OR_GT) {
-        # Expose the required modules, packages and types
-        $MAVEN_OPTS .= " --add-modules java.activation,java.xml.bind";
-        $MAVEN_OPTS .= " --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED";
-        $MAVEN_OPTS .= " --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED";
-        $MAVEN_OPTS .= " --add-opens java.base/java.lang=ALL-UNNAMED";
-        $MAVEN_OPTS .= " --add-opens java.base/java.util.regex=ALL-UNNAMED";
 }
 
 if (not exists $ENV{'JAVA_VENDOR'}) {
@@ -406,7 +392,7 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?(?: \d\d\d\d-\d\d-\d\d)?$/ms;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?(?: \d\d\d\d-\d\d-\d\d)?(?: LTS)?$/ms;
 	if (defined $version) {
 		($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
 		($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
@@ -459,7 +445,7 @@ sub find_java_home {
 
 	my $highest_valid = undef;
 
-	for my $majorversion (sort keys %$versions) {
+	for my $majorversion (sort { $b cmp $a } keys %$versions) {
 		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and ($majorversion < $minimum_java or $majorversion >= $maximum_java)) {
 			next;
 		}
