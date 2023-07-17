@@ -535,7 +535,7 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <div id="onms-interfaces" class="card">
+  <div id="onms-interfaces" class="card" ng-app="onms.default.apps">
     <div class="card-header">
         <span>Node Interfaces</span>
     </div>

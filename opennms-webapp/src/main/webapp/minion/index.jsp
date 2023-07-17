@@ -35,6 +35,7 @@
 	<jsp:param name="title" value="Manage Minions" />
 	<jsp:param name="headTitle" value="Manage Minions" />
 	<jsp:param name="breadcrumb" value="Manage Minions" />
+	<jsp:param name="ngapp" value="onms.default.apps" />
 </jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
