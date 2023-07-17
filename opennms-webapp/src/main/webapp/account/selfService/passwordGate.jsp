@@ -205,7 +205,7 @@
                             <input type="password" class="form-control" name="pass2" id="input_pass2" autocomplete="off">
                         </div>
                         <div class="form-group buttons">
-                            <button type="submit" class="btn btn-primary">Change Password</button>
+                            <button type="submit" id="btn_change_password" name="btn_change_password" class="btn btn-primary">Change Password</button>
                             <button type="submit" id="btn_skip" name="btn_skip" formaction="account/selfService/passwordGateAction?skip=1" class="btn btn-secondary">Skip</button>
                         </div>
                     </div>
