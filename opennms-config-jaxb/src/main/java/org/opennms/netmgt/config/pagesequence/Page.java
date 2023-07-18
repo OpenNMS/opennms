@@ -59,7 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="page")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"method","httpVersion","userAgent","virtualHost","scheme","userInfo","preselectAuth","host","requireIPv6","requireIPv4","disableSslVerification","port","path","query","fragment","failureMatch","failureMessage","successMatch","locationMatch","responseRange","dsName", "parameters", "headers", "sessionVariables"})
+@XmlType(propOrder={"m_method","m_httpVersion","m_userAgent","m_virtualHost","m_scheme","m_userInfo","m_preselectAuth","m_host","m_requireIPv6","m_requireIPv4","m_disableSslVerification","m_port","m_path","m_query","m_fragment","m_failureMatch","m_failureMessage","m_successMatch","m_locationMatch","m_responseRange","m_dsName","m_parameters","m_headers","m_sessionVariables"})
 public class Page implements Serializable {
     private static final long serialVersionUID = -568663444768205075L;
 
