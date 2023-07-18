@@ -226,6 +226,11 @@
         <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>dat</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jce</nonFilteredFileExtension>
+            <nonFilteredFileExtension>raw</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
         </configuration>
       </plugin>
     </plugins>
