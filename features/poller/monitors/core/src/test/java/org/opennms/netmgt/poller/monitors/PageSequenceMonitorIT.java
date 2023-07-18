@@ -392,7 +392,7 @@ public class PageSequenceMonitorIT {
         assertNull(status1.getReason());
 
         final Map<String, Object> params2 = new HashMap<>(m_params);
-        String wrongUserInfo = "admin:wrong";
+        String wrongUserInfo = "admin:passwort";
         params2.put("page-sequence", "" +
                 "<?xml version=\"1.0\"?>" +
                 "<page-sequence>\n" +

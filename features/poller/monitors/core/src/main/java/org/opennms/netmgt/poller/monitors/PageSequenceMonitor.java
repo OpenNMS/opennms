@@ -47,6 +47,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
@@ -70,11 +71,11 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.http.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.core.utils.http.HttpResponseRange;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
@@ -308,7 +309,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             CloseableHttpResponse response = null;
             try (final HttpClientWrapper clientWrapper = parentClientWrapper.duplicate()) {
                 URI uri = getURI(svc);
-                PageSequenceHttpUriRequest method = getMethod(uri);
+                final PageSequenceHttpUriRequest method = getMethod(uri);
 
                 if (getVirtualHost(svc) == null) {
                     LOG.debug("Adding request interceptor to remove the host header");
@@ -365,8 +366,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     LOG.debug("Using header '{}'", header.getName() + ": " + header.getValue());
                 }
 
-                if (getUserInfo() != null) {
-                    String userInfo = getUserInfo();
+                final String userInfo = getUserInfo();
+                if (userInfo != null) {
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
                         clientWrapper.addBasicCredentials(streetCred[0], streetCred[1]);
@@ -375,6 +376,28 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     }
                 }
 
+                String preselectAuth = getPreselectAuth();
+                if (preselectAuth!=null) {
+                    switch (preselectAuth.toLowerCase()) {
+                        case "basic":
+                            clientWrapper.addRequestInterceptor((request, context) -> {
+                                if (userInfo == null) {
+                                    LOG.warn("preselectAuth=\"basic\" but user-info is empty");
+                                    return;
+                                }
+                                final Header[] headers = request.getHeaders("Authorization");
+                                if (headers == null || headers.length == 0) {
+                                    final Base64 base64codec = new Base64(0);
+                                    final String encodedUserInfo = base64codec.encodeAsString(userInfo.getBytes(StandardCharsets.UTF_8));
+                                    request.setHeader("Authorization", "Basic " + encodedUserInfo);
+                                }
+                            });
+                            break;
+                        default:
+                            LOG.warn("Illegal value found for preselect-auth: {}", preselectAuth);
+                    }
+                }
+                
                 long startTime = System.nanoTime();
                 response = clientWrapper.execute(method);
                 long endTime = System.nanoTime();
@@ -535,6 +558,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         private String getUserInfo() {
             return m_page.getUserInfo();
+        }
+
+        private String getPreselectAuth() {
+            return m_page.getPreselectAuth();
         }
 
         private String getScheme() {
