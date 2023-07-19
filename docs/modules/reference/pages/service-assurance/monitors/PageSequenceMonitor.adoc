@@ -125,7 +125,9 @@ Colon-separated credentials such as USERNAME:PASSWORD.
 | n/a
 
 | preselect-auth
-| Preselect authentication method. At the time allows only "basic" what corresponds to Basic Authentication and requires that user name and password are provided in the attribute `user-info`
+| Preselect authentication method. 
+When specified, allows only basic authentication.
+User name and password must be provided in the `user-info` attribute.
 | n/a
 
 | host
@@ -206,11 +208,13 @@ The response time for each page will be stored in the same RRD file specified fo
 WARNING: You need to delete existing RRD files and let them be recreated with the new list of data sources when you add a ds-name attribute to a page in a sequence that is already storing response-time data.
 
 == Preselect authentication
-When authentication is required, the first HTTP request receives a "401 Unauthorized" response with possible authentication methods. The second request is sent using the selected authentication method.
+When authentication is required, the first HTTP request receives a "401 Unauthorized" response with possible authentication methods. 
+The second request is sent using the selected authentication method.
 
-Using the `preselect-auth` attribute allows you to use a specific authentication right on the first request.
+Using the `preselect-auth` attribute lets you to use a specific authentication on the first request.
 
-Some servers do not tell you which authentication methods are supported. In these cases, using the `preselect-auth` attribute is the only option.
+Some servers do not tell you which authentication methods they support. 
+In these cases, using the `preselect-auth` attribute is the only option.
 
 == Examples
 
