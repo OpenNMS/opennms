@@ -1138,6 +1138,8 @@
                    <exclude>com.sun.xml.bind:*</exclude>
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+                   <!-- technically this is just provided by jdk11+ -->
+                   <exclude>xml-apis:xml-apis</exclude>
 
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
@@ -1786,7 +1788,6 @@
     <xalanVersion>2.7.3.ONMS.1</xalanVersion>
     <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
-    <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.8</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
@@ -5064,11 +5065,6 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>${xmlApisVersion}</version>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
