@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.apache.aries.blueprint</groupId>
       <artifactId>org.apache.aries.blueprint.core</artifactId>
-      <version>1.4.4</version>
+      <version>1.10.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
