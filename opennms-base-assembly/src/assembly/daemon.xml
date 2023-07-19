@@ -110,6 +110,7 @@
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
       <excludes>
+        <exclude>bouncycastle:*</exclude>
         <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>

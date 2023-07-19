@@ -314,11 +314,11 @@
         <feature>javax.servlet</feature>
         <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
         <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-core/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-config/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-ldap/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-remoting/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-web/${springSecurityVersion}</bundle>
     </feature>
     <feature name="jicmp" version="2.0.1" description="jicmp">
         <feature>guava</feature>
