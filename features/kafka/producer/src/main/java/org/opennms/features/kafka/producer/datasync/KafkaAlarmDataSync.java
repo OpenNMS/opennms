@@ -47,6 +47,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.common.config.SecurityConfig;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -285,18 +288,25 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         return results;
     }
 
+
+
     private Properties loadStreamsProperties() throws IOException {
         final Properties streamsProperties = new Properties();
         // Default values
         streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "alarm-datasync");
         Path kafkaDir = Paths.get(System.getProperty("karaf.data"), "kafka");
         streamsProperties.put(StreamsConfig.STATE_DIR_CONFIG, kafkaDir.toString());
-        // Copy kafka server info from client properties
+        // Copy common properties from client configuration, which should save the user from having to configure
+        // properties for the stream client 99% of time
         final Dictionary<String, Object> clientProperties = configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
         if (clientProperties != null) {
-            streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, clientProperties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+            copyPropIfNonNull(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clientProperties, streamsProperties);
+            copyPropIfNonNull(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, clientProperties, streamsProperties);
+            copyPropIfNonNull(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, clientProperties, streamsProperties);
+            copyPropIfNonNull(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, clientProperties, streamsProperties);
         }
-        // Add all of the stream properties, overriding the bootstrap servers if set
+
+        // Now add all of the stream properties, overriding any of the properties inherited from the producer config
         final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_STREAMS_PID).getProperties();
         if (properties != null) {
             final Enumeration<String> keys = properties.keys();
@@ -309,6 +319,13 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass());
         return streamsProperties;
+    }
+
+    private static void copyPropIfNonNull(String propName, Dictionary<String, Object> sourceMap, Properties targetMap) {
+        Object propValue = sourceMap.get(propName);
+        if (propValue != null) {
+            targetMap.put(propName, propValue);
+        }
     }
 
     public void setAlarmTopic(String alarmTopic) {
