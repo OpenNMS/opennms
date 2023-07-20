@@ -18,10 +18,6 @@ find_tests()
     circleci tests split --split-by=timings --timings-type=classname < failsafe_classnames > /tmp/this_node_it_tests
 }
 
-sudo apt update && \
-  sudo env DEBIAN_FRONTEND=noninteractive \
-  apt -y --no-install-recommends install openjdk-11-jdk-headless
-
 # prime Docker to already contain the images we need in parallel, since
 # testcontainers downloads them serially
 echo "#### Priming Docker container cache"
