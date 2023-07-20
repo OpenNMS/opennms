@@ -1,6 +1,7 @@
 
 [[ga-events-event-definition]]
 = Event Definition
+:description: How to associate and event with an existing node in OpenNMS Horizon/Meridian, and descriptions of mandatory fields.
 
 == Associate an event to a specific node
 

@@ -1,6 +1,7 @@
 
 [[ga-events-sources-of-events]]
 = Sources of Events
+:description: Overview of where events originate in OpenNMS Horizon/Meridian.
 
 Events may originate within {page-component-title} itself or from outside.
 
