@@ -81,7 +81,7 @@
 	    <strong>Node Label</strong>: <%=nodeLabel%><br/>
         </p>
         <p>
-        <div id="onms-interfaces-config">
+        <div id="onms-interfaces-config" ng-app="onms.default.apps">
           <div growl></div>
           <onms-interfaces-config node="<%=nodeId%>"/>
         </div>
