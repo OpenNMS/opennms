@@ -33,10 +33,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.opennms.core.rpc.api.RpcRequest;
-import org.opennms.core.mate.api.MetadataConstants;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MetadataConstants;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.DetectRequest;
@@ -154,10 +155,12 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("Detector class name is required.");
         }
 
-        final Map<String, String> interpolatedAttributes = Interpolator.interpolateStrings(attributes, new FallbackScope(
+        final Scope scope = new FallbackScope(
                 this.client.getEntityScopeProvider().getScopeForNode(nodeId),
                 this.client.getEntityScopeProvider().getScopeForInterface(nodeId, InetAddressUtils.toIpAddrString(address))
-        ));
+        );
+
+        final Map<String, String> interpolatedAttributes = Interpolator.interpolateStrings(attributes, scope);
 
         // Retrieve the factory associated with the requested detector
         final ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);
@@ -198,7 +201,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
         // Build the DetectRequest and store the runtime attributes in the DTO
         final DetectRequest request = factory.buildRequest(location, address, port, interpolatedAttributes);
-        detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
+        detectorRequestDTO.addRuntimeAttributes(Interpolator.interpolateStrings(request.getRuntimeAttributes(), scope));
+
         // Execute the request
         return client.getDelegate().execute(detectorRequestDTO)
             .thenApply(response -> {
