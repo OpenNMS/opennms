@@ -45,14 +45,6 @@ echo "#### Making sure git is up-to-date"
 git remote prune origin || :
 git fetch origin "${REFERENCE_BRANCH}"
 
-echo "#### Determining tests to run"
-perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
-find_tests
-if [ ! -s /tmp/this_node_projects ]; then
-  echo "No tests to run."
-  exit 0
-fi
-
 echo "#### Set loopback to 127.0.0.1"
 sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
 
@@ -62,10 +54,24 @@ sudo sysctl net.ipv4.ping_group_range='0 429496729'
 echo "#### Setting up Postgres"
 ./.circleci/scripts/postgres.sh
 
-echo "#### Installing other dependencies"
+echo "#### Installing OpenJDK"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
  
+retry sudo apt update && \
+  retry sudo env DEBIAN_FRONTEND=noninteractive \
+    apt -y --no-install-recommends install openjdk-11-jdk-headless
+
+echo "#### Determining tests to run"
+perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
+find_tests
+if [ ! -s /tmp/this_node_projects ]; then
+  echo "No tests to run."
+  exit 0
+fi
+
+echo "#### Installing other dependencies"
+
 # kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
             retry sudo apt update && \
