@@ -124,7 +124,7 @@ In case of an HTTPS request, this is also the virtual domain to send as part of 
 Colon-separated credentials such as USERNAME:PASSWORD.
 | n/a
 
-| preselect-auth
+| preemptive-auth
 | Preselect authentication method. 
 When specified, allows only basic authentication.
 User name and password must be provided in the `user-info` attribute.
@@ -211,10 +211,10 @@ WARNING: You need to delete existing RRD files and let them be recreated with th
 When authentication is required, the first HTTP request receives a "401 Unauthorized" response with possible authentication methods. 
 The second request is sent using the selected authentication method.
 
-Using the `preselect-auth` attribute lets you use a specific authentication on the first request.
+Using the `preemptive-auth` attribute lets you use a specific authentication on the first request.
 
 Some servers do not tell you which authentication methods they support. 
-In these cases, using the `preselect-auth` attribute is the only option.
+In these cases, using the `preemptive-auth` attribute is the only option.
 
 == Examples
 

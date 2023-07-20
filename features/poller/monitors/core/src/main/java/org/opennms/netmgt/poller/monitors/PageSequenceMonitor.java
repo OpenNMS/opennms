@@ -376,13 +376,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     }
                 }
 
-                String preselectAuth = getPreselectAuth();
-                if (preselectAuth!=null) {
-                    switch (preselectAuth.toLowerCase()) {
+                String preemptiveAuth = getPreemptiveAuth();
+                if (preemptiveAuth!=null) {
+                    switch (preemptiveAuth.toLowerCase()) {
                         case "basic":
                             clientWrapper.addRequestInterceptor((request, context) -> {
                                 if (userInfo == null) {
-                                    LOG.warn("preselectAuth=\"basic\" but user-info is empty");
+                                    LOG.warn("preemptiveAuth=\"basic\" but user-info is empty");
                                     return;
                                 }
                                 final Header[] headers = request.getHeaders("Authorization");
@@ -394,7 +394,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                             });
                             break;
                         default:
-                            LOG.warn("Illegal value found for preselect-auth: {}", preselectAuth);
+                            LOG.warn("Illegal value found for preselect-auth: {}", preemptiveAuth);
                     }
                 }
                 
@@ -560,8 +560,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_page.getUserInfo();
         }
 
-        private String getPreselectAuth() {
-            return m_page.getPreselectAuth();
+        private String getPreemptiveAuth() {
+            return m_page.getPreemptiveAuth();
         }
 
         private String getScheme() {
