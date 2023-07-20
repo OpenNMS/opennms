@@ -211,7 +211,7 @@ WARNING: You need to delete existing RRD files and let them be recreated with th
 When authentication is required, the first HTTP request receives a "401 Unauthorized" response with possible authentication methods. 
 The second request is sent using the selected authentication method.
 
-Using the `preselect-auth` attribute lets you to use a specific authentication on the first request.
+Using the `preselect-auth` attribute lets you use a specific authentication on the first request.
 
 Some servers do not tell you which authentication methods they support. 
 In these cases, using the `preselect-auth` attribute is the only option.
