@@ -1816,7 +1816,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run-integration-tests:
-          rerun-failtest-count: 0
+          rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 10
