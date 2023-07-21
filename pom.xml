@@ -1757,7 +1757,7 @@
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
-    <servletApiVersion>3.1.0</servletApiVersion>
+    <servletApiVersion>4.0.1</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
