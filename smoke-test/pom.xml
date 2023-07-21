@@ -49,8 +49,6 @@
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <camelVersion>2.19.1</camelVersion>
-    <surefireVersion>2.18</surefireVersion>
-    <failsafeVersion>3.1.2</failsafeVersion>
     <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
@@ -71,6 +69,9 @@
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <!-- for surefire and failsafe -->
+    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
     <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
@@ -112,7 +113,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefireVersion}</version>
+          <version>${maven.testing.plugin.version}</version>
           <configuration>
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
@@ -123,7 +124,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${failsafeVersion}</version>
+          <version>${maven.testing.plugin.version}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
             <systemPropertyVariables>
