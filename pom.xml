@@ -2189,7 +2189,7 @@
               <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
                 <artifactId>sevntu-checks</artifactId>
-                <version>1.41.0</version>
+                <version>1.44.1</version>
               </dependency>
             </dependencies>
             <configuration>
