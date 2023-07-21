@@ -81,9 +81,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.zookeeper</groupId>
-      <artifactId>zookeeper</artifactId>
-      <version>${zookeeper2Version}</version>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.zookeeper</artifactId>
+      <version>${zookeeperVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
@@ -114,6 +114,12 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-test</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.zookeeper</groupId>
+          <artifactId>zookeeper</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.typesafe.scala-logging</groupId>

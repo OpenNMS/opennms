@@ -204,7 +204,7 @@
              description="OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper" version="${project.version}">
         <feature version="${project.version}">sentinel-coordination-api</feature>
         <feature version="${project.version}">sentinel-coordination-common</feature>
-        <feature version="${zookeeperVersion}">zookeeper-dependencies</feature>
+        <feature version="${zookeeperOsgiVersion}">zookeeper-dependencies</feature>
         <bundle>mvn:org.opennms.features.distributed/coordination-zookeeper/${project.version}</bundle>
     </feature>
 
