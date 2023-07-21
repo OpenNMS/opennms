@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Tests the Admin Password Gate functionality, when user enters the default 'admin' password.
  */
+@SuppressWarnings("java:S2068")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPasswordGateIT.class);

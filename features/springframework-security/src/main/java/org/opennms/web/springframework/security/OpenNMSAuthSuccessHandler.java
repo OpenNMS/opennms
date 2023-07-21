@@ -44,9 +44,11 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.util.StringUtils;
 
+@SuppressWarnings("java:S2068")
 public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     // username/password combination that triggers the password gate, which prompts
     // user to change the default "admin" password
+
     public static final String PASSWORD_GATE_USERNAME = "admin";
     public static final String PASSWORD_GATE_PASSWORD = "admin";
 

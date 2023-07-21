@@ -45,6 +45,7 @@ import org.opennms.web.api.Authentication;
 /**
  * Base servlet class for changing a user's password.
  */
+@SuppressWarnings("java:S2068")
 public abstract class AbstractBasePasswordChangeActionServlet extends HttpServlet {
     public static final String PASSWORD_REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})";
     public static final String SAME_CHARACTER_REGEX = "(.)\\1{5}";
@@ -64,11 +65,11 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
     }
 
     protected boolean validatePassword(final String password) {
-        boolean isPasswordComplexityValid = Pattern.compile(this.PASSWORD_REGEX)
+        boolean isPasswordComplexityValid = Pattern.compile(PASSWORD_REGEX)
             .matcher(password)
             .matches();
 
-        boolean isPasswordWithSameCharacters = Pattern.compile(this.SAME_CHARACTER_REGEX)
+        boolean isPasswordWithSameCharacters = Pattern.compile(SAME_CHARACTER_REGEX)
             .matcher(password)
             .matches();
 

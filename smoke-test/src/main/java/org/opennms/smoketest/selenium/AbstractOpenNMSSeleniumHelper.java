@@ -115,6 +115,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+@SuppressWarnings("java:S2068")
 public abstract class AbstractOpenNMSSeleniumHelper {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenNMSSeleniumHelper.class);
 
