@@ -1781,7 +1781,8 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.8.1_1</zookeeperVersion>
+    <zookeeperOsgiVersion>3.8.1</zookeeperOsgiVersion>
+    <zookeeperVersion>${zookeeperOsgiVersion}_1</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.10.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
