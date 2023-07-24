@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
@@ -214,7 +215,7 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
             throw new IllegalArgumentException("XML Collection " + collectionName +" does not exist.");
         }
         // Parse the collection attributes before adding it in the map
-        runtimeAttributes.put(XML_DATACOLLECTION_KEY, parseCollection(collection, handler, agent, parameters));
+        runtimeAttributes.put(XML_DATACOLLECTION_KEY, Interpolator.pleaseInterpolate(parseCollection(collection, handler, agent, parameters)));
         runtimeAttributes.put(RRD_REPOSITORY_PATH_KEY, m_xmlCollectionDao.getConfig().getRrdRepository());
         return runtimeAttributes;
     }
