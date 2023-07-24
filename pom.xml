@@ -492,7 +492,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.12.1</version>
       </plugin>
       <plugin>
         <groupId>net.nicoulaj.maven.plugins</groupId>
@@ -4724,7 +4724,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>hamcrest-pojo</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
