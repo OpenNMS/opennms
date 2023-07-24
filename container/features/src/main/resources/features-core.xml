@@ -171,7 +171,7 @@
         <feature prerequisite="true">wrap</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
