@@ -35,8 +35,6 @@ import java.util.Properties;
 
 import com.codahale.metrics.MetricRegistry;
 import io.opentracing.util.GlobalTracer;
-
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +48,6 @@ import org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher;
 import org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.ipc.twin.test.MockMinionIdentity;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -68,13 +65,6 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
 
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
-
-    @Before
-    @Override
-    public void setup() throws Exception {
-        super.setup();
-        MockLogAppender.setupLogging(true, "DEBUG");
-    }
 
     @Override
     protected TwinPublisher createPublisher() throws Exception {
