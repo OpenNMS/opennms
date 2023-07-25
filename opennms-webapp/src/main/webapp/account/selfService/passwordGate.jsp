@@ -200,7 +200,7 @@
                         <span class="pg-text">
                             Please take a moment to change your <em>admin</em> user password from its default value.
                             This step helps protect your installation against
-                            <a class="pg-link" target="_blank" href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-137a">default credential attacks</a>.
+                            <a class="pg-link" target="_blank" rel="noopener" href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-137a">default credential attacks</a>.
                         </span>
                     </div>
                     <div class="form-input-wrapper">
