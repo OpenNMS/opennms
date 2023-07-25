@@ -167,10 +167,11 @@
         <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="${zookeeperOsgiVersion}" description="ZooKeeper Dependencies">
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature prerequisite="true">wrap</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.zookeeper/${zookeeperVersion}</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>

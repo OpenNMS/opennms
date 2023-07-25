@@ -50,8 +50,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.zookeeper</artifactId>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
             <version>${zookeeperVersion}</version>
             <exclusions>
                 <exclusion>
@@ -67,12 +67,6 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
-            <exclusions>
-              <exclusion>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-              </exclusion>
-            </exclusions>
         </dependency>
         <!-- curator breaks on newer guava, this is a test-only dependency -->
         <dependency>
@@ -105,12 +99,6 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-              <exclusion>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-              </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 </project>
