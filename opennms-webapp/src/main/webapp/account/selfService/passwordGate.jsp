@@ -89,7 +89,7 @@
     height: 32px;
     border-radius: 5px;
     outline: none;
-    border:2px solid rgba(97, 215, 231, 0.829);
+    border: 2px solid rgba(97, 215, 231, 0.829);
     background-color: rgba(255, 255, 255, 0.623);
   }
 
@@ -129,6 +129,16 @@
 
   label.pg-text, span.pg-text {
     color: #fff;
+  }
+
+  a.pg-link, a.pg-link:visited {
+    color: rgb(97, 184, 195);
+    text-decoration: none;
+  }
+
+  a.pg-link:hover {
+    color: rgb(90, 160, 173);
+    text-decoration: underline;
   }
 </style>
 
@@ -187,9 +197,11 @@
             <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm(event);" action="account/selfService/passwordGateAction">
                 <div class="form-content">
                     <div class="form-group">
-                        <span class="pg-text">You landed here because you have not changed your "admin" password from the default value.
-                        It is highly recommended that you do so.
-                        You may also click "Skip" to skip this step for now.</span>
+                        <span class="pg-text">
+                            Please take a moment to change your <em>admin</em> user password from its default value.
+                            This step helps protect your installation against
+                            <a class="pg-link" target="_blank" rel="noopener" href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-137a">default credential attacks</a>.
+                        </span>
                     </div>
                     <div class="form-input-wrapper">
                         <div class="form-group">
