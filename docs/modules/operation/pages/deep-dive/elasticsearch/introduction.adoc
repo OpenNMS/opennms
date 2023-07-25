@@ -183,6 +183,9 @@ Credentials for each node must be stored in `$OPENNMS_HOME/etc/elastic-credentia
 
 NOTE: Credentials are globally defined and will be used by all features that connect to the specified URLs.
 
+NOTE: Metadata expressions can also be used in username and password attributes of the `elastic-credentials.xml` configuration file.
+In this way, the user can also refer to the credentials stored in the secure credentials.
+
 == Circuit breaker
 
 When Elasticsearch is unavailable, a circuit breaker is used to reduce the number of blocked threads.
