@@ -39,16 +39,6 @@
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
-    <feature name="guava31" version="31.1" description="Google :: Guava">
-        <feature prerequisite="true">wrap</feature>
-        <bundle start-level="30">mvn:com.google.guava/guava/31.1-jre</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
-    </feature>
-
     <feature name="jackson-core" version="${jackson2Version}" description="Jackson 2 :: Base">
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
@@ -152,10 +142,10 @@
         <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="${zookeeperOsgiVersion}" description="ZooKeeper Dependencies">
-        <feature prerequisite="true">guava31</feature>
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature prerequisite="true">wrap</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.zookeeper/${zookeeperVersion}</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
