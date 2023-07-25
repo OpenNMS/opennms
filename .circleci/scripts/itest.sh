@@ -151,6 +151,7 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -Pcoverage \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
+           -Dsurefire.failIfNoSpecifiedTests=false \
            -Dfailsafe.failIfNoSpecifiedTests=false \
            -DrunPingTests=false \
            -DskipITs=false \
