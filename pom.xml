@@ -1128,7 +1128,6 @@
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
-                   <exclude>org.apache.zookeeper:zookeeper</exclude> <!-- use: org.apache.servicemix.bundles.zookeeper -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
                    <exclude>org.springframework.security:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
                    <exclude>org.springframework.security.kerberos:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
@@ -1756,7 +1755,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.10.2</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.3</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
@@ -1781,8 +1780,7 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperOsgiVersion>3.8.1</zookeeperOsgiVersion>
-    <zookeeperVersion>${zookeeperOsgiVersion}_1</zookeeperVersion>
+    <zookeeperVersion>3.5.10</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.10.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
@@ -3654,10 +3652,6 @@
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
           </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3668,10 +3662,6 @@
           <exclusion>
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3684,10 +3674,6 @@
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
           </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3698,10 +3684,6 @@
           <exclusion>
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
           </exclusion>
         </exclusions>
       </dependency>
