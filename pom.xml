@@ -492,7 +492,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.12.1</version>
       </plugin>
       <plugin>
         <groupId>net.nicoulaj.maven.plugins</groupId>
@@ -737,12 +737,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven.failsafe.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -979,31 +979,19 @@
       <plugin>
         <groupId>de.qaware.maven</groupId>
         <artifactId>go-offline-maven-plugin</artifactId>
-        <version>1.2.5</version>
+        <version>1.2.8</version>
         <configuration>
           <dynamicDependencies>
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit3</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit3</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit4</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit4</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1027,7 +1015,7 @@
             <DynamicDependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1140,6 +1128,7 @@
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
+                   <exclude>org.apache.zookeeper:zookeeper</exclude> <!-- use: org.apache.servicemix.bundles.zookeeper -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
                    <exclude>org.springframework.security:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
                    <exclude>org.springframework.security.kerberos:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
@@ -1268,7 +1257,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <skip>${skipSurefire}</skip>
@@ -1368,7 +1357,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${maven.surefire.report.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <reportSets>
           <reportSet>
             <id>unit-tests</id>
@@ -1498,10 +1487,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
-    <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
-    <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
+    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
@@ -1511,7 +1497,6 @@
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
     <!-- other plugin versions -->
-    <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
@@ -1650,7 +1635,7 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>3.0.17</groovyVersion>
+    <groovyVersion>3.0.18</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
@@ -1771,7 +1756,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.2</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
@@ -1796,8 +1781,8 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.8.1</zookeeperVersion>
-    <zookeeper2Version>3.8.1</zookeeper2Version>
+    <zookeeperOsgiVersion>3.8.1</zookeeperOsgiVersion>
+    <zookeeperVersion>${zookeeperOsgiVersion}_1</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.10.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
@@ -2205,7 +2190,7 @@
               <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
                 <artifactId>sevntu-checks</artifactId>
-                <version>1.41.0</version>
+                <version>1.44.1</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -4740,7 +4725,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>hamcrest-pojo</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -5300,6 +5285,11 @@
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xerial.snappy</groupId>
+        <artifactId>snappy-java</artifactId>
+        <version>${snappyJavaVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

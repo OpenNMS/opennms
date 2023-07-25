@@ -95,7 +95,7 @@ Next, we need to create the keystore file and add the credentials for connecting
 [source, console]
 ----
 mkdir keystore
-chmod 10001:10001 keystore<1>
+chown -R 10001:10001 keystore<1>
 docker-compose run -v $(pwd)/keystore:/keystore minion -s<2>
 ----
 <1> Assign permissions so the container user account can write within the directory.
