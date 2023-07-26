@@ -35,7 +35,6 @@
 <jsp:include page="/includes/mobile-app-promo.jsp" flush="false" />
 
 <style type="text/css">
-
   .login-page {
     position: absolute;
     top: 0;
@@ -127,6 +126,7 @@
     background-color: #ffe5e7;
     border-color: #f15b65;
   }
+
   p {
     margin-bottom:0px;
   }
@@ -162,9 +162,9 @@
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"
-            <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
-                   <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
-                   placeholder="Username" autofocus="autofocus" autocomplete="username" required/>
+              <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
+              <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
+              placeholder="Username" autofocus="autofocus" autocomplete="username" required/>
           </div>
 
           <div class="form-group">
@@ -173,7 +173,7 @@
 
           <c:if test="${not empty param.session_expired}">
             <div id="login-expired" class="alert alert-warning">
-              <strong>Session expired</strong> <br> Please log back in.
+              <strong>Session expired</strong> <br /> Please log back in.
             </div>
           </c:if>
 
@@ -199,6 +199,4 @@
           <img src="images/opennms-logo-light.svg" class="" width="180px" />
        </div>
   </div>
-
 </div>
-
