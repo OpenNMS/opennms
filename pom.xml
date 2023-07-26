@@ -1692,8 +1692,7 @@
     <paxLoggingVersion>1.11.13</paxLoggingVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.10</paxWebVersion>
-    <protobufVersion>3.16.1</protobufVersion>
-    <protobuf2Version>2.6.1</protobuf2Version>
+    <protobufVersion>3.16.3</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.7</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
