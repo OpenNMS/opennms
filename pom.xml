@@ -1740,7 +1740,6 @@
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.16.3</protobufVersion>
-    <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
