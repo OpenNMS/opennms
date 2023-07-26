@@ -43,14 +43,18 @@
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
 
-    <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
+    <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
-        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle start-level="30" dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
         <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
+    </feature>
+
+    <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
+        <feature prerequisite="true">guava-dependencies</feature>
+        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
 
     <feature name="guava17" version="17.0" description="Google :: Guava">
@@ -171,7 +175,8 @@
         <feature prerequisite="true">wrap</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
         <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
