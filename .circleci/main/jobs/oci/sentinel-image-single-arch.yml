@@ -1,7 +1,7 @@
 jobs:  
   sentinel-image-single-arch:
     executor: base-executor
-    resource_class: medium
+    resource_class: arm.medium
     parameters:
       architecture:
         type: string

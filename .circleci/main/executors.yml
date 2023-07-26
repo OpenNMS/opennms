@@ -1,7 +1,7 @@
 executors:
   base-executor:
     docker:
-      - image: cimg/base:stable-20.04
+      - image: cimg/base:current
   build-executor:
     docker:
       - image: opennms/build-env:circleci-ubuntu-jdk11-b8711
