@@ -30,12 +30,12 @@ package org.opennms.web.graph;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.charts.ChartException;
 import org.opennms.web.charts.ChartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,11 +101,9 @@ public class PurdyChartServlet extends HttpServlet {
         LOG.debug("doGet: displaying chart: {}", chartName);
         
         try {
-                ChartUtils.getBarChartPNG(chartName, out);
-        } catch (IOException e) {
-            LOG.error("Error reading chart-configuration.xml: ",e);
-        } catch (SQLException e) {
-            LOG.error("Error in SQL for chart: {}", chartName,e);
+            ChartUtils.getBarChartPNG(chartName, out);
+        } catch (ChartException e) {
+            LOG.error("Error creating bar chart.",e);
         }
 
         out.flush();
