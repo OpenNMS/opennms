@@ -97,5 +97,8 @@
     "vitest": "^0.22.0",
     "vue-eslint-parser": "^9.0.3",
     "vue-tsc": "^0.40.1"
+  },
+  "resolutions": {
+    "@antfu/utils": "^0.7.3"
   }
 }
