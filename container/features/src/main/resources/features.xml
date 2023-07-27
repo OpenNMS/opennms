@@ -960,7 +960,7 @@
     </feature>
     <feature name="opennms-telemetry-collection" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature version="${netty4Version}">netty4</feature>
+        <feature version="${netty4Version}">netty</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-thresholding-api</feature>
@@ -979,7 +979,7 @@
     </feature>
 
     <feature name="opennms-telemetry-daemon" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
-        <feature version="${netty4Version}">netty4</feature>
+        <feature version="${netty4Version}">netty</feature>
         <feature>camel-spring</feature>
         <feature>dropwizard-metrics</feature>
         <feature>opennms-core-daemon</feature>
@@ -1092,7 +1092,7 @@
         <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature version="${netty4Version}">netty4</feature>
+        <feature version="${netty4Version}">netty</feature>
         <feature>quartz</feature>
         <feature>opennms-core-tracing</feature>
         <feature>opennms-distributed-core-api</feature>
@@ -1559,7 +1559,7 @@
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>dropwizard-metrics</feature>
         <feature>dnsjava</feature>
-        <feature version="${netty4Version}">netty4</feature>
+        <feature version="${netty4Version}">netty</feature>
         <feature>resilience4j</feature>
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
@@ -1894,6 +1894,8 @@
 
     <feature name="opennms-timeseries-api" description="OpenNMS :: Timeseries Storage API" version="${project.version}">
         <feature>dropwizard-metrics</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>fst</feature>
         <feature>opennms-health</feature>
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
@@ -1918,7 +1920,7 @@
     <feature name="opennms-newts" description="OpenNMS :: Newts" version="${project.version}">
         <feature>commons-pool2</feature>
         <feature>groovy</feature>
-        <feature>guava</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>opennms-measurements-api</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-dao-api</feature>

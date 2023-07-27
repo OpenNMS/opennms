@@ -133,7 +133,7 @@
       <feature>bson</feature>
       <feature>commons-csv</feature>
       <feature>dropwizard-metrics</feature>
-      <feature version="${netty4Version}">netty4</feature>
+      <feature version="${netty4Version}">netty</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>

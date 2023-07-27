@@ -26,9 +26,9 @@
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature>dropwizard-metrics</feature>
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature prerequisite="true">guava18</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <feature version="[${netty4Version},5)">netty4</feature>
+        <feature version="[${netty4Version},5)">netty</feature>
         <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
         <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
@@ -142,6 +142,11 @@
     <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava17" version="17.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/17.0</bundle>
+    </feature>
+
+    <!-- don't rely on dependency="true" for things that want specific versions -->
+    <feature name="guava18" version="18.0" description="Google :: Guava">
+        <bundle>mvn:com.google.guava/guava/18.0</bundle>
     </feature>
 
     <!-- don't rely on dependency="true" for things that want specific versions -->
@@ -260,7 +265,8 @@
         </capability>
     </feature>
 
-    <feature name="netty4" version="${netty4Version}" description="Netty">
+    <feature name="netty" version="${netty4Version}" description="Netty">
+        <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
