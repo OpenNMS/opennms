@@ -29,6 +29,11 @@
                   <filtering>true</filtering>
                 </resource>
               </resources>
+              <encoding>UTF-8</encoding>
+              <escapeString>\</escapeString>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>swp</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
             </configuration>
           </execution>
           <!-- karaf-maven-plugin:verify doesn't know about external sun.nio.* packages, so we need to put a custom config in there -->
