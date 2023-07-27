@@ -31,21 +31,31 @@ package org.opennms.netmgt.ticketer.jira;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 
 @Ignore("These tests rely on the Jira system to be configured correctly (see jira.properties in src/test/resources/opennms-home/etc/jira.properties)")
 public class JiraTicketerPluginTest {
 
     JiraTicketerPlugin m_ticketer;
+
+    EntityScopeProvider entityScopeProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -53,12 +63,20 @@ public class JiraTicketerPluginTest {
         assertTrue(opennmsHome + " must exist.", opennmsHome.exists());
         System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
 
-        m_ticketer = new JiraTicketerPlugin();
+        final Map<ContextKey, String> map = new HashMap<>();
+        map.put(new ContextKey("scv", "jira:username"), "john");
+        map.put(new ContextKey("scv", "jira:password"), "secret");
+        final Scope mapScope = new MapScope(Scope.ScopeName.DEFAULT, map);
+
+        entityScopeProvider = mock(EntityScopeProvider.class);
+        when(entityScopeProvider.getScopeForScv()).thenReturn(mapScope);
+
+        m_ticketer = new JiraTicketerPlugin(entityScopeProvider);
     }
 
     @Test
     public void verifyTooManyFiles() throws PluginException {
-        JiraTicketerPlugin plugin = new JiraTicketerPlugin();
+        JiraTicketerPlugin plugin = new JiraTicketerPlugin(entityScopeProvider);
         for (int i=0; i<500; i++) {
             System.out.print(i + ": ");
             Ticket ticket = plugin.get("NMS-8947");
@@ -71,6 +89,12 @@ public class JiraTicketerPluginTest {
         String ticketId = save();
         get(ticketId);
         update(ticketId);
+    }
+
+    @Test
+    public void testMetadata() {
+        assertEquals("john", JiraTicketerPlugin.getConfig(entityScopeProvider).getUsername());
+        assertEquals("secret", JiraTicketerPlugin.getConfig(entityScopeProvider).getPassword());
     }
 
     private String save() throws PluginException {
