@@ -93,6 +93,9 @@ If url is not defined, the collector falls back to legacy mode and uses the depr
 
 If a service requires different configuration, use an entry in `$OPENNMS_HOME/etc/jmx-config.xml` to overwrite it.
 
+NOTE: Metadata expressions can also be used in attributes of the `jmx-config.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
+
 == JMX collection configuration
 
 Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.

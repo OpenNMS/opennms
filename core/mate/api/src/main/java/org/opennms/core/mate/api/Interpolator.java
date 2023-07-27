@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -66,6 +67,10 @@ public class Interpolator {
 
     public static ToBeInterpolated pleaseInterpolate(final Object value) {
         return new ToBeInterpolated(value);
+    }
+
+    public static Map<String, Object> pleaseInterpolate(final Map<String, ?> map) {
+        return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> pleaseInterpolate(e.getValue())));
     }
 
     public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final Scope scope) {

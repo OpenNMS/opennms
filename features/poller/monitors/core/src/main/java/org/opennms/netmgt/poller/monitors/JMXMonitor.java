@@ -36,6 +36,7 @@ import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -112,7 +113,7 @@ public class JMXMonitor extends AbstractServiceMonitor {
             convert.put(entry.getKey(), (String) entry.getValue());
         }
         Map<String, String> attributes = JmxUtils.getRuntimeAttributes(jmxConfigDao.get(), InetAddressUtils.str(svc.getAddress()), convert);
-        return new HashMap<>(attributes);
+        return new HashMap<>(Interpolator.pleaseInterpolate(attributes));
     }
 
     /**
