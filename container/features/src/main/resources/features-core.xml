@@ -211,6 +211,11 @@
         <feature version="[${jettyVersion},10)">pax-jetty</feature>
     </feature>
 
+    <feature name="java-native-access" version="${jnaVersion}" description="Java Native Access (JNA)">
+        <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
+        <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
+    </feature>
+
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
         <feature>javax.mail</feature>
         <feature>javax.servlet</feature>

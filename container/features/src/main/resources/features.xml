@@ -142,10 +142,6 @@
         <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
         <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
     </feature>
-    <feature name="java-native-access" version="${jnaVersion}" description="Java Native Access (JNA)">
-        <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
-        <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
-    </feature>
     <feature name="jaxb" version="${eclipselinkVersion}" description="EclipseLink :: MOXy">
         <feature>javax.mail</feature>
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/${eclipselinkVersion}</bundle>
