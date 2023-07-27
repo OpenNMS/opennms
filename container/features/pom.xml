@@ -477,6 +477,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>spring-extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.api-layer</artifactId>
       <version>${project.version}</version>
