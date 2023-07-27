@@ -14,10 +14,10 @@
 
     <!-- bouncycastle is weird so we're not gonna share it with the JVM classpath using dependency="true" -->
     <feature name="bouncycastle" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle Java cryptography APIs">
-        <bundle start-level="30">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
-        <bundle start-level="30">mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}</bundle>
     </feature>
 
     <feature name="bson" version="${bsonVersion}" description="Binary JSON Support">
@@ -127,16 +127,16 @@
 
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
     </feature>
 
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
-        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle start-level="${earlyStartLevel}" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
     </feature>
 
     <!-- don't rely on dependency="true" for things that want specific versions -->
@@ -152,7 +152,7 @@
     <!-- don't rely on dependency="true" for things that want specific versions -->
     <feature name="guava31" version="31.1" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
-        <bundle start-level="30">mvn:com.google.guava/guava/31.1-jre</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/31.1-jre</bundle>
     </feature>
 
     <feature name="jackson1" version="${jackson1Version}" description="Jackson 1">
@@ -196,11 +196,11 @@
     </feature>
 
     <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
-        <bundle start-level="30" dependency="true">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
     </feature>
 
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
-        <bundle start-level="30" dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
     </feature>
 
     <feature name="javax.validation" version="1.0.0.GA" description="javax.validation">
@@ -313,9 +313,9 @@
         <feature version="${bouncyCastleVersion}">bouncycastle</feature>
         <feature>jaas</feature>
         <feature>shell</feature>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
     </feature>
 </features>

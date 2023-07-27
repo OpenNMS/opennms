@@ -11,7 +11,9 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container :: Karaf Features</name>
   <properties>
+    <systemStartLevel>30</systemStartLevel>
     <earlyStartLevel>60</earlyStartLevel>
+    <lateStartLevel>100</lateStartLevel>
   </properties>
   <build>
     <plugins>
