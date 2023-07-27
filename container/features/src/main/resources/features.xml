@@ -274,6 +274,8 @@
         <feature>owasp-html-sanitizer</feature>
         <feature>commons-jexl</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
 
@@ -404,6 +406,7 @@
         <feature>opennms-poller-api</feature>
         <feature>opennms-rrd-api</feature>
         <feature>opennms-snmp</feature>
+        <feature>scv-api</feature>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
         <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}</bundle>
@@ -483,9 +486,10 @@
         <feature>org.json</feature>
         <feature>javax.mail</feature>
         <feature>opennms-core-camel</feature>
-        <feature>opennms-distributed-core-api</feature>
-        <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-distributed-core-api</feature>
+        <feature>opennms-health-api</feature>
         <feature>opennms-rpc-utils</feature>
         <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
@@ -736,6 +740,7 @@
         <feature>opennms-events-api</feature>
         <feature>opennms-snmp</feature>
         <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
     <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
@@ -1050,22 +1055,25 @@
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.telemetry-client/${project.version}</bundle>
     </feature>
-    <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
-        <bundle start-level="${lateStartLevel}">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health">
-        <feature>commons-io</feature>
+    <feature name="opennms-health-api" version="${project.version}" description="OpenNMS :: Health :: API">
         <feature>commons-lang3</feature>
-        <feature>dropwizard-metrics</feature>
-        <feature>opennms-util</feature>
         <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health :: Core">
+        <feature>commons-io</feature>
+        <feature>dropwizard-metrics</feature>
+        <feature>opennms-health-api</feature>
+        <feature>opennms-util</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-health-rest" version="${project.version}" description="OpenNMS :: Health :: Rest">
         <feature>opennms-health</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
+        <bundle start-level="${lateStartLevel}">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>
     <feature name="opennms-persistence" version="${project.version}" description="OpenNMS :: Persistence">
         <feature>opennms-model</feature>
@@ -1471,6 +1479,7 @@
         <feature>jackson1</feature>
         <feature>javax.servlet</feature>
         <feature>quartz</feature>
+        <feature>opennms-health-api</feature>
         <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>

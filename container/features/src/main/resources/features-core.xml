@@ -160,7 +160,7 @@
         <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/31.1-jre</bundle>
     </feature>
 
-    <feature name="jackson1" version="${jackson1Version}" description="Jackson 1">
+    <feature name="jackson1" version="${jacksonVersion}" description="Jackson 1">
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
@@ -227,7 +227,7 @@
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
-        <!-- <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle> -->
+        <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2.4</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}</bundle>
