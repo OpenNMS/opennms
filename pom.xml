@@ -1674,7 +1674,7 @@
     <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
-    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jfreechartVersion>1.5.4</jfreechartVersion>
     <jicmpVersion>3.0.4</jicmpVersion>
     <jicmp6Version>3.0.4</jicmp6Version>
     <jinteropVersion>3.4.0</jinteropVersion>
@@ -1741,7 +1741,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.10.2</pyroscopeVersion>
+    <pyroscopeVersion>0.11.5</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
@@ -2182,7 +2182,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
             <dependencies>
               <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
