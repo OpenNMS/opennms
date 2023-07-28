@@ -195,6 +195,7 @@
         <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
         <feature>commons-lang3</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 
     <feature name="minion-api-layer" version="${project.version}" description="Minion :: API Layer">

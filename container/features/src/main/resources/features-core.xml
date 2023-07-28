@@ -224,6 +224,7 @@
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
         <feature>javax.mail</feature>
         <feature>javax.servlet</feature>
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
