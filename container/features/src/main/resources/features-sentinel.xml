@@ -80,6 +80,9 @@
 
         <!-- SystemProperties -->
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
+
+        <!-- work around a startup race condition in jetty by way of pax-web -->
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">

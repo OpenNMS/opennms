@@ -88,6 +88,7 @@
     </feature>
 
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javaxMailVersion}</bundle>

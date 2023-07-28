@@ -213,6 +213,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
+      <artifactId>noop-jetty-extension</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
       <artifactId>spring-extender</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
