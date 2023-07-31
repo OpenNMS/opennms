@@ -139,8 +139,8 @@
       <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
-      <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}</bundle>
-      <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}$Bundle-SymbolicName=io.pkts.core&amp;Bundle-Version=${pktsVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}$Bundle-SymbolicName=io.pkts.buffers&amp;Bundle-Version=${pktsVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>

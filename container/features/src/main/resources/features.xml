@@ -42,33 +42,33 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.alarm-northbounder/${project.version}</bundle>
     </feature>
     <feature name="atomikos" version="${atomikosVersion}" description="Atomikos :: TransactionEssentials">
-        <bundle>wrap:mvn:com.atomikos/atomikos-util/${atomikosVersion}</bundle>
-        <bundle>wrap:mvn:com.atomikos/transactions-api/${atomikosVersion}</bundle>
-        <bundle>wrap:mvn:com.atomikos/transactions/${atomikosVersion}</bundle>
-        <bundle>wrap:mvn:com.atomikos/transactions-jta/${atomikosVersion}</bundle>
-        <bundle>wrap:mvn:com.atomikos/transactions-jdbc/${atomikosVersion}</bundle>
+        <bundle>wrap:mvn:com.atomikos/atomikos-util/${atomikosVersion}$Bundle-SymbolicName=com.atomikos.util&amp;Bundle-Version=${atomikosVersion}</bundle>
+        <bundle>wrap:mvn:com.atomikos/transactions-api/${atomikosVersion}$Bundle-SymbolicName=com.atomikos.transactions.api&amp;Bundle-Version=${atomikosVersion}</bundle>
+        <bundle>wrap:mvn:com.atomikos/transactions/${atomikosVersion}$Bundle-SymbolicName=com.atomikos.transactions&amp;Bundle-Version=${atomikosVersion}</bundle>
+        <bundle>wrap:mvn:com.atomikos/transactions-jta/${atomikosVersion}$Bundle-SymbolicName=com.atomikos.transactions.jta&amp;Bundle-Version=${atomikosVersion}</bundle>
+        <bundle>wrap:mvn:com.atomikos/transactions-jdbc/${atomikosVersion}$Bundle-SymbolicName=com.atomikos.transactions.jdbc&amp;Bundle-Version=${atomikosVersion}</bundle>
     </feature>
     <feature name="batik" version="${batikVersion}" description="Apache :: XML Graphics :: Batik">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:xml-apis/xml-apis-ext/1.3.04</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-anim/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-awt-util/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-bridge/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-css/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-dom/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-ext/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-gvt/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-parser/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-script/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-svggen/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-svg-dom/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-transcoder/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-util/${batikVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:xml-apis/xml-apis-ext/1.3.04$Bundle-SymbolicName=org.w3c.xml-apis.ext&amp;Bundle-Version=1.3.04</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-anim/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.anim&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-awt-util/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.awk.util&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-bridge/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.bridge&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-css/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.css&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-dom/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.dom&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-ext/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.ext&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-gvt/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.gvt&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-parser/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.parser&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-script/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.script&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-svggen/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.svggen&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-svg-dom/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.svg.dom&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-transcoder/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.transcoder&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-util/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.util&amp;Bundle-Version=${batikVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.xml&amp;Bundle-Version=${batikVersion}</bundle>
     </feature>
     <feature name="bsf" version="${bsfVersion}" description="Apache :: Bean Scripting Framework">
-        <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
+        <bundle>wrap:mvn:bsf/bsf/${bsfVersion}$Bundle-SymbolicName=org.apache.bsf&amp;Bundle-Version=${bsfVersion}</bundle>
     </feature>
     <feature name="c3p0" version="${c3p0Version}" description="c3p0">
         <feature>postgresql</feature>
@@ -79,14 +79,14 @@
         <bundle>mvn:com.zaxxer/HikariCP/${hikaricpVersion}</bundle>
     </feature>
     <feature name="cron-parser-core" version="${cronParserCoreVersion}" description="Redhogs :: cron-parser-core">
-        <bundle>wrap:mvn:net.redhogs.cronparser/cron-parser-core/${cronParserCoreVersion}</bundle>
+        <bundle>wrap:mvn:net.redhogs.cronparser/cron-parser-core/${cronParserCoreVersion}$Bundle-SymbolicName=net.redhogs.cronparser.core&amp;Bundle-Version=${cronParserCoreVersion}</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${dnsjavaVersion}</bundle>
     </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/xmlgraphics-commons/${xmlgraphicsCommonsVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.fop&amp;Bundle-Version=${fopVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/xmlgraphics-commons/${xmlgraphicsCommonsVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.commons&amp;Bundle-Version=${xmlgraphicsCommonsVersion}</bundle>
         <feature>batik</feature>
     </feature>
     <feature name="gemini-blueprint" version="${eclipseGeminiVersion}" description="Eclipse :: Gemini Blueprint">
@@ -125,22 +125,22 @@
         <bundle>mvn:org.codehaus.groovy/groovy-xml/${groovyVersion}</bundle>
     </feature>
     <feature name="dom4j" version="${dom4jVersion}" description="DOM4J">
-        <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}$Bundle-SymbolicName=org.dom4j&amp;Bundle-Version=${dom4jVersion}</bundle>
     </feature>
     <feature name="hibernate36" version="3.6.10.Final" description="Hibernate :: Hibernate ORM">
         <feature>commons-collections</feature>
         <feature>dom4j</feature>
-        <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Import-Package=org.hibernate.hql.ast</bundle>
+        <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.ast</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
-        <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Export-Package=org.hibernate*;version="3.6.10"</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
+        <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final$Bundle-SymbolicName=org.hibernate.jpa20.api&amp;Bundle-Version=1.0.1</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=3.6.10&amp;Export-Package=org.hibernate*;version="3.6.10"</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=3.2.0</bundle>
     </feature>
     <feature name="hibernate-validator41" version="4.1.0.Final" description="Hibernate :: Hibernate Validator">
         <feature>javax.validation</feature>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator.annotation-processor&amp;Bundle-Version=4.1.0</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator&amp;Bundle-Version=4.1.0</bundle>
     </feature>
     <feature name="jaxb" version="${eclipselinkVersion}" description="EclipseLink :: MOXy">
         <feature>javax.mail</feature>
@@ -153,12 +153,12 @@
         <feature>bouncycastle</feature>
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
     </feature>
-    <feature name="jfreechart" version="1.0.13" description="JFree :: JFreeChart">
-        <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
-        <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
+    <feature name="jfreechart" version="1.0.19" description="JFree :: JFreeChart">
+        <bundle>wrap:mvn:org.jfree/jfreechart/1.0.19$Bundle-SymbolicName=org.jfree.jfreechart&amp;Bundle-Version=1.0.19</bundle>
+        <bundle>wrap:mvn:org.jfree/jcommon/1.0.24$Bundle-SymbolicName=org.jfree.jcommon&amp;Bundle-Version=1.0.24</bundle>
     </feature>
     <feature name="jldap" version="${jldapVersion}" description="OpenLDAP :: JLDAP">
-        <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}</bundle>
+        <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}$Bundle-SymbolicName=com.novell.ldap&amp;Bundle-Version=${jldapVersion}</bundle>
     </feature>
     <feature name="joda-time" version="${jodaTimeVersion}" description="Joda :: Joda-Time">
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
@@ -174,40 +174,40 @@
         <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
-        <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
-        <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15</bundle>
+        <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6$Bundle-SymbolicName=net.sf.ezmorph&amp;Bundle-Version=1.0.6</bundle>
+        <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15$Bundle-SymbolicName=net.sf.json-lib&amp;Bundle-Version=2.2.3</bundle>
     </feature>
     <feature name="lmax-disruptor" version="${lmaxDisruptorVersion}" description="LMAX :: Disruptor">
         <bundle>mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
     </feature>
     <feature name="org.json" version="${jsonVersion}" description="org.json">
-        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Export-Package=org.json</bundle>
+        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Bundle-SymbolicName=org.json&amp;Bundle-Version=${jsonVersion}&amp;Export-Package=org.json</bundle>
     </feature>
     <feature name="json-simple" version="1.1.1" description="json-simple">
-        <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
+        <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1$Bundle-SymbolicName=com.googlecode.json-simple&amp;Bundle-Version=1.1.1</bundle>
     </feature>
     <feature name="owasp-encoder" version="${owaspEncoderVersion}" description="OWASP :: Encoder">
-        <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Export-Package=org.owasp.encoder</bundle>
+        <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Bundle-SymbolicName=org.owasp.encoder&amp;Bundle-Version=${owaspEncoderVersion}&amp;Export-Package=org.owasp.encoder</bundle>
     </feature>
     <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Export-Package=org.owasp.html</bundle>
+        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Bundle-SymbolicName=com.googlecode.owasp-java.html-sanitizer&amp;Bundle-Version=${owaspHtmlSanitizerVersion}&amp;Export-Package=org.owasp.html</bundle>
     </feature>
     <feature name="postgresql" version="${postgresqlVersion}" description="PostgreSQL :: JDBC Driver">
         <feature>pax-jdbc-spec</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
-        <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
+        <bundle>mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
     <feature name="rate-limited-logger" version="${rateLimitedLoggerVersion}" description="Rate Limited Logger">
         <feature>joda-time</feature>
-        <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+        <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}$Bundle-SymbolicName=com.swrve.rate-limited-logger&amp;Bundle-Version=${rateLimitedLoggerVersion}</bundle>
     </feature>
     <feature name="spring-security-opennms" version="${springSecurityVersion}" description="Spring :: Security">
         <feature version="[4.2,4.3)">spring-web</feature>
         <feature>commons-codec</feature>
         <feature>javax.servlet</feature>
-        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
+        <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Bundle-SymbolicName=org.springframework.ldap.core&amp;Bundle-Version=${springLdapVersion}&amp;Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
+        <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}$Bundle-SymbolicName=org.springframework.security.aspects&amp;Bundle-Version=${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-core/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-config/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-ldap/${springSecurityVersion}</bundle>
@@ -225,15 +225,15 @@
         <feature>c3p0</feature>
         <!-- Quartz needs HikariCP [2,3) - so we use the latest 2.x here -->
         <bundle>mvn:com.zaxxer/HikariCP/2.7.9</bundle>
-        <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
+        <bundle>mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     <feature name="twitter4j" version="${twitter4jVersion}" description="Twitter4J">
-        <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}</bundle>
+        <bundle>wrap:mvn:org.twitter4j/twitter4j-core/${twitter4jVersion}$Bundle-SymbolicName=org.twitter4j.core&amp;Bundle-Version=${twitter4jVersion}</bundle>
     </feature>
     <feature name="opentracing-api" version="${opentracingVersion}" description="OpenTracing API">
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.api&amp;Bundle-Version=${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.noop&amp;Bundle-Version=${opentracingVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.util&amp;Bundle-Version=${opentracingVersion}</bundle>
     </feature>
     <feature name="opennms-core-tracing" version="${project.version}" description="OpenNMS :: Core :: Tracing">
         <feature>opentracing-api</feature>
@@ -262,7 +262,7 @@
     </feature>
 
     <feature name="opennms-bootstrap" version="${project.version}" description="opennms-bootstrap">
-        <bundle>wrap:mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-bootstrap/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-identity" version="${project.version}" description="OpenNMS :: Features :: OpenNMS Identity">
@@ -408,8 +408,8 @@
         <feature>opennms-snmp</feature>
         <feature>scv-api</feature>
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
-        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0$Bundle-SymbolicName=com.googlecode.concurrent-locks&amp;Bundle-Version=1.0.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}$Bundle-SymbolicName=org.jasypt&amp;Bundle-Version=${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
@@ -417,8 +417,8 @@
         <feature>zookeeper-dependencies</feature>
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-        <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
+        <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-SymbolicName=com.yammer.metrics.core&amp;Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
+        <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-SymbolicName=com.yammer.metrics.annotation&amp;Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
@@ -444,8 +444,8 @@
         <feature>rate-limited-logger</feature>
         <feature>fst</feature>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
-        <bundle>wrap:mvn:com.squareup.tape2/tape/${tape2Version}</bundle>
-        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
+        <bundle>wrap:mvn:com.squareup.tape2/tape/${tape2Version}$Bundle-SymbolicName=com.squareup.tape2&amp;Bundle-Version=2.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}$Bundle-SymbolicName=org.rocksdb.jni&amp;Bundle-Version=${rocksdbjniVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-camel-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common">
         <feature>opennms-core-ipc-sink-api</feature>
@@ -491,7 +491,7 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-health-api</feature>
         <feature>opennms-rpc-utils</feature>
-        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
@@ -761,11 +761,11 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.eif-adapter/${project.version}</bundle>
     </feature>
     <feature name="smack" version="${smackVersion}" description="Ignite Realtime :: Smack">
-        <bundle>wrap:mvn:org.igniterealtime.smack/smack-core/${smackVersion}</bundle>
-        <bundle>wrap:mvn:org.igniterealtime.smack/smack-tcp/${smackVersion}</bundle>
-        <bundle>wrap:mvn:org.igniterealtime.smack/smack-extensions/${smackVersion}</bundle>
-        <bundle>wrap:mvn:org.igniterealtime.smack/smack-resolver-javax/${smackVersion}</bundle>
-        <bundle>wrap:mvn:xmlpull/xmlpull/1.1.3.1</bundle>
+        <bundle>mvn:org.igniterealtime.smack/smack-core/${smackVersion}$Bundle-Sym</bundle>
+        <bundle>mvn:org.igniterealtime.smack/smack-tcp/${smackVersion}</bundle>
+        <bundle>mvn:org.igniterealtime.smack/smack-extensions/${smackVersion}</bundle>
+        <bundle>mvn:org.igniterealtime.smack/smack-resolver-javax/${smackVersion}</bundle>
+        <bundle>wrap:mvn:xmlpull/xmlpull/1.1.3.1$Bundle-SymbolicName=xmlpull&amp;Bundle-Version=1.1.3.1</bundle>
     </feature>
     <feature name="wsman-integration" version="${project.version}" description="OpenNMS :: Features :: WS-Man Integration">
         <feature>guava17</feature>
@@ -793,8 +793,8 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>jcifs</feature>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng&amp;Bundle-Version=${jinteropVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng.deps&amp;Bundle-Version=${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
     <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
@@ -810,11 +810,11 @@
         <feature>jackson1</feature>
         <feature>joda-time</feature>
         <feature>opennms-core-web</feature>
-        <bundle>wrap:mvn:com.github.mwiede/jsch/${jschVersion}</bundle>
+        <bundle>mvn:com.github.mwiede/jsch/${jschVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/2.0.8_6</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ezmorph/1.0.6_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json-lib/2.4_1</bundle>
-        <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
+        <bundle dependency="true">mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
@@ -865,9 +865,9 @@
         <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>wrap:mvn:com.toastcoders/yavijava/6.0.03</bundle>
-        <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17</bundle>
-        <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17</bundle>
+        <bundle>wrap:mvn:com.toastcoders/yavijava/6.0.05$Bundle-SymbolicName=com.toastcoders.yavijava&amp;Bundle-Version=6.0.05</bundle>
+        <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17$Bundle-SymbolicName=org.sblim.slp.client&amp;Bundle-Version=1.17</bundle>
+        <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17$Bundle-SymbolicName=org.sblim.webm.client&amp;Bundle-Version=1.17</bundle>
         <bundle>mvn:org.opennms/opennms-vmware/${project.version}</bundle>
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">

@@ -71,7 +71,7 @@
         <feature>commons-lang</feature>
         <feature>javax.mail</feature>
         <feature>javax.servlet</feature>
-        <bundle dependency="true">wrap:mvn:org.apache.ant/ant/${antVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.ant/ant/${antVersion}$Bundle-SymbolicName=org.apache.ant.ant&amp;Bundle-Version=${antVersion}</bundle>
         <bundle dependency="true">mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
     </feature>
 
@@ -100,7 +100,7 @@
         <feature>commons-beanutils</feature>
         <feature>javax.servlet</feature>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
-        <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2</bundle>
+        <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2$Bundle-SymbolicName=javax.servlet.jsp.jsp-api&amp;Bundle-Version=2.2</bundle>
         <bundle dependency="true">mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}</bundle>
     </feature>
 
@@ -135,11 +135,11 @@
 
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1</bundle>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14$Bundle-SymbolicName=org.codehaus.mojo.animal-sniffer-annotations&amp;Bundle-Version=1.14</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0$Bundle-SymbolicName=com.google.errorprone.error-prone-annotations&amp;Bundle-Version=2.10.0</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1$Bundle-SymbolicName=com.google.guava.failureaccess&amp;Bundle-Version=1.0.1</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0$Bundle-SymbolicName=org.checkerframework.checker-qual&amp;Bundle-Version=2.0.0</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1$Bundle-SymbolicName=com.google.j2objc.j2objc-annotations&amp;Bundle-Version=1.1</bundle>
     </feature>
 
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
@@ -288,7 +288,7 @@
     </feature>
 
     <feature name="org.json" version="${jsonVersion}" description="org.json">
-        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Export-Package=org.json</bundle>
+        <bundle>wrap:mvn:org.json/json/${jsonVersion}$Export-Package=org.json&amp;Bundle-Version=${jsonVersion}</bundle>
     </feature>
 
     <feature name="snakeyaml" version="${snakeyamlVersion}" description="SnakeYAML">

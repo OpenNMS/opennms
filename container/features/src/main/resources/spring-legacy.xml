@@ -110,7 +110,7 @@
         <feature prerequisite="true">pax-url-wrap</feature>
         <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">mvn:org.springframework/spring-webmvc-portlet/3.1.4.RELEASE</bundle>
     </feature>
@@ -221,7 +221,7 @@
         <feature prerequisite="true">wrap</feature>
         <feature version="[${springVersion},4.3)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/${springVersion}
@@ -345,7 +345,7 @@
         <feature prerequisite="true">pax-url-wrap</feature>
         <feature version="[4.3.30.RELEASE_1,4.4)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/4.3.30.RELEASE_1

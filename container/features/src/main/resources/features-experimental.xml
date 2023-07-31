@@ -123,10 +123,10 @@
 
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
-      <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>
+      <bundle>wrap:mvn:org.w3c.css/sac/1.3$Bundle-SymbolicName=org.w3c.css.sac&amp;Bundle-Version=1.3</bundle>
       <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
-      <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>
-      <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}</bundle> -->
+      <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11$Bundle-SymbolicName=net.sourceforge.cssparser&amp;Bundle-Version=0.9.11</bundle>
+      <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}$Bundle-SymbolicName=com.google.gwt.servlet&amp;Bundle-Version=${gwtVersion}</bundle> -->
 
       <feature>commons-cli</feature>
       <feature>commons-exec</feature>
@@ -137,7 +137,7 @@
       <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
 
       <!-- TODO: Make this JAR into a bundle -->
-      <bundle>wrap:mvn:org.opennms/rancid-api/${rancidApiVersion}</bundle>
+      <bundle>wrap:mvn:org.opennms/rancid-api/${rancidApiVersion}$Bundle-SymbolicName=org.opennms.rancid-api&amp;Bundle-Version=${rancidApiVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
