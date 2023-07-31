@@ -12,6 +12,14 @@
          Karaf side.
     -->
 
+    <feature name="asm" version="${asmVersion}" description="ASM Java Bytecode Manipulation Framework">
+        <bundle>mvn:org.ow2.asm/asm/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-analysis/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-commons/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-tree/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-util/${asmVersion}</bundle>
+    </feature>
+
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>

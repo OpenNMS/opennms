@@ -1126,6 +1126,7 @@
                    <exclude>xml-apis:xml-apis</exclude>
 
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
+                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- use: org.ow2.asm.* -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
@@ -1572,7 +1573,7 @@
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <args4jVersion>2.33</args4jVersion>
-    <asmVersion>5.0.4</asmVersion>
+    <asmVersion>9.5</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.16</batikVersion>
@@ -3558,7 +3559,27 @@
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-all</artifactId>
+        <artifactId>asm</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
         <version>${asmVersion}</version>
       </dependency>
       <dependency>
