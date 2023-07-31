@@ -70,6 +70,12 @@ You can use `$\{OPENNMS_HOME}/bin/send-event.pl` to generate `newSuspect` events
 
 The events trigger provisiond to check the IP address specified in the command above.
 
-NOTE: This adds the discovered node directly into your {page-component-title} database.
+This adds the discovered node directly into your {page-component-title} database.
 We strongly recommend that you use <<requisition-add-nodes, requisitions>> when adding individual IP addresses.
 This will make it easier to manage nodes over time.
+You can tell the `newSuspect` event to target a specific requisition by adding the parameter `foreignSource` to the event.
+
+[source, console]
+----
+# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address -p 'foreignSource requisitionName' uei.opennms.org/internal/discovery/newSuspect
+----
