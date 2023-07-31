@@ -1797,11 +1797,11 @@
     <minaSshdVersion>2.10.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
-    <springVersion>4.2.9.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <springVersion>4.3.30.RELEASE_1</springVersion>
+    <patchedSpringVersion>4.3.30.RELEASE_1.ONMS.1</patchedSpringVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.9.9.1_1</aspectjVersion>
+    <aspectjVersion>1.9.19_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
     <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
