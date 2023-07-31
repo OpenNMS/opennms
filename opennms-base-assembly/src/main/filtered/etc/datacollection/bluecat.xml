@@ -3,6 +3,26 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
+   <resourceType name="bcnDhcpv4LeaseEntry" label="bcnDhcpv4LeaseEntry" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="bcnDhcpv4SubnetEntry" label="bcnDhcpv4SubnetEntry" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="bcnDhcpv4PoolEntry" label="bcnDhcpv4PoolEntry" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="bcnDhcpv4FixedIPEntry" label="bcnDhcpv4FixedIPEntry" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="bcnNtpPeersVarEntry" label="bcnNtpPeersVarEntry" resourceLabel="${bcnNtpPeersConfigured} (${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
    <group name="adonisdns" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.1" instance="0" alias="dnsDaemonRunning" type="INTEGER"/>
       <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.2" instance="0" alias="dnsDaemonNumOfZones" type="Gauge32"/>
@@ -59,6 +79,94 @@
       <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.3.1.1" instance="0" alias="bcnDnsAlarmSeverity" type="string"/>
       <mibObj oid=".1.3.6.1.4.1.13315.3.1.2.3.1.2" instance="0" alias="bcnDnsAlarmInfo" type="octetstring"/>
    </group>
+   <group name="bcnDhcpv4ServiceStatus" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.1.1" instance="0" alias="bcnDhcp4SerOperStat" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.1.2" instance="0" alias="bcnDhc4FirAleIpAddr" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.1.3" instance="0" alias="bcnDhc4LeasStatSucc" type="gauge32"/>
+   </group>
+   <group name="bcnDhcpv4LeaseTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.1" instance="bcnDhcpv4LeaseEntry" alias="bcnDhcpv4LeaseIP" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.2" instance="bcnDhcpv4LeaseEntry" alias="bcnDhc4LeasStarTime" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.3" instance="bcnDhcpv4LeaseEntry" alias="bcnDhcp4LeasEndTime" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.4" instance="bcnDhcpv4LeaseEntry" alias="bcnDhc4LeasTimeStam" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.5" instance="bcnDhcpv4LeaseEntry" alias="bcnDhcp4LeasMacAddr" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.1.1.6" instance="bcnDhcpv4LeaseEntry" alias="bcnDhcpv4LeaseHostn" type="octetstring"/>
+   </group>
+   <group name="bcnDhcpv4SubnetTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.1" instance="bcnDhcpv4SubnetEntry" alias="bcnDhcpv4SubnetIP" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.2" instance="bcnDhcpv4SubnetEntry" alias="bcnDhcpv4SubnetMask" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.3" instance="bcnDhcpv4SubnetEntry" alias="bcnDhcpv4SubnetSize" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.4" instance="bcnDhcpv4SubnetEntry" alias="bcnDhc4SubnFreeAddr" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.5" instance="bcnDhcpv4SubnetEntry" alias="bcnDhcp4SubnLowThre" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.2.1.6" instance="bcnDhcpv4SubnetEntry" alias="bcnDhc4SubnHighThre" type="integer"/>
+   </group>
+   <group name="bcnDhcpv4PoolTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.3.1.1" instance="bcnDhcpv4PoolEntry" alias="bcnDhcp4PoolStartIP" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.3.1.2" instance="bcnDhcpv4PoolEntry" alias="bcnDhcpv4PoolEndIP" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.3.1.3" instance="bcnDhcpv4PoolEntry" alias="bcnDhcp4PoolSubneIP" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.3.1.4" instance="bcnDhcpv4PoolEntry" alias="bcnDhcpv4PoolSize" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.3.1.5" instance="bcnDhcpv4PoolEntry" alias="bcnDhc4PoolFreeAddr" type="integer"/>
+   </group>
+   <group name="bcnDhcpv4FixedIPTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.2.2.4.1.1" instance="bcnDhcpv4FixedIPEntry" alias="bcnDhcpv4FixedIP" type="octetstring"/>
+   </group>
+   <group name="bcnDhcpv4NotificationData" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.3.1.1" instance="0" alias="bcnDhcpv4AlarmSever" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.3.1.2" instance="0" alias="bcnDhcpv4AlarmInfo" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.3.1.3" instance="0" alias="bcnDhc4FailOverStat" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.1.3.1.4" instance="0" alias="bcnDhc4SubAleIpAddr" type="octetstring"/>
+   </group>
+   <group name="bcnNtpServiceStatus" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.1.1" instance="0" alias="bcnNtpSerOperState" type="string"/>
+   </group>
+   <group name="bcnNtpSystem" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.1" instance="0" alias="bcnNtpSysLeap" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.2" instance="0" alias="bcnNtpSysStratum" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.3" instance="0" alias="bcnNtpSysPrecision" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.4" instance="0" alias="bcnNtpSysRootDelay" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.5" instance="0" alias="bcnNtpSysRootDisper" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.6" instance="0" alias="bcnNtpSysRefId" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.7" instance="0" alias="bcnNtpSysRefTime" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.8" instance="0" alias="bcnNtpSysPoll" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.9" instance="0" alias="bcnNtpSysPeer" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.10" instance="0" alias="bcnNtpSysFreq" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.11" instance="0" alias="bcnNtpSysClock" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.12" instance="0" alias="bcnNtpSysSystem" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.13" instance="0" alias="bcnNtpSysProcessor" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.2.14" instance="0" alias="bcnNtpSysJitter" type="octetstring"/>
+   </group>
+   <group name="bcnNtpPeersVarTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.1" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersAssocId" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.2" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersConfigur" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.3" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeePeeAddType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.4" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerPeerAddre" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.5" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersPeerPort" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.6" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeeHosAddType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.7" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerHostAddre" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.8" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersHostPort" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.9" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersLeap" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.10" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersMode" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.11" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersStratum" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.12" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersPeerPoll" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.13" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersHostPoll" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.14" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersPrecisio" type="integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.15" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerRootDelay" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.16" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerRootDispe" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.17" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersRefId" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.18" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersRefTime" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.19" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersOrgTime" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.20" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerReceiTime" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.21" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeerTransTime" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.22" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersReach" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.23" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersOffset" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.24" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersDelay" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.25" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersDispersi" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.2.3.1.1.26" instance="bcnNtpPeersVarEntry" alias="bcnNtpPeersJitter" type="octetstring"/>
+   </group>
+   <group name="bcnNtpNotificationData" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.3.1.1" instance="0" alias="bcnNtpAlarmSeverity" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.13315.3.1.4.3.1.2" instance="0" alias="bcnNtpAlarmInfo" type="octetstring"/>
+   </group>
    <systemDef name="Bluecat">
       <sysoidMask>.1.3.6.1.4.1.8072.3.2.</sysoidMask>
       <collect>
@@ -75,6 +183,14 @@
          <includeGroup>bcnDnsStatServer</includeGroup>
          <includeGroup>bcnDnsStatAllView</includeGroup>
          <includeGroup>bcnDnsNotificationData</includeGroup>
+         <includeGroup>bcnDhcpv4LeaseTable</includeGroup>
+         <includeGroup>bcnDhcpv4SubnetTable</includeGroup>
+         <includeGroup>bcnDhcpv4PoolTable</includeGroup>
+         <includeGroup>bcnDhcpv4FixedIPTable</includeGroup>
+         <includeGroup>bcnDhcpv4NotificationData</includeGroup>
+         <includeGroup>bcnNtpSystem</includeGroup>
+         <includeGroup>bcnNtpPeersVarTable</includeGroup>
+         <includeGroup>bcnNtpNotificationData</includeGroup>
       </collect>
    </systemDef>
 </datacollection-group>
