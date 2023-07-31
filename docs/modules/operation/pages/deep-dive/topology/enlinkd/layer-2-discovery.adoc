@@ -1,6 +1,7 @@
 
 [[ga-enlinkd-layer-2-link-discovery]]
 = Layer 2 Link Discovery
+:description: Discover supported protocols for enlinkd and layer 2 network link discovery in OpenNMS Horizon/Meridian: LLDP, Cisco Discovery Protocol (CDP), and Bridge.
 
 Enlinkd is able to discover Layer 2 network links based on the following protocols:
 
