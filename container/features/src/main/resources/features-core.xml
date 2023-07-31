@@ -12,6 +12,14 @@
          Karaf side.
     -->
 
+    <feature name="asm" version="${asmVersion}" description="ASM Java Bytecode Manipulation Framework">
+        <bundle>mvn:org.ow2.asm/asm/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-analysis/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-commons/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-tree/${asmVersion}</bundle>
+        <bundle>mvn:org.ow2.asm/asm-util/${asmVersion}</bundle>
+    </feature>
+
     <!-- bouncycastle is weird so we're not gonna share it with the JVM classpath using dependency="true" -->
     <feature name="bouncycastle" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle Java cryptography APIs">
         <bundle start-level="${systemStartLevel}">mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}</bundle>
