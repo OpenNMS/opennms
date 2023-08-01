@@ -282,7 +282,6 @@ commands:
           command: |
             ulimit -n 65536 || :
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            mvn clean -DskipTests=true
             << parameters.node-memory >>
             export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             MAVEN_ARGS="install"
