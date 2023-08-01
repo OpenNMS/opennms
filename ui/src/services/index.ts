@@ -6,6 +6,8 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
+import { getCategories } from './categoryService'
+import { getMonitoringLocations } from './monitoringLocationService'
 import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
 import {
   getGraphNodesNodes,
@@ -61,6 +63,8 @@ export default {
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getCategories,
+  getMonitoringLocations,
   getLog,
   getLogs,
   getFile,
