@@ -41,9 +41,7 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/sentinel-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  (cd ../..; compile.pl -DskipNodeJSBuild=true -DskipTests --projects "${REBUILD_PREREQUISITES}" install) && \
-  compile.pl clean install && \
-    (cd "${CONTAINERDIR}"; compile.pl clean install)
+  (cd ../..; compile.pl -DskipNodeJSBuild=true -DskipTests --projects "${BUILD_PREREQUISITES}" install)
 }
 
 set_instance_specific_configuration() {
