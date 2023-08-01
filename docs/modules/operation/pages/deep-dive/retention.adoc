@@ -17,17 +17,17 @@ The aggregation buckets are defined in various config files based on a `<RRD>...
 <1> Step of 300 seconds (5 minutes) per bucket.
 This value should match the interval of the services in the package.
 <2> Store the average of 1 bucket for 2016 buckets.
-5 minute averages kept for 7 days.
+5-minute averages kept for 7 days.
 <3> Store the average of 12 buckets for 1488 buckets.
-1 hour average kept for 62 days.
+1-hour average kept for 62 days.
 <4> Store the average of 288 buckets for 366 buckets.
-1 day average kept for 366 days.
+1-day average kept for 366 days.
 <5> Store the maximum of 288 buckets for 366 buckets.
-1 day max for kept 366 days.
+1-day max kept for 366 days.
 <6> Store the minimum of 288 buckets for 366 buckets.
-1 day min for kept 366 days.
+1-day min kept for 366 days.
 
-IMPORTANT: If the RRD definition is modified after data has been collected, the existing RRD/JRB files on disk must manually be deleted so they can be recreated with the updated definition.
+IMPORTANT: If the RRD definition is modified after data has been collected, you must manually delete the existing RRD/JRB files on disk so they can be recreated with the updated definition.
 
 When using another storage strategy, such as Newts, Cortex, or other integration, all collected data points are persisted without aggregation.
 These points will be kept until the configured TTL expires.
