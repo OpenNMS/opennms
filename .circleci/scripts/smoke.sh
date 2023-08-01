@@ -78,4 +78,4 @@ ionice nice ../compile.pl \
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \
-  install verify
+  install

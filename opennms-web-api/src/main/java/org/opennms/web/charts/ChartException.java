@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,25 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-<%@ page import="org.owasp.encoder.Encode" %>
-<%
-    String title = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "title", "Undefined"));
-    String type = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "type"));
-%>
+package org.opennms.web.charts;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="<%= title %>" />
-    <jsp:param name="headTitle" value="<%= title %>" />
-    <jsp:param name="breadcrumb" value="<%= title %>" />
-    <jsp:param name="ngapp" value="onms.default.apps" />
-</jsp:include>
+public class ChartException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-<jsp:include page="/assets/load-assets.jsp" flush="false">
-  <jsp:param name="asset" value="angular-status" />
-  <jsp:param name="asset-type" value="js" />
-</jsp:include>
-
-<onms-status-list type="<%= type %>"></onms-status-list>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    public ChartException(final String message, final Exception cause) {
+        super(message, cause);
+    }
+}
