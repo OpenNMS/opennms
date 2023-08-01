@@ -4641,11 +4641,6 @@
         <version>${servletApiVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.github.jnr</groupId>
-        <artifactId>jnr-posix</artifactId>
-        <version>${jnrVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
         <version>${jschVersion}</version>

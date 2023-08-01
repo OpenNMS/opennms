@@ -33,16 +33,16 @@
     </feature>
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
+        <feature>dropwizard-metrics</feature>
         <feature version="[${netty4Version},5)">netty</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/4.2.10</bundle>
-        <bundle dependency="true">mvn:com.datastax.oss/java-driver-core/${cassandraVersion}</bundle>
-        <bundle dependency="true">mvn:com.datastax.oss/native-protocol/1.5.1</bundle>
-        <bundle dependency="true">mvn:com.datastax.oss/java-driver-shaded-guava/25.1-jre-graal-sub-1</bundle>
-        <bundle dependency="true">mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}</bundle>
-        <bundle dependency="true">mvn:com.typesafe/config/1.4.1</bundle>
-        <bundle dependency="true">mvn:org.hdrhistogram/HdrHistogram/2.1.12</bundle>
-        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/${jnrVersion}</bundle>
+        <feature>jnr</feature>
+        <bundle>mvn:com.datastax.oss/java-driver-core/${cassandraVersion}</bundle>
+        <bundle>mvn:com.datastax.oss/native-protocol/1.5.1</bundle>
+        <bundle>mvn:com.datastax.oss/java-driver-shaded-guava/25.1-jre-graal-sub-1</bundle>
+        <bundle>mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}</bundle>
+        <bundle>mvn:com.typesafe/config/1.4.2</bundle>
+        <bundle>mvn:org.hdrhistogram/HdrHistogram/2.1.12</bundle>
     </feature>
 
     <feature name="commons-beanutils" version="${commonsBeanutilsVersion}" description="Apache :: commons-beanutils">
@@ -223,6 +223,17 @@
     <feature name="java-native-access" version="${jnaVersion}" description="Java Native Access (JNA)">
         <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
+    </feature>
+
+    <feature name="jnr" version="${jnrVersion}" description="Java Native Runtime">
+        <feature>asm</feature>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11$Bundle-SymbolicName=jnr-jffi&amp;Bundle-Version=1.3.11</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11/jar/native$Bundle-SymbolicName=jnr-jffi-native&amp;Bundle-Version=1.3.11</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-a64asm/1.0.0$Bundle-SymbolicName=jnr-a64asm&amp;Bundle-Version=1.0.0</bundle>
+        <bundle>mvn:com.github.jnr/jnr-constants/0.10.4</bundle>
+        <bundle>mvn:com.github.jnr/jnr-ffi/2.2.14</bundle>
+        <bundle>mvn:com.github.jnr/jnr-posix/${jnrVersion}</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2$Bundle-SymbolicName=jnr-x86asm&amp;Bundle-Version=1.0.2</bundle>
     </feature>
 
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
