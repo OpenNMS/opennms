@@ -112,3 +112,5 @@ Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configurat
 
 NOTE: When running Kafka as the broker, the consumer config needs to have the `auto.offset.reset=earliest` setting, otherwise
 the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for proper BMP state.
+
+NOTE: When running on Sentinel, it is still necessary to have the `opennms-telemetry-bmp-stats` feature running on the core.
