@@ -20,7 +20,7 @@ CONFD_BIN="/usr/local/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="/opt/minion/cacerts"
 
-export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
+export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 # Error codes
 E_ILLEGAL_ARGS=126

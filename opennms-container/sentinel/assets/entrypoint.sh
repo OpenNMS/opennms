@@ -16,7 +16,7 @@ umask 002
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 
-export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
+export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 # Error codes
 E_ILLEGAL_ARGS=126
