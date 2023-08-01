@@ -460,6 +460,8 @@ doStart(){
 		# this is a JRE, try to use ECJ for Jetty compilation instead
 		APP_VM_PARMS=("-Dorg.apache.jasper.compiler.disablejsr199=true" "${APP_VM_PARMS[@]}")
 	fi
+	# work around some jar files that are not compatible with updated JDK validation
+	APP_VM_PARMS=("-Djdk.util.zip.disableZip64ExtraFieldValidation=true" "${APP_VM_PARMS[@]}")
 
 	CMD=("${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$SYSTEMD" = 1 ]; then
