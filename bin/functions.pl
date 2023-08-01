@@ -133,6 +133,10 @@ if (not $MAVEN_OPTS =~ /MaxFDLimit/) {
 	$MAVEN_OPTS .= " -XX:-MaxFDLimit";
 }
 
+if (not $MAVEN_OPTS =~ /jdk.util.zip.disableZip64ExtraFieldValidation/) {
+	$MAVEN_OPTS .= " -Djdk.util.zip.disableZip64ExtraFieldValidation=true";
+}
+
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
