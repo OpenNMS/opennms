@@ -7,6 +7,7 @@
     "build": "vue-tsc --noEmit && vite build --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
     "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",
+    "watch:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false --watch",
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "eslint --ignore-path ../.gitignore --ext .ts,.vue .",

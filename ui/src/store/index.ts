@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 // store modules
 import searchModule from './search'
 import nodesModule from './nodes'
+import hierarchyModule from './hierarchy'
 import ipInterfacesModule from './ipInterfaces'
 import eventsModule from './events'
 import ifServicesModule from './ifServices'
@@ -26,6 +27,7 @@ export default createStore({
   modules: {
     searchModule,
     nodesModule,
+    hierarchyModule,
     ipInterfacesModule,
     eventsModule,
     ifServicesModule,

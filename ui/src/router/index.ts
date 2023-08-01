@@ -3,8 +3,8 @@ import { Plugin } from '@/types'
 import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import Home from '@/containers/Home.vue'
 import FileEditor from '@/containers/FileEditor.vue'
-import Resources from '@/components/Resources/Resources.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
+import Resources from '@/components/Resources/Resources.vue'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
@@ -113,6 +113,16 @@ const router = createRouter({
           component: () => import('@/components/Map/MapNodesGrid.vue')
         }
       ]
+    },
+    {
+      path: '/nodes',
+      name: 'Nodes',
+      component: () => import('@/containers/Nodes.vue')
+    },
+    {
+      path: '/node/:id',
+      name: 'Node Details',
+      component: () => import('@/containers/NodeDetails.vue')
     },
     {
       path: '/resource-graphs',

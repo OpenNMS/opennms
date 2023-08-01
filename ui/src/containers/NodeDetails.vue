@@ -4,8 +4,9 @@
       <BreadCrumbs :items="items" />
     </div>
   </div>
-  <div class="feather-row" style="flex-wrap: inherit;">
-    <span>This page has been deprecated. Please choose "Nodes" from the main menu instead.</span>
+  <div class="feather-row" style="flex-wrap: inherit; padding: 4px;">
+    <!-- <span>This page has been deprecated. Please choose "Nodes" from the main menu instead.</span> -->
+    <span>Temp node details page for node: {{ props.id }}</span>
     <!--
     <div class="feather-col-6">
       <NodeAvailabilityGraphVue />
@@ -29,6 +30,12 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+
+const props = defineProps({
+  id: {
+    type: Number
+  }
+})
 
 const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
 
