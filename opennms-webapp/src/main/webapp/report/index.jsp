@@ -41,6 +41,7 @@
     <jsp:param name="headTitle" value="Reports" />
     <jsp:param name="location" value="report" />
     <jsp:param name="breadcrumb" value="Reports" />
+    <jsp:param name="ngapp" value="onms.default.apps" />
 </jsp:include>
 
 <div class="row">

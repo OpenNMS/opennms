@@ -51,6 +51,7 @@ public class AlarmSummaryCollection extends JaxbListWrapper<AlarmSummary> {
     }
     @XmlElement(name="alarm-summary")
     @JsonProperty("alarm-summary")
+    @Override
     public List<AlarmSummary> getObjects() {
         return super.getObjects();
     }

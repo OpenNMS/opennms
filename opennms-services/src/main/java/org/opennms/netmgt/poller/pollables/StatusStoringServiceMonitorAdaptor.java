@@ -84,7 +84,7 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
         rrdRepository.setHeartBeat(rrdRepository.getStep() * HEARTBEAT_STEP_MULTIPLIER);
         rrdRepository.setRrdBaseDir(new File(System.getProperty("rrd.base.dir"), ResourceTypeUtils.STATUS_DIRECTORY));
 
-        final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
+        final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         final String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
 
         // Build collection agent

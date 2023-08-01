@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -217,7 +218,11 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
     	
     	LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
     	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
-    	
+
+    	if (criterion == null) {
+    	    return Collections.emptySet();
+    	}
+
     	Set<VertexRef> vertices = ((IpLikeHopCriteria)criterion).getVertices();
     	LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
     	

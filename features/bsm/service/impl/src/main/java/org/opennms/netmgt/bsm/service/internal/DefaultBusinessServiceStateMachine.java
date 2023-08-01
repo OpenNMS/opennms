@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -119,13 +119,13 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 }
             }
 
-            if (m_alarmProvider == null && reductionsKeysToLookup.size() > 0) {
-                LOG.warn("There are one or more reduction keys to lookup, but no alarm provider is set.");
-            } else {
-                // Query the status of the reductions keys that were added
-                // We do this so that we can immediately reflect the state of the new
-                // graph without having to wait for calls to handleNewOrUpdatedAlarm()
-                if (reductionsKeysToLookup.size() > 0) {
+            if (!reductionsKeysToLookup.isEmpty()) {
+                if (m_alarmProvider == null) {
+                    LOG.warn("There are one or more reduction keys to lookup, but no alarm provider is set.");
+                } else {
+                    // Query the status of the reductions keys that were added
+                    // We do this so that we can immediately reflect the state of the new
+                    // graph without having to wait for calls to handleNewOrUpdatedAlarm()
                     final Map<String, AlarmWrapper> lookup = m_alarmProvider.lookup(reductionsKeysToLookup);
                     for (Entry<String, AlarmWrapper> eachEntry : lookup.entrySet()) {
                         updateAndPropagateVertex(g, g.getVertexByReductionKey(eachEntry.getKey()), eachEntry.getValue().getStatus());

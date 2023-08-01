@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.rrd;
 
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -63,25 +64,25 @@ public class RrdStrategyFactory implements ApplicationContextAware {
     @SuppressWarnings("unchecked")
     public <D, F> RrdStrategy<D, F> getStrategy() {
         RrdStrategy<D, F> rrdStrategy = null;
-        Boolean useQueue = (Boolean) m_context.getBean("useQueue");
-        Boolean useTcp = (Boolean) m_context.getBean("useTcp");
+        boolean useQueue = m_context.getBean("useQueue", Boolean.class);
+        boolean useTcp = m_context.getBean("useTcp", Boolean.class);
 
-        if (useQueue) {
-            if (useTcp) {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
+        try {
+            if (useQueue) {
+                if (useTcp) {
+                    rrdStrategy = m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString(), RrdStrategy.class);
+                } else {
+                    rrdStrategy = m_context.getBean(StrategyName.queuingRrdStrategy.toString(), RrdStrategy.class);
+                }
             } else {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingRrdStrategy.toString());
+                if (useTcp) {
+                    rrdStrategy = m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString(), RrdStrategy.class);
+                } else {
+                    rrdStrategy = m_context.getBean(StrategyName.basicRrdStrategy.toString(), RrdStrategy.class);
+                }
             }
-        } else {
-            if (useTcp) {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
-            } else {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
-            }
-        }
-
-        if (rrdStrategy == null) {
-            throw new IllegalStateException(String.format("Invalid RRD configuration useQueue: %s, useTcp: %s", useQueue, useTcp));
+        } catch (final BeansException e) {
+            throw new IllegalStateException(String.format("Invalid RRD configuration useQueue: %s, useTcp: %s", useQueue, useTcp), e);
         }
 
         return rrdStrategy;

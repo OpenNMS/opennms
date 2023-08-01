@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,13 +38,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
-
-/**
- * <p>OnmsSnmpInterfaceList class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 @XmlRootElement(name = "snmpInterfaces")
 @JsonRootName("snmpInterfaces")
 public class OnmsSnmpInterfaceList extends JaxbListWrapper<OnmsSnmpInterface> {
@@ -55,6 +48,7 @@ public class OnmsSnmpInterfaceList extends JaxbListWrapper<OnmsSnmpInterface> {
         super(ifaces);
     }
 
+    @Override
     @XmlElement(name="snmpInterface")
     @JsonProperty("snmpInterface")
     public List<OnmsSnmpInterface> getObjects() {

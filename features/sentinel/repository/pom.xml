@@ -16,7 +16,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>${karafVersion}</version>
                 <executions>
                     <execution>
                         <id>features-add-to-repository</id>
@@ -86,9 +85,6 @@
                                 <feature>sentinel-api-layer</feature>
                                 <feature>sentinel-timeseries-api</feature>
                                 <feature>sentinel-plugin-sample</feature>
-
-                                <!-- Other features -->
-                                <feature>cassandra-driver/${cassandraVersion}</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

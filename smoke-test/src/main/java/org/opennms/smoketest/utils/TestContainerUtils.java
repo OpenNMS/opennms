@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -139,12 +139,15 @@ public class TestContainerUtils {
         cmd.withExposedPorts(exposedPorts);
 
         // Add previous port bindings
-        Ports portBindings = cmd.getHostConfig().getPortBindings();
-        // Add port bindings for our UDP ports
-        for (int port : ports) {
-            portBindings.bind(ExposedPort.udp(port), Ports.Binding.empty());
+        final var hostConfig = cmd.getHostConfig();
+        if (hostConfig != null) {
+            Ports portBindings = hostConfig.getPortBindings();
+            // Add port bindings for our UDP ports
+            for (int port : ports) {
+                portBindings.bind(ExposedPort.udp(port), Ports.Binding.empty());
+            }
+            hostConfig.withPortBindings(portBindings);
         }
-        cmd.getHostConfig().withPortBindings(portBindings);
     }
 
     /**

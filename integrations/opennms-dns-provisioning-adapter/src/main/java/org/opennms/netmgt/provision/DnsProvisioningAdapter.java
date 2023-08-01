@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -235,7 +235,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 update.delete(Name.fromString(oldRecord.getHostname()), Type.A);
             }
             update.replace(Name.fromString(record.getHostname()), Type.A, 3600, record.getIp().getHostAddress());
-            m_resolver.send(update);
+            m_resolver.sendAsync(update);
 
             m_nodeDnsRecordMap.put(Integer.valueOf(op.getNodeId()), record);
         } catch (Throwable e) {
@@ -251,7 +251,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             if (record != null) {
                 Update update = new Update(Name.fromString(record.getZone()));
                 update.delete(Name.fromString(record.getHostname()), Type.A);
-                m_resolver.send(update);
+                m_resolver.sendAsync(update);
 
                 m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
             }

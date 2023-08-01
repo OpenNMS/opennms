@@ -62,18 +62,18 @@ public class JmxConnectionConfig {
     }
 
     public boolean isLocalConnection() throws MalformedURLException {
-        Objects.requireNonNull(getIpAddress());
-        Objects.requireNonNull(getPort());
+        final var addr = Objects.requireNonNull(getIpAddress());
+        final var jvmPort = Objects.requireNonNull(getPort());
 
         // If we're trying to create a connection to a localhost address...
-        if (getIpAddress().isLoopbackAddress()) {
+        if (addr.isLoopbackAddress()) {
             final String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY); // returns null if REMOTE JMX is enabled
 
             // ... and if the port matches the port of the current JVM...
-            if (getPort().equals(jmxPort) ||
-                    // ... or if remote JMX RMI is disabled and we're attempting to connect
-                    // to the default OpenNMS JMX port...
-                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(getPort()))) {
+            if (jvmPort.equals(jmxPort)) {
+                return true;
+            }
+            if (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(jvmPort)) {
                 return true;
             }
         }

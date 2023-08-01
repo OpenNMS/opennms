@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -390,7 +390,7 @@ public abstract class BasicScheduleUtils {
     public static Date getWeeklyTime(final Date referenceTime, final String day, final String timeString) {
         final Calendar ref = Calendar.getInstance();
         ref.setTime(referenceTime);
-        ref.set(Calendar.DAY_OF_WEEK, getDayOfWeekIndex(day).intValue());
+        ref.set(Calendar.DAY_OF_WEEK, getDayOfWeekIndex(day));
         setOutCalTime(ref, timeString);
         return ref.getTime();
     }

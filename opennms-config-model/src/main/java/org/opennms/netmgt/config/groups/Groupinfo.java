@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -80,10 +80,12 @@ public class Groupinfo implements Serializable {
     }
 
     public void addGroup(final Group group) {
-        if (m_groups == null && group != null) {
-            m_groups = new ArrayList<>();
+        if (group != null) {
+            if (m_groups == null) {
+                m_groups = new ArrayList<>();
+            }
+            m_groups.add(group);
         }
-        m_groups.add(group);
     }
 
     public List<Role> getRoles() {

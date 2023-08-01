@@ -2,6 +2,7 @@
 [[ga-events-sources-sink-api]]
 
 = Sink
+:description: How to use OpenNMS sink to route events to a specific topic on Kafka/ActiveMQ in Horizon/Meridian.
 
 Events can also be created by routing them to a specific topic on Kafka/ActiveMQ.
 

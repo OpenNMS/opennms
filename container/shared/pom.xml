@@ -65,6 +65,7 @@
                         <feature>spring/${springVersion}</feature>
                         <feature>spring-jms/${springVersion}</feature>
 
+                        <feature>cassandra-driver/${cassandraVersion}</feature>
                         <feature>jetty/${jettyVersion}</feature>
                         <feature>pax-jetty/${jettyVersion}</feature>
                         <feature>pax-http-whiteboard</feature>

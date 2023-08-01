@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -963,6 +963,7 @@ public class ParserStageSequenceBuilder {
 		public Integer getValue(ParserStageState state) {
 			// Trim the leading zeros from this value
 			String value = getAccumulatedValue(state);
+			if (value == null) return null;
 			boolean trimmed = false;
 			while (value.startsWith("0")) {
 				value = value.substring(1);
@@ -1020,8 +1021,13 @@ public class ParserStageSequenceBuilder {
 		 * @param value
 		 * @return
 		 */
+        @SuppressWarnings("java:S2259") // HOW exactly is trimmed nullable? it's a primitive!
 		public static int trimAndConvert(String value) {
-			boolean trimmed = false;
+		    if (value == null) {
+		        return 0;
+		    }
+
+		    boolean trimmed = false;
 			while (value.startsWith("0")) {
 				value = value.substring(1);
 				trimmed = true;
@@ -1041,6 +1047,11 @@ public class ParserStageSequenceBuilder {
 			if (!(o instanceof MatchInteger)) return false;
 			MatchInteger other = (MatchInteger)o;
 			return Objects.equals(m_resultConsumer, other.m_resultConsumer);
+		}
+
+		@Override
+		public int hashCode() {
+		    return Objects.hash(m_resultConsumer);
 		}
 
 		@Override

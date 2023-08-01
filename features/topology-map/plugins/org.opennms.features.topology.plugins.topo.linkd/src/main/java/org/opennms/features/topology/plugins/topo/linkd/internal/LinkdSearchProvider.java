@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -103,6 +104,10 @@ public class LinkdSearchProvider implements SearchProvider {
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
         org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
+
+        if (criterion == null) {
+            return Collections.emptySet();
+        }
 
         Set<VertexRef> vertices = ((VertexHopCriteria)criterion).getVertices();
         LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());

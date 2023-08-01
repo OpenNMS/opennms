@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -127,9 +127,8 @@ public class DefaultMapViewManager implements MapViewManager{
     
     @Override
     public BoundingBox getCurrentBoundingBox() {
-        if(m_viewPortWidth < 0 || m_mapBounds == null) {
-            //return m_mapBounds;
-            //throw new IllegalStateException("View port and maps bounds must be set");
+        if(m_mapBounds == null) {
+            throw new IllegalStateException("map boundaries bounds must be set");
         }
         BoundingBox mPrime = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
         int width = (int)Math.round(Math.pow((double)mPrime.getWidth(), 1.0 - m_scale) * Math.pow((double)m_viewPortWidth/2.0, m_scale));

@@ -80,7 +80,7 @@ This allows you to get historical availability per-service beyond 24 hours.
 The poller engine has been updated to support asynchronous polling, allowing OpenNMS to use fewer Pollerd threads to handle the same amount of load.
 This will become the default in a future Horizon release.
 
-Details on enabling it are in xref:operation/deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-async[the operation manual].
+Details on enabling it are in xref:operation:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-async[the operation manual].
 
 === OpenNMS Plugin API
 

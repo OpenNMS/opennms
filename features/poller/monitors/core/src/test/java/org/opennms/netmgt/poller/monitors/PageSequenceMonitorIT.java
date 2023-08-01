@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
@@ -43,7 +42,6 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -373,6 +371,32 @@ public class PageSequenceMonitorIT {
                 "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\" locationMatch=\"/opennms/\">\n" +
                 "    <header name=\"Authorization\" value=\"Basic " + new String(Base64.encodeBase64(("admin:wrong").getBytes())) + "\" />\n" +
                 "  </page>\n" +
+                "</page-sequence>\n");
+        final PollStatus status2 = m_monitor.poll(getHttpService("localhost"), params2);
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status2.getStatusCode());
+        assertNotNull(status2.getReason());
+    }
+
+    @Test
+    @JUnitHttpServer(basicAuth = true, port = 10342, webapps = @Webapp(context = "/opennms", path = "src/test/resources/loginTestWar"))
+    public void testUserInfoToBasicAuth() throws Exception {
+        final Map<String, Object> params1 = new HashMap<>(m_params);
+        String correctUserInfo = "admin:istrator";
+        params1.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\" locationMatch=\"/opennms/\" user-info=\"" + correctUserInfo + "\" />\n" +
+                "</page-sequence>\n");
+        final PollStatus status1 = m_monitor.poll(getHttpService("localhost"), params1);
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status1.getStatusCode());
+        assertNull(status1.getReason());
+
+        final Map<String, Object> params2 = new HashMap<>(m_params);
+        String wrongUserInfo = "admin:wrong";
+        params2.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\" locationMatch=\"/opennms/\" user-info=\"" + wrongUserInfo + "\" />\n" +
                 "</page-sequence>\n");
         final PollStatus status2 = m_monitor.poll(getHttpService("localhost"), params2);
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status2.getStatusCode());

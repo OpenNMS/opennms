@@ -35,9 +35,9 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
@@ -79,7 +79,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -440,8 +439,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr, final String location) {
-                    return "oldNodeLabel";
+                @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                    return CompletableFuture.completedFuture("oldNodeLabel");
                 }
             });
 
@@ -482,8 +481,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr, final String location) {
-                    return "newNodeLabel";
+                @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                    return CompletableFuture.completedFuture("newNodeLabel");
                 }
             });
 
@@ -514,8 +513,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr, final String location) {
-                    return "oldNodeLabel";
+                @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                    return CompletableFuture.completedFuture("oldNodeLabel");
                 }
             });
 
@@ -555,8 +554,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             assertEquals(0, getSnmpInterfaceDao().countAll());
 
             m_provisionService.setHostnameResolver(new HostnameResolver() {
-                @Override public String getHostname(final InetAddress addr, final String location) {
-                    return null;
+                @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                    return CompletableFuture.completedFuture(null);
                 }
             });
 

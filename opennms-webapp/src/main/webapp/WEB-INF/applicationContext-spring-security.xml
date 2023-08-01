@@ -225,6 +225,10 @@
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/account/selfService/passwordGateAction"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
           <beans:constructor-arg name="pattern" value="/event/**"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>

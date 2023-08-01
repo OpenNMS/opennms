@@ -37,7 +37,7 @@ The new Minion user appears in the user list.
 
 == Configure message broker
 
-Configuration occurs in the {page-component-title} etc directory.
+Configuration occurs in the {page-component-title} `$\{OPENNMS_HOME}/etc` directory.
       We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
       Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
 

