@@ -8,3 +8,11 @@ The integration in {page-component-title} lets you use these route views, status
 image::bmp/bmp_integration_overview.png[width=70%]
 
 The following sections provide details about associated parsers, adapters, and listeners.
+
+== Distributed BMP processing with Sentinel
+
+You can use Sentinel to process BMP statistics ingested by one or more Minions in order to alleviate load on the core.
+All of the BMP-related adapters can run on Sentinel, allowing you to generate events and metrics, and ingest route changes.
+In this mode, events are sent back to the message broker for the core to process and metrics are persisted directly to the time series database.
+
+TIP: The https://github.com/OpenNMS-forge/bmp-playground[BMP Playground] provides a virtual lab that you can use to simulate BGP, BMP, and to see how the {page-component-title} components can be configured at runtime.
