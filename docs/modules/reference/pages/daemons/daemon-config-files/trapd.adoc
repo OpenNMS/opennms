@@ -69,3 +69,5 @@ Note that for V3, you must specify the SNMPv3 credentials used to authenticate a
 </trapd-configuration>
 ----
 
+NOTE: Metadata expressions can also be used in attributes of the `trapd-configuration.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.

@@ -56,9 +56,10 @@ public class SnmpV3User {
     }
 
     public SnmpV3User(String engineId, String securityName, String authenticationProtocol,
-            String authenticationPassphrase, String privacyProtocol, String privacyPassphrase) {
+            String authenticationPassphrase, String privacyProtocol, String privacyPassphrase, Integer securityLevel) {
         this(securityName, authenticationProtocol, authenticationPassphrase, privacyProtocol, privacyPassphrase);
         this.engineId = engineId;
+        this.securityLevel = securityLevel;
     }
 
     public String getEngineId() {
@@ -145,6 +146,7 @@ public class SnmpV3User {
             .append("privPassPhrase", privPassPhrase)
             .append("privProtocol", privProtocol)
             .append("securityName", securityName)
+            .append("securityLevel", securityLevel)
             .toString();
     }
 }
