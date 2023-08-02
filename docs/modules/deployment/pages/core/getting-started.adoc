@@ -165,9 +165,16 @@ The default user credentials are as follows:
 * *Username:* `admin`
 * *Password:* `admin`
 
-IMPORTANT: After you sign in for the first time, you should immediately change the `admin` account's password to a secure one.
+When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
+Although you also have the option to skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
-To change your account's password, follow these steps:
+. Type your current password.
+. Type your new password and confirm it.
+. Click *Change Password*.
+
+== Change password after first sign in
+
+To change your account's password after the first time you sign in, follow these steps:
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.
