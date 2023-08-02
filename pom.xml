@@ -1704,8 +1704,8 @@
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
     <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
-    <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
-    <kafkaVersion>3.3.2</kafkaVersion>
+    <kafkaBundleVersion>3.5.0_1</kafkaBundleVersion>
+    <kafkaVersion>3.5.0</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
