@@ -12,7 +12,7 @@ JAVA_OPTS="-Xmx2g"
 
 export PATH CONTAINERDIR JAVA_OPTS
 
-BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.sentinel:repository"
+BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:sentinel,org.opennms.features.sentinel:repository"
 
 cleanup_and_build() {
   should_use_sudo=$1
