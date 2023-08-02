@@ -217,6 +217,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
+      <artifactId>noop-jetty-extension</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
       <artifactId>spring-extender</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -833,4 +839,13 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <!-- override a bad repo that's causing issues -->
+  <repositories>
+    <repository>
+      <id>spring-ext</id>
+      <name>OpenNMS Mega-Repository (spring-ext override)</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+    </repository>
+  </repositories>
 </project>
