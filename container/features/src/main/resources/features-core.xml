@@ -227,12 +227,12 @@
 
     <feature name="jnr" version="${jnrVersion}" description="Java Native Runtime">
         <feature>asm</feature>
-        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11$Bundle-SymbolicName=jnr-jffi&amp;Bundle-Version=1.3.11</bundle>
-        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11/jar/native$Bundle-SymbolicName=jnr-jffi-native&amp;Bundle-Version=1.3.11</bundle>
-        <bundle>wrap:mvn:com.github.jnr/jnr-a64asm/1.0.0$Bundle-SymbolicName=jnr-a64asm&amp;Bundle-Version=1.0.0</bundle>
         <bundle>mvn:com.github.jnr/jnr-constants/0.10.4</bundle>
         <bundle>mvn:com.github.jnr/jnr-ffi/2.2.14</bundle>
         <bundle>mvn:com.github.jnr/jnr-posix/${jnrVersion}</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11$Bundle-SymbolicName=com.github.jnr.jffi&amp;Bundle-Version=1.3.11&amp;Export-Package=com.kenai.jffi;version="1.3.11"</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11/jar/native$Bundle-SymbolicName=com.github.jnr.jffi.native&amp;Bundle-Version=1.3.11&amp;Export-Package=jni*;version="1.3.11"</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-a64asm/1.0.0$Bundle-SymbolicName=jnr-a64asm&amp;Bundle-Version=1.0.0</bundle>
         <bundle>wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2$Bundle-SymbolicName=jnr-x86asm&amp;Bundle-Version=1.0.2</bundle>
     </feature>
 

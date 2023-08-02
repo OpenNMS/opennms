@@ -1596,8 +1596,8 @@
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.19.1</camelVersion>
-    <!-- Match Newts version -->
-    <cassandraVersion>4.15.0</cassandraVersion>
+    <!-- Match (or beat) Newts version -->
+    <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCliVersion>1.2</commonsCliVersion>
