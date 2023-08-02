@@ -17,3 +17,8 @@ executors:
   ui-executor:
     docker:
       - image: cimg/node:16.3.0
+  machine-for-local-cluster:
+    description: |
+      Machine executor suitable for running local clusters.
+    machine:
+      image: ubuntu-2204:current
