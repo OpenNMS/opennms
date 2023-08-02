@@ -55,6 +55,7 @@ commands:
             CIRCLE_BIN_DIR="$HOME/.local/bin"
             mkdir -p "$CIRCLE_BIN_DIR"
             export PATH="$CIRCLE_BIN_DIR:$PATH"
+            export CIRCLECI_CLI_TELEMETRY_OPTOUT=1
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
             "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
@@ -167,7 +168,7 @@ jobs:
 
   trigger-path-filtering:
     docker:
-      - image: cimg/python:3.10.1
+      - image: cimg/python:3.10
     parameters:
       base-revision:
         default: main

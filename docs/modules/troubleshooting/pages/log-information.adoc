@@ -3,6 +3,23 @@
 
 This section describes common log files to look at when troubleshooting.
 
+== Debugging
+
+When debugging, it may be helpful to lower the minimum severity at which a component will log from the default level of `WARN`.
+To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the following lines:
+
+[source,xml]
+----
+<KeyValuePair key="..." value="WARN" />
+----
+
+You can alter the log level to one of the following values: `DEBUG`, `INFO`, `WARN`, `ERROR`.
+Changes to this file take effect within 60 seconds with no extra action needed.
+
+NOTE: On busy systems, setting the log level to `DEBUG` may put additional load on your disk.
+Make sure to not leave the system at `DEBUG` level longer than necessary.
+
+
 [[manager.log]]
 == manager.log
 
