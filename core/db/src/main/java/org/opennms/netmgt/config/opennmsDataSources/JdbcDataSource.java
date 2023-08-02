@@ -82,9 +82,6 @@ public class JdbcDataSource implements java.io.Serializable {
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
 
-    private transient String keystorePassword;
-    private transient String keystoreFilename;
-
     public JdbcDataSource() {
         this.paramList = new java.util.ArrayList<>();
     }
