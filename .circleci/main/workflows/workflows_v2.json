@@ -124,6 +124,14 @@
     },
     "individual": {
         "oc-test": {
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/develop/"
+                    ]
+                },
+                "user_overridable": false
+            }
         },
         "empty": {
             "filters": {
