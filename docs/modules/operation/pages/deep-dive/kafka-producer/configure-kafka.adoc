@@ -30,7 +30,6 @@ Set this to an empty string to disable forwarding nodes.
 Set this to an empty string to disable forwarding topologies.
 | nodes
 
-
 | topologyVertexTopic
 | Name of the topic used for topology vertices.
 | vertices
@@ -74,6 +73,11 @@ Set this to `false` to prevent suppressing these alarms.
 | startAlarmSyncWithCleanState
 | Set this to `true` to force the Kafka Streams client to start with a clean state on every boot.
 | false
+
+| alarmSync
+| Set this to `false` to disable synchronization of the alarms topics.
+This is automatically disabled when alarm forwarding is not enabled.
+| true
 |===
 
 == Configure filtering
@@ -169,3 +173,24 @@ admin@opennms()> config:update
 ----
 
 In the example above, we set the vertex and edge topics to be different by default.
+
+== Configure the alarm sync streams client
+
+When producing alarms to a topic, we also automatically enable a Kafka Stream client to help synchronize the contents of the topic and ensure eventual consistency with the database.
+
+The streams client takes different properties than the producer and requires a separate configuration map.
+
+We automatically pull known properties from the producer configuration, allowing it to work without further configuration in most cases.
+
+If your producer takes a special configuration directive, or you would like to tune the behavior of the stream client, you can set properties in `org.opennms.features.kafka.producer.streams`:
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer.streams
+admin@opennms()> config:property-set default.dsl.store rocksDB
+admin@opennms()> config:update
+----
+
+Any property set in `org.opennms.features.kafka.producer.streams` will override those inherited from `org.opennms.features.kafka.producer.client`.
