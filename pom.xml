@@ -1494,7 +1494,7 @@
     <!-- maven surefire/failsafe version added here so it could be overridden -->
     <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
     <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
-    <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
     <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
