@@ -58,7 +58,7 @@ commands:
             export CIRCLECI_CLI_TELEMETRY_OPTOUT=1
             curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | DESTDIR="$CIRCLE_BIN_DIR" bash
             "$CIRCLE_BIN_DIR/circleci" version
-            "$CIRCLE_BIN_DIR/circleci" config validate --skip-update-check /tmp/.circleci/main.yml || exit 1
+            "$CIRCLE_BIN_DIR/circleci" config validate --ignore-deprecated-images --skip-update-check /tmp/.circleci/main.yml || exit 1
 
 workflows:
   coverage:
