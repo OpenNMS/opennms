@@ -155,6 +155,7 @@ start() {
   -Dcom.sun.management.jmxremote.access.file=${OPENNMS_HOME}/etc/jmxremote.access
   -DisThreadContextMapInheritable=true
   -Djdk.attach.allowAttachSelf=true
+  -Djdk.util.zip.disableZip64ExtraFieldValidation=true
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=${OPENNMS_HOME}/data/tmp
   -Djava.locale.providers=CLDR,COMPAT
