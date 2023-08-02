@@ -137,6 +137,8 @@ ipLastCapsdPoll
 ipStatus
 
 | isManaged
+
+IsSnmpPrimary
 |===
 
 
