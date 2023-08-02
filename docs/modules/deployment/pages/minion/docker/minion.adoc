@@ -98,7 +98,7 @@ mkdir keystore
 chown -R 10001:10001 keystore<1>
 docker-compose run -v $(pwd)/keystore:/keystore minion -s<2>
 ----
-<1> Assign permissions so the container user account can write within the directory.
+<1> Assign ownership so the container user account can write within the directory.
 <2> When prompted, enter the username and password for a `ROLE_MINOIN` user account on the {page-component-title} server.
 You may be prompted for the same username and password twice.
 
