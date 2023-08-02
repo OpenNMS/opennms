@@ -118,11 +118,13 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "oc-test"
             ]
         }
     },
     "individual": {
+        "oc-test": {
+        },
         "empty": {
             "filters": {
                 "branches": {

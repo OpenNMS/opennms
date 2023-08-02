@@ -1,6 +1,6 @@
 {
     "build-deploy": false,
-    "coverage": true,
+    "coverage": false,
     "docs": false,
     "ui": false,
     "integration": false,
@@ -11,5 +11,5 @@
     "oci": false,
     "build-publish": false,
     "trivy-scan": false,
-    "experimental": false
+    "experimental": true
 }
