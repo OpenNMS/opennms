@@ -174,7 +174,6 @@ admin@opennms()> config:update
 
 In the example above, we set the vertex and edge topics to be different by default.
 
-
 == Configure the alarm sync streams client
 
 When producing alarms to a topic, we also automatically enable a Kafka Stream client to help synchronize the contents of the topic and ensure eventual consistency with the database.
