@@ -18,7 +18,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-${java.version}</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Spring-Context>META-INF/opennms/applicationContext-osgi.xml,META-INF/opennms/applicationContext-shared.xml,META-INF/opennms/component-dao.xml</Spring-Context>
                         <Export-Package>

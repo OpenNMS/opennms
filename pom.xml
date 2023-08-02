@@ -1089,7 +1089,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,18)</version>
+                 <version>[${java.version},${java.max.version})</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1235,8 +1235,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1377,7 +1377,7 @@
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.21.0</version>
         <configuration>
-            <targetJdk>1.8</targetJdk>
+            <targetJdk>${java.version}</targetJdk>
             <rulesets>
                <!--
                <ruleset>/rulesets/basic-jsf.xml</ruleset>
@@ -1447,6 +1447,11 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
+    <!-- inclusive -->
+    <java.version>11</java.version>
+    <!-- exclusive -->
+    <java.max.version>18</java.max.version>
 
     <!--
       Surefire forked JVM arguments
@@ -2145,30 +2150,6 @@
       <modules>
         <module>smoke-test</module>
       </modules>
-    </profile>
-    <profile>
-      <id>jdk7+</id>
-      <activation>
-        <jdk>[1.7,9)</jdk>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.sun.tools.jxc.maven2</groupId>
-            <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-            <version>1.2</version>
-            <dependencies>
-              <dependency>
-              <groupId>com.sun</groupId>
-              <artifactId>tools</artifactId>
-              <version>1.8</version>
-              <scope>system</scope>
-              <systemPath>${java.home}/../lib/tools.jar</systemPath>
-              </dependency>
-            </dependencies>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>checkstyle</id>

@@ -21,7 +21,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.opennms.netmgt.enlinkd.api;version="${project.version}"</Export-Package>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-${java.version}</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                     </instructions>

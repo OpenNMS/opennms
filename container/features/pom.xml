@@ -143,7 +143,7 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>11</javase>
+                      <javase>${java.version}</javase>
                       <descriptors>
                           <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
                           <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>

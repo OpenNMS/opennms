@@ -14,10 +14,11 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <inherited>false</inherited>
         <configuration>
-          <!-- To load the jar file into jaspersoft studio it is required to be Java 7 compatible -->
-          <source>1.7</source>
-          <target>1.7</target>
+          <!-- stay compatible with 1.8 environments for plugin reasons -->
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -26,7 +27,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.core.spring.*;version="${project.version}"</Export-Package>

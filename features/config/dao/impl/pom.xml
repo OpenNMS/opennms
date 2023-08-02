@@ -11,19 +11,6 @@
     <artifactId>org.opennms.features.config.dao.impl</artifactId>
     <name>OpenNMS :: Features :: Config :: DAO :: Impl</name>
   <packaging>bundle</packaging>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.config.dao</groupId>
