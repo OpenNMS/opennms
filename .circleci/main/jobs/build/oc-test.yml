@@ -18,7 +18,7 @@ jobs:
               exit 0
             fi
 
-            RELEASE_TAG="<< parameters.release-tag >>"
+            
 
             PLATFORM="linux"
             if [ -n "$(uname | grep "Darwin")" ]; then
