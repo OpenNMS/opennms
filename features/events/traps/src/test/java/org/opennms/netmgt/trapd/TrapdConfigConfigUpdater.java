@@ -30,8 +30,6 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -72,10 +70,10 @@ public class TrapdConfigConfigUpdater {
         final List<SnmpV3User> v3users = new ArrayList<>();
         for (SecurityLevel securityLevel : SecurityLevel.values()) {
             Snmpv3User user = new Snmpv3User();
-            user.setSecurityName("some-security-name-" + securityLevel); // Include the security level to make this unique
+            user.setSecurityName("${scv:auth-" + securityLevel + ":username}"); // Include the security level to make this unique
             user.setSecurityLevel(securityLevel.getSnmpValue());
             user.setAuthProtocol("MD5");
-            user.setAuthPassphrase("0p3nNMSv3");
+            user.setAuthPassphrase("${scv:auth-" + securityLevel + ":password}");
             user.setEngineId("some-engine-id-" + securityLevel);
             user.setPrivacyPassphrase("0p3nNMSv3");
             user.setPrivacyProtocol("DES");

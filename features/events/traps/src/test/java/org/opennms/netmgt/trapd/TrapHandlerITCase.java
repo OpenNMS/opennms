@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -78,6 +77,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -155,6 +156,7 @@ public class TrapHandlerITCase implements InitializingBean {
         final TrapdConfigBean newConfig = new TrapdConfigBean(m_trapdConfig);
         newConfig.setSnmpV3Users(Lists.newArrayList(user));
         m_trapdConfig.update(newConfig);
+        m_trapd.setSecureCredentialsVault(new TrapdIT.MockSecureCredentialsVault());
 
         m_trapd.start();
         m_doStop = true;
