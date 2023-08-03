@@ -1626,7 +1626,7 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.5.22</groovyVersion>
+    <groovyVersion>3.0.18</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
