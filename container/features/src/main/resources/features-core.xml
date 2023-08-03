@@ -12,7 +12,7 @@
          Karaf side.
     -->
 
-    <feature name="asm" version="${asmVersion}" description="ASM">
+    <feature name="asm" version="${asmVersion}" description="ASM Java Bytecode Manipulation Framework">
         <bundle>mvn:org.ow2.asm/asm/${asmVersion}</bundle>
         <bundle>mvn:org.ow2.asm/asm-analysis/${asmVersion}</bundle>
         <bundle>mvn:org.ow2.asm/asm-commons/${asmVersion}</bundle>
@@ -104,21 +104,19 @@
     </feature>
 
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
-        <!-- needed by spifly -->
-        <feature version="[9.2,10)">asm</feature>
+        <!-- asm 9.2+ is needed for spifly 1.3.x -->
+        <feature version="${asmVersion}">asm</feature>
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
-        <!-- <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle> -->
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/${jettyVersion}</bundle>
-        <!-- <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/${jettyVersion}</bundle> -->
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/${jettyVersion}</bundle>
@@ -143,7 +141,6 @@
         <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-websocket-api/1.1_1</bundle>
-        <!-- <bundle start-level="30">mvn:org.apache.geronimo.components/geronimo-jaspi/2.0.0</bundle> -->
         <capability>
             osgi.contract;osgi.contract=JavaServlet;version:Version="${servletApiVersion}";uses:="javax.servlet,javax.servlet.http,javax.servlet.descriptor,javax.servlet.annotation",
             osgi.contract;osgi.contract=JavaWebSockets;version:Version="1";uses:="javax.websocket, javax.websocket.server"
