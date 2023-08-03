@@ -13,6 +13,40 @@ jobs:
       - run:
           name: Test the cluster
           command: |
+            if which oc > /dev/null; then
+              echo "The OpenShift client CLI is already installed"
+              exit 0
+            fi
+
+            RELEASE_TAG="<< parameters.release-tag >>"
+
+            PLATFORM="linux"
+            if [ -n "$(uname | grep "Darwin")" ]; then
+              PLATFORM="mac"
+            fi
+
+            RELEASE_URL="https://api.github.com/repos/openshift/origin/releases/latest"
+            if [ -n "${RELEASE_TAG}" ]; then
+              RELEASE_URL="https://api.github.com/repos/openshift/origin/releases/tags/${RELEASE_TAG}"
+            fi
+            DOWNLOAD_URL=$(curl -s --retry 5 "${RELEASE_URL}" \
+              | grep "openshift-origin-client-tools" \
+              | grep "${PLATFORM}" \
+              | awk '/browser_download_url/ {print $2}' \
+              | sed 's/"//g')
+            curl -L -o openshift-client.zip "$DOWNLOAD_URL"
+            tar xvf openshift-client.zip --strip-components=1
+
+            chmod +x ./oc
+            chmod +x ./kubectl
+
+            SUDO=""
+            if [ $(id -u) -ne 0 ] && which sudo > /dev/null ; then
+              SUDO="sudo"
+            fi
+
+            $SUDO mv ./oc /usr/local/bin/
+            $SUDO mv ./kubectl /usr/local/bin/          
             oc new-project localclustertestproject
             oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
             kubectl get services
