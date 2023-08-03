@@ -10,7 +10,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowJs": true,
+    "allowJs": true,  // needed for marker cluster
     "lib": ["esnext", "dom"],
     "paths": {
       "@/*": [
