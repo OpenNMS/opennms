@@ -26,6 +26,7 @@ jobs:
             fi
 
             RELEASE_URL="https://api.github.com/repos/openshift/origin/releases/latest"
+            RELEASE_TAG="v3.11.0"
             if [ -n "${RELEASE_TAG}" ]; then
               RELEASE_URL="https://api.github.com/repos/openshift/origin/releases/tags/${RELEASE_TAG}"
             fi
