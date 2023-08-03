@@ -1,15 +1,15 @@
 jobs:
   oc-test:
-    executor: redhat-openshift/machine-for-local-cluster
+    executor: machine-for-local-cluster
     steps:
-      - redhat-openshift/create-local-cluster-with-oc:
-          skip-registry-check: true
-      - redhat-openshift/login-and-update-kubeconfig:
-          server-address: "https://127.0.0.1:8443"
-          username: dev1
-          password: password
-          openshift-platform-version: "3.x"
-          insecure-skip-tls-verify: true
+     #- redhat-openshift/create-local-cluster-with-oc:
+     #    skip-registry-check: true
+     #- redhat-openshift/login-and-update-kubeconfig:
+     #    server-address: "https://127.0.0.1:8443"
+     #    username: dev1
+     #    password: password
+     #    openshift-platform-version: "3.x"
+     #    insecure-skip-tls-verify: true
       - run:
           name: Test the cluster
           command: |
