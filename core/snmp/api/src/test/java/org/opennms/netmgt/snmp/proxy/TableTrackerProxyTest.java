@@ -97,3 +97,4 @@ public class TableTrackerProxyTest {
         assertThat(rows, hasSize(0));
     }
 }
+

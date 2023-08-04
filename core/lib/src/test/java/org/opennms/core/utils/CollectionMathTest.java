@@ -87,3 +87,4 @@ public class CollectionMathTest extends TestCase {
 		assertEquals(new BigDecimal(19).doubleValue(), CollectionMath.median(c).doubleValue());
 	}
 }
+

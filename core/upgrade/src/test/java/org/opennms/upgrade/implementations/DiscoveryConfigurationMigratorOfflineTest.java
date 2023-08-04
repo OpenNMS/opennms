@@ -72,3 +72,4 @@ public class DiscoveryConfigurationMigratorOfflineTest {
         Assert.assertEquals(1, config.getIncludeRanges().size());
     }
 }
+

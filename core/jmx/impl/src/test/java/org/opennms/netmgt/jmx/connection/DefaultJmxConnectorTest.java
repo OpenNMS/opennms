@@ -90,3 +90,4 @@ public class DefaultJmxConnectorTest {
         return defaultConnectionManager.connect(JmxConnectors.jsr160, localhost, properties, null);
     }
 }
+

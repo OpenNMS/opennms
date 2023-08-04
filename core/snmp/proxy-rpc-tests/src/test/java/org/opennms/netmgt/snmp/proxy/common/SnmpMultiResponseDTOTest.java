@@ -80,3 +80,4 @@ public class SnmpMultiResponseDTOTest extends XmlTestNoCastor<SnmpMultiResponseD
         return multiResponseDTO;
     }
 }
+

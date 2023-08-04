@@ -103,3 +103,4 @@ public class TaskCoordinatorTest {
         assertEquals("0123456789", result.toString());
     }
 }
+

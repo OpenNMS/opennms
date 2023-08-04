@@ -69,3 +69,4 @@ public class FuzzyDateFormatterTest extends TestCase {
         assertEquals("2 years",      FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (1000L * 60 * 60 * 24 * 730) ), now));
     }
 }
+

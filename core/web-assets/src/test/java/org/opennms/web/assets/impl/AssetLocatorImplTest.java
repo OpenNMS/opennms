@@ -160,3 +160,4 @@ public class AssetLocatorImplTest {
         assertEquals(expected, found);
    }
 }
+

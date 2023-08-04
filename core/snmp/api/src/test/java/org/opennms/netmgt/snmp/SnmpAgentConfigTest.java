@@ -136,3 +136,4 @@ public class SnmpAgentConfigTest {
         Assert.assertEquals(config, SnmpAgentConfig.fromMap(config.toMap()));
     }
 }
+

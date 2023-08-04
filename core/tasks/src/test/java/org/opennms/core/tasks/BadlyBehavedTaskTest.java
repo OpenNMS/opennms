@@ -263,3 +263,4 @@ public class BadlyBehavedTaskTest {
         latch2.waitFor(1, TimeUnit.SECONDS);
     }
 }
+

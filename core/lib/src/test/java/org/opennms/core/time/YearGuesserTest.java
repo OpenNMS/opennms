@@ -62,3 +62,4 @@ public class YearGuesserTest {
         assertEquals(expectedYear, dateWithYear.getYear());
     }
 }
+

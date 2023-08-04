@@ -427,3 +427,4 @@ public class FileAnticipatorTest extends TestCase {
         m_anticipator.deleteExpected(true);
     }
 }
+

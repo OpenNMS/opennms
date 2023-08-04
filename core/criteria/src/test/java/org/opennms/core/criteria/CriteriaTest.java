@@ -210,3 +210,4 @@ public class CriteriaTest {
                 assertEquals(expected, cb.toCriteria().getRestrictions());
 	}
 }
+

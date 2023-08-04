@@ -118,3 +118,4 @@ public class PropertiesUtilsTest extends TestCase {
         assertEquals("first geek ordinal", PropertiesUtils.substitute("${prop.foo}", m_propsTwo, m_propsOne));
     }
 }
+

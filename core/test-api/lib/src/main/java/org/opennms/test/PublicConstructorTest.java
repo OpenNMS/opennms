@@ -77,3 +77,4 @@ public abstract class PublicConstructorTest {
 	 */
 	protected abstract List<Class<? extends Object>> getClasses() throws Exception;
 }
+

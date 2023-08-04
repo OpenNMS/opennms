@@ -79,3 +79,4 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
     }
 }
+

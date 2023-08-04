@@ -99,3 +99,4 @@ public class SetSequenceGeneratorTest extends AbstractSqlGeneratorTest<SetSequen
     }
 
 }
+

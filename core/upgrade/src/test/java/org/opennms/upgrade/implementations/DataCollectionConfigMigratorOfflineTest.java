@@ -80,3 +80,4 @@ public class DataCollectionConfigMigratorOfflineTest {
         assertTrue(updatedContents.contains("org.opennms.netmgt.collection.support.IndexStorageStrategy"));
     }
 }
+

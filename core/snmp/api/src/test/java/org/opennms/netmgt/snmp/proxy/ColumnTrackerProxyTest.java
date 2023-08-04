@@ -92,3 +92,4 @@ public class ColumnTrackerProxyTest {
         assertThat(gatherer.getResults(), hasSize(0));
     }
 }
+

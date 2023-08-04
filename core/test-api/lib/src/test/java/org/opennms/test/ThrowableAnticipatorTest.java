@@ -181,3 +181,4 @@ public class ThrowableAnticipatorTest extends TestCase {
     }
     
 }
+

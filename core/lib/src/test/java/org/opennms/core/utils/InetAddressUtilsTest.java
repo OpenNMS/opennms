@@ -96,3 +96,4 @@ public class InetAddressUtilsTest {
         assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", str(InetAddressUtils.convertCidrToInetAddressV6(128)));
     }
 }
+

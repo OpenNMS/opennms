@@ -67,3 +67,4 @@ public class ZonedDateTimeBuilderTest {
         assertEquals(1483228861999L + (0 * 3600 * 1000), ZonedDateTime.of(time, ZonedDateTimeBuilder.parseZoneId("CET")).toInstant().toEpochMilli());
     }
 }
+

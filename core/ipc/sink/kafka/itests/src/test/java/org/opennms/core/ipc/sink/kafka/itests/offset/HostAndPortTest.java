@@ -59,3 +59,4 @@ public class HostAndPortTest {
         assertEquals("kafka", hostAndPort.getHost());
     }
 }
+

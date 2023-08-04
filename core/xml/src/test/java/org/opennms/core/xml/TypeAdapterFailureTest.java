@@ -87,3 +87,4 @@ public class TypeAdapterFailureTest {
         JaxbUtils.unmarshal(MyPoint.class, JaxbUtils.marshal(p));
     }
 }
+

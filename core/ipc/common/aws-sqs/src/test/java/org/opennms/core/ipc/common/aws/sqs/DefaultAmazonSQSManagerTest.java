@@ -116,3 +116,4 @@ public class DefaultAmazonSQSManagerTest {
         return config.getSinkQueueConfig();
     }
 }
+

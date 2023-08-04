@@ -105,3 +105,4 @@ public class SingleInstanceTrackerProxyTest {
         assertThat(gatherer.getResults(), hasSize(0));
     }
 }
+
