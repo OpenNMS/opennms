@@ -70,7 +70,7 @@ sudo killall -9 apt || true && \
 
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-curl -sSf https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo tee -a /etc/apt/trusted.gpg.d/adoptopenjdk_key.asc
+curl -sSf https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo tee -a /etc/apt/trusted.gpg.d/adoptium.asc
 curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
 
 # limit more sources and add mirrors
@@ -78,8 +78,8 @@ echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restri
 deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
 sudo add-apt-repository -y 'deb http://debian.opennms.org stable main'
 
-# add the Adopt OpenJDK repository
-sudo add-apt-repository -y "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(lsb_release -cs) main"
+# add the Adoptium repository
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
 
 # add the R repository
 sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
@@ -88,7 +88,7 @@ retry sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
-                adoptopenjdk-8-hotspot \
+                temurin-8-jdk \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
