@@ -276,16 +276,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public void login() {
         getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
 
-        WebElement index = getElementWithoutWaiting(By.id("index-contentright"));
-        if (index != null && getDriver().getCurrentUrl().contants("index.jsp")) {
-            LOG.warn("already logged in, this test has a stale session and should probably be fixed");
-        } else {
-            waitForLogin();
+        waitForLogin();
 
-            enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
-            enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-            clickElement(By.name("Login"));
-        }
+        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
+        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        clickElement(By.name("Login"));
 
         wait.until((WebDriver driver) -> {
             return ! driver.getCurrentUrl().contains("login.jsp");
