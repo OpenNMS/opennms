@@ -737,12 +737,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven.failsafe.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -998,25 +998,13 @@
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit3</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit3</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit4</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit4</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1040,7 +1028,7 @@
             <DynamicDependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1280,7 +1268,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <skip>${skipSurefire}</skip>
@@ -1382,7 +1370,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${maven.surefire.report.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <reportSets>
           <reportSet>
             <id>unit-tests</id>
@@ -1499,10 +1487,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
-    <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
-    <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
+    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
@@ -1513,7 +1498,6 @@
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
     <!-- other plugin versions -->
-    <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
@@ -1731,7 +1715,7 @@
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.12</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.3</mavenApiVersion>
+    <mavenApiVersion>3.9.4</mavenApiVersion>
     <mavenResolverApiVersion>1.9.13</mavenResolverApiVersion>
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
@@ -1767,7 +1751,7 @@
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
-    <rocksdbjniVersion>7.4.5</rocksdbjniVersion>
+    <rocksdbjniVersion>8.3.2</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
@@ -4294,11 +4278,6 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>${jbossLoggingVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.caucho</groupId>
-        <artifactId>hessian</artifactId>
-        <version>3.1.5</version>
       </dependency>
       <dependency>
         <groupId>com.github.seancfoley</groupId>
