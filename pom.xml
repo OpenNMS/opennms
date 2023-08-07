@@ -1618,7 +1618,7 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
+    <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
