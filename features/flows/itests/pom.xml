@@ -48,13 +48,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
-                <version>1.5</version>
                 <configuration>
                     <alias>localhost</alias>
                     <keysize>2048</keysize>
                     <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
                     <ext>SubjectAlternativeName=dns:localhost</ext>
+                    <storetype>jks</storetype>
                 </configuration>
             </plugin>
         </plugins>
