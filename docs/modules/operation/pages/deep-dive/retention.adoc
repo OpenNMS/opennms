@@ -1,0 +1,35 @@
+When using RRD/JRB storage, data is stored in the file system using a RRD-type strategy.
+With this "round robin" storage, data is kept in aggregated time buckets, with the latest bucket overwriting the oldest bucket.
+Multiple collections within the time period for a bucket will cause the data to be consolidated based on the type of bucket.
+
+The aggregation buckets are defined in various config files based on a `<RRD>...</RRD>` block.
+
+.Default RRD config
+[source, xml]
+----
+<rrd step="300"><1>
+   <rra>RRA:AVERAGE:0.5:1:2016</rra><2>
+   <rra>RRA:AVERAGE:0.5:12:1488</rra><3>
+   <rra>RRA:AVERAGE:0.5:288:366</rra><4>
+   <rra>RRA:MAX:0.5:288:366</rra><5>
+   <rra>RRA:MIN:0.5:288:366</rra><6>
+</rrd>
+----
+<1> Step of 300 seconds (5 minutes) per bucket.
+This value should match the interval of the services in the package.
+<2> Store the average of 1 bucket for 2016 buckets.
+5-minute averages kept for 7 days.
+<3> Store the average of 12 buckets for 1488 buckets.
+1-hour average kept for 62 days.
+<4> Store the average of 288 buckets for 366 buckets.
+1-day average kept for 366 days.
+<5> Store the maximum of 288 buckets for 366 buckets.
+1-day max kept for 366 days.
+<6> Store the minimum of 288 buckets for 366 buckets.
+1-day min kept for 366 days.
+
+IMPORTANT: If the RRD definition is modified after data has been collected, you must manually delete the existing RRD/JRB files on disk so they can be recreated with the updated definition.
+
+When using another storage strategy, such as Newts, Cortex, or other integration, all collected data points are persisted without aggregation.
+These points will be kept until the configured TTL expires.
+These storage strategies will ignore any defined `<RRA>` definitions in favor of the TTL value.
