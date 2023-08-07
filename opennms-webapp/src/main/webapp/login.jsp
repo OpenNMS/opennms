@@ -78,12 +78,6 @@
           && session != null) {
       session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
   }
-
-  // If login page is called in an authorized session, just redirect to dashboard
-  if (request.getUserPrincipal() != null) {
-    response.sendRedirect("index.jsp");
-    return;
-  }
 %>
 
 <div class="login-page">
