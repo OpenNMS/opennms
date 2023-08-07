@@ -38,9 +38,10 @@
         <artifactId>keytool-maven-plugin</artifactId>
         <configuration>
           <alias>localhost</alias>
-          <keysize>1024</keysize>
-          <keyalg>DSA</keyalg>
+          <keysize>2048</keysize>
+          <keyalg>RSA</keyalg>
           <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
+          <storetype>jks</storetype>
         </configuration>
       </plugin>
       <plugin>
