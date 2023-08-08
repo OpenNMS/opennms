@@ -50,6 +50,10 @@ The codename for Horizon 32.0.2 is https://volt.fm/genre/6487/anime-lo-fi[Anime 
 * Extend filter syntax to include isSnmpPrimary (Issue https://issues.opennms.org/browse/NMS-15842[NMS-15842])
 * Add docs to describe the default RRD storage retention (Issue https://issues.opennms.org/browse/NMS-16033[NMS-16033])
 
+=== Task
+
+* Document the note to increase the maximum connection when pool size is increased (Issue https://issues.opennms.org/browse/NMS-16050[NMS-16050])
+
 [[releasenotes-changelog-32.0.1]]
 
 == Release 32.0.1
