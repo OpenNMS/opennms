@@ -4,7 +4,7 @@
 
 The Cortex Time Series plugin enables {page-component-title} to persist time series performance and latency data to Cortex.
 The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to https://cortexmetrics.io/[Cortex].
-It also lets you visualize graphs from the Cortex instance in the https://docs.opennms.com/helm/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+It also lets you visualize graphs from the Cortex instance in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
 
 .Cortex Time Series plugin architecture
 image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Cortex Time Series plugin and how it integrates with {page-component-title}", 600]

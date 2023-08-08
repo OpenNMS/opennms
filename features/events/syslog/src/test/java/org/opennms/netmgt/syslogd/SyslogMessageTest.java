@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -412,13 +412,13 @@ public class SyslogMessageTest {
         LocalDateTime expectedLocalDateTime = LocalDateTime.of(expectedYear, 2, 3 , 12, 21, 20);
         ZonedDateTime expectedDateTime = ZonedDateTime.of(expectedLocalDateTime, expectedTimeZone.toZoneId());
         Date parsedDate = parser.parseDate(dateString);
-        assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+        assertEquals(expectedDateTime.toInstant().toEpochMilli(), parsedDate.toInstant().toEpochMilli());
 
         // Date Format 2:
         LocalDate expectedLocalDate = LocalDate.of(expectedYear, 2, 3 );
         expectedDateTime = expectedLocalDate.atStartOfDay(expectedTimeZone.toZoneId());
         parsedDate = parser.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(expectedDateTime));
-        assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+        assertEquals(expectedDateTime.toInstant().toEpochMilli(), parsedDate.toInstant().toEpochMilli());
     }
 
     static int getExpectedYear(String dateFragment) throws ParseException {
