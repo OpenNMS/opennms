@@ -53,7 +53,7 @@ Use it for the notifications you want to go to the second channel.
       </argument>
    </command>
 ----
-<1> Replace with a valid webhook for your desired channel
+<1> Replace with a valid webhook for your desired channel.
 
 Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 
