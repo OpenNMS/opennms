@@ -29,7 +29,7 @@ The codename for Horizon 32.0.2 is https://volt.fm/genre/6487/anime-lo-fi[Anime 
 * Reflected XSS in multiple JSP files in opennms/opennms (Issue https://issues.opennms.org/browse/NMS-15783[NMS-15783])
 * POSTINSTALL scriptlet may fail if data/tmp/ is present but empty (Issue https://issues.opennms.org/browse/NMS-15809[NMS-15809])
 * PostgreSQL shows too many clients error with a minimal setup (Issue https://issues.opennms.org/browse/NMS-15852[NMS-15852])
-* java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0     at org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader.getNodeCriteriaFromResource(MetaTagDataLoader.java (Issue https://issues.opennms.org/browse/NMS-15854[NMS-15854])
+* java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0 at org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader.getNodeCriteriaFromResource(MetaTagDataLoader.java (Issue https://issues.opennms.org/browse/NMS-15854[NMS-15854])
 * Kafka Producer incapable of using SSL (Issue https://issues.opennms.org/browse/NMS-15859[NMS-15859])
 * Fix incorrect resource types for F5 datacollection (Issue https://issues.opennms.org/browse/NMS-15862[NMS-15862])
 * Build fails due to binary file filtered resource copy (Issue https://issues.opennms.org/browse/NMS-15869[NMS-15869])
