@@ -52,7 +52,7 @@ If you use older versions of PostgreSQL, you should change the method in `postgr
 
 You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to at least twice the maximum pool size in {page-component-title}.
 
-The default maximum pool size value in {page-component-title} is 50, but it applies to each user in `opennms-datasources.xml`: `opennms` and `postgresql`.
+The default maximum pool size value in {page-component-title} is 50, but it applies to each connect in `opennms-datasources.xml`: `opennms` (the main connection used at runtime) and `opennms-admin` (the connection used during administrative operations including installation).
 Therefore, your `max_connections` setting should be at least 100.
 
 If you change the default pool size, make sure you also update the `max_connections`.
