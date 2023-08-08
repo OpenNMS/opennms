@@ -139,7 +139,7 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
       <!-- Use a version that is compatible with the Guava version used -->
-      <version>1.57</version>
+      <version>1.58</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
