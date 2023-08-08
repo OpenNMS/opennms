@@ -82,6 +82,3 @@ sudo systemctl enable --now opennms
 sudo firewall-cmd --permanent --add-port=8980/tcp
 sudo systemctl reload firewalld
 ----
-
-
-
