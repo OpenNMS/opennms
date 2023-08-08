@@ -1,7 +1,7 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12 wrapper">
-      <FeatherMegaMenu ref="mega" name="Management" close-text="Close" class="graph-controls">
+      <ShimFeatherMegaMenu ref="mega" name="Management" close-text="Close" class="graph-controls">
         <template v-slot:button>
           {{ selectedTime }} &nbsp;
           <FeatherIcon :icon="ArrowDropDown" />
@@ -40,14 +40,16 @@
             >Apply custom time</FeatherButton>
           </div>
         </div>
-      </FeatherMegaMenu>
+      </ShimFeatherMegaMenu>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { FeatherList, FeatherListItem } from '@featherds/list'
-import { FeatherMegaMenu } from '@featherds/megamenu'
+import { ShimFeatherMegaMenu } from '../Common/ShimFeatherMegaMenu'
+// add this back when exports are fixed
+//import { FeatherMegaMenu } from '@featherds/megamenu'
 import { add, sub, getUnixTime, differenceInHours } from 'date-fns'
 import { FeatherDateInput } from '@featherds/date-input'
 import { FeatherButton } from '@featherds/button'
@@ -173,3 +175,4 @@ const applyCustomTime = () => {
   }
 }
 </style>
+../Common/ProxyFeatherMegaMenu
