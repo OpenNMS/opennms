@@ -60,10 +60,10 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -135,7 +135,15 @@ public class NodeRestService extends OnmsRestService {
             }
             crit = filterForNodeIds(builder, nodeIds).toCriteria();
         } else if (params.getFirst("filterRule") != null) {
-            final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            Set<Integer> filteredNodeIds = null;
+
+            try {
+                filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            } catch (FilterParseException fpe) {
+                // do not rethrow, the exception may contain the actual SQL query which should not be seen by consumers
+                throw getException(Status.BAD_REQUEST, "Invalid 'filterRule' in request.");
+            }
+
             if (filteredNodeIds.size() < 1) {
                 // The "in" criteria fails if the list of node ids is empty
                 final OnmsNodeList coll = new OnmsNodeList(Collections.emptyList());
