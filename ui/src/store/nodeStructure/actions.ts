@@ -1,5 +1,5 @@
 import API from '@/services'
-import { Category, VuexContext } from '@/types'
+import { Category, SetOperator, VuexContext } from '@/types'
 
 const getCategories = async (context: VuexContext) => {
   const resp = await API.getCategories()
@@ -22,6 +22,10 @@ const setSelectedCategories = async (context: VuexContext, categories: Category[
   context.commit('SAVE_SELECTED_CATEGORIES_TO_STATE', categories)
 }
 
+const setCategoryMode = async (context: VuexContext, mode: SetOperator) => {
+  context.commit('SAVE_CATEGORY_MODE', mode)
+}
+
 const setSelectedFlows = async (context: VuexContext, flows: string[]) => {
   context.commit('SAVE_SELECTED_FLOWS_TO_STATE', flows)
 }
@@ -34,6 +38,7 @@ export default {
   getCategories,
   getMonitoringLocations,
   setSelectedCategories,
+  setCategoryMode,
   setSelectedFlows,
   setSelectedMonitoringLocations
 }

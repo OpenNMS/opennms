@@ -493,3 +493,8 @@ export interface Plugin {
   moduleFileName: string
   resourceRootPath: string
 }
+
+export enum SetOperator {
+  Union = 1,
+  Intersection = 2
+}
