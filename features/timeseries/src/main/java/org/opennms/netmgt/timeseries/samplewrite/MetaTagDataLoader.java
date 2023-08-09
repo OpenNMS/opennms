@@ -146,7 +146,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
         String nodeCriteria = null;
         if (resource.getParent() != null) {
             final String[] resourcePathArray = resource.getParent().elements();
-            if (resourcePathArray != null) {
+            if (resourcePathArray != null && resourcePathArray.length > 0) {
                 if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
                         && resourcePathArray.length == 3) {
                     // parent denotes nodeCriteria, form fs:fid
