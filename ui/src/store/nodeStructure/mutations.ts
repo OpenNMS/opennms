@@ -1,4 +1,4 @@
-import { Category, MonitoringLocation } from '@/types'
+import { Category, MonitoringLocation, SetOperator } from '@/types'
 import { State } from './state'
 
 const SAVE_CATEGORY_COUNT = (state: State, count: number) => {
@@ -11,6 +11,10 @@ const SAVE_CATEGORIES_TO_STATE = (state: State, categories: Category[]) => {
 
 const SAVE_SELECTED_CATEGORIES_TO_STATE = (state: State, categories: Category[]) => {
   state.selectedCategories = [...categories]
+}
+
+const SAVE_CATEGORY_MODE = (state: State, mode: SetOperator) => {
+  state.categoryMode = mode
 }
 
 const SAVE_SELECTED_FLOWS_TO_STATE = (state: State, flows: string[]) => {
@@ -29,6 +33,7 @@ export default {
   SAVE_CATEGORY_COUNT,
   SAVE_CATEGORIES_TO_STATE,
   SAVE_SELECTED_CATEGORIES_TO_STATE,
+  SAVE_CATEGORY_MODE,
   SAVE_SELECTED_FLOWS_TO_STATE,
   SAVE_LOCATIONS_TO_STATE,
   SAVE_SELECTED_MONITORING_LOCATIONS_TO_STATE

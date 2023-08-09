@@ -12,6 +12,16 @@
       </div>
       <div v-else>Categories</div>
     </template>
+    <div>
+      <FeatherRadioGroup :label="''" v-model="categoryMode" :vertical="false"
+        @update:model-value="categoryModeUpdated"
+        class="category-radio-group-container">
+        <FeatherRadio
+          v-for="item in categoryModeItems"
+          :value="item.value"
+          :key="item.value">{{ item.name }}</FeatherRadio>
+      </FeatherRadioGroup>
+    </div>
     <FeatherList class="category-list">
       <FeatherListItem
         v-for="cat of categories"
@@ -70,21 +80,32 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherList, FeatherListItem } from '@featherds/list'
+import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
 import { useStore } from 'vuex'
-import { Category, MonitoringLocation } from '@/types'
+import { Category, MonitoringLocation, SetOperator } from '@/types'
 
 const store = useStore()
 const clearIcon = ref(ClearIcon)
-const categories = computed<Category[]>(() => store.state.hierarchyModule.categories)
-const selectedCategories = computed<Category[]>(() => store.state.hierarchyModule.selectedCategories)
+const categories = computed<Category[]>(() => store.state.nodeStructureModule.categories)
+const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
 const flowTypes = computed<string[]>(() => ['Ingress', 'Egress'])
-const selectedFlows = computed<string[]>(() => store.state.hierarchyModule.selectedFlows)
+const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
 
-const locations = computed<MonitoringLocation[]>(() => store.state.hierarchyModule.monitoringLocations)
-const selectedLocations = computed<MonitoringLocation[]>(() => store.state.hierarchyModule.selectedMonitoringLocations)
+const categoryModeItems = [
+  { name: 'Any', value: SetOperator.Union },
+  { name: 'All', value: SetOperator.Intersection }
+]
+const categoryMode = ref(store.state.nodeStructureModule.categoryMode)
+
+const locations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.monitoringLocations)
+const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)
 const selectedCategoryCount = computed<number>(() => selectedCategories.value?.length || 0)
 const selectedFlowCount = computed<number>(() => selectedFlows.value?.length || 0)
 const selectedLocationCount = computed<number>(() => selectedLocations.value?.length || 0)
+
+const categoryModeUpdated = (val: any) => {
+  store.dispatch('nodeStructureModule/setCategoryMode', val)
+}
 
 const isCategorySelected = (cat: Category) => {
   return selectedCategories.value.some(c => c.id === cat.id)
@@ -99,19 +120,21 @@ const isLocationSelected = (loc: MonitoringLocation) => {
 }
 
 const onClearCategories = () => {
-  store.dispatch('hierarchyModule/setSelectedCategories', [])
+  store.dispatch('nodeStructureModule/setSelectedCategories', [])
 }
 
 const onClearFlows = () => {
-  store.dispatch('hierarchyModule/setSelectedFlows', [])
+  store.dispatch('nodeStructureModule/setSelectedFlows', [])
 }
 
 const onClearLocations = () => {
-  store.dispatch('hierarchyModule/setSelectedMonitoringLocations', [])
+  store.dispatch('nodeStructureModule/setSelectedMonitoringLocations', [])
 }
 
 const onClearAll = () => {
   onClearCategories()
+  categoryModeUpdated(SetOperator.Union)
+  categoryMode.value = SetOperator.Union
   onClearFlows()
   onClearLocations()
 }
@@ -122,7 +145,7 @@ const onClearAll = () => {
 * @param isSelected predicate for determining whether the item was previously selected
 * @param existingItems array of existing values
 * @param deselector function for determining the item that should be deselected
-* @param dispatchName dispatch name within the 'hierarchymodule' for setting the new selected item
+* @param dispatchName dispatch name within the 'nodeStructureModule' for setting the new selected item
 */
 const onSelectionClick = <T,>(item: T, isSelected: boolean, existingItems: T[],
   deselector: ((existingItem: T, clickedItem: T) => boolean), dispatchName: string) => {
@@ -137,7 +160,7 @@ const onSelectionClick = <T,>(item: T, isSelected: boolean, existingItems: T[],
     newSelection = [...existingItems, item]
   }
 
-  store.dispatch(`hierarchyModule/${dispatchName}`, newSelection)
+  store.dispatch(`nodeStructureModule/${dispatchName}`, newSelection)
 }
 
 const onCategoryClick = (cat: Category) => {
@@ -153,8 +176,8 @@ const onLocationClick = (loc: MonitoringLocation) => {
 }
 
 onMounted(() => {
-  store.dispatch('hierarchyModule/getCategories', true)
-  store.dispatch('hierarchyModule/getMonitoringLocations', true)
+  store.dispatch('nodeStructureModule/getCategories', true)
+  store.dispatch('nodeStructureModule/getMonitoringLocations', true)
 })
 </script>
 
@@ -164,7 +187,7 @@ onMounted(() => {
 @import "@featherds/styles/mixins/typography";
 
 .button-panel {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .category-list {
@@ -188,6 +211,26 @@ onMounted(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+// remove extra margins/padding around the radio buttons
+.category-radio-group-container.feather-radio-group-container {
+  label {
+    margin-bottom: 0;
+  }
+
+  .feather-radio-group {
+    display: inline-block;
+  }
+
+  .feather-input-sub-text {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .layout-container {
+    margin-right: 0.5em;
   }
 }
 
