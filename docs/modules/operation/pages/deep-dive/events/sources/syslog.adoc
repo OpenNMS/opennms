@@ -136,10 +136,10 @@ Because this matches any character, it must be followed by a delimiter in the pa
 
 There are some sample syslog event parsing definitions in `$\{OPENNMS_HOME}/etc/syslog` you can use as a base for customizing your own event parsing.
 
-=== Discarding messages
+=== Discard messages
 
 If there are syslog messages you do not want to keep, you can set the UEI to `DISCARD-MATCHING-MESSAGES`.
-This will flag the message as `donotpersist` so they will be dropped and not written to the database.
+This will flag the message as `donotpersist` so it will be dropped and not written to the database.
 
 [source, xml]
 ----
