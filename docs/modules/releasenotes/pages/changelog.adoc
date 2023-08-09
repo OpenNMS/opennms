@@ -8,6 +8,7 @@
 Release 32.0.2 contains several important security fixes, one fix for a potential DOS vulnerability, and a handful of general bugfixes and enhancements.
 
 Thanks to the following researchers for responsibly disclosing security issues in this release:
+
 * Moshe Appelbaum reported issue NMS-15699.
 * Jordi Morales reported issues NMS-15703, NMS-15782, and NMS-15783.
 * OSS Fuzz reported issue NMS-15877.
