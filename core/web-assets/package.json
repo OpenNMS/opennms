@@ -179,7 +179,7 @@
         "webpack": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --env=development",
         "webpack-release": "cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --colors --display-error-details --env=production",
         "check-git": "node check-git.js",
-        "install-deps": "npm ci --prefer-offline --no-progress",
+        "install-deps": "npm --prefer-offline --no-progress --no-audit ci",
         "build": "npm run check-git && npm run webpack",
         "build-release": "npm run check-git && npm run webpack-release",
         "build-verbose": "npm run check-git && npm run lint && cross-env NODE_OPTIONS=--max-old-space-size=4096 webpack --debug --colors --display-modules --display-chunks --display-error-details --display-origins --display-reasons --env=development",
