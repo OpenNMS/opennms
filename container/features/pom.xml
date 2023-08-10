@@ -225,6 +225,9 @@
                           <feature>zookeeper-dependencies</feature>
 
                           <!-- base API features -->
+                          <feature>opennms-config-api</feature>
+                          <feature>opennms-config-jaxb</feature>
+                          <feature>opennms-config-model</feature>
                           <feature>opennms-health</feature>
                           <feature>opennms-health-api</feature>
                           <feature>opennms-newts</feature>
