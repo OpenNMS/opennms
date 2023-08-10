@@ -1713,7 +1713,7 @@
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.4</mavenApiVersion>
-    <mavenResolverApiVersion>1.9.13</mavenResolverApiVersion>
+    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
