@@ -79,10 +79,12 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
     protected void verifyAndChangePassword(UserManager userFactory, HttpSession userSession, User user,
                                            HttpServletRequest request, HttpServletResponse response,
                                            String currentPassword, String newPassword,
-                                           String redoUrl) throws IOException, ServletException {
+                                           String redoUrl,
+                                           String nextUrl,
+                                           boolean redirectAfterSuccess) throws IOException, ServletException {
         if (!userFactory.comparePasswords(user.getUserId(), currentPassword)) {
             // passwords don't match, have user redo
-            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/passwordGate.jsp?action=redo");
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(redoUrl);
             dispatcher.forward(request, response);
         } else {
             if (this.validatePassword(newPassword)) {
@@ -100,8 +102,12 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
                 }
 
                 // forward the request for proper display
-                RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/passwordChanged.jsp");
-                dispatcher.forward(request, response);
+                if (redirectAfterSuccess) {
+                    response.sendRedirect(nextUrl);
+                } else {
+                    RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(nextUrl);
+                    dispatcher.forward(request, response);
+                }
             } else {
                 throw new ServletException("Error saving user " + user.getUserId() + ":::Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with 6 or more characters in a row are also not allowed.");
             }
