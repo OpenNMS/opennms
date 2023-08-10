@@ -95,6 +95,9 @@ public class GenericTypeResourceTest {
         // Build the resource path, and extract the instance (the last element of the path)
         ResourcePath path = gtr.getPath(resource);
         String[] elements = path.elements();
-        return elements[elements.length - 1];
+        if (elements != null && elements.length > 0) {
+            return elements[elements.length - 1];
+        }
+        return null;
     }
 }
