@@ -24,7 +24,7 @@ Node policies apply to the node as a whole, and are applied during node scans re
 === IP and SNMP interface
 
 The interface policies are applied during the node scan, and are intended to filter and update interfaces that are discovered through SNMP.
-NOTE: They do _not_ apply to interfaces defined in the requisition.
+NOTE: They do not apply to interfaces defined in the requisition.
 
 == Supported policies
 
