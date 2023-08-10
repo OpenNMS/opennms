@@ -15,7 +15,7 @@ String values are assumed to be a substring match, unless the parameter is prefi
 
 == Policy types
 
-There are 3 types of policies: node, IP interface, and SNMP interface.
+There are three types of policy: node, IP interface, and SNMP interface.
 
 === Node
 
