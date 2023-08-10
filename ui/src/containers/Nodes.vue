@@ -9,7 +9,7 @@
       <div class="card">
         <div class="feather-row">
           <div class="feather-col-2">
-            <NodeHierarchyPanel />
+            <NodeStructurePanel />
           </div>
           <div :class="`feather-col-10`">
             <NodesTable />
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { useStore } from 'vuex'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
-import NodeHierarchyPanel from '@/components/Nodes/NodeHierarchyPanel.vue'
+import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { BreadCrumb } from '@/types'
 
