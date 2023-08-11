@@ -396,6 +396,12 @@ export interface GraphMetricsPayload {
   expression?: { label: string; transient: boolean; value: string }[]
 }
 
+export interface GraphDefinition {
+  id: string
+  definitions: string[]
+  label: string
+}
+
 export interface GraphMetricsResponse {
   columns: [{ values: number[] }]
   constants: Record<string, any>[]
