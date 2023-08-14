@@ -22,7 +22,7 @@
     "@featherds/chips": "0.10.17",
     "@featherds/date-input": "0.10.17",
     "@featherds/dialog": "0.10.17",
-    "@featherds/drawer": "0.10.17",
+    "@featherds/drawer": "0.12.20",
     "@featherds/dropdown": "0.10.17",
     "@featherds/expansion": "0.10.17",
     "@featherds/icon": "0.10.17",
