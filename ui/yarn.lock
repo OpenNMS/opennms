@@ -319,18 +319,23 @@
     "@featherds/utils" "^0.10.17"
     vue "^3.1.0-0"
 
-"@featherds/snackbar@0.10.17":
-  version "0.10.17"
-  resolved "https://registry.yarnpkg.com/@featherds/snackbar/-/snackbar-0.10.17.tgz#24e7fc12f72cae4ccfa81615e8412a0cab5bada5"
-  integrity sha512-jn+nvB7Mvz6O4WpcrXc0FQicBuH1b8ukUrwS8o7G4cKE6cQFys+aKsSN6KoXVpUE+ViThljaZqWf2MSGqRj85Q==
+"@featherds/snackbar@0.12.20":
+  version "0.12.20"
+  resolved "https://registry.yarnpkg.com/@featherds/snackbar/-/snackbar-0.12.20.tgz#13400e69773df364552ee6536d07756e9b1dcb8d"
+  integrity sha512-tEw/GaOtW2nc+ORu2XIjplN1OQRpq9VeeGoCcrzaqaCETkJ5lolcKD3/PB95mWciuSEdSTDwUh1PmnzS5XBE4g==
   dependencies:
-    "@featherds/styles" "^0.10.17"
+    "@featherds/styles" "^0.12.20"
     vue "^3.1.0-0"
 
 "@featherds/styles@0.10.17", "@featherds/styles@^0.10.17":
   version "0.10.17"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.10.17.tgz#603686055c45e34c6eb5a6797b870478408658b2"
   integrity sha512-kNkir7MQy1KhSstaBBpOHmBPpSmL07Mfeq1hGudtPuPt0hRejyaCmpoBUiiFUf9SI/e3h9dyTUTEymhEyyuV1w==
+
+"@featherds/styles@^0.12.20":
+  version "0.12.20"
+  resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.12.20.tgz#66a1297eaec067602823efcba1098388c23ed87c"
+  integrity sha512-YyIM+f30UOAKXPq9Qr4ZvpFNQK4Mj/C7aoH9VGcHEGI0RTEh6Wqk0i4w43iaNwCmV9pKInO3PHeCj/WlTof05g==
 
 "@featherds/switch@^0.10.17":
   version "0.10.17"
