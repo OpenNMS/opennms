@@ -161,7 +161,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
                 // if not, the policy definition seems to be broken
                 error(null,"Policy class not found or not a policy class: '{}' of type {}", beanName, pluginClass);
             } else {
-                trace("Bean {} with name {} does not match requested type {}", bean, beanName, pluginClass);
+                trace("Bean {} with name {} is a policy, but does not match requested type {}", bean, beanName, pluginClass);
             }
         }
         return bean;
