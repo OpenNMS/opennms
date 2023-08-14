@@ -89,7 +89,7 @@
     "@vue/test-utils": "^2.0.2",
     "diff": "^5.1.0",
     "eslint": "^8.22.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-vue": "^9.3.0",
     "happy-dom": "^6.0.4",
     "prettier": "^2.7.1",
