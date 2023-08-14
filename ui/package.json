@@ -41,7 +41,7 @@
     "@featherds/table": "0.10.17",
     "@featherds/tabs": "0.10.17",
     "@featherds/textarea": "0.10.17",
-    "@featherds/tooltip": "0.10.17",
+    "@featherds/tooltip": "0.12.20",
     "@featherds/utils": "0.10.17",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-regular-svg-icons": "^6.2.0",
