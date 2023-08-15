@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>org.ops4j.pax.swissbox</groupId>
 			<artifactId>pax-swissbox-optional-jcl</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.3</version>
 			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
