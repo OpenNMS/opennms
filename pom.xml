@@ -1700,7 +1700,7 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.20.0</log4j2Version>
-    <logbackClassicVersion>1.2.12</logbackClassicVersion>
+    <logbackClassicVersion>1.4.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.4</mavenApiVersion>
     <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
