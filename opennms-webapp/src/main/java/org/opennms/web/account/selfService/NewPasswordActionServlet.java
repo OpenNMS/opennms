@@ -59,6 +59,8 @@ public class NewPasswordActionServlet extends AbstractBasePasswordChangeActionSe
 
         verifyAndChangePassword(userFactory, userSession, user,
             request, response, currentPassword, newPassword,
-            "/account/selfService/newPassword.jsp?action=redo");
+            "/account/selfService/newPassword.jsp?action=redo",
+            "/account/selfService/passwordChanged.jsp",
+            false);
     }
 }
