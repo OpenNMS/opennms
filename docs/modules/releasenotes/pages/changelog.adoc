@@ -9,8 +9,8 @@ Release 32.0.2 contains several important security fixes, one fix for a potentia
 
 Thanks to the following researchers for responsibly disclosing security issues in this release:
 
-* Moshe Appelbaum reported issue NMS-15699.
-* Jordi Morales reported issues NMS-15703, NMS-15782, and NMS-15783.
+* Moshe Apelbaum reported issue NMS-15699.
+* Jordi Miralles reported issues NMS-15703, NMS-15782, and NMS-15783.
 * OSS Fuzz reported issue NMS-15877.
 
 The codename for Horizon 32.0.2 is https://volt.fm/genre/6487/anime-lo-fi[Anime Lo-fi].
