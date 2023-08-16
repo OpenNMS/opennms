@@ -12,6 +12,8 @@ JAVA_OPTS="-Xmx2g"
 
 export PATH CONTAINERDIR JAVA_OPTS
 
+BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:minion,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository"
+
 cleanup_and_build() {
   should_use_sudo=$1
 
@@ -39,8 +41,7 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/minion-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  compile.pl -DskipTests clean install && \
-    (cd "${CONTAINERDIR}"; compile.pl -DskipTests clean install)
+  (cd ../..; compile.pl -DskipNodeJSBuild=true -DskipTests --projects "${BUILD_PREREQUISITES}" install)
 }
 
 set_instance_specific_configuration() {
