@@ -6,11 +6,13 @@ test -d repository || (echo "This command must be ran from the features/sentinel
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
-PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
 CONTAINERDIR="${MYDIR}/../container/sentinel"
 JAVA_OPTS="-Xmx2g"
 
 export PATH CONTAINERDIR JAVA_OPTS
+
+BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:sentinel,org.opennms.features.sentinel:repository"
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -39,8 +41,7 @@ cleanup_and_build() {
   $cmd_prefix rm -rf "${CONTAINERDIR}"/target/sentinel-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  mvn clean install && \
-    (cd "${CONTAINERDIR}"; mvn clean install)
+  (cd ../..; compile.pl -DskipNodeJSBuild=true -DskipTests --projects "${BUILD_PREREQUISITES}" install)
 }
 
 set_instance_specific_configuration() {
