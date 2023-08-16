@@ -208,6 +208,7 @@
                           <feature>jackson-datatype-jdk8</feature>
                           <feature>jackson-datatype-json</feature>
                           <feature>jackson-datatype-jsr310</feature>
+                          <feature>jackson-module-jaxb-annotations</feature>
                           <feature>jackson1</feature>
                           <feature>java-native-access</feature>
                           <feature>javax.mail</feature>
@@ -237,6 +238,7 @@
                           <feature>opennms-dao-minion</feature>
                           <feature>opennms-trapd-listener</feature>
 
+                          <!-- sentinel features -->
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
                       </features>

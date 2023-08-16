@@ -274,7 +274,7 @@
     </feature>
 
     <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
-        <feature>jackson1</feature>
+        <feature>jackson-core</feature>
         <feature>resilience4j</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-config-dao-api</feature>
@@ -308,6 +308,7 @@
 
     <feature name="sentinel-api-layer" version="${project.version}" description="Sentinel :: API Layer">
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>sentinel-distpoller-dao</feature>
         <feature>sentinel-timeseries-api</feature>
         <feature>opennms-provisioning</feature>
         <feature>opennms-situation-feedback-api</feature>

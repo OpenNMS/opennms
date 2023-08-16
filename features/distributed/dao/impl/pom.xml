@@ -41,10 +41,10 @@
                             org.opennms.features.usageanalytics.api
                         </Export-Package>
                         <Import-Package>
-                            com.google.common.base,
-                            com.google.common.cache,
-                            com.google.common.collect,
-                            com.google.common.util.concurrent,
+                            com.google.common.base;version="${guavaVersion}",
+                            com.google.common.cache;version="${guavaVersion}",
+                            com.google.common.collect;version="${guavaVersion}",
+                            com.google.common.util.concurrent;version="${guavaVersion}",
 
                             org.aopalliance.aop,
 
@@ -56,9 +56,6 @@
                             javax.validation.constraints,
                             javax.xml.bind.annotation,
                             javax.xml.bind.annotation.adapters,
-
-                            org.codehaus.jackson.annotate,
-                            org.codehaus.jackson.map.annotate,
 
                             org.apache.commons.lang.builder,
                             org.apache.commons.io,

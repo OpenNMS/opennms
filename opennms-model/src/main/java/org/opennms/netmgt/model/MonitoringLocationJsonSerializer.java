@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,14 @@ package org.opennms.netmgt.model;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.std.SerializerBase;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public class MonitoringLocationJsonSerializer extends SerializerBase<OnmsMonitoringLocation> {
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+public class MonitoringLocationJsonSerializer extends StdSerializer<OnmsMonitoringLocation> {
+    private static final long serialVersionUID = 1L;
 
     protected MonitoringLocationJsonSerializer() {
         super(OnmsMonitoringLocation.class);
@@ -44,7 +45,7 @@ public class MonitoringLocationJsonSerializer extends SerializerBase<OnmsMonitor
 
     @Override
     public void serialize(OnmsMonitoringLocation value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException, JsonGenerationException {
+            throws IOException {
         jgen.writeString(value.getLocationName());
     }
 

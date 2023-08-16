@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,8 +35,8 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
 @XmlRootElement(name="bridgeLinkNode")
 @JsonRootName("bridgeLinkNode")
@@ -45,7 +45,7 @@ public class BridgeLinkNodeDTO {
 
     private String bridgeLocalPortUrl;
 
-    private List<BridgeLinkRemoteNodeDTO> bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNodeDTO>();
+    private List<BridgeLinkRemoteNodeDTO> bridgeLinkRemoteNodes = new ArrayList<>();
 
     private String bridgeInfo;
 

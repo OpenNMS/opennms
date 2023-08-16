@@ -123,6 +123,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -428,20 +434,7 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
-      <version>${cxfVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.datatype</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.jaxrs</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>com.sun.activation</groupId>
           <artifactId>*</artifactId>
@@ -526,7 +519,6 @@
     <dependency>
       <groupId>jakarta.activation</groupId>
       <artifactId>jakarta.activation-api</artifactId>
-      <version>1.2.2</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -542,40 +534,21 @@
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <version>${swaggerVersion}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-core</artifactId>
-      <version>${swaggerVersion}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
-    <!-- this is actually needed by the CXF code specifically and isn't in $OPENNMS_HOME/lib -->
-    <!--
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-integration</artifactId>
-      <version>${swaggerVersion}</version>
-      <scope>${onmsLibScope}</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>io.github.classgraph</groupId>
-          <artifactId>classgraph</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-models</artifactId>
-      <version>${swaggerVersion}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
-      <version>${swaggerVersion}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

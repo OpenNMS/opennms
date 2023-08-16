@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,19 +28,22 @@
 
 package org.opennms.web.rest.model.v2;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.opennms.core.config.api.JaxbListWrapper;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.List;
+
+import org.opennms.core.config.api.JaxbListWrapper;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(name="events")
 @XmlAccessorType(XmlAccessType.NONE)
 public class EventCollectionDTO extends JaxbListWrapper<EventDTO> {
+    private static final long serialVersionUID = 1L;
 
     public EventCollectionDTO() {
         // No-arg constructor for JAXB
@@ -50,6 +53,7 @@ public class EventCollectionDTO extends JaxbListWrapper<EventDTO> {
         super(events);
     }
 
+    @Override
     @XmlElement(name="event")
     @JsonProperty("event")
     public List<EventDTO> getObjects() {

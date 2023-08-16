@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,22 @@
 
 package org.opennms.core.xml;
 
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 public class JacksonUtils {
+    private JacksonUtils() {}
 
     public static ObjectMapper createDefaultObjectMapper() {
         final ObjectMapper mapper = new ObjectMapper();
         final AnnotationIntrospector introspectorPair = AnnotationIntrospector.pair(
                 new JacksonAnnotationIntrospector(),
-                new JaxbAnnotationIntrospector());
-        mapper.setDeserializationConfig(mapper.getDeserializationConfig().withAnnotationIntrospector(introspectorPair));
-        mapper.setSerializationConfig(mapper.getSerializationConfig().withAnnotationIntrospector(introspectorPair));
+                new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
+        mapper.setConfig(mapper.getDeserializationConfig().with(introspectorPair));
+        mapper.setConfig(mapper.getSerializationConfig().with(introspectorPair));
         return mapper;
     }
 }

@@ -51,6 +51,12 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>
@@ -80,7 +86,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jackson1-dependencies</artifactId>
+            <artifactId>jackson2-dependencies</artifactId>
             <type>pom</type>
         </dependency>
         <dependency>
@@ -110,7 +116,6 @@
         <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
             <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>

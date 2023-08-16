@@ -236,6 +236,7 @@
         <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracingVersion}$Bundle-SymbolicName=io.opentracing.util&amp;Bundle-Version=${opentracingVersion}</bundle>
     </feature>
     <feature name="opennms-core-tracing" version="${project.version}" description="OpenNMS :: Core :: Tracing">
+        <feature>jackson-module-jaxb-annotations</feature>
         <feature>opentracing-api</feature>
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.registry/${project.version}</bundle>
@@ -282,7 +283,7 @@
     <feature name="opennms-core" version="${project.version}" description="OpenNMS :: Core">
         <feature>commons-io</feature>
         <feature>dnsjava</feature>
-        <feature>jackson1</feature>
+        <feature>jackson-core</feature>
         <feature>jaxb</feature>
         <feature version="[4.2,4.3)">spring</feature>
         <feature version="[4.2,4.3)">spring-orm</feature>
@@ -534,6 +535,7 @@
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
         <feature>opennms-config-api</feature>
+        <bundle dependency="true">mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/${project.version}</bundle>
     </feature>
@@ -541,6 +543,7 @@
         <feature>commons-jxpath</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>hibernate-validator41</feature>
+        <feature>jackson-module-jaxb-annotations</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-collection-core</feature>
         <feature>opennms-collection-persistence-rrd</feature>
@@ -807,7 +810,7 @@
         <feature>commons-jxpath</feature>
         <feature>commons-lang</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature>jackson1</feature>
+        <feature>jackson-core</feature>
         <feature>joda-time</feature>
         <feature>opennms-core-web</feature>
         <bundle>mvn:com.github.mwiede/jsch/${jschVersion}</bundle>
@@ -1476,7 +1479,7 @@
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>hibernate36</feature>
-        <feature>jackson1</feature>
+        <feature>jackson-core</feature>
         <feature>javax.servlet</feature>
         <feature>quartz</feature>
         <feature>opennms-health-api</feature>

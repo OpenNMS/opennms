@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,8 +65,8 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
-import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.EnlinkdDTO;
 import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
@@ -82,6 +81,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration

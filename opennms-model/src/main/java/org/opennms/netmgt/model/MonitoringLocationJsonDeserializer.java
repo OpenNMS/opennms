@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,14 +30,15 @@ package org.opennms.netmgt.model;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.deser.std.StdScalarDeserializer;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
+
 public class MonitoringLocationJsonDeserializer extends StdScalarDeserializer<OnmsMonitoringLocation> {
+    private static final long serialVersionUID = 1L;
 
     protected MonitoringLocationJsonDeserializer() {
         super(OnmsMonitoringLocation.class);
@@ -45,7 +46,7 @@ public class MonitoringLocationJsonDeserializer extends StdScalarDeserializer<On
 
     @Override
     public OnmsMonitoringLocation deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         JsonToken t = jp.getCurrentToken();
         if (t == JsonToken.VALUE_STRING) {
             final String locationName = jp.getText().trim();

@@ -22,6 +22,12 @@
             <artifactId>spring-dependencies</artifactId>
             <type>pom</type>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
@@ -31,7 +37,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <scope>${onmsLibScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.status</groupId>
@@ -132,7 +137,6 @@
         <dependency>
             <groupId>org.opennms.features.enlinkd</groupId>
             <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -150,7 +154,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-provisiond</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

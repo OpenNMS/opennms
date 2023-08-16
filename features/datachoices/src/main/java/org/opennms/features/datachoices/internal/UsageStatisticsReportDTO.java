@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,9 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
-
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Throwables;
 
 @XmlRootElement
@@ -541,9 +541,9 @@ public class UsageStatisticsReportDTO {
 
     public String toJson(boolean prettyPrint) {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(Feature.SORT_PROPERTIES_ALPHABETICALLY);
+        mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
         if (prettyPrint) {
-            mapper.enable(Feature.INDENT_OUTPUT);
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
         }
         try {
             return mapper.writeValueAsString(this);
