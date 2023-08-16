@@ -208,9 +208,14 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
-<c:if test="${param.ngapp != null}">
-  ng-app="${param.ngapp}"
-</c:if>
+<c:choose>
+  <c:when test="${param.ngapp != null}">
+    ng-app="${param.ngapp}"
+  </c:when>
+  <c:otherwise>
+    ng-non-bindable
+  </c:otherwise>
+</c:choose>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>

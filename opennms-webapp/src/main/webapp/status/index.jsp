@@ -38,6 +38,7 @@
     <jsp:param name="title" value="<%= title %>" />
     <jsp:param name="headTitle" value="<%= title %>" />
     <jsp:param name="breadcrumb" value="<%= title %>" />
+    <jsp:param name="ngapp" value="onms.default.apps" />
 </jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
