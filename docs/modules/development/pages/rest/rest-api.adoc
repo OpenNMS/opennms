@@ -202,12 +202,12 @@ The Open API documentation provides information on the available operations and 
 To access it, navigate to the new UI and select *Endpoints*.
 
 .OpenNMS UI sidebar
-image::horizon:development:rest/api-explorer-navigation.png["OpenNMS navigation sidebar. Endpoints is highlighted.", 240]
+image::development:rest/api-explorer-navigation.png["OpenNMS navigation sidebar. Endpoints is highlighted.", 240]
 
 You will then see the REST API Explorer.
 
 .OpenNMS REST API Explorer
-image::horizon:development:rest/rest-api-explorer.png["OpenNMS UI displaying the REST API Explorer"]
+image::development:rest/rest-api-explorer.png["OpenNMS UI displaying the REST API Explorer"]
 
 The left pane displays all the possible endpoints that you can view and try out.
 
@@ -220,4 +220,4 @@ The response status and response time are displayed and you can use the tabs to 
 Most `POST` and `PUT` commands require additional JSON request data; the API Explorer will generally display the schema and some sample JSON for the particular request.
 
 .Sending a REST request in the API Explorer
-image::horizon:development:rest/rest-api-explorer-request.png["OpenNMS UI displaying the REST API Explorer. A REST request has been sent, and its results are shown."]
+image::development:rest/rest-api-explorer-request.png["OpenNMS UI displaying the REST API Explorer. A REST request has been sent, and its results are shown."]
