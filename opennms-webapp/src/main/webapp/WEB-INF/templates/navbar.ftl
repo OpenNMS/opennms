@@ -32,7 +32,7 @@
             </ul>
         </#if>
 
-        <onms-central-search class="ml-auto"></onms-central-search>
+        <onms-central-search class="ml-auto" ng-app="onms.default.apps"></onms-central-search>
 
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
