@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -193,7 +193,7 @@ public abstract class JaxbUtils {
         FileReader reader = null;
         try {
             reader = new FileReader(file);
-            return unmarshal(clazz, new InputSource(reader), null, validate);
+            return unmarshal(clazz, new InputSource(reader), null, validate, false);
         } catch (final FileNotFoundException e) {
             throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
         } finally {
@@ -206,7 +206,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader, final boolean validate) {
-        return unmarshal(clazz, new InputSource(reader), null, validate);
+        return unmarshal(clazz, new InputSource(reader), null, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
@@ -219,7 +219,7 @@ public abstract class JaxbUtils {
 
     public static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final boolean validate) {
         try (final Reader reader = new InputStreamReader(stream)) {
-            return unmarshal(clazz, new InputSource(reader), null, validate);
+            return unmarshal(clazz, new InputSource(reader), null, validate, false);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
         }
@@ -233,7 +233,7 @@ public abstract class JaxbUtils {
         final StringReader sr = new StringReader(xml);
         final InputSource is = new InputSource(sr);
         try {
-            return unmarshal(clazz, is, null, validate);
+            return unmarshal(clazz, is, null, validate, false);
         } finally {
             IOUtils.closeQuietly(sr);
         }
@@ -245,7 +245,7 @@ public abstract class JaxbUtils {
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
         try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate);
+            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, false);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
         }
@@ -256,19 +256,23 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final boolean validate) {
-        return unmarshal(clazz, inputSource, null, validate);
+        return unmarshal(clazz, inputSource, null, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext) {
-        return unmarshal(clazz, inputSource, jaxbContext, VALIDATE_IF_POSSIBLE);
+        return unmarshal(clazz, inputSource, jaxbContext, VALIDATE_IF_POSSIBLE, false);
     }
 
-    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate) {
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, boolean disableDOCTYPE) {
+        return unmarshal(clazz, inputSource, jaxbContext, VALIDATE_IF_POSSIBLE, disableDOCTYPE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate, final boolean disableDOCTYPE) {
         final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 
         LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
         try {
-            final XMLFilter filter = getXMLFilterForClass(clazz);
+            final XMLFilter filter = getXMLFilterForClass(clazz, disableDOCTYPE);
             final SAXSource source = new SAXSource(filter, inputSource);
 
             um.setEventHandler(new LoggingValidationEventHandler());
@@ -293,13 +297,32 @@ public abstract class JaxbUtils {
         return null;
     }
 
-    public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
+    public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz, boolean disableDOCTYPE) throws SAXException {
         final String namespace = getNamespaceForClass(clazz);
         XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
 
         LOG.trace("namespace filter for class {}: {}", clazz, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        if (disableDOCTYPE) {
+            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        }
+        xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        filter.setParent(xmlReader);
+        return filter;
+    }
+
+    public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {
+        XMLFilter filter = namespace == null ? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
+
+        LOG.trace("namespace filter for namespace {}: {}", namespace, filter);
+        final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         filter.setParent(xmlReader);
         return filter;
