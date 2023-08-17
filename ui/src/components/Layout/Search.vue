@@ -37,10 +37,12 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { SearchResultItem } from '@/types'
-import {reactive} from 'vue'
+import { reactive } from 'vue'
 
 const store = useStore()
+const menuStore = useMenuStore()
 
 const iconClasses = ref<string[][]>([[]])
 
@@ -56,10 +58,9 @@ const searchState = reactive<SearchState>({
   currentSearch: ''
 })
 
-
 const itemClicked = (item: SearchResultItem) => {
   if (item && item.url) {
-    const baseHref = store.state.menuModule.mainMenu?.baseHref
+    const baseHref = menuStore.mainMenu.baseHref
     const fullPath = `${baseHref}${item.url}`
     window.location.href = fullPath
   }

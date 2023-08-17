@@ -238,6 +238,7 @@ import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
 import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
 
 enum DCBModalContentComponentNames {
@@ -247,7 +248,8 @@ enum DCBModalContentComponentNames {
 }
 
 const store = useStore()
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const menuStore = useMenuStore()
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)

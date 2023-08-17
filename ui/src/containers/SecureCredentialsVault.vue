@@ -15,11 +15,13 @@ import SCVListVue from '@/components/SCV/SCVList.vue'
 import SCVFormVue from '@/components/SCV/SCVForm.vue'
 import { useStore } from 'vuex'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+const menuStore = useMenuStore()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
