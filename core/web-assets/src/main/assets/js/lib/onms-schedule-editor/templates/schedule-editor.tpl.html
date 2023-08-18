@@ -63,7 +63,7 @@
     </div>
 
     <!-- Daily Options -->
-    <div class="mt-2" ng-if="options.type === 'daily' || options.type === 'daysPerWeek'">
+    <div class="mt-2" ng-if="options.type === 'daily' || options.type === 'daysPerWeek'" ng-app="onms.default.apps">
         <div class="form-group">
             <label>Interval</label>
             <onms-schedule-interval ng-model="options.interval"></onms-schedule-interval>
@@ -96,7 +96,7 @@
     </div>
 
     <!-- Days per Month -->
-    <div class="" ng-if="options.type === 'daysPerMonth'">
+    <div class="" ng-if="options.type === 'daysPerMonth'" ng-app="onms.default.apps">
         <!-- Other options -->
         <div class="form-group">
             <label>At</label>
