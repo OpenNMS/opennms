@@ -1,4 +1,5 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
+import { createTestingPinia } from '@pinia/testing'
 import dateFormatDirective from '@/directives/v-date'
 import DCB from '@/containers/DeviceConfigBackup.vue'
 import store from '@/store'
@@ -64,7 +65,7 @@ store.commit('deviceModule/SAVE_DEVICE_CONFIG_BACKUPS', mockDeviceConfigBackups)
 
 const wrapper = mount(DCB, {
   global: {
-    plugins: [store],
+    plugins: [store, createTestingPinia()],
     directives: {
       date: dateFormatDirective
     },
