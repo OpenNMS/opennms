@@ -39,7 +39,23 @@ org.opennms.instance.id: "<instance id>"
 
 Writes specified configuration to `$\{MINION_HOME}/etc/instance-id.properties`.
 
-=== Kafka RPC
+=== Kafka
+
+When using Kafka instead of the embedded Active MQ, settings for Kafka IPC (Twin) will take precedence over any RPC and Sink specific settings.
+
+[source, yaml]
+----
+ipc:
+    kafka:
+        bootstrap.servers: "127.0.0.1:9092"
+        # Any other keys necessary can be specified here
+
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg`.
+If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-ipc.boot` is also updated.
+
+==== Kafka RPC
+
+NOTE: This is optional if you are not using Twin settings via `ipc.kafka`.
 
 [source, yaml]
 ----
@@ -55,7 +71,9 @@ ipc:
 Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg`.
 If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot` is also updated.
 
-=== Kafka SINK
+==== Kafka Sink
+
+NOTE: This is optional if you are not using Twin settings via `ipc.kafka`.
 
 [source, yaml]
 ----
