@@ -19,6 +19,10 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.opennms.netmgt.graph.rest.impl*</Private-Package>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

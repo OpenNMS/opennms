@@ -21,6 +21,7 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
               org.opennms.netmgt.model;resolution:=optional,
               *
             </Import-Package>

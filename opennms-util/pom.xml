@@ -33,6 +33,10 @@
               org.opennms.core.utils.jexl.*;version="${project.version}",
               org.opennms.core.utils.properties.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

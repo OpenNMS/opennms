@@ -10,6 +10,23 @@
   <artifactId>org.opennms.features.graphml.api</artifactId>
   <name>OpenNMS :: Features :: GraphML :: API</name>
   <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

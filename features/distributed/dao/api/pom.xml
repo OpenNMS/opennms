@@ -38,8 +38,8 @@
                             org.opennms.features.usageanalytics.api
                         </Export-Package>
                         <Import-Package>
-                            com.google.common.base,
-                            com.google.common.collect,
+                            com.google.common.base;version="${guavaOsgiVersion}",
+                            com.google.common.collect;version="${guavaOsgiVersion}",
 
                             javax.persistence,
                             javax.validation.constraints,

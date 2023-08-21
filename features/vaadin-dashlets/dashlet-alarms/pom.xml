@@ -20,6 +20,24 @@
     <name>OpenNMS :: Features :: Dashlets :: Alarms</name>
 
     <packaging>bundle</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
 
         <dependency>

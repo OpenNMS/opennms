@@ -19,6 +19,10 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

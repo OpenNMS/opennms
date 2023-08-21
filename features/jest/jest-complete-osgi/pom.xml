@@ -108,11 +108,11 @@
               io.searchbox.snapshot
             </Export-Package>
             <Import-Package>
-              com.google.common.base,
-              com.google.common.collect,
-              com.google.common.io,
-              com.google.common.reflect,
-              com.google.common.util.concurrent,
+              com.google.common.base;version="${guavaOsgiVersion}",
+              com.google.common.collect;version="${guavaOsgiVersion}",
+              com.google.common.io;version="${guavaOsgiVersion}",
+              com.google.common.reflect;version="${guavaOsgiVersion}",
+              com.google.common.util.concurrent;version="${guavaOsgiVersion}",
               com.google.gson,
               com.google.gson.annotations,
               io.searchbox.action,

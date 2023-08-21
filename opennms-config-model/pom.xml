@@ -96,6 +96,7 @@
               org.opennms.netmgt.xml.rtc.*;version="${project.version}"
             </Export-Package>
             <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               io.swagger.v3.oas.annotations;resolution:=optional,

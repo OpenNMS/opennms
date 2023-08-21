@@ -23,6 +23,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
               <!-- Declare the Attach API as an optional dependency -->
+              com.google.common.*;version="${guavaOsgiVersion}",
               com.sun.tools.attach;resolution:=optional,
               *
             </Import-Package>

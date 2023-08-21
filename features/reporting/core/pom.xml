@@ -39,6 +39,10 @@
               org.opennms.reporting.core.svclayer.*;version="${project.version}",
               org.opennms.reporting.core.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

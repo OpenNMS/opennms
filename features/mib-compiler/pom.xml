@@ -34,6 +34,10 @@
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
             <Embed-Dependency>jsmiparser*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

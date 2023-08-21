@@ -41,10 +41,10 @@
                             org.opennms.features.usageanalytics.api
                         </Export-Package>
                         <Import-Package>
-                            com.google.common.base,
-                            com.google.common.cache,
-                            com.google.common.collect,
-                            com.google.common.util.concurrent,
+                            com.google.common.base;version="${guavaOsgiVersion}",
+                            com.google.common.cache;version="${guavaOsgiVersion}",
+                            com.google.common.collect;version="${guavaOsgiVersion}",
+                            com.google.common.util.concurrent;version="${guavaOsgiVersion}",
 
                             org.aopalliance.aop,
 

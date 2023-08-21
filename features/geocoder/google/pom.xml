@@ -42,6 +42,7 @@
               org.conscrypt;resolution:=optional,
               com.android.org.conscrypt;resolution:=optional,
               com.google.appengine.api.urlfetch;resolution:=optional,
+              com.google.common.*;version="${guavaOsgiVersion}",
               javax.annotation.meta;resolution:=optional,
               sun.security.ssl;resolution:=optional,
               *

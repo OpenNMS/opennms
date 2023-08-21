@@ -21,6 +21,10 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Private-Package>org.opennms.netmgt.bsm.service.internal.*;org.opennms.netmgt.bsm.service.model.graph.internal.*</Private-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

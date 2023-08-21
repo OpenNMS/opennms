@@ -21,6 +21,10 @@
                     <instructions>
                         <Private-Package>{local-packages}</Private-Package>
                         <Karaf-Commands>*</Karaf-Commands>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
