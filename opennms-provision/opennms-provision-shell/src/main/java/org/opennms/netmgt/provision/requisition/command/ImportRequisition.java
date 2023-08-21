@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "opennms", name = "import-requisition", description = "Import the requisition from given url")
+@Command(scope = "opennms", name = "import-requisition", description = "Triggers a 'uei.opennms.org/internal/importer/reloadImport' event to import the requisition from a given url parameter")
 @Service
 public class ImportRequisition implements Action {
 
