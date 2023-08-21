@@ -38,6 +38,10 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Karaf-Commands>*</Karaf-Commands>
             <Bundle-Activator>org.opennms.features.kafka.producer.collection.KafkaPersisterActivator</Bundle-Activator>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

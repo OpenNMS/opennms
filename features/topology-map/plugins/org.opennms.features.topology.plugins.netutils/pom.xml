@@ -12,14 +12,31 @@
 
 	<groupId>org.opennms.features.topology</groupId>
 	<artifactId>org.opennms.features.topology.netutils</artifactId>
-	<packaging>${packaging.type}</packaging>
+	<packaging>bundle</packaging>
 	<name>OpenNMS :: Features :: Topology :: Plugins :: Net Utils</name>
 
-	<properties>
-		<packaging.type>bundle</packaging.type>
-		<bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
-		<bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
-	</properties>
+    <properties>
+        <bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
+        <bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
+    </properties>
+
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <extensions>true</extensions>
+              <configuration>
+                <instructions>
+                  <Import-Package>
+                    com.google.common.*;version="${guavaOsgiVersion}",
+                    *
+                  </Import-Package>
+                </instructions>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
 	<dependencies>
 		<dependency>
 			<groupId>org.opennms.features</groupId>

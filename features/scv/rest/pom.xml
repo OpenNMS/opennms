@@ -25,6 +25,10 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -20,6 +20,22 @@
   <artifactId>org.opennms.features.topology.plugins.topo.pathoutage</artifactId>
   <name>OpenNMS :: Features :: Topology :: Plugins :: PathOutage</name>
   <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
 
     <!-- Embedded in jar (not provided) -->

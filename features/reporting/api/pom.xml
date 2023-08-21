@@ -26,6 +26,10 @@
               org.opennms.api.reporting.parameter.*;version="${project.version}",
               org.opennms.api.reporting.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

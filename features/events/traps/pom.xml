@@ -22,6 +22,7 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
               org.snmp4j;resolution:=optional,
               org.slf4j.impl;resolution:=optional,
               org.eclipse.persistence.internal.jaxb;resolution:=optional,

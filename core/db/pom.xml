@@ -23,7 +23,10 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!org.opennms.features.scv.jceks;org.opennms.netmgt.config.opennmsDataSources.*;org.opennms.core.db.*;version="${project.version}"</Export-Package>
             <Private-Package>org.opennms.features.scv.jceks</Private-Package>
-            <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,*</Import-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              io.swagger.v3.oas.annotations;resolution:=optional,
+              *</Import-Package>
           </instructions>
         </configuration>
       </plugin>

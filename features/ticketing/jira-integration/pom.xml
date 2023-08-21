@@ -19,6 +19,10 @@
             <instructions>
               <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
               <Karaf-Commands>*</Karaf-Commands>
+              <Import-Package>
+                com.google.common.*;version="${guavaOsgiVersion}",
+                *
+              </Import-Package>
             </instructions>
           </configuration>
         </plugin>

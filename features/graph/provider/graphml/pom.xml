@@ -19,7 +19,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>*,edu.uci.ics.jung.graph</Import-Package>
+                        <Import-Package>
+                            com.google.common.*;version="${guavaOsgiVersion}",
+                            edu.uci.ics.jung.graph,
+                            *
+                        </Import-Package>
                         <Private-Package>{local-packages}</Private-Package>
                         <Export-Package></Export-Package>
                     </instructions>

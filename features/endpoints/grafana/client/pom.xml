@@ -39,6 +39,7 @@
               org.bouncycastle.jsse.provider;resolution:=optional,
               org.openjsse.javax.net.ssl;resolution:=optional,
               org.openjsse.net.ssl;resolution:=optional,
+              com.google.common.*;version="${guavaOsgiVersion}",
               *
             </Import-Package>
           </instructions>

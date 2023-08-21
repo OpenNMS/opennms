@@ -30,6 +30,7 @@
             -->
             <Import-Package>
               !org.opennms.core.ipc.sink.kafka.server,
+              com.google.common.*;version="${guavaOsgiVersion}",
               *
             </Import-Package>
           </instructions>

@@ -167,6 +167,7 @@
               org.springframework.web.filter;version="[4.0,5)",
 
               <!-- Mark some packages that dependency JARs rely on as optional -->
+              com.google.common.*;version="${guavaOsgiVersion}",
               <!-- Optional dependencies of jdom -->
               oracle.xml*;resolution:=optional,
               org.jaxen*;resolution:=optional,

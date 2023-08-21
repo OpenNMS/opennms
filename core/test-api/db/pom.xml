@@ -25,6 +25,10 @@
               org.opennms.core.test.db.annotations.*;version="${project.version}",
               org.opennms.core.test.db.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

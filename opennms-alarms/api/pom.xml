@@ -24,6 +24,10 @@
               org.opennms.netmgt.alarmd.api.support.*;version="${project.version}",
               org.opennms.netmgt.alarmd.api.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>
+              com.google.common.*;version="${guavaOsgiVersion}",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
