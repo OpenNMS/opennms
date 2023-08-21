@@ -60,7 +60,7 @@ public class ImportRequisition implements Action {
     @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'true', 'false', 'dbonly'")
     private String rescanExisting;
 
-    @Argument(index = 0, name = "type", description = "Type", required = true)
+    @Argument(index = 0, name = "type", description = "Type of import handler", required = true)
     @Completion(ProviderTypeNameCompleter.class)
     private String type;
 
