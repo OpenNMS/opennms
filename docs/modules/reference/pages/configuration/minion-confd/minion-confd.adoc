@@ -41,7 +41,7 @@ Writes specified configuration to `$\{MINION_HOME}/etc/instance-id.properties`.
 
 === Kafka
 
-When using Kafka instead of the embedded Active MQ, settings for Kafka IPC (Twin) will take precedence over any RPC and Sink specific settings.
+When using Kafka instead of the embedded Active MQ, settings for Kafka IPC (Twin) will take precedence over any RPC- and Sink-specific settings.
 
 [source, yaml]
 ----
