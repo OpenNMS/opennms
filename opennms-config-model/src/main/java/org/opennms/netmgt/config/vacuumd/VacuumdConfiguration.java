@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,12 +43,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Top-level element for the vacuumd-configuration.xml configuration file.
  */
 @XmlRootElement(name = "VacuumdConfiguration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("vacuumd-configuration.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class VacuumdConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -69,6 +76,7 @@ public class VacuumdConfiguration implements Serializable {
      */
     @XmlElementWrapper(name = "automations")
     @XmlElement(name = "automation")
+    @JsonProperty("automations")
     private List<Automation> m_automations = new ArrayList<>();
 
     /**
@@ -76,6 +84,7 @@ public class VacuumdConfiguration implements Serializable {
      */
     @XmlElementWrapper(name = "triggers")
     @XmlElement(name = "trigger")
+    @JsonProperty("triggers")
     private List<Trigger> m_triggers = new ArrayList<>();
 
     /**
@@ -83,14 +92,17 @@ public class VacuumdConfiguration implements Serializable {
      */
     @XmlElementWrapper(name = "actions")
     @XmlElement(name = "action")
+    @JsonProperty("actions")
     private List<Action> m_actions = new ArrayList<>();
 
     @XmlElementWrapper(name = "auto-events")
     @XmlElement(name = "auto-event")
+    @JsonProperty("auto-events")
     private List<AutoEvent> m_autoEvents = new ArrayList<>();
 
     @XmlElementWrapper(name = "action-events")
     @XmlElement(name = "action-event")
+    @JsonProperty("action-events")
     private List<ActionEvent> m_actionEvents = new ArrayList<>();
 
     public VacuumdConfiguration() {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @XmlRootElement
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class HeatMapDTOItem {
     private String id;
     private Integer elementId;
@@ -66,6 +73,7 @@ public class HeatMapDTOItem {
 
     @XmlElement(name = "colorEntry")
     @XmlElementWrapper(name = "color")
+    @JsonProperty("color")
     public List<Double> getColor() {
         return color;
     }
@@ -76,6 +84,7 @@ public class HeatMapDTOItem {
 
     @XmlElement(name = "sizeEntry")
     @XmlElementWrapper(name = "size")
+    @JsonProperty("size")
     public List<Double> getSize() {
         return size;
     }

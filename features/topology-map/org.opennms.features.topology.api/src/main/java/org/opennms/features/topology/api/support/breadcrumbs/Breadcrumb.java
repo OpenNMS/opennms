@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,10 @@ import org.opennms.features.topology.api.support.VertexRefAdapter;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 
 /**
@@ -54,11 +58,14 @@ import com.google.common.collect.Lists;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="breadcrumb")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Breadcrumb implements ClickListener {
 
     @XmlElement(name="source-vertex")
     @XmlElementWrapper(name="source-vertices")
     @XmlJavaTypeAdapter(value= VertexRefAdapter.class)
+    @JsonProperty("source-vertices")
     private List<VertexRef> sourceVertices = Lists.newArrayList();
 
     @XmlElement(name="target-namespace")

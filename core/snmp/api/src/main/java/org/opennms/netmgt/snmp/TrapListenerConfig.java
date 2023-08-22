@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,15 +39,23 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 @XmlRootElement(name = "trap-listener-config")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class TrapListenerConfig {
 
     public static final String TWIN_KEY = "trapd.listener.config";
 
     @XmlElementWrapper(name = "snmp-v3-users")
     @XmlElement(name = "snmp-v3-user")
+    @JsonProperty("snmp-v3-users")
     private List<SnmpV3User> snmpV3Users= new ArrayList<>();
 
     public List<SnmpV3User> getSnmpV3Users() {

@@ -72,6 +72,10 @@ import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -82,6 +86,8 @@ import com.google.common.base.MoreObjects;
 @Table(name="alarms")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
@@ -803,6 +809,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @Transient
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
+    @JsonProperty("parameters")
     public List<OnmsEventParameter> getEventParameters() {
         return m_lastEvent != null ? m_lastEvent.getEventParameters() : null;
     }

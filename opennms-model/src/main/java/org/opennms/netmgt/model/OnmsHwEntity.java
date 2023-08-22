@@ -62,6 +62,10 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The Class OnmsHwEntity.
@@ -73,6 +77,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name="hwEntity")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
 
     /** The Constant serialVersionUID. */
@@ -642,6 +648,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      */
     @XmlElement(name="hwEntity")
     @XmlElementWrapper(name="children")
+    @JsonProperty("children")
     @Sort(type = SortType.NATURAL, comparator = OnmsHwEntity.class)
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
     public SortedSet<OnmsHwEntity> getChildren() {
@@ -737,6 +744,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     @Sort(type = SortType.NATURAL)
     @XmlElement(name="hwEntityAttribute")
     @XmlElementWrapper(name="vendorAttributes")
+    @JsonProperty("vendorAttributes")
     public SortedSet<OnmsHwEntityAttribute> getHwEntityAttributes() {
         return m_hwAttributes;
     }

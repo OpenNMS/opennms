@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -44,6 +44,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * This defines the allowable translations for a given
  *  event uei
@@ -51,6 +56,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name = "event-translation-spec")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("translator-configuration.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class EventTranslationSpec implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -65,6 +72,7 @@ public class EventTranslationSpec implements Serializable {
      */
     @XmlElementWrapper(name = "mappings", required = true)
     @XmlElement(name = "mapping")
+    @JsonProperty("mappings")
     private List<Mapping> m_mappings = new ArrayList<>();
 
     public EventTranslationSpec() {

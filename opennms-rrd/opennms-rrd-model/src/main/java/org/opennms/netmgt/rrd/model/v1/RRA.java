@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.netmgt.rrd.model.AbstractRRA;
 import org.opennms.netmgt.rrd.model.DoubleAdapter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * The Class RRA (Round Robin Archives).
  * <p>Warning: This representation doesn't support Aberrant Behavior Detection with Holt-Winters Forecasting</p>
@@ -49,6 +54,8 @@ import org.opennms.netmgt.rrd.model.DoubleAdapter;
  */
 @XmlRootElement(name="rra")
 @XmlAccessorType(XmlAccessType.PROPERTY)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class RRA extends AbstractRRA {
 
     /** The consolidation function. */
@@ -96,6 +103,7 @@ public class RRA extends AbstractRRA {
      */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
+    @JsonProperty("cdp_prep")
     public List<RRADS> getDataSources() {
         return dataSources;
     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,12 +46,18 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.xml.eventconf.EventOrdering.EventOrderIndex;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={})
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Event implements Serializable, Comparable<Event> {
     private static final long serialVersionUID = 2L;
 
@@ -187,6 +193,7 @@ public class Event implements Serializable, Comparable<Event> {
 
     @XmlElementWrapper(name="filters", required=false)
     @XmlElement(name="filter", required=true)
+    @JsonProperty("filters")
     private List<Filter> m_filters;
 
     @XmlTransient

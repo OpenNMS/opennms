@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * The Class XPort (the XML representation of the 'rrdtool xport' command).
  * 
@@ -44,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="xport")
 @XmlAccessorType(XmlAccessType.PROPERTY)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class RrdXport {
 
     /** The meta data. */
@@ -78,6 +85,7 @@ public class RrdXport {
      */
     @XmlElement(name="row")
     @XmlElementWrapper(name="data")
+    @JsonProperty("data")
     public List<XRow> getRows() {
         return rows;
     }

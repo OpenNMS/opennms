@@ -67,6 +67,10 @@ import org.opennms.netmgt.xml.event.Event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -77,6 +81,7 @@ import com.google.common.base.MoreObjects;
 @Table(name="events")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder(alphabetic=true)
 public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/**
@@ -444,6 +449,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	@XmlElementWrapper(name="parameters")
 	@XmlElement(name="parameter")
+	@JsonProperty("parameters")
 	public List<OnmsEventParameter> getEventParameters() {
 		if(this.eventParameters != null) {
 			this.eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));

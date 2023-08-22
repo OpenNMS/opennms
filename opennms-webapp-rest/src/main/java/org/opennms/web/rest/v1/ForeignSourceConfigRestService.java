@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,6 +68,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 
 /**
@@ -114,6 +118,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="plugin-configuration")
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class SimplePluginConfigList extends JaxbListWrapper<SimplePluginConfig> {
 
         /**
@@ -123,6 +129,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
          */
         @XmlElement(name="plugin")
         @XmlElementWrapper(name="plugins")
+        @JsonProperty("plugins")
         public List<SimplePluginConfig> getPlugins() {
             return getObjects();
         }
@@ -133,6 +140,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @XmlRootElement(name="plugin")
     @XmlType(propOrder = { "name", "pluginClass", "parameters" })
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class SimplePluginConfig {
 
         /** The name. */
@@ -146,6 +155,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         /** The parameters. */
         @XmlElement(name="parameter")
         @XmlElementWrapper(name="parameters")
+        @JsonProperty("parameters")
         public List<SimplePluginParameter> parameters = new ArrayList<>();
 
         /**
@@ -170,6 +180,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @XmlRootElement(name="parameter")
     @XmlType(propOrder = { "key", "required", "options" })
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class SimplePluginParameter {
 
         /** The key. */
@@ -183,6 +195,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         /** The options. */
         @XmlElement(name="option")
         @XmlElementWrapper(name="options")
+        @JsonProperty("options")
         public List<String> options = new ArrayList<>();
 
         /**
@@ -209,6 +222,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="elements")
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class ElementList extends JaxbListWrapper<String> {
 
         /**

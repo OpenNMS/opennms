@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,12 +30,20 @@ package org.opennms.web.rest.support.menu.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class MenuXml {
     public static class ConstructorArgElement {
         // List of BeanElement and/or BeanRefElement
@@ -50,6 +58,7 @@ public class MenuXml {
             @XmlElement(name="bean", type=BeanElement.class),
             @XmlElement(name="ref", type=BeanRefElement.class)
         })
+        @JsonProperty("list")
         public List<BeanOrRefElement> getBeansOrRefs() {
             return this.beansOrRefs;
         }
@@ -92,6 +101,7 @@ public class MenuXml {
         //     <bean>
         @XmlElementWrapper(name="list")
         @XmlElement(name="bean")
+        @JsonProperty("list")
         public List<BeanElement> getBeans() {
             return this.beans;
         }

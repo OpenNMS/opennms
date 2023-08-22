@@ -28,8 +28,11 @@
 
 package org.opennms.core.xml;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -42,8 +45,15 @@ public class JacksonUtils {
         final AnnotationIntrospector introspectorPair = AnnotationIntrospector.pair(
                 new JacksonAnnotationIntrospector(),
                 new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
-        mapper.setConfig(mapper.getDeserializationConfig().with(introspectorPair));
-        mapper.setConfig(mapper.getSerializationConfig().with(introspectorPair));
+        mapper.setConfig(mapper.getDeserializationConfig()
+                .with(introspectorPair)
+        );
+        mapper.setConfig(mapper.getSerializationConfig()
+                .with(introspectorPair)
+                .with(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+                .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+        );
+        mapper.setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.ALWAYS, JsonInclude.Include.NON_NULL));
         return mapper;
     }
 }

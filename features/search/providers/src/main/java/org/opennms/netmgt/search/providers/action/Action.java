@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,9 +35,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Action {
     @XmlElement(name="label")
     private String label;
@@ -50,10 +56,12 @@ public class Action {
 
     @XmlElementWrapper(name="roles")
     @XmlElement(name="role")
+    @JsonProperty("roles")
     private List<String> privilegedRoles = Lists.newArrayList();
 
     @XmlElementWrapper(name="aliases")
     @XmlElement(name="alias")
+    @JsonProperty("aliases")
     private List<String> aliases = Lists.newArrayList();
 
     @XmlElement(name="weight")

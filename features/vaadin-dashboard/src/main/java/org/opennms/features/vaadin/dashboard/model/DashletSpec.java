@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,16 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class defines the required configuration for instantiating a {@link Dashlet}.
@@ -40,6 +46,8 @@ import java.util.TreeMap;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 @XmlRootElement
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class DashletSpec {
 
     /**
@@ -173,6 +181,7 @@ public class DashletSpec {
      * @return the parameters
      */
     @XmlElementWrapper(name = "parameters")
+    @JsonProperty("parameters")
     public Map<String, String> getParameters() {
         return m_parameters;
     }

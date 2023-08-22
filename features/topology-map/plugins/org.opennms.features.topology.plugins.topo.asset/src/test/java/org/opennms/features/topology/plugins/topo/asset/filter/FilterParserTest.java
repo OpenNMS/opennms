@@ -85,7 +85,7 @@ public class FilterParserTest {
 
 		Map<String, Filter> filterMap=new HashMap<String, Filter>();
 		filterMap.put(NodeParamLabels.ASSET_DISPLAYCATEGORY, 
-				new NotFilter<>(new OrFilter<>(new EqFilter<>("asset-displaycategory_0"), new EqFilter<>("asset-displaycategory_5"))));
+				new NotFilter(new OrFilter(new EqFilter("asset-displaycategory_0"), new EqFilter("asset-displaycategory_5"))));
 
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);

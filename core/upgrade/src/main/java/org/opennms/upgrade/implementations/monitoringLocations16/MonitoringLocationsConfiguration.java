@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Top-level element for configuration remote monitoring locations.
  */
@@ -46,11 +51,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="monitoring-locations-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
 //@ValidateUsing("monitoring-locations.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class MonitoringLocationsConfiguration implements Serializable {
     private static final long serialVersionUID = 4774677097952128710L;
 
     @XmlElementWrapper(name="locations")
     @XmlElement(name="location-def")
+    @JsonProperty("locations")
     private List<LocationDef> m_locations;
 
     public MonitoringLocationsConfiguration() {

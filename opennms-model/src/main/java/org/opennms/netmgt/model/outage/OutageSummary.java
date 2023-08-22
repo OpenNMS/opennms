@@ -39,6 +39,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.FuzzyDateFormatter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * A data structure holding information on all outages on a single IP address.
  *
@@ -47,6 +51,8 @@ import org.opennms.core.utils.FuzzyDateFormatter;
  */
 @XmlRootElement(name="outage-summary")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class OutageSummary implements Comparable<OutageSummary>, Serializable {
     private static final long serialVersionUID = 1L;
 

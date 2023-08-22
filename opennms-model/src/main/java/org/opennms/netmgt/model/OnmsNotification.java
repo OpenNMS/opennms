@@ -60,6 +60,10 @@ import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 
@@ -71,6 +75,7 @@ import com.google.common.base.MoreObjects;
 @Table(name="notifications")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonPropertyOrder(alphabetic=true)
 public class OnmsNotification implements Acknowledgeable, Serializable {
 
     private static final long serialVersionUID = -1162549324168290004L;
@@ -495,6 +500,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      */
     @XmlElement(name="destination")
     @XmlElementWrapper(name="destinations")
+    @JsonProperty("destinations")
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;

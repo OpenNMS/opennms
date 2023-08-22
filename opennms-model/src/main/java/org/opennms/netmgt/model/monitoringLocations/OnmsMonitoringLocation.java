@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,6 +51,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * <p>
  * This element contains the name of the location, the name of the
@@ -74,6 +79,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 @Table(name="monitoringLocations")
 @XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class OnmsMonitoringLocation implements Serializable {
     private static final long serialVersionUID = -7651610012389148818L;
 
@@ -207,6 +214,7 @@ public class OnmsMonitoringLocation implements Serializable {
 
     @XmlElementWrapper(name="tags")
     @XmlElement(name="tag")
+    @JsonProperty("tags")
     @ElementCollection
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")

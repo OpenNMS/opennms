@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,19 @@
 
 package org.opennms.netmgt.config.vmware.vijava;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 
-import javax.xml.bind.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A grouping of VMware related RRD parms and performance counter
@@ -39,6 +49,8 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "vmware-cim-collection")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class VmwareCollection implements java.io.Serializable {
 
     /**
@@ -58,6 +70,7 @@ public class VmwareCollection implements java.io.Serializable {
      */
     @XmlElementWrapper(name = "vmware-groups")
     @XmlElement(name = "vmware-group")
+    @JsonProperty("vmware-groups")
     private java.util.List<org.opennms.netmgt.config.vmware.vijava.VmwareGroup> _vmwareGroupList;
 
     public VmwareCollection() {

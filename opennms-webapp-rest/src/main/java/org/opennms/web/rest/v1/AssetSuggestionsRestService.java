@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,13 +49,17 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.web.svclayer.support.PropertyUtils;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The Class AssetSuggestionsRestService.
@@ -93,6 +97,8 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="suggestions")
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class Suggestions extends TreeMap<String, SuggestionList> {
 
         /**
@@ -101,6 +107,7 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
          * @return the suggestions
          */
         @XmlElementWrapper(name="mappings")
+        @JsonProperty("mappings")
         public Map<String, SuggestionList> getSuggestions() {
             return this;
         }
@@ -111,6 +118,8 @@ public class AssetSuggestionsRestService extends OnmsRestService implements Init
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="suggestions")
+    @JsonPropertyOrder(alphabetic=true)
+    @JsonInclude(Include.NON_NULL)
     public static class SuggestionList extends JaxbListWrapper<String> {
 
         /**

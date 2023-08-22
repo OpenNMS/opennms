@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,11 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -73,14 +78,19 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 })
 @XmlRootElement(name = "uri")
 @ValidateUsing("http-datacollection-config.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Uri implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "url", required = true)
     protected Url m_url;
+
     @XmlElementWrapper(name="attributes")
     @XmlElement(name="attrib")
+    @JsonProperty("attributes")
     protected List<Attrib> m_attributes;
+
     @XmlAttribute(name = "name", required = true)
     protected String m_name;
 

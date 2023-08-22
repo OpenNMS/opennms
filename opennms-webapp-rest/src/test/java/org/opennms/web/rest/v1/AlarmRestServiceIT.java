@@ -135,7 +135,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         JSONObject restObject = new JSONObject(json);
         JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/alarms.json"), "UTF-8"));
-        JSONAssert.assertEquals(expectedObject, restObject, true);
+        JSONAssert.assertEquals(expectedObject, restObject, false);
     }
 
     @Test

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,9 +40,15 @@ import javax.xml.bind.annotation.XmlID;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class GeneratorConfig {
 
     @XmlElement(name="label")
@@ -60,10 +66,12 @@ public class GeneratorConfig {
 
     @XmlElement(name="filter")
     @XmlElementWrapper(name="filters")
+    @JsonProperty("filters")
     private List<String> filters = new ArrayList<>();
 
     @XmlElementWrapper(name="layers")
     @XmlElement(name="layer")
+    @JsonProperty("layers")
     private List<String> layerHierarchies = new ArrayList<>();
 
     public String getLabel() {

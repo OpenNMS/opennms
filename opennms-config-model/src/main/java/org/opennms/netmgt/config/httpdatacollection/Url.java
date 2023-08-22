@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,11 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
@@ -98,52 +103,76 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 })
 @XmlRootElement(name = "url")
 @ValidateUsing("http-datacollection-config.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Url implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElementWrapper(name = "parameters")
     @XmlElement(name = "parameter")
+    @JsonProperty("parameters")
     protected List<Parameter> m_parameters;
+
     @XmlAttribute(name = "method")
     protected String m_method;
+
     @XmlAttribute(name = "http-version")
     protected String m_httpVersion;
+
     @XmlAttribute(name = "user-agent")
     protected String m_userAgent;
+
     @XmlAttribute(name = "virtual-host")
     protected String m_virtualHost;
+
     @XmlAttribute(name = "scheme")
     protected String m_scheme;
+
     @XmlAttribute(name = "user-info")
     protected String m_userInfo;
+
     @XmlAttribute(name = "host")
     protected String m_host;
+
     @XmlAttribute(name = "port")
     protected Integer m_port;
+
     @XmlAttribute(name = "path", required = true)
     protected String m_path;
+
     @XmlAttribute(name = "query")
     protected String m_query;
+
     @XmlAttribute(name = "fragment")
     protected String m_fragment;
+
     @XmlAttribute(name = "matches")
     protected String m_matches;
+
     @XmlAttribute(name = "response-range")
     protected String m_responseRange;
+
     @XmlAttribute(name = "canonical-equivalence")
     protected Boolean m_canonicalEquivalence;
+
     @XmlAttribute(name = "case-insensitive")
     protected Boolean m_caseInsensitive;
+
     @XmlAttribute(name = "comments")
     protected Boolean m_comments;
+
     @XmlAttribute(name = "dotall")
     protected Boolean m_dotall;
+
     @XmlAttribute(name = "literal")
     protected Boolean m_literal;
+
     @XmlAttribute(name = "multiline")
     protected Boolean m_multiline;
+
     @XmlAttribute(name = "unicode-case")
     protected Boolean m_unicodeCase;
+
     @XmlAttribute(name = "unix-lines")
     protected Boolean m_unixLines;
 

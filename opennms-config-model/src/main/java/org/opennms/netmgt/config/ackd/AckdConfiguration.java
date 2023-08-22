@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,12 +43,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Behavior configuration for the Acknowledgment Daemon
  */
 @XmlRootElement(name = "ackd-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("ackd-configuration.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class AckdConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -87,6 +94,7 @@ public class AckdConfiguration implements Serializable {
      */
     @XmlElementWrapper(name = "readers")
     @XmlElement(name = "reader")
+    @JsonProperty("readers")
     private List<Reader> m_readers;
 
     public AckdConfiguration() {

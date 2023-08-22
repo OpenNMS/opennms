@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,10 @@
 
 package org.opennms.web.rest.model.v2;
 
-import org.opennms.core.network.InetAddressXmlAdapter;
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,13 +40,18 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+
+import org.opennms.core.network.InetAddressXmlAdapter;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class EventDTO {
 
     @XmlAttribute(name = "id")
@@ -79,6 +87,7 @@ public class EventDTO {
 
     @XmlElementWrapper(name = "parameters")
     @XmlElement(name = "parameter")
+    @JsonProperty("parameters")
     private List<EventParameterDTO> parameters;
 
     @XmlElement(name = "createTime")

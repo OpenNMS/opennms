@@ -36,9 +36,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @XmlRootElement(name = "resources")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public final class ResourceDTOCollection extends JaxbListWrapper<ResourceDTO> {
 
     private static final long serialVersionUID = 1L;

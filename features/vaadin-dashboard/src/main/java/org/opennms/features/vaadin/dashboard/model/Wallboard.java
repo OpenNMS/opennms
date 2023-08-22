@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,18 @@
 
 package org.opennms.features.vaadin.dashboard.model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class represents a collection of {@link DashletSpec} objects.
@@ -41,6 +47,8 @@ import java.util.List;
  * @author Christian Pape
  */
 @XmlRootElement
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Wallboard {
     /**
      * A {@link List} holding the associated {@link DashletSpec} instances
@@ -115,6 +123,7 @@ public class Wallboard {
      */
     @XmlElement(name = "dashlet")
     @XmlElementWrapper(name = "dashlets")
+    @JsonProperty("dashlets")
     public List<DashletSpec> getDashletSpecs() {
         return m_dashletSpecs;
     }

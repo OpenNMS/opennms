@@ -63,11 +63,18 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
 import org.opennms.netmgt.events.api.model.IEvent;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import io.swagger.v3.oas.annotations.Hidden;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Event implements Message,Serializable {
         private static final long serialVersionUID = 6997817689084653400L;
 
@@ -176,6 +183,7 @@ public class Event implements Message,Serializable {
 	 */
 	@XmlElementWrapper(name="parms")
 	@XmlElement(name="parm")
+        @JsonProperty("parms")
 	@Valid
 	private List<Parm> _parms;
 

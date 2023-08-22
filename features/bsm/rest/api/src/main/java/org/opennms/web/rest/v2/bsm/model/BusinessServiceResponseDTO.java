@@ -50,6 +50,10 @@ import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
@@ -58,6 +62,8 @@ import com.google.common.collect.Sets;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class BusinessServiceResponseDTO {
     
     @XmlElement(name = "id")
@@ -72,22 +78,27 @@ public class BusinessServiceResponseDTO {
 
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
+    @JsonProperty("ip-service-edges")
     private List<IpServiceEdgeResponseDTO> m_ipServices = Lists.newArrayList();
 
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
+    @JsonProperty("reduction-key-edges")
     private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = Lists.newArrayList();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
+    @JsonProperty("child-edges")
     private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
 
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
+    @JsonProperty("application-edges")
     private List<ApplicationEdgeResponseDTO> m_applications = Lists.newArrayList();
 
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
+    @JsonProperty("parent-services")
     private Set<Long> m_parentServices = Sets.newLinkedHashSet();
 
     @XmlElement(name="reduce-function")

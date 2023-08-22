@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,6 +59,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Basic Web Service using REST for NCS Components
@@ -191,6 +196,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     @Entity
     @XmlRootElement(name = "severities")
+    @JsonPropertyOrder(alphabetic=true)
     public static class AlarmStatisticsBySeverity {
         private List<AlarmStatistics> m_stats = new LinkedList<>();
 
@@ -217,6 +223,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     
     @Entity
     @XmlRootElement(name = "alarmStatistics")
+    @JsonPropertyOrder(alphabetic=true)
     public static class AlarmStatistics {
         private int m_totalCount = 0;
         private int m_acknowledgedCount = 0;
@@ -275,6 +282,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="newestAcked")
         @XmlElement(name="alarm")
+        @JsonProperty("newestAcked")
         public List<OnmsAlarm> getNewestAcknowledged() {
             return Collections.singletonList(m_newestAcknowledged);
         }
@@ -285,6 +293,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="newestUnacked")
         @XmlElement(name="alarm")
+        @JsonProperty("newestUnacked")
         public List<OnmsAlarm> getNewestUnacknowledged() {
             return Collections.singletonList(m_newestUnacknowledged);
         }
@@ -295,6 +304,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="oldestAcked")
         @XmlElement(name="alarm")
+        @JsonProperty("oldestAcked")
         public List<OnmsAlarm> getOldestAcknowledged() {
             return Collections.singletonList(m_oldestAcknowledged);
         }
@@ -305,6 +315,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
         @XmlElementWrapper(name="oldestUnacked")
         @XmlElement(name="alarm")
+        @JsonProperty("oldestUnacked")
         public List<OnmsAlarm> getOldestUnacknowledged() {
             return Collections.singletonList(m_oldestUnacknowledged);
         }

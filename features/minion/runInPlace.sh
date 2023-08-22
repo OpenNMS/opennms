@@ -8,7 +8,7 @@ MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
 PATH="$MYDIR/../..:$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
 CONTAINERDIR="${MYDIR}/../container/minion"
-JAVA_OPTS="-Xmx2g"
+JAVA_OPTS="-Xmx2g -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 export PATH CONTAINERDIR JAVA_OPTS
 

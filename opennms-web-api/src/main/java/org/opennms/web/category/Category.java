@@ -44,6 +44,11 @@ import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Adapts the functionality of the category definition and RTC category updates
  * into one simple interface. Also adds many convenience methods.
@@ -63,6 +68,8 @@ import org.slf4j.LoggerFactory;
 
 @XmlRootElement(name="category")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Category {
     private static final Logger LOG = LoggerFactory.getLogger(Category.class);
 
@@ -372,6 +379,7 @@ public class Category {
 
     @XmlElementWrapper(name="nodes")
     @XmlElement(name="node")
+    @JsonProperty("nodes")
     public List<Long> getNodeIds() {
         final List<Long> nodeIds = new ArrayList<>();
         if (m_rtcCategory != null) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,9 +43,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @XmlRootElement(name="definition")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("discovery-configuration.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Definition implements Serializable {
 
     private static final long serialVersionUID = 5369200192316960658L;
@@ -74,6 +81,7 @@ public class Definition implements Serializable {
 
     @XmlElementWrapper(name = "detectors")
     @XmlElement(name = "detector")
+    @JsonProperty("detectors")
     private List<Detector> detectors = new ArrayList<>();
     /**
      * the specific addresses for discovery

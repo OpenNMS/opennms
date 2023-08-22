@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,11 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * <p>ForeignSource class.</p>
  *
@@ -60,6 +65,8 @@ import org.slf4j.LoggerFactory;
  */
 @XmlRootElement(name="foreign-source")
 @ValidateUsing("foreign-sources.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSource.class);
     private static final long serialVersionUID = -1903289015976502808L;
@@ -77,10 +84,12 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
+    @JsonProperty("detectors")
     private List<PluginConfig> m_detectors = new ArrayList<>();
     
     @XmlElementWrapper(name="policies")
     @XmlElement(name="policy")
+    @JsonProperty("policies")
     private List<PluginConfig> m_policies = new ArrayList<>();
 
     private boolean m_default;

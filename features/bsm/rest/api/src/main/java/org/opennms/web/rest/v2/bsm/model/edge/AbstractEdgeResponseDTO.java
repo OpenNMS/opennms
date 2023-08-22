@@ -45,11 +45,17 @@ import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvi
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.MoreObjects;
 
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public abstract class AbstractEdgeResponseDTO {
 
     @XmlElement(name="id")
@@ -69,6 +75,7 @@ public abstract class AbstractEdgeResponseDTO {
 
     @XmlElement(name="reduction-key")
     @XmlElementWrapper(name="reduction-keys")
+    @JsonProperty("reduction-keys")
     private Set<String> reductionKeys = new HashSet<>();
 
     @XmlElement(name="weight", required = true)

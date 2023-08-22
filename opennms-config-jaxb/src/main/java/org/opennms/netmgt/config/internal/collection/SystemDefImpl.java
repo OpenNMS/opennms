@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,11 @@ import org.opennms.netmgt.config.api.collection.IGroup;
 import org.opennms.netmgt.config.api.collection.ISystemDef;
 import org.opennms.netmgt.config.api.collection.ITable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 /**
  *  &lt;systemDef name="Enterprise"&gt;
@@ -57,6 +62,8 @@ import org.opennms.netmgt.config.api.collection.ITable;
  */
 @XmlRootElement(name="datacollection-group")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class SystemDefImpl implements ISystemDef {
 
     @XmlAttribute(name="name")
@@ -70,6 +77,7 @@ public class SystemDefImpl implements ISystemDef {
 
     @XmlElementWrapper(name="collect")
     @XmlElement(name="include")
+    @JsonProperty("collect")
     private String[] m_includes;
 
     @XmlTransient

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,11 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -72,6 +77,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 })
 @XmlRootElement(name = "http-collection")
 @ValidateUsing("http-datacollection-config.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class HttpCollection {
 
     @XmlElement(name = "rrd", required = true)
@@ -79,6 +86,7 @@ public class HttpCollection {
 
     @XmlElementWrapper(name="uris")
     @XmlElement(name="uri", required = true)
+    @JsonProperty("uris")
     protected List<Uri> m_uris = new ArrayList<>();
 
     @XmlAttribute(name = "name")

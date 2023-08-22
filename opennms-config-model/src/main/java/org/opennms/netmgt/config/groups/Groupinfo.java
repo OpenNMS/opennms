@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -43,9 +43,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @XmlRootElement(name = "groupinfo")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("groups.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Groupinfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -54,10 +61,12 @@ public class Groupinfo implements Serializable {
 
     @XmlElementWrapper(name = "groups")
     @XmlElement(name = "group")
+    @JsonProperty("groups")
     private List<Group> m_groups;
 
     @XmlElementWrapper(name = "roles")
     @XmlElement(name = "role")
+    @JsonProperty("roles")
     private List<Role> m_roles;
 
     public Groupinfo() {

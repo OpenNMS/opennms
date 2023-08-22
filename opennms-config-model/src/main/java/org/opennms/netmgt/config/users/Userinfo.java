@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
@@ -42,6 +42,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * The top-level element of the users.xml configuration
  *  file.
@@ -49,6 +54,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name = "userinfo")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("users.xsd")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class Userinfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -61,6 +68,7 @@ public class Userinfo implements Serializable {
 
     @XmlElementWrapper(name = "users")
     @XmlElement(name = "user")
+    @JsonProperty("users")
     private List<User> m_users = new ArrayList<>();
 
     public Userinfo() {

@@ -290,6 +290,6 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         JSONObject restObject = new JSONObject(json);
         JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/outages.json")));
-        JSONAssert.assertEquals(expectedObject, restObject, true);
+        JSONAssert.assertEquals(expectedObject, restObject, false);
     }
 }

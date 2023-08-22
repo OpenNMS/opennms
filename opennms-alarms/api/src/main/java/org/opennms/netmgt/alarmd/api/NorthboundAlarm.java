@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,6 +51,11 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Wraps the OnmsAlarm into a more generic Alarm instance
  * 
@@ -63,6 +68,8 @@ import org.opennms.netmgt.model.TroubleTicketState;
 @XmlRootElement(name="northbound-alarm")
 @ValidateUsing("northbound-alarm.xsd")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class NorthboundAlarm implements Preservable, Serializable {
 
     private static final long serialVersionUID = -9207587487002564273L;
@@ -676,6 +683,7 @@ public class NorthboundAlarm implements Preservable, Serializable {
     /** The event parameters collection. */
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
+    @JsonProperty("parameters")
     private List<OnmsEventParameter> m_eventParametersCollection = new ArrayList<>();
 
     /** The preserved flag. */

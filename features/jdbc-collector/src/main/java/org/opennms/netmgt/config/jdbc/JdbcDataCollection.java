@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,8 +43,15 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @XmlRootElement(name = "jdbc-collection")
 @XmlType(name="jdbc-collection")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class JdbcDataCollection implements Serializable, Comparable<JdbcDataCollection> {
     private static final long serialVersionUID = -7451959128852991463L;
     
@@ -58,6 +65,7 @@ public class JdbcDataCollection implements Serializable, Comparable<JdbcDataColl
     
     @XmlElementWrapper(name="queries")
     @XmlElement(name="query")
+    @JsonProperty("queries")
     private List<JdbcQuery> m_jdbcQueries = new ArrayList<>();
     
     public JdbcDataCollection() {

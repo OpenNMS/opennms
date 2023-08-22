@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,31 +46,46 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpVarBindDTO;
 import org.opennms.netmgt.snmp.TrapInformation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "trap-dto")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class TrapDTO implements Message {
 
 	@XmlElement(name = "agent-address")
 	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
 	private InetAddress agentAddress;
+
 	@XmlElement(name = "community")
 	private String community;
+
 	@XmlElement(name = "version", required=true)
 	private String version;
+
 	@XmlElement(name = "timestamp")
 	private long timestamp;
+
 	@XmlElement(name = "pdu-length")
 	private int pduLength;
+
 	@XmlElement(name = "creation-time")
 	private long creationTime;
+
 	@XmlElement(name = "raw-message")
 	private byte[] rawMessage;
+
 	@XmlElement(name = "trap-identity")
 	private TrapIdentityDTO trapIdentity;
+
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
+        @JsonProperty("results")
 	private List<SnmpResult> results = new ArrayList<>();
 
 	// No-arg constructor for JAXB

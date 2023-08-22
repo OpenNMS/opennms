@@ -50,11 +50,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 @Entity
 @Table(name = "applications")
 @XmlRootElement(name="application")
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 /**
  * An Application is a grouping of services that belong together.
  * They can run in different locations.
@@ -103,6 +109,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     @XmlElement(name="monitoredServiceId")
     @XmlElementWrapper(name="monitoredServices")
     @JsonBackReference
+    @JsonProperty("monitoredServices")
     public Set<OnmsMonitoredService> getMonitoredServices() {
         return monitoredServices;
     }
@@ -127,6 +134,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     @XmlIDREF
     @XmlElement(name="perspectiveLocationId")
     @XmlElementWrapper(name="perspectiveLocations")
+    @JsonProperty("perspectiveLocations")
     public Set<OnmsMonitoringLocation> getPerspectiveLocations() {
         return this.perspectiveLocations;
     }

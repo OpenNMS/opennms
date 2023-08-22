@@ -48,11 +48,17 @@ import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class BusinessServiceRequestDTO {
 
     @XmlElement(name = "name")
@@ -64,18 +70,22 @@ public class BusinessServiceRequestDTO {
 
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
+    @JsonProperty("ip-service-edges")
     private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
+    @JsonProperty("child-edges")
     private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
 
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
+    @JsonProperty("reduction-key-edges")
     private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
 
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
+    @JsonProperty("application-edges")
     private List<ApplicationEdgeRequestDTO> m_applications = Lists.newArrayList();
 
     @XmlElement(name="reduce-function")

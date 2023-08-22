@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,6 +57,10 @@ import javax.xml.bind.annotation.XmlID;
 
 import org.hibernate.annotations.DiscriminatorOptions;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -86,6 +90,8 @@ import com.google.common.base.MoreObjects;
 // Require all objects to have a discriminator type
 @DiscriminatorOptions(force=true)
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class OnmsMonitoringSystem implements Serializable {
 
     private static final long serialVersionUID = -5095710111103727832L;
@@ -124,6 +130,7 @@ public class OnmsMonitoringSystem implements Serializable {
 
     @XmlElementWrapper(name="properties")
     @XmlElement(name="property")
+    @JsonProperty("properties")
     private Map<String,String> m_properties = new HashMap<String,String>();
 
     /**

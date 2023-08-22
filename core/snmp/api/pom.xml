@@ -30,6 +30,12 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson2-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
@@ -44,7 +50,6 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>${jsonVersion}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>

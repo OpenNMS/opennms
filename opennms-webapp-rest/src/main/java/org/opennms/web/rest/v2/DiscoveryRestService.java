@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Basic Web Service using REST for submitting discovery tasks
  *
@@ -70,6 +75,8 @@ public class DiscoveryRestService {
     public static class DiscoveryConfigurationDTO {
 
         @XmlRootElement
+        @JsonPropertyOrder(alphabetic=true)
+        @JsonInclude(Include.NON_NULL)
         public static class SpecificDTO {
             private String content;
             private String location;
@@ -122,6 +129,8 @@ public class DiscoveryRestService {
         }
 
         @XmlRootElement
+        @JsonPropertyOrder(alphabetic=true)
+        @JsonInclude(Include.NON_NULL)
         public static class IncludeRangeDTO {
             private String location = "Default";
             private Integer retries = 1;
@@ -183,6 +192,8 @@ public class DiscoveryRestService {
         }
 
         @XmlRootElement
+        @JsonPropertyOrder(alphabetic=true)
+        @JsonInclude(Include.NON_NULL)
         public static class ExcludeRangeDTO {
             private String begin;
             private String end;
@@ -208,6 +219,8 @@ public class DiscoveryRestService {
         }
 
         @XmlRootElement
+        @JsonPropertyOrder(alphabetic=true)
+        @JsonInclude(Include.NON_NULL)
         public static class IncludeUrlDTO {
             private String content;
             private String location = "Default";
@@ -260,6 +273,8 @@ public class DiscoveryRestService {
         }
 
         @XmlRootElement
+        @JsonPropertyOrder(alphabetic=true)
+        @JsonInclude(Include.NON_NULL)
         public static class ExcludeUrlDTO {
             private String content;
             private String location = "Default";
@@ -347,6 +362,7 @@ public class DiscoveryRestService {
 
         @XmlElementWrapper(name="specifics")
         @XmlElement(name="specific")
+        @JsonProperty("specifics")
         public List<SpecificDTO> getSpecificDTOList() {
             return specificDTOList;
         }
@@ -357,6 +373,7 @@ public class DiscoveryRestService {
 
         @XmlElementWrapper(name="includeRanges")
         @XmlElement(name="includeRange")
+        @JsonProperty("specifics")
         public List<IncludeRangeDTO> getIncludeRangeDTOList() {
             return includeRangeDTOList;
         }
@@ -367,6 +384,7 @@ public class DiscoveryRestService {
 
         @XmlElementWrapper(name="excludeRanges")
         @XmlElement(name="excludeRange")
+        @JsonProperty("excludeRanges")
         public List<ExcludeRangeDTO> getExcludeRangeDTOList() {
             return excludeRangeDTOList;
         }
@@ -377,6 +395,7 @@ public class DiscoveryRestService {
 
         @XmlElementWrapper(name="includeUrls")
         @XmlElement(name="includeUrl")
+        @JsonProperty("includeUrls")
         public List<IncludeUrlDTO> getIncludeUrlDTOList() {
             return includeUrlDTOList;
         }
@@ -387,6 +406,7 @@ public class DiscoveryRestService {
 
         @XmlElementWrapper(name="excludeUrls")
         @XmlElement(name="excludeUrl")
+        @JsonProperty("excludeUrls")
         public List<ExcludeUrlDTO> getExcludeUrlDTOList() {
             return excludeUrlDTOList;
         }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,8 +43,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonPropertyOrder(alphabetic=true)
 public class ResourceDTO {
 
     @XmlAttribute(name = "id")
@@ -69,16 +73,20 @@ public class ResourceDTO {
     private ResourceDTOCollection m_children;
 
     @XmlElementWrapper(name="stringPropertyAttributes")
+    @JsonProperty("stringPropertyAttributes")
     private Map<String, String> m_stringPropertyAttributes;
 
     @XmlElementWrapper(name="externalValueAttributes")
+    @JsonProperty("externalValueAttributes")
     private Map<String, String> m_externalValueAttributes;
 
     @XmlElementWrapper(name="rrdGraphAttributes")
+    @JsonProperty("rrdGraphAttributes")
     private Map<String, RrdGraphAttribute> m_rrdGraphAttributes;
 
     @XmlElementWrapper(name="graphNames")
     @XmlElement(name="graphName")
+    @JsonProperty("graphNames")
     private List<String> m_graphNames;
 
     @XmlTransient

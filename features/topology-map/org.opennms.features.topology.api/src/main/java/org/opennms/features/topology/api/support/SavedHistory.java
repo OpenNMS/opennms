@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,6 +66,10 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Sets;
 
 /**
@@ -73,6 +77,8 @@ import com.google.common.collect.Sets;
  */
 @XmlRootElement(name="saved-history")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonPropertyOrder(alphabetic=true)
+@JsonInclude(Include.NON_NULL)
 public class SavedHistory {
 
     private static final Logger LOG = LoggerFactory.getLogger(SavedHistory.class);
@@ -91,11 +97,13 @@ public class SavedHistory {
     @XmlElementWrapper(name="selection")
     @XmlElement(name="vertex")
     @XmlJavaTypeAdapter(VertexRefAdapter.class)
+    @JsonProperty("selection")
     private Set<VertexRef> m_selectedVertices = Sets.newHashSet();
 
     @XmlElementWrapper(name="focus")
     @XmlElement(name="vertex")
     @XmlJavaTypeAdapter(VertexRefAdapter.class)
+    @JsonProperty("focus")
     private Set<VertexRef> m_focusVertices = Sets.newHashSet();
 
     /**
@@ -107,6 +115,7 @@ public class SavedHistory {
 
     @XmlElementWrapper(name="searches")
     @XmlElement(name="search-criteria")
+    @JsonProperty("searches")
     private final List<SearchResult> m_searchQueries = new ArrayList<>();
 
     protected SavedHistory() {
