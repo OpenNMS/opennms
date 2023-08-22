@@ -383,6 +383,7 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.rrd/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-api" version="${project.version}" description="OpenNMS :: Configuration :: API">
+        <feature>jackson-core</feature>
         <feature>opennms-config-jaxb</feature>
         <feature>opennms-model</feature>
         <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
