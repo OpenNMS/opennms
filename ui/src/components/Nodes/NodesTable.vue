@@ -89,9 +89,12 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+const menuStore = useMenuStore()
+
 const sortStates: any = reactive({
   label: SORT.ASCENDING,
   location: SORT.NONE,
@@ -121,7 +124,7 @@ const searchFilterHandler: UpdateModelFunction = (val = '') => {
 }
 const nodes = computed(() => store.state.nodesModule.nodes)
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs: BreadCrumb[] = [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },

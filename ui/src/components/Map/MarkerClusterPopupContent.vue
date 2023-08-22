@@ -47,6 +47,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Location from '@featherds/icon/action/Location'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
 import { IpInterface, Node } from '@/types'
+import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
 
 interface ClusterInfo {
@@ -64,7 +65,9 @@ const props = defineProps({
 })
 
 const store = useStore()
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const menuStore = useMenuStore()
+
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
 const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])

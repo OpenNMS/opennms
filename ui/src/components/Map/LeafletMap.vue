@@ -93,8 +93,10 @@ import MarkerPopup from './MarkerPopup.vue'
 import MarkerClusterPopupContents from './MarkerClusterPopupContent.vue'
 import SeverityFilter from './SeverityFilter.vue'
 import { numericSeverityLevel } from './utils'
+import { useMenuStore } from '@/stores/menuStore'
 
 const store = useStore()
+const menuStore = useMenuStore()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -116,7 +118,7 @@ const bounds = computed(() => {
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
 const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const ipInterfaces = computed<IpInterface[]>(() => store.state.ipInterfacesModule.ipInterfaces)
 
