@@ -83,6 +83,7 @@
 | `OPENNMS_CASSANDRA_PORT`      | _Cassandra_ server port                                                           | optional | `9042`
 | `OPENNMS_CASSANDRA_USERNAME`  | Username with access to _Cassandra_                                               | optional | `cassandra`
 | `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to _Cassandra_                                      | optional | `cassandra`
+| `OPENNMS_CASSANDRA_DATACENTER`  | Data center DC set for  _Cassandra_                                             | optional | `datacenter1`
 |===
 
 == Directory Conventions

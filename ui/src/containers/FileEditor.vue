@@ -49,14 +49,16 @@ import Help from '@/components/FileEditor/Help.vue'
 import TopBar from '@/components/FileEditor/TopBar.vue'
 import ConfirmDialog from '@/components/FileEditor/ConfirmDialog.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+const menuStore = useMenuStore()
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const snippets = computed(() => store.state.fileEditorModule.snippets)
 const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', true)
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [

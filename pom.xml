@@ -1591,7 +1591,7 @@
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.16</batikVersion>
-    <bouncyCastleVersion>1.74</bouncyCastleVersion>
+    <bouncyCastleVersion>1.76</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1604,7 +1604,7 @@
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.21</commonsCompressVersion>
+    <commonsCompressVersion>1.23.0</commonsCompressVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>

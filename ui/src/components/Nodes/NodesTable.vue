@@ -120,11 +120,14 @@ import { QueryParameters, UpdateModelFunction } from '@/types'
 import useQueryParameters from '@/composables/useQueryParams'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import { Category, FeatherSortObject, MonitoringLocation, Node, SetOperator } from '@/types'
-import { buildNodeStructureQuery, shouldDisplayFlows } from './utils'
+import { Category, FeatherSortObject, MonitoringLocation, SetOperator } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
+import { buildNodeStructureQuery, shouldDisplayFlows } from './utils'
+import { useMenuStore } from '@/stores/menuStore'
 
 const store = useStore()
+const menuStore = useMenuStore()
+
 const sortStates: any = reactive({
   label: SORT.ASCENDING,
   location: SORT.NONE,
@@ -186,6 +189,8 @@ const updateQuery = (val?: string) => {
   store.dispatch('nodesModule/getNodes', updatedParams)
   queryParameters.value = updatedParams
 }
+
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const computeNodeLink = (nodeId: number) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`

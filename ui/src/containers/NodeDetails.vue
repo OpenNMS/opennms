@@ -21,15 +21,15 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 //import EventsTable from '@/components/Nodes/EventsTable.vue'
 //import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 //import InterfacesTabsVue from '@/components/Nodes/InterfacesTabs.vue'
 //import NodeAvailabilityGraphVue from '@/components/Nodes/NodeAvailabilityGraph.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
+const menuStore = useMenuStore()
 
 const props = defineProps({
   id: {
@@ -37,7 +37,7 @@ const props = defineProps({
   }
 })
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const items: BreadCrumb[] = [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },

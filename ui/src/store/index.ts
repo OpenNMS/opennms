@@ -14,7 +14,6 @@ import infoModule from './info'
 import ipInterfacesModule from './ipInterfaces'
 import logsModule from './logs'
 import mapModule from './map'
-import menuModule from './menu'
 import nodesModule from './nodes'
 import nodeStructureModule from './nodeStructure'
 import pluginModule from './plugin'
@@ -38,7 +37,6 @@ export default createStore({
     ipInterfacesModule,
     logsModule,
     mapModule,
-    menuModule,
     nodesModule,
     nodeStructureModule,
     pluginModule,

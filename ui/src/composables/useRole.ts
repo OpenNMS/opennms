@@ -1,4 +1,4 @@
-import store from '@/store'
+import { useStore } from 'vuex'
 
 const enum Roles {
   ROLE_ADMIN = 'ROLE_ADMIN',
@@ -10,6 +10,7 @@ const enum Roles {
 
 type Role = typeof Roles[keyof typeof Roles]
 
+const store = useStore()
 const roles = computed(() => store.state.authModule.whoAmi.roles)
 const rolesAreLoaded = computed(() => store.state.authModule.loaded)
 

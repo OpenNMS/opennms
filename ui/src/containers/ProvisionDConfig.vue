@@ -31,11 +31,13 @@ import ThreadPools from '@/components/Configuration/ConfigurationThreadPools.vue
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { populateProvisionD } from '@/services/configurationService'
 import { useStore } from 'vuex'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+const menuStore = useMenuStore()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
