@@ -143,10 +143,10 @@
         <constructor-arg value="org.opennms.interface-node-cache.refresh-timer"></constructor-arg>
         <constructor-arg value="300000"></constructor-arg>
     </bean>
-    <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl">
+    <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl" lazy-init="true">
         <constructor-arg ref="interfaceToNodeCacheRefreshInterval" />
     </bean>
-    <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
         <property name="staticMethod">
             <value>org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache.setInstance</value>
         </property>
@@ -252,16 +252,16 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
 
     <!-- Filter DAO -->
-    <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
         <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
         <property name="arguments">
-            <bean id="jdbcFilterDao" class="org.opennms.netmgt.filter.JdbcFilterDao">
+            <bean id="jdbcFilterDao" class="org.opennms.netmgt.filter.JdbcFilterDao" lazy-init="true">
                 <property name="dataSource" ref="dataSource" />
                 <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
             </bean>
         </property>
     </bean>
-    <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+    <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" lazy-init="true" />
     <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/>
 
     <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">

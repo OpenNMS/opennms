@@ -90,7 +90,7 @@
     <bean id="hwEntityAttributeTypeDao" class="org.opennms.netmgt.dao.mock.MockHwEntityAttributeTypeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
 
-    <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.mock.MockIpInterfaceDao" />
+    <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.mock.MockIpInterfaceDao" lazy-init="true" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IpInterfaceDao" ref="ipInterfaceDao" />
 
     <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.mock.MockJavaMailConfigurationDao" />
@@ -196,15 +196,15 @@
     <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
     <onmsgi:service interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
 
-    <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
         <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
         <property name="arguments">
             <bean id="mockFilterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao">
-        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+                <property name="ipInterfaceDao" ref="ipInterfaceDao" />
             </bean>
         </property>
     </bean>
-    <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+    <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" lazy-init="true" />
 
     <bean id="databasePopulator" class="org.opennms.netmgt.dao.DatabasePopulator">
         <property name="populateInSeparateTransaction" value="true" />
