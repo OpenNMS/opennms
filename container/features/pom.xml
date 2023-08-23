@@ -228,20 +228,32 @@
                           <feature>opennms-config-api</feature>
                           <feature>opennms-config-jaxb</feature>
                           <feature>opennms-config-model</feature>
+                          <feature>opennms-core</feature>
+                          <feature>opennms-core-soa</feature>
+                          <feature>opennms-core-lib</feature>
+                          <feature>opennms-deviceconfig-deps</feature>
+                          <feature>opennms-distributed-kvstore-api</feature>
                           <feature>opennms-health</feature>
                           <feature>opennms-health-api</feature>
                           <feature>opennms-newts</feature>
+                          <feature>opennms-provisioning-api</feature>
+                          <feature>opennms-snmp</feature>
+                          <feature>opennms-spring-extender</feature>
+                          <feature>opennms-telemetry-collection</feature>
                           <feature>opennms-timeseries-api</feature>
+                          <feature>opennms-trapd-listener</feature>
+                          <feature>opennms-util</feature>
+                          <feature>opennms-xml-collector</feature>
 
                           <!-- minion features -->
                           <feature>minion-api-layer</feature>
                           <feature>minion-heartbeat-producer</feature>
                           <feature>minion-snmp-proxy</feature>
                           <feature>opennms-dao-minion</feature>
-                          <feature>opennms-trapd-listener</feature>
 
                           <!-- sentinel features -->
                           <feature>sentinel-api-layer</feature>
+                          <feature>sentinel-core</feature>
                           <feature>sentinel-newts</feature>
                           <feature>sentinel-timeseries-api</feature>
                       </features>

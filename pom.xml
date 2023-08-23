@@ -1328,10 +1328,10 @@
         </executions>
       </plugin>
       <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <version>${maven.karaf.plugin.version}</version>
-          <extensions>true</extensions>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <version>${maven.karaf.plugin.version}</version>
+        <extensions>true</extensions>
       </plugin>
       <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
@@ -1347,12 +1347,6 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafMavenPluginVersion}</version>
-        <extensions>true</extensions>
       </plugin>
     </plugins>
  </build>
@@ -1719,7 +1713,6 @@
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
-    <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
     <kafkaBundleVersion>3.5.0_1</kafkaBundleVersion>
     <kafkaVersion>3.5.0</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>

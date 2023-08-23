@@ -51,7 +51,7 @@
     <bean id="sessionUtils" class="org.opennms.netmgt.dao.mock.MockSessionUtils" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SessionUtils" ref="sessionUtils" />
 
-    <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.mock.MockAcknowledgmentDao" />
+    <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.mock.MockAcknowledgmentDao" lazy-init="true" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" ref="acknowledgmentDao" />
 
     <bean id="alarmDao" class="org.opennms.netmgt.dao.mock.MockAlarmDao" />
