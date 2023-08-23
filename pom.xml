@@ -2947,6 +2947,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jest-complete-osgi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jfreechart-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -4512,6 +4517,16 @@
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jakartaXmlBindVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.searchbox</groupId>
+        <artifactId>jest</artifactId>
+        <version>${jestVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.searchbox</groupId>
+        <artifactId>jest-common</artifactId>
+        <version>${jestVersion}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>

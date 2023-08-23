@@ -111,9 +111,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

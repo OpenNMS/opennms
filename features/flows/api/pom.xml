@@ -42,9 +42,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
