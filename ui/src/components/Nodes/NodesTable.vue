@@ -141,7 +141,7 @@ const sortStates: any = reactive({
 
 const currentSearch = ref('')
 const nodes = computed(() => store.state.nodesModule.nodes)
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
 const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
 const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)

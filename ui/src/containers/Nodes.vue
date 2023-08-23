@@ -21,15 +21,14 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
-
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const menuStore = useMenuStore()
+const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -44,4 +43,4 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 @import "@featherds/styles/themes/variables";
 
 </style>
-  
+
