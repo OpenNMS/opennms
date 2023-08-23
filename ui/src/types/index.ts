@@ -113,6 +113,13 @@ export interface Node {
   sysLocation: string
 }
 
+export interface NodeColumnSelectionItem {
+  id: string
+  label: string
+  selected: boolean
+  order: number // 0-based
+}
+
 export interface MapNode {
   id: string
   coordinates: [number, number]

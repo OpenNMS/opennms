@@ -1,6 +1,7 @@
 <template>
+  <h1 class="title">Filtering</h1>
   <div class="button-panel">
-      <FeatherButton primary class="category-btn" @click="onClearAll">Clear All</FeatherButton>
+      <FeatherButton primary class="category-btn" @click="onClearAll" :disabled="!selectedCount">Clear All</FeatherButton>
   </div>
   <FeatherExpansionPanel>
     <template v-slot:title>
@@ -12,15 +13,19 @@
       </div>
       <div v-else>Categories</div>
     </template>
-    <div>
-      <FeatherRadioGroup :label="''" v-model="categoryMode" :vertical="false"
-        @update:model-value="categoryModeUpdated"
-        class="category-radio-group-container">
-        <FeatherRadio
-          v-for="item in categoryModeItems"
-          :value="item.value"
-          :key="item.value">{{ item.name }}</FeatherRadio>
-      </FeatherRadioGroup>
+    <div class="category-button-group">
+      <FeatherButton
+        class="switcher-button"
+        :primary="categoryMode === SetOperator.Union"
+        :secondary="categoryMode !== SetOperator.Union"
+        @click="categoryModeUpdated(SetOperator.Union)"
+      >Any</FeatherButton>
+      <FeatherButton
+        class="switcher-button"
+        :primary="categoryMode === SetOperator.Intersection"
+        :secondary="categoryMode !== SetOperator.Intersection"
+        @click="categoryModeUpdated(SetOperator.Intersection)"
+      >All</FeatherButton>
     </div>
     <FeatherList class="category-list">
       <FeatherListItem
@@ -72,15 +77,31 @@
       </FeatherListItem>
     </FeatherList>
   </FeatherExpansionPanel>
+  <div class="search-autocomplete-panel">
+    <h1 class="title">Metadata Search</h1>
+    <FeatherAutocomplete
+      v-model="metaSearchString"
+      type="multi"
+      :results="metadataSearchResults"
+      label="Search"
+      class="map-search"
+      @search="resetMetaSearch"
+      :loading="loading"
+      :hideLabel="true"
+      text-prop="label"
+      @update:modelValue="selectMetaItem"
+      :labels="metaLabels"
+    ></FeatherAutocomplete>
+  </div>
 </template>
 
 <script setup lang="ts">
 import ClearIcon from '@featherds/icon/action/Cancel'
+import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherList, FeatherListItem } from '@featherds/list'
-import { FeatherRadioGroup, FeatherRadio } from '@featherds/radio'
 import { useStore } from 'vuex'
 import { Category, MonitoringLocation, SetOperator } from '@/types'
 
@@ -90,21 +111,35 @@ const categories = computed<Category[]>(() => store.state.nodeStructureModule.ca
 const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
 const flowTypes = computed<string[]>(() => ['Ingress', 'Egress'])
 const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
-
-const categoryModeItems = [
-  { name: 'Any', value: SetOperator.Union },
-  { name: 'All', value: SetOperator.Intersection }
-]
-const categoryMode = ref(store.state.nodeStructureModule.categoryMode)
+const categoryMode = computed(() => store.state.nodeStructureModule.categoryMode)
 
 const locations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.monitoringLocations)
 const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)
 const selectedCategoryCount = computed<number>(() => selectedCategories.value?.length || 0)
 const selectedFlowCount = computed<number>(() => selectedFlows.value?.length || 0)
 const selectedLocationCount = computed<number>(() => selectedLocations.value?.length || 0)
+const selectedCount = computed<boolean>(() => selectedCategoryCount.value > 0 || selectedFlowCount.value > 0 || selectedLocationCount.value > 0)
+
+const metaSearchString = ref()
+const loading = ref(false)
+const defaultMetaLabels = { noResults: 'Searching...' }
+const metaLabels = ref(defaultMetaLabels)
+
+const metadataSearchResults = computed(() => {
+  return ['cat', 'dog', 'parakeet'].map(x => ({ _text: x }))
+})
+
+const selectMetaItem = (obj: any) => {
+  console.log('selectMetaItem:')
+}
+
+const resetMetaSearch = () => {
+  console.log('resetMetaSearch:')
+}
 
 const categoryModeUpdated = (val: any) => {
   store.dispatch('nodeStructureModule/setCategoryMode', val)
+  return false
 }
 
 const isCategorySelected = (cat: Category) => {
@@ -134,7 +169,6 @@ const onClearLocations = () => {
 const onClearAll = () => {
   onClearCategories()
   categoryModeUpdated(SetOperator.Union)
-  categoryMode.value = SetOperator.Union
   onClearFlows()
   onClearLocations()
 }
@@ -190,6 +224,16 @@ onMounted(() => {
   margin-bottom: 6px;
 }
 
+div.category-button-group {
+  margin-bottom: 1em;
+
+  > button.btn.switcher-button {
+    &.btn-primary, &.btn-secondary {
+      margin-left: 0;
+    }
+  }
+}
+
 .category-list {
   @include elevation(2);
   background: var($surface);
@@ -203,6 +247,16 @@ onMounted(() => {
   margin-bottom: 4px;
   margin-right: 4px;
 }
+
+.search-autocomplete-panel {
+  margin-top: 1.5em;
+}
+
+.title {
+  @include overline();
+  color: #4b5ad6;
+  margin-bottom: 8px;
+}
 </style>
 
 <style lang="scss">
@@ -212,29 +266,5 @@ onMounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
-
-// remove extra margins/padding around the radio buttons
-.category-radio-group-container.feather-radio-group-container {
-  label {
-    margin-bottom: 0;
-  }
-
-  .feather-radio-group {
-    display: inline-block;
-  }
-
-  .feather-input-sub-text {
-    min-height: 0;
-    padding: 0;
-  }
-
-  .layout-container {
-    margin-right: 0.5em;
-  }
-}
-
-.drawer-container .content {
-  top: var(--feather-header-height);
 }
 </style>
