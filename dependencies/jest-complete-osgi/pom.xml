@@ -1,17 +1,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.opennms.features</groupId>
-    <artifactId>org.opennms.features.jest</artifactId>
+    <groupId>org.opennms</groupId>
+    <artifactId>dependencies</artifactId>
     <version>33.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.searchbox</groupId>
+  <groupId>org.opennms.dependencies</groupId>
   <artifactId>jest-complete-osgi</artifactId>
-  <version>${jestVersion}</version>
-  <name>jest-complete-osgi</name>
+  <name>OpenNMS :: Dependencies :: Jest (OSGi Bundle)</name>
   <description>shaded osgi bundle containing complete jest implementation</description>
   <packaging>bundle</packaging>
 
@@ -43,17 +42,6 @@
                 <excludes>
                 </excludes>
               </artifactSet>
-              <!-- <transformers> -->
-              <!-- <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
-              <!-- <manifestEntries> -->
-              <!-- <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName> -->
-              <!-- <Export-Package>io,io.searchbox,io.searchbox.action,io.searchbox.annotations,io.searchbox.client,io.searchbox.client.config,io.searchbox.client.config.exception,io.searchbox.client.config.idle,io.searchbox.client.http.apache,io.searchbox.cloning,io.searchbox.cluster,io.searchbox.core,io.searchbox.core.search,io.searchbox.core.search.aggregation,io.searchbox.core.search.sort,io.searchbox.indices,io.searchbox.indices.aliases,io.searchbox.indices.mapping,io.searchbox.indices.script,io.searchbox.indices.settings,io.searchbox.indices.template,io.searchbox.indices.type,io.searchbox.params,io.searchbox.snapshot -->
-              <!-- </Export-Package> -->
-              <!-- <Import-Package>*</Import-Package> -->
-              <!-- <Private-Package></Private-Package> -->
-              <!-- </manifestEntries> -->
-              <!-- </transformer> -->
-              <!-- </transformers> -->
               <createDependencyReducedPom>true</createDependencyReducedPom>
             </configuration>
           </execution>
@@ -64,24 +52,13 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <!-- <version>2.5.3</version> -->
         <extensions>true</extensions>
-        <executions>
-          <!-- <execution> -->
-          <!-- <id>bundle-manifest</id> -->
-          <!-- <phase>process-classes</phase> -->
-          <!-- <goals> -->
-          <!-- <goal>manifest</goal> -->
-          <!-- </goals> -->
-          <!-- </execution> -->
-        </executions>
         <configuration>
           <instructions>
             <unpackBundle>true</unpackBundle>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
+            <Bundle-Version>${jestVersion}</Bundle-Version>
             <Export-Package>
-              io,
               io.searchbox,
               io.searchbox.action,
               io.searchbox.annotations,
@@ -107,14 +84,17 @@
               io.searchbox.params,
               io.searchbox.snapshot
             </Export-Package>
+            <!-- note: Jest 5.x was built against guava 21,
+                 but appears to only use APIs that are still available
+                 in at least 31, so this version="21" _should_ be OK -->
             <Import-Package>
-              com.google.common.base;version="${guavaOsgiVersion}",
-              com.google.common.collect;version="${guavaOsgiVersion}",
-              com.google.common.io;version="${guavaOsgiVersion}",
-              com.google.common.reflect;version="${guavaOsgiVersion}",
-              com.google.common.util.concurrent;version="${guavaOsgiVersion}",
-              com.google.gson,
-              com.google.gson.annotations,
+              com.google.common.base;version="21",
+              com.google.common.collect;version="21",
+              com.google.common.io;version="21",
+              com.google.common.reflect;version="21",
+              com.google.common.util.concurrent;version="21",
+              com.google.gson;version="${jestGsonVersion}",
+              com.google.gson.annotations;version="${jestGsonVersion}",
               io.searchbox.action,
               io.searchbox.client.config.discovery,
               io.searchbox.client.config.exception,

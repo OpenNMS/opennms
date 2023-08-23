@@ -23,7 +23,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.16.0</version>
+            <version>${commonsCodecVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

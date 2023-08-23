@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>owasp-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies OWASP</name>
+  <name>OpenNMS :: Dependencies :: OWASP</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the OWASP Java Encoder and the OWASP HTML Sanitizer
