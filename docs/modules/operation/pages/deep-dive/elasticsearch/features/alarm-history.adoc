@@ -1,6 +1,0 @@
-
-
-[[ga-elasticsearch-alarm-history]]
-= Alarm History
-
-See <<deep-dive/alarms/history.adoc#ga-alarm-history, Alarm History>>.
