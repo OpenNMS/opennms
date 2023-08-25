@@ -1600,7 +1600,7 @@
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
     <commonsCompressVersion>1.23.0</commonsCompressVersion>
-    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.2</commonsExecVersion>
