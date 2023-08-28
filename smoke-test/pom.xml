@@ -55,14 +55,14 @@
     <jersey.version>2.40</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
-    <karafVersion>4.3.6</karafVersion>
+    <karafVersion>4.4.3</karafVersion>
     <selenium.version>4.6.0</selenium.version>
     <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
          for the same version of selenium specified in selenium.version above.
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <slf4jVersion>2.0.7</slf4jVersion>
-    <testcontainers.version>1.18.3</testcontainers.version>
+    <testcontainers.version>1.19.0</testcontainers.version>
     <netty4Version>4.1.96.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>

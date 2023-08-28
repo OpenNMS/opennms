@@ -14,7 +14,6 @@
     <name>OpenNMS :: Features :: Config :: Configuration for Osgi :: CM Integration</name>
     <packaging>bundle</packaging>
     <dependencies>
-
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
@@ -22,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
+            <artifactId>org.osgi.service.cm</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

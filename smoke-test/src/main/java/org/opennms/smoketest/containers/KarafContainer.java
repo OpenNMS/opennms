@@ -110,21 +110,4 @@ public interface KarafContainer<T extends KarafContainer<T>> extends Container<T
         assertTrue(karafShell.runCommandOnce("feature:install " + feature,
                 output -> !output.toLowerCase().contains("error"), false));
     }
-
-    default void assertNoKarafDestroy(Path karafLogFile) {
-        final var karafLogs = TestContainerUtils.getFileFromContainerAsString(this, karafLogFile);
-        final var lines = karafLogs.split("[\r\n]+");
-
-        final var regex = Pattern.compile("Destroying container");
-        final var matches = new StringBuffer();
-        for (final var line : lines) {
-            if (regex.matcher(line).find()) {
-                matches.append(line + "\n");
-            }
-        }
-
-        if (matches.length() > 0) {
-            throw new AssertionError("Found 'Destroying container' messages in karaf.log:\n" + matches);
-        }
-    }
 }

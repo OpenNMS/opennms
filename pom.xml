@@ -1502,7 +1502,7 @@
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
-    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
+    <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -1584,7 +1584,7 @@
     <asmVersion>9.5</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <batikVersion>1.16</batikVersion>
+    <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.76</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
@@ -1634,7 +1634,7 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
+    <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.8</fopVersion>
@@ -1712,7 +1712,9 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.6</karafVersion>
+    <junitVintageEngineVersion>5.6.3</junitVintageEngineVersion>
+    <karafVersion>4.4.3</karafVersion>
+    <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
     <kafkaBundleVersion>3.5.0_1</kafkaBundleVersion>
     <kafkaVersion>3.5.0</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
@@ -1730,9 +1732,9 @@
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
-    <paxLoggingVersion>2.0.14</paxLoggingVersion>
+    <paxLoggingVersion>2.2.0</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
-    <paxWebVersion>7.3.23</paxWebVersion>
+    <paxWebVersion>8.0.15</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.22.5</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
@@ -1741,10 +1743,8 @@
     <okioVersion>2.8.0</okioVersion>
     <opennmsApiVersion>1.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
-    <osgiVersion>7.0.0</osgiVersion>
-    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
-    <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
-    <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
+    <osgiVersion>8.0.0</osgiVersion>
+    <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
@@ -4680,18 +4680,23 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi.cmpn</artifactId>
-        <version>${osgiCompendiumVersion}</version>
+        <artifactId>org.osgi.service.blueprint</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.cm</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.component.annotations</artifactId>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi.annotation</artifactId>
         <version>${osgiAnnotationVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>osgi.enterprise</artifactId>
-        <version>${osgiEnterpriseVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.jolokia</groupId>
