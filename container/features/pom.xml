@@ -213,10 +213,14 @@
                           <feature>javax.mail</feature>
                           <feature>javax.servlet</feature>
                           <feature>javax.validation</feature>
-                          <feature>jetty</feature>
                           <feature>netty</feature>
                           <feature>org.json</feature>
-                          <feature>pax-jetty</feature>
+                          <feature>pax-web-http-jetty</feature>
+                          <feature>pax-web-jetty</feature>
+                          <feature>pax-web-jetty-extras</feature>
+                          <feature>pax-web-jetty-websockets</feature>
+                          <feature>pax-web-karaf</feature>
+                          <feature>pax-web-war</feature>
                           <feature>scv-api</feature>
                           <feature>scv-jceks-impl</feature>
                           <feature>scv-shell</feature>
@@ -293,12 +297,6 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.jaas-login-module</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>noop-jetty-extension</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

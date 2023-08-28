@@ -39,6 +39,10 @@
                 <artifactId>karaf-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <blacklistedRepositories>
+                        <!-- we want ${paxWebVersion} instead -->
+                        <repository>mvn:org.ops4j.pax.web/pax-web-features/${excludedPaxWebVersion}/xml/features</repository>
+                    </blacklistedRepositories>
                     <bootRepositories>
                         <!--Karaf standard features-->
                         <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>

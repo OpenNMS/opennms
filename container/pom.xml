@@ -9,6 +9,10 @@
   <artifactId>org.opennms.container</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container</name>
+  <properties>
+    <excludedJettyVersion>9.4.51.v20230217</excludedJettyVersion>
+    <excludedPaxWebVersion>8.0.15</excludedPaxWebVersion>
+  </properties>
   <modules>
     <module>branding</module>
     <module>features</module>
@@ -19,6 +23,5 @@
     <module>extender</module>
     <module>spring-extender</module>
     <module>shared</module>
-    <module>noop-jetty-extension</module>
   </modules>
 </project>

@@ -42,6 +42,8 @@
                     <blacklistedRepositories>
                         <!-- make sure the custom opennms karaf repo doesn't make it in -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
+                        <!-- we want ${paxWebVersion} instead -->
+                        <repository>mvn:org.ops4j.pax.web/pax-web-features/${excludedPaxWebVersion}/xml/features</repository>
                     </blacklistedRepositories>
                     <bootRepositories>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
@@ -64,9 +66,13 @@
                         <feature>spring-jms/${springVersion}</feature>
 
                         <feature>cassandra-driver/${cassandraVersion}</feature>
-                        <feature>jetty/${jettyVersion}</feature>
-                        <feature>pax-jetty/${jettyVersion}</feature>
                         <feature>pax-http-whiteboard</feature>
+                        <feature>pax-web-http-jetty</feature>
+                        <feature>pax-web-jetty</feature>
+                        <feature>pax-web-jetty-extras</feature>
+                        <feature>pax-web-jetty-websockets</feature>
+                        <feature>pax-web-karaf</feature>
+                        <feature>pax-web-war</feature>
                     </installedFeatures>
                     <startupFeatures>
                         <feature>eventadmin</feature>
@@ -96,8 +102,9 @@
                         <feature>opennms-bridge-http-service</feature>
                         <feature>opennms-http-whiteboard</feature>
 
-                        <feature>jetty/9.4.43.v20210629</feature>
-                        <feature>pax-jetty/9.4.43.v20210629</feature>
+                        <feature>pax-web-jetty/${excludedJettyVersion}</feature>
+                        <feature>pax-web-jetty-extras/${excludedJettyVersion}</feature>
+                        <feature>pax-web-jetty-websockets/${excludedJettyVersion}</feature>
                         <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
                     <installedBundles>

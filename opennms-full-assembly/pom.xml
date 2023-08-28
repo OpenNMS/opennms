@@ -252,6 +252,9 @@
                 <feature>package</feature>
                 <!-- Replaced by opennms-bridge-http-service -->
                 <!-- <feature>pax-http-service</feature> -->
+                <feature>pax-web-jetty</feature>
+                <feature>pax-web-jetty-extras</feature>
+                <feature>pax-web-jetty-websockets</feature>
                 <feature>profile</feature>
                 <feature>scheduler</feature>
                 <feature>scr</feature>
@@ -307,8 +310,6 @@
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <!-- pull in the latest jetty so we don't end up with multiple versions -->
-                <feature>jetty/${jettyVersion}</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
