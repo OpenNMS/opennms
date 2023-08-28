@@ -1632,7 +1632,7 @@
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
-    <fopVersion>2.8</fopVersion>
+    <fopVersion>2.9</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
     <!-- this has to match FST's direct dependency because we specify it in karaf features -->
