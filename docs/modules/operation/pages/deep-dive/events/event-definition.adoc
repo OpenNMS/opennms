@@ -42,7 +42,7 @@ Log Message::
         This applies only to traps coming in via trapd.
         This will cause trapd to discard the trap without creating an event.
         Other daemons that are listening for this type of event will not receive this event.
-	Events not related to trapd will be processed as if they are marked with `suppress'
+	Events not related to trapd will be processed as if they are marked with `suppress'.
 Severity::
     A severity for this event type.
     Possible values range from `Cleared` to `Critical`.
