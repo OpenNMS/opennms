@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.rt;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -97,19 +98,19 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	@SuppressWarnings("unchecked")
     @Override
 	public List<String> getValidClosedStatus() {
-		return getProperties().getList(getPrefix() + ".validclosedstatus");
+		return Arrays.asList(getProperties().getStringArray(getPrefix() + ".validclosedstatus"));
 	}
 	
 	@SuppressWarnings("unchecked")
     @Override
 	public List<String> getValidOpenStatus() {
-		return getProperties().getList(getPrefix() + ".validopenstatus");
+		return Arrays.asList(getProperties().getStringArray(getPrefix() + ".validopenstatus"));
 	}
 	
 	@SuppressWarnings("unchecked")
     @Override
 	public List<String> getValidCancelledStatus() {
-		return getProperties().getList(getPrefix() + ".validcancelledstatus");
+		return Arrays.asList(getProperties().getStringArray(getPrefix() + ".validcancelledstatus"));
 	}
 	
     @Override

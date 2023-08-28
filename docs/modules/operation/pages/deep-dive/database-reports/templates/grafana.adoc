@@ -1,5 +1,6 @@
 
 = Grafana Dashboard Reports
+:description: Learn how to create, schedule, and email a PDF report from an existing Grafana dashboard in OpenNMS Horizon/Meridian.
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
 You can also schedule and email these PDF reports to anyone, meaning you can do the following:
