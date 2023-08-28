@@ -173,6 +173,7 @@
 **** xref:deep-dive/elasticsearch/features/event-forwarder-mapping-table.adoc[]
 *** xref:deep-dive/elasticsearch/features/flows.adoc[]
 *** xref:deep-dive/elasticsearch/features/situation-feedback.adoc[]
+*** xref:deep-dive/elasticsearch/features/alarm-history.adoc[]
 
 ** xref:deep-dive/flows/introduction.adoc[]
 *** xref:deep-dive/flows/basic.adoc[]
