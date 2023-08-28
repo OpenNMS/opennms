@@ -1,3 +1,4 @@
+
 Enable tracing with Jaeger on Core instance by installing the `opennms-core-tracing-jaeger` feature and creating a configuration file with the Jaeger specific settings.
 
 NOTE: Configurations has to be made in the `etc` directory relative to the {page-component-title} Core home directory.

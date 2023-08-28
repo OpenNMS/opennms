@@ -38,13 +38,15 @@
 import { useStore } from 'vuex'
 import 'rapidoc'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
+const menuStore = useMenuStore()
 const doc = ref()
 const docV1 = ref()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [

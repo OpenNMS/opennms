@@ -1,6 +1,7 @@
 
 [[snmp-index]]
 = Create a Custom Resource Type
+:description: Create custom resource types in OpenNMS Horizon/Meridian to collect SNMP data from tables with arbitrary indexes: attributes, mibObj definitions.
 
 This section describes how to create a custom resource type to collect SNMP data from tables with arbitrary indexes.
 Whether it is a MIB-2 `host-resources` storage table, a Brocade Fibre Channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.

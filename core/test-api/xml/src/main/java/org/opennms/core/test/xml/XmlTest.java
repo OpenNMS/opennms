@@ -400,6 +400,7 @@ public abstract class XmlTest<T> {
         assertDepthEquals(0, "", expected, actual);
     }
 
+    @SuppressWarnings("java:S2259") // sonar doesn't know fail() short-circuits with an AssertionError, so it thinks expected or actual could be null
     private static void assertDepthEquals(final int depth, final String propertyName, final Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;

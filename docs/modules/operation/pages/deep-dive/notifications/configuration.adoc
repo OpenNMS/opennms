@@ -1,5 +1,6 @@
 
 = Notification Configuration
+:description: Advanced notification configuration options in OpenNMS Horizon/Meridian: configure path outages.
 
 The xref:operation:quick-start/notification-config.adoc[Configure Notifications] chapter in the Quick Start section includes basic procedures to configure and customize {page-component-title} notifications.
 This section presents more advanced notification configuration options.

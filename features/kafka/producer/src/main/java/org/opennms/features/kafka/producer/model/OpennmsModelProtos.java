@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -18465,6 +18465,10 @@ public final class OpennmsModelProtos {
     org.opennms.features.kafka.producer.model.OpennmsModelProtos.TopologyRef.Protocol getProtocol();
   }
   /**
+   * <pre>
+   * NOTE: if you change this, you must also update ALEC's copy as well 
+   * </pre>
+   *
    * Protobuf type {@code TopologyRef}
    */
   public  static final class TopologyRef extends
@@ -18578,6 +18582,18 @@ public final class OpennmsModelProtos {
        * <code>USERDEFINED = 5;</code>
        */
       USERDEFINED(5),
+      /**
+       * <code>NODES = 6;</code>
+       */
+      NODES(6),
+      /**
+       * <code>OSPFAREA = 7;</code>
+       */
+      OSPFAREA(7),
+      /**
+       * <code>NETWORKROUTER = 8;</code>
+       */
+      NETWORKROUTER(8),
       UNRECOGNIZED(-1),
       ;
 
@@ -18605,6 +18621,18 @@ public final class OpennmsModelProtos {
        * <code>USERDEFINED = 5;</code>
        */
       public static final int USERDEFINED_VALUE = 5;
+      /**
+       * <code>NODES = 6;</code>
+       */
+      public static final int NODES_VALUE = 6;
+      /**
+       * <code>OSPFAREA = 7;</code>
+       */
+      public static final int OSPFAREA_VALUE = 7;
+      /**
+       * <code>NETWORKROUTER = 8;</code>
+       */
+      public static final int NETWORKROUTER_VALUE = 8;
 
 
       public final int getNumber() {
@@ -18631,6 +18659,9 @@ public final class OpennmsModelProtos {
           case 3: return BRIDGE;
           case 4: return CDP;
           case 5: return USERDEFINED;
+          case 6: return NODES;
+          case 7: return OSPFAREA;
+          case 8: return NETWORKROUTER;
           default: return null;
         }
       }
@@ -18900,6 +18931,10 @@ public final class OpennmsModelProtos {
       return builder;
     }
     /**
+     * <pre>
+     * NOTE: if you change this, you must also update ALEC's copy as well 
+     * </pre>
+     *
      * Protobuf type {@code TopologyRef}
      */
     public static final class Builder extends
@@ -23041,99 +23076,101 @@ public final class OpennmsModelProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\034opennms-kafka-producer.proto\"l\n\014NodeCr" +
-      "iteria\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
-      "(\t\022\022\n\nforeign_id\030\003 \001(\t\022\022\n\nnode_label\030\004 \001" +
-      "(\t\022\020\n\010location\030\005 \001(\t\";\n\016EventParameter\022\014" +
-      "\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\014\n\004type\030\003 \001(" +
-      "\t\"o\n\010SnmpInfo\022\n\n\002id\030\001 \001(\t\022\017\n\007version\030\002 \001" +
-      "(\t\022\020\n\010specific\030\003 \001(\r\022\017\n\007generic\030\004 \001(\r\022\021\n" +
-      "\tcommunity\030\005 \001(\t\022\020\n\010trap_oid\030\006 \001(\t\"\327\002\n\005E" +
-      "vent\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022\r\n\005label\030\003" +
-      " \001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006source\030\005 \001(\t\022\"\n\tpa" +
-      "rameter\030\006 \003(\0132\017.EventParameter\022\023\n\013create" +
-      "_time\030\007 \001(\004\022\023\n\013description\030\010 \001(\t\022\023\n\013log_" +
-      "message\030\t \001(\t\022\033\n\010severity\030\n \001(\0162\t.Severi" +
-      "ty\022\013\n\003log\030\013 \001(\010\022\017\n\007display\030\014 \001(\010\022$\n\rnode" +
-      "_criteria\030\r \001(\0132\r.NodeCriteria\022\022\n\nip_add" +
-      "ress\030\016 \001(\t\022\023\n\013dist_poller\030\017 \001(\t\022\033\n\010snmpI" +
-      "nfo\030\020 \001(\0132\t.SnmpInfo\"\271\005\n\005Alarm\022\n\n\002id\030\001 \001" +
-      "(\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_criteria\030\003 \001(\0132\r" +
-      ".NodeCriteria\022\022\n\nip_address\030\004 \001(\t\022\024\n\014ser" +
-      "vice_name\030\005 \001(\t\022\025\n\rreduction_key\030\006 \001(\t\022\031" +
-      "\n\004type\030\007 \001(\0162\013.Alarm.Type\022\r\n\005count\030\010 \001(\004" +
-      "\022\033\n\010severity\030\t \001(\0162\t.Severity\022\030\n\020first_e" +
-      "vent_time\030\n \001(\004\022\023\n\013description\030\013 \001(\t\022\023\n\013" +
-      "log_message\030\014 \001(\t\022\020\n\010ack_user\030\r \001(\t\022\020\n\010a" +
-      "ck_time\030\016 \001(\004\022\032\n\nlast_event\030\017 \001(\0132\006.Even" +
-      "t\022\027\n\017last_event_time\030\020 \001(\004\022\020\n\010if_index\030\021" +
-      " \001(\r\022\035\n\025operator_instructions\030\022 \001(\t\022\021\n\tc" +
-      "lear_key\030\023 \001(\t\022\037\n\027managed_object_instanc" +
-      "e\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\022\034\n\014" +
-      "relatedAlarm\030\026 \003(\0132\006.Alarm\022\031\n\021trouble_ti" +
-      "cket_id\030\027 \001(\t\0221\n\024trouble_ticket_state\030\030 " +
-      "\001(\0162\023.TroubleTicketState\022\030\n\020last_update_" +
-      "time\030\031 \001(\004\"D\n\004Type\022\026\n\022PROBLEM_WITH_CLEAR" +
-      "\020\000\022\t\n\005CLEAR\020\001\022\031\n\025PROBLEM_WITHOUT_CLEAR\020\002" +
-      "\"\217\002\n\rAlarmFeedback\022\025\n\rsituation_key\030\001 \001(" +
-      "\t\022\035\n\025situation_fingerprint\030\002 \001(\t\022\021\n\talar" +
-      "m_key\030\003 \001(\t\0222\n\rfeedback_type\030\004 \001(\0162\033.Ala" +
-      "rmFeedback.FeedbackType\022\016\n\006reason\030\005 \001(\t\022" +
-      "\014\n\004user\030\006 \001(\t\022\021\n\ttimestamp\030\007 \001(\004\"P\n\014Feed" +
-      "backType\022\022\n\016FALSE_POSITIVE\020\000\022\022\n\016FALSE_NE" +
-      "GATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007UNKNOWN\020\003\"\275\001\n\013I" +
-      "pInterface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001" +
-      "(\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014primary_type\030\004 \001" +
-      "(\0162\030.IpInterface.PrimaryType\022\017\n\007service\030" +
-      "\005 \003(\t\";\n\013PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSEC" +
-      "ONDARY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInter" +
-      "face\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if" +
-      "_descr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name" +
-      "\030\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017if_phys_addr" +
-      "ess\030\007 \001(\t\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if" +
-      "_oper_status\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007" +
-      "HwAlias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010" +
-      "HwEntity\022\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\t" +
-      "entity_id\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 " +
-      "\001(\t\022\032\n\022ent_physical_descr\030\004 \001(\t\022\033\n\023ent_p" +
-      "hysical_is_fru\030\005 \001(\010\022\031\n\021ent_physical_nam" +
-      "e\030\006 \001(\t\022 \n\030ent_physical_vendor_type\030\007 \001(" +
-      "\t\022\036\n\014ent_hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010chi" +
-      "ldren\030\t \003(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 " +
-      "\001(\004\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_i" +
-      "d\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010category\030\005 " +
-      "\003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022" +
-      "\023\n\013sys_contact\030\010 \001(\t\022\027\n\017sys_description\030" +
-      "\t \001(\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_inter" +
-      "face\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_interfa" +
-      "ce\030\014 \003(\0132\016.SnmpInterface\022\037\n\014hw_inventory" +
-      "\030\r \001(\0132\t.HwEntity\"\222\001\n\013TopologyRef\022\n\n\002id\030" +
-      "\001 \001(\t\022\'\n\010protocol\030\002 \001(\0162\025.TopologyRef.Pr" +
-      "otocol\"N\n\010Protocol\022\010\n\004LLDP\020\000\022\010\n\004OSPF\020\001\022\010" +
-      "\n\004ISIS\020\002\022\n\n\006BRIDGE\020\003\022\007\n\003CDP\020\004\022\017\n\013USERDEF" +
-      "INED\020\005\",\n\017TopologySegment\022\031\n\003ref\030\001 \001(\0132\014" +
-      ".TopologyRef\"{\n\014TopologyPort\022\021\n\tvertex_i" +
-      "d\030\001 \001(\t\022\020\n\010if_index\030\002 \001(\004\022\017\n\007if_name\030\003 \001" +
-      "(\t\022\017\n\007address\030\004 \001(\t\022$\n\rnode_criteria\030\005 \001" +
-      "(\0132\r.NodeCriteria\"\227\002\n\014TopologyEdge\022\031\n\003re" +
-      "f\030\001 \001(\0132\014.TopologyRef\022#\n\nsourcePort\030\003 \001(" +
-      "\0132\r.TopologyPortH\000\022)\n\rsourceSegment\030\004 \001(" +
-      "\0132\020.TopologySegmentH\000\022\033\n\nsourceNode\030\005 \001(" +
-      "\0132\005.NodeH\000\022#\n\ntargetPort\030\006 \001(\0132\r.Topolog" +
-      "yPortH\001\022)\n\rtargetSegment\030\007 \001(\0132\020.Topolog" +
-      "ySegmentH\001\022\033\n\ntargetNode\030\010 \001(\0132\005.NodeH\001B" +
-      "\010\n\006sourceB\010\n\006target*g\n\010Severity\022\021\n\rINDET" +
-      "ERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007W" +
-      "ARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITIC" +
-      "AL\020\006*\212\002\n\022TroubleTicketState\022\010\n\004OPEN\020\000\022\022\n" +
-      "\016CREATE_PENDING\020\001\022\021\n\rCREATE_FAILED\020\002\022\022\n\016" +
-      "UPDATE_PENDING\020\003\022\021\n\rUPDATE_FAILED\020\004\022\n\n\006C" +
-      "LOSED\020\005\022\021\n\rCLOSE_PENDING\020\006\022\020\n\014CLOSE_FAIL" +
-      "ED\020\007\022\014\n\010RESOLVED\020\010\022\023\n\017RESOLVE_PENDING\020\t\022" +
-      "\022\n\016RESOLVE_FAILED\020\n\022\r\n\tCANCELLED\020\013\022\022\n\016CA" +
-      "NCEL_PENDING\020\014\022\021\n\rCANCEL_FAILED\020\rB?\n)org" +
-      ".opennms.features.kafka.producer.modelB\022" +
-      "OpennmsModelProtosb\006proto3"
+      "\n+src/main/proto/opennms-kafka-producer." +
+      "proto\"l\n\014NodeCriteria\022\n\n\002id\030\001 \001(\004\022\026\n\016for" +
+      "eign_source\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\022\022\n" +
+      "\nnode_label\030\004 \001(\t\022\020\n\010location\030\005 \001(\t\";\n\016E" +
+      "ventParameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001" +
+      "(\t\022\014\n\004type\030\003 \001(\t\"o\n\010SnmpInfo\022\n\n\002id\030\001 \001(\t" +
+      "\022\017\n\007version\030\002 \001(\t\022\020\n\010specific\030\003 \001(\r\022\017\n\007g" +
+      "eneric\030\004 \001(\r\022\021\n\tcommunity\030\005 \001(\t\022\020\n\010trap_" +
+      "oid\030\006 \001(\t\"\327\002\n\005Event\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002" +
+      " \001(\t\022\r\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006sou" +
+      "rce\030\005 \001(\t\022\"\n\tparameter\030\006 \003(\0132\017.EventPara" +
+      "meter\022\023\n\013create_time\030\007 \001(\004\022\023\n\013descriptio" +
+      "n\030\010 \001(\t\022\023\n\013log_message\030\t \001(\t\022\033\n\010severity" +
+      "\030\n \001(\0162\t.Severity\022\013\n\003log\030\013 \001(\010\022\017\n\007displa" +
+      "y\030\014 \001(\010\022$\n\rnode_criteria\030\r \001(\0132\r.NodeCri" +
+      "teria\022\022\n\nip_address\030\016 \001(\t\022\023\n\013dist_poller" +
+      "\030\017 \001(\t\022\033\n\010snmpInfo\030\020 \001(\0132\t.SnmpInfo\"\271\005\n\005" +
+      "Alarm\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_c" +
+      "riteria\030\003 \001(\0132\r.NodeCriteria\022\022\n\nip_addre" +
+      "ss\030\004 \001(\t\022\024\n\014service_name\030\005 \001(\t\022\025\n\rreduct" +
+      "ion_key\030\006 \001(\t\022\031\n\004type\030\007 \001(\0162\013.Alarm.Type" +
+      "\022\r\n\005count\030\010 \001(\004\022\033\n\010severity\030\t \001(\0162\t.Seve" +
+      "rity\022\030\n\020first_event_time\030\n \001(\004\022\023\n\013descri" +
+      "ption\030\013 \001(\t\022\023\n\013log_message\030\014 \001(\t\022\020\n\010ack_" +
+      "user\030\r \001(\t\022\020\n\010ack_time\030\016 \001(\004\022\032\n\nlast_eve" +
+      "nt\030\017 \001(\0132\006.Event\022\027\n\017last_event_time\030\020 \001(" +
+      "\004\022\020\n\010if_index\030\021 \001(\r\022\035\n\025operator_instruct" +
+      "ions\030\022 \001(\t\022\021\n\tclear_key\030\023 \001(\t\022\037\n\027managed" +
+      "_object_instance\030\024 \001(\t\022\033\n\023managed_object" +
+      "_type\030\025 \001(\t\022\034\n\014relatedAlarm\030\026 \003(\0132\006.Alar" +
+      "m\022\031\n\021trouble_ticket_id\030\027 \001(\t\0221\n\024trouble_" +
+      "ticket_state\030\030 \001(\0162\023.TroubleTicketState\022" +
+      "\030\n\020last_update_time\030\031 \001(\004\"D\n\004Type\022\026\n\022PRO" +
+      "BLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031\n\025PROBLEM_" +
+      "WITHOUT_CLEAR\020\002\"\217\002\n\rAlarmFeedback\022\025\n\rsit" +
+      "uation_key\030\001 \001(\t\022\035\n\025situation_fingerprin" +
+      "t\030\002 \001(\t\022\021\n\talarm_key\030\003 \001(\t\0222\n\rfeedback_t" +
+      "ype\030\004 \001(\0162\033.AlarmFeedback.FeedbackType\022\016" +
+      "\n\006reason\030\005 \001(\t\022\014\n\004user\030\006 \001(\t\022\021\n\ttimestam" +
+      "p\030\007 \001(\004\"P\n\014FeedbackType\022\022\n\016FALSE_POSITIV" +
+      "E\020\000\022\022\n\016FALSE_NEGATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007" +
+      "UNKNOWN\020\003\"\275\001\n\013IpInterface\022\n\n\002id\030\001 \001(\004\022\022\n" +
+      "\nip_address\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014p" +
+      "rimary_type\030\004 \001(\0162\030.IpInterface.PrimaryT" +
+      "ype\022\017\n\007service\030\005 \003(\t\";\n\013PrimaryType\022\013\n\007P" +
+      "RIMARY\020\000\022\r\n\tSECONDARY\020\001\022\020\n\014NOT_ELIGIBLE\020" +
+      "\002\"\317\001\n\rSnmpInterface\022\n\n\002id\030\001 \001(\004\022\020\n\010if_in" +
+      "dex\030\002 \001(\r\022\020\n\010if_descr\030\003 \001(\t\022\017\n\007if_type\030\004" +
+      " \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022" +
+      "\027\n\017if_phys_address\030\007 \001(\t\022\027\n\017if_admin_sta" +
+      "tus\030\010 \001(\r\022\026\n\016if_oper_status\030\t \001(\r\022\020\n\010if_" +
+      "alias\030\n \001(\t\"%\n\007HwAlias\022\r\n\005index\030\001 \001(\r\022\013\n" +
+      "\003oid\030\002 \001(\t\"\210\002\n\010HwEntity\022\032\n\022ent_physical_" +
+      "index\030\001 \001(\r\022\021\n\tentity_id\030\002 \001(\r\022\032\n\022ent_ph" +
+      "ysical_class\030\003 \001(\t\022\032\n\022ent_physical_descr" +
+      "\030\004 \001(\t\022\033\n\023ent_physical_is_fru\030\005 \001(\010\022\031\n\021e" +
+      "nt_physical_name\030\006 \001(\t\022 \n\030ent_physical_v" +
+      "endor_type\030\007 \001(\t\022\036\n\014ent_hw_alias\030\010 \003(\0132\010" +
+      ".HwAlias\022\033\n\010children\030\t \003(\0132\t.HwEntity\"\270\002" +
+      "\n\004Node\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_source\030\002 \001" +
+      "(\t\022\022\n\nforeign_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t" +
+      "\022\020\n\010category\030\005 \003(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013cre" +
+      "ate_time\030\007 \001(\004\022\023\n\013sys_contact\030\010 \001(\t\022\027\n\017s" +
+      "ys_description\030\t \001(\t\022\025\n\rsys_object_id\030\n " +
+      "\001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInterface\022" +
+      "&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInterface\022" +
+      "\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"\276\001\n\013Top" +
+      "ologyRef\022\n\n\002id\030\001 \001(\t\022\'\n\010protocol\030\002 \001(\0162\025" +
+      ".TopologyRef.Protocol\"z\n\010Protocol\022\010\n\004LLD" +
+      "P\020\000\022\010\n\004OSPF\020\001\022\010\n\004ISIS\020\002\022\n\n\006BRIDGE\020\003\022\007\n\003C" +
+      "DP\020\004\022\017\n\013USERDEFINED\020\005\022\t\n\005NODES\020\006\022\014\n\010OSPF" +
+      "AREA\020\007\022\021\n\rNETWORKROUTER\020\010\",\n\017TopologySeg" +
+      "ment\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\"{\n\014Topol" +
+      "ogyPort\022\021\n\tvertex_id\030\001 \001(\t\022\020\n\010if_index\030\002" +
+      " \001(\004\022\017\n\007if_name\030\003 \001(\t\022\017\n\007address\030\004 \001(\t\022$" +
+      "\n\rnode_criteria\030\005 \001(\0132\r.NodeCriteria\"\227\002\n" +
+      "\014TopologyEdge\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef" +
+      "\022#\n\nsourcePort\030\003 \001(\0132\r.TopologyPortH\000\022)\n" +
+      "\rsourceSegment\030\004 \001(\0132\020.TopologySegmentH\000" +
+      "\022\033\n\nsourceNode\030\005 \001(\0132\005.NodeH\000\022#\n\ntargetP" +
+      "ort\030\006 \001(\0132\r.TopologyPortH\001\022)\n\rtargetSegm" +
+      "ent\030\007 \001(\0132\020.TopologySegmentH\001\022\033\n\ntargetN" +
+      "ode\030\010 \001(\0132\005.NodeH\001B\010\n\006sourceB\010\n\006target*g" +
+      "\n\010Severity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED" +
+      "\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t" +
+      "\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006*\212\002\n\022TroubleTicke" +
+      "tState\022\010\n\004OPEN\020\000\022\022\n\016CREATE_PENDING\020\001\022\021\n\r" +
+      "CREATE_FAILED\020\002\022\022\n\016UPDATE_PENDING\020\003\022\021\n\rU" +
+      "PDATE_FAILED\020\004\022\n\n\006CLOSED\020\005\022\021\n\rCLOSE_PEND" +
+      "ING\020\006\022\020\n\014CLOSE_FAILED\020\007\022\014\n\010RESOLVED\020\010\022\023\n" +
+      "\017RESOLVE_PENDING\020\t\022\022\n\016RESOLVE_FAILED\020\n\022\r" +
+      "\n\tCANCELLED\020\013\022\022\n\016CANCEL_PENDING\020\014\022\021\n\rCAN" +
+      "CEL_FAILED\020\rB?\n)org.opennms.features.kaf" +
+      "ka.producer.modelB\022OpennmsModelProtosb\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

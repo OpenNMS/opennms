@@ -1,6 +1,7 @@
 
 [[newts-reference]]
 = Configuration Reference
+:description: Configuration properties for OpenNMS Newts, a time-series data store based on Apache Cassandra, for horizontal scaling.
 
 Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure Newts.
 

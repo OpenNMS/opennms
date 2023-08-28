@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>32.0.0-SNAPSHOT</version>
+        <version>33.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -38,8 +38,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>${karafVersion}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <blacklistedRepositories>
                         <!-- make sure the custom opennms karaf repo doesn't make it in -->
@@ -65,6 +63,7 @@
                         <feature>spring/${springVersion}</feature>
                         <feature>spring-jms/${springVersion}</feature>
 
+                        <feature>cassandra-driver/${cassandraVersion}</feature>
                         <feature>jetty/${jettyVersion}</feature>
                         <feature>pax-jetty/${jettyVersion}</feature>
                         <feature>pax-http-whiteboard</feature>
@@ -87,9 +86,10 @@
                         <feature>scv-jceks-impl</feature>
                         <feature>scv-shell</feature>
 
-                        <!-- OPENNMS: Additional tools -->
+                        <!-- OPENNMS: Additional or overrided tools -->
                         <feature>hawtio</feature>
                         <feature>jolokia</feature>
+                        <feature>ssh/${karafSshdVersion}</feature>
                     </bootFeatures>
                     <blacklistedFeatures>
                         <!-- make sure the custom opennms features don't make it in -->
@@ -98,6 +98,7 @@
 
                         <feature>jetty/9.4.43.v20210629</feature>
                         <feature>pax-jetty/9.4.43.v20210629</feature>
+                        <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->

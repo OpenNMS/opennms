@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1055,6 +1055,10 @@ public class NsclientManager {
     }
     
     private NsclientPacket handleNumberFormatException(NsclientPacket pack, NumberFormatException e) throws NsclientException {
+        if (pack == null) {
+            LOG.warn("nsclient packet was null");
+            return null;
+        }
         pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
         LOG.info("Unable to parse numeric value returned ({})", pack.getResponse(), e);
         return pack;

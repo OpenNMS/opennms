@@ -2,6 +2,7 @@
 [[ga-performance-mgmt-schedule-shell]]
 
 = Collectd Schedule
+:description: Overview of Karaf shell commands in OpenNMS Horizon/Meridian to help administer and diagnose issues related to performance data collection scheduling.
 
 The `opennms:pollerd-schedule` Karaf Shell command can be used to output details of the Collectd scheduler.
 
@@ -28,7 +29,7 @@ opennms:collectd-schedule --services 0
 opennms:collectd-schedule --services 0 --columns nodeId,readyTimeMs
 ----
 
-* You can alter the order of the displayed service schedules by using the option `--option/-o`. 
+* You can alter the order of the displayed service schedules by using the option `--option/-o`.
 To switch to a descending order specify the additional option `--desc/-d`.
 +
 [source, karaf]

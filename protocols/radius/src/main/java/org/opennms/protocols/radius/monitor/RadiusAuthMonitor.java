@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -235,8 +235,8 @@ public final class RadiusAuthMonitor extends ParameterSubstitutingMonitor {
                         attrs.add(new Attr_UserName(innerUser));
                         attrs.add(new Attr_Password(password));
                         ttlsAuth.setTunneledAttributes(attrs);
-                    } else if (authType.equalsIgnoreCase("peap")){
-                        String reason = "Support for eap peap is not ready yet";
+                    } else {
+                        String reason = "Unhandled authenticator type " + authType;
                         LOG.debug(reason);
                         return PollStatus.unavailable(reason);
                     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,7 +94,7 @@ public final class DhcpMonitor extends AbstractServiceMonitor {
             tracker.nextAttempt();
         }
 
-        return transaction.isSuccess() ?
+        return (transaction != null && transaction.isSuccess()) ?
                 PollStatus.available((double) transaction.getResponseTime()) :
                 PollStatus.unavailable("DHCP service unavailable: " +
                         "No response received from " + svc.getIpAddr() + " within " + timeout + " and " + retries + " attempt(s). " +

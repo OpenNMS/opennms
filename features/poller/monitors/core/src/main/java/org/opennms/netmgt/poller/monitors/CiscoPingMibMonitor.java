@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -490,9 +490,14 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 
 	private void cleanupCurrentEntry(CiscoPingEntry pingEntry, InetAddress proxyIpAddr, SnmpAgentConfig agentConfig) {
         pingEntry.setCiscoPingEntryStatus(ROWSTATUS_DESTROY);
-        SnmpValue[] destroyValues = SnmpUtils.set(agentConfig, pingEntry.generateRowStatusOids(), pingEntry.generateRowStatusValues());
-        if (destroyValues == null) LOG.warn("SNMP SET failed to delete just-used ciscoPingEntry on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
-        if (destroyValues[0].toInt() != ROWSTATUS_DESTROY) LOG.warn("SNMP SET to delete just-used ciscoPingEntry indicated row not deleted on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
+        final SnmpValue[] destroyValues = SnmpUtils.set(agentConfig, pingEntry.generateRowStatusOids(), pingEntry.generateRowStatusValues());
+        if (destroyValues == null || destroyValues[0] == null) {
+            LOG.warn("SNMP SET failed to delete just-used ciscoPingEntry on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
+            return;
+        }
+        if (destroyValues[0].toInt() != ROWSTATUS_DESTROY) {
+            LOG.warn("SNMP SET to delete just-used ciscoPingEntry indicated row not deleted on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
+        }
 	}
 
 	private InetAddress determineTargetAddress(MonitoredService svc, Map<String, Object> parameters) {

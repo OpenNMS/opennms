@@ -2,7 +2,7 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
       <div class="center-flex">
-        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" url="/" />
+        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
         <template v-if="mainMenu.username">
           <span class="body-large left-margin-small formatted-time">{{ mainMenu.formattedTime }}</span>
           <font-awesome-icon :icon="noticesDisplay.icon"
@@ -257,9 +257,9 @@ import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/LogoHorizon.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { Plugin } from '@/types'
 import Search from './Search.vue'
-
 import { useStore } from 'vuex'
 
 import {
@@ -273,7 +273,7 @@ import {
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 
 const store = useStore()
-const route = useRoute()
+const menuStore = useMenuStore()
 const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
@@ -291,10 +291,11 @@ useOutsideClick(outsideClick.value, () => {
 })
 const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
 
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
+
 const menuItems = computed<TopMenuItem[]>(() => {
-  if (store.state.menuModule.mainMenu && store.state.menuModule.mainMenu.menus) {
-    return store.state.menuModule.mainMenu.menus?.filter((m: TopMenuItem) => m.name !== 'Search')
+  if (mainMenu.value && mainMenu.value.menus) {
+    return mainMenu.value.menus?.filter((m: TopMenuItem) => m.name !== 'Search')
   } else {
     return []
   }
@@ -319,7 +320,7 @@ const hoverItem = (key: number) => {
   hoveredItems.value[key] = true
 }
 
-const notificationSummary = computed<NotificationSummary>(() => store.state.menuModule.notificationSummary)
+const notificationSummary = computed<NotificationSummary>(() => menuStore.notificationSummary)
 
 const noticesDisplay = computed<NoticeStatusDisplay>(() => {
   const status = mainMenu.value?.noticeStatus

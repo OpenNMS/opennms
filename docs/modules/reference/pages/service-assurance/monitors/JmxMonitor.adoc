@@ -31,7 +31,7 @@ The monitor offers the following functionalities:
 | from jmx-config.xml
 
 | factory
-| Set this to PASSWORD-CLEAR if credentials are required.
+| Set this to PASSWORD_CLEAR if credentials are required.
 | STANDARD
 
 | protocol

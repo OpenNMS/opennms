@@ -83,8 +83,7 @@ public class IpFixProtobufValidationTest {
             Assert.assertEquals(flows.get(i).getFlowRecords(), jsonData.get(i).getFlowRecords());
             Assert.assertEquals(flows.get(i).getTimestamp(), jsonData.get(i).getTimestamp());
             Assert.assertEquals(flows.get(i).getBytes(), jsonData.get(i).getBytes());
-            Direction direction = jsonData.get(i).getDirection() != null ? jsonData.get(i).getDirection() : Direction.INGRESS;
-            Assert.assertEquals(flows.get(i).getDirection(), direction);
+            Assert.assertEquals(flows.get(i).getDirection(), jsonData.get(i).getDirection());
             Assert.assertEquals(flows.get(i).getFirstSwitched(), jsonData.get(i).getFirstSwitched());
             Assert.assertEquals(flows.get(i).getLastSwitched(), jsonData.get(i).getLastSwitched());
             Assert.assertEquals(flows.get(i).getDeltaSwitched(), jsonData.get(i).getDeltaSwitched());

@@ -38,7 +38,7 @@ STOP_TIMEOUT=36
 JAVA_INITIAL_HEAP_SIZE=""
 
 # Maximum heap size (-Xmx) in megabytes
-JAVA_HEAP_SIZE="2048"
+JAVA_HEAP_SIZE=4096
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -392,7 +392,7 @@ doStart(){
 	esac
 
 
-	if [ "$NOEXECUTE" -eq 0 ] && ! "${JAVA_CMD[@]}" "-Dopennms.home=$OPENNMS_HOME" -jar "$BOOTSTRAP" check; then
+	if [ "$NOEXECUTE" -eq 0 ] && ! "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "-Dopennms.home=$OPENNMS_HOME" -jar "$BOOTSTRAP" check; then
 		echo "${install.package.description} was unable to connect to the 'opennms' database configured in opennms-datasources.xml." >&2
 		return 1
 	fi
@@ -446,8 +446,10 @@ doStart(){
 		# this is a JRE, try to use ECJ for Jetty compilation instead
 		APP_VM_PARMS=("-Dorg.apache.jasper.compiler.disablejsr199=true" "${APP_VM_PARMS[@]}")
 	fi
+	# work around some jar files that are not compatible with updated JDK validation
+	APP_VM_PARMS=("-Djdk.util.zip.disableZip64ExtraFieldValidation=true" "${APP_VM_PARMS[@]}")
 
-	CMD=("${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
+	CMD=("${RUNJAVA_CMD[@]}" "-D_OPENNMS_LAUNCH" "${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$SYSTEMD" = 1 ]; then
 		if [ "$BACKGROUND" = 0 ]; then
 			echo "WARNING: -s (systemd) was passed, -f (foreground) is ignored" >&2
@@ -517,7 +519,7 @@ doPause(){
 		if [ -n "$SERVICE" ]; then
 			APP_PARMS_BEFORE+=("$SERVICE")
 		fi
-		runCmd "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
+		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	else
 		echo "${install.package.description} is not running." >&2
 	fi
@@ -538,7 +540,7 @@ doResume(){
 		if [ -n "$SERVICE" ]; then
 			APP_PARMS_BEFORE+=("$SERVICE")
 		fi
-		runCmd "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
+		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	else
 		echo "${install.package.description} is not running." >&2
 	fi
@@ -583,7 +585,7 @@ doStop() {
 		if [ -n "$SERVICE" ]; then
 			APP_PARMS_BEFORE+=("$SERVICE")
 		fi
-		runCmd "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
+		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	fi
 
 	STATUS_ATTEMPTS=0
@@ -614,7 +616,7 @@ doKill(){
 
 		APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=("${PARM_PID[@]}" -u "$JMX_URL" exit)
-		runCmd "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
+		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	fi
 
 	PID="$(getPid)"
@@ -723,7 +725,7 @@ doStatus(){
 
 		APP_VM_PARMS=("${CONTROLLER_OPTIONS[@]}")
 		APP_PARMS_BEFORE=(-p "${MATCHED_PID}" -u "${JMX_URL}" "${PARM_VERBOSE[@]}" status)
-		runCmd "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "${BOOTSTRAP}" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
+		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "${BOOTSTRAP}" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	fi
 
 	# if we make it this far, we couldn't find any PID, assume OpenNMS is not running
@@ -764,21 +766,34 @@ umask 002
 cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 
 # define needed for grep to find opennms easily
-JAVA_CMD=("$OPENNMS_HOME/bin/runjava" -r "${RUNJAVA_OPTIONS[@]}" --)
+RUNJAVA_CMD=("$OPENNMS_HOME/bin/runjava" "-r" "${RUNJAVA_OPTIONS[@]}" "--")
+JAVA_CMD=()
 BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 
 MANAGER_OPTIONS=()
-MANAGER_OPTIONS+=("-D_OPENNMS_LAUNCH")
 MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
-if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ];then
+ if [[ "$JAVA_INITIAL_HEAP_SIZE" =~ [0-9] ]];then
+    if [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ];then
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+    fi
+ else
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}")
+ fi
 fi
 
-if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+
+#if [ -z "$JAVA_HEAP_SIZE" ]; then
+#  JAVA_HEAP_SIZE=4096
+#fi
+if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+ else
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension

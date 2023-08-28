@@ -1,6 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
+:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 7-9, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance.
 It describes how to do the following tasks:
@@ -46,6 +47,21 @@ include::../time-sync.adoc[]
 
 TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
 If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before installing the {page-component-title} core instance.
+
+== Pool size and maximum database connections
+
+You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to at least twice the maximum pool size in {page-component-title}.
+
+The default maximum pool size value in {page-component-title} is 50, but it applies to each connect in `opennms-datasources.xml`: `opennms` (the main connection used at runtime) and `opennms-admin` (the connection used during administrative operations, including installation).
+Therefore, your `max_connections` setting should be at least 100.
+
+If you change the default pool size, make sure you also update the `max_connections`.
+You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
+You must restart the PostgreSQL server for the changes to take effect.
+
+NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
+As with all third-party tools, we do not endorse or guarantee it.
+Use it at your own discretion.
 
 [{tabs}]
 ====
@@ -164,9 +180,16 @@ The default user credentials are as follows:
 * *Username:* `admin`
 * *Password:* `admin`
 
-IMPORTANT: After you sign in for the first time, you should immediately change the `admin` account's password to a secure one.
+When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
+Although you also have the option to skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
-To change your account's password, follow these steps:
+. Type your current password.
+. Type your new password and confirm it.
+. Click *Change Password*.
+
+== Change password after first sign in
+
+To change your account's password after the first time you sign in, follow these steps:
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.
@@ -202,6 +225,7 @@ Nodes with this service have JMX-based data collection performed on Java JVM sta
 
 == Related topics
 
+* xref:operation:deep-dive/admin/configuration/startup.adoc[]
 * xref:reference:configuration/selinux.adoc[]
 * xref:reference:configuration/receive-snmp-traps.adoc[]
 * xref:reference:configuration/install-jdbc-driver.adoc[]

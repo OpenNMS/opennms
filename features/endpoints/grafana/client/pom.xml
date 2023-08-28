@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.endpoints</groupId>
     <artifactId>org.opennms.features.endpoints.grafana</artifactId>
-    <version>32.0.0-SNAPSHOT</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.endpoints.grafana</groupId>
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>
-      <version>2.1</version>
+      <version>2.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

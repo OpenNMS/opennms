@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,6 +27,8 @@
  *******************************************************************************/
 
 package org.opennms.core.criteria;
+
+import java.util.Objects;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 
@@ -90,13 +92,7 @@ public class Alias {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_alias == null) ? 0 : m_alias.hashCode());
-        result = prime * result + ((m_associationPath == null) ? 0 : m_associationPath.hashCode());
-        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
-        result = prime * result + ((m_joinCondition == null) ? 0 : m_joinCondition.hashCode());
-        return result;
+        return Objects.hash(m_alias, m_associationPath, m_type, m_joinCondition);
     }
 
     @Override
@@ -104,22 +100,11 @@ public class Alias {
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof Alias)) return false;
-        final Alias other = (Alias) obj;
-        if (m_alias == null) {
-            if (other.m_alias != null) return false;
-        } else if (!m_alias.equals(other.m_alias)) {
-            return false;
-        }
-        if (m_associationPath == null) {
-            if (other.m_associationPath != null) return false;
-        } else if (!m_associationPath.equals(other.m_associationPath)) {
-            return false;
-        }
-        if (m_type != other.m_type) return false;
-        if (m_joinCondition == null && other.m_joinCondition != null) return false;
-        if (m_joinCondition != null && other.m_joinCondition == null) return false;
-        if (!m_joinCondition.equals(other.m_joinCondition)) return false;
-        return true;
+        final Alias that = (Alias) obj;
+        return Objects.equals(this.m_alias, that.m_alias)
+                && Objects.equals(this.m_associationPath, that.m_associationPath)
+                && Objects.equals(this.m_type, that.m_type)
+                && Objects.equals(this.m_joinCondition, that.m_joinCondition);
     }
 
     @Override

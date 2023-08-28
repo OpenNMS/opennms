@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>32.0.0-SNAPSHOT</version>
+        <version>33.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -48,13 +48,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
-                <version>1.7</version>
                 <configuration>
                     <alias>localhost</alias>
                     <keysize>2048</keysize>
                     <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
                     <ext>SubjectAlternativeName=dns:localhost</ext>
+                    <storetype>jks</storetype>
                 </configuration>
             </plugin>
         </plugins>
@@ -313,7 +313,6 @@
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
-            <version>${snappyJavaVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

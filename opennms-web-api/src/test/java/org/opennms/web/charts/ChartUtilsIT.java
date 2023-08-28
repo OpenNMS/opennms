@@ -155,14 +155,14 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetBarChartConfig() throws FileNotFoundException, IOException {
+    public void testGetBarChartConfig() throws Exception {
 
         assertNotNull(ChartUtils.getBarChartConfigByName("sample-bar-chart"));
         assertTrue(ChartUtils.getBarChartConfigByName("sample-bar-chart").getClass() == BarChart.class);
     }
 
     @Test
-    public void testGetBarChart() throws IOException, SQLException {
+    public void testGetBarChart() throws Exception {
         JFreeChart barChart = ChartUtils.getBarChart("sample-bar-chart");
         assertNotNull(barChart);
         //SubTitle count includes "LegendTitle"
@@ -170,7 +170,7 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartWithInvalidChartName() throws IOException, SQLException {
+    public void testGetChartWithInvalidChartName() throws Exception {
 
         JFreeChart chart = null;
         try {
@@ -182,7 +182,7 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException {
+    public void testGetChartAsFileOutputStream() throws Exception {
         final File tempFile = File.createTempFile("sample-bar-chart", "png");
         OutputStream stream = new FileOutputStream(tempFile);
         ChartUtils.getBarChart("sample-bar-chart", stream);
@@ -190,7 +190,7 @@ public class ChartUtilsIT {
     }
 
     @Test
-    public void testGetChartAsBufferedImage() throws IOException, SQLException {
+    public void testGetChartAsBufferedImage() throws Exception {
         BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
         assertEquals(300, bi.getHeight());
     }

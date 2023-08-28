@@ -66,6 +66,12 @@
       <property name="eventConfDao" ref="eventConfDao" />
     </bean>
 
+    <bean id="notificationTester" class="org.opennms.netmgt.notifd.NotificationTesterImpl"/>
+    <onmsgi:service interface="org.opennms.netmgt.notifd.api.NotificationTester" ref="notificationTester" />
+
+    <bean id="notificationConfigProvider" class="org.opennms.netmgt.notifd.NotificationConfigProviderImpl"/>
+    <onmsgi:service interface="org.opennms.netmgt.notifd.api.NotificationConfigProvider" ref="notificationConfigProvider" />
+
     <bean name="daemon" class="org.opennms.netmgt.notifd.Notifd" />
 
 </beans>

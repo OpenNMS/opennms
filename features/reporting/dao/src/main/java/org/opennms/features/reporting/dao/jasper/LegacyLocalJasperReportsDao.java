@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -98,13 +98,14 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
         try {
             file = m_configResource.getFile();
         } catch (IOException e) {
-            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
+            logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource, e);
+            return;
         }
 
         setLocalJasperReports(JaxbUtils.unmarshal(LocalJasperReports.class, file));
         Assert.notNull(m_LocalJasperReports, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
-        logger.debug("Local report definitions assigned: '{}'", m_LocalJasperReports.toString());
+        logger.debug("Local report definitions assigned: '{}'", m_LocalJasperReports);
     }
 
     /**

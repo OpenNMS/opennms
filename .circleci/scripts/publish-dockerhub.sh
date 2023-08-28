@@ -44,7 +44,7 @@ for TYPE in horizon minion sentinel; do
   export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
 
   # in dockerhub, only push the "branchname-arch" version of the individual ones
-  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | while read -r _file; do
+  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | sort -u | while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
     _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _internal_tag="opennms/${_file_tag}"

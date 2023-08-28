@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -159,7 +159,7 @@ public class BufferParserTest {
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 
-		final int iterations = 100000;
+		final int iterations = 1_000_000;
 
 		{
 			CompletableFuture<SyslogMessage> event = null;

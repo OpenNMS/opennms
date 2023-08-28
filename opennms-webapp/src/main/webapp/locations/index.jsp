@@ -36,6 +36,7 @@
 	<jsp:param name="headTitle" value="Monitoring Locations" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Monitoring Locations" />
+	<jsp:param name="ngapp" value="onms.default.apps" />
 </jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">

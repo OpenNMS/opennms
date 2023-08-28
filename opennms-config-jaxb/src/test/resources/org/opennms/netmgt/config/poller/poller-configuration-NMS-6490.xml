@@ -179,7 +179,7 @@
         </service>
         <service name="OpenNMS-JVM" interval="30000" user-defined="false" status="on">
             <parameter key="port" value="18980"/>
-            <parameter key="factory" value="PASSWORD-CLEAR"/>
+            <parameter key="factory" value="PASSWORD_CLEAR"/>
             <parameter key="username" value="admin"/>
             <parameter key="password" value="admin"/>
             <parameter key="retry" value="2"/>

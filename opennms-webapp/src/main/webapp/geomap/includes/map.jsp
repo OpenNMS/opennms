@@ -29,6 +29,7 @@
 
 --%>
 <%@page import="org.opennms.web.api.Util" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page language="java" contentType="text/html" session="true" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -59,7 +60,7 @@
   <jsp:param name="asset" value="geomap-js" />
 </jsp:include>
 
-<div class="geomap" style="height: <%= getParameter(request, "height", "400px")%>">
+<div class="geomap" style="height: <%= WebSecurityUtils.sanitizeString(getParameter(request, "height", "400px"))%>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
 
   <!-- Template to build the popup for each single marker -->
@@ -111,9 +112,9 @@ $('<%= mapId %>').ready(function() {
     geomap.render({
         baseHref: "<%= baseHref %>",
         mapId: "<%= mapId %>",
-        hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
-        strategy: "<%= getParameter(request, "strategy") %>" ,
-        severity: "<%= getParameter(request, "severity") %>"
+        hideControlsOnStartup: <%= WebSecurityUtils.sanitizeString(getParameter(request, "hideControlsOnStartup")) %> ,
+        strategy: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "strategy")) %>" ,
+        severity: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "severity")) %>"
     })
 });
 </script>

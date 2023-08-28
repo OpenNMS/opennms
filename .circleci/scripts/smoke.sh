@@ -66,7 +66,7 @@ else
 fi
 
 # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-../compile.pl \
+ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \
@@ -78,4 +78,4 @@ fi
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \
-  install verify
+  install

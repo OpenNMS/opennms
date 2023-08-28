@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -215,15 +215,15 @@ public class RequestTracker {
             LOG.trace("unhandled RT ticket attributes: {}", attributes.entrySet());
         }
 
-        if (ticket.getText() == null || ticket.getText().equals("") && getTextAttachment) {
+        if ((ticket.getText() == null || ticket.getText().isBlank()) && getTextAttachment) {
             attributes = getTicketAttributes(ticketId + "/attachments");
-            if (attributes.containsKey("attachments")) {
+            if (attributes != null && attributes.containsKey("attachments")) {
                 final Matcher matcher = IN_TOKENS_PATTERN.matcher(attributes.get("attachments"));
                 matcher.find();
                 final String attachmentId = matcher.group(1);
-                if (attachmentId != null && !"".equals(attachmentId)) {
+                if (attachmentId != null && !attachmentId.isBlank()) {
                     attributes = getTicketAttributes(ticketId + "/attachments/" + attachmentId);
-                    if (attributes.containsKey("content")) {
+                    if (attributes != null && attributes.containsKey("content")) {
                         ticket.setText(attributes.remove("content"));
                     }
                 }

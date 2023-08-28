@@ -1,6 +1,7 @@
 
 [[resource-types]]
 = Resource Types
+:description: Using resource types in OpenNMS Horizon/Meridian to group sets of performance data measurements: persistence selector strategies and storage strategies.
 
 {page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and displaying in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
@@ -49,6 +50,7 @@ You can configure the following persistence selector strategies to specify how t
 | Persist indexes based on JEXL evaluation. +
 This class takes a single parameter, `match-expression`, which defines a JEXL expression.
 On evaluation, this expression should return either `true` (persist index to storage) or `false` (discard data).
+Note that `match-expression` works only on string attributes.
 |===
 
 == Storage strategies

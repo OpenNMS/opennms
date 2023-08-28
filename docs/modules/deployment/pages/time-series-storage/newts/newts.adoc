@@ -1,6 +1,7 @@
 
 [[newts-configure]]
 = Configure {page-component-title} to Use Newts
+:description: How to set up OpenNMS Newts, a time-series data store based on Apache Cassandra, for horizontal scaling.
 
 This section describes how to configure your {page-component-title} instance to use Newts.
 
@@ -59,7 +60,7 @@ org.opennms.newts.query.heartbeat=45000 <2>
 ----
 <1> The shortest collection interval configured for any collectable or pollable service, in milliseconds (in this case, 30 seconds).
 <2> The communication interval for the Newts service, in milliseconds.
-Should be set to 1.5 times the `minimum_step` value.
+Should be set to 1.5 times the `maximum` value of the collection interval configured for any collectable or pollable service, in milliseconds (in this case, 45 seconds).
 
 . Initialize the Newts schema in Cassandra:
 +

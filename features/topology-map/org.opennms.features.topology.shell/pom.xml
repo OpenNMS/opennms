@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>32.0.0-SNAPSHOT</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.shell</bundle.symbolicName>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.apache.aries.blueprint</groupId>
       <artifactId>org.apache.aries.blueprint.core</artifactId>
-      <version>1.4.4</version>
+      <version>1.10.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

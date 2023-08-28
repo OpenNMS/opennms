@@ -39,12 +39,15 @@ import { FeatherInput } from '@featherds/input'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
+
 const store = useStore()
+const menuStore = useMenuStore()
 const router = useRouter()
 const { startSpinner, stopSpinner } = useSpinner()
 const now = new Date()
@@ -63,7 +66,7 @@ const props = defineProps({
   }
 })
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [

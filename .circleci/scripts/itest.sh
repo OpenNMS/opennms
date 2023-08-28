@@ -145,13 +145,15 @@ echo "#### Building Assembly Dependencies"
            install
 
 echo "#### Executing tests"
-./compile.pl "${MAVEN_ARGS[@]}" \
+ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
            -Pcoverage \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
+           -Dsurefire.failIfNoSpecifiedTests=false \
+           -Dfailsafe.failIfNoSpecifiedTests=false \
            -DrunPingTests=false \
            -DskipITs=false \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \

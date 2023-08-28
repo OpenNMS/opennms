@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>32.0.0-SNAPSHOT</version>
+  <version>33.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -49,12 +49,11 @@
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <camelVersion>2.19.1</camelVersion>
-    <surefireVersion>2.18</surefireVersion>
-    <failsafeVersion>2.22.2</failsafeVersion>
     <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
-    <jersey.version>2.36</jersey.version>
+    <jersey.version>2.40</jersey.version>
+    <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
     <karafVersion>4.4.3</karafVersion>
     <selenium.version>4.6.0</selenium.version>
@@ -63,14 +62,17 @@
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <slf4jVersion>2.0.7</slf4jVersion>
-    <testcontainers.version>1.18.0</testcontainers.version>
-    <netty4Version>4.1.78.Final</netty4Version>
+    <testcontainers.version>1.19.0</testcontainers.version>
+    <netty4Version>4.1.96.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
     <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <!-- for surefire and failsafe -->
+    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
     <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
@@ -112,7 +114,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefireVersion}</version>
+          <version>${maven.testing.plugin.version}</version>
           <configuration>
             <!-- skips surefire tests without skipping failsafe tests.
                  Property value seems to magically default to false -->
@@ -123,7 +125,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${failsafeVersion}</version>
+          <version>${maven.testing.plugin.version}</version>
           <configuration>
             <!-- Don't specify argLine here or it will override the argLine property value -->
             <systemPropertyVariables>
@@ -207,11 +209,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <goals>
-              <goal>jar</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
@@ -219,7 +221,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.1</version>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <id>jar</id>
@@ -237,7 +239,7 @@
          <inherited>false</inherited>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-antrun-plugin</artifactId>
-         <version>1.8</version>
+         <version>3.1.0</version>
          <executions>
            <execution>
              <phase>validate</phase>
@@ -255,7 +257,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.11.0</version>
         <configuration>
           <source>11</source>
           <target>11</target>
@@ -266,17 +268,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-resources-plugin</artifactId>
-         <version>3.1.0</version>
+         <version>3.3.1</version>
          <configuration>
            <encoding>UTF-8</encoding>
            <nonFilteredFileExtensions>
-             <nonFilteredFileExtension>raw</nonFilteredFileExtension>
              <nonFilteredFileExtension>dat</nonFilteredFileExtension>
+             <nonFilteredFileExtension>jce</nonFilteredFileExtension>
+             <nonFilteredFileExtension>raw</nonFilteredFileExtension>
            </nonFilteredFileExtensions>
          </configuration>
         <!-- Copy some default configuration for $OPENNMS_HOME/etc/ which is used by some system tests -->
@@ -573,7 +576,7 @@
     <dependency>
       <groupId>com.spotify</groupId>
       <artifactId>hamcrest-jackson</artifactId>
-      <version>1.2.0</version>
+      <version>1.3.2</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -677,12 +680,30 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>25.0-jre</version>
+      <version>32.0.0-jre</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>org.opennms.features.jest.client</artifactId>
       <version>${project.version}</version>
+      <!-- transitive dependencies are our custom osgi-ified jest, but it's a bit funky in the dep tree;
+           we'll just pull in the upstream jest dependencies for smoke tests -->
+      <exclusions>
+        <exclusion>
+          <groupId>io.searchbox</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest</artifactId>
+      <version>${jestVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest-common</artifactId>
+      <version>${jestVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -845,7 +866,7 @@
     <dependency>
       <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.2.6</version>
+      <version>0.2.11</version>
     </dependency>
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
@@ -886,6 +907,12 @@
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.searchbox</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
@@ -924,7 +951,7 @@
     <dependency>
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
-      <version>20.1.0</version>
+      <version>24.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.health</groupId>
@@ -994,6 +1021,10 @@
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -1002,6 +1033,10 @@
       <id>opennms-repo</id>
       <name>OpenNMS Mega-Repository</name>
       <url>https://maven.opennms.org/repository/everything/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

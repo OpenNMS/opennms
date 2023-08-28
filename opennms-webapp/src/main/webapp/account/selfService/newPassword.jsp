@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,13 +26,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 --%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%@page language="java"
 	contentType="text/html"
 	session="true"
 %>
+
+<%@ page import="org.opennms.web.account.selfService.NewPasswordActionServlet" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Change Password" />
@@ -42,30 +45,28 @@
 </jsp:include>
 
 <script type="text/javascript">
-  function verifyGoForm()
-  {
-    if (document.goForm.pass1.value == document.goForm.pass2.value)
-    {
-      let newPassword=document.goForm.pass1.value
-      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
-      const sameCharacterRegex= /(.)\1{5}/;
+  function verifyGoForm() {
+    if (document.goForm.pass1.value == document.goForm.pass2.value) {
+      let newPassword = document.goForm.pass1.value
+      const passwordRegex = /${fn:escapeXml(NewPasswordActionServlet.PASSWORD_REGEX)}/;
+      const sameCharacterRegex = /${fn:escapeXml(NewPasswordActionServlet.SAME_CHARACTER_REGEX)}/;
 
-      if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
-      {
-        document.goForm.currentPassword.value=document.goForm.oldpass.value;
-        document.goForm.newPassword.value=document.goForm.pass1.value;
+      if (newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex)) {
+        document.goForm.currentPassword.value = document.goForm.oldpass.value;
+        document.goForm.newPassword.value = document.goForm.pass1.value;
         return true;
       } else {
         alert("Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
+        return false;
       }
     }
     else
     {
       alert("The two new password fields do not match!");
+      return false;
     }
   }
 </script>
-
 
 <div class="row">
   <div class="col-md-4">

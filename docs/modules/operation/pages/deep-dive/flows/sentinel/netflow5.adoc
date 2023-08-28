@@ -6,15 +6,14 @@ config:property-set adapters.0.name Netflow-5-Adapter<2>
 config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter<3>
 config:update
 ----
-
-<1> Queue name from which Sentinel will fetch messages.
-By default for {page-component-title} components, the queue name convention is `Netflow-5`.
+<1> Queue name from which Sentinel will fetch messages. The Minion parser name for Netflow v5 must match this name.
+By default, for {page-component-title} components, the queue name convention is `Netflow-5`.
 <2> Set a name for the Netflow v5 adapter.
 <3> Assign an adapter to enrich Netflow v5 messages.
 
 The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow5.cfg`.
 
-TIP: To process multiple protocols, increase the index `0` in the adapters name and class name accordingly for additional protocols.
+TIP: When processing multiple protocols from the same queue, include additional adapters by adding additional `name` and `class-name` properties, increasing the index `0` for each pair.
 
 .Run health-check to verify adapter configuration
 [source, karaf]

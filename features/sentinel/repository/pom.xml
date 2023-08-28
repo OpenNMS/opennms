@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>32.0.0-SNAPSHOT</version>
+        <version>33.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -16,7 +16,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>${karafVersion}</version>
                 <executions>
                     <execution>
                         <id>features-add-to-repository</id>
@@ -86,9 +85,6 @@
                                 <feature>sentinel-api-layer</feature>
                                 <feature>sentinel-timeseries-api</feature>
                                 <feature>sentinel-plugin-sample</feature>
-
-                                <!-- Other features -->
-                                <feature>cassandra-driver/${cassandraVersion}</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

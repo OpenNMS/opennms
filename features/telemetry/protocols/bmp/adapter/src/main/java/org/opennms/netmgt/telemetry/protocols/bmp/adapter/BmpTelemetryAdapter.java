@@ -122,10 +122,10 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
 
         if (!exporterNodeId.isPresent()) {
-            LOG.warn("Unable to find node for exporter address: {}", exporterAddress);
-
             if (message.hasBgpId()) {
                 final InetAddress bgpId = address(message.getBgpId());
+                LOG.info("Unable to find node for exporter address: {} at location: {}. Trying to lookup by bgpId: {}",
+                        exporterAddress, messageLog.getLocation(), bgpId);
 
                 final ExporterInfo exporterInfo = transactionTemplate.execute(new TransactionCallback<ExporterInfo>() {
                     @Override
@@ -133,19 +133,18 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
                         final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), InetAddressUtils.toIpAddrString(bgpId));
 
                         if (!nodes.isEmpty()) {
-                            if (nodes.size() > 1) {
-                                LOG.warn("More that one node match bgpId: {}", bgpId);
-                            }
                             final OnmsNode firstNode = nodes.get(0);
+                            if (nodes.size() > 1) {
+                                LOG.warn("More that one node match bgpId: {}. Using the first: {}", bgpId, firstNode.getId());
+                            }
 
                             if (firstNode.containsInterface(bgpId)) {
                                 return new ExporterInfo(firstNode.getId(), bgpId);
                             } else {
                                 return new ExporterInfo(firstNode.getId(), firstNode.getPrimaryInterface().getIpAddress());
                             }
-
                         } else {
-                            LOG.warn("Unable to find node for bgpId: {}", bgpId);
+                            LOG.warn("Unable to find node for bgpId: {}. Message will be ignored.", bgpId);
                             return null;
                         }
                     }
@@ -159,6 +158,8 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
                 exporterAddress = exporterInfo.nodeAddress;
 
             } else {
+                LOG.info("Unable to find node for exporter address: {} at location: {}. Message has no bgpId. Message will be ignored.",
+                        exporterAddress, messageLog.getLocation());
                 return Stream.empty();
             }
         }

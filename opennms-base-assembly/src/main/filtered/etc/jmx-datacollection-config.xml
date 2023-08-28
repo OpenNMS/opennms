@@ -651,6 +651,13 @@
             <attrib name="ScheduledTaskQueueRemainingCapacity" alias="PvSchdTskQRCap" type="gauge"/>
          </mbean>
 
+         <!-- Hikari CP -->
+         <mbean name="HikariCP Pool Stats" objectname="com.zaxxer.hikari:type=Pool (opennms)">
+            <attrib name="ActiveConnections" alias="HkriActvConn" type="gauge"/>
+            <attrib name="IdleConnections" alias="HkriIdleConn" type="gauge"/>
+            <attrib name="TotalConnections" alias="HkriTotlConn" type="gauge"/>
+            <attrib name="ThreadsAwaitingConnection" alias="HkriThrdWaitConn" type="gauge"/>
+         </mbean>
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

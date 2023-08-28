@@ -160,10 +160,10 @@ public class Service implements Serializable {
         if (obj instanceof Service) {
             final Service that = (Service)obj;
             return Objects.equals(this.m_name, that.m_name)
-                    && Objects.equals(that.m_interval, that.m_interval)
-                    && Objects.equals(that.m_userDefined, that.m_userDefined)
-                    && Objects.equals(that.m_status, that.m_status)
-                    && Objects.equals(that.m_parameters, that.m_parameters);
+                    && Objects.equals(this.m_interval, that.m_interval)
+                    && Objects.equals(this.m_userDefined, that.m_userDefined)
+                    && Objects.equals(this.m_status, that.m_status)
+                    && Objects.equals(this.m_parameters, that.m_parameters);
         }
         return false;
     }

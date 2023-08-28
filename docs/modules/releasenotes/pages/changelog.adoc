@@ -1,130 +1,183 @@
-
 [[release-32-changelog]]
 
 = Changelog
-[[releasenotes-changelog-31.0.8]]
+[[releasenotes-changelog-32.0.2]]
 
-== Release 31.0.8
+== Release 32.0.2
 
-Release 31.0.8 contains four security vulnerability fixes and a generous helping of other bug fixes.
-It also includes a few small enhancements to the startup scripts and other components.
+Release 32.0.2 contains several important security fixes, one fix for a potential DOS vulnerability, and a handful of general bugfixes and enhancements.
 
-The codename for Horizon 31.0.8 is https://wikipedia.org/wiki/$$Spritzgeb%C3%A4ck$$[_Spritzgebäck_].
+Thanks to the following researchers for responsibly disclosing security issues in this release:
 
-=== Bug
+* Moshe Appelbaum reported issue NMS-15699.
+* Jordi Morales reported issues NMS-15703, NMS-15782, and NMS-15783.
+* OSS Fuzz reported issue NMS-15877.
 
-* POW Arithmetic Operator Does not work with Backshift Graphing Engine (Issue https://issues.opennms.org/browse/NMS-14779[NMS-14779])
-* Cacheable HTTPS Responses - Cache Control Directive Missing or Misconfigured (Issue https://issues.opennms.org/browse/NMS-14936[NMS-14936])
-* REST API: Deleting nodes fails with "could not insert: [org.opennms.netmgt.model.OnmsAssetRecord]" error message (Issue https://issues.opennms.org/browse/NMS-15033[NMS-15033])
-* Plaintext Password Present in the Web logs (Issue https://issues.opennms.org/browse/NMS-15305[NMS-15305])
-* Stored XSS on Quick-Add Node (Issue https://issues.opennms.org/browse/NMS-15308[NMS-15308])
-* Geographical Map map search capability is not as described in the docs (Issue https://issues.opennms.org/browse/NMS-15426[NMS-15426])
-* Foundation-2020: Snmp4JValueFactory: getOctetString displayable should be true (Issue https://issues.opennms.org/browse/NMS-15599[NMS-15599])
-* Jetty CVE-2023-26048/CVE-2023-26049 (Issue https://issues.opennms.org/browse/NMS-15612[NMS-15612])
-* Update to latest groovy 2.x (Issue https://issues.opennms.org/browse/NMS-15633[NMS-15633])
-* $OPENNMS_HOME/etc/THIRD-PARTY.txt has gone missing with Horizon 31.0.6 and onwards (Issue https://issues.opennms.org/browse/NMS-15636[NMS-15636])
-* SNMPv3 support for AES256 appears broken (Issue https://issues.opennms.org/browse/NMS-15637[NMS-15637])
+The codename for Horizon 32.0.2 is https://volt.fm/genre/6487/anime-lo-fi[Anime Lo-fi].
 
-=== New Feature
+=== Breaking changes
 
-* Add a CLI mechanism to set the admin password (Issue https://issues.opennms.org/browse/NMS-15221[NMS-15221])
-
-=== Story
-
-* Add KPI for boolean containerization status (Issue https://issues.opennms.org/browse/NMS-15368[NMS-15368])
-* Add REST endpoint exposing usage analytics KPIs (Issue https://issues.opennms.org/browse/NMS-15371[NMS-15371])
-* Usage statistics docs updated to include containerization status (Issue https://issues.opennms.org/browse/NMS-15627[NMS-15627])
-
-==== Enhancement
-
-* Smoke test improvements and small tweaks to help developers (Issue https://issues.opennms.org/browse/NMS-15387[NMS-15387])
-
-=== Task
-
-* DOC: Pull changes into foundation branch (Issue https://issues.opennms.org/browse/NMS-15658[NMS-15658])
-
-[[releasenotes-changelog-31.0.7]]
-
-== Release 31.0.7
-
-Release 31.0.7 is an off-cadence release containing several small bug fixes.
-Most notably, it upgrades the OpenNMS Plugin API host to version 1.4.0, enabling OPA plugins targeting that version to load successfully.
-
-The codename for Horizon 31.0.7 is https://wikipedia.org/wiki/$$Snickerdoodle$$[_Snickerdoodle_].
+* This release removes the "3d" variation from the JFreeChart integration, because that style has been removed upstream.
 
 === Bug
 
-* Adding new thresholds to an existing group often throws an IndexOutOfBoundsException (Issue https://issues.opennms.org/browse/NMS-15334[NMS-15334])
-* A small typo in plugin.sh prevents artifacts from GitHub to be included in containers (Issue https://issues.opennms.org/browse/NMS-15592[NMS-15592])
-* Syslog Northbounder maxMessageSize config option is not used (Issue https://issues.opennms.org/browse/NMS-15606[NMS-15606])
-
-=== Task
-
-* Visualization of database-report templates in docs (Issue https://issues.opennms.org/browse/NMS-15423[NMS-15423])
-* Add Velocloud plugin in our core and minion containers (Issue https://issues.opennms.org/browse/NMS-15567[NMS-15567])
-
-=== Story
-
-* Implement collector config extensions – NMS side (Issue https://issues.opennms.org/browse/NMS-15585[NMS-15585])
-
-[[releasenotes-changelog-31.0.6]]
-
-== Release 31.0.6
-
-Release 31.0.6 contains a bunch of bug fixes, along with fixes for several security vulnerabilities.
-It also upgrades the embedded Drools library from v7.x to v8.x, so be sure to test any custom rules that you depend on before moving to production.
-
-The codename for Horizon 31.0.6 is https://wikipedia.org/wiki/$$Coyotas$$[_Coyotas_].
-
-=== Bug
-
-* DOC: Document Newts fetch step / heartbeat settings in opennms.properties (Issue https://issues.opennms.org/browse/NMS-10155[NMS-10155])
 * Document the function hiding Meta-Data values with keynames containing "password" or "secret" (Issue https://issues.opennms.org/browse/NMS-12808[NMS-12808])
-* Scriptd consumes CPU even when it does nothing (Issue https://issues.opennms.org/browse/NMS-13216[NMS-13216])
-* dependabot: upgrade Apache POI to at least 4.1.1 (CVE-2019-12415) (Issue https://issues.opennms.org/browse/NMS-14589[NMS-14589])
-* POW Arithmetic Operator Does not work with Backshift Graphing Engine (Issue https://issues.opennms.org/browse/NMS-14779[NMS-14779])
-* Form Can Be Manipulated with Cross-Site Request Forgery (CSRF) (Issue https://issues.opennms.org/browse/NMS-14865[NMS-14865])
-* Multiple CVEs for cxf 3.2.8 (Issue https://issues.opennms.org/browse/NMS-15065[NMS-15065])
-* The management of alarms (escalation, and acknowledge) on the new MAP UI does not work for user without ROLE_REST. (Issue https://issues.opennms.org/browse/NMS-15080[NMS-15080])
-* Concurrent requests to rrd summary endpoint fails (Issue https://issues.opennms.org/browse/NMS-15086[NMS-15086])
-* Statistics Reports -> Export Excel fails with exception (Issue https://issues.opennms.org/browse/NMS-15148[NMS-15148])
-* No health check for the OpenNMS Core container (Issue https://issues.opennms.org/browse/NMS-15291[NMS-15291])
-* Inconsistent expectations on TimeseriesStorageManager.get() with null return values (Issue https://issues.opennms.org/browse/NMS-15323[NMS-15323])
-* Polling and metrics storage can hard fail if opennms-timeseries-api is reloaded (Issue https://issues.opennms.org/browse/NMS-15325[NMS-15325])
-* Destroying container for blueprint bundle org.opennms.features.org.opennms.features.timeseries leads to downstream problems (Issue https://issues.opennms.org/browse/NMS-15326[NMS-15326])
-* The various SNMP extenders to not work with ifIndex-indexed resources (Issue https://issues.opennms.org/browse/NMS-15342[NMS-15342])
-* SNMP Interfaces Endpoint returns multiple values [duplicates] when there are multiple "IP Interfaces" pointing to same SNMP-IfIndex "ipAdEntIfIndex". (Issue https://issues.opennms.org/browse/NMS-15352[NMS-15352])
-* Missing XML Validation in Apache Xerces2 (Issue https://issues.opennms.org/browse/NMS-15373[NMS-15373])
-* Adding or editing a schedule outage doesn't reload the configuration for Threshd (Issue https://issues.opennms.org/browse/NMS-15420[NMS-15420])
-* M2022 Minions > 2022.1.8 Cannot use SCV credentials (Issue https://issues.opennms.org/browse/NMS-15450[NMS-15450])
-* Event Datetime element parsing changed between M2018 and M2021 (Issue https://issues.opennms.org/browse/NMS-15471[NMS-15471])
-* Minimum system requirements does not enumerate RHEL9 support (Issue https://issues.opennms.org/browse/NMS-15499[NMS-15499])
-* Cortex plugin has no LICENSE.md (Issue https://issues.opennms.org/browse/NMS-15521[NMS-15521])
-* upgrade Xalan to 2.7.3 (CVE-2022-34169) (Issue https://issues.opennms.org/browse/NMS-15578[NMS-15578])
+* Prevent Angular evaluation of strings enclosed by two curly braces in non-Angular form-fields and output (Issue https://issues.opennms.org/browse/NMS-15504[NMS-15504])
+* backport fixes from Spring Security 5.x to custom Spring Security 4.2.20.RELEASE (Issue https://issues.opennms.org/browse/NMS-15663[NMS-15663])
+* XXE injection via   /rtc/post using the default rtc credentials (Issue https://issues.opennms.org/browse/NMS-15699[NMS-15699])
+* ROLE_REST can be used to escalate to ROLE_ADMIN via /rest/users (Issue https://issues.opennms.org/browse/NMS-15703[NMS-15703])
+* Stored XSS in multiple JSP files in opennms/opennms (Issue https://issues.opennms.org/browse/NMS-15782[NMS-15782])
+* Reflected XSS in multiple JSP files in opennms/opennms (Issue https://issues.opennms.org/browse/NMS-15783[NMS-15783])
+* POSTINSTALL scriptlet may fail if data/tmp/ is present but empty (Issue https://issues.opennms.org/browse/NMS-15809[NMS-15809])
+* PostgreSQL shows too many clients error with a minimal setup (Issue https://issues.opennms.org/browse/NMS-15852[NMS-15852])
+* java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0 at org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader.getNodeCriteriaFromResource(MetaTagDataLoader.java (Issue https://issues.opennms.org/browse/NMS-15854[NMS-15854])
+* Kafka Producer incapable of using SSL (Issue https://issues.opennms.org/browse/NMS-15859[NMS-15859])
+* Fix incorrect resource types for F5 datacollection (Issue https://issues.opennms.org/browse/NMS-15862[NMS-15862])
+* Build fails due to binary file filtered resource copy (Issue https://issues.opennms.org/browse/NMS-15869[NMS-15869])
+* Corrected Keystore setup instructions for minion on docker (Issue https://issues.opennms.org/browse/NMS-16017[NMS-16017])
+* OpenNMS Search Bar does not retrieve nodes without foreignsource and foreignid (Issue https://issues.opennms.org/browse/NMS-16030[NMS-16030])
+* Error on startup with Invalid CEN header exception (Issue https://issues.opennms.org/browse/NMS-16034[NMS-16034])
+
+=== Story
+
+* Provide option to disable Kafka Offset Provider (Issue https://issues.opennms.org/browse/NMS-15336[NMS-15336])
+* Document additional details for BMP integration  (Issue https://issues.opennms.org/browse/NMS-15853[NMS-15853])
 
 === Enhancement
 
-* Deploy Release Jars to Maven Central (Issue https://issues.opennms.org/browse/NMS-14727[NMS-14727])
-* DOC: Create documentation for vacuumd (Issue https://issues.opennms.org/browse/NMS-15440[NMS-15440])
-* Upgrade Drools to 8.34.0.Final (from 7.31.0.Final) (Issue https://issues.opennms.org/browse/NMS-15459[NMS-15459])
-* Update docs to include RHEL9 and Rocky/Alma compatability (Issue https://issues.opennms.org/browse/NMS-15500[NMS-15500])
-* re-enable license maven plugin as a separate job (Issue https://issues.opennms.org/browse/NMS-15572[NMS-15572])
+* Improve Kafka section of message broker docs in the deployment section (Issue https://issues.opennms.org/browse/NMS-15632[NMS-15632])
+* Disable BeanShell interpreter remote server mode (Issue https://issues.opennms.org/browse/NMS-15793[NMS-15793])
+* Include Node metadata in Measurement API query responses even if no resource data exists (Issue https://issues.opennms.org/browse/NMS-15839[NMS-15839])
+* Extend filter syntax to include isSnmpPrimary (Issue https://issues.opennms.org/browse/NMS-15842[NMS-15842])
+* Add docs to describe the default RRD storage retention (Issue https://issues.opennms.org/browse/NMS-16033[NMS-16033])
 
 === Task
 
-* DOC: Update replacement tokens documentation (Issue https://issues.opennms.org/browse/NMS-15045[NMS-15045])
-* Vulnerable c3p0 0.9.1.1 packaged in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-15072[NMS-15072])
-* DOC: Restructure Alarm History documentation (Issue https://issues.opennms.org/browse/NMS-15287[NMS-15287])
+* Document the note to increase the maximum connection when pool size is increased (Issue https://issues.opennms.org/browse/NMS-16050[NMS-16050])
+
+[[releasenotes-changelog-32.0.1]]
+
+== Release 32.0.1
+
+Horizon 32.0.1 includes several general bug fixes and documentation improvements.
+
+The codename for Horizon 32.0.1 is https://volt.fm/genre/3127/a-cappella[A Cappella].
+
+=== Bug
+
+* Database threads stuck idle_in_transaction (Issue https://issues.opennms.org/browse/NMS-15108[NMS-15108])
+* Use UNKNOWN direction when not set in Netflow 9 or IPFIX template (Issue https://issues.opennms.org/browse/NMS-15134[NMS-15134])
+* Minion connectivity config docs start the user in the wrong directory (Issue https://issues.opennms.org/browse/NMS-15618[NMS-15618])
+* Docs need an update on what a Minion is able to do (Issue https://issues.opennms.org/browse/NMS-15620[NMS-15620])
+* Various corrections/clarifications needed in Sentinel install/configure docs (Issue https://issues.opennms.org/browse/NMS-15708[NMS-15708])
+* Memory leak when using Groovy scripts in provisiond ScriptPolicy (Issue https://issues.opennms.org/browse/NMS-15798[NMS-15798])
+* Polling fails when rrd-status is set to true (Issue https://issues.opennms.org/browse/NMS-15806[NMS-15806])
+* ALEC stopped working in 32.0.0 (Issue https://issues.opennms.org/browse/NMS-15808[NMS-15808])
+* Database deadlock triggered by NodeRestService (Issue https://issues.opennms.org/browse/NMS-15816[NMS-15816])
+* Some services do not persist the status (Issue https://issues.opennms.org/browse/NMS-15820[NMS-15820])
+
+=== Enhancement
+
+* Update to alarm docs (Issue https://issues.opennms.org/browse/NMS-15584[NMS-15584])
+* Update Minion Docker install keystore instructions (Issue https://issues.opennms.org/browse/NMS-15803[NMS-15803])
 
 [[releasenotes-changelog-32.0.0]]
 
 == Release 32.0.0
 
-Release 32.0.0 is a new major release.
+Horizon 32 features a slew of bug fixes and a number of major improvements, most notably the introduction of JDK17 support, and a major uplift in the Newts backend.
 
-It contains ...
+The codename for Horizon 32.0.0 is https://volt.fm/genre/3379/cavernous-death-metal[Cavernous Death Metal].
 
-The codename for Horizon 32.0.0 is https://de.wikipedia.org/wiki/$$Null$$[_Null_].
+=== Enhancement
 
-=== Epic
+* Add lldpRemLocalPortNum in LldpLink Table (Issue https://issues.opennms.org/browse/NMS-7775[NMS-7775])
+* dependabot: JasperReports from 6.3.0 to 6.20.0 (Issue https://issues.opennms.org/browse/NMS-14588[NMS-14588])
+* Enhanced Linkd supports Network-Routers Map (Issue https://issues.opennms.org/browse/NMS-14678[NMS-14678])
+* Destination Path Test Button (Issue https://issues.opennms.org/browse/NMS-14692[NMS-14692])
+* Node Properties REST endpoint doesn't include asset location data (Issue https://issues.opennms.org/browse/NMS-14785[NMS-14785])
+* fix/re-merge additional changes to password validation (Issue https://issues.opennms.org/browse/NMS-14898[NMS-14898])
+* Provide a method to verify topology capability (Issue https://issues.opennms.org/browse/NMS-14909[NMS-14909])
+* Special-case CounterBasedGauge64 in MIB compiler (Issue https://issues.opennms.org/browse/NMS-15210[NMS-15210])
+* Remove contrib from OpenNMS (Issue https://issues.opennms.org/browse/NMS-15268[NMS-15268])
+* Upgrade Groovy to 3.x (Issue https://issues.opennms.org/browse/NMS-15315[NMS-15315])
+* Create an Apache mina-sshd based ssh client service poller. (Issue https://issues.opennms.org/browse/NMS-15431[NMS-15431])
+* Add a method for finding and clearing alarms by TTicketID to OPA's AlarmDAO (Issue https://issues.opennms.org/browse/NMS-15439[NMS-15439])
+* Upgrade Spring Security (Issue https://issues.opennms.org/browse/NMS-15506[NMS-15506])
+* Doc: PersistRegexSelectorStrategy only works on string attributes (Issue https://issues.opennms.org/browse/NMS-15595[NMS-15595])
+* Enable AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE in shipped opennms.service systemd file (Issue https://issues.opennms.org/browse/NMS-15596[NMS-15596])
+* Remove legacy lsb info from Minion initialization script (Issue https://issues.opennms.org/browse/NMS-15604[NMS-15604])
+* Asynchronous polling engine (Issue https://issues.opennms.org/browse/NMS-15623[NMS-15623])
+* Update documentation (or implementation) for newer Slack API (Issue https://issues.opennms.org/browse/NMS-15652[NMS-15652])
+* Make usage statistics sharing notice dialog non-modal (Issue https://issues.opennms.org/browse/NMS-15677[NMS-15677])
+* Docs: Add info about XSLT to XmlCollector (Issue https://issues.opennms.org/browse/NMS-15693[NMS-15693])
+* Doc: Update DNS provisioning import adapter docs (Issue https://issues.opennms.org/browse/NMS-15694[NMS-15694])
+* KSC report "details" should go directly to the related graph, rather than "all" (Issue https://issues.opennms.org/browse/NMS-15711[NMS-15711])
+* Add more collection for selfmonitor node out of box (Issue https://issues.opennms.org/browse/NMS-15742[NMS-15742])
 
+=== Task
+
+* TrivialTimeMonitor & detector (Issue https://issues.opennms.org/browse/NMS-11063[NMS-11063])
+* Rework NMS0123EnIT test (Issue https://issues.opennms.org/browse/NMS-14743[NMS-14743])
+* Multiple CVEs for Axis 1.4 (Issue https://issues.opennms.org/browse/NMS-15061[NMS-15061])
+* Make test for Admin page footer Copyright year (Issue https://issues.opennms.org/browse/NMS-15220[NMS-15220])
+* Fix coverage test containers after we resolve NMS-15401 (Issue https://issues.opennms.org/browse/NMS-15444[NMS-15444])
+* Poll Status History: Enable Poll Status RRD for all services (Issue https://issues.opennms.org/browse/NMS-15641[NMS-15641])
+* Poll Status History: Change documentation to reflect the changes (Issue https://issues.opennms.org/browse/NMS-15642[NMS-15642])
+* Poll Status History: Add RRD graph definitions for all services in a default poller-configuration.xml (Issue https://issues.opennms.org/browse/NMS-15643[NMS-15643])
+* Document async polling settings (Issue https://issues.opennms.org/browse/NMS-15680[NMS-15680])
+* Update docs to capture additional details on BMP config (Issue https://issues.opennms.org/browse/NMS-15713[NMS-15713])
+* Tweak usage statistics sharing notice copy (Issue https://issues.opennms.org/browse/NMS-15740[NMS-15740])
+* Call out usage statistics consent changes in Horizon 32.0.0 release notes (Issue https://issues.opennms.org/browse/NMS-15796[NMS-15796])
+
+=== Bug
+
+* Multiple OpenNMS feature stop working when the Events Forwarder cannot push content to Elasticsearch (Issue https://issues.opennms.org/browse/NMS-13019[NMS-13019])
+* rest api wrong LinkdTopologyProvider graphs (Issue https://issues.opennms.org/browse/NMS-14329[NMS-14329])
+* Inconsistent references to JMXCollect/Monitor for "password-clear"/"password_clear" (Issue https://issues.opennms.org/browse/NMS-14884[NMS-14884])
+* Docker images for Horizon 30.0.4 and later no longer have an editor or a modern pager (Issue https://issues.opennms.org/browse/NMS-14946[NMS-14946])
+* CVE-2014-2228 for org.restlet 1.1.10 (Issue https://issues.opennms.org/browse/NMS-15193[NMS-15193])
+* Page footer missing from Feather / Vue UIs (Issue https://issues.opennms.org/browse/NMS-15262[NMS-15262])
+* Dead transaction in flow thresholding on sentinel (Issue https://issues.opennms.org/browse/NMS-15340[NMS-15340])
+* Event Datetime element parsing changed between M2018 and M2021 (Issue https://issues.opennms.org/browse/NMS-15471[NMS-15471])
+* Backshift graph's Data tab shows incorrect / phantom data when using STACK (Issue https://issues.opennms.org/browse/NMS-15495[NMS-15495])
+* Status Overview box calculation included the alarms and outages from nodes outside of the assigned categories (Issue https://issues.opennms.org/browse/NMS-15526[NMS-15526])
+* When upgrading Minion from an older version on RHEL based systems, the service file doesn't point to the main installation, but rather to /etc/init.d/minion which doesn't exist (Issue https://issues.opennms.org/browse/NMS-15600[NMS-15600])
+* When upgrading Sentinel from an older version, the service file doesn't point to the main installation, but rather to /etc/init.d/sentinel which doesn't exist (Issue https://issues.opennms.org/browse/NMS-15601[NMS-15601])
+* send-events-to-elasticsearch karaf command passes username/password in reverse (Issue https://issues.opennms.org/browse/NMS-15638[NMS-15638])
+* Doc: File name syslog-grok-patterns.txt is wrong (Issue https://issues.opennms.org/browse/NMS-15684[NMS-15684])
+* Stop packaging activemq-web-console.war (Issue https://issues.opennms.org/browse/NMS-15686[NMS-15686])
+* Database deadlock caused by JdbcFilterDao (Issue https://issues.opennms.org/browse/NMS-15696[NMS-15696])
+* Karaf SSH locks up if connections are terminated improperly (Issue https://issues.opennms.org/browse/NMS-15714[NMS-15714])
+* Vue menubar logo link should go to 'homeUrl' (Issue https://issues.opennms.org/browse/NMS-15721[NMS-15721])
+* https redirection is partially broken (Issue https://issues.opennms.org/browse/NMS-15732[NMS-15732])
+* Startup taking > 10 minutes on fresh 32.0.0-SNAPSHOT builds (Issue https://issues.opennms.org/browse/NMS-15751[NMS-15751])
+* Docs need updating to include support for Kafka 3 (Issue https://issues.opennms.org/browse/NMS-15777[NMS-15777])
+* Add /usr/lib64/jvm to find-java.sh search paths (Issue https://issues.opennms.org/browse/NMS-15784[NMS-15784])
+
+=== Research
+
+* Investigate using trivy to scan containers (Issue https://issues.opennms.org/browse/NMS-14781[NMS-14781])
+
+=== Story
+
+* New REST endpoint provides textual description given a top-level usage statistics KPI key name (Issue https://issues.opennms.org/browse/NMS-15476[NMS-15476])
+* Data choices modal dialog removed from first admin user login (Issue https://issues.opennms.org/browse/NMS-15478[NMS-15478])
+* New usage statistics sharing notice dialog (Issue https://issues.opennms.org/browse/NMS-15479[NMS-15479])
+* Usage Statistics Sharing UI (Issue https://issues.opennms.org/browse/NMS-15481[NMS-15481])
+* Data Choices link removed in favor of Usage Statistics Sharing UI (Issue https://issues.opennms.org/browse/NMS-15482[NMS-15482])
+* Data Choices modal dialog removed entirely (Issue https://issues.opennms.org/browse/NMS-15483[NMS-15483])
+* Fresh installs assume usage statistics sharing consent (Issue https://issues.opennms.org/browse/NMS-15485[NMS-15485])
+* Usage statistics sharing UI includes control to revoke sharing consent (Issue https://issues.opennms.org/browse/NMS-15486[NMS-15486])
+* Docs explicitly state that statistics sharing consent is assumed and how to revoke it (Issue https://issues.opennms.org/browse/NMS-15490[NMS-15490])
+* Official documentation describes how to uninstall and block "datachoices" feature (Issue https://issues.opennms.org/browse/NMS-15491[NMS-15491])
+* Existing opted-out installs stay opted out of usage statistics sharing (Issue https://issues.opennms.org/browse/NMS-15492[NMS-15492])
+* Existing opted-out installs never show the Sharing Notice Dialog (Issue https://issues.opennms.org/browse/NMS-15493[NMS-15493])
+* Existing opted-out install Usage Statistics Sharing UI behaves like a revoked install (Issue https://issues.opennms.org/browse/NMS-15494[NMS-15494])
+* Upgrade to Newts 3.0.0 (Issue https://issues.opennms.org/browse/NMS-15514[NMS-15514])
+* Native support for Holt-Winters forecast (no dep on R) (Issue https://issues.opennms.org/browse/NMS-15622[NMS-15622])
+* Review and adjust default and example startup settings (Issue https://issues.opennms.org/browse/NMS-15635[NMS-15635])
+
+=== New Feature
+
+* update opennms build and runtime to support JDK17 (Issue https://issues.opennms.org/browse/NMS-15609[NMS-15609])

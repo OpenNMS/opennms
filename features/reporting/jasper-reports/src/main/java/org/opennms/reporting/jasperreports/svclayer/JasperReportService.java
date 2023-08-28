@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -636,6 +636,10 @@ public class JasperReportService implements ReportService {
             @Override
             public void visitSubreport(JRSubreport subreport) {
                 final String compiledSubreportName = evaluateToString(report, subreport.getExpression());
+                if (compiledSubreportName == null) {
+                    LOG.debug("Unable to determine sebreport name: {}, {}", report == null? null : report.getName(), subreport.getExpression());
+                    return;
+                }
                 final String sourceSubreportName = compiledSubreportName.replace(".jasper", ".jrxml");
                 final File compiledSubreportFile = new File(compiledSubreportName);
                 final File sourceSubreportFile = new File(sourceSubreportName);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,11 +31,12 @@ package org.opennms.netmgt.flows.classification.internal.value;
 public class IntegerValue {
     private Integer value;
 
-    public IntegerValue(StringValue input) {
+    public IntegerValue(final StringValue input) {
         if (input == null || input.isNullOrEmpty()) {
             this.value = null;
+        } else {
+            this.value = Integer.parseInt(input.getValue());
         }
-        this.value = Integer.parseInt(input.getValue());
     }
 
     public boolean isNull() {
