@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { createTestingPinia } from '@pinia/testing'
 import store from '@/store'
 import { test, expect } from 'vitest'
 import { SCVCredentials } from '@/types/scv'
@@ -13,7 +14,7 @@ const mockCredentials: SCVCredentials = {
 
 const wrapper = mount(SCV, {
   global: {
-    plugins: [store]
+    plugins: [store, createTestingPinia()]
   }
 })
 

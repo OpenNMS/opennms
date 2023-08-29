@@ -1043,7 +1043,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
-        <version>3.0.0-M3</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -1112,7 +1112,8 @@
                    <!-- technically this is just provided by jdk11+ -->
                    <exclude>xml-apis:xml-apis</exclude>
 
-                   <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm:* -->
+                   <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
+                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- use: org.ow2.asm.* -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
                    <exclude>org.ow2.asm:asm-all</exclude>            <!-- doesn't exist anymore, use individual deps -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
@@ -1327,6 +1328,12 @@
         </executions>
       </plugin>
       <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${maven.karaf.plugin.version}</version>
+          <extensions>true</extensions>
+      </plugin>
+      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1489,7 +1496,8 @@
     <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
-    <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
+    <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
+    <maven.karaf.plugin.version>4.4.3</maven.karaf.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.5.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1500,7 +1508,7 @@
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
     <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
-    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
+    <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -1577,34 +1585,38 @@
 
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
+    <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.5</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <batikVersion>1.16</batikVersion>
-    <bouncyCastleVersion>1.74</bouncyCastleVersion>
+    <batikVersion>1.17</batikVersion>
+    <bouncyCastleVersion>1.76</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.19.1</camelVersion>
-    <!-- Match Newts version -->
-    <cassandraVersion>4.15.0</cassandraVersion>
+    <!-- Match (or beat) Newts version -->
+    <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
+    <commonsCliVersion>1.2</commonsCliVersion>
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
+    <commonsCompressVersion>1.23.0</commonsCompressVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
+    <commonsExecVersion>1.2</commonsExecVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
     <commonsIoVersion>2.12.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLang3Version>3.12.0</commonsLang3Version>
+    <commonsLang3Version>3.13.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.9.0</commonsNetVersion>
+    <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
@@ -1653,6 +1665,7 @@
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.14.2</jackson2Version>
     <snakeyamlVersion>1.33</snakeyamlVersion>
+    <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
@@ -1689,7 +1702,7 @@
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
-    <jschVersion>0.2.6</jschVersion>
+    <jschVersion>0.2.11</jschVersion>
     <jsonVersion>20230618</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
@@ -1702,20 +1715,20 @@
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
     <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
-    <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
-    <kafkaVersion>3.3.2</kafkaVersion>
+    <kafkaBundleVersion>3.5.0_1</kafkaBundleVersion>
+    <kafkaVersion>3.5.0</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.3</mavenApiVersion>
-    <mavenResolverApiVersion>1.9.13</mavenResolverApiVersion>
+    <mavenApiVersion>3.9.4</mavenApiVersion>
+    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.87.Final</netty4Version>
+    <netty4Version>4.1.95.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
@@ -4194,7 +4207,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>5.6</version>
+        <version>5.8</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
@@ -4249,11 +4262,6 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>${jbossLoggingVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.caucho</groupId>
-        <artifactId>hessian</artifactId>
-        <version>4.0.66</version>
       </dependency>
       <dependency>
         <groupId>com.github.seancfoley</groupId>
@@ -4626,11 +4634,6 @@
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
         <version>${servletApiVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.jnr</groupId>
-        <artifactId>jnr-posix</artifactId>
-        <version>${jnrVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.github.mwiede</groupId>

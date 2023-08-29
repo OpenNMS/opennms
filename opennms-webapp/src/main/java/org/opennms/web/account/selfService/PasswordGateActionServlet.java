@@ -68,7 +68,9 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
 
         verifyAndChangePassword(userFactory, userSession, user,
             request, response, currentPassword, newPassword,
-            "/account/selfService/passwordGate.jsp?action=redo");
+            "/account/selfService/passwordGate.jsp?action=redo",
+            getRedirectPath(request, response),
+            true);
     }
 
     private String getRedirectPath(HttpServletRequest request, HttpServletResponse response) {
