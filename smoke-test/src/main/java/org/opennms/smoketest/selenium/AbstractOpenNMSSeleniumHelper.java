@@ -275,6 +275,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void login() {
+        // Start with a clean slate
+        getDriver().manage().deleteAllCookies();
+
         getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
 
         waitForLogin();
