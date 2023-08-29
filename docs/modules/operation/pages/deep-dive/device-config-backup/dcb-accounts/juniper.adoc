@@ -1,0 +1,27 @@
+This script creates a `dcb` user account based on a custom login class (`dcb-class`).
+The login class has limited privileges, which are passed on to the `dcb` account.
+
+[source, script]
+----
+admin@juniper-junos# set system login class dcb-class permissions all
+
+[edit]
+admin@juniper-junos# set system login class dcb-class allow-commands "(exit)|(start shell)|(show configuration.*)"
+
+[edit]
+admin@juniper-junos# set system login class dcb-class deny-commands .*
+
+[edit]
+admin@juniper-junos# set system login user dcb uid 1006
+
+[edit]
+admin@juniper-junos# set system login user dcb class dcb-class
+
+[edit]
+admin@juniper-junos# set system login user dcb authentication plain-text-password
+New password: Pa55w0rd
+Retype new password: Pa55w0rd
+
+[edit]
+admin@juniper-junos# exit
+----
