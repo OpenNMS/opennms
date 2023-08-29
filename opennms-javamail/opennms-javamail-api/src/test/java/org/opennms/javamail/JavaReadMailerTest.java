@@ -28,20 +28,30 @@
 
 package org.opennms.javamail;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.mail.Authenticator;
+import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Flags.Flag;
+import javax.mail.PasswordAuthentication;
 import javax.mail.search.OrTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailHost;
 import org.opennms.netmgt.config.javamail.ReadmailProtocol;
@@ -52,7 +62,10 @@ import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
 
 public class JavaReadMailerTest {
-    
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     /**
      * Un-ignore this test with a proper gmail account
      * @throws JavaMailerException
@@ -100,7 +113,7 @@ public class JavaReadMailerTest {
             e.printStackTrace();
         }
         
-        Assert.assertEquals(3, msgs.size());
+        assertEquals(3, msgs.size());
         
         st = new OrTerm(new SubjectTerm(".*"+term1+" #.*"), new SubjectTerm(".*"+term2+" #.*"));
         
@@ -112,7 +125,7 @@ public class JavaReadMailerTest {
         
         //Should find only term1 and term2 messages
         Assert.assertNotNull(msgs);
-        Assert.assertEquals(2, msgs.size());
+        assertEquals(2, msgs.size());
 
         //Now cleanup
         //Delete the term1 and term2 messages
@@ -222,5 +235,27 @@ public class JavaReadMailerTest {
         return mailer;
     }
 
+    private static abstract class MyAuth extends Authenticator {
+        public PasswordAuthentication getConfiguredPasswordAuthentication() {
+            return getPasswordAuthentication();
+        }
+    }
 
+    @Test
+    public void testMetadata() throws Exception {
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("javamailer2", new Credentials("john", "doe"));
+
+        final JavaReadMailer readMailer = createGoogleReadMailer(null, null);
+        readMailer.setSecureCredentialsVault(secureCredentialsVault);
+
+        final Authenticator authenticator = readMailer.createAuthenticator("${scv:javamailer2:username|ABC}", "${scv:javamailer2:password|ABC}");
+        final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
+        method.setAccessible(true);
+        final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);
+
+        assertEquals("john", passwordAuthentication.getUserName());
+        assertEquals("doe", passwordAuthentication.getPassword());
+    }
 }

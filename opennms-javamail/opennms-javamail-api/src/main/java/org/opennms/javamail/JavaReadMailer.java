@@ -117,7 +117,6 @@ public class JavaReadMailer extends JavaMailer2 {
             m_deleteOnClose = closeOnDelete;
         }
         m_config = config;
-        
         final UserAuth userAuth = getUserAuth(config);
         m_session = Session.getInstance(configureProperties(), createAuthenticator(userAuth.getUserName(), userAuth.getPassword()));
     }

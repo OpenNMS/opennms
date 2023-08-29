@@ -30,9 +30,19 @@ package org.opennms.javamail;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.lang.reflect.Method;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailHost;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
@@ -40,6 +50,9 @@ import org.opennms.netmgt.config.javamail.UserAuth;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 
 public class JavaSendMailerTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private JavaSendMailer createSendMailer() throws JavaMailerException {
 
@@ -69,8 +82,8 @@ public class JavaSendMailerTest {
         config.setUseAuthentication(true);
         config.setUseJmta(false);
         UserAuth auth = new UserAuth();
-        auth.setUserName("foo");
-        auth.setPassword("bar");
+        auth.setUserName("${scv:javamailer2:username|foo}");
+        auth.setPassword("${scv:javamailer2:password|bar}");
         config.setUserAuth(auth);
 
         return new JavaSendMailer(config);
@@ -125,5 +138,23 @@ public class JavaSendMailerTest {
 
         assertEquals(1, mimeMessage.getReplyTo().length);
         assertEquals("root@foo.bar.com", mimeMessage.getReplyTo()[0].toString());
+    }
+
+    @Test
+    public void testMetadata() throws Exception {
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("javamailer2", new Credentials("john", "doe"));
+
+        final JavaSendMailer sendMailer = createSendMailer();
+        sendMailer.setSecureCredentialsVault(secureCredentialsVault);
+
+        final Authenticator authenticator = sendMailer.createAuthenticator();
+        final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
+        method.setAccessible(true);
+        final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);
+
+        assertEquals("john", passwordAuthentication.getUserName());
+        assertEquals("doe", passwordAuthentication.getPassword());
     }
 }

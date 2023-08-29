@@ -34,7 +34,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +47,23 @@ import org.slf4j.LoggerFactory;
  * Provides access to the default javamail configuration data.
  */
 public abstract class JavaMailerConfig {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailerConfig.class);
 
+    private static SecureCredentialsVault secureCredentialsVault = JCEKSSecureCredentialsVault.defaultScv();
 
-    
+    private static void interpolateProperty(final Properties properties, final Scope scope, final String key) {
+        final String string = properties.getProperty(key);
+        if (string == null) {
+            return;
+        }
+        properties.put(key, Interpolator.interpolate(string, scope).output);
+    }
+
+    static void setSecureCredentialsVault(final SecureCredentialsVault secureCredentialsVault) {
+        JavaMailerConfig.secureCredentialsVault = secureCredentialsVault;
+    }
+
     /**
      * This loads the configuration file.
      *
@@ -60,6 +77,9 @@ public abstract class JavaMailerConfig {
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
         in.close();
+        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+        interpolateProperty(properties, scope, "org.opennms.core.utils.authenticateUser");
+        interpolateProperty(properties, scope, "org.opennms.core.utils.authenticatePassword");
         return properties;
     }
 

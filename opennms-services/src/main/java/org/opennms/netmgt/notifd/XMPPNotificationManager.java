@@ -57,8 +57,13 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,10 +144,18 @@ public class XMPPNotificationManager {
         }
 	};
 
+	String getXmppPassword() {
+		return xmppPassword;
+	}
+
+	String getXmppUser() {
+		return xmppUser;
+	}
+
 	/**
 	 * <p>Constructor for XMPPNotificationManager.</p>
 	 */
-	protected XMPPNotificationManager() {
+	protected XMPPNotificationManager(final SecureCredentialsVault secureCredentialsVault) {
 	    // mdc may be null when executing via unit tests
 		Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
@@ -175,8 +188,11 @@ public class XMPPNotificationManager {
 
 			xmppServer = this.props.getProperty("xmpp.server");
 			String xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
-			xmppUser = this.props.getProperty("xmpp.user");
-			xmppPassword = this.props.getProperty("xmpp.pass");
+
+			final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+			xmppUser = Interpolator.interpolate(this.props.getProperty("xmpp.user"), scope).output;
+			xmppPassword = Interpolator.interpolate(this.props.getProperty("xmpp.pass"), scope).output;
+
 			xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
 
 			ConnectionConfiguration xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
@@ -270,13 +286,17 @@ public class XMPPNotificationManager {
 	 * @return instance of XMPPNotificationManager
 	 */
 	public static synchronized XMPPNotificationManager getInstance() {
-
 		if (instance == null) {
-			instance = new XMPPNotificationManager();
+			instance = new XMPPNotificationManager(JCEKSSecureCredentialsVault.defaultScv());
 		}
-
 		return instance;
+	}
 
+	public static synchronized XMPPNotificationManager getInstance(final SecureCredentialsVault secureCredentialsVault) {
+		if (instance == null) {
+			instance = new XMPPNotificationManager(secureCredentialsVault);
+		}
+		return instance;
 	}
 
 	/**
