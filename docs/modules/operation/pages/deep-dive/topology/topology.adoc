@@ -1,6 +1,7 @@
 
 [[topology-map]]
 = Topology Map
+:description: Learn how to configure the topology map in OpenNMS Horizon/Meridian, including icon mappings and creating new icons.
 
 This section describes how to configure the topology map.
 
