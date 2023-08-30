@@ -63,6 +63,7 @@ public abstract class JavaMailer2 {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailer2.class);
 
+
     private Session m_session = null;
     private Properties m_mailProps;
     
@@ -96,11 +97,10 @@ public abstract class JavaMailer2 {
      */
     public Authenticator createAuthenticator(final String user, final String password) {
         Authenticator auth;
-
         auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, password);
+                return new PasswordAuthentication(JavaMailerConfig.interpolate(user), JavaMailerConfig.interpolate(password));
             }
         };
         return auth;

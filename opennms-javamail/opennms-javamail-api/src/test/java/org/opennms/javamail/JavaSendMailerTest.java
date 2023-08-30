@@ -30,26 +30,35 @@ package org.opennms.javamail;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailHost;
-import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
 
 public class JavaSendMailerTest {
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Before
+    public void setup() {
+        final Map<ContextKey, String> map = new HashMap<>();
+        map.put(new ContextKey("scv","javamailer:username"), "john");
+        map.put(new ContextKey("scv","javamailer:password"), "doe");
+
+        JavaMailerConfig.setSecureCredentialsVaultScope(new MapScope(Scope.ScopeName.GLOBAL, map));
+    }
 
     private JavaSendMailer createSendMailer() throws JavaMailerException {
 
@@ -79,8 +88,8 @@ public class JavaSendMailerTest {
         config.setUseAuthentication(true);
         config.setUseJmta(false);
         UserAuth auth = new UserAuth();
-        auth.setUserName("${scv:javamailer2:username|foo}");
-        auth.setPassword("${scv:javamailer2:password|bar}");
+        auth.setUserName("foo");
+        auth.setPassword("bar");
         config.setUserAuth(auth);
 
         return new JavaSendMailer(config);
@@ -139,11 +148,9 @@ public class JavaSendMailerTest {
 
     @Test
     public void testMetadata() throws Exception {
-        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final JavaSendMailer javaSendMailer = createSendMailer();
 
-        final JavaSendMailer sendMailer = createSendMailer();
-
-        final Authenticator authenticator = sendMailer.createAuthenticator();
+        Authenticator authenticator = javaSendMailer.createAuthenticator("${scv:javamailer:username|ABC}", "${scv:javamailer:password|DEF}");
         final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
         method.setAccessible(true);
         final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);

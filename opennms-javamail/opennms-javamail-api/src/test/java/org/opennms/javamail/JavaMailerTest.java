@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -40,6 +42,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -55,7 +60,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
 public class JavaMailerTest {
-
     private static final String TEST_ADDRESS = "test@opennms.org";
 
     @Before
@@ -68,6 +72,12 @@ public class JavaMailerTest {
         System.out.println("homeDir: "+homeDir.getAbsolutePath());
 
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
+
+        final Map<ContextKey, String> map = new HashMap<>();
+        map.put(new ContextKey("scv","javamailer:username"), "john");
+        map.put(new ContextKey("scv","javamailer:password"), "doe");
+
+        JavaMailerConfig.setSecureCredentialsVaultScope(new MapScope(Scope.ScopeName.GLOBAL, map));
     }
 
     @After
@@ -130,5 +140,12 @@ public class JavaMailerTest {
         final Message message = jm.buildMessage();
         assertEquals(1, message.getReplyTo().length);
         assertEquals("test@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
+    }
+
+    @Test
+    public void testMetadata() throws Exception {
+        final JavaMailer jm = new JavaMailer();
+        assertEquals("john", jm.getUser());
+        assertEquals("doe", jm.getPassword());
     }
 }

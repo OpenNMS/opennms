@@ -118,5 +118,9 @@
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.model</artifactId>
+    </dependency>
   </dependencies>
 </project>

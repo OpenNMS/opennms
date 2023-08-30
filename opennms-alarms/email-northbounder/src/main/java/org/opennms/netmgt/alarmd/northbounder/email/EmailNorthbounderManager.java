@@ -31,7 +31,6 @@ package org.opennms.netmgt.alarmd.northbounder.email;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -67,9 +66,6 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
     @Autowired
     private JavaMailConfigurationDao m_javaMailDao;
 
-    @Autowired
-    private EntityScopeProvider m_entityScopeProvider;
-
     /** The registrations map. */
     private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
 
@@ -102,7 +98,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
         }
         for (EmailDestination destination : m_configDao.getConfig().getEmailDestinations()) {
             LOG.info("Registering Email northbound configuration for destination {}.", destination.getName());
-            EmailNorthbounder nbi = new EmailNorthbounder(m_configDao, m_javaMailDao, destination.getName(), m_entityScopeProvider);
+            EmailNorthbounder nbi = new EmailNorthbounder(m_configDao, m_javaMailDao, destination.getName());
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(), m_serviceRegistry.register(nbi, Northbounder.class));
         }

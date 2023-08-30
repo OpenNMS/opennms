@@ -33,8 +33,6 @@ import java.io.File;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.Interpolator;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
@@ -54,8 +52,6 @@ import com.google.common.base.Strings;
  * @author ranger
  */
 public class JavaMailDeliveryService implements ReportDeliveryService {
-
-    private EntityScopeProvider m_entityScopeProvider;
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JavaMailDeliveryService.class);
@@ -80,7 +76,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
                 config = m_JavamailConfigDao.getDefaultSendmailConfig();
             }
 
-            JavaSendMailer sm = new JavaSendMailer((SendmailConfig) Interpolator.interpolate(config, m_entityScopeProvider.getScopeForScv()));
+            JavaSendMailer sm = new JavaSendMailer(config);
             MimeMessage msg = new MimeMessage(sm.getSession());
 
             if (config.getSendmailMessage() != null && config.getSendmailProtocol() != null) {
@@ -134,10 +130,6 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
      */
     public void setJavamailConfigDao(JavaMailConfigurationDao javamailConfigDao) {
         m_JavamailConfigDao = javamailConfigDao;
-    }
-
-    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
-        m_entityScopeProvider = entityScopeProvider;
     }
 
     /* (non-Javadoc)

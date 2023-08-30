@@ -31,8 +31,6 @@ package org.opennms.netmgt.alarmd.northbounder.email;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.javamail.JavaMailerException;
@@ -89,8 +87,6 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     /** The initialized flag (it will be true when the NBI is properly initialized). */
     private boolean initialized = false;
 
-    private EntityScopeProvider m_entityScopeProvider;
-
     /**
      * Instantiates a new SNMP Trap northbounder.
      *
@@ -98,9 +94,8 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      * @param javaMailDao the JavaMail configuration DAO
      * @param destinationName the destination name
      */
-    public EmailNorthbounder(EmailNorthbounderConfigDao configDao, JavaMailConfigurationDao javaMailDao, String destinationName, EntityScopeProvider entityScopeProvider) {
+    public EmailNorthbounder(EmailNorthbounderConfigDao configDao, JavaMailConfigurationDao javaMailDao, String destinationName) {
         super(NBI_NAME + ":" + destinationName);
-        m_entityScopeProvider = entityScopeProvider;
         m_configDao = configDao;
         m_destination = configDao.getConfig().getEmailDestination(destinationName);
 
@@ -194,7 +189,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         LOG.info("Forwarding {} alarms to destination {}", alarms.size(), m_destination.getName());
         for (NorthboundAlarm alarm : alarms) {
             try {
-                JavaSendMailer mailer = new JavaSendMailer((SendmailConfig) Interpolator.interpolate(getSendmailConfig(alarm), m_entityScopeProvider.getScopeForScv()), false);
+                JavaSendMailer mailer = new JavaSendMailer(getSendmailConfig(alarm), false);
                 mailer.send();
             } catch (JavaMailerException e) {
                 LOG.error("Can't send email for {}", alarm, e);

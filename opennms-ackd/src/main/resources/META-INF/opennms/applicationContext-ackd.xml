@@ -44,7 +44,6 @@
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
     <property name="acknowledgmentDao" ref="acknowledgmentDao" />
     <property name="jmConfigDao" ref="javamailConfigDao" />
-    <property name="entityScopeProvider" ref="entityScopeProvider"/>
   </bean>
 
 

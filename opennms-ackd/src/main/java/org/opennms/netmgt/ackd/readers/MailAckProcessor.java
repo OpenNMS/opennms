@@ -44,8 +44,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
@@ -80,8 +78,6 @@ class MailAckProcessor implements AckProcessor {
     private AcknowledgmentDao m_ackDao;
     
     private volatile JavaMailConfigurationDao m_jmConfigDao;
-
-    private EntityScopeProvider m_entityScopeProvider;
     
     /**
      * <p>afterPropertiesSet</p>
@@ -290,7 +286,7 @@ class MailAckProcessor implements AckProcessor {
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
-        JavaReadMailer readMailer = new JavaReadMailer((ReadmailConfig) Interpolator.interpolate(readMailConfig, m_entityScopeProvider.getScopeForScv()), true);
+        JavaReadMailer readMailer = new JavaReadMailer(readMailConfig, true);
 
         String notifRe = m_ackdDao.getConfig().getNotifyidMatchExpression();
         notifRe = notifRe.startsWith("~") ? notifRe.substring(1) : notifRe;
@@ -409,11 +405,7 @@ class MailAckProcessor implements AckProcessor {
     public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
     }
-
-    public void setEntityScopeProvider(final EntityScopeProvider entityScopeProvider) {
-        m_entityScopeProvider = entityScopeProvider;
-    }
-
+    
     /**
      * <p>reloadConfigs</p>
      */
