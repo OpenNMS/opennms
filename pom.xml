@@ -747,7 +747,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.0</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -1605,7 +1605,7 @@
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
     <commonsCompressVersion>1.23.0</commonsCompressVersion>
-    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.2</commonsExecVersion>
@@ -1638,7 +1638,7 @@
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
-    <fopVersion>2.8</fopVersion>
+    <fopVersion>2.9</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
     <!-- this has to match FST's direct dependency because we specify it in karaf features -->
