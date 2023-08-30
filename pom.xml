@@ -1686,7 +1686,7 @@
     <jicmp6Version>3.0.4</jicmp6Version>
     <jinteropVersion>3.4.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
-    <jmhVersion>1.36</jmhVersion>
+    <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
