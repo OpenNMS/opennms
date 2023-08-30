@@ -49,6 +49,7 @@ ipc:
     kafka:
         bootstrap.servers: "127.0.0.1:9092"
         # Any other keys necessary can be specified here
+----
 
 Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg`.
 If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-ipc.boot` is also updated.
