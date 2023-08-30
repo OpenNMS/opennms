@@ -19,8 +19,6 @@
 ** xref:configuration/receive-snmp-traps.adoc[]
 ** xref:configuration/install-jdbc-driver.adoc[]
 
-
-
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectors/http.adoc[]
 ** xref:performance-data-collection/collectors/jdbc.adoc[]
@@ -100,6 +98,7 @@
 *** xref:telemetryd/listeners/udp.adoc[]
 ** xref:telemetryd/protocols/introduction.adoc[]
 *** xref:telemetryd/protocols/bmp/bmp.adoc[]
+**** xref:telemetryd/protocols/bmp/basic-setup.adoc[]
 **** xref:telemetryd/protocols/bmp/parser.adoc[]
 **** xref:telemetryd/protocols/bmp/minion.adoc[]
 **** xref:telemetryd/protocols/bmp/adapter.adoc[]

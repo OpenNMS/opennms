@@ -1,0 +1,14 @@
+[[bmp-basic]]
+= Basic BMP Setup
+
+This section describes how to configure and set up the OpenNMS BMP integration to work with {page-component-title}.
+
+
+== Requirements
+
+Make sure that you have the following before you set up the OpenNMS BMP integration:
+
+== Next steps
+After setting up a basic OpenNMS BMP integration, you may want to do the following:
+
+* xref:reference:telemetryd/protocols/bmp/minion.adoc[]
