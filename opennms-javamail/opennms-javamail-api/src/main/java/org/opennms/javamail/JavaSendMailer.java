@@ -42,9 +42,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
@@ -169,8 +166,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     if (m_config.getUserAuth() != null) {
                         final UserAuth userAuth = m_config.getUserAuth();
-                        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
-                        return new PasswordAuthentication(Interpolator.interpolate(userAuth.getUserName(), scope).output, Interpolator.interpolate(userAuth.getPassword(), scope).output);
+                        return new PasswordAuthentication(userAuth.getUserName(), userAuth.getPassword());
                     }
                     LOG.debug("No user authentication configured.");
                     return new PasswordAuthentication(null,null);
@@ -366,8 +362,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
                     LOG.debug("authenticating to {}", sendmailHost.getHost());
                     final UserAuth userAuth = m_config.getUserAuth();
-                    final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), Interpolator.interpolate(userAuth.getUserName(), scope).output, Interpolator.interpolate(userAuth.getPassword(), scope).output);
+                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), userAuth.getUserName(), userAuth.getPassword());
                 } else {
                     LOG.debug("not authenticating to {}", sendmailHost.getHost());
                     t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);

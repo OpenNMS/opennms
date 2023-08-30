@@ -48,11 +48,6 @@ import javax.mail.event.TransportEvent;
 import javax.mail.event.TransportListener;
 import javax.mail.internet.MimeBodyPart;
 
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -68,7 +63,6 @@ public abstract class JavaMailer2 {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailer2.class);
 
-    protected SecureCredentialsVault secureCredentialsVault = JCEKSSecureCredentialsVault.defaultScv();
     private Session m_session = null;
     private Properties m_mailProps;
     
@@ -102,12 +96,11 @@ public abstract class JavaMailer2 {
      */
     public Authenticator createAuthenticator(final String user, final String password) {
         Authenticator auth;
-        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
 
         auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(Interpolator.interpolate(user, scope).output, Interpolator.interpolate(password, scope).output);
+                return new PasswordAuthentication(user, password);
             }
         };
         return auth;
@@ -149,10 +142,6 @@ public abstract class JavaMailer2 {
         }
     }
     */
-
-    void setSecureCredentialsVault(SecureCredentialsVault secureCredentialsVault) {
-        this.secureCredentialsVault = secureCredentialsVault;
-    }
 
     /**
      * Create a file attachment as a MimeBodyPart, checking to see if the file

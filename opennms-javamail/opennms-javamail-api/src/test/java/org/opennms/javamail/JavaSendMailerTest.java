@@ -40,14 +40,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailHost;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
-import org.opennms.netmgt.config.javamail.SendmailMessage;
 
 public class JavaSendMailerTest {
 
@@ -143,11 +140,8 @@ public class JavaSendMailerTest {
     @Test
     public void testMetadata() throws Exception {
         final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
-        secureCredentialsVault.setCredentials("javamailer2", new Credentials("john", "doe"));
 
         final JavaSendMailer sendMailer = createSendMailer();
-        sendMailer.setSecureCredentialsVault(secureCredentialsVault);
 
         final Authenticator authenticator = sendMailer.createAuthenticator();
         final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");

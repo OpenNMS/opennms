@@ -37,6 +37,7 @@
 
   <bean id="deliveryService" class="org.opennms.netmgt.reporting.service.JavaMailDeliveryService">
     <property name="javamailConfigDao" ref="javamailConfigDao" />
+    <property name="entityScopeProvider" ref="entityScopeProvider"/>
   </bean>
 
   <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">

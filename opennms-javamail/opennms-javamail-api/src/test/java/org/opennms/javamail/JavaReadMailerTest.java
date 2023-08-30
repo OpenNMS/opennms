@@ -30,8 +30,6 @@ package org.opennms.javamail;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.List;
 
@@ -46,12 +44,7 @@ import javax.mail.search.SubjectTerm;
 
 import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailHost;
 import org.opennms.netmgt.config.javamail.ReadmailProtocol;
@@ -62,9 +55,6 @@ import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
 
 public class JavaReadMailerTest {
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     /**
      * Un-ignore this test with a proper gmail account
@@ -239,23 +229,5 @@ public class JavaReadMailerTest {
         public PasswordAuthentication getConfiguredPasswordAuthentication() {
             return getPasswordAuthentication();
         }
-    }
-
-    @Test
-    public void testMetadata() throws Exception {
-        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
-        secureCredentialsVault.setCredentials("javamailer2", new Credentials("john", "doe"));
-
-        final JavaReadMailer readMailer = createGoogleReadMailer(null, null);
-        readMailer.setSecureCredentialsVault(secureCredentialsVault);
-
-        final Authenticator authenticator = readMailer.createAuthenticator("${scv:javamailer2:username|ABC}", "${scv:javamailer2:password|ABC}");
-        final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
-        method.setAccessible(true);
-        final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);
-
-        assertEquals("john", passwordAuthentication.getUserName());
-        assertEquals("doe", passwordAuthentication.getPassword());
     }
 }

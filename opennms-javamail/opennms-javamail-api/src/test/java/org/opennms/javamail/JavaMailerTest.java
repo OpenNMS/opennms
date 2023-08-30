@@ -38,15 +38,10 @@ import javax.mail.Message;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestExecutionListeners;
@@ -60,9 +55,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
 public class JavaMailerTest {
-
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final String TEST_ADDRESS = "test@opennms.org";
 
@@ -138,16 +130,5 @@ public class JavaMailerTest {
         final Message message = jm.buildMessage();
         assertEquals(1, message.getReplyTo().length);
         assertEquals("test@opennms.org", jm.buildMessage().getReplyTo()[0].toString());
-    }
-
-    @Test
-    public void testMetadata() throws Exception {
-        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
-        secureCredentialsVault.setCredentials("javamailer", new Credentials("john", "doe"));
-        JavaMailerConfig.setSecureCredentialsVault(secureCredentialsVault);
-        final JavaMailer mailer = new JavaMailer();
-        assertEquals("john", mailer.getUser());
-        assertEquals("doe", mailer.getPassword());
     }
 }
