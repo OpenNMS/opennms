@@ -1,6 +1,60 @@
 [[release-32-changelog]]
 
 = Changelog
+[[releasenotes-changelog-32.0.2]]
+
+== Release 32.0.2
+
+Release 32.0.2 contains several important security fixes, one fix for a potential DOS vulnerability, and a handful of general bugfixes and enhancements.
+
+Thanks to the following researchers for responsibly disclosing security issues in this release:
+
+* Moshe Appelbaum reported issue NMS-15699.
+* Jordi Morales reported issues NMS-15703, NMS-15782, and NMS-15783.
+* OSS Fuzz reported issue NMS-15877.
+
+The codename for Horizon 32.0.2 is https://volt.fm/genre/6487/anime-lo-fi[Anime Lo-fi].
+
+=== Breaking changes
+
+* This release removes the "3d" variation from the JFreeChart integration, because that style has been removed upstream.
+
+=== Bug
+
+* Document the function hiding Meta-Data values with keynames containing "password" or "secret" (Issue https://issues.opennms.org/browse/NMS-12808[NMS-12808])
+* Prevent Angular evaluation of strings enclosed by two curly braces in non-Angular form-fields and output (Issue https://issues.opennms.org/browse/NMS-15504[NMS-15504])
+* backport fixes from Spring Security 5.x to custom Spring Security 4.2.20.RELEASE (Issue https://issues.opennms.org/browse/NMS-15663[NMS-15663])
+* XXE injection via   /rtc/post using the default rtc credentials (Issue https://issues.opennms.org/browse/NMS-15699[NMS-15699])
+* ROLE_REST can be used to escalate to ROLE_ADMIN via /rest/users (Issue https://issues.opennms.org/browse/NMS-15703[NMS-15703])
+* Stored XSS in multiple JSP files in opennms/opennms (Issue https://issues.opennms.org/browse/NMS-15782[NMS-15782])
+* Reflected XSS in multiple JSP files in opennms/opennms (Issue https://issues.opennms.org/browse/NMS-15783[NMS-15783])
+* POSTINSTALL scriptlet may fail if data/tmp/ is present but empty (Issue https://issues.opennms.org/browse/NMS-15809[NMS-15809])
+* PostgreSQL shows too many clients error with a minimal setup (Issue https://issues.opennms.org/browse/NMS-15852[NMS-15852])
+* java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0 at org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader.getNodeCriteriaFromResource(MetaTagDataLoader.java (Issue https://issues.opennms.org/browse/NMS-15854[NMS-15854])
+* Kafka Producer incapable of using SSL (Issue https://issues.opennms.org/browse/NMS-15859[NMS-15859])
+* Fix incorrect resource types for F5 datacollection (Issue https://issues.opennms.org/browse/NMS-15862[NMS-15862])
+* Build fails due to binary file filtered resource copy (Issue https://issues.opennms.org/browse/NMS-15869[NMS-15869])
+* Corrected Keystore setup instructions for minion on docker (Issue https://issues.opennms.org/browse/NMS-16017[NMS-16017])
+* OpenNMS Search Bar does not retrieve nodes without foreignsource and foreignid (Issue https://issues.opennms.org/browse/NMS-16030[NMS-16030])
+* Error on startup with Invalid CEN header exception (Issue https://issues.opennms.org/browse/NMS-16034[NMS-16034])
+
+=== Story
+
+* Provide option to disable Kafka Offset Provider (Issue https://issues.opennms.org/browse/NMS-15336[NMS-15336])
+* Document additional details for BMP integration  (Issue https://issues.opennms.org/browse/NMS-15853[NMS-15853])
+
+=== Enhancement
+
+* Improve Kafka section of message broker docs in the deployment section (Issue https://issues.opennms.org/browse/NMS-15632[NMS-15632])
+* Disable BeanShell interpreter remote server mode (Issue https://issues.opennms.org/browse/NMS-15793[NMS-15793])
+* Include Node metadata in Measurement API query responses even if no resource data exists (Issue https://issues.opennms.org/browse/NMS-15839[NMS-15839])
+* Extend filter syntax to include isSnmpPrimary (Issue https://issues.opennms.org/browse/NMS-15842[NMS-15842])
+* Add docs to describe the default RRD storage retention (Issue https://issues.opennms.org/browse/NMS-16033[NMS-16033])
+
+=== Task
+
+* Document the note to increase the maximum connection when pool size is increased (Issue https://issues.opennms.org/browse/NMS-16050[NMS-16050])
+
 [[releasenotes-changelog-32.0.1]]
 
 == Release 32.0.1

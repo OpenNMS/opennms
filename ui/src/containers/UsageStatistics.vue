@@ -27,10 +27,13 @@ import { useStore } from 'vuex'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import UsageStatisticsHeader from '@/components/UsageStatistics/UsageStatisticsHeader.vue'
 import UsageStatisticsTable from '@/components/UsageStatistics/UsageStatisticsTable.vue'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const store = useStore()
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const menuStore = useMenuStore()
+
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [

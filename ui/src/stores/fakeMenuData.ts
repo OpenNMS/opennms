@@ -1,17 +1,8 @@
-import { VuexContext } from '@/types'
-import API from '@/services'
-import { State } from './state'
 import { MainMenu, NotificationSummary } from '@/types/mainMenu'
 
-interface ContextWithState extends VuexContext {
-  state: State
-}
+// fake/mocked menu data to use for testing
 
-// Set this to true to use local/fake data instead of making API call
-const useFakeMenuData = false
-const useFakeUserNotificationData = false
-
-const defaultMainMenu = {
+export const defaultMainMenu = {
   baseHref: 'http://localhost:8980/opennms/',
   homeUrl: 'http://localhost:8980/opennms/index.jsp',
   formattedTime: '2022-10-13T19:49:29-04:00',
@@ -534,7 +525,7 @@ const defaultMainMenu = {
   }
 } as MainMenu
 
-const defaultNotificationSummary = {
+export const defaultNotificationSummary = {
   totalCount: 10,
   totalUnacknowledgedCount: 8,
   userUnacknowledgedCount: 3,
@@ -581,38 +572,3 @@ const defaultNotificationSummary = {
     ]
   }
 } as NotificationSummary
-
-const getMainMenu = async (context: ContextWithState) => {
-  // for using local data for dev/debugging purposes
-  if (useFakeMenuData) {
-    context.commit('SAVE_MAIN_MENU', defaultMainMenu)
-    return
-  }
-
-  const resp = await API.getMainMenu()
-
-  if (resp) {
-    const mainMenu = resp as MainMenu
-    context.commit('SAVE_MAIN_MENU', mainMenu)
-  }
-}
-
-const getNotificationSummary = async (context: ContextWithState) => {
-  // for using local data for dev/debugging purposes
-  if (useFakeUserNotificationData) {
-    context.commit('SAVE_NOTIFICATION_SUMMARY', defaultNotificationSummary)
-    return
-  }
-
-  const resp = await API.getNotificationSummary()
-
-  if (resp) {
-    const notificationSummary = resp as NotificationSummary
-    context.commit('SAVE_NOTIFICATION_SUMMARY', notificationSummary)
-  }
-}
-
-export default {
-  getMainMenu,
-  getNotificationSummary
-}
