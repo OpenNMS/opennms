@@ -1,0 +1,10 @@
+This script creates a `dcb` user account based on a custom privilege configuration:
+
+[source, script]
+----
+cisco-ios#configure terminal
+cisco-ios(config)#username dcb privilege 2 secret Pa55w0rd
+cisco-ios(config)#privilege exec level 2 copy running-config
+cisco-ios(config)#privilege exec level 2 copy startup-config
+cisco-ios(config)#exit
+----
