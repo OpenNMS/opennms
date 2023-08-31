@@ -26,15 +26,6 @@ View metrics and statistics related to that peer and apply thresholding.
 * *BMP Peer Status Adapter:* Handles BMP Peer Up and Down messages that the BMP parser receives and parses, and converts them to OpenNMS events.
 Allows alarm creation based on up/down status.
 
-//I notice that Integration Adapter is missing from the diagram. Should we add it? Has the architecture changed?
-
-* *OpenBMP Integration Adapter:* Integrates with an existing OpenBMP installation and handles BMP messages from the BMP parser, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
-
 The parser and adapters are configurable in the telemetryd-configuration.xml file.
-
-== Before you begin
-To use {page-component-title} BMP features, you need the OpenBMP https://github.com/SNAS/obmp-postgres[PostgreSQL component] installed and set up, and have a BMP-enabled router.
-
-//Are there any other requirements?
 
 TIP: The https://github.com/OpenNMS-forge/bmp-playground[BMP Playground] provides a virtual lab that you can use to simulate BGP and BMP, and to see how the {page-component-title} components can be configured at runtime.
