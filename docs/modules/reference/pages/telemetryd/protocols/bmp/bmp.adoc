@@ -11,7 +11,7 @@ The BMP integration in {page-component-title} lets you use these route views, st
 {page-component-title} leverages https://www.snas.io/[OpenBMP], an application that was developed as a reference implementation for receiving BMP messages from network equipment and presenting the state of the BGP network to the user.
 
 BGP runs on routers and high-end switches.
-Those devices can send BMP data to {page-component-title} directly or through an OpenNMS Minion collector.
+Those devices can send BMP data to {page-component-title} directly or through a {page-component-title} Minion collector.
 
 .BMP integration overview
 image::bmp/bmp_integration_overview_2.png[width=70%]
