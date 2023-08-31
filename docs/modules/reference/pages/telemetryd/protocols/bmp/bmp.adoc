@@ -33,7 +33,7 @@ Allows alarm creation based on up/down status.
 The parser and adapters are configurable in the telemetryd-configuration.xml file.
 
 == Before you begin
-To use OpenNMS BMP features, you need the OpenBMP https://github.com/SNAS/obmp-postgres[PostgreSQL component] installed and set up, and have a BMP-enabled router.
+To use {page-component-title} BMP features, you need the OpenBMP https://github.com/SNAS/obmp-postgres[PostgreSQL component] installed and set up, and have a BMP-enabled router.
 
 //Are there any other requirements?
 
