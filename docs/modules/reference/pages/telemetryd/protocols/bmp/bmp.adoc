@@ -16,7 +16,7 @@ Those devices can send BMP data to {page-component-title} directly or through a 
 .BMP integration overview
 image::bmp/bmp_integration_overview_2.png[width=70%]
 
-The OpenNMS BMP parser accepts BMP connections from router packets using a TCP listener.
+The {page-component-title} BMP parser accepts BMP connections from router packets using a TCP listener.
 Three adapters in OpenNMS read BMP data, including an inventory list of connected routers and the peers they are established with, and stats and data about what is being exchanged over those peers:
 
 * *BMP Telemetry Adapter:* Handles BMP statistics the BMP parser has received and parsed.
