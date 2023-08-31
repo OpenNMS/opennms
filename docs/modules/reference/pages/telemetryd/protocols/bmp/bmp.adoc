@@ -6,7 +6,7 @@ The https://datatracker.ietf.org/doc/html/rfc7854[BGP Monitoring Protocol] (BMP)
 
 The BMP integration in {page-component-title} lets you use these route views, status updates, and statistics for advanced monitoring and management, providing visibility into what BGP is doing.
 
-== OpenNMS BMP integration
+== {page-component-title} BMP integration
 
 OpenNMS leverages https://www.snas.io/[OpenBMP], an application that was developed as a reference implementation for receiving BMP messages from network equipment and presenting the state of the BGP network to the user.
 
