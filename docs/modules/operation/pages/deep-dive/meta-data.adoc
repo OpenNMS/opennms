@@ -1,6 +1,7 @@
 
 [[metadata-overview]]
 = Metadata
+:description: Learn how to create and associate metadata with nodes, interfaces, and services in OpenNMS Horizon/Meridian.
 
 {page-component-title} supports the assignment of arbitrary metadata to nodes, interfaces and services.
 You can use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds.
