@@ -166,7 +166,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     if (m_config.getUserAuth() != null) {
                         final UserAuth userAuth = m_config.getUserAuth();
-                        return new PasswordAuthentication(userAuth.getUserName(), userAuth.getPassword());
+                        return new PasswordAuthentication(JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
                     }
                     LOG.debug("No user authentication configured.");
                     return new PasswordAuthentication(null,null);
@@ -362,7 +362,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 if (m_config.isUseAuthentication() && m_config.getUserAuth() != null) {
                     LOG.debug("authenticating to {}", sendmailHost.getHost());
                     final UserAuth userAuth = m_config.getUserAuth();
-                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), userAuth.getUserName(), userAuth.getPassword());
+                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), JavaMailerConfig.interpolate(userAuth.getUserName()), JavaMailerConfig.interpolate(userAuth.getPassword()));
                 } else {
                     LOG.debug("not authenticating to {}", sendmailHost.getHost());
                     t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);

@@ -28,15 +28,29 @@
 
 package org.opennms.netmgt.notifd;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.springframework.security.util.InMemoryResource;
 
+import twitter4j.TwitterException;
+
 public class MicroblogClientTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     private final String m_consumerKey = "";
     private final String m_consumerSecret = "";
 
@@ -107,5 +121,30 @@ public class MicroblogClientTest {
          assertNotNull(auth);
          assertNotNull(auth.getUrl());
          assertTrue(auth.getUrl() + " should contain twitter.com/", auth.getUrl().contains("twitter.com/"));
+    }
+
+    @Test
+    public void testMetadata() throws TwitterException {
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("authen", new Credentials("john", "doe"));
+        secureCredentialsVault.setCredentials("oauth", new Credentials("foo", "bar"));
+        final InMemoryResource configResource = new InMemoryResource(
+                "<?xml version=\"1.0\"?>\n" +
+                        "<microblog-configuration default-microblog-profile-name=\"twitter\">\n" +
+                        "    <microblog-profile\n" +
+                        "        name=\"twitter\"\n" +
+                        "        service-url=\"https://twitter.com/\"\n" +
+                        "        authen-username=\"${scv:authen:username|ABC}\"\n" +
+                        "        authen-password=\"${scv:authen:password|DEF}\"\n" +
+                        "        oauth-consumer-key=\"${scv:oauth:username|ABC}\"\n" +
+                        "        oauth-consumer-secret=\"${scv:oauth:password|DEF}\"\n" +
+                        "    />\n" +
+                        "</microblog-configuration>\n");
+        final MicroblogClient client = new MicroblogClient(configResource, secureCredentialsVault);
+        assertEquals("john", client.getTwitter("twitter").getConfiguration().getUser());
+        assertEquals("doe", client.getTwitter("twitter").getConfiguration().getPassword());
+        assertEquals("foo", client.getTwitter("twitter").getConfiguration().getOAuthConsumerKey());
+        assertEquals("bar", client.getTwitter("twitter").getConfiguration().getOAuthConsumerSecret());
     }
 }
