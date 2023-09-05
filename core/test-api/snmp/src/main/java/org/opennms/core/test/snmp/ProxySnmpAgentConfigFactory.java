@@ -79,7 +79,7 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
     }
 
     @Override
-    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address, boolean metaDataInterpolation) {
         final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
         final SnmpAgentAddress agentAddress = mapper.getAddress(address);
 
@@ -89,10 +89,10 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
                     "No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...",
                     addressString, addressString);
 
-            return super.getAgentConfig(address, null);
+            return super.getAgentConfig(address, null, metaDataInterpolation);
 
         }
-        SnmpAgentConfig config = super.getAgentConfigFromProfile(snmpProfile, agentAddress.getAddress());
+        SnmpAgentConfig config = super.getAgentConfigFromProfile(snmpProfile, agentAddress.getAddress(), metaDataInterpolation);
         config.setProxyFor(address);
         config.setPort(agentAddress.getPort());
 

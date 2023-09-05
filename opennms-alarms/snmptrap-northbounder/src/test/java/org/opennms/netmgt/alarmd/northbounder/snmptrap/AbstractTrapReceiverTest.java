@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -36,8 +37,14 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -67,6 +74,9 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     /** The received trap notification. */
     private List<TrapData> trapNotifications = new ArrayList<>();
 
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     /**
      * Sets up the test (initialize a trap listener).
      *
@@ -74,6 +84,11 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
      */
     @Before
     public void setUp() throws Exception {
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("remote", new Credentials("john", "doe"));
+        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
+
         MockLogAppender.setupLogging();
         resetTrapsReceived();
         System.setProperty("opennms.home", "src/test/resources");

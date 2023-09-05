@@ -37,18 +37,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
@@ -79,12 +83,19 @@ public class SnmpDetectorWithProfilesTest {
     private DetectRequest m_request;
 
     @Before
-    public void setUp() throws InterruptedException, UnknownHostException {
+    public void setUp() throws InterruptedException, IOException {
         MockLogAppender.setupLogging();
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setRetries(2);
         m_detector.setUseSnmpProfiles("true");
         m_detector.setTimeout(500);
+
+        final TemporaryFolder temporaryFolder = new TemporaryFolder();
+        temporaryFolder.create();
+        final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("communityv1", new Credentials("username", "public"));
+        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
     }
 
     @Test(timeout = 30000)
