@@ -89,7 +89,7 @@ You can set the following properties:
 | Default
 
 | flowThreshold.stepSizeMs
-| Interval for checking thresholds and doing data collection in milliseconds.
+| Interval for checking thresholds and doing data collection, in milliseconds.
 | 300000
 
 | flowThreshold.idleTimeoutMs
@@ -100,15 +100,28 @@ You can set the following properties:
 
 == Application threshold behavior
 
-If a flow threshold does not specify an 
+This section describes how flows thresholds work in specific scenarios.
 
-To create a flow threshold that applies to all applications (for example, "if any application consumes more than X bandwidth"), use a `match-all` regex expression inside the filter like `.*` to match all applications
+=== Undefined application
+
+If a flow threshold does not specify an application, you will see the following behavior:
+
+* If the `filterOperator` is set to OR, there must be at least one filter or the threshold configuration will not match.
+
+* If the `filterOperator` is set to AND, an empty list of filters will result in a match.
+
+=== Apply flow threshold to all applications
+
+You may want to create a flow threshold that applies to all applications; for example, "if any application consumes more than X bandwidth ...".
+
+To apply a flow threshold to all applications, use a `match-all` regex expression like `.*` inside the filter.
 
 //not sure what was meant in the Jira by "But then you could just threshold on the interface statistics."
 
-You cannot apply flows thresholds to the total bandwidth for a location.
-You can apply them only to a single resource; in this case, the interface of the exporting device.
+=== Flows thresholds per application
 
+Note that you cannot apply flows thresholds to the total bandwidth for a location.
+You can apply them only to a single resource; in this case, the interface of the exporting device.
 
 == Flow thresholds with Sentinel
 
@@ -118,7 +131,7 @@ The default implementation uses the default PostgreSQL database.
 You do not need to configure thresholds on Sentinel as long as you xref:deep-dive/flows/thresholding.adoc#configure-flow-thresholding [configure flows thresholding] in the core.
 
 Threshold configuration and state are synced dynamically to all places where needed.
-A triggered threshold results in an event, which Sentinel sends back to the core for further processing and transformation into alarms and so on.
+A triggered threshold results in an event, which Sentinel sends back to the core for further processing and transformation into alarms, and so on.
 
 
 
