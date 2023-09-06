@@ -1,0 +1,13 @@
+
+= Basic BMP Setup
+:description: Learn how to set up a basic BGP Monitoring Protocol (BMP) integration in OpenNMS Horizon/Meridian to help monitor the Border Gateway Protocol.
+
+This section describes how to get started with BMP integration.
+
+== Requirements
+
+== Beyond basic BMP setup
+
+You may want to do the following:
+* Include BMP integration with Sentinel
+* Include BMP integration with Minions
