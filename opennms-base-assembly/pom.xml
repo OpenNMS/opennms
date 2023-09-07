@@ -1275,4 +1275,14 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jasperreports</id>
+      <name>OpenNMS Mega-Repository (jasperreports override)</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

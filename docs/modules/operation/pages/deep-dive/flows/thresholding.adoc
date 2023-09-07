@@ -1,5 +1,6 @@
 [[ga-flow-support-thresholding]]
 = Thresholding Flow Applications
+:description: Learn how to create thresholds on flows data in OpenNMS Horizon/Meridian to generate alarms when the traffic amount violates these thresholds.
 
 Flows are categorized in applications using the <<deep-dive/flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
 OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications.
