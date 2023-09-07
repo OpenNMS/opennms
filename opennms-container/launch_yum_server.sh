@@ -65,7 +65,8 @@ done
 docker rm --force "${YUM_CONTAINER_NAME}-helper"
 
 echo "=== launching yum server ==="
-docker run --rm --detach --name "${YUM_CONTAINER_NAME}" --volume "${YUM_VOLUME}:/repo" --network "${BUILD_NETWORK}" --publish "${PORT}:${PORT}" "${OCI}"
+# BMR: remove --network "${BUILD_NETWORK}", it's unnecessary and breaks on latest circle images
+docker run --rm --detach --name "${YUM_CONTAINER_NAME}" --volume "${YUM_VOLUME}:/repo" --publish "${PORT}:${PORT}" "${OCI}"
 
 echo "=== waiting for server to be available ==="
 COUNT=0
