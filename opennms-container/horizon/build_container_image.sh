@@ -24,8 +24,8 @@ enabled=1
 gpgcheck=0
 END
 
+# BMR: removed --network "${BUILD_NETWORK}", it's unnecessary and breaks on latest circle images
 docker build -t horizon \
-  --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \
