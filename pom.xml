@@ -619,6 +619,7 @@
           <additionalOptions>
             <!-- for GrafanaPanelDatasource -->
             <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
+            <option>-Djdk.util.zip.disableZip64ExtraFieldValidation=true</option>
           </additionalOptions>
           <tags>
             <tag>
