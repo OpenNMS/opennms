@@ -75,17 +75,10 @@ export const buildNodeStructureQuery = (
   return query
 }
 
-export const shouldDisplayFlows = (node: Node) => {
-  const hasIngress = node.lastIngressFlow && isNumber(node.lastIngressFlow)
-  const hasEgress = node.lastEgressFlow && isNumber(node.lastEgressFlow)
+export const hasIngressFlow = (node: Node) => {
+  return node.lastIngressFlow && isNumber(node.lastIngressFlow)
+}
 
-  if (hasIngress && hasEgress) {
-    return 'I/E'
-  } else if (hasEgress) {
-    return 'E'
-  } else if (hasIngress) {
-    return 'I'
-  }
-
-  return ''
+export const hasEgressFlow = (node: Node) => {
+  return node.lastEgressFlow && isNumber(node.lastEgressFlow)
 }

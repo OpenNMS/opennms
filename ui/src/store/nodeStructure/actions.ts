@@ -1,5 +1,5 @@
 import API from '@/services'
-import { Category, SetOperator, VuexContext } from '@/types'
+import { Category, NodeColumnSelectionItem, SetOperator, VuexContext } from '@/types'
 
 const getCategories = async (context: VuexContext) => {
   const resp = await API.getCategories()
@@ -18,6 +18,10 @@ const getMonitoringLocations = async (context: VuexContext) => {
   }
 }
 
+const resetColumnSelectionToDefault = async (context: VuexContext) => {
+  context.commit('RESET_NODE_COLUMN_SELECTION')
+}
+
 const setSelectedCategories = async (context: VuexContext, categories: Category[]) => {
   context.commit('SAVE_SELECTED_CATEGORIES_TO_STATE', categories)
 }
@@ -34,11 +38,17 @@ const setSelectedMonitoringLocations = async (context: VuexContext, locations: s
   context.commit('SAVE_SELECTED_MONITORING_LOCATIONS_TO_STATE', locations)
 }
 
+const updateNodeColumnSelection = async (context: VuexContext, column: NodeColumnSelectionItem) => {
+  context.commit('UPDATE_NODE_COLUMN_SELECTION', column)
+}
+
 export default {
   getCategories,
   getMonitoringLocations,
+  resetColumnSelectionToDefault,
   setSelectedCategories,
   setCategoryMode,
   setSelectedFlows,
-  setSelectedMonitoringLocations
+  setSelectedMonitoringLocations,
+  updateNodeColumnSelection
 }

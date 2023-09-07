@@ -43,4 +43,3 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 @import "@featherds/styles/themes/variables";
 
 </style>
-

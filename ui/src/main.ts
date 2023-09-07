@@ -30,6 +30,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // TODO: Move to separate fil
 // See: https://fontawesome.com/docs/web/use-with/vue/ and following
 import {
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
@@ -48,6 +50,8 @@ import {
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
