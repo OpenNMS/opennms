@@ -605,6 +605,7 @@
         <version>3.4.1</version>
         <configuration>
           <maxmemory>3g</maxmemory>
+          <additionalparam>-Djdk.util.zip.disableZip64ExtraFieldValidation=true</additionalparam>
           <failOnError>true</failOnError>
           <sourcepath>${project.basedir}/src;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath>
           <tags>
