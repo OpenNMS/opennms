@@ -3,7 +3,7 @@ Maintainer: Benjamin Reed <ranger@opennms.org>
 Section: contrib/net
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), dh-systemd, oracle-java11-installer | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | openjdk-11-jdk-headless | openjdk-11-jdk | java11-jdk | temurin-11-jdk, rsync
+Build-Depends: debhelper (>= 9), dpkg-dev, oracle-java11-installer | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | openjdk-11-jdk-headless | openjdk-11-jdk | java11-jdk | temurin-11-jdk, rsync
 
 Package: opennms-minion
 Architecture: all
