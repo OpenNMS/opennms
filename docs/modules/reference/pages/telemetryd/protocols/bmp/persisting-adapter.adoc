@@ -4,7 +4,9 @@
 
 The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
 It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and creates OpenBMP-compatible messages, which are then
-persisted in OpenNMS Postgres DB.
+persisted in the OpenNMS PostgreSQL DB.
+
+//are there reasons why users wouldn't want to run this?
 
 == Facts
 
@@ -14,10 +16,10 @@ persisted in OpenNMS Postgres DB.
 |===
 
 Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {page-component-title}.
+//not clear on what that sentence means. It doesn't work on Sentinel?
 The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
 
-BMP Stats are stored as time series data in Postgres with TimescaleDB extension.
-TimescaleDB 2.x extension link:https://docs.timescale.com/latest/getting-started/installation[installation instructions].
+BMP stats are stored as time series data in PostgreSQL with the TimescaleDB extension (link:https://docs.timescale.com/latest/getting-started/installation[installation instructions]).
 For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example, `$OPENNMS_HOME/bin/install -dist`).
 If the TimescaleDB extension is not installed, stat tables will not be converted to hypertables.
 
