@@ -610,7 +610,7 @@
         <version>3.4.0</version>
         <configuration>
           <maxmemory>3g</maxmemory>
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <additionalparam>-Xdoclint:none -Djdk.util.zip.disableZip64ExtraFieldValidation=true</additionalparam>
           <failOnError>false</failOnError>
           <tags>
             <tag>
