@@ -99,6 +99,7 @@
     />
   </div>
   <NodeDetailsDialog
+    :computeNodeLink="computeNodeLink"
     @close="dialogVisible = false"
     :visible="dialogVisible"
     :node="dialogNode">
@@ -225,7 +226,7 @@ const updateQuery = (val?: string) => {
   queryParameters.value = updatedParams
 }
 
-const computeNodeLink = (nodeId: number) => {
+const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
 
