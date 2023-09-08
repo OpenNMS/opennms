@@ -1725,7 +1725,7 @@
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.95.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
-    <paxExamVersion>4.13.1</paxExamVersion>
+    <paxExamVersion>4.13.5</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
