@@ -23,6 +23,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Private-Package></Private-Package>
                         <Karaf-Commands>org.opennms.netmgt.flows.clazzification.shell</Karaf-Commands>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

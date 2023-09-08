@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Private-Package>org.opennms.features.graphml.service.impl</Private-Package>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

@@ -30,6 +30,7 @@
             -->
             <Import-Package>
               !org.opennms.core.ipc.sink.kafka.server,
+              ${guavaImportPackage},
               *
             </Import-Package>
           </instructions>

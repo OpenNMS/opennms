@@ -25,6 +25,7 @@
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Karaf-Commands>*</Karaf-Commands>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

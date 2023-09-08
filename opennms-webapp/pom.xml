@@ -147,6 +147,8 @@
             <Embed-Transitive>true</Embed-Transitive>
 
             <Import-Package>
+              ${guavaImportPackage},
+
               <!-- 
                 These are required classes that are not autodetected by bnd from:
                   - web.xml

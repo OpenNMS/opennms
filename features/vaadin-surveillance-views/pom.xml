@@ -40,6 +40,7 @@
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
                         <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
                         <Include-Resource>{maven-resources}</Include-Resource>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

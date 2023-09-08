@@ -19,6 +19,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.opennms.core.health.impl</Export-Package>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

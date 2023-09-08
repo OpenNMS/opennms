@@ -34,6 +34,7 @@
             <Embed-Dependency>*;artifactId=google-maps-services|gson|okhttp|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
+              ${guavaImportPackage},
               dalvik.system;resolution:=optional,
               android.net.http;resolution:=optional,
               android.os;resolution:=optional,

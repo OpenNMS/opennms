@@ -21,6 +21,20 @@
 
   <packaging>bundle</packaging>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <!--
      | uncomment to add all imported (non-local) bundles to your compilation classpath

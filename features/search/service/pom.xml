@@ -20,6 +20,7 @@
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

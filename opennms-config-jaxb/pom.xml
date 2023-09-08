@@ -21,6 +21,7 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              ${guavaImportPackage},
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.opennms.netmgt.collection.adapters,

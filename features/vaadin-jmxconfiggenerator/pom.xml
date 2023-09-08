@@ -26,6 +26,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
                         <Vaadin-Widgetsets>org.opennms.vaadin.DefaultWidgetset</Vaadin-Widgetsets>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

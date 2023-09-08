@@ -1811,6 +1811,9 @@
     <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
 
+    <!-- use to easily template adding Guava to Import-Packages in bundles -->
+    <guavaImportPackage>com.google.common.*;version="${guavaVersion}"</guavaImportPackage>
+
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.1</frontendPluginVersion>
     <nodeVersion>v16.18.1</nodeVersion>

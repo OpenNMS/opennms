@@ -19,7 +19,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>{local-packages}</Private-Package>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
