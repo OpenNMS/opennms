@@ -21,16 +21,16 @@ endif::[]
 ifeval::["{page-component-title}" == "Horizon"]
 == Quick installation
 
-If you want to get started quickly with OpenNMS Horizon on a bare metal system, check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
-This convenient bootstrap script installs Horizon on Debian or CentOS systems, running the steps documented in this section of the deployment guide.
-Use this quick starting point to evaluate and explore how to configure Horizon in complex distributed environments.
+If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
+This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
+Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
 
 === Scope
 
-* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release
-* Installation follows the best-practices from our official docs
-* Script does not deal with existing installations or upgrades
-* Script does not configure or install Minions, Sentinels, or distributed time series storage like Cortex.
+* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
+* Installation follows the best-practices from our official docs.
+* Script is only for new installs and does not deal with existing installations or upgrades.
+* Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
 
 endif::[]
 
