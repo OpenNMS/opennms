@@ -1,5 +1,5 @@
 = Sentinel Features
-:discovery: Discover some of the Sentinel features you can install manually in OpenNMS Horizon/Meridian: core, Java Message Service (JMS), Kafka, flows, and so on.
+:description: Discover some of the Sentinel features you can install manually in OpenNMS Horizon/Meridian: core, Java Message Service (JMS), Kafka, flows, and so on.
 
 The following list contains some features which may be installed manually:
 
