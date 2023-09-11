@@ -33,7 +33,7 @@
     "@featherds/navigation-rail": "0.10.17",
     "@featherds/pagination": "0.10.17",
     "@featherds/progress": "0.10.17",
-    "@featherds/protected-input": "0.10.17",
+    "@featherds/protected-input": "0.12.20",
     "@featherds/radio": "0.10.17",
     "@featherds/select": "0.10.17",
     "@featherds/snackbar": "0.10.17",
