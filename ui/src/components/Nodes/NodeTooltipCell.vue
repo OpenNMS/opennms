@@ -1,5 +1,5 @@
 <template>
-  <td :class="text ? 'focus-cell' : ''">
+  <td :class="text ? 'pointer' : ''">
     <FeatherTooltip
       :title="text"
       :alignment="PointerAlignment.left"
@@ -23,9 +23,3 @@ defineProps({
 })
 
 </script>
-
-<style lang="scss" scoped>
-.focus-cell {
-  cursor: pointer;
-}
-</style>

@@ -29,6 +29,8 @@ const props = defineProps({
   }
 })
 
+defineEmits(['close'])
+
 const labels = reactive({
   title: 'Node Details',
   close: 'Close'

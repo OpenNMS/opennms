@@ -4,7 +4,7 @@
     :alignment="PointerAlignment.center"
     :placement="PopoverPlacement.top"
     v-slot="{ attrs, on }">
-    <div v-if="hasIngressFlow(node) || hasEgressFlow(node)" v-bind="attrs" v-on="on">
+    <div v-if="hasIngressFlow(node) || hasEgressFlow(node)" v-bind="attrs" v-on="on" class="pointer">
       <font-awesome-icon v-if="hasIngressFlow(node)" :icon="'fa-solid fa-long-arrow-left'"></font-awesome-icon>
       <br v-if="hasIngressFlow(node) && hasEgressFlow(node)" style="height: 40px" />
       <font-awesome-icon v-if="hasEgressFlow(node)" :icon="'fa-solid fa-long-arrow-right'"></font-awesome-icon>
@@ -37,7 +37,3 @@ const flowTooltipTitle = (node: Node) => {
   return ''
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

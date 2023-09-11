@@ -49,12 +49,10 @@ const selectColumn = (col: NodeColumnSelectionItem) => {
   }
 
   store.dispatch('nodeStructureModule/updateNodeColumnSelection', newItem)
-  return false
 }
 
 const resetToDefault = () => {
   store.dispatch('nodeStructureModule/resetColumnSelectionToDefault')
-  return false
 }
 </script>
 

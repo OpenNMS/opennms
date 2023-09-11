@@ -102,10 +102,6 @@ const mapLink = (name: string, node: Node) => {
 </script>
 
 <style lang="scss" scoped>
-.focus-icon {
-  cursor: pointer;
-}
-
 .node-menu-item {
   padding: 1em;
 }

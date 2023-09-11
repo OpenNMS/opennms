@@ -130,16 +130,15 @@ const metadataSearchResults = computed(() => {
 })
 
 const selectMetaItem = (obj: any) => {
-  console.log('selectMetaItem:')
+  console.log('selectMetaItem')
 }
 
 const resetMetaSearch = () => {
-  console.log('resetMetaSearch:')
+  console.log('resetMetaSearch')
 }
 
 const categoryModeUpdated = (val: any) => {
   store.dispatch('nodeStructureModule/setCategoryMode', val)
-  return false
 }
 
 const isCategorySelected = (cat: Category) => {
