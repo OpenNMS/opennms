@@ -263,7 +263,7 @@ const sortStates: Record<string, SORT> = reactive({
   lastBackup: SORT.NONE,
   lastUpdated: SORT.NONE
 })
-const { arrivedState, directions } = useScroll(tableWrap, {
+const { arrivedState, directions } = useScroll(tableWrap.value as HTMLElement, {
   offset: { bottom: 300 }
 })
 

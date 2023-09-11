@@ -2,11 +2,16 @@
   <div class="geo-map">
     <MapSearch class="search-bar" @fly-to-node="flyToNode" @set-bounding-box="setBoundingBox" />
     <SeverityFilter />
+    <!--
+      vue-leaflet v0.7.0 needs useGlobalLeaflet=false
+      See: https://github.com/vue-leaflet/vue-leaflet/releases/tag/v0.7.0
+    -->
     <LMap
       ref="map"
       :center="center"
       :max-zoom="19"
       :min-zoom="2"
+      :useGlobalLeaflet="false"
       :zoomAnimation="true"
       @ready="onLeafletReady"
       @moveend="onMoveEnd"
@@ -254,7 +259,7 @@ const onLeafletReady = async () => {
 
   leafletObject.value = map.value.leafletObject
 
-  if (leafletObject.value != undefined && leafletObject.value != null) {
+  if (leafletObject.value !== undefined && leafletObject.value !== null) {
     // set default map view port
     leafletObject.value.zoomControl.setPosition('topright')
     leafletReady.value = true

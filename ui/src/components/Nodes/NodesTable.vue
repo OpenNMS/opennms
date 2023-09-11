@@ -1,70 +1,93 @@
 <template>
   <div class="card">
     <div class="feather-row">
-      <div class="feather-col-12">
-        <BreadCrumbs :items="breadcrumbs" />
+      <div class="feather-col-8">
+        <span class="title">Nodes</span>
+      </div>
+      <div class="feather-col-4">
+        <div class="feather-row">
+          <div class="feather-col-1">
+            <ColumnSelectDropdown></ColumnSelectDropdown>
+          </div>
+          <div class="feather-col-11">
+            <FeatherInput
+              @update:modelValue="searchFilterHandler"
+              label="Search node label"
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class="feather-row">
-      <div class="feather-col-3">
-        <FeatherInput
-          @update:modelValue="searchFilterHandler"
-          label="Search node label"
-        />
-      </div>
-    </div>
-    <div class="feather-row">
       <div class="feather-col-12">
-        <table
-          class="tl1 tl2 tl3 tl4"
-          summary="Nodes"
+        <div
+          id="wrap"
+          class="node-table"
         >
-          <thead>
-            <tr>
-              <FeatherSortHeader
-                scope="col"
-                property="label"
-                :sort="sortStates.label"
-                v-on:sort-changed="sortChanged"
-                >Label</FeatherSortHeader
+          <table
+            class="tl1 tl2 tl3 tl4 tl5 tl6 tl7 tl8 tc9"
+            summary="Nodes"
+          >
+            <thead>
+              <tr>
+                <th scope="column" />
+                <template v-for="column in columns" :key="column.id">
+                  <FeatherSortHeader
+                    scope="col"
+                    :property="column.id"
+                    :sort="sortStateForId(column.id)"
+                    v-on:sort-changed="sortChanged"
+                    v-if="column.selected"
+                  >{{ column.label }}</FeatherSortHeader>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="node in nodes"
+                :key="node.id"
               >
-              <FeatherSortHeader
-                scope="col"
-                property="location"
-                :sort="sortStates.location"
-                v-on:sort-changed="sortChanged"
-                >Location</FeatherSortHeader
-              >
-              <FeatherSortHeader
-                scope="col"
-                property="foreignSource"
-                :sort="sortStates.foreignSource"
-                v-on:sort-changed="sortChanged"
-                >Foreign Source</FeatherSortHeader
-              >
-              <FeatherSortHeader
-                scope="col"
-                property="foreignId"
-                :sort="sortStates.foreignId"
-                v-on:sort-changed="sortChanged"
-                >Foreign Id</FeatherSortHeader
-              >
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="node in nodes"
-              :key="node.id"
-            >
-              <td>
-                <router-link :to="`/node/${node.id}`">{{ node.label }}</router-link>
-              </td>
-              <td>{{ node.location }}</td>
-              <td>{{ node.foreignSource }}</td>
-              <td>{{ node.foreignId }}</td>
-            </tr>
-          </tbody>
-        </table>
+                <td>
+                  <NodeActionsDropdown
+                    :baseHref="mainMenu.baseHref"
+                    :node="node"
+                    :triggerNodeInfo="onNodeInfo"
+                  />
+                </td>
+
+                <template v-for="column in columns" :key="column.id">
+                  <td v-if="isSelectedColumn(column, 'id')">
+                    <a
+                      :href="computeNodeLink(node.id)"
+                      @click="onNodeLinkClick(node.id)"
+                      target="_blank">
+                      {{ node.id }}
+                    </a>
+                  </td>
+                  <td v-if="isSelectedColumn(column, 'label')">
+                    <a
+                      :href="computeNodeLink(node.id)"
+                      @click="onNodeLinkClick(node.id)"
+                      target="_blank">
+                      {{ node.label }}
+                    </a>
+                  </td>
+                  <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
+
+                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignSource')" :text="node.foreignSource" />
+                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignId')" :text="node.foreignId" />
+                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysContact')" :text="node.sysContact" />
+                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysLocation')" :text="node.sysLocation" />
+                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysDescription')" :text="node.sysDescription" />
+
+                  <td v-if="isSelectedColumn(column, 'flows')">
+                    <FlowTooltipCell :node="node" />
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <Pagination
@@ -75,32 +98,88 @@
       totalCountStateName="totalCount"
     />
   </div>
+  <NodeDetailsDialog
+    @close="dialogVisible = false"
+    :visible="dialogVisible"
+    :node="dialogNode">
+  </NodeDetailsDialog>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import Pagination from '../Common/Pagination.vue'
+<script setup lang="ts">
 import { useStore } from 'vuex'
-import { QueryParameters, UpdateModelFunction } from '@/types'
-import useQueryParameters from '@/composables/useQueryParams'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import { FeatherSortObject } from '@/types'
-import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import ColumnSelectDropdown from './ColumnSelectDropdown.vue'
+import FlowTooltipCell from './FlowTooltipCell.vue'
+import NodeActionsDropdown from './NodeActionsDropdown.vue'
+import NodeDetailsDialog from './NodeDetailsDialog.vue'
+import NodeTooltipCell from './NodeTooltipCell.vue'
+import Pagination from '../Common/Pagination.vue'
+import { buildNodeStructureQuery } from './utils'
+import useQueryParameters from '@/composables/useQueryParams'
 import { useMenuStore } from '@/stores/menuStore'
-import { BreadCrumb } from '@/types'
+import {
+  Category,
+  FeatherSortObject,
+  MonitoringLocation,
+  Node,
+  NodeColumnSelectionItem,
+  QueryParameters,
+  SetOperator,
+  UpdateModelFunction } from '@/types'
+import { MainMenu } from '@/types/mainMenu'
 
 const store = useStore()
 const menuStore = useMenuStore()
 
 const sortStates: any = reactive({
+  id: SORT.NONE,
   label: SORT.ASCENDING,
   location: SORT.NONE,
   foreignSource: SORT.NONE,
-  foreignId: SORT.NONE
+  foreignId: SORT.NONE,
+  sysContact: SORT.NONE,
+  sysLocation: SORT.NONE,
+  sysDescription: SORT.NONE,
+  flows: SORT.NONE
 })
+
+const sortStateForId = (label: string) => {
+  switch (label) {
+    case 'id': return sortStates.id
+    case 'label': return sortStates.label
+    case 'location': return sortStates.location
+    case 'foreignSource': return sortStates.foreignSource
+    case 'foreignId': return sortStates.foreignId
+    case 'sysContact': return sortStates.sysContact
+    case 'sysLocation': return sortStates.sysLocation
+    case 'sysDescription': return sortStates.sysDescription
+    case 'flows': return sortStates.flows
+  }
+
+  return SORT.NONE
+}
+
+const currentSearch = ref('')
+const nodes = computed(() => store.state.nodesModule.nodes)
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
+const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
+const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
+const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)
+const categoryMode = computed<SetOperator>(() => store.state.nodeStructureModule.categoryMode)
+const dialogVisible = ref(false)
+const dialogNode = ref<Node>()
+const columns = computed<NodeColumnSelectionItem[]>(() => store.state.nodeStructureModule.columns)
+
+const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
+  return column.selected && column.id === id
+}
+
+const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
+  limit: 10,
+  offset: 0,
+  orderBy: 'label'
+}, 'nodesModule/getNodes')
 
 const sortChanged = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
@@ -110,42 +189,80 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   sort(sortObj)
 }
 
-const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
-  limit: 10,
-  offset: 0,
-  orderBy: 'label'
-}, 'nodesModule/getNodes')
+const buildQueryParams = (searchVal: string) => {
+  const params = {
+    searchVal,
+    selectedCategories: selectedCategories.value,
+    categoryMode: categoryMode.value,
+    selectedFlows: selectedFlows.value,
+    selectedLocations: selectedLocations.value
+  }
+
+  return buildNodeStructureQuery(params)
+}
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  const searchQueryParam: QueryParameters = { _s: `node.label==${val}*` }
+  currentSearch.value = val
+  updateQuery(val)
+}
+
+const onNodeInfo = (node: Node) => {
+  dialogNode.value = node
+  dialogVisible.value = true
+}
+
+const updateQuery = (val?: string) => {
+  const searchQuery = buildQueryParams(val || currentSearch.value)
+  const searchQueryParam: QueryParameters = { _s: searchQuery }
   const updatedParams = { ...queryParameters.value, ...searchQueryParam }
+  // if there is no search query, remove the '_s' property entirely so it doesn't
+  // get put into the API request query string
+  if (!searchQuery) {
+    delete updatedParams._s
+  }
+
   store.dispatch('nodesModule/getNodes', updatedParams)
   queryParameters.value = updatedParams
 }
-const nodes = computed(() => store.state.nodesModule.nodes)
 
-const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+const computeNodeLink = (nodeId: number) => {
+  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+}
 
-const breadcrumbs: BreadCrumb[] = [
-  { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Nodes', to: '/', position: 'last' }
-]
+const onNodeLinkClick = (nodeId: number) => {
+  window.location.assign(computeNodeLink(nodeId))
+}
+
+watch([categoryMode, selectedCategories, selectedFlows, selectedLocations], () => {
+  updateQuery()
+})
 </script>
 
-<style
-  lang="scss"
-  scoped
->
+<style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+
+#wrap {
+  overflow: auto;
+  white-space: nowrap;
+}
+
 .card {
   @include elevation(2);
   background: var($surface);
   padding: 15px;
 }
+
 table {
   @include table;
+  @include table-condensed;
+  @include row-select();
+  @include row-hover();
+}
+
+.title {
+  @include headline1;
+  display: block;
 }
 </style>
-

@@ -1,7 +1,6 @@
 import { Commit, Dispatch } from 'vuex'
 import { SORT } from '@featherds/table'
 
-
 export interface VuexContext {
   commit: Commit
   dispatch: Dispatch
@@ -49,6 +48,9 @@ export interface ApiResponse {
   totalCount: number
 }
 
+export interface CategoryApiResponse extends ApiResponse {
+  category: Category[]
+}
 export interface NodeApiResponse extends ApiResponse {
   node: Node[]
 }
@@ -80,6 +82,10 @@ export interface IfServiceApiResponse extends ApiResponse {
   'monitored-service': IfService[]
 }
 
+export interface MonitoringLocationApiResponse extends ApiResponse {
+  location: MonitoringLocation[]
+}
+
 export interface Node {
   location: string
   type: string
@@ -95,8 +101,8 @@ export interface Node {
   createTime: number
   foreignId: string
   foreignSource: string
-  lastEgressFlow: any
-  lastIngressFlow: any
+  lastEgressFlow: number      // timestamp
+  lastIngressFlow: number
   labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
@@ -105,6 +111,13 @@ export interface Node {
   sysName: string
   sysContact: string
   sysLocation: string
+}
+
+export interface NodeColumnSelectionItem {
+  id: string
+  label: string
+  selected: boolean
+  order: number // 0-based
 }
 
 export interface MapNode {
@@ -151,6 +164,18 @@ export interface Event {
   source: string
   time: number
   uei: string
+}
+
+export interface MonitoringLocation {
+  tags: string[]
+  geolocation: string
+  longitude: number
+  latitude: number
+  priority: number
+  'location-name': string
+  'monitoring-area': string
+  name: string    // mapped from 'location-name' after API GET call response
+  area: string    // mapped from 'monitoring-area' after API GET call response
 }
 
 export interface SnmpInterface {
@@ -474,4 +499,9 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
+}
+
+export enum SetOperator {
+  Union = 1,
+  Intersection = 2
 }

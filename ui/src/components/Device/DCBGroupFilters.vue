@@ -59,9 +59,10 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
-
-import store from '@/store'
+import { useStore } from 'vuex'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
+
+const store = useStore()
 
 const vendorOptions = computed<string[]>(() => store.state.deviceModule.vendorOptions)
 const backupStatusOptions = computed<string[]>(() => store.state.deviceModule.backupStatusOptions)
