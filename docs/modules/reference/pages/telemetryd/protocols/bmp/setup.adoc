@@ -19,6 +19,10 @@ To configure BMP, enable the BMP-TCP-5000 listener and the various BMP adapters 
         </adapter>
 ----
 
+The adapters you choose to enable depends on the use case.
+For example, if you want to know the status of peers, you would enable the BMP peer status adapter.
+If you want to know all the BGP updates, enable the BGP persisting adapter.
+
 In addition to enabling the listener and adapters, you can configure various parameters for the parser and adapters.
 See subsequent chapters in this section for details on these optional parameters.
 
@@ -48,13 +52,4 @@ You can use Sentinel to process BMP statistics ingested by one or more Minions i
 All of the BMP-related adapters can run on Sentinel, allowing you to generate events and metrics, and ingest route changes.
 In this mode, events are sent back to the message broker for the core to process and metrics are persisted directly to the time series database.
 
-.From the Sentinel Karaf console
-[source, karaf]
-----
-config:
-config:
-config:
-config:update
-----
-
-//please provide content or correct process.
+For an example of how to set up BMP with Sentinel, see xref:reference:telemetryd/protocols/bmp/persisting-adapter.adoc#run-bmp-sentinel[Run BMP adapter on Sentinel].

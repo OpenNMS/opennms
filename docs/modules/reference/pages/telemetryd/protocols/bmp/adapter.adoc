@@ -2,7 +2,7 @@
 [[telemetryd-bmp-statistics-adapter]]
 = BMP Telemetry Adapter
 
-The BMP telemetry adapter handles BMP statistics that the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses.
+The BMP telemetry adapter handles BMP statistics that the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses.
 Statistics received from the router are associated as performance data with that router.
 The router must exist as a regular node in {page-component-title}.
 
@@ -30,5 +30,3 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 | Enables lookup using BGP IDs.
 | n/a
 |===
-
-//not clear on what value should go with this parameter

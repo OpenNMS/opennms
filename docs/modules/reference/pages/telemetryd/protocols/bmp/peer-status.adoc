@@ -3,7 +3,7 @@
 = BMP Peer Status Adapter
 
 The BMP peer status adapter creates events for peer status changes.
-It handles BMP Peer Up and Down messages that the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and converts them to {page-component-title} events.
+It handles BMP Peer Up and Down messages that the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses, and converts them to {page-component-title} events.
 {page-component-title} associates the created events with the router sending the messages.
 This router must exist as a regular node in {page-component-title}.
 

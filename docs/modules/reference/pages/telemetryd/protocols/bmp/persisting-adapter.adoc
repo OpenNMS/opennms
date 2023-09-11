@@ -2,11 +2,13 @@
 [[telemetryd-bmp-persisting-adapter]]
 = BMP Persisting Adapter
 
-The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
-It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and creates OpenBMP-compatible messages, which are then
+The BMP persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
+It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses, and creates OpenBMP-compatible messages, which are then
 persisted in the OpenNMS PostgreSQL DB.
 
-//are there reasons why users wouldn't want to run this?
+NOTE: The BMP persisting adapter can produce huge volumes of data.
+You must have the proper setup for PostgreSQL with TimeScale, and for more throughput, you should use Sentinels.
+Failure to do so can cause issues with other {page-component-title} functionality.
 
 == Facts
 
@@ -15,8 +17,9 @@ persisted in the OpenNMS PostgreSQL DB.
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter`
 |===
 
-Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {page-component-title}.
-//not clear on what that sentence means. It doesn't work on Sentinel?
+Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on the{page-component-title} core.
+It does not work on Sentinel
+
 The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
 
 BMP stats are stored as time series data in PostgreSQL with the TimescaleDB extension (link:https://docs.timescale.com/latest/getting-started/installation[installation instructions]).
@@ -72,9 +75,10 @@ config:property-set rpkiUrl http://localhost:8080/api/export.json
 config:update
 ----
 
-== Run BMP Adapter on Sentinel
+[[run-bmp-sentinel]]
+== Run BMP adapter on Sentinel
 
-BMP Persisting Adapter can also run on Sentinel.
+The BMP persisting adapter can also run on Sentinel.
 Sentinel must start the appropriate BMP adapter.
 In Sentinel, adapters are configured either by placing a .cfg file in `$\{SENTINEL_HOME}/etc` or via a `config:edit` statement.
 
