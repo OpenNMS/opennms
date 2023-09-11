@@ -1,7 +1,8 @@
 
 = Configure the Kafka Producer
+:description: Learn how to fine-tune the Kafka Producer in OpenNMS Horizon/Meridian, including configuring filtering, metric forwarding, and topic names.
 
-The Kafka Producer exposes the following options to help fine tune its behavior.
+The Kafka Producer exposes the following options to help fine-tune its behavior.
 
 [options="header" cols="1,3,1"]
 |===

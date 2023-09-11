@@ -54,6 +54,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,7 @@ public class HibernateEventWriter implements EventWriter {
     public static final String LOG_MSG_DEST_LOG_AND_DISPLAY = "logndisplay";
     public static final String LOG_MSG_DEST_LOG_ONLY = "logonly";
     public static final String LOG_MSG_DEST_DISPLAY_ONLY = "displayonly";
+    public static final String LOG_MSG_DEST_DISCARD_TRAPS = "discardtraps";
     
     @Autowired
     private TransactionOperations m_transactionManager;
@@ -326,8 +328,13 @@ public class HibernateEventWriter implements EventWriter {
                 // if 'displayonly' set display column to true
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_YES));
-            } else if (LOG_MSG_DEST_SUPRRESS.equals(logdest)) {
+            } else if (LOG_MSG_DEST_SUPRRESS.equals(logdest) || LOG_MSG_DEST_DISCARD_TRAPS.equals(logdest)) {
                 // if 'suppress' set both log and display to false
+                ovent.setEventLog(String.valueOf(MSG_NO));
+                ovent.setEventDisplay(String.valueOf(MSG_NO));
+            } else {
+                // All other destinations are suppressed by default
+                LOG.warn("Unknown log destination '{}': suppressing event", logdest);
                 ovent.setEventLog(String.valueOf(MSG_NO));
                 ovent.setEventDisplay(String.valueOf(MSG_NO));
             }

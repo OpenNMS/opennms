@@ -225,6 +225,7 @@
                           <feature>zookeeper-dependencies</feature>
 
                           <!-- base API features -->
+                          <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-health</feature>
                           <feature>opennms-health-api</feature>
                           <feature>opennms-newts</feature>

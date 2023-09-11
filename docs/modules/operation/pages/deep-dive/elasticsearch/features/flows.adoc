@@ -1,6 +1,7 @@
 
 [[ga-elasticsearch-integration-flow-support]]
 = Flow Support
+:description: Learn more about the subset of fields in Elasticsearch flow documents in OpenNMS/Meridian.
 
 NOTE: Flow support is described in detail <<deep-dive/flows/introduction.adoc#ga-flow-support-introduction, here>>.
 

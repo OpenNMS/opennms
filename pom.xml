@@ -616,6 +616,9 @@
           <!-- <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath> -->
           <!-- this will require touching a _lot_ of files <doclint>all</doclint> -->
           <doclint>none</doclint>
+          <additionalJOptions>
+            <additionalJOption>-J-Djdk.util.zip.disableZip64ExtraFieldValidation=true</additionalJOption>
+          </additionalJOptions>
           <additionalOptions>
             <!-- for GrafanaPanelDatasource -->
             <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
@@ -1667,7 +1670,7 @@
     <snakeyamlVersion>1.33</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
-    <jasperreportsVersion>6.3.0</jasperreportsVersion>
+    <jasperreportsVersion>6.20.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jasyptVersion>1.9.3</jasyptVersion>
     <javassistVersion>3.29.2-GA</javassistVersion>
@@ -1683,7 +1686,7 @@
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.51.v20230217</jettyVersion>
+    <jettyVersion>9.4.52.v20230823</jettyVersion>
     <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
@@ -3583,7 +3586,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.10.13</version>
+        <version>1.10.14</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
