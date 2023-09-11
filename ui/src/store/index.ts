@@ -15,7 +15,6 @@ import ipInterfacesModule from './ipInterfaces'
 import logsModule from './logs'
 import mapModule from './map'
 import nodesModule from './nodes'
-import nodeStructureModule from './nodeStructure'
 import pluginModule from './plugin'
 import resourceModule from './resource'
 import scvModule from './scv'
@@ -38,7 +37,6 @@ export default createStore({
     logsModule,
     mapModule,
     nodesModule,
-    nodeStructureModule,
     pluginModule,
     resourceModule,
     scvModule,

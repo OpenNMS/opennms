@@ -102,19 +102,19 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherList, FeatherListItem } from '@featherds/list'
-import { useStore } from 'vuex'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { Category, MonitoringLocation, SetOperator } from '@/types'
 
-const store = useStore()
+const nodeStructureStore = useNodeStructureStore()
 const clearIcon = ref(ClearIcon)
-const categories = computed<Category[]>(() => store.state.nodeStructureModule.categories)
-const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
+const categories = computed<Category[]>(() => nodeStructureStore.categories)
+const selectedCategories = computed<Category[]>(() => nodeStructureStore.selectedCategories)
 const flowTypes = computed<string[]>(() => ['Ingress', 'Egress'])
-const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
-const categoryMode = computed(() => store.state.nodeStructureModule.categoryMode)
+const selectedFlows = computed<string[]>(() => nodeStructureStore.selectedFlows)
+const categoryMode = computed(() => nodeStructureStore.categoryMode)
 
-const locations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.monitoringLocations)
-const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)
+const locations = computed<MonitoringLocation[]>(() => nodeStructureStore.monitoringLocations)
+const selectedLocations = computed<MonitoringLocation[]>(() => nodeStructureStore.selectedMonitoringLocations)
 const selectedCategoryCount = computed<number>(() => selectedCategories.value?.length || 0)
 const selectedFlowCount = computed<number>(() => selectedFlows.value?.length || 0)
 const selectedLocationCount = computed<number>(() => selectedLocations.value?.length || 0)
@@ -138,7 +138,7 @@ const resetMetaSearch = () => {
 }
 
 const categoryModeUpdated = (val: any) => {
-  store.dispatch('nodeStructureModule/setCategoryMode', val)
+  nodeStructureStore.setCategoryMode(val)
 }
 
 const isCategorySelected = (cat: Category) => {
@@ -154,15 +154,15 @@ const isLocationSelected = (loc: MonitoringLocation) => {
 }
 
 const onClearCategories = () => {
-  store.dispatch('nodeStructureModule/setSelectedCategories', [])
+  nodeStructureStore.setSelectedCategories([])
 }
 
 const onClearFlows = () => {
-  store.dispatch('nodeStructureModule/setSelectedFlows', [])
+  nodeStructureStore.setSelectedFlows([])
 }
 
 const onClearLocations = () => {
-  store.dispatch('nodeStructureModule/setSelectedMonitoringLocations', [])
+  nodeStructureStore.setSelectedMonitoringLocations([])
 }
 
 const onClearAll = () => {
@@ -178,39 +178,35 @@ const onClearAll = () => {
 * @param isSelected predicate for determining whether the item was previously selected
 * @param existingItems array of existing values
 * @param deselector function for determining the item that should be deselected
-* @param dispatchName dispatch name within the 'nodeStructureModule' for setting the new selected item
 */
-const onSelectionClick = <T,>(item: T, isSelected: boolean, existingItems: T[],
-  deselector: ((existingItem: T, clickedItem: T) => boolean), dispatchName: string) => {
-
-  let newSelection: T[] = []
-
+const getNewSelection = <T,>(item: T, isSelected: boolean, existingItems: T[], deselector: ((existingItem: T, clickedItem: T) => boolean)) => {
   if (isSelected) {
     // deselect clicked item
-    newSelection = existingItems.filter(c => deselector(c, item))
+    return existingItems.filter(c => deselector(c, item))
   } else {
     // add clicked item to selection
-    newSelection = [...existingItems, item]
+    return [...existingItems, item]
   }
-
-  store.dispatch(`nodeStructureModule/${dispatchName}`, newSelection)
 }
 
 const onCategoryClick = (cat: Category) => {
-  onSelectionClick(cat, isCategorySelected(cat), selectedCategories.value, c => c.id !== cat.id, 'setSelectedCategories')
+  const newSelection = getNewSelection(cat, isCategorySelected(cat), selectedCategories.value, c => c.id !== cat.id)
+  nodeStructureStore.setSelectedCategories(newSelection)
 }
 
 const onFlowClick = (flow: string) => {
-  onSelectionClick(flow, isFlowSelected(flow), selectedFlows.value, f => f !== flow, 'setSelectedFlows')
+  const newSelection = getNewSelection(flow, isFlowSelected(flow), selectedFlows.value, f => f !== flow)
+  nodeStructureStore.setSelectedFlows(newSelection)
 }
 
 const onLocationClick = (loc: MonitoringLocation) => {
-  onSelectionClick(loc, isLocationSelected(loc), selectedLocations.value, x => x.name !== loc.name, 'setSelectedMonitoringLocations')
+  const newSelection = getNewSelection(loc, isLocationSelected(loc), selectedLocations.value, x => x.name !== loc.name)
+  nodeStructureStore.setSelectedMonitoringLocations(newSelection)
 }
 
 onMounted(() => {
-  store.dispatch('nodeStructureModule/getCategories', true)
-  store.dispatch('nodeStructureModule/getMonitoringLocations', true)
+  nodeStructureStore.getCategories()
+  nodeStructureStore.getMonitoringLocations()
 })
 </script>
 
