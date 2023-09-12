@@ -24,10 +24,13 @@
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { loadNodePreferences } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
+const nodeStructureStore = useNodeStructureStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
@@ -37,6 +40,14 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+onMounted(() => {
+  // load any saved preferences
+  const prefs = loadNodePreferences()
+
+  if (prefs) {
+    nodeStructureStore.setFromNodePreferences(prefs)
+  }
+})
 </script>
   
 <style lang="scss" scoped>

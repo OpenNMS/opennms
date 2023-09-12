@@ -14,7 +14,7 @@
               <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
             </FeatherButton>
           </div>
-          <div class="feather-col-11">
+          <div class="feather-col-11 search-filter-column">
             <FeatherInput
               @update:modelValue="searchFilterHandler"
               label="Search node label"
@@ -305,5 +305,9 @@ table {
 .title {
   @include headline1;
   display: block;
+}
+
+.feather-col-11.search-filter-column {
+  padding-left: 1rem;
 }
 </style>

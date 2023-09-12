@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { Category, MonitoringLocation, NodeColumnSelectionItem, SetOperator } from '@/types'
+import {
+  Category,
+  MonitoringLocation,
+  NodeColumnSelectionItem,
+  NodeFilterPreferences,
+  NodePreferences,
+  SetOperator
+} from '@/types'
 
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
@@ -79,6 +86,46 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     columns.value = [...newColumns]
   }
 
+  const getNodePreferences = async () => {
+    const nodeColumns = columns.value
+
+    const nodeFilter = {
+      categoryMode: categoryMode.value,
+      selectedCategories: selectedCategories.value,
+      selectedFlows: selectedFlows.value,
+      selectedMonitoringLocations: selectedMonitoringLocations.value
+    } as NodeFilterPreferences
+
+    const nodePrefs = {
+      nodeColumns,
+      nodeFilter
+    } as NodePreferences
+
+    return nodePrefs
+  }
+
+  const setFromNodePreferences = async (prefs: NodePreferences) => {
+    if (prefs.nodeColumns?.length) {
+      columns.value = [...prefs.nodeColumns]
+    }
+
+    if (prefs.nodeFilter) {
+      categoryMode.value = prefs.nodeFilter.categoryMode
+
+      if (prefs.nodeFilter.selectedCategories?.length) {
+        selectedCategories.value = [...prefs.nodeFilter.selectedCategories]
+      }
+
+      if (prefs.nodeFilter.selectedFlows?.length) {
+        selectedFlows.value = [...prefs.nodeFilter.selectedFlows]
+      }
+
+      if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
+        selectedMonitoringLocations.value = [...prefs.nodeFilter.selectedMonitoringLocations]
+      }
+    }
+  }
+
   return {
     categories,
     categoryCount,
@@ -90,12 +137,14 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     selectedMonitoringLocations,
     getCategories,
     getMonitoringLocations,
+    getNodePreferences,
     resetColumnSelectionToDefault,
     setSelectedCategories,
     setCategoryMode,
     setSelectedFlows,
     setSelectedMonitoringLocations,
     setNodeColumnSelection,
+    setFromNodePreferences,
     updateNodeColumnSelection
   }
 })
