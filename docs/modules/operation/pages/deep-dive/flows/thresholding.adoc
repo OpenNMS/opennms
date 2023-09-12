@@ -133,5 +133,3 @@ You do not need to configure thresholds on Sentinel as long as you xref:deep-div
 Threshold configuration and state are synced dynamically to all places where needed.
 A triggered threshold results in an event, which Sentinel sends back to the core for further processing and transformation into alarms, and so on.
 
-
-
