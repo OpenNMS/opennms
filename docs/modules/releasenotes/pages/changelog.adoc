@@ -6,9 +6,9 @@
 
 == Release 32.0.3
 
-Release 32.0.3 contains a bunch of documentation updates, as well as a number of bug fixes and enhancements including improvements to the Karaf core startup, polling and node search fixes, IPv6 support in ILR, and a fix for loading the Cortext timeseries plugin.
+Release 32.0.3 contains a bunch of documentation updates, as well as a number of bug fixes and enhancements including improvements to the Karaf core startup, polling and node search fixes, IPv6 support in ILR, and a fix for loading the Cortex timeseries plugin.
 
-The codename for Meridian 32.0.3 is https://wikipedia.org/wiki/$$Acid_techno$$[_Acid Techno_].
+The codename for Horizon 32.0.3 is https://wikipedia.org/wiki/$$Acid_techno$$[_Acid Techno_].
 
 === Enhancement
 
