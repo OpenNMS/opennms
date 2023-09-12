@@ -1,5 +1,6 @@
 
 = AvailabilityMonitor
+:description: Get information on the deprecated AvailabilityMonitor used in legacy versions of OpenNMS Horizon/Meridian.
 
 NOTE: This monitor has been superseded by the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>>.
 
