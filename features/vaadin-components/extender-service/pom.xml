@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>vaadin-components</artifactId>
-        <version>32.0.2</version>
+        <version>32.0.3</version>
     </parent>
     <groupId>org.opennms.features.vaadin-components</groupId>
     <artifactId>extender-service</artifactId>
@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>org.ops4j.pax.swissbox</groupId>
 			<artifactId>pax-swissbox-optional-jcl</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.3</version>
 			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>

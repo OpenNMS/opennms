@@ -31,6 +31,7 @@
 --%><jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 	<jsp:param name="useionicons" value="true" />
+	<jsp:param name="ngapp" value="onms.default.apps" />
 </jsp:include>
 
 <div class="row">

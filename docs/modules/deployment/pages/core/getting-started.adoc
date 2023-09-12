@@ -3,8 +3,7 @@
 = Installation and Configuration
 :description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 7-9, Debian/Ubuntu, and Docker.
 
-This section explains how to install and configure a new {page-component-title} instance.
-It describes how to do the following tasks:
+This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
 * Install all required OpenNMS {page-component-title} components, including PostgreSQL, on a single node.
 * Run {page-component-title} core and PostgreSQL with the default configuration.
@@ -18,6 +17,23 @@ ifeval::["{page-component-title}" == "Meridian"]
 ** By default, your time series database is RRDtool, which persists RRD files on the local file system.
 endif::[]
 * Sign in to the web UI and change the `admin` account's default password.
+
+ifeval::["{page-component-title}" == "Horizon"]
+== Quick installation
+
+If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
+This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
+Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
+
+=== Scope
+
+* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
+* Installation follows the best-practices from our official docs.
+* Script is only for new installs and does not deal with existing installations or upgrades.
+* Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
+
+endif::[]
+
 
 == Requirements
 

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.flows</artifactId>
-    <version>32.0.2</version>
+    <version>32.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
@@ -43,8 +43,8 @@
     </dependency>
     <dependency>
       <groupId>io.searchbox</groupId>
-      <artifactId>jest-common</artifactId>
-      <version>5.3.3</version>
+      <artifactId>jest-complete-osgi</artifactId>
+      <version>${jestVersion}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

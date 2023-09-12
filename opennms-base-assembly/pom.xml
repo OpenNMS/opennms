@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>32.0.2</version>
+    <version>32.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -1275,4 +1275,14 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jasperreports</id>
+      <name>OpenNMS Mega-Repository (jasperreports override)</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

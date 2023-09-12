@@ -2,7 +2,7 @@
 <features name="karaf-extensions" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/core</repository>
 
-    <feature name="karaf-extender" description="Karaf Extender" version="${project.version}">
+    <feature name="karaf-extender" start-level="${earlyStartLevel}" description="Karaf Extender" version="${project.version}">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature version="${project.version}">health-api</feature>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>

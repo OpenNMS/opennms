@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>32.0.2</version>
+        <version>32.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
@@ -14,15 +14,4 @@
         <module>minion</module>
         <module>sentinel</module>
     </modules>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <extensions>true</extensions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>
