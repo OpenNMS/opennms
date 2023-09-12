@@ -38,6 +38,10 @@ const setSelectedMonitoringLocations = async (context: VuexContext, locations: s
   context.commit('SAVE_SELECTED_MONITORING_LOCATIONS_TO_STATE', locations)
 }
 
+const setNodeColumnSelection = async (context: VuexContext, columns: NodeColumnSelectionItem[]) => {
+  context.commit('SET_NODE_COLUMN_SELECTION', columns)
+}
+
 const updateNodeColumnSelection = async (context: VuexContext, column: NodeColumnSelectionItem) => {
   context.commit('UPDATE_NODE_COLUMN_SELECTION', column)
 }
@@ -48,6 +52,7 @@ export default {
   resetColumnSelectionToDefault,
   setSelectedCategories,
   setCategoryMode,
+  setNodeColumnSelection,
   setSelectedFlows,
   setSelectedMonitoringLocations,
   updateNodeColumnSelection

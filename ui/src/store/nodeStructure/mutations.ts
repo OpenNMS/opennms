@@ -29,6 +29,10 @@ const RESET_NODE_COLUMN_SELECTION = (state: State) => {
   state.columns = [...defaultColumns]
 }
 
+const SET_NODE_COLUMN_SELECTION = (state: State, columns: NodeColumnSelectionItem[]) => {
+  state.columns = [...columns]
+}
+
 const UPDATE_NODE_COLUMN_SELECTION = (state: State, column: NodeColumnSelectionItem) => {
   const newColumns = [...state.columns].map(c => {
     if (c.id === column.id) {
@@ -56,5 +60,6 @@ export default {
   SAVE_SELECTED_FLOWS_TO_STATE,
   SAVE_LOCATIONS_TO_STATE,
   SAVE_SELECTED_MONITORING_LOCATIONS_TO_STATE,
+  SET_NODE_COLUMN_SELECTION,
   UPDATE_NODE_COLUMN_SELECTION
 }

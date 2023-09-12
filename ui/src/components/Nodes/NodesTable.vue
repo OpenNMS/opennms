@@ -7,7 +7,12 @@
       <div class="feather-col-4">
         <div class="feather-row">
           <div class="feather-col-1">
-            <ColumnSelectDropdown></ColumnSelectDropdown>
+            <FeatherButton
+              icon="Open Preferences"
+              @click="openPreferences"
+            >
+              <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
+            </FeatherButton>
           </div>
           <div class="feather-col-11">
             <FeatherInput
@@ -25,7 +30,7 @@
           class="node-table"
         >
           <table
-            class="tl1 tl2 tl3 tl4 tl5 tl6 tl7 tl8 tc9"
+            :class="tableCssClasses"
             summary="Nodes"
           >
             <thead>
@@ -99,20 +104,30 @@
     />
   </div>
   <NodeDetailsDialog
+    :computeNodeLink="computeNodeLink"
     @close="dialogVisible = false"
     :visible="dialogVisible"
     :node="dialogNode">
   </NodeDetailsDialog>
+
+  <NodePreferencesDialog
+    @close="preferencesVisible = false"
+    :visible="preferencesVisible">
+  </NodePreferencesDialog>
 </template>
 
 <script setup lang="ts">
+import { markRaw } from 'vue'
 import { useStore } from 'vuex'
+import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import Settings from '@featherds/icon/action/Settings'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import ColumnSelectDropdown from './ColumnSelectDropdown.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
+import NodePreferencesDialog from './NodePreferencesDialog.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import Pagination from '../Common/Pagination.vue'
 import { buildNodeStructureQuery } from './utils'
@@ -131,6 +146,7 @@ import { MainMenu } from '@/types/mainMenu'
 
 const store = useStore()
 const menuStore = useMenuStore()
+const settingsIcon = markRaw(Settings)
 
 const sortStates: any = reactive({
   id: SORT.NONE,
@@ -169,7 +185,26 @@ const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeS
 const categoryMode = computed<SetOperator>(() => store.state.nodeStructureModule.categoryMode)
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
+const preferencesVisible = ref(false)
 const columns = computed<NodeColumnSelectionItem[]>(() => store.state.nodeStructureModule.columns)
+
+const tableCssClasses = computed<string[]>(() => {
+  const classes: string[] = columns.value.filter(col => col.selected).map((col, i) => {
+    let t = 'tl'
+
+    if (col.id === 'id') {
+      t = 'tr'
+    } else if (col.id === 'flows') {
+      t = 'tc'
+    }
+
+    // +2 : one since Feather table column classes are 1-based, one for the first action column which isn't in 'columns'
+    return `${t}${i + 2}`
+  })
+
+  // add 'action' column
+  return ['tl1', ...classes]
+})
 
 const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
   return column.selected && column.id === id
@@ -211,6 +246,10 @@ const onNodeInfo = (node: Node) => {
   dialogVisible.value = true
 }
 
+const openPreferences = () => {
+  preferencesVisible.value = true
+}
+
 const updateQuery = (val?: string) => {
   const searchQuery = buildQueryParams(val || currentSearch.value)
   const searchQueryParam: QueryParameters = { _s: searchQuery }
@@ -225,7 +264,7 @@ const updateQuery = (val?: string) => {
   queryParameters.value = updatedParams
 }
 
-const computeNodeLink = (nodeId: number) => {
+const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
 
