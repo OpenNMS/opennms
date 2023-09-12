@@ -1,6 +1,35 @@
 [[release-32-changelog]]
 
 = Changelog
+
+[[releasenotes-changelog-32.0.3]]
+
+== Release 32.0.3
+
+Release 32.0.3 contains a bunch of documentation updates, as well as a number of bug fixes and enhancements including improvements to the Karaf core startup, polling and node search fixes, IPv6 support in ILR, and a fix for loading the Cortext timeseries plugin.
+
+The codename for Meridian 32.0.3 is https://wikipedia.org/wiki/$$Acid_techno$$[_Acid Techno_].
+
+=== Enhancement
+
+* documentation enhancement for discard-uei (Issue https://issues.opennms.org/browse/NMS-3552[NMS-3552])
+* BMP Introduction (Issue https://issues.opennms.org/browse/NMS-13892[NMS-13892])
+* newts set OPENNMS_CASSANDRA_DC using template (Issue https://issues.opennms.org/browse/NMS-16025[NMS-16025])
+* Minion Container Documentation updates (Issue https://issues.opennms.org/browse/NMS-16088[NMS-16088])
+* Update help text on `import-requisition` Karaf command (Issue https://issues.opennms.org/browse/NMS-16100[NMS-16100])
+* Docs are missing a ValueMappingPropertyExtender example (Issue https://issues.opennms.org/browse/NMS-16106[NMS-16106])
+
+=== Bug
+
+* Intermittent error starting Telemetryd: No adapter found for class: org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter (Issue https://issues.opennms.org/browse/NMS-15345[NMS-15345])
+* Polling fails when rrd-status is set to true (Issue https://issues.opennms.org/browse/NMS-15806[NMS-15806])
+* Provisioning policies do not apply (Issue https://issues.opennms.org/browse/NMS-16031[NMS-16031])
+* Prevent Invalid Node Filter Search from revealing SQL query (Issue https://issues.opennms.org/browse/NMS-16057[NMS-16057])
+* Unable to install alarm history feature on Kubernetes (Issue https://issues.opennms.org/browse/NMS-16070[NMS-16070])
+* Minion and Sentinel just run with Java 1.8 - 11.x instead 11 to 17 (Issue https://issues.opennms.org/browse/NMS-16090[NMS-16090])
+* Cortex-tss-plugin 2.0.1 does not work on v32 (Issue https://issues.opennms.org/browse/NMS-16104[NMS-16104])
+* Update Instrumentation Log Reader to parse IPv6 addresses (Issue https://issues.opennms.org/browse/NMS-16114[NMS-16114])
+
 [[releasenotes-changelog-32.0.2]]
 
 == Release 32.0.2
