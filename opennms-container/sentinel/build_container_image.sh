@@ -11,18 +11,7 @@ cd "$(dirname "$0")"
 # shellcheck disable=SC1091
 source ../set-build-environment.sh
 
-../launch_yum_server.sh "$RPMDIR"
-
-cat <<END >rpms/opennms-docker.repo
-[opennms-repo-docker-common]
-name=Local RPMs to Install from Docker
-baseurl=http://${YUM_CONTAINER_NAME}:19990/
-enabled=1
-gpgcheck=0
-END
-
 docker build -t sentinel \
-  --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \
@@ -34,6 +23,3 @@ docker build -t sentinel \
   .
 
 docker image save sentinel -o images/container.oci
-
-rm -f rpms/*.repo
-../stop_yum_server.sh

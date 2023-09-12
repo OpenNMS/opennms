@@ -25,7 +25,6 @@ fi
 
 [ -n "${BUILD_BRANCH}"            ] || BUILD_BRANCH="${CIRCLE_BRANCH}"
 [ -n "${BUILD_BRANCH}"            ] || BUILD_BRANCH="$(git branch --show-current)"
-[ -n "${BUILD_NETWORK}"           ] || BUILD_NETWORK="opennms-build-network"
 [ -n "${BUILD_DATE}"              ] || BUILD_DATE="$(date -u "+%Y-%m-%dT%H:%M:%S%z")"
 [ -n "${SOURCE}"                  ] || SOURCE="${CIRCLE_REPOSITORY_URL:-local-build}"
 [ -n "${REVISION}"                ] || REVISION="${BUILD_BRANCH}-${POM_VERSION}-$(git rev-parse --short --verify HEAD)"
@@ -33,7 +32,6 @@ fi
 [ -n "${BUILD_NUMBER}"            ] || BUILD_NUMBER="${CIRCLE_BUILD_NUM:-0}"
 [ -n "${BUILD_URL}"               ] || BUILD_URL="${CIRCLE_BUILD_URL}"
 
-[ -n "${YUM_CONTAINER_NAME}"      ] || YUM_CONTAINER_NAME="yum-repo"
 [ -n "${RPMDIR}"                  ] || RPMDIR="${TOPDIR}/../target/rpm/RPMS/noarch"
 
 [ -n "${CONTAINER_PROJECT}"       ] || CONTAINER_PROJECT="$(basename "${TOPDIR}")"
