@@ -38,15 +38,15 @@ import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherIcon } from '@featherds/icon'
 import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
 import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
-import { useStore } from 'vuex'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeColumnSelectionItem } from '@/types'
 
-const store = useStore()
+const nodeStructureStore = useNodeStructureStore()
 
 const upIcon = markRaw(KeyboardArrowUp)
 const downIcon = markRaw(KeyboardArrowDown)
 
-const columns = computed<NodeColumnSelectionItem[]>(() => store.state.nodeStructureModule.columns)
+const columns = computed<NodeColumnSelectionItem[]>(() => nodeStructureStore.columns)
 
 const selectColumn = (col: NodeColumnSelectionItem) => {
   const newItem = {
@@ -54,7 +54,7 @@ const selectColumn = (col: NodeColumnSelectionItem) => {
     selected: !col.selected
   }
 
-  store.dispatch('nodeStructureModule/updateNodeColumnSelection', newItem)
+  nodeStructureStore.updateNodeColumnSelection(newItem)
 }
 
 const columnMove = (isUp: boolean, index: number) => {
@@ -73,7 +73,7 @@ const columnMove = (isUp: boolean, index: number) => {
 
   newCols.forEach((col, i) => col.order = i)
 
-  store.dispatch('nodeStructureModule/setNodeColumnSelection', newCols)
+  nodeStructureStore.setNodeColumnSelection(newCols)
 }
 
 const getOrderIconCssClasses = (isUp: boolean, index: number) => {
@@ -93,7 +93,7 @@ const getOrderIconCssClasses = (isUp: boolean, index: number) => {
 }
 
 const resetToDefault = () => {
-  store.dispatch('nodeStructureModule/resetColumnSelectionToDefault')
+  nodeStructureStore.resetColumnSelectionToDefault()
 }
 </script>
 

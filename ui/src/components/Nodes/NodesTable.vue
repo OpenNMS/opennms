@@ -133,6 +133,7 @@ import Pagination from '../Common/Pagination.vue'
 import { buildNodeStructureQuery } from './utils'
 import useQueryParameters from '@/composables/useQueryParams'
 import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
   Category,
   FeatherSortObject,
@@ -145,6 +146,7 @@ import {
 import { MainMenu } from '@/types/mainMenu'
 
 const store = useStore()
+const nodeStructureStore = useNodeStructureStore()
 const menuStore = useMenuStore()
 const settingsIcon = markRaw(Settings)
 
@@ -179,14 +181,14 @@ const sortStateForId = (label: string) => {
 const currentSearch = ref('')
 const nodes = computed(() => store.state.nodesModule.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
-const selectedCategories = computed<Category[]>(() => store.state.nodeStructureModule.selectedCategories)
-const selectedFlows = computed<string[]>(() => store.state.nodeStructureModule.selectedFlows)
-const selectedLocations = computed<MonitoringLocation[]>(() => store.state.nodeStructureModule.selectedMonitoringLocations)
-const categoryMode = computed<SetOperator>(() => store.state.nodeStructureModule.categoryMode)
+const selectedCategories = computed<Category[]>(() => nodeStructureStore.selectedCategories)
+const selectedFlows = computed<string[]>(() => nodeStructureStore.selectedFlows)
+const selectedLocations = computed<MonitoringLocation[]>(() => nodeStructureStore.selectedMonitoringLocations)
+const categoryMode = computed<SetOperator>(() => nodeStructureStore.categoryMode)
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
 const preferencesVisible = ref(false)
-const columns = computed<NodeColumnSelectionItem[]>(() => store.state.nodeStructureModule.columns)
+const columns = computed<NodeColumnSelectionItem[]>(() => nodeStructureStore.columns)
 
 const tableCssClasses = computed<string[]>(() => {
   const classes: string[] = columns.value.filter(col => col.selected).map((col, i) => {
