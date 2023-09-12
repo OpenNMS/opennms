@@ -34,6 +34,3 @@ docker build -t minion \
   .
 
 docker image save minion -o images/container.oci
-
-rm -f rpms/*.repo
-../stop_yum_server.sh
