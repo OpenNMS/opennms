@@ -1590,6 +1590,8 @@ jobs:
           name: Fetch RPM artifacts and build Horizon container image
           command: |
             cd opennms-container/horizon
+            mkdir -p rpms
+            ln ../../target/rpm/RPMS/noarch/opennms-{core,webapp-jetty,webapp-hawtio}*.rpm rpms/
             ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/horizon/images/container.oci
@@ -1663,6 +1665,8 @@ jobs:
           name: Fetch RPM artifacts and build Sentinel container image
           command: |
             cd opennms-container/sentinel
+            mkdir -p rpms
+            ln ../../target/rpm/RPMS/noarch/opennms-sentinel* rpms/
             ./build_container_image.sh
       - store_artifacts:
           path: ~/project/opennms-container/sentinel/images/container.oci

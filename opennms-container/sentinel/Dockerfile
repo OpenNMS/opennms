@@ -4,6 +4,10 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
 
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-temp
+
+COPY ./rpms /tmp/rpms
+
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
 
 ARG REQUIRED_RPMS="hostname wget gettext openssh-clients"
@@ -41,8 +45,6 @@ ARG SENTINEL_PACKAGES="opennms-sentinel"
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
 
-COPY ./rpms /tmp/rpms
-
 SHELL ["/bin/bash", "-c"]
 
 # we want these to break the caching so yum will re-install now that
@@ -51,22 +53,16 @@ ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
+RUN --mount=type=bind,source=/tmp/rpms/,target=/tmp/rpms/,from=sentinel-temp \
+    echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local RPMs from filesystem" && \
         dnf -y install /tmp/rpms/*.rpm; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y install 'dnf-command(config-manager)' && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${SENTINEL_PACKAGES}; \
     else \
         echo "installing remote RPMs from stable" && \
         dnf -y install ${SENTINEL_PACKAGES}; \
     fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
     dnf clean all && \
     rm -rf /var/cache/yum && \
     mkdir -p /opt/sentinel/data/{log,tmp} && \

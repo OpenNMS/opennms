@@ -56,7 +56,7 @@ public class ServiceCollector {
         return m_serviceID;
     }
 
-    private static final String SERVICE_ID_REGEX = "([^/]+)/(\\d+)/(\\d+.\\d+.\\d+.\\d+)/([\\w-_]+)"; // Should be consistent with BaseLogMessage.s_regexp
+    private static final String SERVICE_ID_REGEX = "([^/]+)/(\\d+)/(\\d+.\\d+.\\d+.\\d+|[0-9a-fA-F:]+)/([\\w-_]+)"; // Should be consistent with BaseLogMessage.s_regexp
     private static final Pattern SERVICE_ID_PATTERN = Pattern.compile(SERVICE_ID_REGEX);	
 
     public void addMessage(LogMessage msg) {
