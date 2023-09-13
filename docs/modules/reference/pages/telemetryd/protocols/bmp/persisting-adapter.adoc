@@ -22,7 +22,7 @@ This requires you to install the `opennms-telemetry-bmp-stats` feature on {page-
 Sentinel does not require the `opennms-telemetry-bmp-stats` feature.
 
 BMP stats are stored as time series data in PostgreSQL with the TimescaleDB extension (link:https://docs.timescale.com/latest/getting-started/installation[installation instructions]).
-For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example, `$OPENNMS_HOME/bin/install -dist`).
+For `opennms` schema, TimescaleDB extension can be added with `-t` option on install DB script (for example, `$OPENNMS_HOME/bin/install -dist`).
 If the TimescaleDB extension is not installed, stat tables will not be converted to hypertables.
 
 To load the adapter while {page-component-title} is running, use the following command in the Karaf shell.
