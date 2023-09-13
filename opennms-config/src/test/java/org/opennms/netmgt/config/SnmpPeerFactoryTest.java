@@ -30,14 +30,20 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
 import org.hamcrest.Matchers;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
@@ -50,6 +56,15 @@ public class SnmpPeerFactoryTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        final TemporaryFolder temporaryFolder = new TemporaryFolder();
+        temporaryFolder.create();
+        final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("myv1community", new Credentials("username", "specificv1"));
+        secureCredentialsVault.setCredentials("myv2community", new Credentials("username", "specificv2c"));
+        secureCredentialsVault.setCredentials("myCredentials-profile1", new Credentials("securityName-profile1", "authPassphrase-profile1"));
+        secureCredentialsVault.setCredentials("myCredentials-profile2", new Credentials("securityName-profile2", "authPassphrase-profile2"));
+        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
         setVersion(SnmpAgentConfig.VERSION2C);
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         MockLogAppender.setupLogging(true);
@@ -80,15 +95,15 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <specific>"+myLocalHost()+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\">\n" +
                 "       <specific>10.0.0.1</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"484\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\" max-request-size=\"484\">\n" +
                 "       <specific>10.0.0.2</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\""+myLocalHost()+"\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\" proxy-host=\""+myLocalHost()+"\">\n" +
                 "       <specific>10.0.0.3</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -128,7 +143,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <range begin=\"10.7.20.100\" end=\"10.7.25.100\"/>\n" +
                 "   </definition>\n" + 
                 "\n" +
-                "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
+                "   <definition version=\"v2c\" read-community=\"${scv:myv2community:password}\">\n" +
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" +
@@ -173,7 +188,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  max-vars-per-pdu=\"4\" "
                         + "  max-repetitions=\"5\" "
                         + "  max-request-size=\"484\" "
-                        + "  security-name=\"securityName\" "
+                        + "  security-name=\"${scv:myCredentials-profile2:username}\" "
+                        + "  auth-passphrase=\"${scv:myCredentials-profile2:password}\" "
                         + "  security-level=\"3\" "
                         + "  auth-protocol=\"MD5\" "
                         + "  engine-id=\"engineId\" "
@@ -188,6 +204,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  write-community=\"private\" "
                         + "  proxy-host=\""+myLocalHost()+"\""
                         + "  version=\"v3\" "
+                        + "  security-name=\"${scv:myCredentials-profile1:username}\" "
+                        + "  auth-passphrase=\"${scv:myCredentials-profile1:password}\" "
                         + "  max-vars-per-pdu=\"4\" "
                         + "  max-repetitions=\"5\" "
                         + "  max-request-size=\"484\" "
@@ -198,7 +216,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  context-name=\"profileContext\" "
                         //+ "  privacy-protocol=\"DES\" "
                         + "  enterprise-id=\"enterpriseId\">"
-                        + "<label>profile2</label>"
+                        + "<label>profile1</label>"
                         + "<filter>*.opennms.org</filter>"
                         + "</profile>"
                     + "</profiles>"
@@ -487,6 +505,9 @@ public class SnmpPeerFactoryTest extends TestCase {
             // Even if read-community/write-community is not specified, should use defaults.
             assertEquals("public", snmpAgentConfig.getReadCommunity());
             assertEquals("private", snmpAgentConfig.getWriteCommunity());
+            assertEquals("securityName-" + snmpProfile.getLabel(), snmpAgentConfig.getSecurityName());
+            assertEquals("authPassphrase-" + snmpProfile.getLabel(), snmpAgentConfig.getAuthPassPhrase());
+
             assertNull(snmpAgentConfig.getPrivProtocol());
             assertThat(snmpAgentConfig.getVersionAsString(), Matchers.isOneOf("v2c", "v3"));
         }

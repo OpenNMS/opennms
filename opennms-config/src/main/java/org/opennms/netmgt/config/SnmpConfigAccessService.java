@@ -76,7 +76,7 @@ public class SnmpConfigAccessService {
         flushAll();
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
-                return SnmpPeerFactory.getInstance().getAgentConfig(addr, location);
+                return SnmpPeerFactory.getInstance().getAgentConfig(addr, location, false);
             }
         });
     }

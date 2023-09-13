@@ -61,7 +61,7 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
     }
 
     @Override
-    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address, boolean metaDataInterpolation) {
         return null;
     }
 
