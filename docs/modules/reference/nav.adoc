@@ -37,7 +37,6 @@
 
 * xref:service-assurance/introduction.adoc[]
 ** xref:service-assurance/monitors/ActiveMQMonitor.adoc[]
-** xref:service-assurance/monitors/AvailabilityMonitor.adoc[]
 ** xref:service-assurance/monitors/BgpSessionMonitor.adoc[]
 ** xref:service-assurance/monitors/BSFMonitor.adoc[]
 ** xref:service-assurance/monitors/CiscoIpSlaMonitor.adoc[]
