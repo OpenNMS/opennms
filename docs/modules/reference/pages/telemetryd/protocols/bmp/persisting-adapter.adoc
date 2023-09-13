@@ -17,10 +17,9 @@ Failure to do so can cause issues with other {page-component-title} functionalit
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter`
 |===
 
-Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on the{page-component-title} core.
-It does not work on Sentinel
-
-The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
+Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on the {page-component-title} core.
+This requires you to install the `opennms-telemetry-bmp-stats` feature on {page-component-title}.
+Sentinel does not require the `opennms-telemetry-bmp-stats` feature.
 
 BMP stats are stored as time series data in PostgreSQL with the TimescaleDB extension (link:https://docs.timescale.com/latest/getting-started/installation[installation instructions]).
 For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example, `$OPENNMS_HOME/bin/install -dist`).
@@ -39,7 +38,7 @@ To ensure that the feature continues to be installed on subsequent restarts, add
 echo "opennms-telemetry-bmp-stats" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/telemetry-bmp.boot
 ----
 
-== Configuration BMP persistence for external sources
+== Configure BMP persistence for external sources
 
 You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
 
@@ -84,7 +83,7 @@ In Sentinel, adapters are configured either by placing a .cfg file in `$\{SENTIN
 
 The following example configures the consumption of `BMP` messages and saves the configuration in `$\{SENTINEL_HOME}/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
 
-First, login to the Karaf Shell.
+First, log in to the Karaf Shell.
 
 [source, console]
 ----
