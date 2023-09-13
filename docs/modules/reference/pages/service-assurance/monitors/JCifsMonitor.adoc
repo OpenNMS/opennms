@@ -1,8 +1,9 @@
 
 [[poller-jcifs-monitor]]
 = JCifsMonitor
+:description: Learn about the JCifsMonitor in OpenNMS Horizon/Meridian that tests a file-sharing service based on the CIFS/SMB protocol.
 
-This monitor lets you to test a file-sharing service based on the CIFS/SMB protocol.
+This monitor tests a file-sharing service based on the CIFS/SMB protocol.
 
 IMPORTANT: The use of the JCifsMonitor requires the installation of the `opennms-plugin-protocol-cifs` package before polling will start.
 
