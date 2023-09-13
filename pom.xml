@@ -1781,7 +1781,7 @@
     <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
-    <xmlgraphicsCommonsVersion>2.8</xmlgraphicsCommonsVersion>
+    <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
