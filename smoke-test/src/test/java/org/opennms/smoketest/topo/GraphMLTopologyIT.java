@@ -252,6 +252,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         Assert.assertEquals(2, topologyUIPage.getVisibleVertices().size());
         Assert.assertEquals("Routers", topologyUIPage.getVisibleVertices().get(0).getLabel());
         Assert.assertEquals("Servers", topologyUIPage.getVisibleVertices().get(1).getLabel());
+
+        topologyUIPage.clearFocus();
     }
 
     @Test
