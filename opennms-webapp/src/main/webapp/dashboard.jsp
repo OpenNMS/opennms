@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -47,6 +47,6 @@
     }
 %>
 
-<iframe name="dashboard" id="surveillance-view-ui" src="vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" class="vaadin-fullscreen"></iframe>
+<iframe name="dashboard" id="surveillance-view-ui" src="vaadin-surveillance-views?dashboard=true<%= WebSecurityUtils.sanitizeString(viewName) %>" frameborder="0" class="vaadin-fullscreen"></iframe>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

@@ -1,5 +1,6 @@
 
 = Event Daemon Configuration
+:description: How to configure the event daemon in OpenNMS Horizon/Meridian: parameters, severities, event reload configuration.
 
 The back-end configuration surrounding events is split into two areas: the configuration of eventd itself, and the configuration of events definitions known to {page-component-title}.
 
@@ -155,10 +156,28 @@ When slotting your own event definitions, take care not to place them below thes
 * If you need to customize some events in one of the default tributary files, you may want to make a copy of the file containing only the customized events and load the copy above the original in `eventconf.xml`.
 This practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
 
+At level `DEBUG`, `eventd` will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
+On busy systems, this setting may create so much noise as to be impractical.
+In these cases, you can get terse event summaries by setting `eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
+
+=== Karaf Shell
+
+Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
+This command is useful for displaying event definitions that may not be easily accessible on disk, or verifying that particular events were actually loaded.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:show-event-config -u uei.opennms.org/alarms
+----
 === Reload event configuration
 
 After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you must restart the eventd daemon.
 You can trigger a reload of the daemon in the Karaf shell or by issuing the following command on the {page-component-title} server:
 
 [source, console]
-$OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+----

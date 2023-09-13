@@ -117,7 +117,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>3.5.2</version>
+      <version>3.5.3</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -492,12 +492,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.12.1</version>
       </plugin>
       <plugin>
         <groupId>net.nicoulaj.maven.plugins</groupId>
         <artifactId>checksum-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.11</version>
       </plugin>
       <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
@@ -594,7 +594,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1</version>
         <configuration>
           <deployAtEnd>true</deployAtEnd>
           <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
@@ -603,7 +603,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.10</version>
+        <version>3.6.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -616,6 +616,9 @@
           <!-- <sourcepath>${project.basedir}/src/main;${project.build.directory}/generated-sources;${project.build.directory}/generated-sources/annotations;${project.build.directory}/generated-sources/cxf;${project.build.directory}/generated-sources/groovy-stubs;${project.build.directory}/generated-test-sources/test-annotations</sourcepath> -->
           <!-- this will require touching a _lot_ of files <doclint>all</doclint> -->
           <doclint>none</doclint>
+          <additionalJOptions>
+            <additionalJOption>-J-Djdk.util.zip.disableZip64ExtraFieldValidation=true</additionalJOption>
+          </additionalJOptions>
           <additionalOptions>
             <!-- for GrafanaPanelDatasource -->
             <option>--add-exports</option> <option>jdk.internal.opt/jdk.internal.joptsimple.internal=ALL-UNNAMED</option>
@@ -702,17 +705,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.6.0</version>
         <configuration>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
@@ -737,17 +740,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven.failsafe.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.0</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -987,36 +990,24 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <version>0.15.3</version>
       </plugin>
       <plugin>
         <groupId>de.qaware.maven</groupId>
         <artifactId>go-offline-maven-plugin</artifactId>
-        <version>1.2.5</version>
+        <version>1.2.8</version>
         <configuration>
           <dynamicDependencies>
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit3</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit3</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit4</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit4</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1040,7 +1031,7 @@
             <DynamicDependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-failsafe-plugin</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
+              <version>${maven.testing.plugin.version}</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
@@ -1068,7 +1059,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
-        <version>3.0.0-M3</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -1134,8 +1125,12 @@
                    <exclude>com.sun.xml.bind:*</exclude>
                    <exclude>com.sun.xml.bind.mvn:*</exclude>
                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+                   <!-- technically this is just provided by jdk11+ -->
+                   <exclude>xml-apis:xml-apis</exclude>
 
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
+                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- use: org.ow2.asm.* -->
+                   <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
@@ -1149,6 +1144,8 @@
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
+                   <exclude>org.springframework.security:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
+                   <exclude>org.springframework.security.kerberos:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1262,11 +1259,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <goals>
-              <goal>jar</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
@@ -1274,7 +1271,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <skip>${skipSurefire}</skip>
@@ -1347,6 +1344,12 @@
         </executions>
       </plugin>
       <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${maven.karaf.plugin.version}</version>
+          <extensions>true</extensions>
+      </plugin>
+      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1370,7 +1373,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${maven.surefire.report.plugin.version}</version>
+        <version>${maven.testing.plugin.version}</version>
         <reportSets>
           <reportSet>
             <id>unit-tests</id>
@@ -1389,7 +1392,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.20.0</version>
+        <version>3.21.0</version>
         <configuration>
             <targetJdk>1.8</targetJdk>
             <rulesets>
@@ -1487,25 +1490,22 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
-    <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
-    <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
+    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
-    <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
-    <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
-    <maven.shade.plugin.version>3.3.0</maven.shade.plugin.version>
+    <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
+    <maven.karaf.plugin.version>4.4.3</maven.karaf.plugin.version>
+    <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
+    <maven.shade.plugin.version>3.5.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
     <!-- other plugin versions -->
-    <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
-    <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
-    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
+    <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+    <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -1574,6 +1574,7 @@
     <!-- whether to enable snapshot dependencies when building -->
     <enable.snapshots>false</enable.snapshots>
 
+    <updatePolicy>interval:480</updatePolicy> <!-- 8 hours, only used for snapshot repos -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
     <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
@@ -1581,46 +1582,50 @@
 
     <!-- dependency versions -->
     <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
+    <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
-    <asmVersion>5.0.4</asmVersion>
+    <asmVersion>9.5</asmVersion>
     <activemqVersion>5.15.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <batikVersion>1.16</batikVersion>
-    <bouncyCastleVersion>1.68</bouncyCastleVersion>
+    <batikVersion>1.17</batikVersion>
+    <bouncyCastleVersion>1.76</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.19.1</camelVersion>
     <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
     <!-- Match Newts version -->
-    <cassandraVersion>3.11.2</cassandraVersion>
+    <cassandraVersion>3.11.4</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.15</commonsCodecVersion>
+    <commonsCliVersion>1.2</commonsCliVersion>
+    <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
-    <commonsCompressVersion>1.21</commonsCompressVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsCompressVersion>1.23.0</commonsCompressVersion>
+    <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
+    <commonsExecVersion>1.2</commonsExecVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.12.0</commonsIoVersion>
+    <commonsIoVersion>2.13.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLang3Version>3.12.0</commonsLang3Version>
+    <commonsLang3Version>3.13.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.9.0</commonsNetVersion>
-    <commonsValidatorVersion>1.6</commonsValidatorVersion>
+    <commonsPool2Version>2.4.3</commonsPool2Version>
+    <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
-    <curatorVersion>3.2.1</curatorVersion>
-    <curatorTestVersion>5.4.0</curatorTestVersion>
+    <curatorVersion>5.5.0</curatorVersion>
+    <curatorTestVersion>5.5.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
-    <dom4jVersion>2.1.3</dom4jVersion>
+    <dnsjavaVersion>3.5.2_1</dnsjavaVersion>
+    <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
@@ -1628,11 +1633,13 @@
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
-    <felixBridgeVersion>4.0.4</felixBridgeVersion>
+    <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
-    <fopVersion>2.8</fopVersion>
+    <fopVersion>2.9</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
-    <fstVersion>2.47</fstVersion>
+    <fstVersion>2.57</fstVersion>
+    <!-- this has to match FST's direct dependency because we specify it in karaf features -->
+    <objenesisVersion>2.5.1</objenesisVersion>
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
@@ -1651,12 +1658,13 @@
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
-    <ipaddressVersion>5.3.3</ipaddressVersion>
+    <ipaddressVersion>5.4.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.14.2</jackson2Version>
     <snakeyamlVersion>1.33</snakeyamlVersion>
+    <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
-    <jasperreportsVersion>6.3.0</jasperreportsVersion>
+    <jasperreportsVersion>6.20.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jasyptVersion>1.9.3</jasyptVersion>
     <javassistVersion>3.29.2-GA</javassistVersion>
@@ -1667,7 +1675,7 @@
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
     <javaxMailVersion>1.4.7</javaxMailVersion>
-    <jbossLoggingVersion>3.5.0.Final</jbossLoggingVersion>
+    <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
@@ -1676,22 +1684,22 @@
     <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
-    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jfreechartVersion>1.5.4</jfreechartVersion>
     <jicmpVersion>3.0.4</jicmpVersion>
     <jicmp6Version>3.0.4</jicmp6Version>
     <jinteropVersion>3.4.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
-    <jmhVersion>1.36</jmhVersion>
+    <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
-    <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
-    <jschVersion>0.2.6</jschVersion>
-    <jsonVersion>20230227</jsonVersion>
+    <jschVersion>0.2.11</jschVersion>
+    <jsonVersion>20230618</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.7.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
@@ -1702,28 +1710,27 @@
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
-    <kafkaBundleVersion>3.3.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.3.1</kafkaVersion>
+    <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
+    <kafkaVersion>3.3.2</kafkaVersion>
     <kotlinVersion>1.4.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
-    <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
+    <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.20.0</log4j2Version>
-    <logbackClassicVersion>1.2.11</logbackClassicVersion>
+    <logbackClassicVersion>1.2.12</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.2</mavenApiVersion>
-    <mavenResolverApiVersion>1.6.3</mavenResolverApiVersion>
-    <minaVersion>2.1.6</minaVersion>
+    <mavenApiVersion>3.9.4</mavenApiVersion>
+    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
+    <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.87.Final</netty4Version>
+    <netty4Version>4.1.95.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
-    <paxExamVersion>4.13.1</paxExamVersion>
+    <paxExamVersion>4.13.5</paxExamVersion>
     <paxLoggingVersion>2.0.14</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
-    <pktsVersion>3.0.0</pktsVersion>
+    <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.16.3</protobufVersion>
-    <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
@@ -1741,28 +1748,28 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.10.2</pyroscopeVersion>
+    <pyroscopeVersion>0.11.5</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
-    <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
+    <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
-    <rocksdbjniVersion>7.4.5</rocksdbjniVersion>
+    <rocksdbjniVersion>8.3.2</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.3</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
-    <sonarVersion>3.7.0.1746</sonarVersion>
+    <sonarVersion>3.9.1.2184</sonarVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.15.1</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.35.2</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
@@ -1773,14 +1780,12 @@
     <xalanVersion>2.7.3.ONMS.1</xalanVersion>
     <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
-    <xmlApisVersion>99.99.99-exclude-provided-by-jdk11-and-up</xmlApisVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.8</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.5.10</zookeeperVersion>
-    <zookeeper2Version>3.6.3</zookeeper2Version>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.10.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
@@ -1791,9 +1796,9 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>4.2.20.RELEASE</springSecurityVersion>
+    <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
-    <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
+    <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -1852,12 +1857,13 @@
         </plugins>
       </build>
       <repositories>
-        <!-- Disable snapshots for our own artifacts for release bulds -->
+        <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
           <id>opennms-ossrh</id>
           <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
-            <enabled>false</enabled>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
           </releases>
           <snapshots>
             <enabled>false</enabled>
@@ -1953,8 +1959,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1966,6 +1977,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
         <repository>
@@ -1976,6 +1988,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -1987,8 +2000,13 @@
           <id>central</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
         <pluginRepository>
@@ -2000,6 +2018,7 @@
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
@@ -2169,12 +2188,12 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
             <dependencies>
               <dependency>
                 <groupId>com.github.sevntu-checkstyle</groupId>
                 <artifactId>sevntu-checks</artifactId>
-                <version>1.41.0</version>
+                <version>1.44.1</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -3557,13 +3576,33 @@
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-all</artifactId>
+        <artifactId>asm</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
         <version>${asmVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.10.13</version>
+        <version>1.10.14</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -3644,10 +3683,6 @@
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
           </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3658,10 +3693,6 @@
           <exclusion>
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3674,10 +3705,6 @@
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
           </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3688,10 +3715,6 @@
           <exclusion>
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>org.apache.zookeeper</artifactId>
-            <groupId>zookeeper</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4203,7 +4226,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>5.6</version>
+        <version>5.8</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
@@ -4260,11 +4283,6 @@
         <version>${jbossLoggingVersion}</version>
       </dependency>
       <dependency>
-        <groupId>com.caucho</groupId>
-        <artifactId>hessian</artifactId>
-        <version>3.1.5</version>
-      </dependency>
-      <dependency>
         <groupId>com.github.seancfoley</groupId>
         <artifactId>ipaddress</artifactId>
         <version>${ipaddressVersion}</version>
@@ -4277,7 +4295,7 @@
       <dependency>
         <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
-        <version>1.2.1</version>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -4687,7 +4705,7 @@
       <dependency>
         <groupId>org.skyscreamer</groupId>
         <artifactId>jsonassert</artifactId>
-        <version>1.2.3</version>
+        <version>1.5.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4705,7 +4723,7 @@
       <dependency>
         <groupId>com.spotify</groupId>
         <artifactId>hamcrest-pojo</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -5065,7 +5083,7 @@
       <dependency>
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
-        <version>2.11</version>
+        <version>2.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.velocity</groupId>
@@ -5112,18 +5130,13 @@
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>${xmlApisVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
         <artifactId>xml-apis-ext</artifactId>
         <version>${xmlApisExtVersion}</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
         <artifactId>xmlunit</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -5189,12 +5202,12 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
+        <artifactId>bcpkix-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
+        <artifactId>bcprov-jdk18on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>
@@ -5260,6 +5273,11 @@
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xerial.snappy</groupId>
+        <artifactId>snappy-java</artifactId>
+        <version>${snappyJavaVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

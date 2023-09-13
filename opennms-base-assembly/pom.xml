@@ -226,6 +226,11 @@
         <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>dat</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jce</nonFilteredFileExtension>
+            <nonFilteredFileExtension>raw</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
         </configuration>
       </plugin>
     </plugins>
@@ -1287,4 +1292,14 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jasperreports</id>
+      <name>OpenNMS Mega-Repository (jasperreports override)</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

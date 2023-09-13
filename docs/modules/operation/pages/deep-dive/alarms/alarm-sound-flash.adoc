@@ -1,5 +1,6 @@
 
 = Alarm Sounds
+:description: How to configure OpenNMS Horizon/Meridian to generate sounds for alarms.
 
 In certain situations, you may want an audible indication of a change in alarm state.
 The Alarms List page has the optional ability to generate a sound either when new alarms are created, or on each change to an alarm event count on the page.
@@ -62,3 +63,4 @@ NOTE: If `alarm.properties` does not exist, create it and specify the above sett
 
 The sound that is played is determined by the contents of `$\{OPENNMS_HOME}/jetty-webapps/opennms/sounds/alert.wav`.
 To change the alarm sound, create a new `.wav` file with the desired sound, name it `alert.wav`, and replace the default file in `$\{OPENNMS_HOME}/jetty-webapps/opennms/sounds/`.
+Make sure too keep a copy of this file as it may be overwritten to the default sound while installing updates to {page-component-title}.

@@ -1,0 +1,17 @@
+This script creates a `dcb` user account based on a custom user group (`dcb-group`).
+The user group has limited privileges, which are passed on to the `dcb` account.
+
+[source, script]
+----
+aruba-os-cx# config
+aruba-os-cx(config)# user-group dcb-group
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy startup-config tftp.*"
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy running-config tftp.*"
+aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "show running-config"
+aruba-os-cx(config-usr-grp-dcb-group)# deny cli command ".*"
+aruba-os-cx(config-usr-grp-dcb-group)# exit
+aruba-os-cx(config)# user dcb group dcb-group password
+Enter password: Pa55w0rd
+Confirm password: Pa55w0rd
+aruba-os-cx(config)#
+----

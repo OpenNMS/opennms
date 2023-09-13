@@ -487,10 +487,8 @@ if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
-OPTS_UPDATE_POLICY="-DupdatePolicy=never"
 if [ "%{enable_snapshots}" = 1 ]; then
 	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 fi
 
 OPTS_PRODUCTION=""
@@ -965,9 +963,9 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
+	find "$ROOT_INST/data/" -maxdepth 1 -mindepth 1 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
 	if [ -d "$ROOT_INST/data/tmp" ]; then
-		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+		find "$ROOT_INST/data/tmp/" -maxdepth 1 -mindepth 1 -name README -prune -o -print0 | xargs -0 rm -rf
 	fi
 fi
 echo "done"

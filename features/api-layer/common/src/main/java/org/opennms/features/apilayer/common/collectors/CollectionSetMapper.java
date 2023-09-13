@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -170,13 +170,15 @@ public class CollectionSetMapper {
         String nodeCriteria = null;
         if (resource.getParent() != null) {
             String[] resourcePathArray = resource.getParent().elements();
-            if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
-                    && resourcePathArray.length == 3) {
-                // parent denotes nodeCriteria, form fs:fid
-                nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
-            } else if (checkNumeric(resourcePathArray[0])) {
-                // parent denotes nodeId
-                nodeCriteria = resourcePathArray[0];
+            if (resourcePathArray != null && resourcePathArray.length > 0) {
+                if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
+                        && resourcePathArray.length == 3) {
+                    // parent denotes nodeCriteria, form fs:fid
+                    nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
+                } else if (checkNumeric(resourcePathArray[0])) {
+                    // parent denotes nodeId
+                    nodeCriteria = resourcePathArray[0];
+                }
             }
         }
         return nodeCriteria;

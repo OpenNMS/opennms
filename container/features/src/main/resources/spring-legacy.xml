@@ -70,8 +70,8 @@
     <feature name="spring-struts" description="Spring 3.1.x Struts support" version="3.1.4.RELEASE">
         <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
         <feature>pax-web-war</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.2</bundle>
-        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.4</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
         <bundle dependency="true" start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.struts/1.3.10_1
         </bundle>
@@ -100,7 +100,7 @@
 
     <feature name="spring-web" description="Spring 3.1.x Web support" version="3.1.4.RELEASE">
         <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-web/3.1.4.RELEASE.ONMS.1</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-webmvc/3.1.4.RELEASE</bundle>
         <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
@@ -110,7 +110,7 @@
         <feature prerequisite="true">pax-url-wrap</feature>
         <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">mvn:org.springframework/spring-webmvc-portlet/3.1.4.RELEASE</bundle>
     </feature>
@@ -221,7 +221,7 @@
         <feature prerequisite="true">wrap</feature>
         <feature version="[${springVersion},4.3)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/${springVersion}
@@ -331,7 +331,7 @@
 
     <feature name="spring-web" description="Spring 4.3.x Web support" version="4.3.30.RELEASE_1">
         <feature version="[4.3.30.RELEASE_1,4.4)">spring</feature>
-        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle dependency="true">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/4.3.30.RELEASE_1.ONMS.1
         </bundle>
@@ -345,7 +345,7 @@
         <feature prerequisite="true">pax-url-wrap</feature>
         <feature version="[4.3.30.RELEASE_1,4.4)">spring-web</feature>
         <bundle dependency="true" start-level="30">
-            wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0
+            wrap:mvn:javax.portlet/portlet-api/2.0$Bundle-SymbolicName=javax.portlet.api&amp;Bundle-Version=2.0&amp;Export-Package=javax.portlet.*;version=2.0
         </bundle>
         <bundle start-level="30">
             mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/4.3.30.RELEASE_1

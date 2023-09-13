@@ -1,5 +1,6 @@
 
 = Minimum System Requirements
+:description: OpenNMS system requirements, supported operating systems, version compatibility with Grafana, Cassandra, Elasticsearch, JDK, Kafka, PostgreSQL.
 
 Your system must meet the following minimum specifications to run {page-component-title}:
 

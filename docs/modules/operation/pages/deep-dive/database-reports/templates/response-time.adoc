@@ -1,5 +1,6 @@
 
 = Node Response Time Report
+:description: Learn how to create a Node Response Time report in OpenNMS Horizon/Meridian, which lists the response times by nodes, filtered by specified node tags.
 
 This report lists the response times by nodes, filtered by specified node tags.
 

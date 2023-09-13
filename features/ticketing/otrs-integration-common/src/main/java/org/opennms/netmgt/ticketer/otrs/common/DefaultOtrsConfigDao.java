@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -137,28 +138,19 @@ public class DefaultOtrsConfigDao {
 		return getProperties().getString("otrs.articlehistorytype");
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Integer> getValidClosedStateId() {
-		
-		List<String> closedStateId = getProperties().getList("otrs.validclosedstateid");
-		return stringToInt(closedStateId);
-		
+		List<Object> closedStateId = getProperties().getList("otrs.validclosedstateid");
+		return valueToInt(closedStateId);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Integer> getValidOpenStateId() {
-		
-		List<String> openStateId = getProperties().getList("otrs.validopenstateid");
-		return stringToInt(openStateId);
-		
+		List<Object> openStateId = getProperties().getList("otrs.validopenstateid");
+		return valueToInt(openStateId);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Integer> getValidCancelledStateId() {
-		
-		List<String> cancelledStateId = getProperties().getList("otrs.validcancelledstateid");
-		return stringToInt(cancelledStateId);
-		
+		List<Object> cancelledStateId = getProperties().getList("otrs.validcancelledstateid");
+		return valueToInt(cancelledStateId);
 	}
 	
 	public Integer getOpenStateId() {
@@ -178,15 +170,8 @@ public class DefaultOtrsConfigDao {
 		return getProperties().getString("otrs.defaultuser");
 	}
 	
-	private List<Integer> stringToInt(List<String> strings) {
-		
-		List<Integer> intList = new ArrayList<>();
-		
-		for (String string : strings) {
-			intList.add( Integer.parseInt(string));
-		}
-		
-		return intList;
+	private List<Integer> valueToInt(List<Object> values) {
+		return values.stream().map(val -> Integer.parseInt(val.toString())).collect(Collectors.toList());
 	}
 
 	public String getTicketOpenedMessage() {

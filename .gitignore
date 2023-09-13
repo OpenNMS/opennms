@@ -62,3 +62,5 @@ __pycache__
 
 # Ignore secure vault
 opennms-base-assembly/src/main/filtered/etc/scv.jce
+
+core/web-assets/.eslintcache

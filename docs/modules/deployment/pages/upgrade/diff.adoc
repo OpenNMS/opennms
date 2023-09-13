@@ -1,5 +1,6 @@
 [[run_diff]]
 = Identify Changed Configuration Files
+:description: How to identify changed configuration files during an OpenNMS Horizon or Meridian upgrade.
 
 During an upgrade, {page-component-title} overwrites configuration files, so any customization you may have done will be lost.
 You need to back up your customized configuration files so that you can merge them into your upgraded system.

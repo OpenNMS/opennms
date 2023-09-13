@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.search.providers.node;
+package org.opennms.web.charts;
 
-import java.util.Objects;
+public class ChartException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-import org.opennms.netmgt.model.OnmsNode;
-
-public class NodeRef {
-
-    private String foreignSource;
-    private String foreignId;
-
-    public NodeRef(OnmsNode node) {
-        Objects.requireNonNull(node);
-        this.foreignSource = node.getForeignSource();
-        this.foreignId = node.getForeignId();
-    }
-
-    public String asString() {
-        return foreignSource + ":" + foreignId;
+    public ChartException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

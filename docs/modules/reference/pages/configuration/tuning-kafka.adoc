@@ -1,4 +1,5 @@
 = Tuning Apache Kafka
+:description: Learn about default Kafka settings in OpenNMS Horizon/Meridian and how to change them to meet your system requirements, including multi-tenancy.
 
 The configuration is shipped with some defaults, but depending on the size and network topology you might need to tune the Apache Kafka environment to meet certain needs.
 Set Apache Kafka options directly in the `org.opennms.core.ipc.rpc.kafka.cfg` and `org.opennms.core.ipc.sink.kafka.cfg` file.
@@ -65,3 +66,15 @@ single-topic=false
 org.opennms.core.ipc.rpc.kafka.single-topic=false
 ----
 Create this file if it does not already exist.
+
+== Disable the Kafka offset provider
+
+{page-component-title} Core automatically monitors consumer offsets on Kafka to provide lag-related metrics.
+
+To disable the monitoring of these metrics you can set the following property:
+
+.Disable offset provider on `$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties`
+[source, properties]
+----
+org.opennms.core.ipc.kafka.offset.disabled=true
+----

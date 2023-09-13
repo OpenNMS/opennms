@@ -109,7 +109,6 @@
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
         <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
-        <exclude>org.springframework:*</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
         <exclude>io.pyroscope:agent</exclude>
         <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>

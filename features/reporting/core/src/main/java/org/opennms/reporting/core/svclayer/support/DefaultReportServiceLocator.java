@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import org.opennms.api.reporting.ReportService;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -49,14 +50,11 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
      * {@inheritDoc}
      */
     @Override
-    public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
-
-        ReportService reportService = (ReportService) m_applicationContext.getBean(reportServiceName);
-
-        if (reportService == null) {
-            throw new ReportServiceLocatorException("cannot locate report service bean: " + reportServiceName);
-        } else {
-            return reportService;
+    public ReportService getReportService(final String reportServiceName) throws ReportServiceLocatorException {
+        try {
+            return m_applicationContext.getBean(reportServiceName, ReportService.class);
+        } catch (final BeansException e) {
+            throw new ReportServiceLocatorException("cannot locate report service bean: " + reportServiceName, e);
         }
     }
 

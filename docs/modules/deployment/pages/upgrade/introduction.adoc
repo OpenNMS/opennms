@@ -1,6 +1,7 @@
 
 [[upgrade]]
 = Upgrade {page-component-title}
+:description: Overview of OpenNMS Horizon or Meridian upgrade including before you begin and assessing events table size.
 
 This section outlines the basic steps that you should follow to upgrade to a newer version of {page-component-title}.
 You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one OpenNMS instance, have more complex database migration requirements, and/or depending on the age of current version).

@@ -86,3 +86,42 @@ The `config-tester` command is even more exhaustive, but it may not catch all er
 
 If your ${page-component-title} or Minion server is not processing traps, syslog, flow, or other incoming messages that you are able to see via `tcpdump`, check your firewall settings.
 The `tcpdump` utility will show traffic before system firewalls such as iptables or firewalld block unexpected data.
+
+== Database connection deadlocks
+
+If the system ends up in a state where all available database connections are exhausted and fails to recover, you can turn on deadlock detection to help identify the cause.
+
+To do so, enable deadlock detection with the following:
+[source, shell]
+----
+# echo 'org.opennms.core.db.deadlock.detection=true' >> /opt/opennms/etc/opennms.properties.d/db.properties
+----
+
+Restart {page-component-title} for the changes to become effective.
+
+Once enabled, you should see the following in the logs:
+[source, shell]
+----
+2023-07-03 21:38:49,874 ERROR [Main] o.o.c.d.HikariCPConnectionFactory: Deadlock detection is enabled.
+----
+
+Possible deadlocks will be logged with a message similar to the following:
+[source, shell]
+---
+2023-07-03 21:39:52,357 ERROR [Main] o.o.c.d.HikariCPConnectionFactory: Possible database deadlock detected: Attempting to acquire connection in thread while existing transaction active.
+java.lang.Exception: Possible deadlock
+        at org.opennms.core.db.HikariCPConnectionFactory.getConnection(HikariCPConnectionFactory.java:109) ~[org.opennms.core.db-31.0.3-SNAPSHOT.jar:?]
+        at org.opennms.netmgt.filter.JdbcFilterDao.getNodeIPAddressServiceMap(JdbcFilterDao.java:235) ~[opennms-config-31.0.3-SNAPSHOT.jar:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+        at java.lang.reflect.Method.invoke(Method.java:566) ~[?:?]
+        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:302) ~[org.apache.servicemix.bundles.spring-aop-4.2.9.RELEASE_1.ONMS.1.jar:?]
+        at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:202) ~[org.apache.servicemix.bundles.spring-aop-4.2.9.RELEASE_1.ONMS.1.jar:?]
+        at com.sun.proxy.$Proxy136.getNodeIPAddressServiceMap(Unknown Source) ~[?:?]
+        at org.opennms.netmgt.dao.support.DefaultFilterWatcher$FilterSession.lambda$refreshNow$0(DefaultFilterWatcher.java:228) ~[opennms-dao-31.0.3-SNAPSHOT.jar:?]
+        at org.opennms.netmgt.dao.hibernate.DefaultSessionUtils.withManualFlush(DefaultSessionUtils.java:81) ~[opennms-dao-31.0.3-SNAPSHOT.jar:?]
+---
+
+Inspect these messages and stack traces further to see if there are any potential problems.
+Some of the messages may be false positives.

@@ -90,7 +90,7 @@ main() {
 	fi
 
 	if [ "$SKIP_DEFAULTS" -eq 0 ]; then
-		DEFAULTS=(/usr/lib/jvm /usr/java /System/Library/Java/JavaVirtualMachines /Library/Java/JavaVirtualMachines /Library/Java/Home /opt)
+		DEFAULTS=(/usr/lib/jvm /usr/java /System/Library/Java/JavaVirtualMachines /Library/Java/JavaVirtualMachines /Library/Java/Home /opt /usr/lib64/jvm)
 		# this is massively inefficient, but bash sucks and there aren't *that* many entries so it doesn't really matter
 		for default in "${DEFAULTS[@]}"; do
 			found=false

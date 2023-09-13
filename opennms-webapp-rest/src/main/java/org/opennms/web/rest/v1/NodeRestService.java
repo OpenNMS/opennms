@@ -59,10 +59,11 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -90,7 +91,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("nodeRestService")
 @Path("nodes")
-@Transactional
 public class NodeRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
@@ -109,6 +109,9 @@ public class NodeRestService extends OnmsRestService {
     @Autowired
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
+
+    @Autowired
+    private SessionUtils m_sessionUtils;
 
     /**
      * <p>getNodes</p>
@@ -132,7 +135,15 @@ public class NodeRestService extends OnmsRestService {
             }
             crit = filterForNodeIds(builder, nodeIds).toCriteria();
         } else if (params.getFirst("filterRule") != null) {
-            final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            Set<Integer> filteredNodeIds = null;
+
+            try {
+                filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            } catch (FilterParseException fpe) {
+                // do not rethrow, the exception may contain the actual SQL query which should not be seen by consumers
+                throw getException(Status.BAD_REQUEST, "Invalid 'filterRule' in request.");
+            }
+
             if (filteredNodeIds.size() < 1) {
                 // The "in" criteria fails if the list of node ids is empty
                 final OnmsNodeList coll = new OnmsNodeList(Collections.emptyList());
@@ -157,15 +168,18 @@ public class NodeRestService extends OnmsRestService {
             }
         }
 
-        final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
-        
-        crit.setLimit(null);
-        crit.setOffset(null);
-        crit.setOrders(new ArrayList<Order>());
+        final Criteria criteria = crit;
+        return m_sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(criteria));
 
-        coll.setTotalCount(m_nodeDao.countMatching(crit));
+            criteria.setLimit(null);
+            criteria.setOffset(null);
+            criteria.setOrders(new ArrayList<Order>());
 
-        return coll;
+            coll.setTotalCount(m_nodeDao.countMatching(criteria));
+
+            return coll;
+        });
     }
 
     private static CriteriaBuilder filterForNodeIds(CriteriaBuilder builder, Collection<Integer> nodeIds) {
@@ -183,6 +197,7 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{nodeCriteria}")
+    @Transactional
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         final OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -200,6 +215,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}/rescan")
+    @Transactional
     public Response rescanNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         final OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -219,6 +235,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
+    @Transactional
     public Response addNode(@Context final UriInfo uriInfo, final OnmsNode node) {
         writeLock();
         
@@ -261,6 +278,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
+    @Transactional
     public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         writeLock();
         
@@ -302,6 +320,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{nodeCriteria}")
+    @Transactional
     public Response deleteNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         writeLock();
         
@@ -326,6 +345,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsIpInterfaceResource} object.
      */
     @Path("{nodeCriteria}/ipinterfaces")
+    @Transactional
     public OnmsIpInterfaceResource getIpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(OnmsIpInterfaceResource.class);
     }
@@ -336,6 +356,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsSnmpInterfaceResource} object.
      */
     @Path("{nodeCriteria}/snmpinterfaces")
+    @Transactional
     public OnmsSnmpInterfaceResource getSnmpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(OnmsSnmpInterfaceResource.class);
     }
@@ -346,6 +367,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.AssetRecordResource} object.
      */
     @Path("{nodeCriteria}/assetRecord")
+    @Transactional
     public AssetRecordResource getAssetRecordResource(@Context final ResourceContext context) {
         return context.getResource(AssetRecordResource.class);
     }
@@ -356,6 +378,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.HardwareInventoryResource} object.
      */
     @Path("{nodeCriteria}/hardwareInventory")
+    @Transactional
     public HardwareInventoryResource getHardwareInventoryResource(@Context final ResourceContext context) {
         return context.getResource(HardwareInventoryResource.class);
     }
@@ -363,6 +386,7 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Path("/{nodeCriteria}/categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional
     public OnmsCategoryCollection getCategoriesForNode(@PathParam("nodeCriteria") String nodeCriteria) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -373,6 +397,7 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("/{nodeCriteria}/categories/{categoryName}")
+    @Transactional
     public OnmsCategory getCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -388,6 +413,7 @@ public class NodeRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Path("/{nodeCriteria}/categories")
+    @Transactional
     public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
         if (category == null) throw getException(Status.BAD_REQUEST, "Category must not be null.");
         return addCategoryToNode(uriInfo, nodeCriteria,  category.getName());
@@ -395,6 +421,7 @@ public class NodeRestService extends OnmsRestService {
     
     @POST
     @Path("/{nodeCriteria}/categories/{categoryName}")
+    @Transactional
     public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
         writeLock();
 
@@ -423,6 +450,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{nodeCriteria}/categories/{categoryName}")
+    @Transactional
     public Response updateCategoryForNode(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
         writeLock();
 
@@ -460,6 +488,7 @@ public class NodeRestService extends OnmsRestService {
 
     @DELETE
     @Path("/{nodeCriteria}/categories/{categoryName}")
+    @Transactional
     public Response removeCategoryFromNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
         writeLock();
 

@@ -1,0 +1,8 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <service interface="org.eclipse.jetty.websocket.api.extensions.Extension">
+    <bean class="org.opennms.container.jetty.extensions.noop.NoopExtension" />
+  </service>
+
+</blueprint>

@@ -87,7 +87,7 @@ public class ApplicationEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTe
                         "       \"id\" : 42," +
                         "       \"location\" : \"/api/v2/business-services/applications/42\"," +
                         "       \"application-name\" : \"MyApplication\"" +
-                        "  }," +
+                        "  }" +
                         "}",
                 "<application-edge>\n" +
                         "   <id>1</id>\n" +
