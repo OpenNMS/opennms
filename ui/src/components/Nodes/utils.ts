@@ -1,5 +1,38 @@
-import { Category, MonitoringLocation, Node, SetOperator } from '@/types'
+import { Category, MonitoringLocation, Node, NodeApiResponse, NodeColumnSelectionItem, QueryParameters, SetOperator } from '@/types'
 import { isNumber } from '@/lib/utils'
+import { getNodes } from '@/services/nodeService'
+
+export interface NodeStructureQueryParams {
+  searchVal: string,
+  selectedCategories: Category[],
+  categoryMode: SetOperator,
+  selectedFlows: string[],
+  selectedLocations: MonitoringLocation[]
+}
+
+/**
+ * Construct an array of Feather Table CSS classes for the given configured node table columns. 
+ * These start with 't', then ('l', 'r', 'c') for (left, right, center), then the 1 based column index.
+ * e.g. 'tl1': left-align 1st column
+ * 'tr7': right-align 7th colunn
+ */
+export const getTableCssClasses = (columns: NodeColumnSelectionItem[]) => {
+  const classes: string[] = columns.filter(col => col.selected).map((col, i) => {
+    let t = 'tl'
+
+    if (col.id === 'id') {
+      t = 'tr'
+    } else if (col.id === 'flows') {
+      t = 'tc'
+    }
+
+    // +2 : one since Feather table column classes are 1-based, one for the first action column which isn't in 'columns'
+    return `${t}${i + 2}`
+  })
+
+  // add 'action' column
+  return ['tl1', ...classes]
+}
 
 const buildSearchQuery = (searchVal: string) => {
   if (searchVal.length > 0) {
@@ -53,14 +86,6 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
   return ''
 }
 
-export interface NodeStructureQueryParams {
-  searchVal: string,
-  selectedCategories: Category[],
-  categoryMode: SetOperator,
-  selectedFlows: string[],
-  selectedLocations: MonitoringLocation[]
-}
-
 export const buildNodeStructureQuery = (
   { searchVal, selectedCategories, categoryMode, selectedFlows, selectedLocations }: NodeStructureQueryParams) => {
   const searchQuery = buildSearchQuery(searchVal)
@@ -75,10 +100,142 @@ export const buildNodeStructureQuery = (
   return query
 }
 
+export const buildUpdatedNodeStructureQueryParams = (queryParameters: QueryParameters, newParams: NodeStructureQueryParams) => {
+  const searchQuery = buildNodeStructureQuery(newParams)
+  const searchQueryParam: QueryParameters = { _s: searchQuery }
+  const updatedParams = { ...queryParameters, ...searchQueryParam }
+
+  // if there is no search query, remove the '_s' property entirely so it doesn't
+  // get put into the API request query string
+  if (!searchQuery) {
+    delete updatedParams._s
+  }
+
+  return updatedParams as QueryParameters
+}
+
 export const hasIngressFlow = (node: Node) => {
   return node.lastIngressFlow && isNumber(node.lastIngressFlow)
 }
 
 export const hasEgressFlow = (node: Node) => {
   return node.lastEgressFlow && isNumber(node.lastEgressFlow)
+}
+
+/**
+ * Create an object used to export data which contains only the fields from the currently selected columns for the given Node.
+ */
+const buildExportableNode = (columns: NodeColumnSelectionItem[], node: Node) => {
+  const obj: any = {}
+  const selectedColumns = columns.filter(col => col.selected)
+
+  for (const col of selectedColumns) {
+    let val: string | null = null
+
+    if (col.id === 'flows') {
+      const hasIngress = hasIngressFlow(node)
+      const hasEgress = hasEgressFlow(node)
+
+      if (hasIngress && hasEgress) {
+        val = 'Ingress, Egress'
+      } else if (hasIngress) {
+        val = 'Ingress'
+      } else if (hasEgress) {
+        val = 'Egress'
+      }
+    } else {
+      val = (node as any)[col.id]
+    }
+
+    if (val !== null) {
+      obj[col.id] = val
+    }
+  }
+
+  return obj
+}
+
+const getCsvString = (val: any) => {
+  if (val === null || val === undefined) {
+    return ''
+  } else {
+    let s: string = val.toString()
+
+    if (s.includes(',')) {
+      s = `"${s}"`
+    }
+
+    return s
+  }
+}
+
+export const buildCsvExport = (columns: NodeColumnSelectionItem[], nodes: any[]): string[] => {
+  const selectedColumns = columns.filter(c => c.selected)
+
+  const header = selectedColumns.map(c => c.label).join(',')
+
+  const rows = nodes.map(node => {
+    const cols: string[] = selectedColumns.map(col => getCsvString(node[col.id]))
+    return cols.join(',')
+  })
+
+  return [header, ...rows]
+}
+
+/**
+ * Create Node export data as a string, with given query parameters/filters and currently configured columns.
+ * @param format Export format, either 'csv' or 'json'
+ */
+export const getExportData = async (format: string,
+  queryParams: NodeStructureQueryParams,
+  initialQueryParams: QueryParameters,
+  columns: NodeColumnSelectionItem[]) => {
+
+  const updatedParams = {
+    ...buildUpdatedNodeStructureQueryParams(initialQueryParams, queryParams),
+    offset: 0,
+    limit: 0
+  }
+
+  const resp = await getNodes(updatedParams)
+
+  if (!resp || !resp.node || resp.node.length === 0) {
+    console.error('Invalid response from getNodes, or no nodes found for the given search')
+    return ''
+  }
+
+  const nodeResponse = resp as NodeApiResponse
+  const nodes: Node[] = nodeResponse.node
+
+  const exportableNodes = nodes.map(n => buildExportableNode(columns, n))
+
+  if (format === 'json') {
+    return JSON.stringify(exportableNodes, null, 2)
+  }
+
+  if (format === 'csv') {
+    const csvRows = buildCsvExport(columns, exportableNodes)
+    return csvRows.join('\n')
+  }
+
+  return ''
+}
+
+/**
+ * Generate a blob for the given text and content type.
+ */
+export const generateBlob = (data: string, contentType: string): Blob => {
+  return new Blob([data], { type: contentType })
+}
+
+/**
+ * Create and call the target <a/> element
+ * Note, should probably call window.URL.revokeObjectURL() to clean up.
+ */
+export const generateDownload = (blob: Blob, name: string): void => {
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  a.click()
 }

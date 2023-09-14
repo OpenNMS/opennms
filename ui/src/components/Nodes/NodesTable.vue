@@ -1,20 +1,26 @@
 <template>
   <div class="card">
     <div class="feather-row">
-      <div class="feather-col-8">
+      <div class="feather-col-6">
         <span class="title">Nodes</span>
       </div>
-      <div class="feather-col-4">
+      <div class="feather-col-6">
         <div class="feather-row">
-          <div class="feather-col-1">
-            <FeatherButton
-              icon="Open Preferences"
-              @click="openPreferences"
-            >
-              <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
-            </FeatherButton>
+          <div class="feather-col-3 action-buttons-column">
+            <div class="action-buttons-container">
+              <NodeDownloadDropdown
+                :onCsvDownload="onCsvDownload"
+                :onJsonDownload="onJsonDownload"
+              ></NodeDownloadDropdown>
+              <FeatherButton
+                icon="Open Preferences"
+                @click="openPreferences"
+              >
+                <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
+              </FeatherButton>
+            </div>
           </div>
-          <div class="feather-col-11 search-filter-column">
+          <div class="feather-col-9 search-filter-column">
             <FeatherInput
               @update:modelValue="searchFilterHandler"
               label="Search node label"
@@ -124,12 +130,21 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
+import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodePreferencesDialog from './NodePreferencesDialog.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
 import Pagination from '../Common/Pagination.vue'
-import { buildNodeStructureQuery } from './utils'
+import {
+  buildUpdatedNodeStructureQueryParams,
+  generateBlob,
+  generateDownload,
+  getExportData,
+  getTableCssClasses,
+  NodeStructureQueryParams
+} from './utils'
 import useQueryParameters from '@/composables/useQueryParams'
+import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
@@ -147,6 +162,7 @@ import { MainMenu } from '@/types/mainMenu'
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
+const { showSnackBar } = useSnackbar()
 const settingsIcon = markRaw(Settings)
 
 const sortStates: any = reactive({
@@ -188,24 +204,7 @@ const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
 const preferencesVisible = ref(false)
 const columns = computed<NodeColumnSelectionItem[]>(() => nodeStructureStore.columns)
-
-const tableCssClasses = computed<string[]>(() => {
-  const classes: string[] = columns.value.filter(col => col.selected).map((col, i) => {
-    let t = 'tl'
-
-    if (col.id === 'id') {
-      t = 'tr'
-    } else if (col.id === 'flows') {
-      t = 'tc'
-    }
-
-    // +2 : one since Feather table column classes are 1-based, one for the first action column which isn't in 'columns'
-    return `${t}${i + 2}`
-  })
-
-  // add 'action' column
-  return ['tl1', ...classes]
-})
+const tableCssClasses = computed<string[]>(() => getTableCssClasses(columns.value))
 
 const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
   return column.selected && column.id === id
@@ -233,22 +232,32 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   sort(sortObj)
 }
 
-const buildQueryParams = (searchVal: string) => {
-  const params = {
-    searchVal,
-    selectedCategories: selectedCategories.value,
-    categoryMode: categoryMode.value,
-    selectedFlows: selectedFlows.value,
-    selectedLocations: selectedLocations.value
-  }
-
-  return buildNodeStructureQuery(params)
-}
-
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
   currentSearch.value = val
   updateQuery(val)
 }
+
+const onDownload = async (format: string) => {
+  const queryParams = buildNodeStructureQueryParams(currentSearch.value)
+  const data = await getExportData(format, queryParams,  queryParameters.value, columns.value)
+
+  if (!data) {
+    showSnackBar({
+      msg: `No data found for '${format}' download with the given search and filter configuration`,
+      error: true
+    })
+
+    return
+  }
+
+  const contentType = format === 'json' ? 'application/json' : format === 'csv' ? 'text/csv' : ''
+
+  const blob = generateBlob(data, contentType)
+  generateDownload(blob, `Nodes.${format}`)
+}
+
+const onCsvDownload = async () => { return onDownload('csv') }
+const onJsonDownload = async () => { return onDownload('json') }
 
 const onNodeInfo = (node: Node) => {
   dialogNode.value = node
@@ -259,15 +268,19 @@ const openPreferences = () => {
   preferencesVisible.value = true
 }
 
-const updateQuery = (val?: string) => {
-  const searchQuery = buildQueryParams(val || currentSearch.value)
-  const searchQueryParam: QueryParameters = { _s: searchQuery }
-  const updatedParams = { ...queryParameters.value, ...searchQueryParam }
-  // if there is no search query, remove the '_s' property entirely so it doesn't
-  // get put into the API request query string
-  if (!searchQuery) {
-    delete updatedParams._s
-  }
+const buildNodeStructureQueryParams = (searchVal: string) => {
+  return {
+    searchVal,
+    selectedCategories: selectedCategories.value,
+    categoryMode: categoryMode.value,
+    selectedFlows: selectedFlows.value,
+    selectedLocations: selectedLocations.value
+  } as NodeStructureQueryParams
+}
+
+const updateQuery = (searchVal?: string) => {
+  const queryParams = buildNodeStructureQueryParams(searchVal || currentSearch.value)
+  const updatedParams = buildUpdatedNodeStructureQueryParams(queryParameters.value, queryParams)
 
   nodeStore.getNodes(updatedParams)
   queryParameters.value = updatedParams
@@ -316,5 +329,16 @@ table {
 
 .feather-col-11.search-filter-column {
   padding-left: 1rem;
+}
+
+.action-buttons-column {
+  text-align: right;
+}
+
+.search-filter-column {
+}
+
+.action-buttons-container {
+  display: inline-block;
 }
 </style>
