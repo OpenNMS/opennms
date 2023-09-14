@@ -1,35 +1,31 @@
 <template>
   <div class="column-select-container">
-    <div>
-      <div>
-        <div class="feather-row node-actions-reset">
-          <div class="feather-col-9">
-          </div>
-          <div class="feather-col-3">
-            <FeatherButton primary @click="resetToDefault">Default</FeatherButton>
-          </div>
+    <div class="feather-row node-actions-reset">
+      <div class="feather-col-9">
+      </div>
+      <div class="feather-col-3 centered">
+        <FeatherButton secondary @click="resetToDefault">Default</FeatherButton>
+      </div>
+    </div>
+  </div>
+  <div
+    v-for="(col, index) in columns"
+    :key="col.id"
+    >
+      <div class="feather-row column-select-item-wrapper">
+        <div class="feather-col-9">
+          <FeatherCheckbox
+            class="checkbox"
+            @update:modelValue="selectColumn(col)"
+            :modelValue="col.selected"
+          >{{ col.label }}</FeatherCheckbox>
+        </div>
+        <div class="feather-col-3 centered">
+          <FeatherIcon :icon="upIcon" title="Move Up" @click="columnMove(true, index)" :class="getOrderIconCssClasses(true, index)" />
+          <FeatherIcon :icon="downIcon" title="Move Down" @click="columnMove(false, index)" :class="getOrderIconCssClasses(false, index)" />
         </div>
       </div>
-      <div
-        v-for="(col, index) in columns"
-        :key="col.id"
-        >
-          <div class="feather-row column-select-item-wrapper">
-            <div class="feather-col-9">
-              <FeatherCheckbox
-                class="checkbox"
-                @update:modelValue="selectColumn(col)"
-                :modelValue="col.selected"
-              >{{ col.label }}</FeatherCheckbox>
-            </div>
-            <div class="feather-col-3">
-              <FeatherIcon :icon="upIcon" title="Move Up" @click="columnMove(true, index)" :class="getOrderIconCssClasses(true, index)" />
-              <FeatherIcon :icon="downIcon" title="Move Down" @click="columnMove(false, index)" :class="getOrderIconCssClasses(false, index)" />
-            </div>
-          </div>
-      </div>
-    </div> 
-  </div> 
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -109,7 +105,6 @@ button.btn.btn-icon .node-actions-icon {
 }
 
 .column-select-container {
-  overflow-y: auto;
   padding: 4px;
 }
 
@@ -134,5 +129,9 @@ button.btn.btn-icon .node-actions-icon {
   &-down {
     margin-left: 4px;
   }
+}
+
+.feather-col-3.centered {
+  text-align: center;
 }
 </style>

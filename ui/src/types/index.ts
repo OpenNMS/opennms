@@ -505,3 +505,19 @@ export enum SetOperator {
   Union = 1,
   Intersection = 2
 }
+
+export interface NodeFilterPreferences {
+  categoryMode: SetOperator
+  selectedCategories: Category[]
+  selectedFlows: string[]
+  selectedMonitoringLocations: MonitoringLocation[]
+}
+
+export interface NodePreferences {
+  nodeColumns: NodeColumnSelectionItem[]
+  nodeFilter?: NodeFilterPreferences
+}
+
+export interface OpenNmsPreferences {
+  nodePreferences: NodePreferences
+}
