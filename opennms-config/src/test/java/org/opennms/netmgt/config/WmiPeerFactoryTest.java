@@ -33,14 +33,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Optional;
 
-import junit.framework.TestCase;
-
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+
+import junit.framework.TestCase;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -63,7 +63,7 @@ public class WmiPeerFactoryTest extends TestCase {
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("wmi", new Credentials("foo", "bar"));
 
-        final String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
+        final String wmiConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<wmi-config retry=\"3\" timeout=\"800\"\n" +
                 "   username=\"${scv:wmi:username}\" password=\"${scv:wmi:password}\">\n" +
                 "   <definition>\n" +
@@ -76,7 +76,7 @@ public class WmiPeerFactoryTest extends TestCase {
                 "</wmi-config>\n" +
                 "";
 
-        final WmiPeerFactory factory = getFactory(amiConfigXml);
+        final WmiPeerFactory factory = getFactory(wmiConfigXml);
         factory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
 
         assertEquals(Optional.of("${scv:wmi:username}"), factory.getConfig().getUsername());

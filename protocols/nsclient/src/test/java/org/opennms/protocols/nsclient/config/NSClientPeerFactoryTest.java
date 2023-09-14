@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -86,7 +85,7 @@ public class NSClientPeerFactoryTest {
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("nsclient", new Credentials("foo", "bar"));
 
-        final String amiConfigXml = "<?xml version=\"1.0\"?>\n" +
+        final String nsClientConfigXml = "<?xml version=\"1.0\"?>\n" +
                 "<nsclient-config retry=\"3\" timeout=\"800\"\n" +
                 "   password=\"${scv:nsclient:password}\">\n" +
                 "   <definition>\n" +
@@ -96,7 +95,7 @@ public class NSClientPeerFactoryTest {
                 "</nsclient-config>\n" +
                 "";
 
-        final NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
+        final NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(nsClientConfigXml.getBytes(StandardCharsets.UTF_8)));
         factory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
 
         assertEquals("${scv:nsclient:password}", factory.getConfig().getPassword());
