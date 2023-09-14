@@ -1595,7 +1595,7 @@
     <camelVersion>2.19.1</camelVersion>
     <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
     <!-- Match Newts version -->
-    <cassandraVersion>3.11.4</cassandraVersion>
+    <cassandraVersion>3.11.5</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCliVersion>1.2</commonsCliVersion>
