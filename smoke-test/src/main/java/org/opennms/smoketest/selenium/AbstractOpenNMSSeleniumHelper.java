@@ -313,6 +313,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             username, skip, closeUsageStatsSharing, navigateToLoginPage);
 
         if (navigateToLoginPage) {
+            // Start with a clean slate
+            getDriver().manage().deleteAllCookies();
+
             getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
         }
 
