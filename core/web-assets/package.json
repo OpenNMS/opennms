@@ -92,7 +92,7 @@
         "angular-ui-sortable": "^0.19.0",
         "backshift": "github:OpenNMS/backshift#v1.3.3",
         "bootbox": "^6.0.0",
-        "bootstrap": "~4.6.1",
+        "bootstrap": "~5.3.2",
         "c3": "^0.4.24",
         "core-js": "^3.19.3",
         "cron-parser": "^4.2.1",
