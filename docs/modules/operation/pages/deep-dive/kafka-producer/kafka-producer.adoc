@@ -66,3 +66,7 @@ The records are keyed in this fashion to help ensure that collection sets relate
 When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
 
 NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be available on the {page-component-title} instance.
+
+== Schema
+View the https://github.com/OpenNMS/opennms/blob/develop/features/kafka/producer/src/main/proto/opennms-kafka-producer.proto[Kafka Producer schema] on GitHub.
+Change branches or tags to see a version from that point in time.
