@@ -1,6 +1,6 @@
 
 = Kafka Producer
-:description: Learn how the Kafka Producer enables OpenNMS Horizon/Meridian forward events, alarms, nodes, topologies, and metrics to Kafka.
+:description: Learn how the Kafka Producer enables {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
 The Kafka Producer feature lets {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 

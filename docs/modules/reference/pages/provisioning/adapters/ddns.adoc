@@ -1,6 +1,6 @@
 [[adapter-ddns]]
 = Dynamic DNS
-:description: Learn how the DDNS adapter uses the dynamic DNS protocol to send updated A/AAAA DNS records to your DNS system when OpenNMS Horizon/Meridian provisions nodes.
+:description: Learn how the DDNS adapter uses the dynamic DNS protocol to send updated A/AAAA DNS records to your DNS system when {page-component-title} provisions nodes.
 
 The DDNS adapter uses the dynamic DNS protocol to send updated A/AAAA DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 

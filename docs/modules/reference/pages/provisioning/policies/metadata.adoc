@@ -1,5 +1,5 @@
 = Metadata Policies
-:description: Learn about the node and interface metadata policies in OpenNMS Horizon/Meridian to set metadata for provisioned nodes and discovered interfaces on them.
+:description: Learn about the node and interface metadata policies in {page-component-title} to set metadata for provisioned nodes and discovered interfaces on them.
 
 == Node metadata policy
 
@@ -8,5 +8,3 @@ The Metadata policy lets you set node-level metadata in the context `requisition
 == Interface metadata policy
 
 The Interface Metadata policy lets you set interface-level metadata in the context `requisition` for discovered interfaces on provisioned nodes.
-
-//this section seems sparse

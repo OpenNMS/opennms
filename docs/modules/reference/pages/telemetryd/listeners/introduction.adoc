@@ -1,6 +1,6 @@
 
 [[ref-listener]]
 = Listener Reference
-:description: Overview of telemetryd listener documentation in OpenNMS Horizon/Meridian.
+:description: Overview of telemetryd listener documentation in {page-component-title}.
 
 This section describes the available telemetryd listeners.

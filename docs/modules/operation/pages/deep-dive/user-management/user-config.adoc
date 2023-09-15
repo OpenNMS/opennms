@@ -1,7 +1,7 @@
 
 [[ga-user-config]]
 = User Creation and Configuration
-:description: How to create users and user schedules in OpenNMS Horizon/Meridian.
+:description: How to create users and user schedules in {page-component-title}.
 
 
 Only a user with admin privileges can create users and assign security roles.

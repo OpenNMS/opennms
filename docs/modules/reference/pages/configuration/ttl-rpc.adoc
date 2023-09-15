@@ -1,5 +1,5 @@
 = Time to Live (TTL) for RPCs
-:description: Learn about time-to-live (TTL) with remote procedure calls (RPCs) in OpenNMS Horizon/Meridian: global, pollerd, collectd, provisiond, and so on.
+:description: Learn about time-to-live (TTL) with remote procedure calls (RPCs) in {page-component-title}: global, pollerd, collectd, provisiond, and so on.
 
 Remote procedure calls (RPCs) between {page-component-title} Core and Minion include a time limit which, if exceeded, aborts the requests and discards any subsequent responses.
 We call this limit the time-to-live or TTL.

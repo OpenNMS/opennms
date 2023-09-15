@@ -1,7 +1,7 @@
 
 [[ref-ticketing-jira]]
 = Jira Ticketing Plugin
-:description: Learn how to set up and use the Jira Ticketing Plugin to create Jira issues in response to OpenNMS Horizon/Meridian alarms.
+:description: Learn how to set up and use the Jira Ticketing Plugin to create Jira issues in response to {page-component-title} alarms.
 
 The Jira ticketing plugin creates Jira issues in response to {page-component-title} alarms.
 

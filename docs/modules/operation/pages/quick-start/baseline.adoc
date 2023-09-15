@@ -1,7 +1,7 @@
 
 = Step 6: Establish a Baseline
 
-:description: Step 6 of OpenNMS Horizon/Meridian setup: establish a baseline by determining your environment's "normal".
+:description: Step 6 of {page-component-title} setup: establish a baseline by determining your environment's "normal".
 
 This section describes how to establish a baseline for your {page-component-title} instance.
 Determining your environment's baseline operating state will help you evaluate how effective your notification rules are, your network's peak operating times, and other useful metrics.

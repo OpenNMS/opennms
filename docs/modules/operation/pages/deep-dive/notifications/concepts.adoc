@@ -1,7 +1,7 @@
 
 [[ga-notifications-concepts]]
 = Concepts
-:description: Concepts around notifications in OpenNMS Horizon/Meridian: events and UEIs, users and groups, on-call roles, duty schedules, and destination paths.
+:description: Concepts around notifications in {page-component-title}: events and UEIs, users and groups, on-call roles, duty schedules, and destination paths.
 
 This page describes core concepts related to {page-component-title} notifications.
 They ultimately combine to form an xref:operation:deep-dive/events/event-definition.adoc[Event Notification Definition].
