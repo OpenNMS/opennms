@@ -2518,6 +2518,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.charts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.dhcpd</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2948,12 +2953,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jcifs-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jfreechart-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3402,9 +3401,8 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jasper-dependencies</artifactId>
+        <artifactId>jasper-shaded</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -4282,6 +4280,16 @@
         <artifactId>ehcache</artifactId>
         <version>1.8.0</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${jcommonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>${jfreechartVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
