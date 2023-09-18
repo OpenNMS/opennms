@@ -1,6 +1,6 @@
 
 = Step 7: Determine Service Availability
-:description: Step 7 of OpenNMS Horizon/Meridian setup: determine service availability, pollerd, service monitor framework.
+:description: Step 7 of {page-component-title} setup: determine service availability, pollerd, service monitor framework.
 
 By default, {page-component-title} monitors a number of services, including ICMP, DNS, Elasticsearch, SMTP, FTP, SNMP, HTTP(S), SSH, Postgres, IMAP, and POP3.
 

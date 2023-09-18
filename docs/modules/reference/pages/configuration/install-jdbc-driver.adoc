@@ -1,7 +1,7 @@
 
 [[install-jdbc-driver-core]]
 = Install JDBC Driver on {page-component-title} Core
-:description: Learn how to install a JDBC driver in OpenNMS Horizon/Meridian to detect, poll, or collect on JDBC services.
+:description: Learn how to install a JDBC driver in {page-component-title} to detect, poll, or collect on JDBC services.
 
 To detect, poll, or collect any JDBC service, you must install the appropriate JDBC driver.
 

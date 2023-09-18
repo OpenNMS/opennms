@@ -1,6 +1,6 @@
 
 = Operational Status
-:description: Overview of business service operational status in OpenNMS Horizon/Meridian.
+:description: Overview of business service operational status in {page-component-title}.
 
 Every business service maintains an operational status that represents its overall status.
 The overall status is calculated from the edges, using the map and reduce functions, and uses the <<deep-dive/events/event-configuration.adoc#severities, severities>> from associated events and alarms.

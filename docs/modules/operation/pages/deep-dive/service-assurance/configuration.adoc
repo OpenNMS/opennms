@@ -1,7 +1,7 @@
 
 [[ga-pollerd-configuration]]
 = Configure Pollerd
-:description: How to configure pollerd in OpenNMS Horizon/Meridian to change service monitoring behavior: define thread pool, downtime model, asynchronous engine.
+:description: How to configure pollerd in {page-component-title} to change service monitoring behavior: define thread pool, downtime model, asynchronous engine.
 
 For information on configuration and log files related to pollerd, see xref:reference:daemons/daemon-config-files/pollerd.adoc[] in the reference section.
 

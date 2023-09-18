@@ -1,5 +1,5 @@
 = SNMP Trap Performance Data
-:description: Persist performance data from SNMP traps in OpenNMS Horizon/Meridian, including example configurations, resource types, and graphing.
+:description: Persist performance data from SNMP traps in {page-component-title}, including example configurations, resource types, and graphing.
 
 The `opennms-events-collector` feature lets you persist performance data from SNMP traps as time-series data.
 Unlike SNMP collection where you can define data types, SNMP traps always embed values as strings.

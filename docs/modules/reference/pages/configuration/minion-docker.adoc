@@ -1,6 +1,6 @@
 [[minion-docker]]
 = Minion Docker
-:description: Learn about startup arguments and environment variables for the Docker with the OpenNMS Horizon/Meridian Minion.
+:description: Learn about startup arguments and environment variables for the Docker with the {page-component-title} Minion.
 
 == Startup arguments
 

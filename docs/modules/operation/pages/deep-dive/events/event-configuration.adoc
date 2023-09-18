@@ -1,6 +1,6 @@
 
 = Event Daemon Configuration
-:description: How to configure the event daemon in OpenNMS Horizon/Meridian: parameters, severities, event reload configuration.
+:description: How to configure the event daemon in {page-component-title}: parameters, severities, event reload configuration.
 
 The back-end configuration surrounding events is split into two areas: the configuration of eventd itself, and the configuration of events definitions known to {page-component-title}.
 

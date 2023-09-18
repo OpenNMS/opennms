@@ -1,6 +1,6 @@
 
 [[ga-events-sources-rest]]
 = REST
-:description: Overview of posting events in XML format to the REST API events endpoint in OpenNMS Horizon/Meridian.
+:description: Overview of posting events in XML format to the REST API events endpoint in {page-component-title}.
 
 Posting an event in XML format to the xref:development:rest/events.adoc#posts-adding-data[Events endpoint] in the {page-component-title} REST API will create a corresponding event, just as with the XML-TCP interface.

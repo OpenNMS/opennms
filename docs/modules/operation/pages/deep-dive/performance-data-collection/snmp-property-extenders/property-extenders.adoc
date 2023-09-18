@@ -1,6 +1,6 @@
 
 = SNMP Property Extenders
-:description: Overview of SNMP property extenders in OpenNMS Horizon/Meridian for better categorization of collected data.
+:description: Overview of SNMP property extenders in {page-component-title} for better categorization of collected data.
 
 When collecting tabular numerical metrics from an MIB table, it's helpful to include one or more string properties from each conceptual row of the table in question.
 These properties can be used in the `resourceLabel` attribute of the `resourceType` that is associated with the collected data.

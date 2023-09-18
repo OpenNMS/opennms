@@ -1,7 +1,7 @@
 
 [[xml-sample-provision]]
 = XML Samples
-:description: Sample XML configuration for provisioning tasks in OpenNMS Horizon/Meridian.
+:description: Sample XML configuration for provisioning tasks in {page-component-title}.
 
 This section provides sample XML configuration for many of the tasks described in the Provisioning chapter.
 
