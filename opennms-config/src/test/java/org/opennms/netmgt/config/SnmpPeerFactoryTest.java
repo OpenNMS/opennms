@@ -31,22 +31,32 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 
 import junit.framework.TestCase;
 
@@ -510,6 +520,61 @@ public class SnmpPeerFactoryTest extends TestCase {
 
             assertNull(snmpAgentConfig.getPrivProtocol());
             assertThat(snmpAgentConfig.getVersionAsString(), Matchers.isOneOf("v2c", "v3"));
+        }
+    }
+
+    public void testMergingWithMetadata() throws Exception {
+        TemporaryFolder temporaryFolder = new TemporaryFolder();
+        temporaryFolder.create();
+        final var file = new File(temporaryFolder.getRoot(), "snmp-config.xml");
+
+        try (var filewriter = new FileWriter(file)) {
+            IOUtils.write("<snmp-config xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\" version=\"v2c\" read-community=\"minion\" timeout=\"1800\" retry=\"1\"/>", filewriter);
+        }
+
+        final URL url = file.toURI().toURL();
+        try (final InputStream inputStream = url.openStream()) {
+            final SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(inputStream));
+            SnmpPeerFactory.setFile(file);
+
+            final Definition defA = new Definition();
+            defA.setRanges(Arrays.asList(new Range("192.168.30.1","192.168.30.10")));
+            defA.setReadCommunity("${scv:myCommunity:password}");
+            defA.setWriteCommunity("private");
+            defA.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defA.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defA);
+            snmpPeerFactory.saveCurrent();
+
+            final Definition defB = new Definition();
+            defB.setRanges(Arrays.asList(new Range("192.168.30.11","192.168.30.30")));
+            defB.setReadCommunity("${scv:myCommunity:password}");
+            defB.setWriteCommunity("private");
+            defB.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defB.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defB);
+            snmpPeerFactory.saveCurrent();
+
+            final SnmpConfig snmpConfig1 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
+
+            assertEquals(1, snmpConfig1.getDefinitions().size());
+            assertEquals("${scv:myAuthPassphrase:password}", snmpConfig1.getDefinitions().get(0).getAuthPassphrase());
+            assertEquals("${scv:myPrivacyPassphrase:password}", snmpConfig1.getDefinitions().get(0).getPrivacyPassphrase());
+            assertEquals("${scv:myCommunity:password}", snmpConfig1.getDefinitions().get(0).getReadCommunity());
+            assertEquals("private", snmpConfig1.getDefinitions().get(0).getWriteCommunity());
+
+            final Definition defC = new Definition();
+            defC.setRanges(Arrays.asList(new Range("192.168.30.31","192.168.30.35")));
+            // this should not match
+            defC.setReadCommunity("${scv:anotherCommunity:password}");
+            defC.setWriteCommunity("private");
+            defC.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defC.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defC);
+            snmpPeerFactory.saveCurrent();
+
+            final SnmpConfig snmpConfig2 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
+            assertEquals(2, snmpConfig2.getDefinitions().size());
         }
     }
 }
