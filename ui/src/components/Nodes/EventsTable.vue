@@ -42,10 +42,13 @@
     <Pagination
       :parameters="queryParameters"
       @update-query-parameters="updateQueryParameters"
-      moduleName="eventsModule"
+      :query="getEventsModuleEvents"
+      :getTotalCount="getEventsTotalCount"
+    />
+    <!-- moduleName="eventsModule"
       functionName="getEvents"
       totalCountStateName="totalCount"
-    />
+    -->
   </div>
 </template>
 
@@ -56,15 +59,27 @@
 import Pagination from '../Common/Pagination.vue'
 import { useStore } from 'vuex'
 import useQueryParameters from '@/composables/useQueryParams'
-import { Event } from '@/types'
+import { Event, QueryParameters } from '@/types'
 
 const store = useStore()
 const route = useRoute()
+
+const getEventsModuleEvents = async (payload: QueryParameters) => {
+  // TODO: Replace with pinia store
+  store.dispatch('eventsModule/getEvents', payload)
+}
+
+const getEventsTotalCount = () => {
+  // TODO: Replace with pinia store
+  return store.state.eventsModule.totalCount
+}
+
 const { queryParameters, updateQueryParameters } = useQueryParameters({
   limit: 5,
   offset: 0,
   _s: `node.id==${route.params.id}`
-}, 'eventsModule/getEvents')
+}, getEventsModuleEvents)
+
 const events = computed(() => store.state.eventsModule.events)
 const getRowClass = (data: Event) => data.severity.toLowerCase()
 </script>
