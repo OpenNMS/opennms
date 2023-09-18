@@ -2,6 +2,8 @@
 [[ref-daemon-config-files-alarmd]]
 = Alarmd
 
+:description: Learn about the alarm daemon (alarmd), which is responsible for alarm workflows in OpenNMS {page-component-title}.
+
 The alarm daemon handles alarm workflows.
 It manages the xref:operation:deep-dive/alarms/introduction.adoc[alarm] state based on generated events.
 

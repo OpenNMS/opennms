@@ -1,5 +1,6 @@
 
 = Vacuumd
+:description: Learn about the vacuum daemon (vacuumd) in OpenNMS {page-component-title}, which runs daily cleanup tasks for the PostgreSQL database.
 
 The vacuum daemon runs daily cleanup tasks for the PostgreSQL database.
 You can create automations for vacuumd by setting triggers and actions in `vacuumd-configuration.xml`.
