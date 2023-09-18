@@ -1,5 +1,6 @@
 
 = Provisiond
+:description: Learn about the OpenNMS {page-component-title} provision daemon (provisiond), which scans nodes from requisition and import files and from `newSuspect` events.
 
 The provision daemon scans nodes from requisition and import files, and from `newSuspect` events.
 The scanned nodes are then added to the database.
