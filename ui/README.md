@@ -35,7 +35,7 @@ yarn test
 
 This project uses [Vuex](https://next.vuex.vuejs.org/) with the modules pattern.
 Each store module has separate files for state, actions, and mutations.
-Current convention is to only call actions from components, (no mutations).
+Current convention is to call actions only from components, (no mutations).
 
 Vuex stores are under `store`; pinia stores are under `stores`.
 
