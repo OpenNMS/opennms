@@ -98,9 +98,8 @@
     <Pagination
       :parameters="queryParameters"
       @update-query-parameters="updateQueryParameters"
-      moduleName="nodesModule"
-      functionName="getNodes"
-      totalCountStateName="totalCount"
+      :query="nodeQuery"
+      :getTotalCount="getNodeTotalCount"
     />
   </div>
   <NodeDetailsDialog
@@ -118,7 +117,6 @@
 
 <script setup lang="ts">
 import { markRaw } from 'vue'
-import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Settings from '@featherds/icon/action/Settings'
@@ -133,6 +131,7 @@ import Pagination from '../Common/Pagination.vue'
 import { buildNodeStructureQuery } from './utils'
 import useQueryParameters from '@/composables/useQueryParams'
 import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
   Category,
@@ -145,9 +144,9 @@ import {
   UpdateModelFunction } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 
-const store = useStore()
-const nodeStructureStore = useNodeStructureStore()
 const menuStore = useMenuStore()
+const nodeStructureStore = useNodeStructureStore()
+const nodeStore = useNodeStore()
 const settingsIcon = markRaw(Settings)
 
 const sortStates: any = reactive({
@@ -179,7 +178,7 @@ const sortStateForId = (label: string) => {
 }
 
 const currentSearch = ref('')
-const nodes = computed(() => store.state.nodesModule.nodes)
+const nodes = computed(() => nodeStore.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const selectedCategories = computed<Category[]>(() => nodeStructureStore.selectedCategories)
 const selectedFlows = computed<string[]>(() => nodeStructureStore.selectedFlows)
@@ -212,11 +211,19 @@ const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
   return column.selected && column.id === id
 }
 
+const nodeQuery = async (params: QueryParameters) => {
+  nodeStore.getNodes(params)
+}
+
+const getNodeTotalCount = () => {
+  return nodeStore.totalCount
+}
+
 const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
   limit: 10,
   offset: 0,
   orderBy: 'label'
-}, 'nodesModule/getNodes')
+}, nodeQuery)
 
 const sortChanged = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
@@ -262,7 +269,7 @@ const updateQuery = (val?: string) => {
     delete updatedParams._s
   }
 
-  store.dispatch('nodesModule/getNodes', updatedParams)
+  nodeStore.getNodes(updatedParams)
   queryParameters.value = updatedParams
 }
 
@@ -270,7 +277,7 @@ const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
 
-const onNodeLinkClick = (nodeId: number) => {
+const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 

@@ -35,9 +35,8 @@
     :payload="payload"
     :parameters="queryParameters"
     @update-query-parameters="updateQueryParameters"
-    moduleName="nodesModule"
-    functionName="getNodeSnmpInterfaces"
-    totalCountStateName="snmpInterfacesTotalCount"
+    :query="snmpInterfacesQuery"
+    :getTotalCount="getSnmpInterfacesTotalCount"
   />
 </template>
 
@@ -46,17 +45,28 @@
   lang="ts"
 >
 import Pagination from '../Common/Pagination.vue'
-import { useStore } from 'vuex'
+import { useNodeStore } from '@/stores/nodeStore'
 import useQueryParameters from '@/composables/useQueryParams'
+import { QueryParameters } from '@/types'
 
-const store = useStore()
 const route = useRoute()
 const optionalPayload = { id: route.params.id }
+const nodeStore = useNodeStore()
+
+const snmpInterfacesQuery = async (payload: QueryParameters) => {
+  nodeStore.getNodeSnmpInterfaces({ id: route.params.id as string, queryParameters: payload })
+}
+
+const getSnmpInterfacesTotalCount = () => {
+  return nodeStore.snmpInterfacesTotalCount
+}
+
 const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
   limit: 5,
-  offset: 0,
-}, 'nodesModule/getNodeSnmpInterfaces', optionalPayload)
-const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
+  offset: 0
+}, snmpInterfacesQuery, optionalPayload)
+
+const snmpInterfaces = computed(() => nodeStore.snmpInterfaces)
 </script>
 
 <style lang="scss">
@@ -65,4 +75,3 @@ table {
   @include table;
 }
 </style>
-

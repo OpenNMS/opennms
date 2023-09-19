@@ -5,7 +5,6 @@ import appModule from './app'
 import authModule from './auth'
 import configuration from './configuration'
 import deviceModule from './device'
-import eventsModule from './events'
 import fileEditorModule from './fileEditor'
 import graphModule from './graph'
 import helpModule from './help'
@@ -14,7 +13,6 @@ import infoModule from './info'
 import ipInterfacesModule from './ipInterfaces'
 import logsModule from './logs'
 import mapModule from './map'
-import nodesModule from './nodes'
 import pluginModule from './plugin'
 import resourceModule from './resource'
 import scvModule from './scv'
@@ -27,7 +25,6 @@ export default createStore({
     authModule,
     configuration,
     deviceModule,
-    eventsModule,
     fileEditorModule,
     graphModule,
     helpModule,
@@ -36,7 +33,6 @@ export default createStore({
     ipInterfacesModule,
     logsModule,
     mapModule,
-    nodesModule,
     pluginModule,
     resourceModule,
     scvModule,

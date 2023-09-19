@@ -85,6 +85,7 @@ import {
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
+import { useNodeStore } from '@/stores/nodeStore'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
@@ -102,6 +103,7 @@ import { useMenuStore } from '@/stores/menuStore'
 
 const store = useStore()
 const menuStore = useMenuStore()
+const nodeStore = useNodeStore()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -321,12 +323,12 @@ const tileProviders = [
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-  },
+  }
 ]
 
 onMounted(async () => {
   store.dispatch('mapModule/getNodes')
-  store.dispatch('nodesModule/getNodes')
+  nodeStore.getNodes()
   store.dispatch('ipInterfacesModule/getAllIpInterfaces')
 })
 
