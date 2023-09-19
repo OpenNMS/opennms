@@ -72,13 +72,15 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
     @Test
     public void testAdminPasswordGate() {
         // login with "admin/admin", do not skip the password gate but instead change the password
-        LOG.debug("Test admin login and password change.");
-        loginAndChangePassword("index.jsp");
+        LOG.debug("Test admin login and password change");
+        logout();
+        loginAndChangePassword("index.jsp", true);
 
         // logout, then login with "admin/newPassword", should go directly to main page
-        LOG.debug("Test admin login with new password.");
+        LOG.debug("Test admin login with new password");
         logout();
-        login(PASSWORD_GATE_USERNAME, ALTERNATE_ADMIN_PASSWORD, true, true, true);
+        // skip cookie deletion, we need to retain for authorization for resetPassword Rest API call
+        login(PASSWORD_GATE_USERNAME, ALTERNATE_ADMIN_PASSWORD, true, true, true, true);
         assertTrue(driver.getCurrentUrl().contains("index.jsp"));
         verifyOnMainPage();
 
@@ -86,53 +88,56 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         resetPassword();
 
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
-        LOG.debug("Test admin login with default password and skip.");
+        LOG.debug("Test admin login with default password and skip");
         logout();
         loginAndSkip();
 
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, click Skip, then should redirect to original page
-        LOG.debug("Logout and login to the node page, confirm that skipping the password gate redirects there");
+        LOG.debug("Test logout and login to the node page, confirm that skipping the password gate redirects there");
         logout();
         nodePage();
         waitFor("login.jsp");
-        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, true, false);
+        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, true, false, false);
         waitFor("element/nodeList.htm");
 
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, change the password, then should redirect to node page
-        LOG.debug("Logout and login to the node page, confirm that changing the password redirects to node page");
+        LOG.debug("Test logout and login to the node page, confirm that changing the password redirects to node page");
         logout();
         nodePage();
         waitFor("login.jsp");
-        loginAndChangePassword("element/nodeList.htm");
+        loginAndChangePassword("element/nodeList.htm", false);
 
         // Reset password back to "admin" using Rest API
         resetPassword();
 
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
+        LOG.debug("Test final logout and login to the node page and skip");
         logout();
         loginAndSkip();
     }
 
     private void resetPassword() {
         LOG.debug("Resetting password back to default via Rest API");
+
         final String url = "/rest/users/admin";
         final String body = "password=admin&hashPassword=true";
 
         try {
             final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(PASSWORD_GATE_USERNAME, ALTERNATE_ADMIN_PASSWORD);
             sendPut(url, body, 204, credentials);
+            LOG.debug("Password reset successfully");
         } catch (Exception e) {
             fail("Failed to reset password to 'admin': " + e.getMessage());
         }
     }
 
-    private void loginAndChangePassword(String expectedRedirectUrl) {
-        // login with "admin/admin", do not skip past the password gate
-        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, false, false, true);
+    private void loginAndChangePassword(String expectedRedirectUrl, boolean navigateToLoginPage) {
+        // login with "admin/admin", do not skip past the password gate, skip cookie deletion
+        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, false, false, navigateToLoginPage, true);
 
         if (!driver.getCurrentUrl().contains("passwordGate.jsp")) {
             fail("Failed to get password gate page after 'admin/admin' login attempt.");
@@ -144,13 +149,13 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         enterText(By.name("pass2"), ALTERNATE_ADMIN_PASSWORD);
         clickElement(By.name("btn_change_password"));
 
-        // waiting until redirecting back to login page after successful password change
+        // waiting until redirecting back to expectedRedirectUrl after successful password change
         waitFor(expectedRedirectUrl);
     }
 
     private void loginAndSkip() {
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
-        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, true, true);
+        login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, true, true, false);
 
         waitFor("index.jsp");
     }

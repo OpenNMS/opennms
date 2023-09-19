@@ -291,7 +291,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * skip the password gate page and then close the Usage Statistics Sharing dialog if present.
      */
     public void login() {
-        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, true);
+        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, true, false);
     }
 
     /**
@@ -308,13 +308,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      *     to a different page before calling this method, e.g. to test that redirect after login works.
      */
     public void login(final String username, final String password, final boolean skip, final boolean closeUsageStatsSharing,
-                      final boolean navigateToLoginPage) {
-        LOG.debug("Login: username={}, skip={}, closeUsageStatsSharing={}, navigateToLoginPage={}",
-            username, skip, closeUsageStatsSharing, navigateToLoginPage);
+                      final boolean navigateToLoginPage, final boolean skipCookieDeletion) {
+        LOG.debug("Login: username={}, skip={}, closeUsageStatsSharing={}, navigateToLoginPage={}, skipCookieDeletion={}",
+            username, skip, closeUsageStatsSharing, navigateToLoginPage, skipCookieDeletion);
 
         if (navigateToLoginPage) {
-            // Start with a clean slate
-            getDriver().manage().deleteAllCookies();
+            if (!skipCookieDeletion) {
+                // Start with a clean slate
+                getDriver().manage().deleteAllCookies();
+            }
 
             getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
         }
