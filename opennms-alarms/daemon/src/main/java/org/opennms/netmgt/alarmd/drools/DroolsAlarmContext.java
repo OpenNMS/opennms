@@ -455,6 +455,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 Hibernate.initialize(alarm.getLastEvent().getEventParameters());
             } catch (ObjectNotFoundException ex) {
                 // This may be triggered if the event attached to the alarm entity is already gone
+                LoggerFactory.getLogger("NMS-15734").warn("Event gone while processing alarm.", new Exception(ex));
                 alarm.setLastEvent(null);
             }
         }

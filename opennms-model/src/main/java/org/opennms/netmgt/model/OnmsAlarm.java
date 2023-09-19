@@ -72,6 +72,7 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import com.google.common.base.MoreObjects;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>OnmsAlarm class.</p>
@@ -789,6 +790,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
      */
     public void setLastEvent(OnmsEvent event) {
+        if (this.m_lastEvent != null && event == null) {
+            LoggerFactory.getLogger("NMS-15734").warn("Event vanished.", new Exception());
+        }
+
+
         this.m_lastEvent = event;
         if (event!=null) {
             try {
