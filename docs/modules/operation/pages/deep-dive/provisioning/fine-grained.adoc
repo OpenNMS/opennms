@@ -1,5 +1,5 @@
 = Fine-Grained provisioning using provision.pl
-:description: How to use the provision.pl script for fine-grained provisioning in OpenNMS Horizon/Meridian.
+:description: How to use the provision.pl script for fine-grained provisioning in {page-component-title}.
 
 `provision.pl` provides an example command-line interface to the provisioning-related {page-component-title} REST API endpoints.
 

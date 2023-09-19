@@ -1,7 +1,7 @@
 
 [[ga-events-sources-eif]]
 = IBM Tivoli Event Integration Facility
-:description: How to configure OpenNMS Horizon/Meridian to receive events sent using the Tivoli Event Integration Facility (EIF). Includes troubleshooting.
+:description: How to configure {page-component-title} to receive events sent using the Tivoli Event Integration Facility (EIF). Includes troubleshooting.
 
 You can configure {page-component-title} to receive events sent using the https://www.ibm.com/docs/en/netcoolomnibus/8.1?topic=reference-overview-tivoli-event-integration-facility[Tivoli Event Integration Facility].
 These EIF events are translated into {page-component-title} events using preconfigured rules.

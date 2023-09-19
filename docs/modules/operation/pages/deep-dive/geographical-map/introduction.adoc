@@ -1,5 +1,5 @@
 = Geographical Maps
-:description: Learn more about the geographical map in OpenNMS Horizon/Meridian that displays nodes with address asset information, including dynamic alarm status.
+:description: Learn more about the geographical map in {page-component-title} that displays nodes with address asset information, including dynamic alarm status.
 
 OpenNMS includes a geographical map which can show nodes with address asset information on a world map, including dynamic alarm status.
 

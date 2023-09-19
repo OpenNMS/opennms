@@ -1,7 +1,7 @@
 
 [[flows-remote]]
 = Using Minions as a Flow Collector
-:description: Learn how to set up distributed flows data collection in OpenNMS Horizon/Meridian with Minion.
+:description: Learn how to set up distributed flows data collection in {page-component-title} with Minion.
 
 Beyond a basic flows setup, you may want to add a Minion to collect flows data from hard-to-reach or remote locations.
 

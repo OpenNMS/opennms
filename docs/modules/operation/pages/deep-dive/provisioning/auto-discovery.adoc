@@ -1,7 +1,7 @@
 
 [[auto-discovery]]
 = Auto Discovery
-:description: How to automatically add nodes to OpenNMS Horizon/Meridian through discovery scans.
+:description: How to automatically add nodes to {page-component-title} through discovery scans.
 
 Auto discovery is the process of automatically adding nodes to {page-component-title}.
 This is done through discovery, which is run either periodically on a schedule or as one-off, unscheduled operations.

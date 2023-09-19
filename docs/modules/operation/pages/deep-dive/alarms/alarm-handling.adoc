@@ -1,6 +1,6 @@
 
 = Alarm Handling
-:description: Ways to manage alarms in OpenNMS Horizon/Meridian: acknowledgement, clearing, escalation, related events, alarm note, and advanced alarm handling.
+:description: Ways to manage alarms in {page-component-title}: acknowledgement, clearing, escalation, related events, alarm note, and advanced alarm handling.
 
 The following are ways you can interact with alarms.
 

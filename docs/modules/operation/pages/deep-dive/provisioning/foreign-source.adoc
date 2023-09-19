@@ -1,7 +1,7 @@
 
 [[foreign-source-definition]]
 = Foreign Source Definition
-:description: Use the foreign source definition in OpenNMS Horizon/Meridian to define detection services(DNS, FTP, ICMP, etc.), set scan interval. and create a policy.
+:description: Use the foreign source definition in {page-component-title} to define detection services(DNS, FTP, ICMP, etc.), set scan interval. and create a policy.
 
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, and so on), the scan interval for discovery, and the policies to use when provisioning.
 Policies determine entity persistence and set attributes on the discovered entities that control {page-component-title} management behavior.

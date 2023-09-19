@@ -1,6 +1,6 @@
 
 = Quick Start
-:description: Overview of OpenNMS Horizon/Meridian quick start documentation.
+:description: Overview of {page-component-title} quick start documentation.
 
 This Quick Start guide assumes that you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/getting-started.adoc[installed a {page-component-title} instance], and that you are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
 

@@ -1,6 +1,6 @@
 
 = Shell Commands
-:description: Overview of Karaf shell commands in OpenNMS Horizon/Meridian to help administer and diagnose issues related to performance data collection.
+:description: Overview of Karaf shell commands in {page-component-title} to help administer and diagnose issues related to performance data collection.
 
 A number of Karaf Shell commands are made available to help administer and diagnose issues related to performance data collection.
 
