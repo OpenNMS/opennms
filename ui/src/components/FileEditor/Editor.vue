@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { getExtensionFromFilenameSafely } from './utils'
 import { useStore } from 'vuex'
+import { useAppStore } from '@/stores/appStore'
 import { VAceEditor } from 'vue3-ace-editor'
 import { onKeyStroke } from '@vueuse/core'
 import Console from './Console.vue'
@@ -30,23 +31,30 @@ import 'ace-builds/src-noconflict/theme-xcode'
 import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import workerXmlUrl from 'ace-builds/src-noconflict/worker-xml?url'
+
 ace.config.setModuleUrl('ace/mode/xml_worker', workerXmlUrl)
 
-const theme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dracula'
-  return 'xcode'
-})
-
 const store = useStore()
+const appStore = useAppStore()
 const content = ref('')
 const reactiveEditor = ref()
+
+const theme = computed(() => {
+  const theme = appStore.theme
+  if (theme === 'open-dark') {
+    return 'dracula'
+  }
+
+  return 'xcode'
+})
 
 const selectedFileName = computed(() => store.state.fileEditorModule.selectedFileName)
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const fileString = computed(() => store.state.fileEditorModule.file)
+
 const lang = computed(() => {
   const xml = 'xml', properties = 'properties', drl = 'drl', java = 'java'
+
   if (selectedFileName.value) {
     const extension = getExtensionFromFilenameSafely(selectedFileName.value)
     if (extension === xml) return xml
@@ -62,6 +70,7 @@ const disableEditor = (editor: any) => {
 }
 
 watchEffect(() => content.value = fileString.value)
+
 watch(selectedFileName, (selectedFileName) => {
   // enable editor when file is selected
   if (selectedFileName) {

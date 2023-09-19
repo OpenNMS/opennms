@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { useStore } from 'vuex'
+import { useAppStore } from '@/stores/appStore'
 import { VAceEditor } from 'vue3-ace-editor'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
@@ -46,18 +47,22 @@ import 'ace-builds/src-noconflict/theme-xcode'
 import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 
-const theme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dracula'
-  return 'xcode'
-})
-
 const store = useStore()
+const appStore = useAppStore()
 const reverseLog = ref(false)
 const content = ref('')
 const logString = computed(() => store.state.logsModule.log)
 const selectedLog = computed(() => store.state.logsModule.selectedLog)
 const editorRef = ref()
+
+const theme = computed(() => {
+  const theme = appStore.theme
+  if (theme === 'open-dark') {
+    return 'dracula'
+  }
+
+  return 'xcode'
+})
 
 onKeyStroke('f', (e) => {
   if (e.ctrlKey || e.metaKey) {

@@ -35,13 +35,14 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import 'rapidoc'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
+import API from '@/services'
 
-const store = useStore()
+const appStore = useAppStore()
 const menuStore = useMenuStore()
 const doc = ref()
 const docV1 = ref()
@@ -56,22 +57,23 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const getTheme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dark'
+  const theme = appStore.theme
+
+  if (theme === 'open-dark') {
+    return 'dark'
+  }
+
   return 'light'
 })
 
-const openApiSpec = computed<string>(() => store.state.helpModule?.openApi )
-const openApiSpecV1 = computed<string>(() => store.state.helpModule?.openApiV1 )
-
 const setup = async () => {
-  
   const docEl = document.getElementById('thedoc')
   const docElV1 = document.getElementById('thedocV1')
   const http = 'http', https = 'https'
-  let openApiSpec = await store.dispatch('helpModule/getOpenApi')
-  let openApiSpecV1 = await store.dispatch('helpModule/getOpenApiV1')
   const protocol = window.location.protocol.slice(0, -1)
+
+  const openApiSpec = await API.getOpenApi()
+  const openApiSpecV1 = await API.getOpenApiV1()
 
   let modifiedOpenApiSpec = openApiSpec
   let modifiedOpenApiV1Spec = openApiSpecV1
@@ -91,7 +93,6 @@ const setup = async () => {
 
   setTheme(docEl)
   setTheme(docElV1)
-  
 }
 
 const setTheme = (element: HTMLElement | null) => {
@@ -121,7 +122,7 @@ const setTheme = (element: HTMLElement | null) => {
 
 watch(getTheme, () => setup())
 
-onMounted(() => {
+onMounted(async () => {
   setup()
 })
 </script>
