@@ -1,6 +1,6 @@
 # Vue 3 + Typescript + Vite
 
-This template should help get you started developing with Vue 3, Typescript 4.9 and Vite 4.
+This template should help you start developing with Vue 3, Typescript 4.9, and Vite 4.
 
 ## Build instructions
 
