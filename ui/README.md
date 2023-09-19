@@ -62,7 +62,7 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 
 - from `target/snapshot/jetty-webapps/opennms/ui`, occasionally run `rm assets/*.*` to clear out old files
 
-- refresh your browser, which is pointed at `http://localhost:8980/opennms/ui/index.html#/nodes` or similar
+- refresh your browser, which points at `http://localhost:8980/opennms/ui/index.html#/nodes` or similar
 
 - test and debug code, use browser `F12 Developer Tools` to set breakpoints, view console output, inspect elements, etc.
 
