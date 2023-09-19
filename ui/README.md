@@ -40,7 +40,7 @@ Current convention is to call actions only from components, (no mutations).
 Vuex stores are under `store`; pinia stores are under `stores`.
 
 ## Vue-router
-Project routes make use of [vue-router](https://next.router.vuejs.org/guide/)
+Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
 
 ## Recommended IDE Setup
 
