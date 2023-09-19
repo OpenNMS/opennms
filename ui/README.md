@@ -48,7 +48,7 @@ Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
 
 ## Developer workflow
 
-Developer workflow for development -> build -> fast deploy. There may be issues running the vite development server since it runs on a different port than OpenNMS and OpenNMS menu items and URLs will be pointing to that port instead of the vite port.
+Developer workflow for development -> build -> fast deploy. There may be issues running the vite development server since it runs on a different port than OpenNMS; OpenNMS menu items and URLs will point to that port instead of the vite port.
 
 - assuming your local OpenNMS Horizon code is in `~/projects/opennms`
 
