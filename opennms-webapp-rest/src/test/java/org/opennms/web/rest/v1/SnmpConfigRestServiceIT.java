@@ -392,7 +392,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 	private SnmpInfo createSnmpInfoWithDefaultsForSnmpV3(final String ipAddress) {
 		SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress));
-		return new SnmpInfo(agentConfig);
+		return new SnmpInfo(agentConfig, null);
 	}
 	
 	private SnmpInfo createSnmpInfoWithDefaultsForSnmpV1() {
