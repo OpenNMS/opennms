@@ -23,4 +23,4 @@ org.opennms.core.ipc.twin.kafka.bootstrap.servers={{join $twin_servers ","}}{{en
 {{if $strategy}}
 org.opennms.core.ipc.strategy=kafka
 org.opennms.activemq.broker.disable=true
-c{{end}}
+{{end}}
