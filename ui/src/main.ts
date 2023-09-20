@@ -1,11 +1,11 @@
 import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
-import App from './App.vue'
+import VueDiff from 'vue-diff'
 import router, { isLegacyPlugin } from './router'
 import store from './store'
-import VueDiff from 'vue-diff'
 import { createPinia } from 'pinia'
 import API from '@/services'
+import App from './App.vue'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
