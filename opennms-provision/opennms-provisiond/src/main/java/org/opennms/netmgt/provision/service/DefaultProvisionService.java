@@ -529,17 +529,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
     }
 
-    /** {@inheritDoc} */
-    @Transactional
-    @Override
-    public OnmsMonitoredService addMonitoredService(final Integer ipInterfaceId, final String svcName, final String monitorKey) {
-        final OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
-        assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
-        return addMonitoredService(iface, svcName, monitorKey);
-
-    }
-
-    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey) {
+    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey, List<OnmsMetaData> metaData) {
         final OnmsServiceType svcType = createServiceTypeIfNecessary(svcName);
 
         return new CreateIfNecessaryTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
@@ -553,6 +543,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsMonitoredService doInsert() {
                 final OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
                 svc.setStatus("A");
+                svc.setMetaData(metaData);
                 m_ipInterfaceDao.saveOrUpdate(iface);
                 m_ipInterfaceDao.flush();
 
@@ -568,10 +559,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName, final String monitorKey) {
+    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName, final String monitorKey, List<OnmsMetaData> metaData) {
         final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
-        return addMonitoredService(iface, svcName, monitorKey);
+        return addMonitoredService(iface, svcName, monitorKey, metaData);
     }
 
     @Transactional
