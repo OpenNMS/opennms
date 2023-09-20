@@ -1,0 +1,4 @@
+[template]
+src = "kafka-consumer.tpl"
+dest = "/usr/share/opennms/etc/org.opennms.features.kafka.consumer.client.cfg"
+keys = ["/opennms/kafka/consumer"]
