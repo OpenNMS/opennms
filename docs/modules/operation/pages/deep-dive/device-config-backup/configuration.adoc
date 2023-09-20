@@ -1,7 +1,7 @@
 
 [[poller-config]]
 = Poller Configuration
-:description: Device Configuration Backup feature poller configuration in OpenNMS Horizon/Meridian: TFTP port and IP address, events, parameters, thread pool adjustments.
+:description: Device Configuration Backup feature poller configuration in {page-component-title}: TFTP port and IP address, events, parameters, thread pool adjustments.
 
 {page-component-title} backs up device configuration through the xref:reference:service-assurance/monitors/DeviceConfigMonitor.adoc[].
 You may have to configure the <<tftp-port-configure, TFTP port>> before {page-component-title} can back up device configurations.

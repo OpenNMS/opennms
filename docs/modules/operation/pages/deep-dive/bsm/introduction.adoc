@@ -1,7 +1,7 @@
 
 [[ga-bsm-introduction]]
 = Business Service Monitoring
-:description: How to monitor high-level business service contexts with OpenNMS Horizon/Meridian to identify the most critical problems affecting them.
+:description: How to monitor high-level business service contexts with {page-component-title} to identify the most critical problems affecting them.
 
 While {page-component-title} detects issues in your network by device, interface, or service, Business Service Monitoring takes it one step further.
 With this feature, you can monitor high-level business service contexts around {page-component-title}'s technical service monitors, and quickly identify the most critical problems affecting them.

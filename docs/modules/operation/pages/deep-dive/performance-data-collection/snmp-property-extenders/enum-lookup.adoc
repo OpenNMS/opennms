@@ -1,5 +1,5 @@
 = Enum Lookup property extender
-:description: Enum lookup property extender in OpenNMS Horizon/Meridian to map an enumerated set of integer values to a corresponding set of human-readable text values.
+:description: Enum lookup property extender in {page-component-title} to map an enumerated set of integer values to a corresponding set of human-readable text values.
 
 The Enum Lookup property extender provides a mechanism that works like a lookup table for values of a local MIB table column.
 

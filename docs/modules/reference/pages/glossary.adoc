@@ -1,6 +1,7 @@
 
 [[glossary]]
 = Glossary
+:description: View definitions for common terms used in OpenNMS {page-component-title}.
 
 == A
 

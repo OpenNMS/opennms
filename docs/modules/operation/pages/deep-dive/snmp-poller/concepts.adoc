@@ -1,6 +1,6 @@
 [[snmp-interface-poller]]
 = SNMP Interface Poller
-:description: Learn how the SNMP Interface Poller in OpenNMS Horizon/Meridian monitors the SNMP interfaces not being directly monitored by the Service Assurance monitor.
+:description: Learn how the SNMP Interface Poller in {page-component-title} monitors the SNMP interfaces not being directly monitored by the Service Assurance monitor.
 
 {page-component-title} can monitor the status of an SNMP interface that the <<deep-dive/service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor is not directly monitoring.
 

@@ -1,6 +1,6 @@
 
 = SameSite Cookie Attribute
-:description: Learn how to configure the SameSite Cookie attribute in OpenNMS Horizon/Meridian to relax the cookie enforcement policy.
+:description: Learn how to configure the SameSite Cookie attribute in {page-component-title} to relax the cookie enforcement policy.
 
 The SameSite Cookie attribute controls access to cookies and helps prevent various cross-site scripting (XSS) and cross-site request forgery (CSRF) attacks.
 This attribute tells browsers how to handle first- or third-party cookies and identifies whether to allow a cookie to be accessed.

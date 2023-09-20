@@ -1,5 +1,6 @@
 
 = Daemons
+:description: Learn about the daemon sub-services available in OpenNMS {page-component-title} and how to enable or disable them.
 
 The {page-component-title} service is composed of several daemon "sub-services" that each perform a specific set of tasks.
 You can enable and disable them via `$\{OPENNMS_HOME}/etc/service-configuration.xml`.

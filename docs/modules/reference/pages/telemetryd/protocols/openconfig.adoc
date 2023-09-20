@@ -1,5 +1,6 @@
 
 = OpenConfig Telemetry
+:description: Learn how to stream OpenConfig telemetry data over gRPC to {page-component-title}.
 
 https://www.openconfig.net/[OpenConfig] is an open-source initiative by network operators to develop vendor-neutral data models, programmatic interfaces, and tools for managing networks.
 

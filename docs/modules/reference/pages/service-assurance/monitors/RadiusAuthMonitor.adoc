@@ -1,6 +1,6 @@
 
 = RadiusAuthMonitor
-:description: Learn how to configure and use the RadiusAuthMonitor in OpenNMS Horizon/Meridian to test the functionality of the RADIUS authentication system.
+:description: Learn how to configure and use the RadiusAuthMonitor in {page-component-title} to test the functionality of the RADIUS authentication system.
 
 This monitor lets you test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
 The availability is tested by sending an AUTH packet to the RADIUS server.

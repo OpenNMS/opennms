@@ -1,6 +1,6 @@
 
 = Pointer-Like Index Property Extender
-:description: Pointer-Like Index property extender in OpenNMS Horizon/Meridian to use an attribute's value from a target MIB table as the index of the source MIB table.
+:description: Pointer-Like Index property extender in {page-component-title} to use an attribute's value from a target MIB table as the index of the source MIB table.
 
 The Pointer-Like Index property extender enables {page-component-title} to use the value of an attribute from a target MIB table as the index for the source MIB table.
 Unlike the xref:deep-dive/performance-data-collection/snmp-property-extenders/index-split.adoc[Index Split] and xref:deep-dive/performance-data-collection/snmp-property-extenders/regex.adoc[Regex] extenders, this class does not require the target and source MIB tables to share any index components.

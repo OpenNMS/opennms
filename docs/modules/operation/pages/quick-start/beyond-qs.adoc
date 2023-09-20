@@ -1,6 +1,6 @@
 
 = Beyond the Quick Start Guide
-:description: Additional tasks to customize OpenNMS Horizon/Meridian: manage users, inventory, performance, thresholding, service availability, and notification.
+:description: Additional tasks to customize {page-component-title}: manage users, inventory, performance, thresholding, service availability, and notification.
 
 After you finish following the steps in this Quick Start guide, your {page-component-title} instance should be set up and monitoring your network.
 Of course, there is still much more that you can do to customize {page-component-title} to suit your needs.

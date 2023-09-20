@@ -1,6 +1,6 @@
 
 = Regex Property Extender
-:description: Regex property extender in OpenNMS Horizon/Meridian specializes in importing a string property from a resource table.
+:description: Regex property extender in {page-component-title} specializes in importing a string property from a resource table.
 
 The Regex property extender works similarly to the xref:deep-dive/performance-data-collection/snmp-property-extenders/index-split.adoc[Index Split] extender, with the added capability of importing a string property from a source table.
 

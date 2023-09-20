@@ -1,5 +1,5 @@
 = Index Split Property Extender
-:description: Index Split property extender in OpenNMS Horizon/Meridian to enable extraction of part of a resource's local instance identifier.
+:description: Index Split property extender in {page-component-title} to enable extraction of part of a resource's local instance identifier.
 
 The Index Split property extender enables extraction of part of a resource's local instance identifier.
 

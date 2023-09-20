@@ -1,6 +1,6 @@
 
 = Alarms
-:description: Overview of alarms in OpenNMS Horizon/Meridian for fault management information.
+:description: Overview of alarms in {page-component-title} for fault management information.
 
 {page-component-title} uses a network's managed entities, their resources, the services they provide, and any applications that they host to monitor problem states.
 
