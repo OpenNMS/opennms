@@ -217,6 +217,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		expectedConfig.setProxyHost("127.0.0.1");
 		expectedConfig.setSecurityLevel(null);
 		expectedConfig.setSecurityName(null);
+		expectedConfig.setLocation("Default");
 		
 		// read via REST
 		SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
@@ -282,6 +283,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 expectedConfig.setMaxRequestSize(7000);
                 expectedConfig.setReadCommunity(null);
                 expectedConfig.setWriteCommunity(null);
+		expectedConfig.setLocation("Default");
                 
                 // read via REST
                 SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
@@ -369,6 +371,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 expectedConfig.setMaxRequestSize(7000);
                 expectedConfig.setReadCommunity(null);
                 expectedConfig.setWriteCommunity(null);
+		expectedConfig.setLocation("Default");
                 
                 // read via REST
                 SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
@@ -408,6 +411,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		// defaults are not set via snmp-config.xml, but via defaults in SnmpAgentConfig
 		config.setWriteCommunity(defaults.getWriteCommunity());
 		config.setMaxRequestSize(defaults.getMaxRequestSize());
+		config.setLocation("Default");
 		return config;
 	}
 		
