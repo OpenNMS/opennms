@@ -23,5 +23,22 @@
                     class-name="${install.database.driver}" 
                     url="jdbc:postgresql://localhost:5432/template1"
                     user-name="${install.database.admin.user}"
-                    password="${install.database.admin.password}" />
+                    password="${install.database.admin.password}">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
+  
+  <jdbc-data-source name="opennms-monitor" 
+                    database-name="postgres" 
+                    class-name="${install.database.driver}" 
+                    url="jdbc:postgresql://localhost:5432/postgres"
+                    user-name="${install.database.admin.user}"
+                    password="${install.database.admin.password}">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
 </datasource-configuration>
