@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.search.providers.node;
 
-import org.opennms.core.criteria.Alias;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -39,19 +44,12 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.search.api.Contexts;
-import org.opennms.netmgt.search.api.Match;
-import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class NodeAlarmSearchProvider implements SearchProvider {
 
@@ -86,17 +84,21 @@ public class NodeAlarmSearchProvider implements SearchProvider {
                 restrictions.add(Restrictions.eq("id", alarm.getNodeId().intValue()));
             }
         }
-        criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
-                .or(restrictions.toArray(new Restriction[restrictions.size()]))
-                .distinct();
-        final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("id").limit(query.getMaxResults()).toCriteria());
-        final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
-            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
-            searchResultItem.setLabel("Show nodes with severity '" + input+ "'");
-            return searchResultItem;
-        }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
-        return searchResult;
+
+        if (restrictions.size() > 0) {
+            criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
+                    .or(restrictions.toArray(new Restriction[restrictions.size()]))
+                    .distinct();
+            final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
+            final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("id").limit(query.getMaxResults()).toCriteria());
+            final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
+                final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
+                searchResultItem.setLabel("Show nodes with severity '" + input + "'");
+                return searchResultItem;
+            }).collect(Collectors.toList());
+            return new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
+        } else {
+            return new SearchResult(Contexts.Node).withMore(false).withResults(Collections.emptyList());
+        }
     }
 }
