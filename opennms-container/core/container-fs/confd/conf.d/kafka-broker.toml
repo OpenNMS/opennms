@@ -1,4 +1,4 @@
 [template]
 src = "kafka-broker.tpl"
-dest = "/usr/share/opennms/etc/opennms.properties.d/_kafka.properties"
+dest = "/usr/share/opennms/etc/opennms.properties.d/_confd.kafka.properties"
 keys = ["/opennms/kafka", "/opennms/instance_id"]
