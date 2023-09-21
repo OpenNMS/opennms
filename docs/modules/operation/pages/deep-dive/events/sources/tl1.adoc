@@ -17,8 +17,8 @@ There also is no mechanism to filter which messages get translated into {page-co
 
 Tl1d needs to have one or more "elements" defined with which to communicate.
 In TL1 terminology, an element is a node that has a TL1 interface.
-This might be an individual switch or concentrator, or it might be an element management system (EMS) that serves in a proxy capacity for many other elements.
-The default `tl1d-configuration.xml` file has no elements defined, so in order to start receiving TL1 messages it is necessary to define at least one element.
+This might be an individual switch or concentrator, or it might be an element management system (EMS) that serves as a proxy for many other elements.
+The default `tl1d-configuration.xml` file has no elements defined, so in order to start receiving TL1 messages you must define at least one element.
 
 .Example `tl1d-configuration.xml` with a single element defined
 [source, xml]
@@ -57,7 +57,7 @@ The default `tl1d-configuration.xml` file has no elements defined, so in order t
 | 502
 
 | userid
-| A user ID with which to authenticate to the element
+| A user ID with which to authenticate to the element.
 | opennms
 
 | password
@@ -69,11 +69,11 @@ The default `tl1d-configuration.xml` file has no elements defined, so in order t
 | 30000
 
 | tl1-client-api^1^
-| The fully-qualified Java class name of a class that provides methods for communicating with this element.
+| The fully qualified Java class name of a class that provides methods for communicating with this element.
 | org.opennms.netmgt.tl1d.Tl1ClientImpl
 
 | tl1-message-parser^1^
-| The fully-qualified Java class name of a class that provides methods for parsing messages received from this element.
+| The fully qualified Java class name of a class that provides methods for parsing messages received from this element.
 | org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor
 |===
 ^1^ These two attributes should rarely, if ever, need to be changed from their defaults.
@@ -82,19 +82,19 @@ The default `tl1d-configuration.xml` file has no elements defined, so in order t
 
 Tl1d automatically subscribes to and recognizes TL1 autonomous messages received from elements to which it has successfully connected and authenticated.
 It parses these autonomous messages and creates {page-component-title} events.
-These events have a UEI of `uei.opennms.org/api/tl1d/message/autonomous`, and convey information from the autonomous message with following event parameters:
+These events have a UEI of `uei.opennms.org/api/tl1d/message/autonomous`, and convey information from the autonomous message with the following event parameters:
 
 raw-message:: The original, unprocessed TL1 autonomous message.
 alarm-code:: The alarm-code field from the received TL1 autonomous message.
 atag:: The Autonomous Tag (ATAG) field from the received TL1 autonomous message.
-verb:: The Verb field from the received TL1 autonomous message, one of REPT (report), EVT (event), or SESSION.
+verb:: The Verb field from the received TL1 autonomous message; one of REPT (report), EVT (event), or SESSION.
 autoblock:: The Auto Block field from the received TL1 autonomous message.
 aid:: The Access Identifier (AID) field from the received TL1 autonomous message.
 additionalParams:: Any parameters from the Auto Block of the received TL1 autonomous message beyond AID, notification code (if present), and severity.
 
 == Handling events
 
-As all tl1d events come in with a uniform UEI, here are some ways you could handle the received events.
+As all Tl1d events come in with a uniform UEI, here are some ways you could handle the received events.
 
 * Event translation and passive status
 +
@@ -104,7 +104,7 @@ The xref:operation:deep-dive/events/event-translator.adoc[Event Translator] and 
 * Alarms, automations, and trouble ticketing
 +
 The default TL1 autonomous message event in {page-component-title} is annotated with alarm data.
-By customizing that alarm data to your particular needs, you can enable sophisticated automations that perform event enrichment and integrate with external systems.
+By customizing that alarm data to your needs, you can enable sophisticated automations that perform event enrichment and integrate with external systems.
 One such example is to create xref:operation:deep-dive/ticketing/introduction.adoc[trouble tickets], either automatically or manually, in an external help desk system via {page-component-title}'s ticketer interface.
 
 * Translation to SNMP traps

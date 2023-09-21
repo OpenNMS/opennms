@@ -15,7 +15,7 @@ Handles processing of xref:operation:deep-dive/events/sources/tl1.adoc[TL1 messa
 | Restart Required
 
 | tl1d-configuration.xml
-| Configure generic behavior of tl1d.
+| Configure generic behavior of Tl1d.
 | yes
 | no
 |===
@@ -28,5 +28,5 @@ Handles processing of xref:operation:deep-dive/events/sources/tl1.adoc[TL1 messa
 | Description
 
 | tl1d.log
-| Logs relating to tl1 message parsing.
+| Logs relating to Tl1 message parsing.
 |===
