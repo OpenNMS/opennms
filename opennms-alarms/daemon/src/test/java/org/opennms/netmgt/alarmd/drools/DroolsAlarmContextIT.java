@@ -42,6 +42,10 @@ import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,6 +72,8 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -76,6 +82,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -137,6 +144,68 @@ public class DroolsAlarmContextIT {
     public void tearDown() {
         if (dac != null) {
             dac.stop();
+        }
+    }
+
+    public static class Result {
+        private String result;
+
+        public void setResult(final String result) {
+            this.result = result;
+        }
+
+        public String getResult() {
+            return result;
+        }
+    }
+
+    @Test
+    public void testMetadata() throws IOException {
+        final Path dstDirectory = Paths.get("target","test", "drools-rules.d");
+
+        try {
+            final Result result = new Result();
+
+            dac.setOnNewKiewSessionCallback(kieSession -> {
+                kieSession.setGlobal("result", result);
+            });
+
+            final String rule = String.format(
+                    "import org.opennms.netmgt.model.OnmsAlarm;\n" +
+                            "global %s result;\n" +
+                            "rule \"metadataTest\"\n" +
+                            "  when\n" +
+                            "      $alarm : OnmsAlarm(node != null)  \n" +
+                            "      eval($alarm.getNode() != null && ($alarm.getNode().findMetaDataForContextAndKey(\"requisition\", \"myKey\").isPresent()))\n"+
+                            "  then\n" +
+                            "      result.setResult($alarm.getNode().findMetaDataForContextAndKey(\"requisition\", \"myKey\").get().getValue());\n" +
+                            "end", Result.class.getCanonicalName());
+
+            Files.write(dstDirectory.resolve("metadata.drl"), rule.getBytes(StandardCharsets.UTF_8));
+
+            dac.reload();
+
+            final OnmsNode onmsNode = new OnmsNode();
+            onmsNode.setNodeId("1");
+            onmsNode.setLabel("MyNode");
+            final OnmsMetaData onmsMetaData = new OnmsMetaData("requisition", "myKey", "foobar");
+            onmsNode.setMetaData(Lists.newArrayList(onmsMetaData));
+
+            final OnmsAlarm onmsAlarm = new OnmsAlarm();
+            onmsAlarm.setId(1);
+            onmsAlarm.setNode(onmsNode);
+            onmsAlarm.setAlarmType(1);
+            onmsAlarm.setSeverity(OnmsSeverity.WARNING);
+            onmsAlarm.setLastEventTime(new Date(100));
+
+            assertThat(result.getResult(), equalTo(null));
+
+            dac.handleNewOrUpdatedAlarm(onmsAlarm);
+            dac.tick();
+
+            assertThat(result.getResult(), equalTo("foobar"));
+        } finally {
+            Files.delete(dstDirectory.resolve("metadata.drl"));
         }
     }
 
