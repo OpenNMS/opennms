@@ -1,4 +1,4 @@
-import { Category, MonitoringLocation, Node, NodeApiResponse, NodeColumnSelectionItem, QueryParameters, SetOperator } from '@/types'
+import { Category, IpInterface, MonitoringLocation, Node, NodeApiResponse, NodeColumnSelectionItem, QueryParameters, SetOperator } from '@/types'
 import { isNumber } from '@/lib/utils'
 import { getNodes } from '@/services/nodeService'
 
@@ -112,6 +112,58 @@ export const buildUpdatedNodeStructureQueryParams = (queryParameters: QueryParam
   }
 
   return updatedParams as QueryParameters
+}
+
+export interface IpInterfaceLabel {
+  ip: string
+  modifier: string
+  label: string
+}
+
+/**
+ * Find the 'best' IP for the given node id.
+ * If there is only one, return that one. Otherwise try to find the primary SNMP interface, or the otherwise best one.
+ *
+ * @returns a object with the IP address plus a modifier: 'M' for managed, 'P' for primary, 'S' for secondary, 'N' for not eligible
+ */
+export const getBestIpInterfaceForNode = (nodeId: string, nodeToIpInterfaceMap: Map<string, IpInterface[]>): IpInterfaceLabel => {
+  if (nodeToIpInterfaceMap.has(nodeId)) {
+    const ipInterfaces = nodeToIpInterfaceMap.get(nodeId) || []
+
+    let intf: IpInterface | null = null
+
+    if (ipInterfaces.length === 1) {
+      intf = ipInterfaces[0]
+    } else if (ipInterfaces.length > 1) {
+      // try to get SNMP primary (even if unmanaged), or else the first managed interface, or else just the first interface
+      intf = ipInterfaces.find(x => x.snmpPrimary === 'P') || ipInterfaces.find(x => x.isManaged) || ipInterfaces[0]
+    }
+
+    if (intf) {
+      let modifier = intf.isManaged ? 'M' : ''
+      modifier += intf.snmpPrimary || ''
+
+      if (modifier) {
+        return {
+          ip: intf.ipAddress,
+          modifier,
+          label: `${intf.ipAddress} (${modifier})`
+        } as IpInterfaceLabel
+      }
+
+      return {
+        ip: intf.ipAddress,
+        modifier,
+        label: intf.ipAddress
+      } as IpInterfaceLabel
+    }
+  }
+
+  return {
+    ip: '',
+    modifier: '',
+    label: ''
+  } as IpInterfaceLabel
 }
 
 export const hasIngressFlow = (node: Node) => {

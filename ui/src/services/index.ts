@@ -33,7 +33,7 @@ import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
-import { getIpInterfaces } from './ipInterfaceService'
+import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
@@ -59,6 +59,7 @@ export default {
   getNodeOutages,
   getNodeIfServices,
   getIpInterfaces,
+  getNodeIpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,

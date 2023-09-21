@@ -48,8 +48,10 @@
                     :property="column.id"
                     :sort="sortStateForId(column.id)"
                     v-on:sort-changed="sortChanged"
-                    v-if="column.selected"
+                    v-if="column.selected && column.id !== 'ipaddress'"
                   >{{ column.label }}</FeatherSortHeader>
+
+                  <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
                 </template>
               </tr>
             </thead>
@@ -83,6 +85,12 @@
                       {{ node.label }}
                     </a>
                   </td>
+                  <td v-if="isSelectedColumn(column, 'ipaddress')">
+                    <a :href="computeNodeIpInterfaceLink(node.id, getIpAddressLabel(node.id).ip)">
+                      {{ getIpAddressLabel(node.id).label }}
+                    </a>
+                  </td>
+
                   <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
 
                   <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignSource')" :text="node.foreignSource" />
@@ -110,6 +118,7 @@
   </div>
   <NodeDetailsDialog
     :computeNodeLink="computeNodeLink"
+    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
     @close="dialogVisible = false"
     :visible="dialogVisible"
     :node="dialogNode">
@@ -139,6 +148,7 @@ import {
   buildUpdatedNodeStructureQueryParams,
   generateBlob,
   generateDownload,
+  getBestIpInterfaceForNode,
   getExportData,
   getTableCssClasses,
   NodeStructureQueryParams
@@ -168,6 +178,7 @@ const settingsIcon = markRaw(Settings)
 const sortStates: any = reactive({
   id: SORT.NONE,
   label: SORT.ASCENDING,
+  ipaddress: SORT.NONE, // note, cannot sort by this at the moment
   location: SORT.NONE,
   foreignSource: SORT.NONE,
   foreignId: SORT.NONE,
@@ -181,6 +192,7 @@ const sortStateForId = (label: string) => {
   switch (label) {
     case 'id': return sortStates.id
     case 'label': return sortStates.label
+    case 'ipaddress': return sortStates.ipaddress
     case 'location': return sortStates.location
     case 'foreignSource': return sortStates.foreignSource
     case 'foreignId': return sortStates.foreignId
@@ -211,7 +223,7 @@ const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
 }
 
 const nodeQuery = async (params: QueryParameters) => {
-  nodeStore.getNodes(params)
+  nodeStore.getNodes(params, true)
 }
 
 const getNodeTotalCount = () => {
@@ -225,6 +237,11 @@ const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
 }, nodeQuery)
 
 const sortChanged = (sortObj: FeatherSortObject) => {
+  // currently we don't support sorting by ipaddress
+  if (sortObj.value === 'ipaddress') {
+    return
+  }
+
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }
@@ -282,12 +299,20 @@ const updateQuery = (searchVal?: string) => {
   const queryParams = buildNodeStructureQueryParams(searchVal || currentSearch.value)
   const updatedParams = buildUpdatedNodeStructureQueryParams(queryParameters.value, queryParams)
 
-  nodeStore.getNodes(updatedParams)
+  nodeStore.getNodes(updatedParams, true)
   queryParameters.value = updatedParams
+}
+
+const getIpAddressLabel = (nodeId: string) => {
+  return getBestIpInterfaceForNode(nodeId, nodeStore.nodeToIpInterfaceMap)
 }
 
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+}
+
+const computeNodeIpInterfaceLink = (nodeId: number | string, ipAddress: string) => {
+  return `${mainMenu.value.baseHref}element/interface.jsp?node=${nodeId}&intf=${ipAddress}`
 }
 
 const onNodeLinkClick = (nodeId: number | string) => {
