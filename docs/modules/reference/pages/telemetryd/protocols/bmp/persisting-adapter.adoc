@@ -99,7 +99,7 @@ config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols
 config:update
 ----
 
-Install the following features via Karaf shell to start processing BMP messages on Sentinel.
+You can immediately activate following features via Karaf shell to start processing BMP messages on Sentinel.
 
 [source, karaf]
 ----
@@ -114,6 +114,18 @@ feature:install sentinel-telemetry-bmp-persist
 <1> Needs datasource configuration setup per xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[Sentinel Flow Processing].
 <2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
+
+To automatically start the adapter each time the Sentinel restarts, add the following to `${SENTINEL_HOME}/etc/featuresBoot.d/bmp-adapter.boot`.
+
+[source]
+----
+sentinel-core
+sentinel-persistence
+sentinel-jms
+sentinel-blobstore-noop
+sentinel-jsonstore-postgres
+sentinel-telemetry-bmp-persist
+----
 
 NOTE: When running Kafka as the broker, the consumer config needs to have the `auto.offset.reset=earliest` setting, otherwise
 the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for proper BMP state.
