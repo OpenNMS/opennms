@@ -36,8 +36,9 @@ export const getTableCssClasses = (columns: NodeColumnSelectionItem[]) => {
 
 const buildSearchQuery = (searchVal: string) => {
   if (searchVal.length > 0) {
-    const star = searchVal.endsWith('*') ? '' : '*'
-    return `node.label==${searchVal}${star}`
+    const startStar = searchVal.startsWith('*') ? '' : '*'
+    const endStar = searchVal.endsWith('*') ? '' : '*'
+    return `node.label==${startStar}${searchVal}${endStar}`
   }
 
   return ''
@@ -114,10 +115,20 @@ export const buildUpdatedNodeStructureQueryParams = (queryParameters: QueryParam
   return updatedParams as QueryParameters
 }
 
-export interface IpInterfaceLabel {
-  ip: string
-  modifier: string
+export interface IpInterfaceInfo {
   label: string
+  managed: boolean
+  primaryLabel: string
+  primaryType: string
+}
+
+const getSnmpPrimaryLabel = (primaryType: string) => {
+  switch (primaryType) {
+    case 'P': return 'Primary'
+    case 'S': return 'Secondary'
+    case 'N': return 'Not Eligible'
+    default: return ''
+  }
 }
 
 /**
@@ -126,7 +137,7 @@ export interface IpInterfaceLabel {
  *
  * @returns a object with the IP address plus a modifier: 'M' for managed, 'P' for primary, 'S' for secondary, 'N' for not eligible
  */
-export const getBestIpInterfaceForNode = (nodeId: string, nodeToIpInterfaceMap: Map<string, IpInterface[]>): IpInterfaceLabel => {
+export const getBestIpInterfaceForNode = (nodeId: string, nodeToIpInterfaceMap: Map<string, IpInterface[]>): IpInterfaceInfo => {
   if (nodeToIpInterfaceMap.has(nodeId)) {
     const ipInterfaces = nodeToIpInterfaceMap.get(nodeId) || []
 
@@ -136,34 +147,29 @@ export const getBestIpInterfaceForNode = (nodeId: string, nodeToIpInterfaceMap: 
       intf = ipInterfaces[0]
     } else if (ipInterfaces.length > 1) {
       // try to get SNMP primary (even if unmanaged), or else the first managed interface, or else just the first interface
-      intf = ipInterfaces.find(x => x.snmpPrimary === 'P') || ipInterfaces.find(x => x.isManaged) || ipInterfaces[0]
+      intf = ipInterfaces.find(x => x.snmpPrimary === 'P') || ipInterfaces.find(x => x.isManaged === 'M') || ipInterfaces[0]
     }
 
     if (intf) {
-      let modifier = intf.isManaged ? 'M' : ''
-      modifier += intf.snmpPrimary || ''
-
-      if (modifier) {
-        return {
-          ip: intf.ipAddress,
-          modifier,
-          label: `${intf.ipAddress} (${modifier})`
-        } as IpInterfaceLabel
-      }
+      const managed = intf.isManaged === 'M'
+      const primaryType = intf.snmpPrimary || ''
+      const primaryLabel = getSnmpPrimaryLabel(primaryType)
 
       return {
-        ip: intf.ipAddress,
-        modifier,
-        label: intf.ipAddress
-      } as IpInterfaceLabel
+        label: intf.ipAddress,
+        managed,
+        primaryLabel,
+        primaryType
+      } as IpInterfaceInfo
     }
   }
 
   return {
-    ip: '',
-    modifier: '',
-    label: ''
-  } as IpInterfaceLabel
+    label: '',
+    managed: false,
+    primaryLabel: '',
+    primaryType: ''
+  } as IpInterfaceInfo
 }
 
 export const hasIngressFlow = (node: Node) => {

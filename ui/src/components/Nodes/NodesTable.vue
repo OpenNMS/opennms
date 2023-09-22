@@ -85,11 +85,12 @@
                       {{ node.label }}
                     </a>
                   </td>
-                  <td v-if="isSelectedColumn(column, 'ipaddress')">
-                    <a :href="computeNodeIpInterfaceLink(node.id, getIpAddressLabel(node.id).ip)">
-                      {{ getIpAddressLabel(node.id).label }}
-                    </a>
-                  </td>
+
+                  <ManagementIPTooltipCell v-if="isSelectedColumn(column, 'ipaddress')"
+                    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
+                    :node="node"
+                    :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
+                  />
 
                   <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
 
@@ -138,6 +139,7 @@ import Settings from '@featherds/icon/action/Settings'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import FlowTooltipCell from './FlowTooltipCell.vue'
+import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
@@ -148,7 +150,6 @@ import {
   buildUpdatedNodeStructureQueryParams,
   generateBlob,
   generateDownload,
-  getBestIpInterfaceForNode,
   getExportData,
   getTableCssClasses,
   NodeStructureQueryParams
@@ -231,7 +232,7 @@ const getNodeTotalCount = () => {
 }
 
 const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
-  limit: 10,
+  limit: 20,
   offset: 0,
   orderBy: 'label'
 }, nodeQuery)
@@ -301,10 +302,6 @@ const updateQuery = (searchVal?: string) => {
 
   nodeStore.getNodes(updatedParams, true)
   queryParameters.value = updatedParams
-}
-
-const getIpAddressLabel = (nodeId: string) => {
-  return getBestIpInterfaceForNode(nodeId, nodeStore.nodeToIpInterfaceMap)
 }
 
 const computeNodeLink = (nodeId: number | string) => {

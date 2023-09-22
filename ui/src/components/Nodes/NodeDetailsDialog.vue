@@ -56,7 +56,7 @@ const nodeItems = computed(() => {
   return [
     { label: 'Node ID', text: props.node?.id, link: props.computeNodeLink(props.node?.id || 0) },
     { label: 'Node Label', text: props.node?.label, link: props.computeNodeLink(props.node?.id || 0) },
-    { label: 'IP Address', text: ipLabel.label, link: props.computeNodeIpInterfaceLink(props.node?.id || 0, ipLabel.ip) },
+    { label: 'IP Address', text: ipLabel.label, link: props.computeNodeIpInterfaceLink(props.node?.id || 0, ipLabel.label) },
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },

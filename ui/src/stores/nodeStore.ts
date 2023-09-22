@@ -65,6 +65,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const getIpInterfacesForNodes = async (nodeIds: string[], managedOnly: boolean) => {
     const query = getNodeIpInterfaceQuery(nodeIds, managedOnly)
     const queryParameters = {
+      limit: nodeIds.length,
       _s: query
     } as QueryParameters
 
