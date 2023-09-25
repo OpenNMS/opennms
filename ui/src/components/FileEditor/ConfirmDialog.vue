@@ -9,11 +9,11 @@
   </FeatherDialog>
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherButton } from '@featherds/button'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 
-const store = useStore()
+const fileEditorStore = useFileEditorStore()
 
 const labels = {
   title: 'Delete confirmation',
@@ -21,12 +21,12 @@ const labels = {
 }
 
 const open = ref(false)
-const file = computed(() => store.state.fileEditorModule.fileToDelete)
+const file = computed(() => fileEditorStore.fileToDelete)
 
 watchEffect(() => open.value = Boolean(file.value))
 
-const deleteFile = () => store.dispatch('fileEditorModule/deleteFile', file.value.fullPath)
-const cancel = () => store.dispatch('fileEditorModule/setFileToDelete', null)
+const deleteFile = () => fileEditorStore.deleteFile(file.value?.fullPath || '')
+const cancel = () => fileEditorStore.setFileToDelete(null)
 </script>
 
 <style lang="scss" scoped>
