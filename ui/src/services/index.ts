@@ -8,7 +8,7 @@ import {
 } from './nodeService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
-import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
+import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
   getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
@@ -80,7 +80,6 @@ export default {
   getOpenApiV1,
   getOpenApi,
   getProvisionDService,
-  populateProvisionD,
   putProvisionDService,
   getResources,
   getGraphMetrics,

@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils'
-import store from '@/store'
 import { createTestingPinia } from '@pinia/testing'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
 import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '../src/components/Configuration/copy/requisitionTypes'
@@ -30,14 +29,14 @@ const mockProps = {
 
 const wrapper = mount(ConfigurationTable, {
   global: {
-    plugins: [store, createTestingPinia()]
+    plugins: [createTestingPinia()]
   },
   propsData: mockProps
 })
 
 const provisionDConfig = mount(ProvisionDConfig, {
   global: {
-    plugins: [store, createTestingPinia()]
+    plugins: [createTestingPinia()]
   }
 })
 
