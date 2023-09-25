@@ -6,7 +6,6 @@ import fileEditorModule from './fileEditor'
 import graphModule from './graph'
 import ifServicesModule from './ifServices'
 import ipInterfacesModule from './ipInterfaces'
-import logsModule from './logs'
 import mapModule from './map'
 import resourceModule from './resource'
 import scvModule from './scv'
@@ -19,7 +18,6 @@ export default createStore({
     graphModule,
     ifServicesModule,
     ipInterfacesModule,
-    logsModule,
     mapModule,
     resourceModule,
     scvModule,
