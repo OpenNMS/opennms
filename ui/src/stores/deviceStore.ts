@@ -15,7 +15,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
   const vendorOptions = ref([] as string[])
   const backupStatusOptions = ref(['SUCCESS', 'FAILED', 'NONE'] as status[])
   const osImageOptions = ref([] as string[])
-  const deviceConfigTotal = ref('N/A')
+  const deviceConfigTotal = ref(0)
   const historyModalBackups = ref([] as DeviceConfigBackup[])
 
   const getDeviceConfigBackupObjByIds = (deviceConfigs: DeviceConfigBackup[], ids: number[]) => {
@@ -31,7 +31,12 @@ export const useDeviceStore = defineStore('deviceStore', () => {
 
     if (resp) {
       deviceConfigBackups.value = resp.data || []
-      deviceConfigTotal.value = resp.headers['content-range']
+      const contentRange = resp.headers['content-range']
+      const total = contentRange?.length > 0 ? parseInt(contentRange, 10) : 0
+
+      if (!Number.isNaN(total)) {
+        deviceConfigTotal.value = total
+      }
     }
   }
 
@@ -51,22 +56,11 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     }
   }
 
-  const downloadByConfig = async (config: DeviceConfigBackup | DeviceConfigBackup[]) => {
-    const isSingleDeviceBackup = (config: DeviceConfigBackup | DeviceConfigBackup[]): config is DeviceConfigBackup => {
-      return (config as DeviceConfigBackup).id !== undefined
-    }
+  const downloadByConfig = async (configIds: number[]) => {
+    const file = await API.downloadDeviceConfigs(configIds)
 
-    if (isSingleDeviceBackup(config)) {
-      const file = await API.downloadDeviceConfigs([config.id])
-      if (file) {
-        downloadFile(file)
-      }
-    } else {
-      const ids = config.map((x) => x.id)
-      const file = await API.downloadDeviceConfigs(ids)
-      if (file) {
-        downloadFile(file)
-      }
+    if (file) {
+      downloadFile(file)
     }
   }
 

@@ -2,8 +2,8 @@
   <div class="content">
     <!-- We can use the diff editor display for a single config -->
     <DCBDiff
-      :config1="modalDeviceConfigBackup"
-      :config2="modalDeviceConfigBackup"
+      :config1="deviceStore.modalDeviceConfigBackup"
+      :config2="deviceStore.modalDeviceConfigBackup"
       :mode="'unified'"
     />
   </div>
@@ -11,11 +11,9 @@
 
 <script setup lang="ts">
 import DCBDiff from './DCBDiff.vue'
-import { DeviceConfigBackup } from '@/types/deviceConfig'
-import { useStore } from 'vuex'
+import { useDeviceStore } from '@/stores/deviceStore'
 
-const store = useStore()
-const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
+const deviceStore = useDeviceStore()
 </script>
 
 <style scoped lang="scss">

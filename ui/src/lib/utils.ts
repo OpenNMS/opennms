@@ -1,5 +1,5 @@
 export const isNumber = (value: any) => {
-  return typeof(value) === 'number'
+  return value !== null && value !== undefined && typeof(value) === 'number'
 }
 
 /**
