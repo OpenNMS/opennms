@@ -4,8 +4,6 @@ import { createStore } from 'vuex'
 import deviceModule from './device'
 import fileEditorModule from './fileEditor'
 import graphModule from './graph'
-import ifServicesModule from './ifServices'
-import ipInterfacesModule from './ipInterfaces'
 import mapModule from './map'
 import resourceModule from './resource'
 import scvModule from './scv'
@@ -16,8 +14,6 @@ export default createStore({
     deviceModule,
     fileEditorModule,
     graphModule,
-    ifServicesModule,
-    ipInterfacesModule,
     mapModule,
     resourceModule,
     scvModule,

@@ -85,6 +85,7 @@ import {
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
 import { useStore } from 'vuex'
+import { useIpInterfacesStore } from '@/stores/ipInterfacesStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import NormalIcon from '@/assets/Normal-icon.png'
@@ -102,6 +103,7 @@ import { numericSeverityLevel } from './utils'
 import { useMenuStore } from '@/stores/menuStore'
 
 const store = useStore()
+const ipInterfaceStore = useIpInterfacesStore()
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const map = ref()
@@ -127,7 +129,7 @@ const bounds = computed(() => {
 const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
-const ipInterfaces = computed<IpInterface[]>(() => store.state.ipInterfacesModule.ipInterfaces)
+const ipInterfaces = computed<IpInterface[]>(() => ipInterfaceStore.ipInterfaces)
 
 // cached map of node id -> IpInterface list
 const ipInterfaceMap = computed<Map<string,IpInterface[]>>(() => {
@@ -329,7 +331,7 @@ const tileProviders = [
 onMounted(async () => {
   store.dispatch('mapModule/getNodes')
   nodeStore.getNodes()
-  store.dispatch('ipInterfacesModule/getAllIpInterfaces')
+  ipInterfaceStore.getAllIpInterfaces()
 })
 
 defineExpose({ invalidateSizeFn })
