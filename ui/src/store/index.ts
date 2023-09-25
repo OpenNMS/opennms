@@ -1,7 +1,6 @@
 import { createStore } from 'vuex'
 
 // store modules
-import authModule from './auth'
 import configuration from './configuration'
 import deviceModule from './device'
 import fileEditorModule from './fileEditor'
@@ -18,7 +17,6 @@ import usageStatisticsModule from './usageStatistics'
 
 export default createStore({
   modules: {
-    authModule,
     configuration,
     deviceModule,
     fileEditorModule,

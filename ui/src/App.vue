@@ -29,15 +29,17 @@ import Footer from './components/Layout/Footer.vue'
 import Menubar from './components/Layout/Menubar.vue'
 import Spinner from './components/Common/Spinner.vue'
 import Snackbar from '@/components/Common/Snackbar.vue'
+import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { useMenuStore } from '@/stores/menuStore'
 
 const store = useStore()
+const authStore = useAuthStore()
 const infoStore = useInfoStore()
 const menuStore = useMenuStore()
 
 onMounted(() => {
-  store.dispatch('authModule/getWhoAmI')
+  authStore.getWhoAmI()
   infoStore.getInfo()
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
