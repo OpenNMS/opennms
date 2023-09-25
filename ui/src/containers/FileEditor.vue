@@ -41,7 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
@@ -49,14 +48,16 @@ import Help from '@/components/FileEditor/Help.vue'
 import TopBar from '@/components/FileEditor/TopBar.vue'
 import ConfirmDialog from '@/components/FileEditor/ConfirmDialog.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
+const fileEditorStore = useFileEditorStore()
 const menuStore = useMenuStore()
-const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
-const snippets = computed(() => store.state.fileEditorModule.snippets)
-const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', true)
+
+const isHelpOpen = computed(() => fileEditorStore.isHelpOpen)
+const snippets = computed(() => fileEditorStore.snippets)
+const triggerHelp = () => fileEditorStore.setIsHelpOpen(true)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -68,8 +69,8 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(() => {
-  store.dispatch('fileEditorModule/getFileNames')
-  store.dispatch('fileEditorModule/getFileExtensions')
+  fileEditorStore.getFileNames()
+  fileEditorStore.getFileExtensions()
 })
 </script>
 

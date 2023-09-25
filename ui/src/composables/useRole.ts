@@ -1,4 +1,4 @@
-import store from '@/store'
+import { useAuthStore } from '@/stores/authStore'
 
 const enum Roles {
   ROLE_ADMIN = 'ROLE_ADMIN',
@@ -10,8 +10,10 @@ const enum Roles {
 
 type Role = typeof Roles[keyof typeof Roles]
 
-const roles = computed(() => store.state.authModule.whoAmi.roles)
-const rolesAreLoaded = computed(() => store.state.authModule.loaded)
+const authStore = computed(() => useAuthStore())
+
+const roles = computed(() => authStore.value.whoAmI.roles)
+const rolesAreLoaded = computed(() => authStore.value.loaded)
 
 const hasOneOf = (...rolesToCheck: Role[]) => {
   for (const role of rolesToCheck) {

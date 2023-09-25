@@ -6,13 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'
 
-const store = useStore()
-const snippets = computed(() => store.state.fileEditorModule.snippets)
-const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', false)
+const fileEditorStore = useFileEditorStore()
+const snippets = computed(() => fileEditorStore.snippets)
+const triggerHelp = () => fileEditorStore.setIsHelpOpen(false)
 </script>
 
 <style lang="scss" scoped>

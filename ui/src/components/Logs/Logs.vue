@@ -28,16 +28,16 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
-import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
+import Search from './Search.vue'
+import { useLogStore } from '@/stores/logStore'
 
-const store = useStore()
-const selectedLog = computed(() => store.state.logsModule.selectedLog)
-const logs = computed(() => store.getters['logsModule/getFilteredLogs'])
-const getLog = (log: string) => store.dispatch('logsModule/getLog', log)
+const logStore = useLogStore()
+const selectedLog = computed(() => logStore.selectedLog)
+const logs = computed(() => logStore.getFilteredLogs())
+const getLog = (log: string) => logStore.getLog(log)
 
 const scrollToSelectedLog = () => {
   const selected = document.getElementById('selected')

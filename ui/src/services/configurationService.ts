@@ -1,11 +1,6 @@
 import { rest } from '@/services/axiosInstances'
-import { Store } from 'vuex'
 
 const getProvisionD = '/cm/provisiond/default'
-
-const populateProvisionD = (store: Store<unknown>) => {
-  store.dispatch('configuration/getProvisionDService')
-}
 
 const getProvisionDService = async () => {
   try {
@@ -30,4 +25,4 @@ const putProvisionDService = async (payload: any) => {
   }
 }
 
-export { getProvisionDService, putProvisionDService, populateProvisionD }
+export { getProvisionDService, putProvisionDService }

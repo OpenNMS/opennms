@@ -1,15 +1,24 @@
+import { assert, beforeAll, describe, test } from 'vitest'
+import { createTestingPinia } from '@pinia/testing'
 import useRole from '@/composables/useRole'
-import store from '@/store'
-import { test, assert } from 'vitest'
+import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 
 const mockWhoAmI = {
   roles: ['ROLE_DEVICE_CONFIG_BACKUP']
 } as WhoAmIResponse
 
-test('returns role access correctly', () => {
-  store.commit('authModule/SAVE_WHO_AM_I_TO_STATE', mockWhoAmI)
-  const { adminRole, dcbRole } = useRole()
-  assert.equal(adminRole.value, false)
-  assert.equal(dcbRole.value, true)
+describe('useRole test', () => {
+  beforeAll(() => {
+    createTestingPinia()
+  })
+
+  test('returns role access correctly', () => {
+    const authStore = useAuthStore()
+    authStore.whoAmI = mockWhoAmI
+
+    const { adminRole, dcbRole } = useRole()
+    assert.equal(adminRole.value, false)
+    assert.equal(dcbRole.value, true)
+  })
 })
