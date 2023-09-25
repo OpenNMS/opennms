@@ -621,18 +621,17 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@one-ini/wasm@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@one-ini/wasm/-/wasm-0.1.1.tgz#6013659736c9dbfccc96e8a9c2b3de317df39323"
+  integrity sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==
+
 "@pinia/testing@^0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@pinia/testing/-/testing-0.1.3.tgz#ee46a5a51d437f845ddc9c7b048c98b6a435e68b"
   integrity sha512-D2Ds2s69kKFaRf2KCcP1NhNZEg5+we59aRyQalwRm7ygWfLM25nDH66267U3hNvRUOTx8ofL24GzodZkOmB5xw==
   dependencies:
     vue-demi ">=0.14.5"
-
-"@one-ini/wasm@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@one-ini/wasm/-/wasm-0.1.1.tgz#6013659736c9dbfccc96e8a9c2b3de317df39323"
-  integrity sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==
-
 
 "@rollup/pluginutils@^5.0.2":
   version "5.0.2"
@@ -1601,10 +1600,10 @@ abbrev@^1.0.0:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
-ace-builds@^1.23.4:
-  version "1.23.4"
-  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.23.4.tgz#4f2c813bbdc886a67224be255ab32a280f779a9a"
-  integrity sha512-a4hKAT2T7KNUQC4LQPW2peuoEsZmLYTn4Dwjkh26A3Z+fQ8/fA2JZNs3V6CqvivhbyMQXQJD1u/0qTCoSS6deA==
+ace-builds@^1.28.0:
+  version "1.28.0"
+  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.28.0.tgz#b606702c33dec470393531d9808a1082add8302b"
+  integrity sha512-wkJp+Wz8MRHtCVdt65L/jPFLAQ0iqJZ2EeD2XWOvKGbIi4mZNwHlpHRLRB8ZnQ07VoiB0TLFWwIjjm2FL9gUcQ==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
