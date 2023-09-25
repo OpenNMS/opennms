@@ -9,7 +9,6 @@ import ifServicesModule from './ifServices'
 import ipInterfacesModule from './ipInterfaces'
 import logsModule from './logs'
 import mapModule from './map'
-import pluginModule from './plugin'
 import resourceModule from './resource'
 import scvModule from './scv'
 import searchModule from './search'
@@ -25,7 +24,6 @@ export default createStore({
     ipInterfacesModule,
     logsModule,
     mapModule,
-    pluginModule,
     resourceModule,
     scvModule,
     searchModule,
