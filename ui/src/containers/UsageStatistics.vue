@@ -23,15 +23,15 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import UsageStatisticsHeader from '@/components/UsageStatistics/UsageStatisticsHeader.vue'
 import UsageStatisticsTable from '@/components/UsageStatistics/UsageStatisticsTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
 const menuStore = useMenuStore()
+const usageStatisticsStore = useUsageStatisticsStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -44,9 +44,9 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 // TODO: Spinner until we get data
 onMounted(async () => {
-  store.dispatch('usageStatisticsModule/getStatus')
-  store.dispatch('usageStatisticsModule/getMetadata')
-  store.dispatch('usageStatisticsModule/getStatistics')
+  usageStatisticsStore.getStatus()
+  usageStatisticsStore.getMetadata()
+  usageStatisticsStore.getStatistics()
 })
 </script>
 

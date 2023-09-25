@@ -11,7 +11,6 @@ import mapModule from './map'
 import resourceModule from './resource'
 import scvModule from './scv'
 import searchModule from './search'
-import usageStatisticsModule from './usageStatistics'
 
 export default createStore({
   modules: {
@@ -24,7 +23,6 @@ export default createStore({
     mapModule,
     resourceModule,
     scvModule,
-    searchModule,
-    usageStatisticsModule
+    searchModule
   }
 })

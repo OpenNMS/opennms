@@ -80,9 +80,9 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { isNumber, isString } from '@/lib/utils'
+import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { FeatherSortObject } from '@/types'
 import UsageStatisticsModal from './UsageStatisticsModal.vue'
 import {
@@ -103,7 +103,7 @@ interface StatisticsItem {
 
 const STRING_CLIP_LENGTH = 100
 
-const store = useStore()
+const usageStatisticsStore = useUsageStatisticsStore()
 
 const sortStates: Record<string, SORT> = reactive({
   name: SORT.NONE,
@@ -117,8 +117,8 @@ const showValueModalSubtitle = ref('')
 const showValueModalVisible = ref(false)
 
 const currentSort = ref({ property: 'key', value: SORT.ASCENDING } as FeatherSortObject)
-const statistics = computed<UsageStatisticsData>(() => store.state.usageStatisticsModule.statistics )
-const metadata = computed<UsageStatisticsMetadata>(() => store.state.usageStatisticsModule.metadata )
+const statistics = computed<UsageStatisticsData>(() => usageStatisticsStore.statistics )
+const metadata = computed<UsageStatisticsMetadata>(() => usageStatisticsStore.metadata )
 
 const metadataMap = computed<Map<string,UsageStatisticsMetadataItem>>(() => {
   const map = new Map<string,UsageStatisticsMetadataItem>()
