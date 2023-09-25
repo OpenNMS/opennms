@@ -17,13 +17,18 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
-import { hasEgressFlow, hasIngressFlow } from './utils'
+import { getBestIpInterfaceForNode, hasEgressFlow, hasIngressFlow } from './utils'
+import { useNodeStore } from '@/stores/nodeStore'
 import { Node } from '@/types'
 
 const props = defineProps({
   computeNodeLink: {
     required: true,
     type: Function as PropType<(id: number | string) => string>
+  },
+  computeNodeIpInterfaceLink: {
+    required: true,
+    type: Function as PropType<(nodeId: number | string, ipAddress: string) => string>
   },
   visible: {
     required: true,
@@ -43,11 +48,15 @@ const labels = reactive({
 })
 
 const EMPTY = '--'
+const nodeStore = useNodeStore()
 
 const nodeItems = computed(() => {
+  const ipLabel = getBestIpInterfaceForNode(props.node?.id || '', nodeStore.nodeToIpInterfaceMap)
+
   return [
     { label: 'Node ID', text: props.node?.id, link: props.computeNodeLink(props.node?.id || 0) },
     { label: 'Node Label', text: props.node?.label, link: props.computeNodeLink(props.node?.id || 0) },
+    { label: 'IP Address', text: ipLabel.label, link: props.computeNodeIpInterfaceLink(props.node?.id || 0, ipLabel.label) },
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },
