@@ -26,9 +26,11 @@ import {
   FeatherListItem,
   FeatherList
 } from '@featherds/list'
+import { useGraphStore } from '@/stores/graphStore'
 import { Resource, UpdateModelFunction } from '@/types'
 
 const store = useStore()
+const graphStore = useGraphStore()
 
 const searchValue = ref('')
 
@@ -37,6 +39,7 @@ const resources = computed<Resource[]>(() => store.getters['resourceModule/getFi
 const search: UpdateModelFunction = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
 const selectResource = (name: string) => { 
   store.dispatch('resourceModule/getResourcesForNode', name)
-  store.dispatch('graphModule/getPreFabGraphs', name)
+
+  graphStore.getPreFabGraphs(name)
 }
 </script>

@@ -39,6 +39,7 @@ import { FeatherInput } from '@featherds/input'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { GraphDefinition, useGraphStore } from '@/stores/graphStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
@@ -47,6 +48,7 @@ const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
 
 const store = useStore()
+const graphStore = useGraphStore()
 const menuStore = useMenuStore()
 const router = useRouter()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -77,11 +79,11 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const resources = props.singleGraphResourceId ?
-  ref([{ id: props.singleGraphResourceId, definitions: [props.singleGraphDefinition as string], label: props.label as string }]) :
-  computed<{ id: string, definitions: string[], label: string }[]>(() => store.state.graphModule.definitions)
+  ref([{ id: props.singleGraphResourceId, definitions: [props.singleGraphDefinition as string], label: props.label as string } as GraphDefinition]) :
+  computed<GraphDefinition[]>(() => graphStore.definitions)
 
-const definitionsList = computed<string[]>(() => store.state.graphModule.definitionsList)
-let definitionsListCopy: string[] = JSON.parse(JSON.stringify(store.state.graphModule.definitionsList))
+const definitionsList = computed<string[]>(() => graphStore.definitionsList)
+let definitionsListCopy: string[] = JSON.parse(JSON.stringify(graphStore.definitionsList))
 
 const time = reactive<StartEndTime>({
   startTime: getUnixTime(sub(now, { hours: 24 })),

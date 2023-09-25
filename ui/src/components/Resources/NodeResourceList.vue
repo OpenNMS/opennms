@@ -34,6 +34,7 @@ import {
   FeatherList,
   FeatherListSeparator
 } from '@featherds/list'
+import { useGraphStore } from '@/stores/graphStore'
 import { Resource } from '@/types'
 
 interface GroupedResourcesObject {
@@ -41,6 +42,7 @@ interface GroupedResourcesObject {
 }
 
 const store = useStore()
+const graphStore = useGraphStore()
 const router = useRouter()
 
 const selectedResourceObject = ref<any>({})
@@ -50,25 +52,30 @@ const groupedResourcesObject = computed<GroupedResourcesObject>(() => groupBy(re
 const resourceIsSelected = computed<boolean>(() => Object.values(selectedResourceObject.value).includes(true))
 
 const selectCheckbox = (resourceId: string) => selectedResourceObject.value[resourceId] = !selectedResourceObject.value[resourceId]
+
 const selectAll = () => {
   for (const resource of resources.value) {
     selectedResourceObject.value[resource.id] = true
   }
 }
+
 const clearAll = () => selectedResourceObject.value = {}
+
 const graphSelected = async () => {
   const selectedIds = []
+
   for (const key in selectedResourceObject.value) {
     if (selectedResourceObject.value[key]) {
       selectedIds.push(key)
     }
   }
-  await store.dispatch('graphModule/getGraphDefinitionsByResourceIds', selectedIds)
+
+  await graphStore.getGraphDefinitionsByResourceIds(selectedIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
 const graphAll = async () => {
   const resourceIds = resources.value.map((resource) => resource.id)
-  await store.dispatch('graphModule/getGraphDefinitionsByResourceIds', resourceIds)
+  graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
 </script>

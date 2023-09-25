@@ -1,30 +1,36 @@
 import { defineStore } from 'pinia'
-import { sortBy, uniq } from 'lodash'
 import API from '@/services'
 import {
-  GraphDefinition,
   GraphMetricsPayload,
   GraphMetricsResponse,
   PreFabGraph,
   Resource,
   ResourceDefinitionsApiResponse
 } from '@/types'
+import { uniq } from 'lodash'
+import { sortBy } from 'lodash'
+
+export interface GraphDefinition {
+  id: string
+  definitions: string[]
+  label: string
+}
 
 export const useGraphStore = defineStore('graphStore', () => {
-  const definitions = ref([] as GraphDefinition[])
-  const definitionDataObjects = ref([] as PreFabGraph[])
-  const graphMetrics = ref([] as GraphMetricsResponse[])
-  const definitionsList = ref([] as string[])
-  const nameOrderMap = ref({} as Record<string,number>)
+  const definitions = ref<GraphDefinition[]>([])
+  const definitionDataObjects = ref<PreFabGraph[]>([])
+  const graphMetrics = ref<GraphMetricsResponse[]>([])
+  const definitionsList = ref<string[]>([])
+  const nameOrderMap = ref(new Map<string,number>())
 
-  // nodeResource comes from resourceModule, either pass it in or else call useResourceStore() here
-  const getGraphDefinitionsByResourceIds = async (nodeResource: Resource, ids: string[]) => {
-    let idsWithDefinitions: { id: string; definitions: string[]; label: string }[] = []
+  // TODO: nodeResource is passed in from resourceStore.nodeResource.children.resource
+  const getGraphDefinitionsByResourceIds = async (ids: string[], nodeResources: Resource[]) => {
+    let idsWithDefinitions: GraphDefinition[] = []
     const resourceAndPromises: { [x: string]: Promise<ResourceDefinitionsApiResponse>[] } = {}
 
-    // nodeResource is from resourceModule
+    // list from resourceModule
     const resources: Resource[] = JSON.parse(
-      JSON.stringify(nodeResource.children?.resource || [])
+      JSON.stringify(nodeResources)
     )
 
     const getLabelFromId = (id: string) => {
@@ -55,14 +61,14 @@ export const useGraphStore = defineStore('graphStore', () => {
 
       // sorts by preFabGraph order value
       const sortedDefinitions = sortBy(
-        defs.map(definition => ({ name: definition, order: nameOrderMap.value[definition] })),
+        defs.map((definition) => ({ name: definition, order: nameOrderMap.value.get(definition) })),
         ['order']
       ).map(definition => definition.name)
 
       idsWithDefinitions = [...idsWithDefinitions, { id, definitions: sortedDefinitions, label: getLabelFromId(id) }]
     }
 
-    const totalDefinitionsList = uniq(idsWithDefinitions.map(item => item.definitions).flat())
+    const totalDefinitionsList = uniq(idsWithDefinitions.map((item) => item.definitions).flat())
 
     definitionsList.value = totalDefinitionsList
     definitions.value = idsWithDefinitions
@@ -78,16 +84,20 @@ export const useGraphStore = defineStore('graphStore', () => {
     return definitionData
   }
 
-  const getPreFabGraphs = async (node: string) => {
-    const preFabGraphs = await API.getPreFabGraphs(node)
+  const saveNameOrderMap = (graphs: PreFabGraph[]) => {
+    const newMap = new Map<string,number>()
 
-    const newMap: { [name: string]: number } = {}
-
-    for (const graph of preFabGraphs) {
-      newMap[graph.name] = graph.order
+    for (const graph of graphs) {
+      newMap.set(graph.name, graph.order)
     }
 
     nameOrderMap.value = newMap
+  }
+
+  const getPreFabGraphs = async (node: string) => {
+    const preFabGraphs = await API.getPreFabGraphs(node)
+
+    saveNameOrderMap(preFabGraphs)
   }
 
   const getGraphMetrics = async (payload: GraphMetricsPayload): Promise<GraphMetricsResponse | null> => {
