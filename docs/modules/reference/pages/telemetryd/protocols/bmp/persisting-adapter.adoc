@@ -115,7 +115,7 @@ feature:install sentinel-telemetry-bmp-persist
 <2> Can alternatively be set to `sentinel-kafka` based on your selected message broker.
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
 
-To automatically start the adapter each time the Sentinel restarts, add the following to `${SENTINEL_HOME}/etc/featuresBoot.d/bmp-adapter.boot`.
+To automatically start the adapter each time the Sentinel restarts, add the following to `$\{SENTINEL_HOME}/etc/featuresBoot.d/bmp-adapter.boot`.
 
 [source]
 ----
