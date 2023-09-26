@@ -55,3 +55,40 @@ Also includes service detection and policy results.
 | GeoIpProvisioningAdapter.log
 | Logs related to the xref:reference:provisioning/adapters/geoip.adoc[GeoIP provisioning plugin].
 |===
+
+== Provisiond thread configuration
+
+Provisiond uses for a few thread pools for managing various tasks.
+These can be configured via the Web UI by going to menu:Info[External Requisitions] in the top menu bar.
+
+NOTE: Any changes to the thread pools requires a restart of the {page-component-title} service to apply the new thread limits.
+
+
+.Provisiond thread pool descriptions
+[cols="1,1,5"]
+|===
+| Pool  | Default Size | Description
+
+| Import
+| 8
+| Number of threads to allocate for importing requisitions.
+This pool determines the number of requisitions that can be imported at one time.
+Increase this number if you have a large number of requisitions.
+
+| Scan
+| 10
+| Number of threads to allocate for manual scan/sync requests.
+This pool is used for any manual sync tasks and when requesting a rescan of a single node.
+Increase this number if you have a large number of nodes in a single requisition.
+
+| Rescan
+| 10
+| Number of threads to allocate for automated rescanning existing nodes.
+This pool is used for rescanning nodes in a requisition on the schedule set in the foreign source definition.
+This value typically should be the same as the Scan thread pool size.
+
+| Write
+| 8
+| Number of threads to allocate for writing to the database.
+This value typically does not need to be modified under most use cases.
+|===
