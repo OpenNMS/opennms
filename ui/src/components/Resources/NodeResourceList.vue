@@ -24,7 +24,6 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { groupBy } from 'lodash'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherButton } from '@featherds/button'
@@ -35,19 +34,20 @@ import {
   FeatherListSeparator
 } from '@featherds/list'
 import { useGraphStore } from '@/stores/graphStore'
+import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
 
 interface GroupedResourcesObject {
   [x: string]: Resource[]
 }
 
-const store = useStore()
 const graphStore = useGraphStore()
+const resourceStore = useResourceStore()
 const router = useRouter()
 
 const selectedResourceObject = ref<any>({})
 
-const resources = computed<Resource[]>(() => store.state.resourceModule.nodeResource.children?.resource || [])
+const resources = computed<Resource[]>(() => resourceStore.nodeResource.children?.resource || [])
 const groupedResourcesObject = computed<GroupedResourcesObject>(() => groupBy(resources.value, 'typeLabel'))
 const resourceIsSelected = computed<boolean>(() => Object.values(selectedResourceObject.value).includes(true))
 
@@ -73,8 +73,9 @@ const graphSelected = async () => {
   await graphStore.getGraphDefinitionsByResourceIds(selectedIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
+
 const graphAll = async () => {
-  const resourceIds = resources.value.map((resource) => resource.id)
+  const resourceIds = resources.value.map(resource => resource.id)
   graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
   router.push('/resource-graphs/graphs')
 }

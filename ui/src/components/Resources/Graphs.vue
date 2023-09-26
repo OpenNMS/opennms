@@ -41,6 +41,7 @@ import { UpdateModelFunction } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { GraphDefinition, useGraphStore } from '@/stores/graphStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
 
 const el = document.getElementById('card')
@@ -50,6 +51,7 @@ const definitionsToDisplay = ref<string[]>([])
 const store = useStore()
 const graphStore = useGraphStore()
 const menuStore = useMenuStore()
+const resourceStore = useResourceStore()
 const router = useRouter()
 const { startSpinner, stopSpinner } = useSpinner()
 const now = new Date()
@@ -147,12 +149,12 @@ onMounted(() => {
 })
 
 onBeforeMount(() => {
-  if (props.singleGraphDefinition) return
+  if (props.singleGraphDefinition) {
+    return
+  }
 
   // if no resources, route to resource selection
-  const resources = store.state.resourceModule.resources
-
-  if (!resources.length) {
+  if (!resourceStore.resources.length) {
     router.push('/resource-graphs')
   }
 })
@@ -170,4 +172,3 @@ onBeforeMount(() => {
   }
 }
 </style>
-  

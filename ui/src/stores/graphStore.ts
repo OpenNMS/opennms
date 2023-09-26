@@ -23,12 +23,10 @@ export const useGraphStore = defineStore('graphStore', () => {
   const definitionsList = ref<string[]>([])
   const nameOrderMap = ref(new Map<string,number>())
 
-  // TODO: nodeResource is passed in from resourceStore.nodeResource.children.resource
   const getGraphDefinitionsByResourceIds = async (ids: string[], nodeResources: Resource[]) => {
     let idsWithDefinitions: GraphDefinition[] = []
     const resourceAndPromises: { [x: string]: Promise<ResourceDefinitionsApiResponse>[] } = {}
 
-    // list from resourceModule
     const resources: Resource[] = JSON.parse(
       JSON.stringify(nodeResources)
     )
