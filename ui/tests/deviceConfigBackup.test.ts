@@ -73,10 +73,8 @@ const wrapper = mount(DCB, {
   }
 })
 
-describe('deviceConfiBackup test', () => {
+describe('deviceConfigBackupStore test', () => {
   beforeAll(() => {
-    //createTestingPinia()
-
     const deviceStore = useDeviceStore()
     deviceStore.deviceConfigBackups = mockDeviceConfigBackups
   })

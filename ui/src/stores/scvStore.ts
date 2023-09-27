@@ -15,7 +15,6 @@ export const useScvStore = defineStore('scvStore', () => {
   const dbCredentials = ref({} as SCVCredentials)
   const isEditing = ref(false)
 
-
   const getAliases = async () => {
     const resp = await API.getAliases()
     aliases.value = resp
@@ -98,6 +97,7 @@ export const useScvStore = defineStore('scvStore', () => {
     credentials,
     dbCredentials,
     isEditing,
+    getAliases,
     getCredentialsByAlias,
     addCredentials,
     updateCredentials,
