@@ -19,13 +19,13 @@ image::bmp/bmp_integration_overview_2.png[width=70%]
 The {page-component-title} BMP parser accepts BMP connections from router packets using a TCP listener.
 Two adapters in OpenNMS read BMP data, including an inventory list of connected routers and the peers they are established with, and stats and data about what is being exchanged over those peers:
 
-* *BMP Telemetry Adapter:* Handles BMP statistics the BMP parser has received and parsed.
+* *BMP telemetry adapter:* Handles BMP statistics the BMP parser has received and parsed.
 Statistics received from the router are associated as performance data with that router.
 View metrics and statistics related to that peer and apply thresholding.
 
-* *BMP Peer Status Adapter:* Handles BMP Peer Up and Down messages that the BMP parser receives and parses, and converts them to OpenNMS events.
+* *BMP peer status adapter:* Handles BMP Peer Up and Down messages that the BMP parser receives and parses, and converts them to OpenNMS events.
 Allows alarm creation based on up/down status.
 
-The parser and adapters are configurable in the telemetryd-configuration.xml file.
+You can configure the parser and adapters in the `telemetryd-configuration.xml` file.
 
 TIP: The https://github.com/OpenNMS-forge/bmp-playground[BMP Playground] provides a virtual lab that you can use to simulate BGP and BMP, and to see how the {page-component-title} components can be configured at runtime.
