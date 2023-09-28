@@ -22,15 +22,31 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
 
 FROM ${BASE_IMAGE} as sentinel-base
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime rsync"
+
+ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
 SHELL ["/bin/bash", "-c"]
 
-# Collect generic steps in a layer for caching
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
-# install required RPMs
-RUN microdnf -y install ${REQUIRED_RPMS} && \
-    rm -rf /var/cache/yum
+# Collect generic steps in a layer for caching
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get --no-install-recommends install -yq gnupg ca-certificates && \
+    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
+    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# get any security updates for the base system
+RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
+    apt clean && \
+    rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 ##
 # Download plugins
@@ -83,6 +99,11 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel /opt/sentinel
 
 COPY ./container-fs/* /
+
+# Allow to send ICMP messages as non-root user
+RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
+    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
+    ldconfig
 
 VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 

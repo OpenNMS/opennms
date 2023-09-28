@@ -37,13 +37,26 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_DEBS="hostname uuid-runtime rsync"
+
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Collect generic steps in a layer for caching
 
-# install required RPMs
-RUN microdnf -y install ${REQUIRED_RPMS} && \
-    rm -rf /var/cache/yum
+# import keys & install required debs
+RUN apt-get update && \
+    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
+    apt-get -y autoclean && \
+    apt-get -y clean && \
+    rm -rf /var/cache/apt
+
+# get any security updates for the base system
+RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
+    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
+    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
+    apt clean && \
+    rm -rf /var/cache/apt /etc/apt/security.sources.list
 
 RUN groupadd \
         --gid 10001 \
