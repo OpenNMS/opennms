@@ -112,12 +112,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
-const store = useStore()
 const mapStore = useMapStore()
 const nodes = computed<Node[]>(() => mapStore.getNodes())
 const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())

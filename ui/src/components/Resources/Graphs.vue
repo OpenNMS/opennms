@@ -30,7 +30,6 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
@@ -48,7 +47,6 @@ const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
 
-const store = useStore()
 const graphStore = useGraphStore()
 const menuStore = useMenuStore()
 const resourceStore = useResourceStore()

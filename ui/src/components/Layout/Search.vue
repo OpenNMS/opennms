@@ -36,13 +36,13 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
-import { useSearchStore } from '@/stores/searchStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { useSearchStore } from '@/stores/searchStore'
 import { SearchResultItem } from '@/types'
 import { reactive } from 'vue'
 
-const searchStore = useSearchStore()
 const menuStore = useMenuStore()
+const searchStore = useSearchStore()
 
 const iconClasses = ref<string[][]>([[]])
 

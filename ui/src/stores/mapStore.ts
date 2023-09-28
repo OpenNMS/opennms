@@ -44,7 +44,7 @@ export const useMapStore = defineStore('mapStore', () => {
     const severityMap = getNodeAlarmSeverityMap()
     const selectedNumericSeverityLevel = numericSeverityLevel(selectedSeverity.value)
 
-    // copy the vuex nodes
+    // copy the nodes from the store
     let nodes: Node[] = JSON.parse(JSON.stringify(nodesWithCoordinates.value))
 
     // sort the nodes
