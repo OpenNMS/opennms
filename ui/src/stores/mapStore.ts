@@ -10,7 +10,7 @@ import {
   Coordinates,
   FeatherSortObject,
   Node,
-  QueryParameters,
+  QueryParameters
 } from '@/types'
 
 export const useMapStore = defineStore('mapStore', () => {
@@ -38,6 +38,7 @@ export const useMapStore = defineStore('mapStore', () => {
     return map
   }
 
+  // Get current list of filtered and sorted nodes, does NOT make API call
   // previously getters: getNodes
   const getNodes = (): Node[] => {
     const severityMap = getNodeAlarmSeverityMap()
@@ -82,6 +83,7 @@ export const useMapStore = defineStore('mapStore', () => {
     return getNodes().map((node: Node) => node.label)
   }
 
+  // Get current list of filtered and sorted alarms, does NOT make API call
   // previously getters: getAlarms
   const getAlarms = (): Alarm[] => {
     const nodeLabels = getNodeLabels()
@@ -91,6 +93,7 @@ export const useMapStore = defineStore('mapStore', () => {
     return orderBy(filteredAlarms, alarmSortObject.value.property, alarmSortObject.value.value)
   }
 
+  // Make API call to get nodes
   // previously actions: getNodes
   const fetchNodes = async (queryParameters?: QueryParameters) => {
     const defaultParams = queryParameters || { limit: 5000, offset: 0 }
@@ -108,6 +111,7 @@ export const useMapStore = defineStore('mapStore', () => {
     }
   }
 
+  // Make API call to get alarms
   // previously actions: getAlarms
   const fetchAlarms = async (queryParameters?: QueryParameters) => {
     const defaultParams = queryParameters || { limit: 5000, offset: 0 }
