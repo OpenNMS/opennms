@@ -345,6 +345,7 @@ if (request.getAttribute("success") != null) {
   </div> <!-- col-md-6 -->
 </div> <!--  row -->
 
+<a id="updateForm"/>
 <form role="form" class="form-horizontal" method="post" name="snmpConfigForm"
   action="admin/snmpConfig?action=add" onsubmit="return verifySnmpConfig();">
   <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
