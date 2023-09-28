@@ -19,14 +19,14 @@
   lang="ts"
 >
 import { debounce } from 'lodash'
-import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { useMapStore } from '@/stores/mapStore'
+import { useSearchStore } from '@/stores/searchStore'
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
-const store = useStore()
 const mapStore = useMapStore()
+const searchStore = useSearchStore()
 const searchStr = ref()
 const loading = ref(false)
 const outsideSearch = ref(false)
@@ -54,19 +54,23 @@ const resetLabelsAndSearch = (value: string) => {
 }
 
 const search = debounce(async (value: string) => {
-  if (!value) return
+  if (!value) {
+    return
+  }
+
   loading.value = true
 
-  await store.dispatch('searchModule/search', value)
+  await searchStore.search(value)
 
   labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
 
 const results = computed(() => {
-  if (store.state.searchModule.searchResults[0]) {
-    return store.state.searchModule.searchResults[0].results
+  if (searchStore.searchResults.length > 0 && searchStore.searchResults[0]) {
+    return searchStore.searchResults[0].results
   }
+
   return []
 })
 
@@ -97,7 +101,7 @@ watchEffect(async () => {
 
     loading.value = true
     outsideSearch.value = true
-    await store.dispatch('searchModule/search', nodeSearchTerm.value)
+    await searchStore.search(nodeSearchTerm.value)
     labels.value = { noResults: 'No results found' }
     loading.value = false
   }
