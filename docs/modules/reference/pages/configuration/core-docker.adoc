@@ -4,6 +4,8 @@
 
 == Startup arguments
 
+These startup arguments can be passed in the `command` definition of the Docker Compose file.
+
 [options="header, %autowidth"]
 |===
 | Argument | Description
@@ -14,83 +16,353 @@
 | `-t`     | One-time command to run the config-tester against the configuration.
 |===
 
-== Environment variables
-
-.Java options
-|===
-| Environment variable  | Description                           | Required | Default value
-| `JAVA_OPTS`           | Allows you to add additional Java options. | optional | `-`
-|===
-
-.PostgreSQL connection configuration in opennms-datasources.xml
-[options="header, %autowidth"]
-|===
-| Environment variable                       | Description                                                                       | Required | Default value
-| `OPENNMS_DBNAME`                           | Database name used for {page-component-title} Core instance                       | required | -
-| `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
-| `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
-| `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
-| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
-| `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
-| `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -
-| `OPENNMS_DATABASE_CONNECTION_POOLFACTORY`  | Database connection pool factory                                                  | optional | `org.opennms.core.db.HikariCPConnectionFactory`
-| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Database connection pool idle timeout                                             | optional | `600`
-| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Database connection pool login timeout                                            | optional | `3`
-| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Minimal connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Maximum connections                                                               | optional | `50`
-|===
-
-.Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
-[options="header, %autowidth"]
-|===
-| Environment variable               | Description                                                             | Required | Default value
-| `OPENNMS_TIMESERIES_STRATEGY`      | Used Timeseries storage strategy                                        | optional | `rrd`
-| `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | Store timeseries data by foreign source instead of the database node id | optional | `true`
-| `OPENNMS_RRD_STRATEGYCLASS`        | Java RRD Strategy class                                                 | optional | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy`
-| `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
-| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
-|===
-
-.SNMP Trap receiver configuration in trapd-configuration.xml
-[options="header, %autowidth"]
-|===
-| Environment variable              | Description                                                       | Required | Default value
-| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                 | optional | `*`
-| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                   | optional | `1162`
-| `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event-based trap recipient for unknown devices. | optional | `false`
-| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                             | optional | `false`
-| `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP traps.                     | optional | `0`
-| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                      | optional | `10000`
-| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                         | optional | `1000`
-| `OPENNMS_TRAPD_BATCHINTERVAL`     | Set batch processing interval in milliseconds.                     | optional | `500`
-|===
-
-.Karaf Shell configuration in org.apache.karaf.shell.cfg
-[options="header, %autowidth"]
-|===
-| Environment variable     | Description                        | Required | Default value
-| `OPENNMS_karaf_SSH_HOST` | Listen interface for Karaf shell | optional | `0.0.0.0`
-| `OPENNMS_karaf_SSH_PORT` | SSH port for Karaf shell       | optional | `8101`
-|===
-
-.Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
-[options="header, %autowidth"]
-|===
-| Environment variable          | Description                                                                       | Required | Default value
-| `REPLICATION_FACTOR`          | Set Cassandra replication factor for the newts keyspace if Newts is used.      | optional | `1`
-| `OPENNMS_CASSANDRA_HOSTNAMES` | A comma-separated list with Cassandra hosts for Newts                         | optional | `localhost`
-| `OPENNMS_CASSANDRA_KEYSPACE`  | Name of the keyspace used by Newts                                              | optional | `newts`
-| `OPENNMS_CASSANDRA_PORT`      | Cassandra server port                                                           | optional | `9042`
-| `OPENNMS_CASSANDRA_USERNAME`  | Username with access to Cassandra                                              | optional | `cassandra`
-| `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to Cassandra                                      | optional | `cassandra`
-|===
-
 == Directory conventions
 
+The containerized version of {page-component-title} provides some extra mount points that can be used to persist data and configuration.
+
 [options="header, %autowidth"]
 |===
-| Mountpoint             | Description
-| `/opt/opennms-overlay` | Allows you to overwrite files relative to `/opt/opennms`.
-| `/opennms-data`        | Directory with RRDTool/JRobin files and generated PDF reports sent to the file system.
+| Mountpoint | Description
+
+| /opt/opennms-overlay
+| Files placed here will be copied to `$\{OPENNMS-HOME}` on container startup.
+
+| /opennms-data
+| Directory with RRDTool/JRobin files and generated PDF reports sent to the file system.
 |===
+
+== Configuration settings
+
+{page-component-title} containers utilize confd to apply select configuration options to the container.
+These settings can either be set in the `docker-compose.yml` as environment variables, or through a mapped YAML file.
+See the <<configuration-options>> section below for possible values.
+
+If you want to use a separate YAML to define configuration, the following files must be mounted:
+
+* A yaml file to the following path: `/opt/opennms-overlay/confd/{page-component-name}-config.yaml`.
+* A file mapped to `/etc/confd/confd.toml` with the following contents:
++
+[source, toml]
+----
+confdir = "/etc/confd"
+backend = "file"
+file = ["/opt/opennms-overlay/confd/{page-component-name}-config.yaml"]<1>
+log-level = "info"
+----
+<1> Make sure the path of this file matches the location where you have mounted this file.
+
+IMPORTANT: Directly overlaying specific configuration files overwrites corresponding configurations provided by confd.
+
+When defining the `{page-component-name}-config.yaml` file, use the table below as a reference for the key values.
+Replace any `_` with a tree structure using the following as an example.
+
+`OPENNMS_DBNAME` translates to:
++
+[source, yaml]
+----
+opennms:
+  dbname: opennms
+----
+
+`OPENNMS_DATABASE_CONNECTION_MAXPOOL` translates to:
++
+[source, yaml]
+----
+opennms:
+  database:
+    connection:
+      maxpool: 50
+----
+
+== Configuration options
+
+=== Java options
+
+|===
+| Environment variable | Description |  Default value
+
+3+| *Optional*
+
+| JAVA_OPTS
+| Allows you to add additional Java options.
+This option is only available as an environment variable, and not via a YAML config file.
+|
+|===
+
+=== PostgreSQL connection configuration
+
+These options are written to `$\{OPENNMS_HOME}/etc/opennms-datasources.xml`.
+
+[options="header, %autowidth"]
+|===
+| Environment variable | Description |  Default value
+
+3+| *Required*
+
+| OPENNMS_DBNAME
+| Database name used for {page-component-title} Core instance
+|
+
+| OPENNMS_DBUSER
+| Username with access to the database
+|
+
+| OPENNMS_DBPASS
+| Password for user with acccess to the database
+|
+
+| POSTGRES_HOST
+| Host with the PostgreSQL server instance running
+|
+
+| POSTGRES_USER
+| PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME`
+|
+
+| POSTGRES_PASSWORD
+| PostgreSQL super user password
+|
+
+3+| *Optional*
+
+| POSTGRES_PORT
+| PostgreSQL server port
+| 5432
+
+| OPENNMS_DATABASE_CONNECTION_POOLFACTORY
+| Database connection pool factory
+| org.opennms.core.db.HikariCPConnectionFactory
+
+| OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT
+| Database connection pool idle timeout
+| 600
+
+| OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT
+| Database connection pool login timeout
+| 3
+
+| OPENNMS_DATABASE_CONNECTION_MINPOOL
+| Minimal connection pool size
+| 50
+
+| OPENNMS_DATABASE_CONNECTION_MAXPOOL
+| Maximum connection pool size
+| 50
+
+| OPENNMS_DATABASE_CONNECTION_MAXSIZE
+| Maximum connections
+| 50
+|===
+
+.Timeseries storage configuration
+
+These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.timeseries.properties`.
+
+[options="header, %autowidth"]
+|===
+| Environment variable | Description |  Default value
+
+3+| *Optional*
+
+| OPENNMS_TIMESERIES_STRATEGY
+| Used Timeseries storage strategy
+| rrd
+
+| OPENNMS_RRD_STOREBYFOREIGNSOURCE
+| Store timeseries data by foreign source instead of the database node id
+| true
+
+| OPENNMS_RRD_STRATEGYCLASS
+| Java RRD Strategy class
+| org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+
+| OPENNMS_RRD_INTERFACEJAR
+| Java RRD Interface library
+| /usr/share/java/jrrd2.jar
+
+| OPENNMS_LIBRARY_JRRD2
+| JRRD2 library path
+| /usr/lib64/libjrrd2.so
+|===
+
+=== SNMP trap receiver configuration
+
+These options are written to `$\{OPENNMS_HOME}/etc/trapd-configuration.xml`.
+
+[options="header, %autowidth"]
+|===
+| Environment variable | Description | Default value
+
+3+| *Optional*
+
+| OPENNMS_TRAPD_ADDRESS
+| Listen interface for SNMP Trapd
+| *
+
+| OPENNMS_TRAPD_PORT
+| Port to listen for SNMP traps
+| 1162
+
+| OPENNMS_TRAPD_NEWSUSPECTONTRAP
+| Create new suspect event-based trap recipient for unknown devices.
+| false
+
+| OPENNMS_TRAPD_INCLUDERAWMESSAGE
+| Preserve raw messages in SNMP traps.
+| false
+
+| OPENNMS_TRAPD_THREADS
+| Set maximum thread size to process SNMP traps.
+| 0
+
+| OPENNMS_TRAPD_QUEUESIZE
+| Set maximum queue for SNMP trap processing.
+| 10000
+
+| OPENNMS_TRAPD_BATCHSIZE
+| Set batch size for SNMP trap processing.
+| 1000
+
+| OPENNMS_TRAPD_BATCHINTERVAL
+| Set batch processing interval in milliseconds.
+| 500
+|===
+
+=== Karaf Shell configuration
+
+These options are written to `$\{OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg`.
+
+[options="header, %autowidth"]
+|===
+| Environment variable | Description |  Default value
+
+3+| *Optional*
+
+| OPENNMS_KARAF_SSH_HOST
+| Listen interface for Karaf shell
+| 0.0.0.0
+
+| OPENNMS_KARAF_SSH_PORT
+| SSH port for Karaf shell
+| 8101
+|===
+
+.Cassandra and Newts configuration
+
+These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.newts.properties`.
+
+[options="header, %autowidth"]
+|===
+| Environment variable | Description | Default value
+
+3+| *Optional*
+
+| REPLICATION_FACTOR
+| Set Cassandra replication factor for the newts keyspace if Newts is used.
+| 1
+
+| OPENNMS_CASSANDRA_HOSTNAMES
+| A comma-separated list with Cassandra hosts for Newts
+| localhost
+
+| OPENNMS_CASSANDRA_KEYSPACE
+| Name of the keyspace used by Newts
+| newts
+
+| OPENNMS_CASSANDRA_PORT
+| Cassandra server port
+| 9042
+
+| OPENNMS_CASSANDRA_USERNAME
+| Username with access to Cassandra
+| cassandra
+
+| OPENNMS_CASSANDRA_PASSWORD
+| Password for user with access to Cassandra
+| cassandra
+|===
+
+
+=== Kafka broker configuration
+
+Kafka broker settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.kafka.properties`.
+
+[source, yaml]
+----
+opennms:
+  instance_id: "<id>" <1>
+  kafka:
+    ipc: <2>
+      bootstrap_servers: <3>
+        - broker1:9092
+        - broker2:9092
+      config: <4>
+        key: value
+----
+<1> If modifying the instance ID, make sure to set the same ID on the Minion configs.
+<2> You can also define `opennms.kafka.rpc.\*`, `opennms.kafka.sink.\*`, and `opennms.kafka.twin.\*`, with a similiar structure, if you want to define different settings for each of those systems.
+<3> If you have multiple Kafka brokers in your cluster, {page-component-title} will attempt to connect to each listed server in order.
+The first broker server to respond will be used to provide a full list of all brokers in the cluster.
+<4> Any settings defined within the `config` section will be written as `org.opennms.core.ipc.key=value`.
+
+=== Kafka consumer configuration
+
+Kafka Consumer settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+
+[source, yaml]
+----
+opennms:
+  kafka:
+    consumer:
+      topic: opennms-kafka-events <1>
+      bootstrap_servers: <2>
+        - broker1:9092
+        - broker2:9092
+      config: <3>
+        key: value
+----
+<1> Topic will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.cfg`.
+<2> If you have multiple Kafka brokers in your cluster, Kafka Consumer will attempt to connect to each listed server in order.
+The first broker server to respond will be used to provide a full list of all brokers in the cluster.
+This setting will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
+`$\{OPENNMS_HOME}/etc/featuresBoot.d/kafka-consumer.boot` will also be created when bootstrap servers have been defined.
+<3> Any settings defined within the `config` section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
+
+=== Elastic flows configuration
+
+Elastic settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+
+[source, yaml]
+----
+opennms:
+  instance_id: "<id>" <1>
+elastic:
+  flows:
+    hosts: <2>
+    - host: http://elastic:9200 <3>
+      username: elastic
+      password: e1@stic
+    - host: broker2:9092
+    config: <4>
+      key: value
+----
+<1> If an instance ID is present, it will be used as an index prefix.
+<2> If you have multiple Elastic servers in your cluster, {page-component-title} will attempt to connect to each listed server in order.
+The first  server to respond will be used to provide a full list of all servers in the cluster.
+<3> If your Elastic servers require credentials, you can define `username` and `password` values which will be written to `$\{OPENNMS_HOME}/etc/elastic-credentials.xml`.
+Alternatively, you can define `globalElasticUser` and `globalElasticPassword` in the config section to define one set of credentials to use across all Elastic servers.
+<4> Any settings defined within the `config` section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+=== System properties
+
+System properties can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.custom.properties`.
+Any valid {page-component-title} property can be passed.
+
+[source, yaml]
+----
+opennms:
+  properties:
+    key: value
+----
