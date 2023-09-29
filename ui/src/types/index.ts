@@ -1,10 +1,4 @@
-import { Commit, Dispatch } from 'vuex'
 import { SORT } from '@featherds/table'
-
-export interface VuexContext {
-  commit: Commit
-  dispatch: Dispatch
-}
 
 export type UpdateModelFunction = (_value: any) => any
 
@@ -40,7 +34,8 @@ export interface SearchResultItem {
     matches: SearchResultMatch[];
     weight: number;
 }
-export type SearchResultsByContext = Array<{label:string,results:SearchResultResponse[]}>
+
+export type SearchResultsByContext = Array<{label: string, results: SearchResultResponse[]}>
 
 export interface ApiResponse {
   count: number

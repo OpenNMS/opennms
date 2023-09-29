@@ -75,6 +75,7 @@
 </template>
 <script setup lang ="ts">
 import 'leaflet/dist/leaflet.css'
+import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
 import {
   LMap,
   LTileLayer,
@@ -83,27 +84,29 @@ import {
   LControlLayers
   // LPolyline,
 } from '@vue-leaflet/vue-leaflet'
-import MarkerCluster from './MarkerCluster.vue'
-import { useStore } from 'vuex'
-import { useIpInterfacesStore } from '@/stores/ipInterfacesStore'
-import { useNodeStore } from '@/stores/nodeStore'
-import { Map as LeafletMap, divIcon, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
-import NormalIcon from '@/assets/Normal-icon.png'
-import WarninglIcon from '@/assets/Warning-icon.png'
+import CriticalIcon from '@/assets/Critical-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
-import CriticalIcon from '@/assets/Critical-icon.png'
-import { IpInterface, Node } from '@/types'
-import { MainMenu } from '@/types/mainMenu'
+import NormalIcon from '@/assets/Normal-icon.png'
+import WarninglIcon from '@/assets/Warning-icon.png'
+
+import MarkerCluster from './MarkerCluster.vue'
 import MapSearch from './MapSearch.vue'
 import MarkerPopup from './MarkerPopup.vue'
 import MarkerClusterPopupContents from './MarkerClusterPopupContent.vue'
 import SeverityFilter from './SeverityFilter.vue'
 import { numericSeverityLevel } from './utils'
-import { useMenuStore } from '@/stores/menuStore'
 
-const store = useStore()
+import { isNumber } from '@/lib/utils'
+import { useIpInterfacesStore } from '@/stores/ipInterfacesStore'
+import { useMapStore } from '@/stores/mapStore'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStore } from '@/stores/nodeStore'
+import { Coordinates, IpInterface, Node } from '@/types'
+import { MainMenu } from '@/types/mainMenu'
+
 const ipInterfaceStore = useIpInterfacesStore()
+const mapStore = useMapStore()
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const map = ref()
@@ -119,14 +122,29 @@ const zoom = ref<number>(2)
 const iconWidth = 25
 const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
-const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
+
+const numberOrStringToFloat = (n: number | string) => {
+  return isNumber(n) ? Number(n) : parseFloat('' + n)
+}
+
+const center = computed<number[]>(() => {
+  const { latitude, longitude } = mapStore.mapCenter
+  const vals = [latitude, longitude].map(x => numberOrStringToFloat(x))
+  return vals
+})
+
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const allNodes = computed<Node[]>(() => mapStore.nodesWithCoordinates)
+
+// get all valid coordinates from existing nodes
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
-  return nodes.value.map((node) => coordinatedMap.get(node.id))
+  const coordinates = nodes.value.map(node => coordinatedMap.get(node.id)).filter(coord => coord !== undefined)
+
+  return coordinates.map(c => [numberOrStringToFloat(c!.latitude), numberOrStringToFloat(c!.longitude)])
 })
-const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+
+const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const ipInterfaces = computed<IpInterface[]>(() => ipInterfaceStore.ipInterfaces)
@@ -164,6 +182,7 @@ const nodeLabelToAlarmSeverity = (label: string) => {
 
 const getHighestSeverity = (severities: string[]) => {
   let highestSeverity = 'NORMAL'
+
   for (const severity of severities) {
     if (numericSeverityLevel(severity) > numericSeverityLevel(highestSeverity)) {
       highestSeverity = severity
@@ -177,12 +196,15 @@ const iconCreateFunction = (cluster: Cluster) => {
   const childMarkers = cluster.getAllChildMarkers()
   // find highest level of severity
   const severities = []
+
   for (const marker of childMarkers) {
     const markerSeverity = nodeLabelAlarmSeverityMap.value[(marker as any).options.name]
+
     if (markerSeverity) {
       severities.push(markerSeverity)
     }
   }
+
   const highestSeverity = getHighestSeverity(severities)
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
@@ -240,7 +262,7 @@ const setMarkerColor = (severity: string | undefined) => {
 // const edges = computed(() => {
 //   const ids: string[] = nodes.value.map((node: Node) => node.id)
 //   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
-//   return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
+//   return mapStore.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
 //     .map((edge: [number, number]) => {
 //       let edgeCoordinatesPair = []
 //       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))
@@ -250,11 +272,14 @@ const setMarkerColor = (severity: string | undefined) => {
 // })
 
 const getNodeCoordinateMap = computed(() => {
-  const map = new Map()
+  const map = new Map<string, Coordinates>()
+
   allNodes.value.forEach((node: Node) => {
-    map.set(node.id, [node.assetRecord.latitude, node.assetRecord.longitude])
-    map.set(node.label, [node.assetRecord.latitude, node.assetRecord.longitude])
+    const coord = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
+    map.set(node.id, coord)
+    map.set(node.label, coord)
   })
+
   return map
 })
 
@@ -271,12 +296,15 @@ const onLeafletReady = async () => {
     await nextTick()
 
     // save the bounds to state
-    store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+    mapStore.setMapBounds(leafletObject.value.getBounds())
+    await nextTick()
 
-    try {
-      leafletObject.value.fitBounds(bounds.value)
-    } catch (err) {
-      console.log(err, `Invalid bounds array: ${bounds.value}`)
+    if (bounds.value.length > 0) {
+      try {
+        leafletObject.value.fitBounds(bounds.value.map(b => [b[0], b[1]] as LatLngTuple))
+      } catch (err) {
+        console.log(err, `Invalid bounds array: ${bounds.value}`)
+      }
     }
 
     // if nodeid query param, fly to it
@@ -288,7 +316,7 @@ const onLeafletReady = async () => {
 
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
-  store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+  mapStore.setMapBounds(leafletObject.value.getBounds())
 }
 
 const flyToNode = (nodeLabelOrId: string) => {
@@ -296,15 +324,16 @@ const flyToNode = (nodeLabelOrId: string) => {
   const nodeCoordinates = coordinateMap.get(nodeLabelOrId)
 
   if (nodeCoordinates) {
-    leafletObject.value.flyTo(nodeCoordinates, 7)
+    leafletObject.value.flyTo([nodeCoordinates.latitude, nodeCoordinates.longitude] as LatLngTuple, 7)
   }
 }
 
 const setBoundingBox = (nodeLabels: string[]) => {
   const coordinateMap = getNodeCoordinateMap.value
   const bounds = nodeLabels.map((nodeLabel) => coordinateMap.get(nodeLabel))
+
   if (bounds.length) {
-    leafletObject.value.fitBounds(bounds)
+    leafletObject.value.fitBounds(bounds.map(c => [c!.latitude, c!.longitude] as LatLngTuple))
   }
 }
 
@@ -329,7 +358,8 @@ const tileProviders = [
 ]
 
 onMounted(async () => {
-  store.dispatch('mapModule/getNodes')
+  mapStore.fetchNodes()
+  mapStore.fetchAlarms()
   nodeStore.getNodes()
   ipInterfaceStore.getAllIpInterfaces()
 })

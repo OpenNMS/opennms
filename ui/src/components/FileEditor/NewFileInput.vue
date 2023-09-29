@@ -75,7 +75,7 @@ const addNewFile = () => {
   // clear editor contents
   fileEditorStore.clearEditor()
 
-  // update vuex store with new file
+  // update store with new file
   fileEditorStore.saveNewFileToState(fullPath)
 
   // update the search input with the new file name

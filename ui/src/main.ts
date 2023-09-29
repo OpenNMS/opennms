@@ -2,7 +2,6 @@ import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
 import VueDiff from 'vue-diff'
 import router, { isLegacyPlugin } from './router'
-import store from './store'
 import { createPinia } from 'pinia'
 import API from '@/services'
 import App from './App.vue'
@@ -11,7 +10,6 @@ import App from './App.vue'
 // @ts-ignore
 import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
-import * as Vuex from 'vuex'
 import * as VueRouter from 'vue-router'
 
 import '@featherds/styles'
@@ -75,7 +73,6 @@ library.add(...icons);
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
 (window as any).Pinia = Pinia;
-(window as any).Vuex = Vuex;
 (window as any).VueRouter = VueRouter;
 (window as any)['VRouter'] = router
 
@@ -117,7 +114,6 @@ createApp({
 })
   .use(VueDiff)
   .use(router)
-  .use(store)
   .use(createPinia())
   .component('font-awesome-icon', FontAwesomeIcon)
   .directive('date', dateFormatDirective)

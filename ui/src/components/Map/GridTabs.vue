@@ -8,15 +8,15 @@
   <router-view />
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useMapStore } from '@/stores/mapStore'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
 import { Alarm, Node } from '@/types'
 
-const store = useStore()
+const mapStore = useMapStore()
 const router = useRouter()
 const route = useRoute()
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const alarms = computed<Alarm[]>(() => store.getters['mapModule/getAlarms'])
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const alarms = computed<Alarm[]>(() => mapStore.getAlarms())
 const alarmTab = ref()
 const nodesTab = ref()
 

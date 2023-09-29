@@ -36,8 +36,6 @@ export const useSearchStore = defineStore('searchStore', () => {
   const loading = ref(false)
 
   /**
-   * 
-   * @param context Since this is a dispatch based action, it will receive the full VueX context as the first result
    * @param searchStr The string we want to search OpenNMS for
    */
   const search = async (searchStr: string) => {

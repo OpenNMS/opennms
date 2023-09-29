@@ -30,14 +30,12 @@ Run unit tests
 yarn test
 ```
 
-## State management: Vuex and pinia
-*NOTE:* Vuex is being replaced by [pinia](https://pinia.vuejs.org/).
+## State management: pinia
+This project uses [pinia](https://pinia.vuejs.org/).
 
-This project uses [Vuex](https://next.vuex.vuejs.org/) with the modules pattern.
-Each store module has separate files for state, actions, and mutations.
-Current convention is to call actions only from components, (no mutations).
+pinia stores are under `stores`.
 
-Vuex stores are under `store`; pinia stores are under `stores`.
+*NOTE:* this project used to use `vuex` but it has been replaced by `pinia`.
 
 ## Vue-router
 Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).

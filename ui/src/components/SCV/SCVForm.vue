@@ -6,7 +6,7 @@
       :disabled="isEditing"
       label="Alias"
       @update:modelValue="updateAlias"
-      :modelValue="credentials.alias"
+      :modelValue="scvStore.credentials.alias"
       :error="aliasError"
       class="alias-input"
     />
@@ -17,7 +17,7 @@
         autocomplete="new-username"
         label="Username"
         @update:modelValue="updateUsername"
-        :modelValue="credentials.username"
+        :modelValue="scvStore.credentials.username"
         class="input"
       />
 
@@ -26,7 +26,7 @@
         autocomplete="new-password"
         label="Password"
         @update:modelValue="updatePassword"
-        :modelValue="credentials.password"
+        :modelValue="scvStore.credentials.password"
         :error="passwordError"
         class="input"
       />
@@ -38,7 +38,7 @@
     </div>
 
     <SCVAttribute
-      v-for="(value, key, index) in credentials.attributes" 
+      v-for="(value, key, index) in scvStore.credentials.attributes" 
       :key="key" :attributeKey="key" 
       :attributeValue="value" 
       :attributeIndex="index"
@@ -75,27 +75,27 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add' 
+import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import SCVAttribute from './SCVAttribute.vue'
 
-const store = useStore()
+const scvStore = useScvStore()
 const keyError = ref(false)
-const credentials = computed<SCVCredentials>(() => store.state.scvModule.credentials)
-const dbCredentials = computed<SCVCredentials>(() => store.state.scvModule.dbCredentials)
-const aliases = computed<string[]>(() => store.state.scvModule.aliases)
-const isEditing = computed<boolean>(() => store.state.scvModule.isEditing)
-const disabled = computed<boolean>(() => Boolean(!credentials.value.alias || aliasError.value || passwordError.value || keyError.value))
+const dbCredentials = computed<SCVCredentials>(() => scvStore.dbCredentials)
+const aliases = computed<string[]>(() => scvStore.aliases)
+const isEditing = computed<boolean>(() => scvStore.isEditing)
+const disabled = computed<boolean>(() => Boolean(!scvStore.credentials.alias || aliasError.value || passwordError.value || keyError.value))
 
 const isMasked = (password: string) => {
   for (const char of password) {
     if (char !== '*') return false
   }
+
   return true
 }
 
@@ -103,9 +103,9 @@ const isMasked = (password: string) => {
 // warn the user that the password must also be updated
 const passwordError = computed<string | undefined>(() => {
   if (
-    dbCredentials.value.username && credentials.value.password &&
-    credentials.value.username !== dbCredentials.value.username && 
-    isMasked(credentials.value.password)) {
+    dbCredentials.value.username && scvStore.credentials.password &&
+    scvStore.credentials.username !== dbCredentials.value.username && 
+    isMasked(scvStore.credentials.password)) {
 
     return 'Password cannot be masked with updated usernames.'  
   }
@@ -116,21 +116,25 @@ const passwordError = computed<string | undefined>(() => {
 const aliasError = computed<string | undefined>(() => {
   if (
     !isEditing.value && 
-    credentials.value.alias && 
-    aliases.value.includes(credentials.value.alias.toLowerCase())) {
+    scvStore.credentials.alias && 
+    aliases.value.includes(scvStore.credentials.alias.toLowerCase())) {
     return 'Alias already in use.'
   }
   return undefined
 })
 
 const setKeyError = (val: boolean) => keyError.value = val
-const updateAlias: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { alias: val.toLowerCase() }) 
-const updateUsername: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { username: val })
-const updatePassword: UpdateModelFunction = (val: string) => store.dispatch('scvModule/setValue', { password: val }) 
-const addCredentials = () => store.dispatch('scvModule/addCredentials')
-const updateCredentials = () => store.dispatch('scvModule/updateCredentials')
-const clearCredentials = () => store.dispatch('scvModule/clearCredentials')
-const addAttribute = () => store.dispatch('scvModule/addAttribute')
+
+const updateAlias: UpdateModelFunction = (val: string) => {
+  scvStore.setValue({ alias: val.toLowerCase() })
+} 
+
+const updateUsername: UpdateModelFunction = (val: string) => scvStore.setValue({ username: val })
+const updatePassword: UpdateModelFunction = (val: string) => scvStore.setValue({ password: val }) 
+const addCredentials = () => scvStore.addCredentials()
+const updateCredentials = () => scvStore.updateCredentials()
+const clearCredentials = () => scvStore.clearCredentials()
+const addAttribute = () => scvStore.addAttribute()
 </script>
 
 <style lang="scss" scoped>

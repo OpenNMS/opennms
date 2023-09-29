@@ -38,7 +38,7 @@ import RrdGraphConverter from './utils/RrdGraphConverter.class'
 import { formatTimestamps, getFormattedLegendStatements } from './utils/LegendFormatter'
 import GraphDataTable from './GraphDataTable.vue'
 import { ConvertedGraphData, GraphMetricsPayload, GraphMetricsResponse, Metric, PreFabGraph, StartEndTime } from '@/types'
-import { useStore } from 'vuex'
+import { useGraphStore } from '@/stores/graphStore'
 import { useElementSize } from '@vueuse/core'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { Chart, registerables } from 'chart.js'
@@ -80,8 +80,8 @@ const props = defineProps({
   }
 })
 
-const store = useStore()
-const graphData = ref<GraphMetricsResponse>({} as GraphMetricsResponse)
+const graphStore = useGraphStore()
+const graphData = ref<GraphMetricsResponse | null>(null)
 const convertedGraphDataRef = ref<ConvertedGraphData>({
   title: '',
   verticalLabel: '',
@@ -147,7 +147,7 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabels: { name: string, statement: string }[]) => {
-  const label = graphData.value.labels[index]
+  const label = graphData.value?.labels[index] || ''
   const datasetLabelObj = datasetLabels.filter((datasetLabel) => datasetLabel.name === label)[0]
   const seriesObjs = []
   const datasets = []
@@ -189,7 +189,7 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
         radius: 0,
         hitRadius: 5,
         hoverRadius: 6,
-        order: convertedGraphDataRef.value.series.length - index,
+        order: convertedGraphDataRef.value.series.length - index
       })
     }
   }
@@ -200,8 +200,8 @@ const getDatasetsForColumn = (index: number, columnValues: number[], datasetLabe
 const dataSets = computed(() => {
   let sets: any = []
 
-  for (const [index, column] of graphData.value.columns.entries()) {
-    const datasets = getDatasetsForColumn(index, column.values, graphData.value.formattedLabels)
+  for (const [index, column] of graphData.value?.columns.entries() || []) {
+    const datasets = getDatasetsForColumn(index, column.values, graphData.value?.formattedLabels || [])
     sets = [...sets, ...datasets]
   }
 
@@ -210,7 +210,7 @@ const dataSets = computed(() => {
 
 const chartData = computed<ChartData<any>>(() => {
   return {
-    labels: graphData.value.formattedTimestamps,
+    labels: graphData.value?.formattedTimestamps,
     datasets: dataSets.value
   }
 })
@@ -247,7 +247,7 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
 }
 
 const render = async (update?: boolean) => {
-  const definitionData: PreFabGraph = await store.dispatch('graphModule/getDefinitionData', props.definition)
+  const definitionData: PreFabGraph | null = await graphStore.getDefinitionData(props.definition)
 
   try {
     const rrdGraphConverter = new RrdGraphConverter({
@@ -268,7 +268,12 @@ const render = async (update?: boolean) => {
     }))
 
     const payload = getGraphMetricsPayload(metrics)
-    const graphMetrics = await store.dispatch('graphModule/getGraphMetrics', payload)
+    const graphMetrics = await graphStore.getGraphMetrics(payload)
+
+    if (graphMetrics === null) {
+      graphData.value = null
+      return
+    }
 
     let formattedGraphData = formatTimestamps(graphMetrics, props.time.format)
     formattedGraphData = getFormattedLegendStatements(graphMetrics, rrdGraphConverterModel)
@@ -294,6 +299,7 @@ const render = async (update?: boolean) => {
 }
 
 watch(props.time, () => render(true))
+
 onMounted(() => render())
 </script>
   

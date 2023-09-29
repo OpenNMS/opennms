@@ -23,6 +23,10 @@ export const useResourceStore = defineStore('resourceStore', () => {
     }
   }
 
+  const getFilteredResourcesList = (): Resource[] => {
+    return resources.value.filter(resource => resource.label.includes(searchValue.value))
+  }
+
   const setSearchValue = (value: string) => {
     searchValue.value = value
   }
@@ -31,6 +35,7 @@ export const useResourceStore = defineStore('resourceStore', () => {
     resources,
     nodeResource,
     searchValue,
+    getFilteredResourcesList,
     getResources,
     getResourcesForNode,
     setSearchValue
