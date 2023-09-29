@@ -1,0 +1,4 @@
+[template]
+src = "system-properties.tpl"
+dest = "/usr/share/opennms/etc/opennms.properties.d/_confd.custom.properties"
+keys = ["/opennms/properties"]
