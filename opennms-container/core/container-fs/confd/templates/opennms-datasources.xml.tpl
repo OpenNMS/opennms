@@ -7,11 +7,10 @@
   <!--
     DON'T EDIT THIS FILE :: GENERATED WITH CONFD
   -->
-
   <connection-pool factory="{{getv "/opennms/database/connection/poolfactory" "org.opennms.core.db.HikariCPConnectionFactory"}}"
     idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
     loginTimeout="{{getv "/opennms/database/connection/logintimeout" "3"}}"
-    minPool="{{getv "/opennms/database/connection/minpool" "50"}}"
+    minPool="{{getv "/opennms/database/connection/minpool" "25"}}"
     maxPool="{{getv "/opennms/database/connection/maxpool" "50"}}"
     maxSize="{{getv "/opennms/database/connection/maxsize" "50"}}" />
 
@@ -27,5 +26,22 @@
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/template1"
                     user-name="{{getv "/postgres/user" "postgres"}}"
-                    password="{{getv "/postgres/password" "postgres"}}"/>
+                    password="{{getv "/postgres/password" "postgres"}}">
+    <connection-pool idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
+                     minPool="{{getv "/opennms/database/connection/minpool" "0"}}"
+                     maxPool="{{getv "/opennms/database/connection/maxpool" "10"}}"
+                     maxSize="{{getv "/opennms/database/connection/maxsize" "50"}}" />
+  </jdbc-data-source>
+
+  <jdbc-data-source name="opennms-monitor"
+                    database-name="postgres"
+                    class-name="${install.database.driver}"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/postgres"
+                    user-name="{{getv "/postgres/user" "postgres"}}"
+                    password="{{getv "/postgres/password" "postgres"}}">
+    <connection-pool idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
+                     minPool="{{getv "/opennms/database/connection/minpool" "0"}}"
+                     maxPool="{{getv "/opennms/database/connection/maxpool" "10"}}"
+                     maxSize="{{getv "/opennms/database/connection/maxsize" "50"}}" />
+  </jdbc-data-source>
 </datasource-configuration>
