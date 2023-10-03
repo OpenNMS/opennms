@@ -9,11 +9,21 @@ These startup arguments can be passed in the `command` definition of the Docker 
 [options="header, %autowidth"]
 |===
 | Argument | Description
-| `-h`     | Display help with available arguments.
-| `-f`     | Start the process in the foreground and use existing data and configuration.
-| `-i`     | One-time command to initialize or update database and configuration files and do *NOT* start.
-| `-s`     | Command to initialize or update database and configuration files and start OpenNMS in the foreground.
-| `-t`     | One-time command to run the config-tester against the configuration.
+
+| `-h`
+| Display help with available arguments.
+
+| `-f`
+| Start the process in the foreground and use existing data and configuration.
+
+| `-i`
+| One-time command to initialize or update database and configuration files and do *NOT* start.
+
+| `-s`
+| Command to initialize or update database and configuration files and start OpenNMS in the foreground.
+
+| `-t`
+| One-time command to run the config-tester against the configuration.
 |===
 
 == Directory conventions
@@ -42,14 +52,15 @@ If you want to use a separate YAML to define configuration, the following files 
 * A yaml file to the following path: `/opt/opennms-overlay/confd/{page-component-name}-config.yaml`.
 * A file mapped to `/etc/confd/confd.toml` with the following contents:
 +
-[source, toml]
+[subs="attributes"]
 ----
 confdir = "/etc/confd"
 backend = "file"
-file = ["/opt/opennms-overlay/confd/{page-component-name}-config.yaml"]<1>
+file = ["/opt/opennms-overlay/confd/{page-component-name}-config.yaml"]
 log-level = "info"
 ----
-<1> Make sure the path of this file matches the location where you have mounted this file.
+
+Make sure the path of the `file` property matches the location where you have mounted this file.
 
 IMPORTANT: Directly overlaying specific configuration files overwrites corresponding configurations provided by confd.
 
