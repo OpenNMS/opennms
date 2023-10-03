@@ -35,7 +35,7 @@
 
   <jdbc-data-source name="opennms-monitor"
                     database-name="postgres"
-                    class-name="${install.database.driver}"
+                    class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/postgres"
                     user-name="{{getv "/postgres/user" "postgres"}}"
                     password="{{getv "/postgres/password" "postgres"}}">
