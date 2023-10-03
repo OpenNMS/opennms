@@ -247,7 +247,7 @@ These options are written to `$\{OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg`.
 | 8101
 |===
 
-.Cassandra and Newts configuration
+=== Cassandra and Newts configuration
 
 These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.newts.properties`.
 
@@ -282,6 +282,49 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.n
 | cassandra
 |===
 
+=== Daemon control
+
+Select daemons are able to be enabled or disabled through the container definition with the following boolean variables.
+
+[options="header, %autowidth"]
+|===
+| Environment variable
+
+| *Optional*
+
+| OPENNMS_DAEMONS_CORRELATOR
+
+| OPENNMS_DAEMONS_SNMPPOLLER
+
+| OPENNMS_DAEMONS_SYSLOGD
+
+| OPENNMS_DAEMONS_TELEMETRYD
+
+| OPENNMS_DAEMONS_TICKETER
+
+| OPENNMS_DAEMONS_TRAPD
+|===
+
+
+=== RRD/RRA definitions
+
+Data collection retention RRA definitions can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+If RRA definitions are provided, any `<rra>` elements will be replaced across all `\*datacollection\*` files and any files located in `$\{OPENNMS_HOME}/etc/\*datacollection\*.d/` subdirectories.
+
+IMPORTANT: If you change the RRA definitions once datacollection has already run, you will need to manually delete any existing RRD/JRB files so they can be recreated with the new definition.
+No new metrics will be collected until the files are deleted or the RRA definitions reverted back to their previous values.
+
+[source, yaml]
+----
+opennms:
+  rrd:
+    rras:
+      - RRA:AVERAGE:0.5:1:2016
+      - RRA:AVERAGE:0.5:12:1488
+      - RRA:AVERAGE:0.5:288:366
+      - RRA:MAX:0.5:288:366
+      - RRA:MIN:0.5:288:366
+----
 
 === Kafka broker configuration
 
@@ -292,19 +335,23 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.k
 ----
 opennms:
   instance_id: "<id>" <1>
+ipc:
   kafka:
-    ipc: <2>
-      bootstrap_servers: <3>
-        - broker1:9092
-        - broker2:9092
-      config: <4>
-        key: value
+    bootstrap_servers: <2>
+      - broker1:9092
+      - broker2:9092
+    key: value <3>
+  sink: <4>
+    initialSleepTime: 66666
+    kafka:
+      key: value <5>
 ----
 <1> If modifying the instance ID, make sure to set the same ID on the Minion configs.
-<2> You can also define `opennms.kafka.rpc.\*`, `opennms.kafka.sink.\*`, and `opennms.kafka.twin.\*`, with a similiar structure, if you want to define different settings for each of those systems.
-<3> If you have multiple Kafka brokers in your cluster, {page-component-title} will attempt to connect to each listed server in order.
+<2> If you have multiple Kafka brokers in your cluster, {page-component-title} will attempt to connect to each listed server in order.
 The first broker server to respond will be used to provide a full list of all brokers in the cluster.
-<4> Any settings defined within the `config` section will be written as `org.opennms.core.ipc.key=value`.
+<3> Any settings defined within this section will be written as `org.opennms.core.ipc.kafka.key=value`.
+<4> You can also define `ipc.rpc.kafka.\*`, `ipc.sink.kafka.\*`, and `ipc.twin.kafka.\*`, with a similiar structure, if you want to define different settings for each of those systems.
+<5> Any settings defined within this section will be written as `org.opennms.core.ipc.sink.kafka.key=value`.
 
 === Kafka consumer configuration
 
@@ -319,15 +366,14 @@ opennms:
       bootstrap_servers: <2>
         - broker1:9092
         - broker2:9092
-      config: <3>
-        key: value
+      key: value <3>
 ----
 <1> Topic will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.cfg`.
 <2> If you have multiple Kafka brokers in your cluster, Kafka Consumer will attempt to connect to each listed server in order.
 The first broker server to respond will be used to provide a full list of all brokers in the cluster.
 This setting will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
 `$\{OPENNMS_HOME}/etc/featuresBoot.d/kafka-consumer.boot` will also be created when bootstrap servers have been defined.
-<3> Any settings defined within the `config` section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
+<3> Any settings defined within this section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
 
 === Elastic flows configuration
 
@@ -344,15 +390,14 @@ elastic:
       username: elastic
       password: e1@stic
     - host: broker2:9092
-    config: <4>
-      key: value
+    key: value <4>
 ----
 <1> If an instance ID is present, it will be used as an index prefix.
 <2> If you have multiple Elastic servers in your cluster, {page-component-title} will attempt to connect to each listed server in order.
 The first  server to respond will be used to provide a full list of all servers in the cluster.
 <3> If your Elastic servers require credentials, you can define `username` and `password` values which will be written to `$\{OPENNMS_HOME}/etc/elastic-credentials.xml`.
 Alternatively, you can define `globalElasticUser` and `globalElasticPassword` in the config section to define one set of credentials to use across all Elastic servers.
-<4> Any settings defined within the `config` section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+<4> Any settings defined within this section will be written as `key=value` to `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 === System properties
 

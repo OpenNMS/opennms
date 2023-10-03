@@ -5,9 +5,7 @@
 {{range ls "/elastic/flows/hosts"}}{{ $index := (atoi . )}}{{$host := getv (print "/elastic/flows/hosts/" $index "/host")}}{{if $index = 0}}{{$servers := $host}}{{else}}{{$servers = print $host "," $servers}}{{end}}{{end}}
 {{$servers := trimSuffix $servers ","}}
 {{if $servers}}
-elasticUrl={{$servers}}
-{{if exists "/opennms/instance_id"}}
-indexPrefix={{getv "/opennms/instance_id" ""}}{{end}}
-{{range $custom := gets "/elastic/flows/*"}}
-{{base .Key}}={{.Value}}{{end}}
+ENABLE_TELEMETRYD=TRUE
+{{else}}
+ENABLE_TELEMETRYD=FALSE
 {{end}}
