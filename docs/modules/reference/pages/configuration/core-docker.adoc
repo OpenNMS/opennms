@@ -140,6 +140,15 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms-datasources.xml`.
 | PostgreSQL server port
 | 5432
 
+| POSTGRES_SSL_MODE
+| PostgreSQL SSL connection mode.
+See the link:https://jdbc.postgresql.org/documentation/ssl/[PostgreSQL documentation] for available options.
+| disable
+
+| POSTGRES_SSL_FACTORY
+| PostgreSQL SSL socket factory
+| org.postgresql.ssl.LibPQFactory
+
 | OPENNMS_DATABASE_CONNECTION_POOLFACTORY
 | Database connection pool factory
 | org.opennms.core.db.HikariCPConnectionFactory
@@ -315,7 +324,6 @@ Select daemons are able to be enabled or disabled through the container definiti
 
 | OPENNMS_DAEMONS_TRAPD
 |===
-
 
 === RRD/RRA definitions
 
