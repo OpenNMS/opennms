@@ -1,8 +1,6 @@
 #
 # DON'T EDIT THIS FILE :: GENERATED WITH CONFD
 #
-{{if exists "/opennms/instance_id"}}
-org.opennms.instance.id={{getv "/opennms/instance_id"}}{{end}}
 {{$ipc_servers := getvs "/ipc/kafka/bootstrap.servers/*"}}{{$strategy := false}}
 {{$rpc_servers := getvs "/ipc/rpc/kafka/bootstrap.servers/*"}}
 {{$sink_servers := getvs "/ipc/sink/kafka/bootstrap.servers/*"}}
@@ -25,6 +23,8 @@ org.opennms.core.ipc.sink.kafka.{{base .Key}}={{.Value}}{{end}}
 {{range $custom := gets "/ipc/twin/kafka/*"}}
 org.opennms.core.ipc.twin.kafka.{{base .Key}}={{.Value}}{{end}}
 {{if $strategy}}
+{{if exists "/opennms/instance_id"}}
+org.opennms.instance.id={{getv "/opennms/instance_id"}}{{end}}
 org.opennms.core.ipc.strategy=kafka
 org.opennms.activemq.broker.disable=true
 {{end}}

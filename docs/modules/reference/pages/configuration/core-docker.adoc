@@ -67,16 +67,14 @@ IMPORTANT: Directly overlaying specific configuration files overwrites correspon
 When defining the `{page-component-name}-config.yaml` file, use the table below as a reference for the key values.
 Replace any `_` with a tree structure using the following as an example.
 
-`OPENNMS_DBNAME` translates to:
-+
+.`OPENNMS_DBNAME` translates to:
 [source, yaml]
 ----
 opennms:
   dbname: opennms
 ----
 
-`OPENNMS_DATABASE_CONNECTION_MAXPOOL` translates to:
-+
+.`OPENNMS_DATABASE_CONNECTION_MAXPOOL` translates to:
 [source, yaml]
 ----
 opennms:
@@ -174,7 +172,7 @@ See the link:https://jdbc.postgresql.org/documentation/ssl/[PostgreSQL documenta
 | 50
 |===
 
-.Timeseries storage configuration
+=== Timeseries storage configuration
 
 These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.timeseries.properties`.
 
@@ -314,6 +312,8 @@ Select daemons are able to be enabled or disabled through the container definiti
 
 | OPENNMS_DAEMONS_CORRELATOR
 
+| OPENNMS_DAEMONS_ENLINKD
+
 | OPENNMS_DAEMONS_SNMPPOLLER
 
 | OPENNMS_DAEMONS_SYSLOGD
@@ -328,10 +328,13 @@ Select daemons are able to be enabled or disabled through the container definiti
 === RRD/RRA definitions
 
 Data collection retention RRA definitions can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
-If RRA definitions are provided, any `<rra>` elements will be replaced across all `\*datacollection\*` files and any files located in `$\{OPENNMS_HOME}/etc/\*datacollection\*.d/` subdirectories.
+If RRA definitions are provided, any `<rra>` elements will be replaced across all `\*datacollection*` files and any files located in `$\{OPENNMS_HOME}/etc/\*datacollection*.d/` subdirectories.
+This does not change the RRA definitions for pollerd services.
 
 IMPORTANT: If you change the RRA definitions once datacollection has already run, you will need to manually delete any existing RRD/JRB files so they can be recreated with the new definition.
 No new metrics will be collected until the files are deleted or the RRA definitions reverted back to their previous values.
+
+WARNING: If you want to have different RRA definitions for different collections, do not use this setting and instead overlay the specific config files as necessary.
 
 [source, yaml]
 ----
@@ -356,7 +359,7 @@ opennms:
   instance_id: "<id>" <1>
 ipc:
   kafka:
-    bootstrap_servers: <2>
+    bootstrap.servers: <2>
       - broker1:9092
       - broker2:9092
     key: value <3>
@@ -382,7 +385,7 @@ opennms:
   kafka:
     consumer:
       topic: opennms-kafka-events <1>
-      bootstrap_servers: <2>
+      bootstrap.servers: <2>
         - broker1:9092
         - broker2:9092
       key: value <3>
