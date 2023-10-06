@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -41,7 +42,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 @XmlRootElement(name="service")
 @XmlAccessorType(XmlAccessType.NONE)
 public class MonitoredServiceDTO {
-    @XmlElement(name="id")
+    @XmlAttribute(name="id")
     private Integer id;
 
     @XmlElement(name="down")
