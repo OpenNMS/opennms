@@ -1701,7 +1701,7 @@
     <jschVersion>0.2.11</jschVersion>
     <jsonVersion>20230618</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
-    <jsonPathVersion>2.7.0</jsonPathVersion>
+    <jsonPathVersion>2.8.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
