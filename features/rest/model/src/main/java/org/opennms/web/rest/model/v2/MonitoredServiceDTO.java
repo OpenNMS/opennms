@@ -31,51 +31,56 @@ package org.opennms.web.rest.model.v2;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+@XmlRootElement(name="service")
+@XmlAccessorType(XmlAccessType.NONE)
 public class MonitoredServiceDTO {
-    @XmlAttribute(name="id")
+    @XmlElement(name="id")
     private Integer id;
 
-    @XmlAttribute(name="down")
+    @XmlElement(name="down")
     private Boolean down;
 
-    @XmlAttribute(name="notify")
+    @XmlElement(name="notify")
     private String notify;
 
-    @XmlAttribute(name="status")
+    @XmlElement(name="status")
     private String status;
 
-    @XmlAttribute(name="source")
+    @XmlElement(name="source")
     private String source;
 
-    @XmlAttribute(name="serviceType")
+    @XmlElement(name="serviceType")
     private ServiceTypeDTO serviceType;
 
-    @XmlAttribute(name="qualifier")
+    @XmlElement(name="qualifier")
     private String qualifier;
 
-    @XmlAttribute(name="lastFail")
+    @XmlElement(name="lastFail")
     private Date lastFail;
 
-    @XmlAttribute(name="lastGood")
+    @XmlElement(name="lastGood")
     private Date lastGood;
 
-    @XmlAttribute(name="statusLong")
+    @XmlElement(name="statusLong")
     private String statusLong;
 
-    @XmlAttribute(name="ipInterfaceId")
+    @XmlElement(name="ipInterfaceId")
     private Integer ipInterfaceId;
 
-    @XmlAttribute(name="ipAddress")
+    @XmlElement(name="ipAddress")
     private String ipAddress;
 
-    @XmlAttribute(name="nodeId")
+    @XmlElement(name="nodeId")
     private Integer nodeId;
 
-    @XmlAttribute(name="nodeLabel")
+    @XmlElement(name="nodeLabel")
     private String nodeLabel;
 
     // Getters
