@@ -1712,7 +1712,7 @@
     <karafVersion>4.3.6</karafVersion>
     <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
     <kafkaVersion>3.3.2</kafkaVersion>
-    <kotlinVersion>1.4.10</kotlinVersion>
+    <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.20.0</log4j2Version>
@@ -4281,6 +4281,21 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>${jbossLoggingVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-osgi-bundle</artifactId>
+        <version>${kotlinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib-common</artifactId>
+        <version>${kotlinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.github.seancfoley</groupId>
