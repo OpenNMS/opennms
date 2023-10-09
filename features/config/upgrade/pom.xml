@@ -24,20 +24,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${liquibaseVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.yaml</groupId>
-          <artifactId>snakeyaml</artifactId>
-          <version>${snakeyamlVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>liquibase-dependencies</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.config.dao</groupId>

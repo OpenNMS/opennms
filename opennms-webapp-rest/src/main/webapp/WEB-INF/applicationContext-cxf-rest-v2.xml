@@ -79,15 +79,11 @@
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />
         <entry key="xml" value="application/xml" />
-        <entry key="atom" value="application/atom+xml" />
       </jaxrs:extensionMappings>
       <jaxrs:providers>
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
         <ref bean="jacksonJaxbJsonProvider"/>
-        <ref bean="atomEntryProvider"/>
-        <ref bean="atomFeedProvider"/>
-        <!-- <ref bean="atomPojoProvider"/> -->
         <ref bean="searchContextProvider"/>
         <ref bean="noSuchElementProvider" />
         <ref bean="errorResponseProvider" />

@@ -87,7 +87,16 @@
           <groupId>com.boundary</groupId>
           <artifactId>high-scale-lib</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.33</version>
     </dependency>
     <!-- replaces com.boundary:high-scale-lib,
          removes overridden java.util.concurrent.* junk that breaks things -->

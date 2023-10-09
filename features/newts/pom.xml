@@ -108,6 +108,17 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.33</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

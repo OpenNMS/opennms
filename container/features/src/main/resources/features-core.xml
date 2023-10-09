@@ -182,13 +182,12 @@
 
     <feature name="jackson-dataformat-xml" version="${jackson2Version}" description="Jackson 2 :: XML Data Format">
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <feature>snakeyaml</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/${jackson2Version}</bundle>
     </feature>
 
     <feature name="jackson-dataformat-yaml" version="${jackson2Version}" description="Jackson 2 :: YAML Data Format">
         <feature version="[${jackson2Version},3)">jackson-core</feature>
-        <feature>snakeyaml</feature>
+        <feature version="[${snakeyamlVersion},3)">snakeyaml</feature>
         <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
     </feature>
 

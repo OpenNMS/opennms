@@ -575,7 +575,7 @@
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
-      <version>${swaggerVersion}</version>
+      <version>${swaggerParserVersion}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
