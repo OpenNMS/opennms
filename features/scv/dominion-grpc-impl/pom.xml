@@ -54,7 +54,6 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
-            <version>${grpcVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

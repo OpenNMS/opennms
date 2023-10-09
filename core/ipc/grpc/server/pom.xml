@@ -39,7 +39,6 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>${grpcVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.grpc</groupId>
