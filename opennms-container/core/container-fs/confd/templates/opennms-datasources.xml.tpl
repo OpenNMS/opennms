@@ -11,7 +11,7 @@
   <connection-pool factory="{{getv "/opennms/database/connection/poolfactory" "org.opennms.core.db.HikariCPConnectionFactory"}}"
     idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
     loginTimeout="{{getv "/opennms/database/connection/logintimeout" "3"}}"
-    minPool="{{getv "/opennms/database/connection/minpool" "50"}}"
+    minPool="{{getv "/opennms/database/connection/minpool" "25"}}"
     maxPool="{{getv "/opennms/database/connection/maxpool" "50"}}"
     maxSize="{{getv "/opennms/database/connection/maxsize" "50"}}" />
 
