@@ -15,7 +15,7 @@
   <description>OSGi wrapper for Jaeger Tracer.</description>
 
   <properties>
-    <apacheThriftVersion>0.18.1</apacheThriftVersion>
+    <apacheThriftVersion>0.19.0</apacheThriftVersion>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
