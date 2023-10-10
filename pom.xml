@@ -1654,6 +1654,7 @@
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -4501,7 +4502,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
-        <version>4.1.0.Final</version>
+        <version>${hibernateValidatorAnnotationProcessorVersion}</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
