@@ -1,6 +1,6 @@
 
 = Map Functions
-:description: Overview of map functions in OpenNMS Horizon/Meridian to use the severity of an edge in the parent system's reduce function.
+:description: Overview of map functions in {page-component-title} to use the severity of an edge in the parent system's reduce function.
 
 The map function defines how to use the severity of an edge in the parent system's reduce function when {page-component-title} calculates the operational status of the business service.
 

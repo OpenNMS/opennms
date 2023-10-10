@@ -1,6 +1,6 @@
 
 = Step 9: Visualize Data
-:description: Step 9 of OpenNMS Horizon/Meridian setup: how to visualize your environment's data with dashboard, surveillance view, heatmap, and trend page.
+:description: Step 9 of {page-component-title} setup: how to visualize your environment's data with dashboard, surveillance view, heatmap, and trend page.
 
 
 This section describes how to visualize your environment's data (using the dashboard, graphs, and so on) in {page-component-title}.

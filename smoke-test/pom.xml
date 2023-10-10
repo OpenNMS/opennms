@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>32.0.3</version>
+  <version>32.0.4-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -63,7 +63,7 @@
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <slf4jVersion>2.0.7</slf4jVersion>
     <testcontainers.version>1.19.0</testcontainers.version>
-    <netty4Version>4.1.96.Final</netty4Version>
+    <netty4Version>4.1.99.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
     <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>

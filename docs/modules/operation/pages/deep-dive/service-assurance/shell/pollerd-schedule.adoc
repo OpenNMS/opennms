@@ -1,7 +1,7 @@
 
 [[ga-service-assurance-schedule-shell]]
 = Pollerd Schedule
-:description: Karaf shell command to output details of the Pollerd scheduler in OpenNMS Horizon/Meridian.
+:description: Karaf shell command to output details of the Pollerd scheduler in {page-component-title}.
 
 You can use the `opennms:pollerd-schedule` Karaf Shell command to output details of the Pollerd scheduler.
 

@@ -1,6 +1,6 @@
 
 = SNMP Interface Property Extender
-:description: SNMP Interface property extender in OpenNMS Horizon/Meridian specializes in importing properties from the ifTable.
+:description: SNMP Interface property extender in {page-component-title} specializes in importing properties from the ifTable.
 
 The SNMP Interface property extender does much the same job as the xref:deep-dive/performance-data-collection/snmp-property-extenders/pointer-like-index.adoc[Pointer-Like Index] extender, but it is specialized for importing properties from the `ifTable`.
 Resources representing rows in the `ifTable` are modeled differently in {page-component-title} compared to other tabular resource types, and this extender accounts for those differences.

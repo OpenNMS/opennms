@@ -1,6 +1,6 @@
 
 = Step 5: Set up a Threshold
-:description: Step 5 of OpenNMS Horizon/Meridian setup: set up and test a threshold, create and expression-based threshold, and threshold settings.
+:description: Step 5 of {page-component-title} setup: set up and test a threshold, create and expression-based threshold, and threshold settings.
 
 A threshold defines limits against the network performance metrics (CPU load, bandwidth, disk space, and so on) of a managed entity to trigger an xref:deep-dive/events/introduction.adoc[event] (record) when a datasource value goes above or below the specified limit.
 The threshold types are as follows:

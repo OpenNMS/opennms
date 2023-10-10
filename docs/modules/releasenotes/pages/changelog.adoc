@@ -2,6 +2,41 @@
 
 = Changelog
 
+[[releasenotes-changelog-32.0.4]]
+
+== Release 32.0.4
+
+Release 32.0.4 contains documentation updates as well as a number of bug fixes and enhancements including Sentinel fixes, improvements to running in containers, metadata support improvements, and some other small changes.
+
+The codename for Horizon 32.0.4 is https://wikipedia.org/wiki/$$Eurovision_Song_Contest$$[_Classic Eurovision_].
+
+=== Bug
+
+* login.jsp page is still visible/accessible after being authenticated by pre-authentication (Issue https://issues.opennms.org/browse/NMS-14078[NMS-14078])
+* Fix Event documentation formatting (Issue https://issues.opennms.org/browse/NMS-15603[NMS-15603])
+* Sentinel depends on unpackaged /opt/sentinel/etc/datacollection-config.xml (Issue https://issues.opennms.org/browse/NMS-15695[NMS-15695])
+* Container ignores environment variable OPENNMS_DATABASE_CONNECTION_MINPOOL or confd opennms/database/connection/minpool configuration (Issue https://issues.opennms.org/browse/NMS-16141[NMS-16141])
+* Postgres error when creating a database from source database template1 (Issue https://issues.opennms.org/browse/NMS-16143[NMS-16143])
+* Container's java binary is missing cap_net_raw capability (Issue https://issues.opennms.org/browse/NMS-16145[NMS-16145])
+* SENTINEL_HOME points to wrong location in fix-permissions (Issue https://issues.opennms.org/browse/NMS-16159[NMS-16159])
+* Update Core confd database with new schema (Issue https://issues.opennms.org/browse/NMS-16163[NMS-16163])
+
+=== Enhancement
+
+* Basic BMP Setup (Issue https://issues.opennms.org/browse/NMS-13893[NMS-13893])
+* BMP set up with Minion (Issue https://issues.opennms.org/browse/NMS-13894[NMS-13894])
+* BMP Setup with Sentinel (Issue https://issues.opennms.org/browse/NMS-13895[NMS-13895])
+* Quick install script for first time evaluator and training (Issue https://issues.opennms.org/browse/NMS-14811[NMS-14811])
+* Expand flow thresholding documentation (Issue https://issues.opennms.org/browse/NMS-15276[NMS-15276])
+* Add link to configure SNMP Community strings from node admin page (Issue https://issues.opennms.org/browse/NMS-15772[NMS-15772])
+* Make pool size configurable per data source. (Issue https://issues.opennms.org/browse/NMS-16051[NMS-16051])
+* Monitored Service Rest API Updates for OPG (Issue https://issues.opennms.org/browse/NMS-16160[NMS-16160])
+* opennms-js updates for Monitored Services for OPG (Issue https://issues.opennms.org/browse/NMS-16161[NMS-16161])
+* Metadata DSL: Add effective values of service parameters in Karaf poll command (Issue https://issues.opennms.org/browse/NMS-16119[NMS-16119])
+* Add language to docs for how to find schema to Kafka Producer (Issue https://issues.opennms.org/browse/NMS-16133[NMS-16133])
+* Remove availability monitor content from documentation (Issue https://issues.opennms.org/browse/NMS-16135[NMS-16135])
+* Migrate Tl1 docs from wiki (Issue https://issues.opennms.org/browse/NMS-16150[NMS-16150])
+
 [[releasenotes-changelog-32.0.3]]
 
 == Release 32.0.3

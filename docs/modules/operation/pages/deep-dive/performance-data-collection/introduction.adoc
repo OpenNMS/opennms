@@ -1,7 +1,7 @@
 
 [[performance-management]]
 = Performance Management
-:description: Overview of performance data collection using collectd in OpenNMS Horizon/Meridian.
+:description: Overview of performance data collection using collectd in {page-component-title}.
 
 {page-component-title} uses xref:reference:daemons/daemon-config-files/collectd.adoc[collectd] to collect performance data.
 Collectd schedules data collection on network entities using management agents and protocol-specific collectors (SNMP, HTTPS, JMX, and so on).

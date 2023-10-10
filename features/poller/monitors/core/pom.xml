@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.poller</groupId>
     <artifactId>org.opennms.features.poller.monitors</artifactId>
-    <version>32.0.3</version>
+    <version>32.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller.monitors</groupId>
@@ -57,6 +57,12 @@
     <dependency>
       <groupId>org.jolokia</groupId>
       <artifactId>jolokia-client-java</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>bsh</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

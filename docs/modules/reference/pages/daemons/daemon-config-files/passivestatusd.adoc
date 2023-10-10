@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-passivestatusd]]
 = PassiveStatusd
+:description: Learn about the OpenNMS {page-component-title} passive status keeper daemon (PassiveStatusd), which provides a mechanism to generate service outages based on events.
 
 The Passive Status Keeper daemon provides a mechanism to generate service outages based on events.
 This can be helpful for checking the service state of devices that cannot be polled directly.

@@ -1,6 +1,6 @@
 [[ga-configure-alarms]]
 = Configure Alarms
-:description: Configuring alarms in OpenNMS Horizon/Meridian including attributes and elements like reduction key, alarm type, and clear key attribute.
+:description: Configuring alarms in {page-component-title} including attributes and elements like reduction key, alarm type, and clear key attribute.
 
 Because alarmd instantiates alarms from events, defining alarms in {page-component-title} involves defining an additional event XML element that indicates a problem or resolution in the network.
 This is the `alarm-data` element.
