@@ -8,6 +8,8 @@ opennms-sentinel (32.0.4-1) stable; urgency=low
     For details on what has changed, see:
     https://docs.opennms.com/horizon/32.0.4/index.html
 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Oct 2023 12:49:00 -0400
+
 opennms-sentinel (32.0.3-1) stable; urgency=medium
 
   * Minor release containing several bug fixes and documentation improvements.
