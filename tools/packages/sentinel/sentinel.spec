@@ -137,6 +137,7 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 
 # fix the permissions-fixing scripts
 sed -i \
+	-e 's,^\([ \t]*\)*OPENNMS_HOME[ \t]*=.*$,\1SENTINEL_HOME="%{sentinelinstprefix}",g' \
     -e 's,OPENNMS_HOME,SENTINEL_HOME,g' \
     -e 's,opennms,sentinel,g' \
     '%{buildroot}%{sentinelinstprefix}/bin/fix-permissions' \
