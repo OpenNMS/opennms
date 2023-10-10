@@ -1734,7 +1734,7 @@
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
-    <okioVersion>2.8.0</okioVersion>
+    <okioVersion>3.6.0</okioVersion>
     <opennmsApiVersion>1.5.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.5.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
