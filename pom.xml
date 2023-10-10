@@ -1622,7 +1622,7 @@
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.5.0</curatorVersion>
     <curatorTestVersion>5.5.0</curatorTestVersion>
-    <cxfVersion>3.5.5</cxfVersion>
+    <cxfVersion>4.0.3</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>3.5.2_1</dnsjavaVersion>
