@@ -4484,7 +4484,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
-        <version>8.0.1.Final</version>
+        <version>4.1.0.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
