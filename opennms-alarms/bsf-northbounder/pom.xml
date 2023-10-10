@@ -61,7 +61,7 @@
       <artifactId>bsf</artifactId>
     </dependency>
     <dependency>
-      <groupId>bsh</groupId>
+      <groupId>org.apache-extras.beanshell</groupId>
       <artifactId>bsh</artifactId>
     </dependency>
     <!-- test dependencies -->
