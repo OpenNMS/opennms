@@ -48,8 +48,11 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoredServiceList;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.model.v2.MonitoredServiceCollectionDTO;
+import org.opennms.web.rest.model.v2.MonitoredServiceDTO;
+import org.opennms.web.rest.model.v2.ServiceTypeDTO;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -74,8 +77,7 @@ import com.google.common.collect.Sets;
 @Component
 @Path("ifservices")
 @Transactional
-public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,SearchBean,Integer,String> {
-
+public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMonitoredService,MonitoredServiceDTO,SearchBean,Integer,String> {
     @Autowired
     private MonitoredServiceDao m_dao;
 
@@ -121,11 +123,6 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected JaxbListWrapper<OnmsMonitoredService> createListWrapper(Collection<OnmsMonitoredService> list) {
-        return new OnmsMonitoredServiceList(list);
-    }
-
-    @Override
     protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.IF_SERVICE_SERVICE_PROPERTIES;
     }
@@ -154,12 +151,66 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
+    protected JaxbListWrapper<MonitoredServiceDTO> createListWrapper(Collection<MonitoredServiceDTO> list) {
+        return new MonitoredServiceCollectionDTO(list);
+    }
+
+    @Override
+    public MonitoredServiceDTO mapEntityToDTO(OnmsMonitoredService entity) {
+        final var dto = new MonitoredServiceDTO();
+        dto.setId(entity.getId());
+        dto.setDown(entity.isDown());
+        dto.setNotify(entity.getNotify());
+        dto.setStatus(entity.getStatus());
+        dto.setSource(entity.getSource());
+
+        final var serviceType = new ServiceTypeDTO();
+        serviceType.setId(entity.getServiceId());
+        serviceType.setName(entity.getServiceName());
+        dto.setServiceType(serviceType);
+
+        dto.setQualifier(entity.getQualifier());
+        dto.setLastFail(entity.getLastFail());
+        dto.setLastGood(entity.getLastGood());
+        dto.setStatusLong(entity.getStatusLong());
+        dto.setIpInterfaceId(entity.getIpInterfaceId());
+        dto.setIpAddress(entity.getIpAddress().getHostAddress());
+        dto.setNodeId(entity.getNodeId());
+        dto.setNodeLabel(entity.getNodeLabel());
+
+        return dto;
+    }
+
+    @Override
+    public OnmsMonitoredService mapDTOToEntity(MonitoredServiceDTO dto) {
+        // currently unused, providing a basic but incomplete mapping of some top-level items
+        final var service = new OnmsMonitoredService();
+        service.setId(dto.getId());
+        service.setNotify(dto.getNotify());
+        service.setStatus(dto.getStatus());
+        service.setSource(dto.getSource());
+
+        final var serviceType = new OnmsServiceType();
+        serviceType.setId(dto.getServiceType().getId());
+        serviceType.setName(dto.getServiceType().getName());
+        service.setServiceType(serviceType);
+
+        service.setQualifier(dto.getQualifier());
+        service.setLastFail(dto.getLastFail());
+        service.setLastGood(dto.getLastGood());
+
+        return service;
+    }
+
+    @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
         final Set<OnmsApplication> applicationsOriginal = new HashSet<>(); // unfortunately applications set is not immutable, let's make a copy.
-        if(targetObject.getApplications() != null) {
+
+        if (targetObject.getApplications() != null) {
             applicationsOriginal.addAll(targetObject.getApplications());
         }
+
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
 
@@ -174,5 +225,4 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
-
 }
