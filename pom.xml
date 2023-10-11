@@ -1618,7 +1618,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.13.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
-    <commonsNetVersion>3.9.0</commonsNetVersion>
+    <commonsNetVersion>3.10.0</commonsNetVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
@@ -1765,7 +1765,7 @@
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -1780,7 +1780,7 @@
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.37.0</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.38.0</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
