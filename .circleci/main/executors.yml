@@ -16,4 +16,4 @@ executors:
       image: ubuntu-2204:current
   ui-executor:
     docker:
-      - image: cimg/node:18.18.0
+      - image: cimg/node:18.18.1
