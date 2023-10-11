@@ -1765,7 +1765,7 @@
     <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.10.3</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
-    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
+    <snmp4jagentVersion>3.6.7</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
