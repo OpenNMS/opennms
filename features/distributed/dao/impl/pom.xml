@@ -74,7 +74,7 @@
                             org.hibernate.annotations,
                             org.hibernate.proxy,
                             org.hibernate.validator;version="${hibernateValidatorVersion}",
-                            org.hibernate.validator.constraints;version=${hibernateValidatorVersion}",
+                            org.hibernate.validator.constraints;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.messageinterpolation;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.resourceloading;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.ap,
