@@ -107,7 +107,7 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
   <jsp:param name="headTitle" value="Detail" />
-  <jsp:param name="headTtitle" value="Events" />
+  <jsp:param name="headTitle" value="Events" />
   <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
   <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
 </jsp:include>

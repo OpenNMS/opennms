@@ -62,8 +62,8 @@
 <%= "<html lang=\"en\">" %>
 <head>
   <title>
-    <c:forEach var="headTitle" items="${paramValues.headTitle}">
-      <c:out value="${headTitle}" escapeXml="false"/> |
+    <c:forEach var="headTitle" items="${__bs_headTitles}">
+      <c:out value="${headTitle}" escapeXml="true"/> |
     </c:forEach>
     OpenNMS Web Console
   </title>
@@ -80,10 +80,6 @@
 
   <!-- Set GWT property to get browsers locale -->
   <meta name="gwt:property" content="locale=<%= Encode.forHtmlAttribute(request.getLocale().toString()) %>">
-
-  <c:forEach var="meta" items="${paramValues.meta}">
-    <c:out value="${meta}" escapeXml="false"/>
-  </c:forEach>
 
   <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="manifest" />
@@ -116,9 +112,6 @@
   <link rel="mask-icon" href="<%= baseHref %>safari-pinned-tab.svg" color="#4c9d45">
   <meta name="msapplication-TileColor" content="#e9e9e9">
   <meta name="theme-color" content="#ffffff">
-  <c:forEach var="link" items="${paramValues.link}">
-    <c:out value="${link}" escapeXml="false" />
-  </c:forEach>
 
   <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="vendor" />
@@ -183,18 +176,6 @@
     </jsp:include>
   </c:if>
 
-  <c:if test="${not empty param.script}">
-  </c:if>
-  <c:forEach var="script" items="${paramValues.script}">
-    <!-- WARNING: "script" parameters are deprecated. Remove the next line from your JSP. -->
-    <c:out value="${script}" escapeXml="false" />
-  </c:forEach>
-
-  <c:forEach var="extras" items="${paramValues.extras}">
-    <!-- WARNING: "extras" parameters are deprecated. Remove the next line from your JSP. -->
-    <c:out value="${extras}" escapeXml="false" />
-  </c:forEach>
-
   <c:if test="${param.vaadinEmbeddedStyles == 'true'}">
     <!-- embedded Vaadin app, fix container to leave room for headers -->
     <style type="text/css">
@@ -209,15 +190,15 @@
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
 <c:choose>
-  <c:when test="${param.ngapp != null}">
-    ng-app="${param.ngapp}"
+  <c:when test="${__bs_ngApp != null}">
+    ng-app="${Encode.forHtmlAttribute(__bs_ngApp)}"
   </c:when>
   <c:otherwise>
     ng-non-bindable
   </c:otherwise>
 </c:choose>
-<c:if test="${param.scrollSpy != null}">
-  data-spy="scroll" data-target="${param.scrollSpy}"
+<c:if test="${__bs_scrollSpy != null}">
+  data-spy="scroll" data-target="${Encode.forHtmlAttribute(__bs_scrollSpy)}"
 </c:if>
 
 <%-- Don't add any padding when the visual heading is not being displayed --%>
@@ -256,18 +237,25 @@
   <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="<%= baseHref %>index.jsp">Home</a></li>
-    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}" varStatus="loop">
-      <c:if test="${breadcrumb != ''}">
-          <c:choose>
-            <c:when test="${loop.last}">
-              <li class="breadcrumb-item active"><c:out value="${breadcrumb}" escapeXml="false"/></li>
-            </c:when>
-            <c:otherwise>
-              <li class="breadcrumb-item"><c:out value="${breadcrumb}" escapeXml="false"/></li>
-            </c:otherwise>
-          </c:choose>
 
-      </c:if>
+    <c:forEach var="breadcrumb" items="${__bs_breadcrumbs}" varStatus="loop">
+      <c:choose><%--
+        --%><c:when test="${loop.last}"><%--
+	  --%><li class="breadcrumb-item active"><%--
+	--%></c:when><%--
+	--%><c:otherwise><%--
+	  --%><li class="breadcrumb-item"><%--
+	--%></c:otherwise><%--
+      --%></c:choose><%--
+      --%><c:choose><%--
+        --%><c:when test="${breadcrumb.link != null}"><%--
+	  --%><a href="${breadcrumb.link}"><c:out value="${breadcrumb.title}" escapeXml="false"/></a><%--
+	--%></c:when><%--
+	--%><c:otherwise><%--
+	  --%><c:out value="${breadcrumb.title}" escapeXml="false"/><%--
+        --%></c:otherwise><%--
+      --%></c:choose><%--
+      --%></li>
     </c:forEach>
   </ol>
   </nav>
