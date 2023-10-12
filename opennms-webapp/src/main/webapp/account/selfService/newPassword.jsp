@@ -34,12 +34,14 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Change Password" />
-  <jsp:param name="headTitle" value="Change Password" />
-  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
-  <jsp:param name="breadcrumb" value="Change Password" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Change Password")
+          .breadcrumb("Self-Service", "account/selfService/index.jsp")
+          .breadcrumb("Change Password")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
   function verifyGoForm()

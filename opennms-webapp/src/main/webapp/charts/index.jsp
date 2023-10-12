@@ -34,12 +34,13 @@
             pageEncoding="UTF-8"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Charts" />
-  <jsp:param name="headTitle" value="Charts" />
-  <jsp:param name="location" value="chart" />
-  <jsp:param name="breadcrumb" value="Charts" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Charts")
+          .breadcrumb("Charts")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%@ page import="org.opennms.web.charts.ChartUtils" %>
 <%@ page import="org.opennms.netmgt.config.charts.BarChart" %>

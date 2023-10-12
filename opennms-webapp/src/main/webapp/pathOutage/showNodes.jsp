@@ -39,12 +39,14 @@
 			org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Path Outage Nodes" />
-  <jsp:param name="headTitle" value="Path Outage Nodes" />
-  <jsp:param name="breadcrumb" value="<a href=&quot;pathOutage/index.jsp&quot;>Path Outages</a>" />
-  <jsp:param name="breadcrumb" value="Nodes" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Path Outage Nodes")
+          .breadcrumb("Path Outages", "pathOutage/index.jsp")
+          .breadcrumb("Nodes")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <% 
       String critIp = request.getParameter("critIp");

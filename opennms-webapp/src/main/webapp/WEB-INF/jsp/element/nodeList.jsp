@@ -44,13 +44,14 @@
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Node List" />
-  <jsp:param name="headTitle" value="Node List" />
-  <jsp:param name="location" value="nodelist" />
-  <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
-  <jsp:param name="breadcrumb" value="Node List"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Node List")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <!-- NMS-7099: Add custom javascripts AFTER the header was included -->
 <script type="text/javascript">

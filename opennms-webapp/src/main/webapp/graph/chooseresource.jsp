@@ -48,16 +48,18 @@
   pageContext.setAttribute("endUrl", endUrl == null ? "" : endUrl);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="onms-resources" />
-  <jsp:param name="title" value="Choose Resource" />
-  <jsp:param name="headTitle" value="Choose" />
-  <jsp:param name="headTitle" value="Resource Graphs" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>" />
-  <jsp:param name="breadcrumb" value="Choose" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Choose")
+          .headTitle("Resource Graphs")
+          .headTitle("Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Resource Graphs", "graph/index.jsp")
+          .breadcrumb("Choose")
+          .ngApp("onms-resources")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="" ng-controller="NodeResourcesCtrl" ng-init="init('${e:forJavaScript(node)}','${e:forJavaScript(reports)}','${e:forJavaScript(endUrl)}')">
 

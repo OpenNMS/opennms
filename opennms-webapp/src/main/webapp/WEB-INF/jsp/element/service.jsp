@@ -170,14 +170,16 @@
 </c:url>
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Service" />
-  <jsp:param name="headTitle" value="${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
-  <jsp:param name="breadcrumb" value="Service" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
+          .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
+          .breadcrumb("Service")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
   
   
 <sec:authorize url="admin/deleteService">
