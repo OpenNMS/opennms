@@ -27,7 +27,6 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
       if (includeIpInterfaces === true) {
         const nodeIds = resp.node.map(n => n.id)
-
         getIpInterfacesForNodes(nodeIds, false)
       }
     }

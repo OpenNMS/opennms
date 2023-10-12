@@ -17,7 +17,8 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { FeatherDialog } from '@featherds/dialog'
-import { getBestIpInterfaceForNode, hasEgressFlow, hasIngressFlow } from './utils'
+import { hasEgressFlow, hasIngressFlow } from './utils'
+import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
 import { useNodeStore } from '@/stores/nodeStore'
 import { Node } from '@/types'
 
@@ -49,6 +50,7 @@ const labels = reactive({
 
 const EMPTY = '--'
 const nodeStore = useNodeStore()
+const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
 
 const nodeItems = computed(() => {
   const ipLabel = getBestIpInterfaceForNode(props.node?.id || '', nodeStore.nodeToIpInterfaceMap)

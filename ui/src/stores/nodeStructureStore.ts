@@ -4,10 +4,13 @@ import {
   Category,
   MonitoringLocation,
   NodeColumnSelectionItem,
-  NodeFilterPreferences,
+  NodeQueryFilter,
   NodePreferences,
   SetOperator
 } from '@/types'
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+
+const { getDefaultNodeQueryFilter } = useNodeQuery()
 
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
@@ -24,19 +27,16 @@ export const defaultColumns: NodeColumnSelectionItem[] = [
 
 export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const categories = ref<Category[]>([])
-  const categoryCount = ref(0)
-  const categoryMode = ref(SetOperator.Union)
-  const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
+  const categoryCount = computed(() => categories.value.length)
   const monitoringLocations = ref<MonitoringLocation[]>([])
-  const selectedCategories = ref<Category[]>([])
-  const selectedFlows = ref<string[]>([])
-  const selectedMonitoringLocations = ref<MonitoringLocation[]>([])
+  const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
+
+  const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
 
   const getCategories = async () => {
     const resp = await API.getCategories()
 
     if (resp) {
-      categoryCount.value = resp.totalCount
       categories.value = resp.category
     }
   }
@@ -53,20 +53,39 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     columns.value = defaultColumns
   }
 
+  const setSearchTerm = async (term: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      searchTerm: term
+    }
+  }
+
   const setSelectedCategories = async (cats: Category[]) => {
-    selectedCategories.value = [...cats]
+    queryFilter.value = {
+      ...queryFilter.value,
+      selectedCategories: [...cats]
+    }
   }
 
   const setCategoryMode = async (mode: SetOperator) => {
-    categoryMode.value = mode
+    queryFilter.value = {
+      ...queryFilter.value,
+      categoryMode: mode
+    }
   }
 
   const setSelectedFlows = async (flows: string[]) => {
-    selectedFlows.value = [...flows]
+    queryFilter.value = {
+      ...queryFilter.value,
+      selectedFlows: [...flows]
+    }
   }
 
   const setSelectedMonitoringLocations = async (locations: MonitoringLocation[]) => {
-    selectedMonitoringLocations.value = [...locations]
+    queryFilter.value = {
+      ...queryFilter.value,
+      selectedMonitoringLocations: [...locations]
+    }
   }
 
   const setNodeColumnSelection = async (cols: NodeColumnSelectionItem[]) => {
@@ -87,19 +106,21 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     columns.value = [...newColumns]
   }
 
+  const clearAllFilters = async (mode?: SetOperator) => {
+    const filter = getDefaultNodeQueryFilter()
+    queryFilter.value = !mode ? filter :
+      {
+        ...filter,
+        categoryMode: mode
+      }
+  }
+
   const getNodePreferences = async () => {
     const nodeColumns = columns.value
 
-    const nodeFilter = {
-      categoryMode: categoryMode.value,
-      selectedCategories: selectedCategories.value,
-      selectedFlows: selectedFlows.value,
-      selectedMonitoringLocations: selectedMonitoringLocations.value
-    } as NodeFilterPreferences
-
     const nodePrefs = {
       nodeColumns,
-      nodeFilter
+      nodeFilter: { ...queryFilter.value }
     } as NodePreferences
 
     return nodePrefs
@@ -110,42 +131,46 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       columns.value = [...prefs.nodeColumns]
     }
 
+    const filter = getDefaultNodeQueryFilter()
+
     if (prefs.nodeFilter) {
-      categoryMode.value = prefs.nodeFilter.categoryMode
+      filter.searchTerm = prefs.nodeFilter.searchTerm
+      filter.categoryMode = prefs.nodeFilter.categoryMode
 
       if (prefs.nodeFilter.selectedCategories?.length) {
-        selectedCategories.value = [...prefs.nodeFilter.selectedCategories]
+        filter.selectedCategories = [...prefs.nodeFilter.selectedCategories]
       }
 
       if (prefs.nodeFilter.selectedFlows?.length) {
-        selectedFlows.value = [...prefs.nodeFilter.selectedFlows]
+        filter.selectedFlows = [...prefs.nodeFilter.selectedFlows]
       }
 
       if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
-        selectedMonitoringLocations.value = [...prefs.nodeFilter.selectedMonitoringLocations]
+        filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
       }
     }
+
+    queryFilter.value = filter
   }
 
   return {
     categories,
     categoryCount,
-    categoryMode,
     columns,
     monitoringLocations,
-    selectedCategories,
-    selectedFlows,
-    selectedMonitoringLocations,
+    queryFilter,
+    clearAllFilters,
     getCategories,
     getMonitoringLocations,
     getNodePreferences,
     resetColumnSelectionToDefault,
-    setSelectedCategories,
     setCategoryMode,
+    setFromNodePreferences,
+    setNodeColumnSelection,
+    setSearchTerm,
+    setSelectedCategories,
     setSelectedFlows,
     setSelectedMonitoringLocations,
-    setNodeColumnSelection,
-    setFromNodePreferences,
     updateNodeColumnSelection
   }
 })

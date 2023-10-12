@@ -1,10 +1,10 @@
 <template>
   <h1 class="title">Filtering</h1>
   <div class="button-panel">
-      <FeatherButton primary class="category-btn" @click="onClearAll" :disabled="!selectedCount">Clear All</FeatherButton>
+      <FeatherButton primary class="category-btn" @click="onClearAll" :disabled="!isAnyFilterSelected">Clear All</FeatherButton>
   </div>
   <FeatherExpansionPanel>
-    <template v-slot:title>
+    <template #title>
       <div v-if="selectedCategoryCount">
         <span>{{ `Categories (${selectedCategoryCount})` }}</span>
         <FeatherButton icon="Clear" @click="onClearCategories">
@@ -13,32 +13,34 @@
       </div>
       <div v-else>Categories</div>
     </template>
-    <div class="category-button-group">
-      <FeatherButton
-        class="switcher-button"
-        :primary="categoryMode === SetOperator.Union"
-        :secondary="categoryMode !== SetOperator.Union"
-        @click="categoryModeUpdated(SetOperator.Union)"
-      >Any</FeatherButton>
-      <FeatherButton
-        class="switcher-button"
-        :primary="categoryMode === SetOperator.Intersection"
-        :secondary="categoryMode !== SetOperator.Intersection"
-        @click="categoryModeUpdated(SetOperator.Intersection)"
-      >All</FeatherButton>
-    </div>
-    <FeatherList class="category-list">
-      <FeatherListItem
-        v-for="cat of categories"
-        :selected="isCategorySelected(cat)"
-        :key="cat.name"
-        @click="onCategoryClick(cat)">
-        {{ cat.name }}
-      </FeatherListItem>
-    </FeatherList>
+    <template #default>
+      <div class="category-button-group">
+        <FeatherButton
+          class="switcher-button"
+          :primary="categoryMode === SetOperator.Union"
+          :secondary="categoryMode !== SetOperator.Union"
+          @click="categoryModeUpdated(SetOperator.Union)"
+        >Any</FeatherButton>
+        <FeatherButton
+          class="switcher-button"
+          :primary="categoryMode === SetOperator.Intersection"
+          :secondary="categoryMode !== SetOperator.Intersection"
+          @click="categoryModeUpdated(SetOperator.Intersection)"
+        >All</FeatherButton>
+      </div>
+      <FeatherList class="category-list">
+        <FeatherListItem
+          v-for="cat of nodeStructureStore.categories"
+          :selected="isCategorySelected(cat)"
+          :key="cat.name"
+          @click="onCategoryClick(cat)">
+          {{ cat.name }}
+        </FeatherListItem>
+      </FeatherList>
+    </template>
   </FeatherExpansionPanel>
   <FeatherExpansionPanel>
-    <template v-slot:title>
+    <template #title>
       <div v-if="selectedFlowCount">
         <span>{{ `Flows (${selectedFlowCount})` }}</span>
         <FeatherButton icon="Clear" @click="onClearFlows">
@@ -58,7 +60,7 @@
     </FeatherList>
   </FeatherExpansionPanel>
   <FeatherExpansionPanel>
-    <template v-slot:title>
+    <template #title>
       <div v-if="selectedLocationCount">
         <span>{{ `Locations (${selectedLocationCount})` }}</span>
         <FeatherButton icon="Clear" @click="onClearLocations">
@@ -107,18 +109,14 @@ import { Category, MonitoringLocation, SetOperator } from '@/types'
 
 const nodeStructureStore = useNodeStructureStore()
 const clearIcon = ref(ClearIcon)
-const categories = computed<Category[]>(() => nodeStructureStore.categories)
-const selectedCategories = computed<Category[]>(() => nodeStructureStore.selectedCategories)
 const flowTypes = computed<string[]>(() => ['Ingress', 'Egress'])
-const selectedFlows = computed<string[]>(() => nodeStructureStore.selectedFlows)
-const categoryMode = computed(() => nodeStructureStore.categoryMode)
+const categoryMode = computed(() => nodeStructureStore.queryFilter.categoryMode)
 
 const locations = computed<MonitoringLocation[]>(() => nodeStructureStore.monitoringLocations)
-const selectedLocations = computed<MonitoringLocation[]>(() => nodeStructureStore.selectedMonitoringLocations)
-const selectedCategoryCount = computed<number>(() => selectedCategories.value?.length || 0)
-const selectedFlowCount = computed<number>(() => selectedFlows.value?.length || 0)
-const selectedLocationCount = computed<number>(() => selectedLocations.value?.length || 0)
-const selectedCount = computed<boolean>(() => selectedCategoryCount.value > 0 || selectedFlowCount.value > 0 || selectedLocationCount.value > 0)
+const selectedCategoryCount = computed<number>(() => nodeStructureStore.queryFilter.selectedCategories?.length || 0)
+const selectedFlowCount = computed<number>(() => nodeStructureStore.queryFilter.selectedFlows?.length || 0)
+const selectedLocationCount = computed<number>(() => nodeStructureStore.queryFilter.selectedMonitoringLocations?.length || 0)
+const isAnyFilterSelected = computed<boolean>(() => nodeStructureStore.queryFilter.searchTerm?.length > 0 || selectedCategoryCount.value > 0 || selectedFlowCount.value > 0 || selectedLocationCount.value > 0)
 
 const metaSearchString = ref()
 const loading = ref(false)
@@ -142,15 +140,15 @@ const categoryModeUpdated = (val: any) => {
 }
 
 const isCategorySelected = (cat: Category) => {
-  return selectedCategories.value.some(c => c.id === cat.id)
+  return nodeStructureStore.queryFilter.selectedCategories.some(c => c.id === cat.id)
 }
 
 const isFlowSelected = (flow: string) => {
-  return selectedFlows.value.some(f => f === flow)
+  return nodeStructureStore.queryFilter.selectedFlows.some(f => f === flow)
 }
 
 const isLocationSelected = (loc: MonitoringLocation) => {
-  return selectedLocations.value.some(x => x.name === loc.name)
+  return nodeStructureStore.queryFilter.selectedMonitoringLocations.some(x => x.name === loc.name)
 }
 
 const onClearCategories = () => {
@@ -166,10 +164,7 @@ const onClearLocations = () => {
 }
 
 const onClearAll = () => {
-  onClearCategories()
-  categoryModeUpdated(SetOperator.Union)
-  onClearFlows()
-  onClearLocations()
+  nodeStructureStore.clearAllFilters(SetOperator.Union)
 }
 
 /**
@@ -190,24 +185,19 @@ const getNewSelection = <T,>(item: T, isSelected: boolean, existingItems: T[], d
 }
 
 const onCategoryClick = (cat: Category) => {
-  const newSelection = getNewSelection(cat, isCategorySelected(cat), selectedCategories.value, c => c.id !== cat.id)
+  const newSelection = getNewSelection(cat, isCategorySelected(cat), nodeStructureStore.queryFilter.selectedCategories, c => c.id !== cat.id)
   nodeStructureStore.setSelectedCategories(newSelection)
 }
 
 const onFlowClick = (flow: string) => {
-  const newSelection = getNewSelection(flow, isFlowSelected(flow), selectedFlows.value, f => f !== flow)
+  const newSelection = getNewSelection(flow, isFlowSelected(flow), nodeStructureStore.queryFilter.selectedFlows, f => f !== flow)
   nodeStructureStore.setSelectedFlows(newSelection)
 }
 
 const onLocationClick = (loc: MonitoringLocation) => {
-  const newSelection = getNewSelection(loc, isLocationSelected(loc), selectedLocations.value, x => x.name !== loc.name)
+  const newSelection = getNewSelection(loc, isLocationSelected(loc), nodeStructureStore.queryFilter.selectedMonitoringLocations, x => x.name !== loc.name)
   nodeStructureStore.setSelectedMonitoringLocations(newSelection)
 }
-
-onMounted(() => {
-  nodeStructureStore.getCategories()
-  nodeStructureStore.getMonitoringLocations()
-})
 </script>
 
 <style lang="scss" scoped>
