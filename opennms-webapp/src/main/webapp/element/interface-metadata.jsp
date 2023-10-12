@@ -51,9 +51,6 @@
     final OnmsIpInterface entity = NetworkElementFactory
             .getInstance(getServletContext())
             .getNode(nodeId).getIpInterfaceByIpAddress(ipAddr);
-
-    final String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-    final String interfaceBreadCrumb = "<a href='element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr + "'>Interface</a>";
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -61,8 +58,8 @@
           .headTitle(ipAddr)
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
-          .breadcrumb(interfaceBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
           .breadcrumb("Meta-Data")
           .build(request);
 %>

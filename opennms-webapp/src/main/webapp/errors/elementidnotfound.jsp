@@ -44,7 +44,7 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle("ID Not Found for <%=einfe.getElemType()%>")
+          .headTitle("ID Not Found for " + einfe.getElemType())
           .headTitle("Error")
           .breadcrumb("Error")
           .build(request);

@@ -41,8 +41,6 @@
 --%>
 
 <%@page language="java"
-        contentType="text/html"
-        session="true"
         import="
 		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
@@ -54,7 +52,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
-  final String baseHref = Util.calculateUrlBase( request );
+  final String __baseHref = Util.calculateUrlBase( request );
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -68,7 +66,7 @@
     OpenNMS Web Console
   </title>
   <c:if test="${param.nobase != 'true' }">
-    <base href="<%= baseHref %>" />
+    <base href="<%= __baseHref %>" />
   </c:if>
 
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
@@ -104,12 +102,12 @@
     </jsp:include>
     <!-- we used to include the "print.css" here but it turns out it looks like crap -->
   </c:if>
-  <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="<%= baseHref %>apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="<%= baseHref %>favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="<%= baseHref %>favicon-16x16.png">
-  <link rel="manifest" href="<%= baseHref %>site.webmanifest">
-  <link rel="mask-icon" href="<%= baseHref %>safari-pinned-tab.svg" color="#4c9d45">
+  <link rel="shortcut icon" href="<%= __baseHref %>favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="<%= __baseHref %>apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= __baseHref %>favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="<%= __baseHref %>favicon-16x16.png">
+  <link rel="manifest" href="<%= __baseHref %>site.webmanifest">
+  <link rel="mask-icon" href="<%= __baseHref %>safari-pinned-tab.svg" color="#4c9d45">
   <meta name="msapplication-TileColor" content="#e9e9e9">
   <meta name="theme-color" content="#ffffff">
 
@@ -143,13 +141,13 @@
     }
   </script>
 
-  <c:if test="${param.renderGraphs == 'true'}">
+  <c:if test='${__bs_flags.contains("renderGraphs")}'>
       <!-- Graphing -->
       <script type="text/javascript">
         // Global scope
         window.onmsGraphContainers = {
             'engine': '<%= TimeSeries.getGraphEngine() %>',
-            'baseHref': '<%= baseHref %>'
+            'baseHref': '<%= __baseHref %>'
         };
     </script>
     <jsp:include page="/assets/load-assets.jsp" flush="false">
@@ -157,7 +155,7 @@
     </jsp:include>
   </c:if>
 
-  <c:if test="${param.usebackshift == 'true'}">
+  <c:if test='${__bs_flags.contains("usebackshift")}'>
     <%-- This allows pages to explicitly use Backshift instead of relying on graph.js (which may not use Backshift) --%>
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="d3-js" />
@@ -170,7 +168,7 @@
     </jsp:include>
   </c:if>
 
-  <c:if test="${param.useionicons == 'true'}">
+  <c:if test='${__bs_flags.contains("useionicons")}'>
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="ionicons-css" />
     </jsp:include>
@@ -202,14 +200,14 @@
 </c:if>
 
 <%-- Don't add any padding when the visual heading is not being displayed --%>
-<c:if test="${param.quiet != 'true'}">
+<c:if test='${not __bs_flags.contains("quiet")}'>
   class="fixed-nav"
 </c:if>
 <%= ">" %>
 
 <!-- Bootstrap header -->
 <c:choose>
-  <c:when test="${param.quiet == 'true'}">
+  <c:when test='${__bs_flags.contains("quiet")}'>
     <!-- No visual header is being displayed -->
   </c:when>
   <c:otherwise>
@@ -233,10 +231,10 @@
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
   </c:otherwise>
 </c:choose>
-<c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
+<c:if test='${((not __bs_flags.contains("nonavbar")) && (!empty pageContext.request.remoteUser)) && (not __bs_flags.contains("nobreadcrumbs"))}'>
   <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<%= baseHref %>index.jsp">Home</a></li>
+    <li class="breadcrumb-item"><a href="<%= __baseHref %>index.jsp">Home</a></li>
 
     <c:forEach var="breadcrumb" items="${__bs_breadcrumbs}" varStatus="loop">
       <c:choose><%--

@@ -108,15 +108,12 @@
     <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
 </c:url>
 
-<%
-String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-%>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle(ipAddr)
           .headTitle("Interface")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
           .breadcrumb("Interface")
           .build(request);
 %>

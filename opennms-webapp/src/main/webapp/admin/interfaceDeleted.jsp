@@ -90,8 +90,8 @@
 <% Bootstrap.with(pageContext)
           .headTitle(WebSecurityUtils.sanitizeString(ipAddr))
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
-          .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Interface", "${interfaceLink}")
           .breadcrumb("Interface Deleted")
           .build(request);
 %>

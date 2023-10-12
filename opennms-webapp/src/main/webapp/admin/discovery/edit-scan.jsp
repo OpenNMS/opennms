@@ -52,17 +52,14 @@
 		response.setHeader("Cache-Control", "no-cache");
 	}
 %>
-<% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
-<% String breadcrumb2 = "<a href='admin/discovery/index.jsp'> Discovery </a>"; %>
-<% String breadcrumb3 = "Create Discovery Scan"; %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Discovery")
           .headTitle("Admin")
-          .breadcrumb(breadcrumb1)
-          .breadcrumb(breadcrumb2)
-          .breadcrumb(breadcrumb3)
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Discovery", "admin/discovery/index.jsp")
+          .breadcrumb("Create Discovery Scan")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
