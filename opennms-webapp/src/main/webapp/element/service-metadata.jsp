@@ -53,10 +53,6 @@
             .getInstance(getServletContext())
             .getNode(nodeId).getIpInterfaceByIpAddress(ipAddr)
             .getMonitoredServiceByServiceType(service);
-
-    final String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-    final String interfaceBreadCrumb = "<a href='element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr + "'>Interface</a>";
-    final String serviceBreadCrumb = "<a href='element/service.jsp?node=" + nodeId  + "&intf=" + ipAddr + "&service=" + entity.getServiceId() + "'>Service</a>";
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -64,9 +60,9 @@
           .headTitle(entity.getServiceName())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
-          .breadcrumb(interfaceBreadCrumb)
-          .breadcrumb(serviceBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
+          .breadcrumb("Service", "element/service.jsp?node=" + nodeId  + "&intf=" + ipAddr + "&service=" + entity.getServiceId())
           .breadcrumb("Meta-Data")
           .build(request);
 %>

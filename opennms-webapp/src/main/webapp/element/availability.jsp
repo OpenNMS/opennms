@@ -266,7 +266,7 @@
           .headTitle("ID ${model.id}")
           .headTitle("Availability")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
+          .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Availability")
           .build(request);
 %>

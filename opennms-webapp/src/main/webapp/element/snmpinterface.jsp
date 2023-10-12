@@ -57,15 +57,11 @@
   String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;    
 %>
 
-<%
-String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-%>
-
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Snmp Interface")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
           .breadcrumb("SnmpInterface")
           .build(request);
 %>

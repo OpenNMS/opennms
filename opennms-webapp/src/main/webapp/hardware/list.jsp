@@ -163,15 +163,13 @@
             break;
         }
     }
-
-    String nodeBreadCrumb = "<a href='element/node.jsp?node=" + node.getId()  + "'>Node</a>";
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Hardware Inventory")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + node.getId())
           .breadcrumb("Hardware Inventory")
           .build(request);
 %>

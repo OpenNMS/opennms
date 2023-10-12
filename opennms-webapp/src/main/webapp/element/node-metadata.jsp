@@ -45,8 +45,6 @@
 
 <%
     final OnmsNode entity = ElementUtil.getNodeByParams(request, getServletContext());
-
-    String nodeBreadCrumb = "<a href='element/node.jsp?node=" + entity.getId()  + "'>Node</a>";
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -54,7 +52,7 @@
           .headTitle(entity.getLabel())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb(nodeBreadCrumb)
+          .breadcrumb("Node", "element/node.jsp?node=" + entity.getId())
           .breadcrumb("Meta-Data")
           .build(request);
 %>

@@ -65,7 +65,7 @@
           .headTitle("Rescan")
           .headTitle("Element")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
+          .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Rescan")
           .build(request);
 %>
@@ -82,7 +82,7 @@
           .headTitle("Rescan")
           .headTitle("Element")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
+          .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
           .breadcrumb("Rescan")
           .build(request);

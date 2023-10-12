@@ -94,8 +94,8 @@
           .headTitle("Rescan")
           .headTitle("SNMP Information")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "${fn:escapeXml(nodeLink)}")
-          .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Interface", "${interfaceLink}")
           .breadcrumb("Update SNMP Information")
           .build(request);
 %>
