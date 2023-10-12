@@ -59,11 +59,13 @@
 	}
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="User Account Self-Service" />
-  <jsp:param name="headTitle" value="User Account Self-Service" />
-  <jsp:param name="breadcrumb" value="User Account Self-Service" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("User Account Self-Service")
+          .breadcrumb("User Account Self-Service")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
   function changePassword() {

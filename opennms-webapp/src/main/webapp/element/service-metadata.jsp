@@ -59,16 +59,18 @@
     final String serviceBreadCrumb = "<a href='element/service.jsp?node=" + nodeId  + "&intf=" + ipAddr + "&service=" + entity.getServiceId() + "'>Service</a>";
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Metadata" />
-    <jsp:param name="headTitle" value="<%= entity.getServiceName() %>" />
-    <jsp:param name="headTitle" value="Meta-Data" />
-    <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-    <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
-    <jsp:param name="breadcrumb" value="<%= interfaceBreadCrumb %>" />
-    <jsp:param name="breadcrumb" value="<%= serviceBreadCrumb %>" />
-    <jsp:param name="breadcrumb" value="Meta-Data" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(entity.getServiceName())
+          .headTitle("Meta-Data")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb(nodeBreadCrumb)
+          .breadcrumb(interfaceBreadCrumb)
+          .breadcrumb(serviceBreadCrumb)
+          .breadcrumb("Meta-Data")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h4>Meta-Data for Service: <strong><%= entity.getServiceName() %></strong></h4>
 

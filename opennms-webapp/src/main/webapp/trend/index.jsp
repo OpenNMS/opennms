@@ -30,9 +30,11 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Trend"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/trend/trend-box.htm" flush="false">
     <jsp:param name="columns" value="3"/>

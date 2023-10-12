@@ -36,12 +36,13 @@
         session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Support"/>
-    <jsp:param name="headTitle" value="Get Support"/>
-    <jsp:param name="location" value="help"/>
-    <jsp:param name="breadcrumb" value="Support"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Get Support")
+          .breadcrumb("Support")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
     <div class="col-md-4">
