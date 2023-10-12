@@ -37,19 +37,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:import url="/includes/bootstrap.jsp">
-    <c:param name="ngapp" value="onms-ksc" />
-    <c:param name="title" value="Resource Graph Results" />
-    <c:param name="headTitle" value="Results" />
-    <c:param name="headTitle" value="Resource Graphs" />
-    <c:param name="headTitle" value="Reports" />
-    <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-    <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
-    <c:param name="breadcrumb" value="Results" />
-    <c:param name="scrollSpy" value="#results-sidebar" />
-    <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
-    <c:param name="renderGraphs" value="true" />
-</c:import>
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="ngapp" value="onms-ksc" />
+    <jsp:param name="title" value="Resource Graph Results" />
+    <jsp:param name="headTitle" value="Results" />
+    <jsp:param name="headTitle" value="Resource Graphs" />
+    <jsp:param name="headTitle" value="Reports" />
+    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+    <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
+    <jsp:param name="breadcrumb" value="Results" />
+    <jsp:param name="scrollSpy" value="#results-sidebar" />
+    <jsp:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
+    <jsp:param name="renderGraphs" value="true" />
+</jsp:include>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="add-to-ksc" />
