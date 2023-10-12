@@ -64,7 +64,6 @@
       <include-collection dataCollectionGroup="OpenNMS Appliances"/>
       <include-collection dataCollectionGroup="PaloAlto"/>
       <include-collection dataCollectionGroup="pfSense"/>
-      <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
       <include-collection dataCollectionGroup="Powerware"/>
       <include-collection dataCollectionGroup="Printers"/>
       <include-collection dataCollectionGroup="REF_Compaq-Insight-Manager"/>

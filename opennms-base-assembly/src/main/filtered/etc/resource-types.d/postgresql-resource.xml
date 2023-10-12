@@ -1,4 +1,5 @@
-<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="PostgreSQL-JDBC">
+<?xml version="1.0"?>
+<resource-types>
    <resourceType name="pgTableSpace" label="PostgreSQL Tablespace" resourceLabel="${spcname}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -7,4 +8,4 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
-</datacollection-group>
+</resource-types>
