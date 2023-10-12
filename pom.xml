@@ -3301,12 +3301,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>netty-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
         <version>${project.version}</version>

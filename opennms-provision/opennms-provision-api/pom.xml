@@ -32,9 +32,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>netty-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>${netty4Version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

@@ -41,22 +41,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.protobuf.ProtobufDecoder;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -77,8 +64,18 @@ import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import org.awaitility.core.ConditionTimeoutException;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -95,25 +92,40 @@ public class TcpOutputStrategyTest {
 
     private static List<PerformanceDataReadings> allReadings = new ArrayList<>();
 
+    private static ChannelFuture channel;
+
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass() throws Exception {
         // Setup a quick Netty TCP server that decodes the protobuf messages
         // and appends these to a list when received
-        ChannelFactory factory = new NioServerSocketChannelFactory();
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(
-                        new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance()),
-                        new PerfDataServerHandler());
-            }
-        });
-        bootstrap.setOption("reuseAddress", true);
-        Channel channel = bootstrap.bind(new InetSocketAddress(0));
-        InetSocketAddress addr = (InetSocketAddress)channel.getLocalAddress();
+
+        EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+        final ServerBootstrap bootstrap = new ServerBootstrap()
+                .group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(final SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast("frameDecoder", new LengthFieldBasedFrameDecoder(1_000_000_000, 0, 4, 0, 4));
+                        ch.pipeline().addLast("protobufDecoder", new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance()));
+                        ch.pipeline().addLast("perfHandler", new PerfDataServerHandler());
+                    }
+                })
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                ;
+
+        final var addr = new InetSocketAddress(9000);
+        TcpOutputStrategyTest.channel = bootstrap.bind(addr).sync();
+
+        System.err.println("host: " + addr.getHostString());
+        System.err.println("port: " + addr.getPort());
 
         // Point the TCP exporter to our server
-        System.setProperty("org.opennms.rrd.tcp.host", addr.getHostString());
+        System.setProperty("org.opennms.rrd.tcp.host", InetAddressUtils.getLocalHostAddressAsString());
         System.setProperty("org.opennms.rrd.tcp.port", Integer.toString(addr.getPort()));
         // Always use queueing during these tests
         System.setProperty("org.opennms.rrd.usequeue", Boolean.TRUE.toString());
@@ -121,10 +133,16 @@ public class TcpOutputStrategyTest {
         System.setProperty("rrd.base.dir", tempFolder.getRoot().getAbsolutePath());
     }
 
-    public static class PerfDataServerHandler extends SimpleChannelHandler {
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        TcpOutputStrategyTest.channel.channel().closeFuture().sync();
+    }
+
+    public static class PerfDataServerHandler extends SimpleChannelInboundHandler<PerformanceDataReadings> {
         @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-            allReadings.add((PerformanceDataReadings) e.getMessage());
+        protected void channelRead0(final ChannelHandlerContext ctx, final PerformanceDataReadings msg) throws Exception {
+            System.err.println("performance: " + msg);
+            allReadings.add(msg);
         }
     }
 
