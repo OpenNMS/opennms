@@ -1066,6 +1066,11 @@
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
       </plugin>
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -1496,6 +1501,7 @@
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
     <maven.karaf.plugin.version>4.4.3</maven.karaf.plugin.version>
+    <maven.os.plugin.version>1.7.1</maven.os.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.5.0</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1746,7 +1752,6 @@
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
-    <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
