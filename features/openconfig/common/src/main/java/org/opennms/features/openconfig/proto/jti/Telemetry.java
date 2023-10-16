@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -89,6 +89,8 @@ public final class Telemetry {
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -96,6 +98,10 @@ public final class Telemetry {
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static ReturnCode forNumber(int value) {
       switch (value) {
         case 0: return SUCCESS;
@@ -119,6 +125,10 @@ public final class Telemetry {
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -200,6 +210,8 @@ public final class Telemetry {
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -207,6 +219,10 @@ public final class Telemetry {
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static VerbosityLevel forNumber(int value) {
       switch (value) {
         case 0: return DETAIL;
@@ -230,6 +246,10 @@ public final class Telemetry {
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -319,6 +339,8 @@ public final class Telemetry {
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -326,6 +348,10 @@ public final class Telemetry {
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static EncodingType forNumber(int value) {
       switch (value) {
         case 0: return UNDEFINED;
@@ -350,6 +376,10 @@ public final class Telemetry {
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -394,6 +424,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionInput input = 1;</code>
+     * @return Whether the input field is set.
      */
     boolean hasInput();
     /**
@@ -402,6 +433,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionInput input = 1;</code>
+     * @return The input.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput getInput();
     /**
@@ -470,6 +502,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+     * @return Whether the additionalConfig field is set.
      */
     boolean hasAdditionalConfig();
     /**
@@ -480,6 +513,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+     * @return The additionalConfig.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig getAdditionalConfig();
     /**
@@ -500,7 +534,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.SubscriptionRequest}
    */
-  public  static final class SubscriptionRequest extends
+  public static final class SubscriptionRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.SubscriptionRequest)
       SubscriptionRequestOrBuilder {
@@ -520,87 +554,6 @@ public final class Telemetry {
       return new SubscriptionRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscriptionRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.Builder subBuilder = null;
-              if (input_ != null) {
-                subBuilder = input_.toBuilder();
-              }
-              input_ = input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(input_);
-                input_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                pathList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Path>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              pathList_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.Path.parser(), extensionRegistry));
-              break;
-            }
-            case 26: {
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.Builder subBuilder = null;
-              if (additionalConfig_ != null) {
-                subBuilder = additionalConfig_.toBuilder();
-              }
-              additionalConfig_ = input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(additionalConfig_);
-                additionalConfig_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          pathList_ = java.util.Collections.unmodifiableList(pathList_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_SubscriptionRequest_descriptor;
@@ -614,6 +567,7 @@ public final class Telemetry {
               org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest.class, org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest.Builder.class);
     }
 
+    private int bitField0_;
     public static final int INPUT_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput input_;
     /**
@@ -622,9 +576,11 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionInput input = 1;</code>
+     * @return Whether the input field is set.
      */
+    @java.lang.Override
     public boolean hasInput() {
-      return input_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -632,7 +588,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionInput input = 1;</code>
+     * @return The input.
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput getInput() {
       return input_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.getDefaultInstance() : input_;
     }
@@ -643,11 +601,13 @@ public final class Telemetry {
      *
      * <code>.telemetry.SubscriptionInput input = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInputOrBuilder getInputOrBuilder() {
-      return getInput();
+      return input_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.getDefaultInstance() : input_;
     }
 
     public static final int PATH_LIST_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> pathList_;
     /**
      * <pre>
@@ -657,6 +617,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> getPathListList() {
       return pathList_;
     }
@@ -668,6 +629,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder> 
         getPathListOrBuilderList() {
       return pathList_;
@@ -680,6 +642,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public int getPathListCount() {
       return pathList_.size();
     }
@@ -691,6 +654,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.Path getPathList(int index) {
       return pathList_.get(index);
     }
@@ -702,6 +666,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder getPathListOrBuilder(
         int index) {
       return pathList_.get(index);
@@ -717,9 +682,11 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+     * @return Whether the additionalConfig field is set.
      */
+    @java.lang.Override
     public boolean hasAdditionalConfig() {
-      return additionalConfig_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -729,7 +696,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+     * @return The additionalConfig.
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig getAdditionalConfig() {
       return additionalConfig_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.getDefaultInstance() : additionalConfig_;
     }
@@ -742,8 +711,9 @@ public final class Telemetry {
      *
      * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfigOrBuilder getAdditionalConfigOrBuilder() {
-      return getAdditionalConfig();
+      return additionalConfig_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.getDefaultInstance() : additionalConfig_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -760,16 +730,16 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (input_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getInput());
       }
       for (int i = 0; i < pathList_.size(); i++) {
         output.writeMessage(2, pathList_.get(i));
       }
-      if (additionalConfig_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(3, getAdditionalConfig());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -778,7 +748,7 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (input_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getInput());
       }
@@ -786,11 +756,11 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, pathList_.get(i));
       }
-      if (additionalConfig_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getAdditionalConfig());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -817,7 +787,7 @@ public final class Telemetry {
         if (!getAdditionalConfig()
             .equals(other.getAdditionalConfig())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -840,7 +810,7 @@ public final class Telemetry {
         hash = (37 * hash) + ADDITIONAL_CONFIG_FIELD_NUMBER;
         hash = (53 * hash) + getAdditionalConfig().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -889,11 +859,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -972,28 +944,30 @@ public final class Telemetry {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getInputFieldBuilder();
           getPathListFieldBuilder();
+          getAdditionalConfigFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (inputBuilder_ == null) {
-          input_ = null;
-        } else {
-          input_ = null;
+        bitField0_ = 0;
+        input_ = null;
+        if (inputBuilder_ != null) {
+          inputBuilder_.dispose();
           inputBuilder_ = null;
         }
         if (pathListBuilder_ == null) {
           pathList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          pathList_ = null;
           pathListBuilder_.clear();
         }
-        if (additionalConfigBuilder_ == null) {
-          additionalConfig_ = null;
-        } else {
-          additionalConfig_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        additionalConfig_ = null;
+        if (additionalConfigBuilder_ != null) {
+          additionalConfigBuilder_.dispose();
           additionalConfigBuilder_ = null;
         }
         return this;
@@ -1022,28 +996,40 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest result = new org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest(this);
-        int from_bitField0_ = bitField0_;
-        if (inputBuilder_ == null) {
-          result.input_ = input_;
-        } else {
-          result.input_ = inputBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest result) {
         if (pathListBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             pathList_ = java.util.Collections.unmodifiableList(pathList_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.pathList_ = pathList_;
         } else {
           result.pathList_ = pathListBuilder_.build();
         }
-        if (additionalConfigBuilder_ == null) {
-          result.additionalConfig_ = additionalConfig_;
-        } else {
-          result.additionalConfig_ = additionalConfigBuilder_.build();
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.input_ = inputBuilder_ == null
+              ? input_
+              : inputBuilder_.build();
+          to_bitField0_ |= 0x00000001;
         }
-        onBuilt();
-        return result;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.additionalConfig_ = additionalConfigBuilder_ == null
+              ? additionalConfig_
+              : additionalConfigBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1097,7 +1083,7 @@ public final class Telemetry {
           if (!other.pathList_.isEmpty()) {
             if (pathList_.isEmpty()) {
               pathList_ = other.pathList_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensurePathListIsMutable();
               pathList_.addAll(other.pathList_);
@@ -1110,7 +1096,7 @@ public final class Telemetry {
               pathListBuilder_.dispose();
               pathListBuilder_ = null;
               pathList_ = other.pathList_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               pathListBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getPathListFieldBuilder() : null;
@@ -1122,7 +1108,7 @@ public final class Telemetry {
         if (other.hasAdditionalConfig()) {
           mergeAdditionalConfig(other.getAdditionalConfig());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -1137,17 +1123,57 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getInputFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.Path m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.Path.parser(),
+                        extensionRegistry);
+                if (pathListBuilder_ == null) {
+                  ensurePathListIsMutable();
+                  pathList_.add(m);
+                } else {
+                  pathListBuilder_.addMessage(m);
+                }
+                break;
+              } // case 18
+              case 26: {
+                input.readMessage(
+                    getAdditionalConfigFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -1161,9 +1187,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionInput input = 1;</code>
+       * @return Whether the input field is set.
        */
       public boolean hasInput() {
-        return inputBuilder_ != null || input_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -1171,6 +1198,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionInput input = 1;</code>
+       * @return The input.
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput getInput() {
         if (inputBuilder_ == null) {
@@ -1192,11 +1220,11 @@ public final class Telemetry {
             throw new NullPointerException();
           }
           input_ = value;
-          onChanged();
         } else {
           inputBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -1210,11 +1238,11 @@ public final class Telemetry {
           org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.Builder builderForValue) {
         if (inputBuilder_ == null) {
           input_ = builderForValue.build();
-          onChanged();
         } else {
           inputBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -1226,17 +1254,20 @@ public final class Telemetry {
        */
       public Builder mergeInput(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput value) {
         if (inputBuilder_ == null) {
-          if (input_ != null) {
-            input_ =
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.newBuilder(input_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            input_ != null &&
+            input_ != org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.getDefaultInstance()) {
+            getInputBuilder().mergeFrom(value);
           } else {
             input_ = value;
           }
-          onChanged();
         } else {
           inputBuilder_.mergeFrom(value);
         }
-
+        if (input_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -1247,14 +1278,13 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionInput input = 1;</code>
        */
       public Builder clearInput() {
-        if (inputBuilder_ == null) {
-          input_ = null;
-          onChanged();
-        } else {
-          input_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        input_ = null;
+        if (inputBuilder_ != null) {
+          inputBuilder_.dispose();
           inputBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -1265,7 +1295,7 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionInput input = 1;</code>
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.Builder getInputBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getInputFieldBuilder().getBuilder();
       }
@@ -1308,9 +1338,9 @@ public final class Telemetry {
       private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> pathList_ =
         java.util.Collections.emptyList();
       private void ensurePathListIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           pathList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Path>(pathList_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -1515,7 +1545,7 @@ public final class Telemetry {
       public Builder clearPathList() {
         if (pathListBuilder_ == null) {
           pathList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           pathListBuilder_.clear();
@@ -1627,7 +1657,7 @@ public final class Telemetry {
           pathListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.jti.Telemetry.Path, org.opennms.features.openconfig.proto.jti.Telemetry.Path.Builder, org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder>(
                   pathList_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           pathList_ = null;
@@ -1646,9 +1676,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+       * @return Whether the additionalConfig field is set.
        */
       public boolean hasAdditionalConfig() {
-        return additionalConfigBuilder_ != null || additionalConfig_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <pre>
@@ -1658,6 +1689,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
+       * @return The additionalConfig.
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig getAdditionalConfig() {
         if (additionalConfigBuilder_ == null) {
@@ -1681,11 +1713,11 @@ public final class Telemetry {
             throw new NullPointerException();
           }
           additionalConfig_ = value;
-          onChanged();
         } else {
           additionalConfigBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -1701,11 +1733,11 @@ public final class Telemetry {
           org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.Builder builderForValue) {
         if (additionalConfigBuilder_ == null) {
           additionalConfig_ = builderForValue.build();
-          onChanged();
         } else {
           additionalConfigBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -1719,17 +1751,20 @@ public final class Telemetry {
        */
       public Builder mergeAdditionalConfig(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig value) {
         if (additionalConfigBuilder_ == null) {
-          if (additionalConfig_ != null) {
-            additionalConfig_ =
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.newBuilder(additionalConfig_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            additionalConfig_ != null &&
+            additionalConfig_ != org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.getDefaultInstance()) {
+            getAdditionalConfigBuilder().mergeFrom(value);
           } else {
             additionalConfig_ = value;
           }
-          onChanged();
         } else {
           additionalConfigBuilder_.mergeFrom(value);
         }
-
+        if (additionalConfig_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -1742,14 +1777,13 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
        */
       public Builder clearAdditionalConfig() {
-        if (additionalConfigBuilder_ == null) {
-          additionalConfig_ = null;
-          onChanged();
-        } else {
-          additionalConfig_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        additionalConfig_ = null;
+        if (additionalConfigBuilder_ != null) {
+          additionalConfigBuilder_.dispose();
           additionalConfigBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -1762,7 +1796,7 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionAdditionalConfig additional_config = 3;</code>
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.Builder getAdditionalConfigBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getAdditionalConfigFieldBuilder().getBuilder();
       }
@@ -1838,7 +1872,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscriptionRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1928,7 +1973,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.SubscriptionInput}
    */
-  public  static final class SubscriptionInput extends
+  public static final class SubscriptionInput extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.SubscriptionInput)
       SubscriptionInputOrBuilder {
@@ -1948,61 +1993,6 @@ public final class Telemetry {
       return new SubscriptionInput();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscriptionInput(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                collectorList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Collector>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              collectorList_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.Collector.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          collectorList_ = java.util.Collections.unmodifiableList(collectorList_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_SubscriptionInput_descriptor;
@@ -2017,6 +2007,7 @@ public final class Telemetry {
     }
 
     public static final int COLLECTOR_LIST_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Collector> collectorList_;
     /**
      * <pre>
@@ -2028,6 +2019,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Collector collector_list = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Collector> getCollectorListList() {
       return collectorList_;
     }
@@ -2041,6 +2033,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Collector collector_list = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.CollectorOrBuilder> 
         getCollectorListOrBuilderList() {
       return collectorList_;
@@ -2055,6 +2048,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Collector collector_list = 1;</code>
      */
+    @java.lang.Override
     public int getCollectorListCount() {
       return collectorList_.size();
     }
@@ -2068,6 +2062,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Collector collector_list = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.Collector getCollectorList(int index) {
       return collectorList_.get(index);
     }
@@ -2081,6 +2076,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Collector collector_list = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.CollectorOrBuilder getCollectorListOrBuilder(
         int index) {
       return collectorList_.get(index);
@@ -2103,7 +2099,7 @@ public final class Telemetry {
       for (int i = 0; i < collectorList_.size(); i++) {
         output.writeMessage(1, collectorList_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -2116,7 +2112,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, collectorList_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -2133,7 +2129,7 @@ public final class Telemetry {
 
       if (!getCollectorListList()
           .equals(other.getCollectorListList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -2148,7 +2144,7 @@ public final class Telemetry {
         hash = (37 * hash) + COLLECTOR_LIST_FIELD_NUMBER;
         hash = (53 * hash) + getCollectorListList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2197,11 +2193,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2269,29 +2267,25 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getCollectorListFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (collectorListBuilder_ == null) {
           collectorList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          collectorList_ = null;
           collectorListBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -2318,7 +2312,13 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput result = new org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput result) {
         if (collectorListBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             collectorList_ = java.util.Collections.unmodifiableList(collectorList_);
@@ -2328,8 +2328,10 @@ public final class Telemetry {
         } else {
           result.collectorList_ = collectorListBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -2402,7 +2404,7 @@ public final class Telemetry {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2417,17 +2419,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.Collector m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.Collector.parser(),
+                        extensionRegistry);
+                if (collectorListBuilder_ == null) {
+                  ensureCollectorListIsMutable();
+                  collectorList_.add(m);
+                } else {
+                  collectorListBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionInput) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -2830,7 +2858,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscriptionInput(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2860,6 +2899,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string address = 1;</code>
+     * @return The address.
      */
     java.lang.String getAddress();
     /**
@@ -2868,6 +2908,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string address = 1;</code>
+     * @return The bytes for address.
      */
     com.google.protobuf.ByteString
         getAddressBytes();
@@ -2878,6 +2919,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 port = 2;</code>
+     * @return The port.
      */
     int getPort();
   }
@@ -2888,7 +2930,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.Collector}
    */
-  public  static final class Collector extends
+  public static final class Collector extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.Collector)
       CollectorOrBuilder {
@@ -2908,59 +2950,6 @@ public final class Telemetry {
       return new Collector();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Collector(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              address_ = s;
-              break;
-            }
-            case 16: {
-
-              port_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_Collector_descriptor;
@@ -2975,14 +2964,17 @@ public final class Telemetry {
     }
 
     public static final int ADDRESS_FIELD_NUMBER = 1;
-    private volatile java.lang.Object address_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object address_ = "";
     /**
      * <pre>
      * IP address of collector endpoint
      * </pre>
      *
      * <code>string address = 1;</code>
+     * @return The address.
      */
+    @java.lang.Override
     public java.lang.String getAddress() {
       java.lang.Object ref = address_;
       if (ref instanceof java.lang.String) {
@@ -3001,7 +2993,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string address = 1;</code>
+     * @return The bytes for address.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getAddressBytes() {
       java.lang.Object ref = address_;
@@ -3017,14 +3011,16 @@ public final class Telemetry {
     }
 
     public static final int PORT_FIELD_NUMBER = 2;
-    private int port_;
+    private int port_ = 0;
     /**
      * <pre>
      * Transport protocol port number for the collector destination.
      * </pre>
      *
      * <code>uint32 port = 2;</code>
+     * @return The port.
      */
+    @java.lang.Override
     public int getPort() {
       return port_;
     }
@@ -3043,13 +3039,13 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getAddressBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(address_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, address_);
       }
       if (port_ != 0) {
         output.writeUInt32(2, port_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3058,14 +3054,14 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getAddressBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(address_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, address_);
       }
       if (port_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(2, port_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3084,7 +3080,7 @@ public final class Telemetry {
           .equals(other.getAddress())) return false;
       if (getPort()
           != other.getPort()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -3099,7 +3095,7 @@ public final class Telemetry {
       hash = (53 * hash) + getAddress().hashCode();
       hash = (37 * hash) + PORT_FIELD_NUMBER;
       hash = (53 * hash) + getPort();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3148,11 +3144,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Collector parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Collector parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3220,26 +3218,20 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.Collector.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         address_ = "";
-
         port_ = 0;
-
         return this;
       }
 
@@ -3266,10 +3258,19 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.Collector buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.Collector result = new org.opennms.features.openconfig.proto.jti.Telemetry.Collector(this);
-        result.address_ = address_;
-        result.port_ = port_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.Collector result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.address_ = address_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.port_ = port_;
+        }
       }
 
       @java.lang.Override
@@ -3318,12 +3319,13 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.Collector.getDefaultInstance()) return this;
         if (!other.getAddress().isEmpty()) {
           address_ = other.address_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.getPort() != 0) {
           setPort(other.getPort());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -3338,19 +3340,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.Collector parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                address_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 16: {
+                port_ = input.readUInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.Collector) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object address_ = "";
       /**
@@ -3359,6 +3385,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string address = 1;</code>
+       * @return The address.
        */
       public java.lang.String getAddress() {
         java.lang.Object ref = address_;
@@ -3378,6 +3405,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string address = 1;</code>
+       * @return The bytes for address.
        */
       public com.google.protobuf.ByteString
           getAddressBytes() {
@@ -3398,14 +3426,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string address = 1;</code>
+       * @param value The address to set.
+       * @return This builder for chaining.
        */
       public Builder setAddress(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         address_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3415,10 +3443,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string address = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearAddress() {
-        
         address_ = getDefaultInstance().getAddress();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -3428,15 +3457,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string address = 1;</code>
+       * @param value The bytes for address to set.
+       * @return This builder for chaining.
        */
       public Builder setAddressBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         address_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3448,7 +3477,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 port = 2;</code>
+       * @return The port.
        */
+      @java.lang.Override
       public int getPort() {
         return port_;
       }
@@ -3458,10 +3489,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 port = 2;</code>
+       * @param value The port to set.
+       * @return This builder for chaining.
        */
       public Builder setPort(int value) {
-        
+
         port_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3471,9 +3505,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 port = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPort() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         port_ = 0;
         onChanged();
         return this;
@@ -3511,7 +3546,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Collector(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -3542,6 +3588,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 1;</code>
+     * @return The path.
      */
     java.lang.String getPath();
     /**
@@ -3551,6 +3598,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
     com.google.protobuf.ByteString
         getPathBytes();
@@ -3561,6 +3609,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string filter = 2;</code>
+     * @return The filter.
      */
     java.lang.String getFilter();
     /**
@@ -3569,6 +3618,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string filter = 2;</code>
+     * @return The bytes for filter.
      */
     com.google.protobuf.ByteString
         getFilterBytes();
@@ -3580,6 +3630,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool suppress_unchanged = 3;</code>
+     * @return The suppressUnchanged.
      */
     boolean getSuppressUnchanged();
 
@@ -3592,6 +3643,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 max_silent_interval = 4;</code>
+     * @return The maxSilentInterval.
      */
     int getMaxSilentInterval();
 
@@ -3601,11 +3653,13 @@ public final class Telemetry {
      * specified data to the collector platform. The target device
      * will sample the corresponding data (e.g,. a counter) and
      * immediately send to the collector destination.
+     *
      * If sample-frequency is set to 0, then the network device
      * must emit an update upon every datum change.
      * </pre>
      *
      * <code>uint32 sample_frequency = 5;</code>
+     * @return The sampleFrequency.
      */
     int getSampleFrequency();
 
@@ -3619,6 +3673,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool need_eom = 6;</code>
+     * @return The needEom.
      */
     boolean getNeedEom();
   }
@@ -3629,7 +3684,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.Path}
    */
-  public  static final class Path extends
+  public static final class Path extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.Path)
       PathOrBuilder {
@@ -3650,80 +3705,6 @@ public final class Telemetry {
       return new Path();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Path(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              path_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              filter_ = s;
-              break;
-            }
-            case 24: {
-
-              suppressUnchanged_ = input.readBool();
-              break;
-            }
-            case 32: {
-
-              maxSilentInterval_ = input.readUInt32();
-              break;
-            }
-            case 40: {
-
-              sampleFrequency_ = input.readUInt32();
-              break;
-            }
-            case 48: {
-
-              needEom_ = input.readBool();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_Path_descriptor;
@@ -3738,7 +3719,8 @@ public final class Telemetry {
     }
 
     public static final int PATH_FIELD_NUMBER = 1;
-    private volatile java.lang.Object path_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object path_ = "";
     /**
      * <pre>
      * Data model path of interest
@@ -3746,7 +3728,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 1;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
@@ -3766,7 +3750,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPathBytes() {
       java.lang.Object ref = path_;
@@ -3782,14 +3768,17 @@ public final class Telemetry {
     }
 
     public static final int FILTER_FIELD_NUMBER = 2;
-    private volatile java.lang.Object filter_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object filter_ = "";
     /**
      * <pre>
      * Regular expression to be used in filtering state leaves
      * </pre>
      *
      * <code>string filter = 2;</code>
+     * @return The filter.
      */
+    @java.lang.Override
     public java.lang.String getFilter() {
       java.lang.Object ref = filter_;
       if (ref instanceof java.lang.String) {
@@ -3808,7 +3797,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string filter = 2;</code>
+     * @return The bytes for filter.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getFilterBytes() {
       java.lang.Object ref = filter_;
@@ -3824,7 +3815,7 @@ public final class Telemetry {
     }
 
     public static final int SUPPRESS_UNCHANGED_FIELD_NUMBER = 3;
-    private boolean suppressUnchanged_;
+    private boolean suppressUnchanged_ = false;
     /**
      * <pre>
      * If this is set to true, the target device will only send
@@ -3832,13 +3823,15 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool suppress_unchanged = 3;</code>
+     * @return The suppressUnchanged.
      */
+    @java.lang.Override
     public boolean getSuppressUnchanged() {
       return suppressUnchanged_;
     }
 
     public static final int MAX_SILENT_INTERVAL_FIELD_NUMBER = 4;
-    private int maxSilentInterval_;
+    private int maxSilentInterval_ = 0;
     /**
      * <pre>
      * Maximum time in ms the target device may go without sending
@@ -3848,31 +3841,36 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 max_silent_interval = 4;</code>
+     * @return The maxSilentInterval.
      */
+    @java.lang.Override
     public int getMaxSilentInterval() {
       return maxSilentInterval_;
     }
 
     public static final int SAMPLE_FREQUENCY_FIELD_NUMBER = 5;
-    private int sampleFrequency_;
+    private int sampleFrequency_ = 0;
     /**
      * <pre>
      * Time in ms between collection and transmission of the
      * specified data to the collector platform. The target device
      * will sample the corresponding data (e.g,. a counter) and
      * immediately send to the collector destination.
+     *
      * If sample-frequency is set to 0, then the network device
      * must emit an update upon every datum change.
      * </pre>
      *
      * <code>uint32 sample_frequency = 5;</code>
+     * @return The sampleFrequency.
      */
+    @java.lang.Override
     public int getSampleFrequency() {
       return sampleFrequency_;
     }
 
     public static final int NEED_EOM_FIELD_NUMBER = 6;
-    private boolean needEom_;
+    private boolean needEom_ = false;
     /**
      * <pre>
      * EOM needed for each walk cycle of this path?
@@ -3883,7 +3881,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool need_eom = 6;</code>
+     * @return The needEom.
      */
+    @java.lang.Override
     public boolean getNeedEom() {
       return needEom_;
     }
@@ -3902,10 +3902,10 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, path_);
       }
-      if (!getFilterBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filter_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, filter_);
       }
       if (suppressUnchanged_ != false) {
@@ -3920,7 +3920,7 @@ public final class Telemetry {
       if (needEom_ != false) {
         output.writeBool(6, needEom_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3929,10 +3929,10 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, path_);
       }
-      if (!getFilterBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filter_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, filter_);
       }
       if (suppressUnchanged_ != false) {
@@ -3951,7 +3951,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(6, needEom_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3978,7 +3978,7 @@ public final class Telemetry {
           != other.getSampleFrequency()) return false;
       if (getNeedEom()
           != other.getNeedEom()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4003,7 +4003,7 @@ public final class Telemetry {
       hash = (37 * hash) + NEED_EOM_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getNeedEom());
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4052,11 +4052,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Path parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Path parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4124,34 +4126,24 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.Path.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         path_ = "";
-
         filter_ = "";
-
         suppressUnchanged_ = false;
-
         maxSilentInterval_ = 0;
-
         sampleFrequency_ = 0;
-
         needEom_ = false;
-
         return this;
       }
 
@@ -4178,14 +4170,31 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.Path buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.Path result = new org.opennms.features.openconfig.proto.jti.Telemetry.Path(this);
-        result.path_ = path_;
-        result.filter_ = filter_;
-        result.suppressUnchanged_ = suppressUnchanged_;
-        result.maxSilentInterval_ = maxSilentInterval_;
-        result.sampleFrequency_ = sampleFrequency_;
-        result.needEom_ = needEom_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.Path result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = path_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.filter_ = filter_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.suppressUnchanged_ = suppressUnchanged_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.maxSilentInterval_ = maxSilentInterval_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.sampleFrequency_ = sampleFrequency_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.needEom_ = needEom_;
+        }
       }
 
       @java.lang.Override
@@ -4234,10 +4243,12 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.Path.getDefaultInstance()) return this;
         if (!other.getPath().isEmpty()) {
           path_ = other.path_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getFilter().isEmpty()) {
           filter_ = other.filter_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.getSuppressUnchanged() != false) {
@@ -4252,7 +4263,7 @@ public final class Telemetry {
         if (other.getNeedEom() != false) {
           setNeedEom(other.getNeedEom());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -4267,19 +4278,63 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.Path parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                path_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                filter_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                suppressUnchanged_ = input.readBool();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 32: {
+                maxSilentInterval_ = input.readUInt32();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 40: {
+                sampleFrequency_ = input.readUInt32();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 48: {
+                needEom_ = input.readBool();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 48
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.Path) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object path_ = "";
       /**
@@ -4289,6 +4344,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 1;</code>
+       * @return The path.
        */
       public java.lang.String getPath() {
         java.lang.Object ref = path_;
@@ -4309,6 +4365,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 1;</code>
+       * @return The bytes for path.
        */
       public com.google.protobuf.ByteString
           getPathBytes() {
@@ -4330,14 +4387,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 1;</code>
+       * @param value The path to set.
+       * @return This builder for chaining.
        */
       public Builder setPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4348,10 +4405,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPath() {
-        
         path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -4362,15 +4420,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 1;</code>
+       * @param value The bytes for path to set.
+       * @return This builder for chaining.
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4382,6 +4440,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string filter = 2;</code>
+       * @return The filter.
        */
       public java.lang.String getFilter() {
         java.lang.Object ref = filter_;
@@ -4401,6 +4460,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string filter = 2;</code>
+       * @return The bytes for filter.
        */
       public com.google.protobuf.ByteString
           getFilterBytes() {
@@ -4421,14 +4481,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string filter = 2;</code>
+       * @param value The filter to set.
+       * @return This builder for chaining.
        */
       public Builder setFilter(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         filter_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4438,10 +4498,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string filter = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFilter() {
-        
         filter_ = getDefaultInstance().getFilter();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -4451,15 +4512,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string filter = 2;</code>
+       * @param value The bytes for filter to set.
+       * @return This builder for chaining.
        */
       public Builder setFilterBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         filter_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4472,7 +4533,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool suppress_unchanged = 3;</code>
+       * @return The suppressUnchanged.
        */
+      @java.lang.Override
       public boolean getSuppressUnchanged() {
         return suppressUnchanged_;
       }
@@ -4483,10 +4546,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool suppress_unchanged = 3;</code>
+       * @param value The suppressUnchanged to set.
+       * @return This builder for chaining.
        */
       public Builder setSuppressUnchanged(boolean value) {
-        
+
         suppressUnchanged_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -4497,9 +4563,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool suppress_unchanged = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSuppressUnchanged() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         suppressUnchanged_ = false;
         onChanged();
         return this;
@@ -4515,7 +4582,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 max_silent_interval = 4;</code>
+       * @return The maxSilentInterval.
        */
+      @java.lang.Override
       public int getMaxSilentInterval() {
         return maxSilentInterval_;
       }
@@ -4528,10 +4597,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 max_silent_interval = 4;</code>
+       * @param value The maxSilentInterval to set.
+       * @return This builder for chaining.
        */
       public Builder setMaxSilentInterval(int value) {
-        
+
         maxSilentInterval_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -4544,9 +4616,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 max_silent_interval = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearMaxSilentInterval() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         maxSilentInterval_ = 0;
         onChanged();
         return this;
@@ -4559,12 +4632,15 @@ public final class Telemetry {
        * specified data to the collector platform. The target device
        * will sample the corresponding data (e.g,. a counter) and
        * immediately send to the collector destination.
+       *
        * If sample-frequency is set to 0, then the network device
        * must emit an update upon every datum change.
        * </pre>
        *
        * <code>uint32 sample_frequency = 5;</code>
+       * @return The sampleFrequency.
        */
+      @java.lang.Override
       public int getSampleFrequency() {
         return sampleFrequency_;
       }
@@ -4574,15 +4650,19 @@ public final class Telemetry {
        * specified data to the collector platform. The target device
        * will sample the corresponding data (e.g,. a counter) and
        * immediately send to the collector destination.
+       *
        * If sample-frequency is set to 0, then the network device
        * must emit an update upon every datum change.
        * </pre>
        *
        * <code>uint32 sample_frequency = 5;</code>
+       * @param value The sampleFrequency to set.
+       * @return This builder for chaining.
        */
       public Builder setSampleFrequency(int value) {
-        
+
         sampleFrequency_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -4592,14 +4672,16 @@ public final class Telemetry {
        * specified data to the collector platform. The target device
        * will sample the corresponding data (e.g,. a counter) and
        * immediately send to the collector destination.
+       *
        * If sample-frequency is set to 0, then the network device
        * must emit an update upon every datum change.
        * </pre>
        *
        * <code>uint32 sample_frequency = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSampleFrequency() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         sampleFrequency_ = 0;
         onChanged();
         return this;
@@ -4616,7 +4698,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eom = 6;</code>
+       * @return The needEom.
        */
+      @java.lang.Override
       public boolean getNeedEom() {
         return needEom_;
       }
@@ -4630,10 +4714,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eom = 6;</code>
+       * @param value The needEom to set.
+       * @return This builder for chaining.
        */
       public Builder setNeedEom(boolean value) {
-        
+
         needEom_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -4647,9 +4734,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eom = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNeedEom() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         needEom_ = false;
         onChanged();
         return this;
@@ -4687,7 +4775,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Path(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4717,6 +4816,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>int32 limit_records = 1;</code>
+     * @return The limitRecords.
      */
     int getLimitRecords();
 
@@ -4726,6 +4826,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>int32 limit_time_seconds = 2;</code>
+     * @return The limitTimeSeconds.
      */
     int getLimitTimeSeconds();
 
@@ -4736,6 +4837,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool need_eos = 3;</code>
+     * @return The needEos.
      */
     boolean getNeedEos();
   }
@@ -4746,7 +4848,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.SubscriptionAdditionalConfig}
    */
-  public  static final class SubscriptionAdditionalConfig extends
+  public static final class SubscriptionAdditionalConfig extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.SubscriptionAdditionalConfig)
       SubscriptionAdditionalConfigOrBuilder {
@@ -4765,63 +4867,6 @@ public final class Telemetry {
       return new SubscriptionAdditionalConfig();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscriptionAdditionalConfig(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              limitRecords_ = input.readInt32();
-              break;
-            }
-            case 16: {
-
-              limitTimeSeconds_ = input.readInt32();
-              break;
-            }
-            case 24: {
-
-              needEos_ = input.readBool();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_SubscriptionAdditionalConfig_descriptor;
@@ -4836,33 +4881,37 @@ public final class Telemetry {
     }
 
     public static final int LIMIT_RECORDS_FIELD_NUMBER = 1;
-    private int limitRecords_;
+    private int limitRecords_ = 0;
     /**
      * <pre>
      * limit the number of records sent in the stream
      * </pre>
      *
      * <code>int32 limit_records = 1;</code>
+     * @return The limitRecords.
      */
+    @java.lang.Override
     public int getLimitRecords() {
       return limitRecords_;
     }
 
     public static final int LIMIT_TIME_SECONDS_FIELD_NUMBER = 2;
-    private int limitTimeSeconds_;
+    private int limitTimeSeconds_ = 0;
     /**
      * <pre>
      * limit the time the stream remains open
      * </pre>
      *
      * <code>int32 limit_time_seconds = 2;</code>
+     * @return The limitTimeSeconds.
      */
+    @java.lang.Override
     public int getLimitTimeSeconds() {
       return limitTimeSeconds_;
     }
 
     public static final int NEED_EOS_FIELD_NUMBER = 3;
-    private boolean needEos_;
+    private boolean needEos_ = false;
     /**
      * <pre>
      * EOS needed for this subscription?
@@ -4870,7 +4919,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool need_eos = 3;</code>
+     * @return The needEos.
      */
+    @java.lang.Override
     public boolean getNeedEos() {
       return needEos_;
     }
@@ -4898,7 +4949,7 @@ public final class Telemetry {
       if (needEos_ != false) {
         output.writeBool(3, needEos_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4919,7 +4970,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, needEos_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4940,7 +4991,7 @@ public final class Telemetry {
           != other.getLimitTimeSeconds()) return false;
       if (getNeedEos()
           != other.getNeedEos()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4958,7 +5009,7 @@ public final class Telemetry {
       hash = (37 * hash) + NEED_EOS_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getNeedEos());
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5007,11 +5058,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5079,28 +5132,21 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         limitRecords_ = 0;
-
         limitTimeSeconds_ = 0;
-
         needEos_ = false;
-
         return this;
       }
 
@@ -5127,11 +5173,22 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig result = new org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig(this);
-        result.limitRecords_ = limitRecords_;
-        result.limitTimeSeconds_ = limitTimeSeconds_;
-        result.needEos_ = needEos_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.limitRecords_ = limitRecords_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.limitTimeSeconds_ = limitTimeSeconds_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.needEos_ = needEos_;
+        }
       }
 
       @java.lang.Override
@@ -5187,7 +5244,7 @@ public final class Telemetry {
         if (other.getNeedEos() != false) {
           setNeedEos(other.getNeedEos());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5202,19 +5259,48 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                limitRecords_ = input.readInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                limitTimeSeconds_ = input.readInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                needEos_ = input.readBool();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionAdditionalConfig) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int limitRecords_ ;
       /**
@@ -5223,7 +5309,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_records = 1;</code>
+       * @return The limitRecords.
        */
+      @java.lang.Override
       public int getLimitRecords() {
         return limitRecords_;
       }
@@ -5233,10 +5321,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_records = 1;</code>
+       * @param value The limitRecords to set.
+       * @return This builder for chaining.
        */
       public Builder setLimitRecords(int value) {
-        
+
         limitRecords_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5246,9 +5337,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_records = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLimitRecords() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         limitRecords_ = 0;
         onChanged();
         return this;
@@ -5261,7 +5353,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_time_seconds = 2;</code>
+       * @return The limitTimeSeconds.
        */
+      @java.lang.Override
       public int getLimitTimeSeconds() {
         return limitTimeSeconds_;
       }
@@ -5271,10 +5365,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_time_seconds = 2;</code>
+       * @param value The limitTimeSeconds to set.
+       * @return This builder for chaining.
        */
       public Builder setLimitTimeSeconds(int value) {
-        
+
         limitTimeSeconds_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5284,9 +5381,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>int32 limit_time_seconds = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLimitTimeSeconds() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         limitTimeSeconds_ = 0;
         onChanged();
         return this;
@@ -5300,7 +5398,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eos = 3;</code>
+       * @return The needEos.
        */
+      @java.lang.Override
       public boolean getNeedEos() {
         return needEos_;
       }
@@ -5311,10 +5411,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eos = 3;</code>
+       * @param value The needEos to set.
+       * @return This builder for chaining.
        */
       public Builder setNeedEos(boolean value) {
-        
+
         needEos_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -5325,9 +5428,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool need_eos = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNeedEos() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         needEos_ = false;
         onChanged();
         return this;
@@ -5365,7 +5469,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscriptionAdditionalConfig(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5396,6 +5511,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionResponse response = 1;</code>
+     * @return Whether the response field is set.
      */
     boolean hasResponse();
     /**
@@ -5405,6 +5521,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionResponse response = 1;</code>
+     * @return The response.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse getResponse();
     /**
@@ -5473,7 +5590,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.SubscriptionReply}
    */
-  public  static final class SubscriptionReply extends
+  public static final class SubscriptionReply extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.SubscriptionReply)
       SubscriptionReplyOrBuilder {
@@ -5493,74 +5610,6 @@ public final class Telemetry {
       return new SubscriptionReply();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscriptionReply(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.Builder subBuilder = null;
-              if (response_ != null) {
-                subBuilder = response_.toBuilder();
-              }
-              response_ = input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(response_);
-                response_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                pathList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Path>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              pathList_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.Path.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          pathList_ = java.util.Collections.unmodifiableList(pathList_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_SubscriptionReply_descriptor;
@@ -5574,6 +5623,7 @@ public final class Telemetry {
               org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply.class, org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply.Builder.class);
     }
 
+    private int bitField0_;
     public static final int RESPONSE_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse response_;
     /**
@@ -5583,9 +5633,11 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionResponse response = 1;</code>
+     * @return Whether the response field is set.
      */
+    @java.lang.Override
     public boolean hasResponse() {
-      return response_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -5594,7 +5646,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.SubscriptionResponse response = 1;</code>
+     * @return The response.
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse getResponse() {
       return response_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.getDefaultInstance() : response_;
     }
@@ -5606,11 +5660,13 @@ public final class Telemetry {
      *
      * <code>.telemetry.SubscriptionResponse response = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponseOrBuilder getResponseOrBuilder() {
-      return getResponse();
+      return response_ == null ? org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.getDefaultInstance() : response_;
     }
 
     public static final int PATH_LIST_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> pathList_;
     /**
      * <pre>
@@ -5620,6 +5676,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> getPathListList() {
       return pathList_;
     }
@@ -5631,6 +5688,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder> 
         getPathListOrBuilderList() {
       return pathList_;
@@ -5643,6 +5701,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public int getPathListCount() {
       return pathList_.size();
     }
@@ -5654,6 +5713,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.Path getPathList(int index) {
       return pathList_.get(index);
     }
@@ -5665,6 +5725,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Path path_list = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder getPathListOrBuilder(
         int index) {
       return pathList_.get(index);
@@ -5684,13 +5745,13 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (response_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getResponse());
       }
       for (int i = 0; i < pathList_.size(); i++) {
         output.writeMessage(2, pathList_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5699,7 +5760,7 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (response_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getResponse());
       }
@@ -5707,7 +5768,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, pathList_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5729,7 +5790,7 @@ public final class Telemetry {
       }
       if (!getPathListList()
           .equals(other.getPathListList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -5748,7 +5809,7 @@ public final class Telemetry {
         hash = (37 * hash) + PATH_LIST_FIELD_NUMBER;
         hash = (53 * hash) + getPathListList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5797,11 +5858,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5880,24 +5943,26 @@ public final class Telemetry {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getResponseFieldBuilder();
           getPathListFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (responseBuilder_ == null) {
-          response_ = null;
-        } else {
-          response_ = null;
+        bitField0_ = 0;
+        response_ = null;
+        if (responseBuilder_ != null) {
+          responseBuilder_.dispose();
           responseBuilder_ = null;
         }
         if (pathListBuilder_ == null) {
           pathList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          pathList_ = null;
           pathListBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -5924,23 +5989,34 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply result = new org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply(this);
-        int from_bitField0_ = bitField0_;
-        if (responseBuilder_ == null) {
-          result.response_ = response_;
-        } else {
-          result.response_ = responseBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply result) {
         if (pathListBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             pathList_ = java.util.Collections.unmodifiableList(pathList_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.pathList_ = pathList_;
         } else {
           result.pathList_ = pathListBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.response_ = responseBuilder_ == null
+              ? response_
+              : responseBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -5994,7 +6070,7 @@ public final class Telemetry {
           if (!other.pathList_.isEmpty()) {
             if (pathList_.isEmpty()) {
               pathList_ = other.pathList_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensurePathListIsMutable();
               pathList_.addAll(other.pathList_);
@@ -6007,7 +6083,7 @@ public final class Telemetry {
               pathListBuilder_.dispose();
               pathListBuilder_ = null;
               pathList_ = other.pathList_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               pathListBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getPathListFieldBuilder() : null;
@@ -6016,7 +6092,7 @@ public final class Telemetry {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6031,17 +6107,50 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getResponseFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.Path m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.Path.parser(),
+                        extensionRegistry);
+                if (pathListBuilder_ == null) {
+                  ensurePathListIsMutable();
+                  pathList_.add(m);
+                } else {
+                  pathListBuilder_.addMessage(m);
+                }
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -6056,9 +6165,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionResponse response = 1;</code>
+       * @return Whether the response field is set.
        */
       public boolean hasResponse() {
-        return responseBuilder_ != null || response_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -6067,6 +6177,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.SubscriptionResponse response = 1;</code>
+       * @return The response.
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse getResponse() {
         if (responseBuilder_ == null) {
@@ -6089,11 +6200,11 @@ public final class Telemetry {
             throw new NullPointerException();
           }
           response_ = value;
-          onChanged();
         } else {
           responseBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -6108,11 +6219,11 @@ public final class Telemetry {
           org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.Builder builderForValue) {
         if (responseBuilder_ == null) {
           response_ = builderForValue.build();
-          onChanged();
         } else {
           responseBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -6125,17 +6236,20 @@ public final class Telemetry {
        */
       public Builder mergeResponse(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse value) {
         if (responseBuilder_ == null) {
-          if (response_ != null) {
-            response_ =
-              org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.newBuilder(response_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            response_ != null &&
+            response_ != org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.getDefaultInstance()) {
+            getResponseBuilder().mergeFrom(value);
           } else {
             response_ = value;
           }
-          onChanged();
         } else {
           responseBuilder_.mergeFrom(value);
         }
-
+        if (response_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -6147,14 +6261,13 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionResponse response = 1;</code>
        */
       public Builder clearResponse() {
-        if (responseBuilder_ == null) {
-          response_ = null;
-          onChanged();
-        } else {
-          response_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        response_ = null;
+        if (responseBuilder_ != null) {
+          responseBuilder_.dispose();
           responseBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -6166,7 +6279,7 @@ public final class Telemetry {
        * <code>.telemetry.SubscriptionResponse response = 1;</code>
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.Builder getResponseBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getResponseFieldBuilder().getBuilder();
       }
@@ -6211,9 +6324,9 @@ public final class Telemetry {
       private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Path> pathList_ =
         java.util.Collections.emptyList();
       private void ensurePathListIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           pathList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Path>(pathList_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -6418,7 +6531,7 @@ public final class Telemetry {
       public Builder clearPathList() {
         if (pathListBuilder_ == null) {
           pathList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           pathListBuilder_.clear();
@@ -6530,7 +6643,7 @@ public final class Telemetry {
           pathListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.jti.Telemetry.Path, org.opennms.features.openconfig.proto.jti.Telemetry.Path.Builder, org.opennms.features.openconfig.proto.jti.Telemetry.PathOrBuilder>(
                   pathList_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           pathList_ = null;
@@ -6570,7 +6683,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscriptionReply(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -6602,6 +6726,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
     int getSubscriptionId();
   }
@@ -6612,7 +6737,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.SubscriptionResponse}
    */
-  public  static final class SubscriptionResponse extends
+  public static final class SubscriptionResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.SubscriptionResponse)
       SubscriptionResponseOrBuilder {
@@ -6631,53 +6756,6 @@ public final class Telemetry {
       return new SubscriptionResponse();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscriptionResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              subscriptionId_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_SubscriptionResponse_descriptor;
@@ -6692,7 +6770,7 @@ public final class Telemetry {
     }
 
     public static final int SUBSCRIPTION_ID_FIELD_NUMBER = 1;
-    private int subscriptionId_;
+    private int subscriptionId_ = 0;
     /**
      * <pre>
      * Unique id for the subscription on the device. This is
@@ -6701,7 +6779,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
+    @java.lang.Override
     public int getSubscriptionId() {
       return subscriptionId_;
     }
@@ -6723,7 +6803,7 @@ public final class Telemetry {
       if (subscriptionId_ != 0) {
         output.writeUInt32(1, subscriptionId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -6736,7 +6816,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, subscriptionId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6753,7 +6833,7 @@ public final class Telemetry {
 
       if (getSubscriptionId()
           != other.getSubscriptionId()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -6766,7 +6846,7 @@ public final class Telemetry {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SUBSCRIPTION_ID_FIELD_NUMBER;
       hash = (53 * hash) + getSubscriptionId();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6815,11 +6895,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6887,24 +6969,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         subscriptionId_ = 0;
-
         return this;
       }
 
@@ -6931,9 +7008,16 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse result = new org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse(this);
-        result.subscriptionId_ = subscriptionId_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.subscriptionId_ = subscriptionId_;
+        }
       }
 
       @java.lang.Override
@@ -6983,7 +7067,7 @@ public final class Telemetry {
         if (other.getSubscriptionId() != 0) {
           setSubscriptionId(other.getSubscriptionId());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6998,19 +7082,38 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                subscriptionId_ = input.readUInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int subscriptionId_ ;
       /**
@@ -7021,7 +7124,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return The subscriptionId.
        */
+      @java.lang.Override
       public int getSubscriptionId() {
         return subscriptionId_;
       }
@@ -7033,10 +7138,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @param value The subscriptionId to set.
+       * @return This builder for chaining.
        */
       public Builder setSubscriptionId(int value) {
-        
+
         subscriptionId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7048,9 +7156,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSubscriptionId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         subscriptionId_ = 0;
         onChanged();
         return this;
@@ -7088,7 +7197,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscriptionResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7118,6 +7238,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string system_id = 1;</code>
+     * @return The systemId.
      */
     java.lang.String getSystemId();
     /**
@@ -7126,6 +7247,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string system_id = 1;</code>
+     * @return The bytes for systemId.
      */
     com.google.protobuf.ByteString
         getSystemIdBytes();
@@ -7136,6 +7258,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 component_id = 2;</code>
+     * @return The componentId.
      */
     int getComponentId();
 
@@ -7145,6 +7268,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 sub_component_id = 3;</code>
+     * @return The subComponentId.
      */
     int getSubComponentId();
 
@@ -7154,6 +7278,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 4;</code>
+     * @return The path.
      */
     java.lang.String getPath();
     /**
@@ -7162,6 +7287,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 4;</code>
+     * @return The bytes for path.
      */
     com.google.protobuf.ByteString
         getPathBytes();
@@ -7173,6 +7299,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint64 sequence_number = 5;</code>
+     * @return The sequenceNumber.
      */
     long getSequenceNumber();
 
@@ -7182,6 +7309,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint64 timestamp = 6;</code>
+     * @return The timestamp.
      */
     long getTimestamp();
 
@@ -7328,6 +7456,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>bool sync_response = 10;</code>
+     * @return The syncResponse.
      */
     boolean getSyncResponse();
   }
@@ -7339,7 +7468,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.OpenConfigData}
    */
-  public  static final class OpenConfigData extends
+  public static final class OpenConfigData extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.OpenConfigData)
       OpenConfigDataOrBuilder {
@@ -7363,122 +7492,6 @@ public final class Telemetry {
       return new OpenConfigData();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private OpenConfigData(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              systemId_ = s;
-              break;
-            }
-            case 16: {
-
-              componentId_ = input.readUInt32();
-              break;
-            }
-            case 24: {
-
-              subComponentId_ = input.readUInt32();
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              path_ = s;
-              break;
-            }
-            case 40: {
-
-              sequenceNumber_ = input.readUInt64();
-              break;
-            }
-            case 48: {
-
-              timestamp_ = input.readUInt64();
-              break;
-            }
-            case 58: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                kv_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              kv_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.parser(), extensionRegistry));
-              break;
-            }
-            case 66: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                delete_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Delete>();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              delete_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.Delete.parser(), extensionRegistry));
-              break;
-            }
-            case 74: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                eom_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Eom>();
-                mutable_bitField0_ |= 0x00000004;
-              }
-              eom_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.Eom.parser(), extensionRegistry));
-              break;
-            }
-            case 80: {
-
-              syncResponse_ = input.readBool();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          kv_ = java.util.Collections.unmodifiableList(kv_);
-        }
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          delete_ = java.util.Collections.unmodifiableList(delete_);
-        }
-        if (((mutable_bitField0_ & 0x00000004) != 0)) {
-          eom_ = java.util.Collections.unmodifiableList(eom_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_OpenConfigData_descriptor;
@@ -7493,14 +7506,17 @@ public final class Telemetry {
     }
 
     public static final int SYSTEM_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object systemId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object systemId_ = "";
     /**
      * <pre>
      * router name:export IP address
      * </pre>
      *
      * <code>string system_id = 1;</code>
+     * @return The systemId.
      */
+    @java.lang.Override
     public java.lang.String getSystemId() {
       java.lang.Object ref = systemId_;
       if (ref instanceof java.lang.String) {
@@ -7519,7 +7535,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string system_id = 1;</code>
+     * @return The bytes for systemId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getSystemIdBytes() {
       java.lang.Object ref = systemId_;
@@ -7535,40 +7553,47 @@ public final class Telemetry {
     }
 
     public static final int COMPONENT_ID_FIELD_NUMBER = 2;
-    private int componentId_;
+    private int componentId_ = 0;
     /**
      * <pre>
      * line card / RE (slot number)
      * </pre>
      *
      * <code>uint32 component_id = 2;</code>
+     * @return The componentId.
      */
+    @java.lang.Override
     public int getComponentId() {
       return componentId_;
     }
 
     public static final int SUB_COMPONENT_ID_FIELD_NUMBER = 3;
-    private int subComponentId_;
+    private int subComponentId_ = 0;
     /**
      * <pre>
      * PFE (if applicable)
      * </pre>
      *
      * <code>uint32 sub_component_id = 3;</code>
+     * @return The subComponentId.
      */
+    @java.lang.Override
     public int getSubComponentId() {
       return subComponentId_;
     }
 
     public static final int PATH_FIELD_NUMBER = 4;
-    private volatile java.lang.Object path_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object path_ = "";
     /**
      * <pre>
      * Path specification for elements of OpenConfig data models
      * </pre>
      *
      * <code>string path = 4;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
@@ -7587,7 +7612,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string path = 4;</code>
+     * @return The bytes for path.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPathBytes() {
       java.lang.Object ref = path_;
@@ -7603,7 +7630,7 @@ public final class Telemetry {
     }
 
     public static final int SEQUENCE_NUMBER_FIELD_NUMBER = 5;
-    private long sequenceNumber_;
+    private long sequenceNumber_ = 0L;
     /**
      * <pre>
      * Sequence number, monotonically increasing for each
@@ -7611,25 +7638,30 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint64 sequence_number = 5;</code>
+     * @return The sequenceNumber.
      */
+    @java.lang.Override
     public long getSequenceNumber() {
       return sequenceNumber_;
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 6;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * timestamp (milliseconds since epoch)
      * </pre>
      *
      * <code>uint64 timestamp = 6;</code>
+     * @return The timestamp.
      */
+    @java.lang.Override
     public long getTimestamp() {
       return timestamp_;
     }
 
     public static final int KV_FIELD_NUMBER = 7;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue> kv_;
     /**
      * <pre>
@@ -7638,6 +7670,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 7;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue> getKvList() {
       return kv_;
     }
@@ -7648,6 +7681,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 7;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.KeyValueOrBuilder> 
         getKvOrBuilderList() {
       return kv_;
@@ -7659,6 +7693,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 7;</code>
      */
+    @java.lang.Override
     public int getKvCount() {
       return kv_.size();
     }
@@ -7669,6 +7704,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 7;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue getKv(int index) {
       return kv_.get(index);
     }
@@ -7679,12 +7715,14 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 7;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValueOrBuilder getKvOrBuilder(
         int index) {
       return kv_.get(index);
     }
 
     public static final int DELETE_FIELD_NUMBER = 8;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Delete> delete_;
     /**
      * <pre>
@@ -7693,6 +7731,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Delete delete = 8;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Delete> getDeleteList() {
       return delete_;
     }
@@ -7703,6 +7742,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Delete delete = 8;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.DeleteOrBuilder> 
         getDeleteOrBuilderList() {
       return delete_;
@@ -7714,6 +7754,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Delete delete = 8;</code>
      */
+    @java.lang.Override
     public int getDeleteCount() {
       return delete_.size();
     }
@@ -7724,6 +7765,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Delete delete = 8;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.Delete getDelete(int index) {
       return delete_.get(index);
     }
@@ -7734,12 +7776,14 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Delete delete = 8;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.DeleteOrBuilder getDeleteOrBuilder(
         int index) {
       return delete_.get(index);
     }
 
     public static final int EOM_FIELD_NUMBER = 9;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Eom> eom_;
     /**
      * <pre>
@@ -7749,6 +7793,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Eom eom = 9;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Eom> getEomList() {
       return eom_;
     }
@@ -7760,6 +7805,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Eom eom = 9;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.EomOrBuilder> 
         getEomOrBuilderList() {
       return eom_;
@@ -7772,6 +7818,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Eom eom = 9;</code>
      */
+    @java.lang.Override
     public int getEomCount() {
       return eom_.size();
     }
@@ -7783,6 +7830,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Eom eom = 9;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.Eom getEom(int index) {
       return eom_.get(index);
     }
@@ -7794,20 +7842,23 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.Eom eom = 9;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.EomOrBuilder getEomOrBuilder(
         int index) {
       return eom_.get(index);
     }
 
     public static final int SYNC_RESPONSE_FIELD_NUMBER = 10;
-    private boolean syncResponse_;
+    private boolean syncResponse_ = false;
     /**
      * <pre>
      * If filled, it indicates end of sync for complete subscription
      * </pre>
      *
      * <code>bool sync_response = 10;</code>
+     * @return The syncResponse.
      */
+    @java.lang.Override
     public boolean getSyncResponse() {
       return syncResponse_;
     }
@@ -7826,7 +7877,7 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getSystemIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, systemId_);
       }
       if (componentId_ != 0) {
@@ -7835,7 +7886,7 @@ public final class Telemetry {
       if (subComponentId_ != 0) {
         output.writeUInt32(3, subComponentId_);
       }
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, path_);
       }
       if (sequenceNumber_ != 0L) {
@@ -7856,7 +7907,7 @@ public final class Telemetry {
       if (syncResponse_ != false) {
         output.writeBool(10, syncResponse_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7865,7 +7916,7 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getSystemIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, systemId_);
       }
       if (componentId_ != 0) {
@@ -7876,7 +7927,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(3, subComponentId_);
       }
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, path_);
       }
       if (sequenceNumber_ != 0L) {
@@ -7903,7 +7954,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(10, syncResponse_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7938,7 +7989,7 @@ public final class Telemetry {
           .equals(other.getEomList())) return false;
       if (getSyncResponse()
           != other.getSyncResponse()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -7978,7 +8029,7 @@ public final class Telemetry {
       hash = (37 * hash) + SYNC_RESPONSE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getSyncResponse());
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -8027,11 +8078,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8100,57 +8153,46 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getKvFieldBuilder();
-          getDeleteFieldBuilder();
-          getEomFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         systemId_ = "";
-
         componentId_ = 0;
-
         subComponentId_ = 0;
-
         path_ = "";
-
         sequenceNumber_ = 0L;
-
         timestamp_ = 0L;
-
         if (kvBuilder_ == null) {
           kv_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          kv_ = null;
           kvBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000040);
         if (deleteBuilder_ == null) {
           delete_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
+          delete_ = null;
           deleteBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000080);
         if (eomBuilder_ == null) {
           eom_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
+          eom_ = null;
           eomBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000100);
         syncResponse_ = false;
-
         return this;
       }
 
@@ -8177,43 +8219,65 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData result = new org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData(this);
-        int from_bitField0_ = bitField0_;
-        result.systemId_ = systemId_;
-        result.componentId_ = componentId_;
-        result.subComponentId_ = subComponentId_;
-        result.path_ = path_;
-        result.sequenceNumber_ = sequenceNumber_;
-        result.timestamp_ = timestamp_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData result) {
         if (kvBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000040) != 0)) {
             kv_ = java.util.Collections.unmodifiableList(kv_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.kv_ = kv_;
         } else {
           result.kv_ = kvBuilder_.build();
         }
         if (deleteBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000080) != 0)) {
             delete_ = java.util.Collections.unmodifiableList(delete_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000080);
           }
           result.delete_ = delete_;
         } else {
           result.delete_ = deleteBuilder_.build();
         }
         if (eomBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000100) != 0)) {
             eom_ = java.util.Collections.unmodifiableList(eom_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000100);
           }
           result.eom_ = eom_;
         } else {
           result.eom_ = eomBuilder_.build();
         }
-        result.syncResponse_ = syncResponse_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.systemId_ = systemId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.componentId_ = componentId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.subComponentId_ = subComponentId_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.path_ = path_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.sequenceNumber_ = sequenceNumber_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.syncResponse_ = syncResponse_;
+        }
       }
 
       @java.lang.Override
@@ -8262,6 +8326,7 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData.getDefaultInstance()) return this;
         if (!other.getSystemId().isEmpty()) {
           systemId_ = other.systemId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.getComponentId() != 0) {
@@ -8272,6 +8337,7 @@ public final class Telemetry {
         }
         if (!other.getPath().isEmpty()) {
           path_ = other.path_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.getSequenceNumber() != 0L) {
@@ -8284,7 +8350,7 @@ public final class Telemetry {
           if (!other.kv_.isEmpty()) {
             if (kv_.isEmpty()) {
               kv_ = other.kv_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureKvIsMutable();
               kv_.addAll(other.kv_);
@@ -8297,7 +8363,7 @@ public final class Telemetry {
               kvBuilder_.dispose();
               kvBuilder_ = null;
               kv_ = other.kv_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000040);
               kvBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getKvFieldBuilder() : null;
@@ -8310,7 +8376,7 @@ public final class Telemetry {
           if (!other.delete_.isEmpty()) {
             if (delete_.isEmpty()) {
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000080);
             } else {
               ensureDeleteIsMutable();
               delete_.addAll(other.delete_);
@@ -8323,7 +8389,7 @@ public final class Telemetry {
               deleteBuilder_.dispose();
               deleteBuilder_ = null;
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000080);
               deleteBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDeleteFieldBuilder() : null;
@@ -8336,7 +8402,7 @@ public final class Telemetry {
           if (!other.eom_.isEmpty()) {
             if (eom_.isEmpty()) {
               eom_ = other.eom_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000100);
             } else {
               ensureEomIsMutable();
               eom_.addAll(other.eom_);
@@ -8349,7 +8415,7 @@ public final class Telemetry {
               eomBuilder_.dispose();
               eomBuilder_ = null;
               eom_ = other.eom_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000100);
               eomBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getEomFieldBuilder() : null;
@@ -8361,7 +8427,7 @@ public final class Telemetry {
         if (other.getSyncResponse() != false) {
           setSyncResponse(other.getSyncResponse());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -8376,17 +8442,104 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                systemId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 16: {
+                componentId_ = input.readUInt32();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              case 24: {
+                subComponentId_ = input.readUInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              case 34: {
+                path_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 40: {
+                sequenceNumber_ = input.readUInt64();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 48: {
+                timestamp_ = input.readUInt64();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 48
+              case 58: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.parser(),
+                        extensionRegistry);
+                if (kvBuilder_ == null) {
+                  ensureKvIsMutable();
+                  kv_.add(m);
+                } else {
+                  kvBuilder_.addMessage(m);
+                }
+                break;
+              } // case 58
+              case 66: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.Delete m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.Delete.parser(),
+                        extensionRegistry);
+                if (deleteBuilder_ == null) {
+                  ensureDeleteIsMutable();
+                  delete_.add(m);
+                } else {
+                  deleteBuilder_.addMessage(m);
+                }
+                break;
+              } // case 66
+              case 74: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.Eom m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.Eom.parser(),
+                        extensionRegistry);
+                if (eomBuilder_ == null) {
+                  ensureEomIsMutable();
+                  eom_.add(m);
+                } else {
+                  eomBuilder_.addMessage(m);
+                }
+                break;
+              } // case 74
+              case 80: {
+                syncResponse_ = input.readBool();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 80
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -8398,6 +8551,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string system_id = 1;</code>
+       * @return The systemId.
        */
       public java.lang.String getSystemId() {
         java.lang.Object ref = systemId_;
@@ -8417,6 +8571,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string system_id = 1;</code>
+       * @return The bytes for systemId.
        */
       public com.google.protobuf.ByteString
           getSystemIdBytes() {
@@ -8437,14 +8592,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string system_id = 1;</code>
+       * @param value The systemId to set.
+       * @return This builder for chaining.
        */
       public Builder setSystemId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         systemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8454,10 +8609,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string system_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSystemId() {
-        
         systemId_ = getDefaultInstance().getSystemId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -8467,15 +8623,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string system_id = 1;</code>
+       * @param value The bytes for systemId to set.
+       * @return This builder for chaining.
        */
       public Builder setSystemIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         systemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8487,7 +8643,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 component_id = 2;</code>
+       * @return The componentId.
        */
+      @java.lang.Override
       public int getComponentId() {
         return componentId_;
       }
@@ -8497,10 +8655,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 component_id = 2;</code>
+       * @param value The componentId to set.
+       * @return This builder for chaining.
        */
       public Builder setComponentId(int value) {
-        
+
         componentId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -8510,9 +8671,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 component_id = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearComponentId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         componentId_ = 0;
         onChanged();
         return this;
@@ -8525,7 +8687,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 sub_component_id = 3;</code>
+       * @return The subComponentId.
        */
+      @java.lang.Override
       public int getSubComponentId() {
         return subComponentId_;
       }
@@ -8535,10 +8699,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 sub_component_id = 3;</code>
+       * @param value The subComponentId to set.
+       * @return This builder for chaining.
        */
       public Builder setSubComponentId(int value) {
-        
+
         subComponentId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -8548,9 +8715,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 sub_component_id = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSubComponentId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         subComponentId_ = 0;
         onChanged();
         return this;
@@ -8563,6 +8731,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 4;</code>
+       * @return The path.
        */
       public java.lang.String getPath() {
         java.lang.Object ref = path_;
@@ -8582,6 +8751,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 4;</code>
+       * @return The bytes for path.
        */
       public com.google.protobuf.ByteString
           getPathBytes() {
@@ -8602,14 +8772,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 4;</code>
+       * @param value The path to set.
+       * @return This builder for chaining.
        */
       public Builder setPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -8619,10 +8789,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPath() {
-        
         path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -8632,15 +8803,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string path = 4;</code>
+       * @param value The bytes for path to set.
+       * @return This builder for chaining.
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         path_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -8653,7 +8824,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 sequence_number = 5;</code>
+       * @return The sequenceNumber.
        */
+      @java.lang.Override
       public long getSequenceNumber() {
         return sequenceNumber_;
       }
@@ -8664,10 +8837,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 sequence_number = 5;</code>
+       * @param value The sequenceNumber to set.
+       * @return This builder for chaining.
        */
       public Builder setSequenceNumber(long value) {
-        
+
         sequenceNumber_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -8678,9 +8854,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 sequence_number = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSequenceNumber() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         sequenceNumber_ = 0L;
         onChanged();
         return this;
@@ -8693,7 +8870,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 timestamp = 6;</code>
+       * @return The timestamp.
        */
+      @java.lang.Override
       public long getTimestamp() {
         return timestamp_;
       }
@@ -8703,10 +8882,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 timestamp = 6;</code>
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -8716,9 +8898,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint64 timestamp = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -8727,9 +8910,9 @@ public final class Telemetry {
       private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue> kv_ =
         java.util.Collections.emptyList();
       private void ensureKvIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000040) != 0)) {
           kv_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue>(kv_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000040;
          }
       }
 
@@ -8923,7 +9106,7 @@ public final class Telemetry {
       public Builder clearKv() {
         if (kvBuilder_ == null) {
           kv_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           kvBuilder_.clear();
@@ -9028,7 +9211,7 @@ public final class Telemetry {
           kvBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue, org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.Builder, org.opennms.features.openconfig.proto.jti.Telemetry.KeyValueOrBuilder>(
                   kv_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000040) != 0),
                   getParentForChildren(),
                   isClean());
           kv_ = null;
@@ -9039,9 +9222,9 @@ public final class Telemetry {
       private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Delete> delete_ =
         java.util.Collections.emptyList();
       private void ensureDeleteIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000080) != 0)) {
           delete_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Delete>(delete_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000080;
          }
       }
 
@@ -9235,7 +9418,7 @@ public final class Telemetry {
       public Builder clearDelete() {
         if (deleteBuilder_ == null) {
           delete_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000080);
           onChanged();
         } else {
           deleteBuilder_.clear();
@@ -9340,7 +9523,7 @@ public final class Telemetry {
           deleteBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.jti.Telemetry.Delete, org.opennms.features.openconfig.proto.jti.Telemetry.Delete.Builder, org.opennms.features.openconfig.proto.jti.Telemetry.DeleteOrBuilder>(
                   delete_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000080) != 0),
                   getParentForChildren(),
                   isClean());
           delete_ = null;
@@ -9351,9 +9534,9 @@ public final class Telemetry {
       private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.Eom> eom_ =
         java.util.Collections.emptyList();
       private void ensureEomIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000100) != 0)) {
           eom_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.Eom>(eom_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000100;
          }
       }
 
@@ -9558,7 +9741,7 @@ public final class Telemetry {
       public Builder clearEom() {
         if (eomBuilder_ == null) {
           eom_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000100);
           onChanged();
         } else {
           eomBuilder_.clear();
@@ -9670,7 +9853,7 @@ public final class Telemetry {
           eomBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.jti.Telemetry.Eom, org.opennms.features.openconfig.proto.jti.Telemetry.Eom.Builder, org.opennms.features.openconfig.proto.jti.Telemetry.EomOrBuilder>(
                   eom_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000100) != 0),
                   getParentForChildren(),
                   isClean());
           eom_ = null;
@@ -9685,7 +9868,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool sync_response = 10;</code>
+       * @return The syncResponse.
        */
+      @java.lang.Override
       public boolean getSyncResponse() {
         return syncResponse_;
       }
@@ -9695,10 +9880,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool sync_response = 10;</code>
+       * @param value The syncResponse to set.
+       * @return This builder for chaining.
        */
       public Builder setSyncResponse(boolean value) {
-        
+
         syncResponse_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -9708,9 +9896,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>bool sync_response = 10;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSyncResponse() {
-        
+        bitField0_ = (bitField0_ & ~0x00000200);
         syncResponse_ = false;
         onChanged();
         return this;
@@ -9748,7 +9937,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new OpenConfigData(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -9778,6 +9978,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string key = 1;</code>
+     * @return The key.
      */
     java.lang.String getKey();
     /**
@@ -9786,51 +9987,95 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string key = 1;</code>
+     * @return The bytes for key.
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
      * <code>double double_value = 5;</code>
+     * @return Whether the doubleValue field is set.
+     */
+    boolean hasDoubleValue();
+    /**
+     * <code>double double_value = 5;</code>
+     * @return The doubleValue.
      */
     double getDoubleValue();
 
     /**
      * <code>int64 int_value = 6;</code>
+     * @return Whether the intValue field is set.
+     */
+    boolean hasIntValue();
+    /**
+     * <code>int64 int_value = 6;</code>
+     * @return The intValue.
      */
     long getIntValue();
 
     /**
      * <code>uint64 uint_value = 7;</code>
+     * @return Whether the uintValue field is set.
+     */
+    boolean hasUintValue();
+    /**
+     * <code>uint64 uint_value = 7;</code>
+     * @return The uintValue.
      */
     long getUintValue();
 
     /**
      * <code>sint64 sint_value = 8;</code>
+     * @return Whether the sintValue field is set.
+     */
+    boolean hasSintValue();
+    /**
+     * <code>sint64 sint_value = 8;</code>
+     * @return The sintValue.
      */
     long getSintValue();
 
     /**
      * <code>bool bool_value = 9;</code>
+     * @return Whether the boolValue field is set.
+     */
+    boolean hasBoolValue();
+    /**
+     * <code>bool bool_value = 9;</code>
+     * @return The boolValue.
      */
     boolean getBoolValue();
 
     /**
      * <code>string str_value = 10;</code>
+     * @return Whether the strValue field is set.
+     */
+    boolean hasStrValue();
+    /**
+     * <code>string str_value = 10;</code>
+     * @return The strValue.
      */
     java.lang.String getStrValue();
     /**
      * <code>string str_value = 10;</code>
+     * @return The bytes for strValue.
      */
     com.google.protobuf.ByteString
         getStrValueBytes();
 
     /**
      * <code>bytes bytes_value = 11;</code>
+     * @return Whether the bytesValue field is set.
+     */
+    boolean hasBytesValue();
+    /**
+     * <code>bytes bytes_value = 11;</code>
+     * @return The bytesValue.
      */
     com.google.protobuf.ByteString getBytesValue();
 
-    public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.ValueCase getValueCase();
+    org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.ValueCase getValueCase();
   }
   /**
    * <pre>
@@ -9839,7 +10084,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.KeyValue}
    */
-  public  static final class KeyValue extends
+  public static final class KeyValue extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.KeyValue)
       KeyValueOrBuilder {
@@ -9859,90 +10104,6 @@ public final class Telemetry {
       return new KeyValue();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private KeyValue(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              key_ = s;
-              break;
-            }
-            case 41: {
-              valueCase_ = 5;
-              value_ = input.readDouble();
-              break;
-            }
-            case 48: {
-              valueCase_ = 6;
-              value_ = input.readInt64();
-              break;
-            }
-            case 56: {
-              valueCase_ = 7;
-              value_ = input.readUInt64();
-              break;
-            }
-            case 64: {
-              valueCase_ = 8;
-              value_ = input.readSInt64();
-              break;
-            }
-            case 72: {
-              valueCase_ = 9;
-              value_ = input.readBool();
-              break;
-            }
-            case 82: {
-              java.lang.String s = input.readStringRequireUtf8();
-              valueCase_ = 10;
-              value_ = s;
-              break;
-            }
-            case 90: {
-              valueCase_ = 11;
-              value_ = input.readBytes();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_KeyValue_descriptor;
@@ -9957,9 +10118,11 @@ public final class Telemetry {
     }
 
     private int valueCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object value_;
     public enum ValueCase
-        implements com.google.protobuf.Internal.EnumLite {
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       DOUBLE_VALUE(5),
       INT_VALUE(6),
       UINT_VALUE(7),
@@ -9973,6 +10136,8 @@ public final class Telemetry {
         this.value = value;
       }
       /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -10005,14 +10170,17 @@ public final class Telemetry {
     }
 
     public static final int KEY_FIELD_NUMBER = 1;
-    private volatile java.lang.Object key_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object key_ = "";
     /**
      * <pre>
      * Key
      * </pre>
      *
      * <code>string key = 1;</code>
+     * @return The key.
      */
+    @java.lang.Override
     public java.lang.String getKey() {
       java.lang.Object ref = key_;
       if (ref instanceof java.lang.String) {
@@ -10031,7 +10199,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string key = 1;</code>
+     * @return The bytes for key.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getKeyBytes() {
       java.lang.Object ref = key_;
@@ -10049,7 +10219,17 @@ public final class Telemetry {
     public static final int DOUBLE_VALUE_FIELD_NUMBER = 5;
     /**
      * <code>double double_value = 5;</code>
+     * @return Whether the doubleValue field is set.
      */
+    @java.lang.Override
+    public boolean hasDoubleValue() {
+      return valueCase_ == 5;
+    }
+    /**
+     * <code>double double_value = 5;</code>
+     * @return The doubleValue.
+     */
+    @java.lang.Override
     public double getDoubleValue() {
       if (valueCase_ == 5) {
         return (java.lang.Double) value_;
@@ -10060,7 +10240,17 @@ public final class Telemetry {
     public static final int INT_VALUE_FIELD_NUMBER = 6;
     /**
      * <code>int64 int_value = 6;</code>
+     * @return Whether the intValue field is set.
      */
+    @java.lang.Override
+    public boolean hasIntValue() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>int64 int_value = 6;</code>
+     * @return The intValue.
+     */
+    @java.lang.Override
     public long getIntValue() {
       if (valueCase_ == 6) {
         return (java.lang.Long) value_;
@@ -10071,7 +10261,17 @@ public final class Telemetry {
     public static final int UINT_VALUE_FIELD_NUMBER = 7;
     /**
      * <code>uint64 uint_value = 7;</code>
+     * @return Whether the uintValue field is set.
      */
+    @java.lang.Override
+    public boolean hasUintValue() {
+      return valueCase_ == 7;
+    }
+    /**
+     * <code>uint64 uint_value = 7;</code>
+     * @return The uintValue.
+     */
+    @java.lang.Override
     public long getUintValue() {
       if (valueCase_ == 7) {
         return (java.lang.Long) value_;
@@ -10082,7 +10282,17 @@ public final class Telemetry {
     public static final int SINT_VALUE_FIELD_NUMBER = 8;
     /**
      * <code>sint64 sint_value = 8;</code>
+     * @return Whether the sintValue field is set.
      */
+    @java.lang.Override
+    public boolean hasSintValue() {
+      return valueCase_ == 8;
+    }
+    /**
+     * <code>sint64 sint_value = 8;</code>
+     * @return The sintValue.
+     */
+    @java.lang.Override
     public long getSintValue() {
       if (valueCase_ == 8) {
         return (java.lang.Long) value_;
@@ -10093,7 +10303,17 @@ public final class Telemetry {
     public static final int BOOL_VALUE_FIELD_NUMBER = 9;
     /**
      * <code>bool bool_value = 9;</code>
+     * @return Whether the boolValue field is set.
      */
+    @java.lang.Override
+    public boolean hasBoolValue() {
+      return valueCase_ == 9;
+    }
+    /**
+     * <code>bool bool_value = 9;</code>
+     * @return The boolValue.
+     */
+    @java.lang.Override
     public boolean getBoolValue() {
       if (valueCase_ == 9) {
         return (java.lang.Boolean) value_;
@@ -10104,6 +10324,14 @@ public final class Telemetry {
     public static final int STR_VALUE_FIELD_NUMBER = 10;
     /**
      * <code>string str_value = 10;</code>
+     * @return Whether the strValue field is set.
+     */
+    public boolean hasStrValue() {
+      return valueCase_ == 10;
+    }
+    /**
+     * <code>string str_value = 10;</code>
+     * @return The strValue.
      */
     public java.lang.String getStrValue() {
       java.lang.Object ref = "";
@@ -10124,6 +10352,7 @@ public final class Telemetry {
     }
     /**
      * <code>string str_value = 10;</code>
+     * @return The bytes for strValue.
      */
     public com.google.protobuf.ByteString
         getStrValueBytes() {
@@ -10147,7 +10376,17 @@ public final class Telemetry {
     public static final int BYTES_VALUE_FIELD_NUMBER = 11;
     /**
      * <code>bytes bytes_value = 11;</code>
+     * @return Whether the bytesValue field is set.
      */
+    @java.lang.Override
+    public boolean hasBytesValue() {
+      return valueCase_ == 11;
+    }
+    /**
+     * <code>bytes bytes_value = 11;</code>
+     * @return The bytesValue.
+     */
+    @java.lang.Override
     public com.google.protobuf.ByteString getBytesValue() {
       if (valueCase_ == 11) {
         return (com.google.protobuf.ByteString) value_;
@@ -10169,7 +10408,7 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getKeyBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
       }
       if (valueCase_ == 5) {
@@ -10199,7 +10438,7 @@ public final class Telemetry {
         output.writeBytes(
             11, (com.google.protobuf.ByteString) value_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -10208,7 +10447,7 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getKeyBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
       }
       if (valueCase_ == 5) {
@@ -10244,7 +10483,7 @@ public final class Telemetry {
           .computeBytesSize(
               11, (com.google.protobuf.ByteString) value_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -10295,7 +10534,7 @@ public final class Telemetry {
         case 0:
         default:
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -10345,7 +10584,7 @@ public final class Telemetry {
         case 0:
         default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -10394,11 +10633,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -10466,24 +10707,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         key_ = "";
-
         valueCase_ = 0;
         value_ = null;
         return this;
@@ -10512,31 +10748,22 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue result = new org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue(this);
-        result.key_ = key_;
-        if (valueCase_ == 5) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 6) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 7) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 8) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 9) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 10) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 11) {
-          result.value_ = value_;
-        }
-        result.valueCase_ = valueCase_;
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.key_ = key_;
+        }
+      }
+
+      private void buildPartialOneofs(org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue result) {
+        result.valueCase_ = valueCase_;
+        result.value_ = this.value_;
       }
 
       @java.lang.Override
@@ -10585,6 +10812,7 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.getDefaultInstance()) return this;
         if (!other.getKey().isEmpty()) {
           key_ = other.key_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         switch (other.getValueCase()) {
@@ -10622,7 +10850,7 @@ public final class Telemetry {
             break;
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -10637,17 +10865,71 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                key_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 41: {
+                value_ = input.readDouble();
+                valueCase_ = 5;
+                break;
+              } // case 41
+              case 48: {
+                value_ = input.readInt64();
+                valueCase_ = 6;
+                break;
+              } // case 48
+              case 56: {
+                value_ = input.readUInt64();
+                valueCase_ = 7;
+                break;
+              } // case 56
+              case 64: {
+                value_ = input.readSInt64();
+                valueCase_ = 8;
+                break;
+              } // case 64
+              case 72: {
+                value_ = input.readBool();
+                valueCase_ = 9;
+                break;
+              } // case 72
+              case 82: {
+                java.lang.String s = input.readStringRequireUtf8();
+                valueCase_ = 10;
+                value_ = s;
+                break;
+              } // case 82
+              case 90: {
+                value_ = input.readBytes();
+                valueCase_ = 11;
+                break;
+              } // case 90
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int valueCase_ = 0;
@@ -10665,6 +10947,7 @@ public final class Telemetry {
         return this;
       }
 
+      private int bitField0_;
 
       private java.lang.Object key_ = "";
       /**
@@ -10673,6 +10956,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string key = 1;</code>
+       * @return The key.
        */
       public java.lang.String getKey() {
         java.lang.Object ref = key_;
@@ -10692,6 +10976,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string key = 1;</code>
+       * @return The bytes for key.
        */
       public com.google.protobuf.ByteString
           getKeyBytes() {
@@ -10712,14 +10997,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string key = 1;</code>
+       * @param value The key to set.
+       * @return This builder for chaining.
        */
       public Builder setKey(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         key_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10729,10 +11014,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string key = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearKey() {
-        
         key_ = getDefaultInstance().getKey();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -10742,21 +11028,29 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string key = 1;</code>
+       * @param value The bytes for key to set.
+       * @return This builder for chaining.
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         key_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
       /**
        * <code>double double_value = 5;</code>
+       * @return Whether the doubleValue field is set.
+       */
+      public boolean hasDoubleValue() {
+        return valueCase_ == 5;
+      }
+      /**
+       * <code>double double_value = 5;</code>
+       * @return The doubleValue.
        */
       public double getDoubleValue() {
         if (valueCase_ == 5) {
@@ -10766,8 +11060,11 @@ public final class Telemetry {
       }
       /**
        * <code>double double_value = 5;</code>
+       * @param value The doubleValue to set.
+       * @return This builder for chaining.
        */
       public Builder setDoubleValue(double value) {
+
         valueCase_ = 5;
         value_ = value;
         onChanged();
@@ -10775,6 +11072,7 @@ public final class Telemetry {
       }
       /**
        * <code>double double_value = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoubleValue() {
         if (valueCase_ == 5) {
@@ -10787,6 +11085,14 @@ public final class Telemetry {
 
       /**
        * <code>int64 int_value = 6;</code>
+       * @return Whether the intValue field is set.
+       */
+      public boolean hasIntValue() {
+        return valueCase_ == 6;
+      }
+      /**
+       * <code>int64 int_value = 6;</code>
+       * @return The intValue.
        */
       public long getIntValue() {
         if (valueCase_ == 6) {
@@ -10796,8 +11102,11 @@ public final class Telemetry {
       }
       /**
        * <code>int64 int_value = 6;</code>
+       * @param value The intValue to set.
+       * @return This builder for chaining.
        */
       public Builder setIntValue(long value) {
+
         valueCase_ = 6;
         value_ = value;
         onChanged();
@@ -10805,6 +11114,7 @@ public final class Telemetry {
       }
       /**
        * <code>int64 int_value = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIntValue() {
         if (valueCase_ == 6) {
@@ -10817,6 +11127,14 @@ public final class Telemetry {
 
       /**
        * <code>uint64 uint_value = 7;</code>
+       * @return Whether the uintValue field is set.
+       */
+      public boolean hasUintValue() {
+        return valueCase_ == 7;
+      }
+      /**
+       * <code>uint64 uint_value = 7;</code>
+       * @return The uintValue.
        */
       public long getUintValue() {
         if (valueCase_ == 7) {
@@ -10826,8 +11144,11 @@ public final class Telemetry {
       }
       /**
        * <code>uint64 uint_value = 7;</code>
+       * @param value The uintValue to set.
+       * @return This builder for chaining.
        */
       public Builder setUintValue(long value) {
+
         valueCase_ = 7;
         value_ = value;
         onChanged();
@@ -10835,6 +11156,7 @@ public final class Telemetry {
       }
       /**
        * <code>uint64 uint_value = 7;</code>
+       * @return This builder for chaining.
        */
       public Builder clearUintValue() {
         if (valueCase_ == 7) {
@@ -10847,6 +11169,14 @@ public final class Telemetry {
 
       /**
        * <code>sint64 sint_value = 8;</code>
+       * @return Whether the sintValue field is set.
+       */
+      public boolean hasSintValue() {
+        return valueCase_ == 8;
+      }
+      /**
+       * <code>sint64 sint_value = 8;</code>
+       * @return The sintValue.
        */
       public long getSintValue() {
         if (valueCase_ == 8) {
@@ -10856,8 +11186,11 @@ public final class Telemetry {
       }
       /**
        * <code>sint64 sint_value = 8;</code>
+       * @param value The sintValue to set.
+       * @return This builder for chaining.
        */
       public Builder setSintValue(long value) {
+
         valueCase_ = 8;
         value_ = value;
         onChanged();
@@ -10865,6 +11198,7 @@ public final class Telemetry {
       }
       /**
        * <code>sint64 sint_value = 8;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSintValue() {
         if (valueCase_ == 8) {
@@ -10877,6 +11211,14 @@ public final class Telemetry {
 
       /**
        * <code>bool bool_value = 9;</code>
+       * @return Whether the boolValue field is set.
+       */
+      public boolean hasBoolValue() {
+        return valueCase_ == 9;
+      }
+      /**
+       * <code>bool bool_value = 9;</code>
+       * @return The boolValue.
        */
       public boolean getBoolValue() {
         if (valueCase_ == 9) {
@@ -10886,8 +11228,11 @@ public final class Telemetry {
       }
       /**
        * <code>bool bool_value = 9;</code>
+       * @param value The boolValue to set.
+       * @return This builder for chaining.
        */
       public Builder setBoolValue(boolean value) {
+
         valueCase_ = 9;
         value_ = value;
         onChanged();
@@ -10895,6 +11240,7 @@ public final class Telemetry {
       }
       /**
        * <code>bool bool_value = 9;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBoolValue() {
         if (valueCase_ == 9) {
@@ -10907,7 +11253,17 @@ public final class Telemetry {
 
       /**
        * <code>string str_value = 10;</code>
+       * @return Whether the strValue field is set.
        */
+      @java.lang.Override
+      public boolean hasStrValue() {
+        return valueCase_ == 10;
+      }
+      /**
+       * <code>string str_value = 10;</code>
+       * @return The strValue.
+       */
+      @java.lang.Override
       public java.lang.String getStrValue() {
         java.lang.Object ref = "";
         if (valueCase_ == 10) {
@@ -10927,7 +11283,9 @@ public final class Telemetry {
       }
       /**
        * <code>string str_value = 10;</code>
+       * @return The bytes for strValue.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString
           getStrValueBytes() {
         java.lang.Object ref = "";
@@ -10948,19 +11306,20 @@ public final class Telemetry {
       }
       /**
        * <code>string str_value = 10;</code>
+       * @param value The strValue to set.
+       * @return This builder for chaining.
        */
       public Builder setStrValue(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 10;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 10;
         value_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>string str_value = 10;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStrValue() {
         if (valueCase_ == 10) {
@@ -10972,13 +11331,13 @@ public final class Telemetry {
       }
       /**
        * <code>string str_value = 10;</code>
+       * @param value The bytes for strValue to set.
+       * @return This builder for chaining.
        */
       public Builder setStrValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         valueCase_ = 10;
         value_ = value;
         onChanged();
@@ -10987,6 +11346,14 @@ public final class Telemetry {
 
       /**
        * <code>bytes bytes_value = 11;</code>
+       * @return Whether the bytesValue field is set.
+       */
+      public boolean hasBytesValue() {
+        return valueCase_ == 11;
+      }
+      /**
+       * <code>bytes bytes_value = 11;</code>
+       * @return The bytesValue.
        */
       public com.google.protobuf.ByteString getBytesValue() {
         if (valueCase_ == 11) {
@@ -10996,18 +11363,19 @@ public final class Telemetry {
       }
       /**
        * <code>bytes bytes_value = 11;</code>
+       * @param value The bytesValue to set.
+       * @return This builder for chaining.
        */
       public Builder setBytesValue(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 11;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 11;
         value_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>bytes bytes_value = 11;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBytesValue() {
         if (valueCase_ == 11) {
@@ -11050,7 +11418,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new KeyValue(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -11076,10 +11455,12 @@ public final class Telemetry {
 
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
     java.lang.String getPath();
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
     com.google.protobuf.ByteString
         getPathBytes();
@@ -11091,7 +11472,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.Delete}
    */
-  public  static final class Delete extends
+  public static final class Delete extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.Delete)
       DeleteOrBuilder {
@@ -11111,54 +11492,6 @@ public final class Telemetry {
       return new Delete();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Delete(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              path_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_Delete_descriptor;
@@ -11173,10 +11506,13 @@ public final class Telemetry {
     }
 
     public static final int PATH_FIELD_NUMBER = 1;
-    private volatile java.lang.Object path_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object path_ = "";
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
@@ -11191,7 +11527,9 @@ public final class Telemetry {
     }
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPathBytes() {
       java.lang.Object ref = path_;
@@ -11220,10 +11558,10 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, path_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -11232,10 +11570,10 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, path_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -11252,7 +11590,7 @@ public final class Telemetry {
 
       if (!getPath()
           .equals(other.getPath())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -11265,7 +11603,7 @@ public final class Telemetry {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + PATH_FIELD_NUMBER;
       hash = (53 * hash) + getPath().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -11314,11 +11652,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Delete parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Delete parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11386,24 +11726,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.Delete.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         path_ = "";
-
         return this;
       }
 
@@ -11430,9 +11765,16 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.Delete buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.Delete result = new org.opennms.features.openconfig.proto.jti.Telemetry.Delete(this);
-        result.path_ = path_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.Delete result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = path_;
+        }
       }
 
       @java.lang.Override
@@ -11481,9 +11823,10 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.Delete.getDefaultInstance()) return this;
         if (!other.getPath().isEmpty()) {
           path_ = other.path_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -11498,23 +11841,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.Delete parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                path_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.Delete) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object path_ = "";
       /**
        * <code>string path = 1;</code>
+       * @return The path.
        */
       public java.lang.String getPath() {
         java.lang.Object ref = path_;
@@ -11530,6 +11893,7 @@ public final class Telemetry {
       }
       /**
        * <code>string path = 1;</code>
+       * @return The bytes for path.
        */
       public com.google.protobuf.ByteString
           getPathBytes() {
@@ -11546,37 +11910,38 @@ public final class Telemetry {
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The path to set.
+       * @return This builder for chaining.
        */
       public Builder setPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>string path = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPath() {
-        
         path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The bytes for path to set.
+       * @return This builder for chaining.
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11613,7 +11978,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Delete(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -11639,10 +12015,12 @@ public final class Telemetry {
 
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
     java.lang.String getPath();
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
     com.google.protobuf.ByteString
         getPathBytes();
@@ -11654,7 +12032,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.Eom}
    */
-  public  static final class Eom extends
+  public static final class Eom extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.Eom)
       EomOrBuilder {
@@ -11674,54 +12052,6 @@ public final class Telemetry {
       return new Eom();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Eom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              path_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_Eom_descriptor;
@@ -11736,10 +12066,13 @@ public final class Telemetry {
     }
 
     public static final int PATH_FIELD_NUMBER = 1;
-    private volatile java.lang.Object path_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object path_ = "";
     /**
      * <code>string path = 1;</code>
+     * @return The path.
      */
+    @java.lang.Override
     public java.lang.String getPath() {
       java.lang.Object ref = path_;
       if (ref instanceof java.lang.String) {
@@ -11754,7 +12087,9 @@ public final class Telemetry {
     }
     /**
      * <code>string path = 1;</code>
+     * @return The bytes for path.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPathBytes() {
       java.lang.Object ref = path_;
@@ -11783,10 +12118,10 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, path_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -11795,10 +12130,10 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      if (!getPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(path_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, path_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -11815,7 +12150,7 @@ public final class Telemetry {
 
       if (!getPath()
           .equals(other.getPath())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -11828,7 +12163,7 @@ public final class Telemetry {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + PATH_FIELD_NUMBER;
       hash = (53 * hash) + getPath().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -11877,11 +12212,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Eom parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.Eom parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11949,24 +12286,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.Eom.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         path_ = "";
-
         return this;
       }
 
@@ -11993,9 +12325,16 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.Eom buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.Eom result = new org.opennms.features.openconfig.proto.jti.Telemetry.Eom(this);
-        result.path_ = path_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.Eom result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = path_;
+        }
       }
 
       @java.lang.Override
@@ -12044,9 +12383,10 @@ public final class Telemetry {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.Eom.getDefaultInstance()) return this;
         if (!other.getPath().isEmpty()) {
           path_ = other.path_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -12061,23 +12401,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.Eom parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                path_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.Eom) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object path_ = "";
       /**
        * <code>string path = 1;</code>
+       * @return The path.
        */
       public java.lang.String getPath() {
         java.lang.Object ref = path_;
@@ -12093,6 +12453,7 @@ public final class Telemetry {
       }
       /**
        * <code>string path = 1;</code>
+       * @return The bytes for path.
        */
       public com.google.protobuf.ByteString
           getPathBytes() {
@@ -12109,37 +12470,38 @@ public final class Telemetry {
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The path to set.
+       * @return This builder for chaining.
        */
       public Builder setPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>string path = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPath() {
-        
         path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>string path = 1;</code>
+       * @param value The bytes for path to set.
+       * @return This builder for chaining.
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12176,7 +12538,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Eom(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -12207,6 +12580,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
     int getSubscriptionId();
   }
@@ -12217,7 +12591,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.CancelSubscriptionRequest}
    */
-  public  static final class CancelSubscriptionRequest extends
+  public static final class CancelSubscriptionRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.CancelSubscriptionRequest)
       CancelSubscriptionRequestOrBuilder {
@@ -12236,53 +12610,6 @@ public final class Telemetry {
       return new CancelSubscriptionRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private CancelSubscriptionRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              subscriptionId_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_CancelSubscriptionRequest_descriptor;
@@ -12297,7 +12624,7 @@ public final class Telemetry {
     }
 
     public static final int SUBSCRIPTION_ID_FIELD_NUMBER = 1;
-    private int subscriptionId_;
+    private int subscriptionId_ = 0;
     /**
      * <pre>
      * Subscription identifier as returned by the device when
@@ -12305,7 +12632,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
+    @java.lang.Override
     public int getSubscriptionId() {
       return subscriptionId_;
     }
@@ -12327,7 +12656,7 @@ public final class Telemetry {
       if (subscriptionId_ != 0) {
         output.writeUInt32(1, subscriptionId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -12340,7 +12669,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, subscriptionId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -12357,7 +12686,7 @@ public final class Telemetry {
 
       if (getSubscriptionId()
           != other.getSubscriptionId()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -12370,7 +12699,7 @@ public final class Telemetry {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SUBSCRIPTION_ID_FIELD_NUMBER;
       hash = (53 * hash) + getSubscriptionId();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -12419,11 +12748,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12491,24 +12822,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         subscriptionId_ = 0;
-
         return this;
       }
 
@@ -12535,9 +12861,16 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest result = new org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest(this);
-        result.subscriptionId_ = subscriptionId_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.subscriptionId_ = subscriptionId_;
+        }
       }
 
       @java.lang.Override
@@ -12587,7 +12920,7 @@ public final class Telemetry {
         if (other.getSubscriptionId() != 0) {
           setSubscriptionId(other.getSubscriptionId());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -12602,19 +12935,38 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                subscriptionId_ = input.readUInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int subscriptionId_ ;
       /**
@@ -12624,7 +12976,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return The subscriptionId.
        */
+      @java.lang.Override
       public int getSubscriptionId() {
         return subscriptionId_;
       }
@@ -12635,10 +12989,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @param value The subscriptionId to set.
+       * @return This builder for chaining.
        */
       public Builder setSubscriptionId(int value) {
-        
+
         subscriptionId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -12649,9 +13006,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSubscriptionId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         subscriptionId_ = 0;
         onChanged();
         return this;
@@ -12689,7 +13047,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CancelSubscriptionRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -12719,6 +13088,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.ReturnCode code = 1;</code>
+     * @return The enum numeric value on the wire for code.
      */
     int getCodeValue();
     /**
@@ -12727,6 +13097,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.ReturnCode code = 1;</code>
+     * @return The code.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode getCode();
 
@@ -12736,6 +13107,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string code_str = 2;</code>
+     * @return The codeStr.
      */
     java.lang.String getCodeStr();
     /**
@@ -12744,6 +13116,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string code_str = 2;</code>
+     * @return The bytes for codeStr.
      */
     com.google.protobuf.ByteString
         getCodeStrBytes();
@@ -12755,7 +13128,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.CancelSubscriptionReply}
    */
-  public  static final class CancelSubscriptionReply extends
+  public static final class CancelSubscriptionReply extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.CancelSubscriptionReply)
       CancelSubscriptionReplyOrBuilder {
@@ -12776,60 +13149,6 @@ public final class Telemetry {
       return new CancelSubscriptionReply();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private CancelSubscriptionReply(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-              int rawValue = input.readEnum();
-
-              code_ = rawValue;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              codeStr_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_CancelSubscriptionReply_descriptor;
@@ -12844,15 +13163,16 @@ public final class Telemetry {
     }
 
     public static final int CODE_FIELD_NUMBER = 1;
-    private int code_;
+    private int code_ = 0;
     /**
      * <pre>
      * Return code
      * </pre>
      *
      * <code>.telemetry.ReturnCode code = 1;</code>
+     * @return The enum numeric value on the wire for code.
      */
-    public int getCodeValue() {
+    @java.lang.Override public int getCodeValue() {
       return code_;
     }
     /**
@@ -12861,22 +13181,25 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.ReturnCode code = 1;</code>
+     * @return The code.
      */
-    public org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode getCode() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode result = org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.valueOf(code_);
+    @java.lang.Override public org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode getCode() {
+      org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode result = org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.forNumber(code_);
       return result == null ? org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.UNRECOGNIZED : result;
     }
 
     public static final int CODE_STR_FIELD_NUMBER = 2;
-    private volatile java.lang.Object codeStr_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object codeStr_ = "";
     /**
      * <pre>
      * Return code string
      * </pre>
      *
      * <code>string code_str = 2;</code>
+     * @return The codeStr.
      */
+    @java.lang.Override
     public java.lang.String getCodeStr() {
       java.lang.Object ref = codeStr_;
       if (ref instanceof java.lang.String) {
@@ -12895,7 +13218,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>string code_str = 2;</code>
+     * @return The bytes for codeStr.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCodeStrBytes() {
       java.lang.Object ref = codeStr_;
@@ -12927,10 +13252,10 @@ public final class Telemetry {
       if (code_ != org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.SUCCESS.getNumber()) {
         output.writeEnum(1, code_);
       }
-      if (!getCodeStrBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(codeStr_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, codeStr_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -12943,10 +13268,10 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, code_);
       }
-      if (!getCodeStrBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(codeStr_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, codeStr_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -12964,7 +13289,7 @@ public final class Telemetry {
       if (code_ != other.code_) return false;
       if (!getCodeStr()
           .equals(other.getCodeStr())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -12979,7 +13304,7 @@ public final class Telemetry {
       hash = (53 * hash) + code_;
       hash = (37 * hash) + CODE_STR_FIELD_NUMBER;
       hash = (53 * hash) + getCodeStr().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -13028,11 +13353,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -13100,26 +13427,20 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         code_ = 0;
-
         codeStr_ = "";
-
         return this;
       }
 
@@ -13146,10 +13467,19 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply result = new org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply(this);
-        result.code_ = code_;
-        result.codeStr_ = codeStr_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.code_ = code_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.codeStr_ = codeStr_;
+        }
       }
 
       @java.lang.Override
@@ -13201,9 +13531,10 @@ public final class Telemetry {
         }
         if (!other.getCodeStr().isEmpty()) {
           codeStr_ = other.codeStr_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -13218,19 +13549,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                code_ = input.readEnum();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 18: {
+                codeStr_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int code_ = 0;
       /**
@@ -13239,8 +13594,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.ReturnCode code = 1;</code>
+       * @return The enum numeric value on the wire for code.
        */
-      public int getCodeValue() {
+      @java.lang.Override public int getCodeValue() {
         return code_;
       }
       /**
@@ -13249,9 +13605,12 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.ReturnCode code = 1;</code>
+       * @param value The enum numeric value on the wire for code to set.
+       * @return This builder for chaining.
        */
       public Builder setCodeValue(int value) {
         code_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -13261,10 +13620,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.ReturnCode code = 1;</code>
+       * @return The code.
        */
+      @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode getCode() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode result = org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.valueOf(code_);
+        org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode result = org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.forNumber(code_);
         return result == null ? org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode.UNRECOGNIZED : result;
       }
       /**
@@ -13273,12 +13633,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.ReturnCode code = 1;</code>
+       * @param value The code to set.
+       * @return This builder for chaining.
        */
       public Builder setCode(org.opennms.features.openconfig.proto.jti.Telemetry.ReturnCode value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000001;
         code_ = value.getNumber();
         onChanged();
         return this;
@@ -13289,9 +13651,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.ReturnCode code = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearCode() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         code_ = 0;
         onChanged();
         return this;
@@ -13304,6 +13667,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string code_str = 2;</code>
+       * @return The codeStr.
        */
       public java.lang.String getCodeStr() {
         java.lang.Object ref = codeStr_;
@@ -13323,6 +13687,7 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string code_str = 2;</code>
+       * @return The bytes for codeStr.
        */
       public com.google.protobuf.ByteString
           getCodeStrBytes() {
@@ -13343,14 +13708,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string code_str = 2;</code>
+       * @param value The codeStr to set.
+       * @return This builder for chaining.
        */
       public Builder setCodeStr(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         codeStr_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -13360,10 +13725,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string code_str = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearCodeStr() {
-        
         codeStr_ = getDefaultInstance().getCodeStr();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -13373,15 +13739,15 @@ public final class Telemetry {
        * </pre>
        *
        * <code>string code_str = 2;</code>
+       * @param value The bytes for codeStr to set.
+       * @return This builder for chaining.
        */
       public Builder setCodeStrBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         codeStr_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -13418,7 +13784,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CancelSubscriptionReply(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -13451,6 +13828,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
     int getSubscriptionId();
   }
@@ -13461,7 +13839,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.GetSubscriptionsRequest}
    */
-  public  static final class GetSubscriptionsRequest extends
+  public static final class GetSubscriptionsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.GetSubscriptionsRequest)
       GetSubscriptionsRequestOrBuilder {
@@ -13480,53 +13858,6 @@ public final class Telemetry {
       return new GetSubscriptionsRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private GetSubscriptionsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              subscriptionId_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_GetSubscriptionsRequest_descriptor;
@@ -13541,7 +13872,7 @@ public final class Telemetry {
     }
 
     public static final int SUBSCRIPTION_ID_FIELD_NUMBER = 1;
-    private int subscriptionId_;
+    private int subscriptionId_ = 0;
     /**
      * <pre>
      * Subscription identifier as returned by the device when
@@ -13551,7 +13882,9 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
+    @java.lang.Override
     public int getSubscriptionId() {
       return subscriptionId_;
     }
@@ -13573,7 +13906,7 @@ public final class Telemetry {
       if (subscriptionId_ != 0) {
         output.writeUInt32(1, subscriptionId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -13586,7 +13919,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, subscriptionId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -13603,7 +13936,7 @@ public final class Telemetry {
 
       if (getSubscriptionId()
           != other.getSubscriptionId()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -13616,7 +13949,7 @@ public final class Telemetry {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SUBSCRIPTION_ID_FIELD_NUMBER;
       hash = (53 * hash) + getSubscriptionId();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -13665,11 +13998,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -13737,24 +14072,19 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         subscriptionId_ = 0;
-
         return this;
       }
 
@@ -13781,9 +14111,16 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest result = new org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest(this);
-        result.subscriptionId_ = subscriptionId_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.subscriptionId_ = subscriptionId_;
+        }
       }
 
       @java.lang.Override
@@ -13833,7 +14170,7 @@ public final class Telemetry {
         if (other.getSubscriptionId() != 0) {
           setSubscriptionId(other.getSubscriptionId());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -13848,19 +14185,38 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                subscriptionId_ = input.readUInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int subscriptionId_ ;
       /**
@@ -13872,7 +14228,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return The subscriptionId.
        */
+      @java.lang.Override
       public int getSubscriptionId() {
         return subscriptionId_;
       }
@@ -13885,10 +14243,13 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @param value The subscriptionId to set.
+       * @return This builder for chaining.
        */
       public Builder setSubscriptionId(int value) {
-        
+
         subscriptionId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -13901,9 +14262,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSubscriptionId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         subscriptionId_ = 0;
         onChanged();
         return this;
@@ -13941,7 +14303,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetSubscriptionsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -14016,7 +14389,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.GetSubscriptionsReply}
    */
-  public  static final class GetSubscriptionsReply extends
+  public static final class GetSubscriptionsReply extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.GetSubscriptionsReply)
       GetSubscriptionsReplyOrBuilder {
@@ -14036,61 +14409,6 @@ public final class Telemetry {
       return new GetSubscriptionsReply();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private GetSubscriptionsReply(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                subscriptionList_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              subscriptionList_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          subscriptionList_ = java.util.Collections.unmodifiableList(subscriptionList_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_GetSubscriptionsReply_descriptor;
@@ -14105,6 +14423,7 @@ public final class Telemetry {
     }
 
     public static final int SUBSCRIPTION_LIST_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply> subscriptionList_;
     /**
      * <pre>
@@ -14113,6 +14432,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.SubscriptionReply subscription_list = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply> getSubscriptionListList() {
       return subscriptionList_;
     }
@@ -14123,6 +14443,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.SubscriptionReply subscription_list = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReplyOrBuilder> 
         getSubscriptionListOrBuilderList() {
       return subscriptionList_;
@@ -14134,6 +14455,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.SubscriptionReply subscription_list = 1;</code>
      */
+    @java.lang.Override
     public int getSubscriptionListCount() {
       return subscriptionList_.size();
     }
@@ -14144,6 +14466,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.SubscriptionReply subscription_list = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply getSubscriptionList(int index) {
       return subscriptionList_.get(index);
     }
@@ -14154,6 +14477,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.SubscriptionReply subscription_list = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReplyOrBuilder getSubscriptionListOrBuilder(
         int index) {
       return subscriptionList_.get(index);
@@ -14176,7 +14500,7 @@ public final class Telemetry {
       for (int i = 0; i < subscriptionList_.size(); i++) {
         output.writeMessage(1, subscriptionList_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -14189,7 +14513,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, subscriptionList_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -14206,7 +14530,7 @@ public final class Telemetry {
 
       if (!getSubscriptionListList()
           .equals(other.getSubscriptionListList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -14221,7 +14545,7 @@ public final class Telemetry {
         hash = (37 * hash) + SUBSCRIPTION_LIST_FIELD_NUMBER;
         hash = (53 * hash) + getSubscriptionListList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -14270,11 +14594,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -14342,29 +14668,25 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getSubscriptionListFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (subscriptionListBuilder_ == null) {
           subscriptionList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          subscriptionList_ = null;
           subscriptionListBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -14391,7 +14713,13 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply result = new org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply result) {
         if (subscriptionListBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             subscriptionList_ = java.util.Collections.unmodifiableList(subscriptionList_);
@@ -14401,8 +14729,10 @@ public final class Telemetry {
         } else {
           result.subscriptionList_ = subscriptionListBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -14475,7 +14805,7 @@ public final class Telemetry {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -14490,17 +14820,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionReply.parser(),
+                        extensionRegistry);
+                if (subscriptionListBuilder_ == null) {
+                  ensureSubscriptionListIsMutable();
+                  subscriptionList_.add(m);
+                } else {
+                  subscriptionListBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -14849,7 +15205,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetSubscriptionsReply(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -14876,6 +15243,7 @@ public final class Telemetry {
     /**
      * <pre>
      * Per-subscription_id level operational state can be requested.
+     *
      * Subscription identifier as returned by the device when
      * subscription was requested
      * --- or ---
@@ -14887,6 +15255,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
     int getSubscriptionId();
 
@@ -14896,6 +15265,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+     * @return The enum numeric value on the wire for verbosity.
      */
     int getVerbosityValue();
     /**
@@ -14904,6 +15274,7 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+     * @return The verbosity.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel getVerbosity();
   }
@@ -14914,7 +15285,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.GetOperationalStateRequest}
    */
-  public  static final class GetOperationalStateRequest extends
+  public static final class GetOperationalStateRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.GetOperationalStateRequest)
       GetOperationalStateRequestOrBuilder {
@@ -14934,59 +15305,6 @@ public final class Telemetry {
       return new GetOperationalStateRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private GetOperationalStateRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              subscriptionId_ = input.readUInt32();
-              break;
-            }
-            case 16: {
-              int rawValue = input.readEnum();
-
-              verbosity_ = rawValue;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_GetOperationalStateRequest_descriptor;
@@ -15001,10 +15319,11 @@ public final class Telemetry {
     }
 
     public static final int SUBSCRIPTION_ID_FIELD_NUMBER = 1;
-    private int subscriptionId_;
+    private int subscriptionId_ = 0;
     /**
      * <pre>
      * Per-subscription_id level operational state can be requested.
+     *
      * Subscription identifier as returned by the device when
      * subscription was requested
      * --- or ---
@@ -15016,21 +15335,24 @@ public final class Telemetry {
      * </pre>
      *
      * <code>uint32 subscription_id = 1;</code>
+     * @return The subscriptionId.
      */
+    @java.lang.Override
     public int getSubscriptionId() {
       return subscriptionId_;
     }
 
     public static final int VERBOSITY_FIELD_NUMBER = 2;
-    private int verbosity_;
+    private int verbosity_ = 0;
     /**
      * <pre>
      * Control verbosity of the output
      * </pre>
      *
      * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+     * @return The enum numeric value on the wire for verbosity.
      */
-    public int getVerbosityValue() {
+    @java.lang.Override public int getVerbosityValue() {
       return verbosity_;
     }
     /**
@@ -15039,10 +15361,10 @@ public final class Telemetry {
      * </pre>
      *
      * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+     * @return The verbosity.
      */
-    public org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel getVerbosity() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel result = org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.valueOf(verbosity_);
+    @java.lang.Override public org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel getVerbosity() {
+      org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel result = org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.forNumber(verbosity_);
       return result == null ? org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.UNRECOGNIZED : result;
     }
 
@@ -15066,7 +15388,7 @@ public final class Telemetry {
       if (verbosity_ != org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.DETAIL.getNumber()) {
         output.writeEnum(2, verbosity_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -15083,7 +15405,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, verbosity_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -15101,7 +15423,7 @@ public final class Telemetry {
       if (getSubscriptionId()
           != other.getSubscriptionId()) return false;
       if (verbosity_ != other.verbosity_) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -15116,7 +15438,7 @@ public final class Telemetry {
       hash = (53 * hash) + getSubscriptionId();
       hash = (37 * hash) + VERBOSITY_FIELD_NUMBER;
       hash = (53 * hash) + verbosity_;
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -15165,11 +15487,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -15237,26 +15561,20 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         subscriptionId_ = 0;
-
         verbosity_ = 0;
-
         return this;
       }
 
@@ -15283,10 +15601,19 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest result = new org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest(this);
-        result.subscriptionId_ = subscriptionId_;
-        result.verbosity_ = verbosity_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.subscriptionId_ = subscriptionId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.verbosity_ = verbosity_;
+        }
       }
 
       @java.lang.Override
@@ -15339,7 +15666,7 @@ public final class Telemetry {
         if (other.verbosity_ != 0) {
           setVerbosityValue(other.getVerbosityValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -15354,24 +15681,49 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                subscriptionId_ = input.readUInt32();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 16: {
+                verbosity_ = input.readEnum();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 16
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private int subscriptionId_ ;
       /**
        * <pre>
        * Per-subscription_id level operational state can be requested.
+       *
        * Subscription identifier as returned by the device when
        * subscription was requested
        * --- or ---
@@ -15383,13 +15735,16 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return The subscriptionId.
        */
+      @java.lang.Override
       public int getSubscriptionId() {
         return subscriptionId_;
       }
       /**
        * <pre>
        * Per-subscription_id level operational state can be requested.
+       *
        * Subscription identifier as returned by the device when
        * subscription was requested
        * --- or ---
@@ -15401,16 +15756,20 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @param value The subscriptionId to set.
+       * @return This builder for chaining.
        */
       public Builder setSubscriptionId(int value) {
-        
+
         subscriptionId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <pre>
        * Per-subscription_id level operational state can be requested.
+       *
        * Subscription identifier as returned by the device when
        * subscription was requested
        * --- or ---
@@ -15422,9 +15781,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>uint32 subscription_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSubscriptionId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         subscriptionId_ = 0;
         onChanged();
         return this;
@@ -15437,8 +15797,9 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+       * @return The enum numeric value on the wire for verbosity.
        */
-      public int getVerbosityValue() {
+      @java.lang.Override public int getVerbosityValue() {
         return verbosity_;
       }
       /**
@@ -15447,9 +15808,12 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+       * @param value The enum numeric value on the wire for verbosity to set.
+       * @return This builder for chaining.
        */
       public Builder setVerbosityValue(int value) {
         verbosity_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -15459,10 +15823,11 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+       * @return The verbosity.
        */
+      @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel getVerbosity() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel result = org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.valueOf(verbosity_);
+        org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel result = org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.forNumber(verbosity_);
         return result == null ? org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel.UNRECOGNIZED : result;
       }
       /**
@@ -15471,12 +15836,14 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+       * @param value The verbosity to set.
+       * @return This builder for chaining.
        */
       public Builder setVerbosity(org.opennms.features.openconfig.proto.jti.Telemetry.VerbosityLevel value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000002;
         verbosity_ = value.getNumber();
         onChanged();
         return this;
@@ -15487,9 +15854,10 @@ public final class Telemetry {
        * </pre>
        *
        * <code>.telemetry.VerbosityLevel verbosity = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearVerbosity() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         verbosity_ = 0;
         onChanged();
         return this;
@@ -15527,7 +15895,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetOperationalStateRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -15612,7 +15991,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.GetOperationalStateReply}
    */
-  public  static final class GetOperationalStateReply extends
+  public static final class GetOperationalStateReply extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.GetOperationalStateReply)
       GetOperationalStateReplyOrBuilder {
@@ -15632,61 +16011,6 @@ public final class Telemetry {
       return new GetOperationalStateReply();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private GetOperationalStateReply(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                kv_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              kv_.add(
-                  input.readMessage(org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          kv_ = java.util.Collections.unmodifiableList(kv_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_GetOperationalStateReply_descriptor;
@@ -15701,6 +16025,7 @@ public final class Telemetry {
     }
 
     public static final int KV_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue> kv_;
     /**
      * <pre>
@@ -15711,6 +16036,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue> getKvList() {
       return kv_;
     }
@@ -15723,6 +16049,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.openconfig.proto.jti.Telemetry.KeyValueOrBuilder> 
         getKvOrBuilderList() {
       return kv_;
@@ -15736,6 +16063,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 1;</code>
      */
+    @java.lang.Override
     public int getKvCount() {
       return kv_.size();
     }
@@ -15748,6 +16076,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue getKv(int index) {
       return kv_.get(index);
     }
@@ -15760,6 +16089,7 @@ public final class Telemetry {
      *
      * <code>repeated .telemetry.KeyValue kv = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.KeyValueOrBuilder getKvOrBuilder(
         int index) {
       return kv_.get(index);
@@ -15782,7 +16112,7 @@ public final class Telemetry {
       for (int i = 0; i < kv_.size(); i++) {
         output.writeMessage(1, kv_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -15795,7 +16125,7 @@ public final class Telemetry {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, kv_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -15812,7 +16142,7 @@ public final class Telemetry {
 
       if (!getKvList()
           .equals(other.getKvList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -15827,7 +16157,7 @@ public final class Telemetry {
         hash = (37 * hash) + KV_FIELD_NUMBER;
         hash = (53 * hash) + getKvList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -15876,11 +16206,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -15948,29 +16280,25 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getKvFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (kvBuilder_ == null) {
           kv_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          kv_ = null;
           kvBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -15997,7 +16325,13 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply result = new org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply result) {
         if (kvBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             kv_ = java.util.Collections.unmodifiableList(kv_);
@@ -16007,8 +16341,10 @@ public final class Telemetry {
         } else {
           result.kv_ = kvBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -16081,7 +16417,7 @@ public final class Telemetry {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -16096,17 +16432,43 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue m =
+                    input.readMessage(
+                        org.opennms.features.openconfig.proto.jti.Telemetry.KeyValue.parser(),
+                        extensionRegistry);
+                if (kvBuilder_ == null) {
+                  ensureKvIsMutable();
+                  kv_.add(m);
+                } else {
+                  kvBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -16491,7 +16853,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetOperationalStateReply(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -16522,7 +16895,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.DataEncodingRequest}
    */
-  public  static final class DataEncodingRequest extends
+  public static final class DataEncodingRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.DataEncodingRequest)
       DataEncodingRequestOrBuilder {
@@ -16541,48 +16914,6 @@ public final class Telemetry {
       return new DataEncodingRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private DataEncodingRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_DataEncodingRequest_descriptor;
@@ -16610,7 +16941,7 @@ public final class Telemetry {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -16619,7 +16950,7 @@ public final class Telemetry {
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -16634,7 +16965,7 @@ public final class Telemetry {
       }
       org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest other = (org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -16645,7 +16976,7 @@ public final class Telemetry {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -16694,11 +17025,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -16766,18 +17099,13 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -16856,7 +17184,7 @@ public final class Telemetry {
 
       public Builder mergeFrom(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest other) {
         if (other == org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -16871,17 +17199,30 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       @java.lang.Override
@@ -16917,7 +17258,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DataEncodingRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -16943,23 +17295,30 @@ public final class Telemetry {
 
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return A list containing the encodingList.
      */
     java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType> getEncodingListList();
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return The count of encodingList.
      */
     int getEncodingListCount();
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @param index The index of the element to return.
+     * @return The encodingList at the given index.
      */
     org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType getEncodingList(int index);
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return A list containing the enum numeric values on the wire for encodingList.
      */
     java.util.List<java.lang.Integer>
     getEncodingListValueList();
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of encodingList at the given index.
      */
     int getEncodingListValue(int index);
   }
@@ -16970,7 +17329,7 @@ public final class Telemetry {
    *
    * Protobuf type {@code telemetry.DataEncodingReply}
    */
-  public  static final class DataEncodingReply extends
+  public static final class DataEncodingReply extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:telemetry.DataEncodingReply)
       DataEncodingReplyOrBuilder {
@@ -16990,75 +17349,6 @@ public final class Telemetry {
       return new DataEncodingReply();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private DataEncodingReply(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-              int rawValue = input.readEnum();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                encodingList_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              encodingList_.add(rawValue);
-              break;
-            }
-            case 10: {
-              int length = input.readRawVarint32();
-              int oldLimit = input.pushLimit(length);
-              while(input.getBytesUntilLimit() > 0) {
-                int rawValue = input.readEnum();
-                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                  encodingList_ = new java.util.ArrayList<java.lang.Integer>();
-                  mutable_bitField0_ |= 0x00000001;
-                }
-                encodingList_.add(rawValue);
-              }
-              input.popLimit(oldLimit);
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          encodingList_ = java.util.Collections.unmodifiableList(encodingList_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.jti.Telemetry.internal_static_telemetry_DataEncodingReply_descriptor;
@@ -17073,46 +17363,58 @@ public final class Telemetry {
     }
 
     public static final int ENCODING_LIST_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<java.lang.Integer> encodingList_;
     private static final com.google.protobuf.Internal.ListAdapter.Converter<
         java.lang.Integer, org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType> encodingList_converter_ =
             new com.google.protobuf.Internal.ListAdapter.Converter<
                 java.lang.Integer, org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType>() {
               public org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType convert(java.lang.Integer from) {
-                @SuppressWarnings("deprecation")
-                org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType result = org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType.valueOf(from);
+                org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType result = org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType.forNumber(from);
                 return result == null ? org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType.UNRECOGNIZED : result;
               }
             };
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return A list containing the encodingList.
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType> getEncodingListList() {
       return new com.google.protobuf.Internal.ListAdapter<
           java.lang.Integer, org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType>(encodingList_, encodingList_converter_);
     }
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return The count of encodingList.
      */
+    @java.lang.Override
     public int getEncodingListCount() {
       return encodingList_.size();
     }
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @param index The index of the element to return.
+     * @return The encodingList at the given index.
      */
+    @java.lang.Override
     public org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType getEncodingList(int index) {
       return encodingList_converter_.convert(encodingList_.get(index));
     }
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @return A list containing the enum numeric values on the wire for encodingList.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
     getEncodingListValueList() {
       return encodingList_;
     }
     /**
      * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of encodingList at the given index.
      */
+    @java.lang.Override
     public int getEncodingListValue(int index) {
       return encodingList_.get(index);
     }
@@ -17140,7 +17442,7 @@ public final class Telemetry {
       for (int i = 0; i < encodingList_.size(); i++) {
         output.writeEnumNoTag(encodingList_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -17161,7 +17463,7 @@ public final class Telemetry {
             .computeUInt32SizeNoTag(dataSize);
         }encodingListMemoizedSerializedSize = dataSize;
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -17177,7 +17479,7 @@ public final class Telemetry {
       org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply other = (org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply) obj;
 
       if (!encodingList_.equals(other.encodingList_)) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -17192,7 +17494,7 @@ public final class Telemetry {
         hash = (37 * hash) + ENCODING_LIST_FIELD_NUMBER;
         hash = (53 * hash) + encodingList_.hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -17241,11 +17543,13 @@ public final class Telemetry {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -17313,22 +17617,18 @@ public final class Telemetry {
 
       // Construct using org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         encodingList_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
@@ -17357,14 +17657,22 @@ public final class Telemetry {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply buildPartial() {
         org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply result = new org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply result) {
         if (((bitField0_ & 0x00000001) != 0)) {
           encodingList_ = java.util.Collections.unmodifiableList(encodingList_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.encodingList_ = encodingList_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -17421,7 +17729,7 @@ public final class Telemetry {
           }
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -17436,17 +17744,47 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                int tmpRaw = input.readEnum();
+                ensureEncodingListIsMutable();
+                encodingList_.add(tmpRaw);
+                break;
+              } // case 8
+              case 10: {
+                int length = input.readRawVarint32();
+                int oldLimit = input.pushLimit(length);
+                while(input.getBytesUntilLimit() > 0) {
+                  int tmpRaw = input.readEnum();
+                  ensureEncodingListIsMutable();
+                  encodingList_.add(tmpRaw);
+                }
+                input.popLimit(oldLimit);
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -17461,6 +17799,7 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @return A list containing the encodingList.
        */
       public java.util.List<org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType> getEncodingListList() {
         return new com.google.protobuf.Internal.ListAdapter<
@@ -17468,18 +17807,24 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @return The count of encodingList.
        */
       public int getEncodingListCount() {
         return encodingList_.size();
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param index The index of the element to return.
+       * @return The encodingList at the given index.
        */
       public org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType getEncodingList(int index) {
         return encodingList_converter_.convert(encodingList_.get(index));
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The encodingList to set.
+       * @return This builder for chaining.
        */
       public Builder setEncodingList(
           int index, org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType value) {
@@ -17493,6 +17838,8 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param value The encodingList to add.
+       * @return This builder for chaining.
        */
       public Builder addEncodingList(org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType value) {
         if (value == null) {
@@ -17505,6 +17852,8 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param values The encodingList to add.
+       * @return This builder for chaining.
        */
       public Builder addAllEncodingList(
           java.lang.Iterable<? extends org.opennms.features.openconfig.proto.jti.Telemetry.EncodingType> values) {
@@ -17517,6 +17866,7 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearEncodingList() {
         encodingList_ = java.util.Collections.emptyList();
@@ -17526,6 +17876,7 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @return A list containing the enum numeric values on the wire for encodingList.
        */
       public java.util.List<java.lang.Integer>
       getEncodingListValueList() {
@@ -17533,12 +17884,17 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of encodingList at the given index.
        */
       public int getEncodingListValue(int index) {
         return encodingList_.get(index);
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param index The index to set the value at.
+       * @param value The enum numeric value on the wire for encodingList to set.
+       * @return This builder for chaining.
        */
       public Builder setEncodingListValue(
           int index, int value) {
@@ -17549,6 +17905,8 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param value The enum numeric value on the wire for encodingList to add.
+       * @return This builder for chaining.
        */
       public Builder addEncodingListValue(int value) {
         ensureEncodingListIsMutable();
@@ -17558,6 +17916,8 @@ public final class Telemetry {
       }
       /**
        * <code>repeated .telemetry.EncodingType encoding_list = 1;</code>
+       * @param values The enum numeric values on the wire for encodingList to add.
+       * @return This builder for chaining.
        */
       public Builder addAllEncodingListValue(
           java.lang.Iterable<java.lang.Integer> values) {
@@ -17601,7 +17961,18 @@ public final class Telemetry {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DataEncodingReply(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 

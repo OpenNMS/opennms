@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,14 +29,6 @@
 package org.opennms.features.openconfig.proto.jti;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  * <pre>
@@ -44,8 +36,9 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.24.0)",
+    value = "by gRPC proto compiler (version 1.46.0)",
     comments = "Source: telemetry.proto")
+@io.grpc.stub.annotations.GrpcGenerated
 public final class OpenConfigTelemetryGrpc {
 
   private OpenConfigTelemetryGrpc() {}
@@ -212,7 +205,14 @@ public final class OpenConfigTelemetryGrpc {
    * Creates a new async stub that supports all call types for the service
    */
   public static OpenConfigTelemetryStub newStub(io.grpc.Channel channel) {
-    return new OpenConfigTelemetryStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryStub>() {
+        @java.lang.Override
+        public OpenConfigTelemetryStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new OpenConfigTelemetryStub(channel, callOptions);
+        }
+      };
+    return OpenConfigTelemetryStub.newStub(factory, channel);
   }
 
   /**
@@ -220,7 +220,14 @@ public final class OpenConfigTelemetryGrpc {
    */
   public static OpenConfigTelemetryBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new OpenConfigTelemetryBlockingStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryBlockingStub>() {
+        @java.lang.Override
+        public OpenConfigTelemetryBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new OpenConfigTelemetryBlockingStub(channel, callOptions);
+        }
+      };
+    return OpenConfigTelemetryBlockingStub.newStub(factory, channel);
   }
 
   /**
@@ -228,7 +235,14 @@ public final class OpenConfigTelemetryGrpc {
    */
   public static OpenConfigTelemetryFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new OpenConfigTelemetryFutureStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<OpenConfigTelemetryFutureStub>() {
+        @java.lang.Override
+        public OpenConfigTelemetryFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new OpenConfigTelemetryFutureStub(channel, callOptions);
+        }
+      };
+    return OpenConfigTelemetryFutureStub.newStub(factory, channel);
   }
 
   /**
@@ -247,7 +261,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void telemetrySubscribe(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData> responseObserver) {
-      asyncUnimplementedUnaryCall(getTelemetrySubscribeMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTelemetrySubscribeMethod(), responseObserver);
     }
 
     /**
@@ -257,7 +271,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void cancelTelemetrySubscription(org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getCancelTelemetrySubscriptionMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getCancelTelemetrySubscriptionMethod(), responseObserver);
     }
 
     /**
@@ -269,7 +283,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getTelemetrySubscriptions(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetTelemetrySubscriptionsMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetTelemetrySubscriptionsMethod(), responseObserver);
     }
 
     /**
@@ -279,7 +293,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getTelemetryOperationalState(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetTelemetryOperationalStateMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetTelemetryOperationalStateMethod(), responseObserver);
     }
 
     /**
@@ -290,42 +304,42 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getDataEncodings(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetDataEncodingsMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetDataEncodingsMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getTelemetrySubscribeMethod(),
-            asyncServerStreamingCall(
+            io.grpc.stub.ServerCalls.asyncServerStreamingCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest,
                 org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData>(
                   this, METHODID_TELEMETRY_SUBSCRIBE)))
           .addMethod(
             getCancelTelemetrySubscriptionMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest,
                 org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply>(
                   this, METHODID_CANCEL_TELEMETRY_SUBSCRIPTION)))
           .addMethod(
             getGetTelemetrySubscriptionsMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest,
                 org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply>(
                   this, METHODID_GET_TELEMETRY_SUBSCRIPTIONS)))
           .addMethod(
             getGetTelemetryOperationalStateMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest,
                 org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply>(
                   this, METHODID_GET_TELEMETRY_OPERATIONAL_STATE)))
           .addMethod(
             getGetDataEncodingsMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest,
                 org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply>(
@@ -339,19 +353,15 @@ public final class OpenConfigTelemetryGrpc {
    * Interface exported by Agent
    * </pre>
    */
-  public static final class OpenConfigTelemetryStub extends io.grpc.stub.AbstractStub<OpenConfigTelemetryStub> {
-    private OpenConfigTelemetryStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private OpenConfigTelemetryStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class OpenConfigTelemetryStub extends io.grpc.stub.AbstractAsyncStub<OpenConfigTelemetryStub> {
+    private OpenConfigTelemetryStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected OpenConfigTelemetryStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected OpenConfigTelemetryStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenConfigTelemetryStub(channel, callOptions);
     }
 
@@ -364,7 +374,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void telemetrySubscribe(org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData> responseObserver) {
-      asyncServerStreamingCall(
+      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
           getChannel().newCall(getTelemetrySubscribeMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -375,7 +385,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void cancelTelemetrySubscription(org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getCancelTelemetrySubscriptionMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -388,7 +398,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getTelemetrySubscriptions(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetTelemetrySubscriptionsMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -399,7 +409,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getTelemetryOperationalState(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetTelemetryOperationalStateMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -411,7 +421,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public void getDataEncodings(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetDataEncodingsMethod(), getCallOptions()), request, responseObserver);
     }
   }
@@ -421,19 +431,15 @@ public final class OpenConfigTelemetryGrpc {
    * Interface exported by Agent
    * </pre>
    */
-  public static final class OpenConfigTelemetryBlockingStub extends io.grpc.stub.AbstractStub<OpenConfigTelemetryBlockingStub> {
-    private OpenConfigTelemetryBlockingStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private OpenConfigTelemetryBlockingStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class OpenConfigTelemetryBlockingStub extends io.grpc.stub.AbstractBlockingStub<OpenConfigTelemetryBlockingStub> {
+    private OpenConfigTelemetryBlockingStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected OpenConfigTelemetryBlockingStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected OpenConfigTelemetryBlockingStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenConfigTelemetryBlockingStub(channel, callOptions);
     }
 
@@ -446,7 +452,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public java.util.Iterator<org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData> telemetrySubscribe(
         org.opennms.features.openconfig.proto.jti.Telemetry.SubscriptionRequest request) {
-      return blockingServerStreamingCall(
+      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(
           getChannel(), getTelemetrySubscribeMethod(), getCallOptions(), request);
     }
 
@@ -456,7 +462,7 @@ public final class OpenConfigTelemetryGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply cancelTelemetrySubscription(org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getCancelTelemetrySubscriptionMethod(), getCallOptions(), request);
     }
 
@@ -468,7 +474,7 @@ public final class OpenConfigTelemetryGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply getTelemetrySubscriptions(org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetTelemetrySubscriptionsMethod(), getCallOptions(), request);
     }
 
@@ -478,7 +484,7 @@ public final class OpenConfigTelemetryGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply getTelemetryOperationalState(org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetTelemetryOperationalStateMethod(), getCallOptions(), request);
     }
 
@@ -489,7 +495,7 @@ public final class OpenConfigTelemetryGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply getDataEncodings(org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetDataEncodingsMethod(), getCallOptions(), request);
     }
   }
@@ -499,19 +505,15 @@ public final class OpenConfigTelemetryGrpc {
    * Interface exported by Agent
    * </pre>
    */
-  public static final class OpenConfigTelemetryFutureStub extends io.grpc.stub.AbstractStub<OpenConfigTelemetryFutureStub> {
-    private OpenConfigTelemetryFutureStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private OpenConfigTelemetryFutureStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class OpenConfigTelemetryFutureStub extends io.grpc.stub.AbstractFutureStub<OpenConfigTelemetryFutureStub> {
+    private OpenConfigTelemetryFutureStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected OpenConfigTelemetryFutureStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected OpenConfigTelemetryFutureStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new OpenConfigTelemetryFutureStub(channel, callOptions);
     }
 
@@ -522,7 +524,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionReply> cancelTelemetrySubscription(
         org.opennms.features.openconfig.proto.jti.Telemetry.CancelSubscriptionRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getCancelTelemetrySubscriptionMethod(), getCallOptions()), request);
     }
 
@@ -535,7 +537,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsReply> getTelemetrySubscriptions(
         org.opennms.features.openconfig.proto.jti.Telemetry.GetSubscriptionsRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetTelemetrySubscriptionsMethod(), getCallOptions()), request);
     }
 
@@ -546,7 +548,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateReply> getTelemetryOperationalState(
         org.opennms.features.openconfig.proto.jti.Telemetry.GetOperationalStateRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetTelemetryOperationalStateMethod(), getCallOptions()), request);
     }
 
@@ -558,7 +560,7 @@ public final class OpenConfigTelemetryGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingReply> getDataEncodings(
         org.opennms.features.openconfig.proto.jti.Telemetry.DataEncodingRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetDataEncodingsMethod(), getCallOptions()), request);
     }
   }

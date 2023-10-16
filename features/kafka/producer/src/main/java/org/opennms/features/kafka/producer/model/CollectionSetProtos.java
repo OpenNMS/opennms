@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,20 +48,24 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>string value = 2;</code>
+     * @return The value.
      */
     java.lang.String getValue();
     /**
      * <code>string value = 2;</code>
+     * @return The bytes for value.
      */
     com.google.protobuf.ByteString
         getValueBytes();
@@ -69,7 +73,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code StringAttribute}
    */
-  public  static final class StringAttribute extends
+  public static final class StringAttribute extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:StringAttribute)
       StringAttributeOrBuilder {
@@ -84,60 +88,12 @@ public final class CollectionSetProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new StringAttribute();
     }
-    private StringAttribute(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
 
-              name_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              value_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_StringAttribute_descriptor;
@@ -152,10 +108,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -170,7 +129,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -186,10 +147,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object value_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object value_ = "";
     /**
      * <code>string value = 2;</code>
+     * @return The value.
      */
+    @java.lang.Override
     public java.lang.String getValue() {
       java.lang.Object ref = value_;
       if (ref instanceof java.lang.String) {
@@ -204,7 +168,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string value = 2;</code>
+     * @return The bytes for value.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getValueBytes() {
       java.lang.Object ref = value_;
@@ -233,13 +199,13 @@ public final class CollectionSetProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
-      if (!getValueBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -248,13 +214,13 @@ public final class CollectionSetProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
-      if (!getValueBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -269,13 +235,12 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute) obj;
 
-      boolean result = true;
-      result = result && getName()
-          .equals(other.getName());
-      result = result && getValue()
-          .equals(other.getValue());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!getValue()
+          .equals(other.getValue())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -289,7 +254,7 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getName().hashCode();
       hash = (37 * hash) + VALUE_FIELD_NUMBER;
       hash = (53 * hash) + getValue().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -338,11 +303,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -406,26 +373,20 @@ public final class CollectionSetProtos {
 
       // Construct using org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-
         value_ = "";
-
         return this;
       }
 
@@ -452,43 +413,52 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute(this);
-        result.name_ = name_;
-        result.value_ = value_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.value_ = value_;
+        }
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -504,13 +474,15 @@ public final class CollectionSetProtos {
         if (other == org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getValue().isEmpty()) {
           value_ = other.value_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -525,23 +497,48 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                name_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                value_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -557,6 +554,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -573,37 +571,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -611,6 +610,7 @@ public final class CollectionSetProtos {
       private java.lang.Object value_ = "";
       /**
        * <code>string value = 2;</code>
+       * @return The value.
        */
       public java.lang.String getValue() {
         java.lang.Object ref = value_;
@@ -626,6 +626,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string value = 2;</code>
+       * @return The bytes for value.
        */
       public com.google.protobuf.ByteString
           getValueBytes() {
@@ -642,44 +643,45 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string value = 2;</code>
+       * @param value The value to set.
+       * @return This builder for chaining.
        */
       public Builder setValue(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         value_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string value = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearValue() {
-        
         value_ = getDefaultInstance().getValue();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string value = 2;</code>
+       * @param value The bytes for value to set.
+       * @return This builder for chaining.
        */
       public Builder setValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         value_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -709,7 +711,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new StringAttribute(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -735,47 +748,68 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string group = 1;</code>
+     * @return The group.
      */
     java.lang.String getGroup();
     /**
      * <code>string group = 1;</code>
+     * @return The bytes for group.
      */
     com.google.protobuf.ByteString
         getGroupBytes();
 
     /**
      * <code>string name = 2;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 2;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>double value = 3;</code>
+     * @return The value.
      */
     double getValue();
 
     /**
      * <code>.NumericAttribute.Type type = 4;</code>
+     * @return The enum numeric value on the wire for type.
      */
     int getTypeValue();
     /**
      * <code>.NumericAttribute.Type type = 4;</code>
+     * @return The type.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type getType();
 
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     * @return Whether the metricValue field is set.
      */
     boolean hasMetricValue();
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     * @return The metricValue.
      */
     com.google.protobuf.DoubleValue getMetricValue();
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
      */
     com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder();
@@ -783,7 +817,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code NumericAttribute}
    */
-  public  static final class NumericAttribute extends
+  public static final class NumericAttribute extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:NumericAttribute)
       NumericAttributeOrBuilder {
@@ -795,89 +829,16 @@ public final class CollectionSetProtos {
     private NumericAttribute() {
       group_ = "";
       name_ = "";
-      value_ = 0D;
       type_ = 0;
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new NumericAttribute();
     }
-    private NumericAttribute(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
 
-              group_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              name_ = s;
-              break;
-            }
-            case 25: {
-
-              value_ = input.readDouble();
-              break;
-            }
-            case 32: {
-              int rawValue = input.readEnum();
-
-              type_ = rawValue;
-              break;
-            }
-            case 42: {
-              com.google.protobuf.DoubleValue.Builder subBuilder = null;
-              if (metricValue_ != null) {
-                subBuilder = metricValue_.toBuilder();
-              }
-              metricValue_ = input.readMessage(com.google.protobuf.DoubleValue.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(metricValue_);
-                metricValue_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_NumericAttribute_descriptor;
@@ -926,6 +887,8 @@ public final class CollectionSetProtos {
       }
 
       /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -933,6 +896,10 @@ public final class CollectionSetProtos {
         return forNumber(value);
       }
 
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
       public static Type forNumber(int value) {
         switch (value) {
           case 0: return GAUGE;
@@ -955,6 +922,10 @@ public final class CollectionSetProtos {
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
         return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -989,11 +960,15 @@ public final class CollectionSetProtos {
       // @@protoc_insertion_point(enum_scope:NumericAttribute.Type)
     }
 
+    private int bitField0_;
     public static final int GROUP_FIELD_NUMBER = 1;
-    private volatile java.lang.Object group_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object group_ = "";
     /**
      * <code>string group = 1;</code>
+     * @return The group.
      */
+    @java.lang.Override
     public java.lang.String getGroup() {
       java.lang.Object ref = group_;
       if (ref instanceof java.lang.String) {
@@ -1008,7 +983,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string group = 1;</code>
+     * @return The bytes for group.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getGroupBytes() {
       java.lang.Object ref = group_;
@@ -1024,10 +1001,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int NAME_FIELD_NUMBER = 2;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>string name = 2;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -1042,7 +1022,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string name = 2;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -1058,50 +1040,70 @@ public final class CollectionSetProtos {
     }
 
     public static final int VALUE_FIELD_NUMBER = 3;
-    private double value_;
+    private double value_ = 0D;
     /**
      * <code>double value = 3;</code>
+     * @return The value.
      */
+    @java.lang.Override
     public double getValue() {
       return value_;
     }
 
     public static final int TYPE_FIELD_NUMBER = 4;
-    private int type_;
+    private int type_ = 0;
     /**
      * <code>.NumericAttribute.Type type = 4;</code>
+     * @return The enum numeric value on the wire for type.
      */
-    public int getTypeValue() {
+    @java.lang.Override public int getTypeValue() {
       return type_;
     }
     /**
      * <code>.NumericAttribute.Type type = 4;</code>
+     * @return The type.
      */
-    public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type getType() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type result = org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.valueOf(type_);
+    @java.lang.Override public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type getType() {
+      org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type result = org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.forNumber(type_);
       return result == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.UNRECOGNIZED : result;
     }
 
     public static final int METRIC_VALUE_FIELD_NUMBER = 5;
     private com.google.protobuf.DoubleValue metricValue_;
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     * @return Whether the metricValue field is set.
      */
+    @java.lang.Override
     public boolean hasMetricValue() {
-      return metricValue_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+     * @return The metricValue.
      */
+    @java.lang.Override
     public com.google.protobuf.DoubleValue getMetricValue() {
       return metricValue_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
     }
     /**
+     * <pre>
+     * Copy of `value` that is ALWAYS serialized, even when zero
+     * </pre>
+     *
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder() {
-      return getMetricValue();
+      return metricValue_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1118,22 +1120,22 @@ public final class CollectionSetProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getGroupBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(group_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, group_);
       }
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
       }
-      if (value_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(value_) != 0) {
         output.writeDouble(3, value_);
       }
       if (type_ != org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.GAUGE.getNumber()) {
         output.writeEnum(4, type_);
       }
-      if (metricValue_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(5, getMetricValue());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1142,13 +1144,13 @@ public final class CollectionSetProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getGroupBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(group_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, group_);
       }
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
       }
-      if (value_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(value_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(3, value_);
       }
@@ -1156,11 +1158,11 @@ public final class CollectionSetProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(4, type_);
       }
-      if (metricValue_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, getMetricValue());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1175,23 +1177,21 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute) obj;
 
-      boolean result = true;
-      result = result && getGroup()
-          .equals(other.getGroup());
-      result = result && getName()
-          .equals(other.getName());
-      result = result && (
-          java.lang.Double.doubleToLongBits(getValue())
-          == java.lang.Double.doubleToLongBits(
-              other.getValue()));
-      result = result && type_ == other.type_;
-      result = result && (hasMetricValue() == other.hasMetricValue());
+      if (!getGroup()
+          .equals(other.getGroup())) return false;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (java.lang.Double.doubleToLongBits(getValue())
+          != java.lang.Double.doubleToLongBits(
+              other.getValue())) return false;
+      if (type_ != other.type_) return false;
+      if (hasMetricValue() != other.hasMetricValue()) return false;
       if (hasMetricValue()) {
-        result = result && getMetricValue()
-            .equals(other.getMetricValue());
+        if (!getMetricValue()
+            .equals(other.getMetricValue())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1214,7 +1214,7 @@ public final class CollectionSetProtos {
         hash = (37 * hash) + METRIC_VALUE_FIELD_NUMBER;
         hash = (53 * hash) + getMetricValue().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1263,11 +1263,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1342,23 +1344,20 @@ public final class CollectionSetProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getMetricValueFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         group_ = "";
-
         name_ = "";
-
         value_ = 0D;
-
         type_ = 0;
-
-        if (metricValueBuilder_ == null) {
-          metricValue_ = null;
-        } else {
-          metricValue_ = null;
+        metricValue_ = null;
+        if (metricValueBuilder_ != null) {
+          metricValueBuilder_.dispose();
           metricValueBuilder_ = null;
         }
         return this;
@@ -1387,50 +1386,66 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute(this);
-        result.group_ = group_;
-        result.name_ = name_;
-        result.value_ = value_;
-        result.type_ = type_;
-        if (metricValueBuilder_ == null) {
-          result.metricValue_ = metricValue_;
-        } else {
-          result.metricValue_ = metricValueBuilder_.build();
-        }
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.group_ = group_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.value_ = value_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.type_ = type_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.metricValue_ = metricValueBuilder_ == null
+              ? metricValue_
+              : metricValueBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1446,10 +1461,12 @@ public final class CollectionSetProtos {
         if (other == org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.getDefaultInstance()) return this;
         if (!other.getGroup().isEmpty()) {
           group_ = other.group_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.getValue() != 0D) {
@@ -1461,7 +1478,7 @@ public final class CollectionSetProtos {
         if (other.hasMetricValue()) {
           mergeMetricValue(other.getMetricValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -1476,23 +1493,65 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                group_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                name_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 25: {
+                value_ = input.readDouble();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 25
+              case 32: {
+                type_ = input.readEnum();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 42: {
+                input.readMessage(
+                    getMetricValueFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object group_ = "";
       /**
        * <code>string group = 1;</code>
+       * @return The group.
        */
       public java.lang.String getGroup() {
         java.lang.Object ref = group_;
@@ -1508,6 +1567,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string group = 1;</code>
+       * @return The bytes for group.
        */
       public com.google.protobuf.ByteString
           getGroupBytes() {
@@ -1524,37 +1584,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string group = 1;</code>
+       * @param value The group to set.
+       * @return This builder for chaining.
        */
       public Builder setGroup(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         group_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>string group = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearGroup() {
-        
         group_ = getDefaultInstance().getGroup();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>string group = 1;</code>
+       * @param value The bytes for group to set.
+       * @return This builder for chaining.
        */
       public Builder setGroupBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         group_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1562,6 +1623,7 @@ public final class CollectionSetProtos {
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 2;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -1577,6 +1639,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string name = 2;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -1593,37 +1656,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string name = 2;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string name = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string name = 2;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1631,24 +1695,30 @@ public final class CollectionSetProtos {
       private double value_ ;
       /**
        * <code>double value = 3;</code>
+       * @return The value.
        */
+      @java.lang.Override
       public double getValue() {
         return value_;
       }
       /**
        * <code>double value = 3;</code>
+       * @param value The value to set.
+       * @return This builder for chaining.
        */
       public Builder setValue(double value) {
-        
+
         value_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
        * <code>double value = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearValue() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         value_ = 0D;
         onChanged();
         return this;
@@ -1657,59 +1727,77 @@ public final class CollectionSetProtos {
       private int type_ = 0;
       /**
        * <code>.NumericAttribute.Type type = 4;</code>
+       * @return The enum numeric value on the wire for type.
        */
-      public int getTypeValue() {
+      @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
        * <code>.NumericAttribute.Type type = 4;</code>
+       * @param value The enum numeric value on the wire for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
         type_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
        * <code>.NumericAttribute.Type type = 4;</code>
+       * @return The type.
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type getType() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type result = org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.valueOf(type_);
+        org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type result = org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.forNumber(type_);
         return result == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type.UNRECOGNIZED : result;
       }
       /**
        * <code>.NumericAttribute.Type type = 4;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000008;
         type_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
        * <code>.NumericAttribute.Type type = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         type_ = 0;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.DoubleValue metricValue_ = null;
+      private com.google.protobuf.DoubleValue metricValue_;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder> metricValueBuilder_;
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       * @return Whether the metricValue field is set.
        */
       public boolean hasMetricValue() {
-        return metricValueBuilder_ != null || metricValue_ != null;
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
+       * @return The metricValue.
        */
       public com.google.protobuf.DoubleValue getMetricValue() {
         if (metricValueBuilder_ == null) {
@@ -1719,6 +1807,10 @@ public final class CollectionSetProtos {
         }
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public Builder setMetricValue(com.google.protobuf.DoubleValue value) {
@@ -1727,68 +1819,90 @@ public final class CollectionSetProtos {
             throw new NullPointerException();
           }
           metricValue_ = value;
-          onChanged();
         } else {
           metricValueBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public Builder setMetricValue(
           com.google.protobuf.DoubleValue.Builder builderForValue) {
         if (metricValueBuilder_ == null) {
           metricValue_ = builderForValue.build();
-          onChanged();
         } else {
           metricValueBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public Builder mergeMetricValue(com.google.protobuf.DoubleValue value) {
         if (metricValueBuilder_ == null) {
-          if (metricValue_ != null) {
-            metricValue_ =
-              com.google.protobuf.DoubleValue.newBuilder(metricValue_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000010) != 0) &&
+            metricValue_ != null &&
+            metricValue_ != com.google.protobuf.DoubleValue.getDefaultInstance()) {
+            getMetricValueBuilder().mergeFrom(value);
           } else {
             metricValue_ = value;
           }
-          onChanged();
         } else {
           metricValueBuilder_.mergeFrom(value);
         }
-
+        if (metricValue_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         return this;
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public Builder clearMetricValue() {
-        if (metricValueBuilder_ == null) {
-          metricValue_ = null;
-          onChanged();
-        } else {
-          metricValue_ = null;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        metricValue_ = null;
+        if (metricValueBuilder_ != null) {
+          metricValueBuilder_.dispose();
           metricValueBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public com.google.protobuf.DoubleValue.Builder getMetricValueBuilder() {
-        
+        bitField0_ |= 0x00000010;
         onChanged();
         return getMetricValueFieldBuilder().getBuilder();
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       public com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder() {
@@ -1800,6 +1914,10 @@ public final class CollectionSetProtos {
         }
       }
       /**
+       * <pre>
+       * Copy of `value` that is ALWAYS serialized, even when zero
+       * </pre>
+       *
        * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -1818,7 +1936,7 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1848,7 +1966,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NumericAttribute(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1874,45 +2003,54 @@ public final class CollectionSetProtos {
 
     /**
      * <code>int64 node_id = 1;</code>
+     * @return The nodeId.
      */
     long getNodeId();
 
     /**
      * <code>string foreign_source = 2;</code>
+     * @return The foreignSource.
      */
     java.lang.String getForeignSource();
     /**
      * <code>string foreign_source = 2;</code>
+     * @return The bytes for foreignSource.
      */
     com.google.protobuf.ByteString
         getForeignSourceBytes();
 
     /**
      * <code>string foreign_id = 3;</code>
+     * @return The foreignId.
      */
     java.lang.String getForeignId();
     /**
      * <code>string foreign_id = 3;</code>
+     * @return The bytes for foreignId.
      */
     com.google.protobuf.ByteString
         getForeignIdBytes();
 
     /**
      * <code>string node_label = 4;</code>
+     * @return The nodeLabel.
      */
     java.lang.String getNodeLabel();
     /**
      * <code>string node_label = 4;</code>
+     * @return The bytes for nodeLabel.
      */
     com.google.protobuf.ByteString
         getNodeLabelBytes();
 
     /**
      * <code>string location = 5;</code>
+     * @return The location.
      */
     java.lang.String getLocation();
     /**
      * <code>string location = 5;</code>
+     * @return The bytes for location.
      */
     com.google.protobuf.ByteString
         getLocationBytes();
@@ -1920,7 +2058,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code NodeLevelResource}
    */
-  public  static final class NodeLevelResource extends
+  public static final class NodeLevelResource extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:NodeLevelResource)
       NodeLevelResourceOrBuilder {
@@ -1930,7 +2068,6 @@ public final class CollectionSetProtos {
       super(builder);
     }
     private NodeLevelResource() {
-      nodeId_ = 0L;
       foreignSource_ = "";
       foreignId_ = "";
       nodeLabel_ = "";
@@ -1938,77 +2075,12 @@ public final class CollectionSetProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new NodeLevelResource();
     }
-    private NodeLevelResource(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
 
-              nodeId_ = input.readInt64();
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              foreignSource_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              foreignId_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              nodeLabel_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              location_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_NodeLevelResource_descriptor;
@@ -2023,19 +2095,24 @@ public final class CollectionSetProtos {
     }
 
     public static final int NODE_ID_FIELD_NUMBER = 1;
-    private long nodeId_;
+    private long nodeId_ = 0L;
     /**
      * <code>int64 node_id = 1;</code>
+     * @return The nodeId.
      */
+    @java.lang.Override
     public long getNodeId() {
       return nodeId_;
     }
 
     public static final int FOREIGN_SOURCE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object foreignSource_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object foreignSource_ = "";
     /**
      * <code>string foreign_source = 2;</code>
+     * @return The foreignSource.
      */
+    @java.lang.Override
     public java.lang.String getForeignSource() {
       java.lang.Object ref = foreignSource_;
       if (ref instanceof java.lang.String) {
@@ -2050,7 +2127,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string foreign_source = 2;</code>
+     * @return The bytes for foreignSource.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getForeignSourceBytes() {
       java.lang.Object ref = foreignSource_;
@@ -2066,10 +2145,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int FOREIGN_ID_FIELD_NUMBER = 3;
-    private volatile java.lang.Object foreignId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object foreignId_ = "";
     /**
      * <code>string foreign_id = 3;</code>
+     * @return The foreignId.
      */
+    @java.lang.Override
     public java.lang.String getForeignId() {
       java.lang.Object ref = foreignId_;
       if (ref instanceof java.lang.String) {
@@ -2084,7 +2166,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string foreign_id = 3;</code>
+     * @return The bytes for foreignId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getForeignIdBytes() {
       java.lang.Object ref = foreignId_;
@@ -2100,10 +2184,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int NODE_LABEL_FIELD_NUMBER = 4;
-    private volatile java.lang.Object nodeLabel_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object nodeLabel_ = "";
     /**
      * <code>string node_label = 4;</code>
+     * @return The nodeLabel.
      */
+    @java.lang.Override
     public java.lang.String getNodeLabel() {
       java.lang.Object ref = nodeLabel_;
       if (ref instanceof java.lang.String) {
@@ -2118,7 +2205,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string node_label = 4;</code>
+     * @return The bytes for nodeLabel.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNodeLabelBytes() {
       java.lang.Object ref = nodeLabel_;
@@ -2134,10 +2223,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int LOCATION_FIELD_NUMBER = 5;
-    private volatile java.lang.Object location_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object location_ = "";
     /**
      * <code>string location = 5;</code>
+     * @return The location.
      */
+    @java.lang.Override
     public java.lang.String getLocation() {
       java.lang.Object ref = location_;
       if (ref instanceof java.lang.String) {
@@ -2152,7 +2244,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string location = 5;</code>
+     * @return The bytes for location.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getLocationBytes() {
       java.lang.Object ref = location_;
@@ -2184,19 +2278,19 @@ public final class CollectionSetProtos {
       if (nodeId_ != 0L) {
         output.writeInt64(1, nodeId_);
       }
-      if (!getForeignSourceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignSource_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, foreignSource_);
       }
-      if (!getForeignIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, foreignId_);
       }
-      if (!getNodeLabelBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(nodeLabel_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, nodeLabel_);
       }
-      if (!getLocationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, location_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -2209,19 +2303,19 @@ public final class CollectionSetProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, nodeId_);
       }
-      if (!getForeignSourceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignSource_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, foreignSource_);
       }
-      if (!getForeignIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, foreignId_);
       }
-      if (!getNodeLabelBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(nodeLabel_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, nodeLabel_);
       }
-      if (!getLocationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, location_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -2236,19 +2330,18 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) obj;
 
-      boolean result = true;
-      result = result && (getNodeId()
-          == other.getNodeId());
-      result = result && getForeignSource()
-          .equals(other.getForeignSource());
-      result = result && getForeignId()
-          .equals(other.getForeignId());
-      result = result && getNodeLabel()
-          .equals(other.getNodeLabel());
-      result = result && getLocation()
-          .equals(other.getLocation());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getNodeId()
+          != other.getNodeId()) return false;
+      if (!getForeignSource()
+          .equals(other.getForeignSource())) return false;
+      if (!getForeignId()
+          .equals(other.getForeignId())) return false;
+      if (!getNodeLabel()
+          .equals(other.getNodeLabel())) return false;
+      if (!getLocation()
+          .equals(other.getLocation())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2269,7 +2362,7 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getNodeLabel().hashCode();
       hash = (37 * hash) + LOCATION_FIELD_NUMBER;
       hash = (53 * hash) + getLocation().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2318,11 +2411,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2386,32 +2481,23 @@ public final class CollectionSetProtos {
 
       // Construct using org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         nodeId_ = 0L;
-
         foreignSource_ = "";
-
         foreignId_ = "";
-
         nodeLabel_ = "";
-
         location_ = "";
-
         return this;
       }
 
@@ -2438,46 +2524,61 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource(this);
-        result.nodeId_ = nodeId_;
-        result.foreignSource_ = foreignSource_;
-        result.foreignId_ = foreignId_;
-        result.nodeLabel_ = nodeLabel_;
-        result.location_ = location_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.nodeId_ = nodeId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.foreignSource_ = foreignSource_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.foreignId_ = foreignId_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.nodeLabel_ = nodeLabel_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.location_ = location_;
+        }
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2496,21 +2597,25 @@ public final class CollectionSetProtos {
         }
         if (!other.getForeignSource().isEmpty()) {
           foreignSource_ = other.foreignSource_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getForeignId().isEmpty()) {
           foreignId_ = other.foreignId_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (!other.getNodeLabel().isEmpty()) {
           nodeLabel_ = other.nodeLabel_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (!other.getLocation().isEmpty()) {
           location_ = other.location_;
+          bitField0_ |= 0x00000010;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2525,41 +2630,86 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                nodeId_ = input.readInt64();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 18: {
+                foreignSource_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                foreignId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                nodeLabel_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                location_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private long nodeId_ ;
       /**
        * <code>int64 node_id = 1;</code>
+       * @return The nodeId.
        */
+      @java.lang.Override
       public long getNodeId() {
         return nodeId_;
       }
       /**
        * <code>int64 node_id = 1;</code>
+       * @param value The nodeId to set.
+       * @return This builder for chaining.
        */
       public Builder setNodeId(long value) {
-        
+
         nodeId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>int64 node_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNodeId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         nodeId_ = 0L;
         onChanged();
         return this;
@@ -2568,6 +2718,7 @@ public final class CollectionSetProtos {
       private java.lang.Object foreignSource_ = "";
       /**
        * <code>string foreign_source = 2;</code>
+       * @return The foreignSource.
        */
       public java.lang.String getForeignSource() {
         java.lang.Object ref = foreignSource_;
@@ -2583,6 +2734,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string foreign_source = 2;</code>
+       * @return The bytes for foreignSource.
        */
       public com.google.protobuf.ByteString
           getForeignSourceBytes() {
@@ -2599,37 +2751,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string foreign_source = 2;</code>
+       * @param value The foreignSource to set.
+       * @return This builder for chaining.
        */
       public Builder setForeignSource(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         foreignSource_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string foreign_source = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearForeignSource() {
-        
         foreignSource_ = getDefaultInstance().getForeignSource();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string foreign_source = 2;</code>
+       * @param value The bytes for foreignSource to set.
+       * @return This builder for chaining.
        */
       public Builder setForeignSourceBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         foreignSource_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2637,6 +2790,7 @@ public final class CollectionSetProtos {
       private java.lang.Object foreignId_ = "";
       /**
        * <code>string foreign_id = 3;</code>
+       * @return The foreignId.
        */
       public java.lang.String getForeignId() {
         java.lang.Object ref = foreignId_;
@@ -2652,6 +2806,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string foreign_id = 3;</code>
+       * @return The bytes for foreignId.
        */
       public com.google.protobuf.ByteString
           getForeignIdBytes() {
@@ -2668,37 +2823,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string foreign_id = 3;</code>
+       * @param value The foreignId to set.
+       * @return This builder for chaining.
        */
       public Builder setForeignId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         foreignId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
        * <code>string foreign_id = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearForeignId() {
-        
         foreignId_ = getDefaultInstance().getForeignId();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
        * <code>string foreign_id = 3;</code>
+       * @param value The bytes for foreignId to set.
+       * @return This builder for chaining.
        */
       public Builder setForeignIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         foreignId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2706,6 +2862,7 @@ public final class CollectionSetProtos {
       private java.lang.Object nodeLabel_ = "";
       /**
        * <code>string node_label = 4;</code>
+       * @return The nodeLabel.
        */
       public java.lang.String getNodeLabel() {
         java.lang.Object ref = nodeLabel_;
@@ -2721,6 +2878,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string node_label = 4;</code>
+       * @return The bytes for nodeLabel.
        */
       public com.google.protobuf.ByteString
           getNodeLabelBytes() {
@@ -2737,37 +2895,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string node_label = 4;</code>
+       * @param value The nodeLabel to set.
+       * @return This builder for chaining.
        */
       public Builder setNodeLabel(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         nodeLabel_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
        * <code>string node_label = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNodeLabel() {
-        
         nodeLabel_ = getDefaultInstance().getNodeLabel();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
       /**
        * <code>string node_label = 4;</code>
+       * @param value The bytes for nodeLabel to set.
+       * @return This builder for chaining.
        */
       public Builder setNodeLabelBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         nodeLabel_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2775,6 +2934,7 @@ public final class CollectionSetProtos {
       private java.lang.Object location_ = "";
       /**
        * <code>string location = 5;</code>
+       * @return The location.
        */
       public java.lang.String getLocation() {
         java.lang.Object ref = location_;
@@ -2790,6 +2950,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string location = 5;</code>
+       * @return The bytes for location.
        */
       public com.google.protobuf.ByteString
           getLocationBytes() {
@@ -2806,44 +2967,45 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string location = 5;</code>
+       * @param value The location to set.
+       * @return This builder for chaining.
        */
       public Builder setLocation(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         location_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
       /**
        * <code>string location = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLocation() {
-        
         location_ = getDefaultInstance().getLocation();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
       /**
        * <code>string location = 5;</code>
+       * @param value The bytes for location to set.
+       * @return This builder for chaining.
        */
       public Builder setLocationBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         location_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2873,7 +3035,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NodeLevelResource(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2899,10 +3072,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
     boolean hasNode();
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode();
     /**
@@ -2912,23 +3087,26 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string instance = 2;</code>
+     * @return The instance.
      */
     java.lang.String getInstance();
     /**
      * <code>string instance = 2;</code>
+     * @return The bytes for instance.
      */
     com.google.protobuf.ByteString
         getInstanceBytes();
 
     /**
      * <code>int32 if_index = 3;</code>
+     * @return The ifIndex.
      */
     int getIfIndex();
   }
   /**
    * Protobuf type {@code InterfaceLevelResource}
    */
-  public  static final class InterfaceLevelResource extends
+  public static final class InterfaceLevelResource extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:InterfaceLevelResource)
       InterfaceLevelResourceOrBuilder {
@@ -2939,76 +3117,15 @@ public final class CollectionSetProtos {
     }
     private InterfaceLevelResource() {
       instance_ = "";
-      ifIndex_ = 0;
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new InterfaceLevelResource();
     }
-    private InterfaceLevelResource(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder subBuilder = null;
-              if (node_ != null) {
-                subBuilder = node_.toBuilder();
-              }
-              node_ = input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(node_);
-                node_ = subBuilder.buildPartial();
-              }
 
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              instance_ = s;
-              break;
-            }
-            case 24: {
-
-              ifIndex_ = input.readInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_InterfaceLevelResource_descriptor;
@@ -3022,32 +3139,41 @@ public final class CollectionSetProtos {
               org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource.class, org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource.Builder.class);
     }
 
+    private int bitField0_;
     public static final int NODE_FIELD_NUMBER = 1;
     private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_;
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
+    @java.lang.Override
     public boolean hasNode() {
-      return node_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
       return node_ == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance() : node_;
     }
     /**
      * <code>.NodeLevelResource node = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder getNodeOrBuilder() {
-      return getNode();
+      return node_ == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance() : node_;
     }
 
     public static final int INSTANCE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object instance_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object instance_ = "";
     /**
      * <code>string instance = 2;</code>
+     * @return The instance.
      */
+    @java.lang.Override
     public java.lang.String getInstance() {
       java.lang.Object ref = instance_;
       if (ref instanceof java.lang.String) {
@@ -3062,7 +3188,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string instance = 2;</code>
+     * @return The bytes for instance.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getInstanceBytes() {
       java.lang.Object ref = instance_;
@@ -3078,10 +3206,12 @@ public final class CollectionSetProtos {
     }
 
     public static final int IF_INDEX_FIELD_NUMBER = 3;
-    private int ifIndex_;
+    private int ifIndex_ = 0;
     /**
      * <code>int32 if_index = 3;</code>
+     * @return The ifIndex.
      */
+    @java.lang.Override
     public int getIfIndex() {
       return ifIndex_;
     }
@@ -3100,16 +3230,16 @@ public final class CollectionSetProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (node_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getNode());
       }
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, instance_);
       }
       if (ifIndex_ != 0) {
         output.writeInt32(3, ifIndex_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3118,18 +3248,18 @@ public final class CollectionSetProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (node_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getNode());
       }
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, instance_);
       }
       if (ifIndex_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, ifIndex_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3144,18 +3274,17 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) obj;
 
-      boolean result = true;
-      result = result && (hasNode() == other.hasNode());
+      if (hasNode() != other.hasNode()) return false;
       if (hasNode()) {
-        result = result && getNode()
-            .equals(other.getNode());
+        if (!getNode()
+            .equals(other.getNode())) return false;
       }
-      result = result && getInstance()
-          .equals(other.getInstance());
-      result = result && (getIfIndex()
-          == other.getIfIndex());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getInstance()
+          .equals(other.getInstance())) return false;
+      if (getIfIndex()
+          != other.getIfIndex()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -3173,7 +3302,7 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getInstance().hashCode();
       hash = (37 * hash) + IF_INDEX_FIELD_NUMBER;
       hash = (53 * hash) + getIfIndex();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3222,11 +3351,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3301,21 +3432,20 @@ public final class CollectionSetProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getNodeFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nodeBuilder_ == null) {
-          node_ = null;
-        } else {
-          node_ = null;
+        bitField0_ = 0;
+        node_ = null;
+        if (nodeBuilder_ != null) {
+          nodeBuilder_.dispose();
           nodeBuilder_ = null;
         }
         instance_ = "";
-
         ifIndex_ = 0;
-
         return this;
       }
 
@@ -3342,48 +3472,60 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource(this);
-        if (nodeBuilder_ == null) {
-          result.node_ = node_;
-        } else {
-          result.node_ = nodeBuilder_.build();
-        }
-        result.instance_ = instance_;
-        result.ifIndex_ = ifIndex_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.node_ = nodeBuilder_ == null
+              ? node_
+              : nodeBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.instance_ = instance_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.ifIndex_ = ifIndex_;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3402,12 +3544,13 @@ public final class CollectionSetProtos {
         }
         if (!other.getInstance().isEmpty()) {
           instance_ = other.instance_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.getIfIndex() != 0) {
           setIfIndex(other.getIfIndex());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -3422,31 +3565,64 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getNodeFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                instance_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 24: {
+                ifIndex_ = input.readInt32();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
-      private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_ = null;
+      private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder> nodeBuilder_;
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return Whether the node field is set.
        */
       public boolean hasNode() {
-        return nodeBuilder_ != null || node_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return The node.
        */
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
         if (nodeBuilder_ == null) {
@@ -3464,11 +3640,11 @@ public final class CollectionSetProtos {
             throw new NullPointerException();
           }
           node_ = value;
-          onChanged();
         } else {
           nodeBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -3478,11 +3654,11 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder builderForValue) {
         if (nodeBuilder_ == null) {
           node_ = builderForValue.build();
-          onChanged();
         } else {
           nodeBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -3490,38 +3666,40 @@ public final class CollectionSetProtos {
        */
       public Builder mergeNode(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource value) {
         if (nodeBuilder_ == null) {
-          if (node_ != null) {
-            node_ =
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.newBuilder(node_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            node_ != null &&
+            node_ != org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance()) {
+            getNodeBuilder().mergeFrom(value);
           } else {
             node_ = value;
           }
-          onChanged();
         } else {
           nodeBuilder_.mergeFrom(value);
         }
-
+        if (node_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
        */
       public Builder clearNode() {
-        if (nodeBuilder_ == null) {
-          node_ = null;
-          onChanged();
-        } else {
-          node_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        node_ = null;
+        if (nodeBuilder_ != null) {
+          nodeBuilder_.dispose();
           nodeBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
        */
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder getNodeBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getNodeFieldBuilder().getBuilder();
       }
@@ -3556,6 +3734,7 @@ public final class CollectionSetProtos {
       private java.lang.Object instance_ = "";
       /**
        * <code>string instance = 2;</code>
+       * @return The instance.
        */
       public java.lang.String getInstance() {
         java.lang.Object ref = instance_;
@@ -3571,6 +3750,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 2;</code>
+       * @return The bytes for instance.
        */
       public com.google.protobuf.ByteString
           getInstanceBytes() {
@@ -3587,37 +3767,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 2;</code>
+       * @param value The instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstance(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         instance_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInstance() {
-        
         instance_ = getDefaultInstance().getInstance();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 2;</code>
+       * @param value The bytes for instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstanceBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         instance_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3625,24 +3806,30 @@ public final class CollectionSetProtos {
       private int ifIndex_ ;
       /**
        * <code>int32 if_index = 3;</code>
+       * @return The ifIndex.
        */
+      @java.lang.Override
       public int getIfIndex() {
         return ifIndex_;
       }
       /**
        * <code>int32 if_index = 3;</code>
+       * @param value The ifIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setIfIndex(int value) {
-        
+
         ifIndex_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
        * <code>int32 if_index = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearIfIndex() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         ifIndex_ = 0;
         onChanged();
         return this;
@@ -3650,7 +3837,7 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -3680,7 +3867,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new InterfaceLevelResource(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -3706,10 +3904,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
     boolean hasNode();
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode();
     /**
@@ -3719,20 +3919,24 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
     java.lang.String getType();
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
     com.google.protobuf.ByteString
         getTypeBytes();
 
     /**
      * <code>string instance = 3;</code>
+     * @return The instance.
      */
     java.lang.String getInstance();
     /**
      * <code>string instance = 3;</code>
+     * @return The bytes for instance.
      */
     com.google.protobuf.ByteString
         getInstanceBytes();
@@ -3740,7 +3944,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code GenericTypeResource}
    */
-  public  static final class GenericTypeResource extends
+  public static final class GenericTypeResource extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:GenericTypeResource)
       GenericTypeResourceOrBuilder {
@@ -3755,73 +3959,12 @@ public final class CollectionSetProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new GenericTypeResource();
     }
-    private GenericTypeResource(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder subBuilder = null;
-              if (node_ != null) {
-                subBuilder = node_.toBuilder();
-              }
-              node_ = input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(node_);
-                node_ = subBuilder.buildPartial();
-              }
 
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              type_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              instance_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_GenericTypeResource_descriptor;
@@ -3835,32 +3978,41 @@ public final class CollectionSetProtos {
               org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource.class, org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource.Builder.class);
     }
 
+    private int bitField0_;
     public static final int NODE_FIELD_NUMBER = 1;
     private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_;
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
+    @java.lang.Override
     public boolean hasNode() {
-      return node_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
       return node_ == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance() : node_;
     }
     /**
      * <code>.NodeLevelResource node = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder getNodeOrBuilder() {
-      return getNode();
+      return node_ == null ? org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance() : node_;
     }
 
     public static final int TYPE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object type_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object type_ = "";
     /**
      * <code>string type = 2;</code>
+     * @return The type.
      */
+    @java.lang.Override
     public java.lang.String getType() {
       java.lang.Object ref = type_;
       if (ref instanceof java.lang.String) {
@@ -3875,7 +4027,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string type = 2;</code>
+     * @return The bytes for type.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getTypeBytes() {
       java.lang.Object ref = type_;
@@ -3891,10 +4045,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int INSTANCE_FIELD_NUMBER = 3;
-    private volatile java.lang.Object instance_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object instance_ = "";
     /**
      * <code>string instance = 3;</code>
+     * @return The instance.
      */
+    @java.lang.Override
     public java.lang.String getInstance() {
       java.lang.Object ref = instance_;
       if (ref instanceof java.lang.String) {
@@ -3909,7 +4066,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string instance = 3;</code>
+     * @return The bytes for instance.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getInstanceBytes() {
       java.lang.Object ref = instance_;
@@ -3938,16 +4097,16 @@ public final class CollectionSetProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (node_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getNode());
       }
-      if (!getTypeBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, type_);
       }
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, instance_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3956,17 +4115,17 @@ public final class CollectionSetProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (node_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getNode());
       }
-      if (!getTypeBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, type_);
       }
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, instance_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3981,18 +4140,17 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) obj;
 
-      boolean result = true;
-      result = result && (hasNode() == other.hasNode());
+      if (hasNode() != other.hasNode()) return false;
       if (hasNode()) {
-        result = result && getNode()
-            .equals(other.getNode());
+        if (!getNode()
+            .equals(other.getNode())) return false;
       }
-      result = result && getType()
-          .equals(other.getType());
-      result = result && getInstance()
-          .equals(other.getInstance());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getType()
+          .equals(other.getType())) return false;
+      if (!getInstance()
+          .equals(other.getInstance())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4010,7 +4168,7 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getType().hashCode();
       hash = (37 * hash) + INSTANCE_FIELD_NUMBER;
       hash = (53 * hash) + getInstance().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4059,11 +4217,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4138,21 +4298,20 @@ public final class CollectionSetProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getNodeFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nodeBuilder_ == null) {
-          node_ = null;
-        } else {
-          node_ = null;
+        bitField0_ = 0;
+        node_ = null;
+        if (nodeBuilder_ != null) {
+          nodeBuilder_.dispose();
           nodeBuilder_ = null;
         }
         type_ = "";
-
         instance_ = "";
-
         return this;
       }
 
@@ -4179,48 +4338,60 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource(this);
-        if (nodeBuilder_ == null) {
-          result.node_ = node_;
-        } else {
-          result.node_ = nodeBuilder_.build();
-        }
-        result.type_ = type_;
-        result.instance_ = instance_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.node_ = nodeBuilder_ == null
+              ? node_
+              : nodeBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.type_ = type_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.instance_ = instance_;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4239,13 +4410,15 @@ public final class CollectionSetProtos {
         }
         if (!other.getType().isEmpty()) {
           type_ = other.type_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getInstance().isEmpty()) {
           instance_ = other.instance_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -4260,31 +4433,64 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getNodeFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                type_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                instance_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
-      private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_ = null;
+      private org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource node_;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder> nodeBuilder_;
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return Whether the node field is set.
        */
       public boolean hasNode() {
-        return nodeBuilder_ != null || node_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return The node.
        */
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
         if (nodeBuilder_ == null) {
@@ -4302,11 +4508,11 @@ public final class CollectionSetProtos {
             throw new NullPointerException();
           }
           node_ = value;
-          onChanged();
         } else {
           nodeBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -4316,11 +4522,11 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder builderForValue) {
         if (nodeBuilder_ == null) {
           node_ = builderForValue.build();
-          onChanged();
         } else {
           nodeBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -4328,38 +4534,40 @@ public final class CollectionSetProtos {
        */
       public Builder mergeNode(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource value) {
         if (nodeBuilder_ == null) {
-          if (node_ != null) {
-            node_ =
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.newBuilder(node_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            node_ != null &&
+            node_ != org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.getDefaultInstance()) {
+            getNodeBuilder().mergeFrom(value);
           } else {
             node_ = value;
           }
-          onChanged();
         } else {
           nodeBuilder_.mergeFrom(value);
         }
-
+        if (node_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
        */
       public Builder clearNode() {
-        if (nodeBuilder_ == null) {
-          node_ = null;
-          onChanged();
-        } else {
-          node_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        node_ = null;
+        if (nodeBuilder_ != null) {
+          nodeBuilder_.dispose();
           nodeBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
        */
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder getNodeBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getNodeFieldBuilder().getBuilder();
       }
@@ -4394,6 +4602,7 @@ public final class CollectionSetProtos {
       private java.lang.Object type_ = "";
       /**
        * <code>string type = 2;</code>
+       * @return The type.
        */
       public java.lang.String getType() {
         java.lang.Object ref = type_;
@@ -4409,6 +4618,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string type = 2;</code>
+       * @return The bytes for type.
        */
       public com.google.protobuf.ByteString
           getTypeBytes() {
@@ -4425,37 +4635,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
        */
       public Builder setType(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         type_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string type = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearType() {
-        
         type_ = getDefaultInstance().getType();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string type = 2;</code>
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
        */
       public Builder setTypeBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         type_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4463,6 +4674,7 @@ public final class CollectionSetProtos {
       private java.lang.Object instance_ = "";
       /**
        * <code>string instance = 3;</code>
+       * @return The instance.
        */
       public java.lang.String getInstance() {
         java.lang.Object ref = instance_;
@@ -4478,6 +4690,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 3;</code>
+       * @return The bytes for instance.
        */
       public com.google.protobuf.ByteString
           getInstanceBytes() {
@@ -4494,44 +4707,45 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 3;</code>
+       * @param value The instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstance(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         instance_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInstance() {
-        
         instance_ = getDefaultInstance().getInstance();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 3;</code>
+       * @param value The bytes for instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstanceBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         instance_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4561,7 +4775,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GenericTypeResource(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4587,20 +4812,24 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string instance = 1;</code>
+     * @return The instance.
      */
     java.lang.String getInstance();
     /**
      * <code>string instance = 1;</code>
+     * @return The bytes for instance.
      */
     com.google.protobuf.ByteString
         getInstanceBytes();
 
     /**
      * <code>string location = 2;</code>
+     * @return The location.
      */
     java.lang.String getLocation();
     /**
      * <code>string location = 2;</code>
+     * @return The bytes for location.
      */
     com.google.protobuf.ByteString
         getLocationBytes();
@@ -4608,7 +4837,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code ResponseTimeResource}
    */
-  public  static final class ResponseTimeResource extends
+  public static final class ResponseTimeResource extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:ResponseTimeResource)
       ResponseTimeResourceOrBuilder {
@@ -4623,60 +4852,12 @@ public final class CollectionSetProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ResponseTimeResource();
     }
-    private ResponseTimeResource(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
 
-              instance_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              location_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_ResponseTimeResource_descriptor;
@@ -4691,10 +4872,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int INSTANCE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object instance_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object instance_ = "";
     /**
      * <code>string instance = 1;</code>
+     * @return The instance.
      */
+    @java.lang.Override
     public java.lang.String getInstance() {
       java.lang.Object ref = instance_;
       if (ref instanceof java.lang.String) {
@@ -4709,7 +4893,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string instance = 1;</code>
+     * @return The bytes for instance.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getInstanceBytes() {
       java.lang.Object ref = instance_;
@@ -4725,10 +4911,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int LOCATION_FIELD_NUMBER = 2;
-    private volatile java.lang.Object location_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object location_ = "";
     /**
      * <code>string location = 2;</code>
+     * @return The location.
      */
+    @java.lang.Override
     public java.lang.String getLocation() {
       java.lang.Object ref = location_;
       if (ref instanceof java.lang.String) {
@@ -4743,7 +4932,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string location = 2;</code>
+     * @return The bytes for location.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getLocationBytes() {
       java.lang.Object ref = location_;
@@ -4772,13 +4963,13 @@ public final class CollectionSetProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, instance_);
       }
-      if (!getLocationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, location_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4787,13 +4978,13 @@ public final class CollectionSetProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getInstanceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(instance_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, instance_);
       }
-      if (!getLocationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, location_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4808,13 +4999,12 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) obj;
 
-      boolean result = true;
-      result = result && getInstance()
-          .equals(other.getInstance());
-      result = result && getLocation()
-          .equals(other.getLocation());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getInstance()
+          .equals(other.getInstance())) return false;
+      if (!getLocation()
+          .equals(other.getLocation())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4828,7 +5018,7 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getInstance().hashCode();
       hash = (37 * hash) + LOCATION_FIELD_NUMBER;
       hash = (53 * hash) + getLocation().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4877,11 +5067,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4945,26 +5137,20 @@ public final class CollectionSetProtos {
 
       // Construct using org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         instance_ = "";
-
         location_ = "";
-
         return this;
       }
 
@@ -4991,43 +5177,52 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource(this);
-        result.instance_ = instance_;
-        result.location_ = location_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.instance_ = instance_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.location_ = location_;
+        }
+      }
+
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5043,13 +5238,15 @@ public final class CollectionSetProtos {
         if (other == org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource.getDefaultInstance()) return this;
         if (!other.getInstance().isEmpty()) {
           instance_ = other.instance_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getLocation().isEmpty()) {
           location_ = other.location_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5064,23 +5261,48 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                instance_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                location_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object instance_ = "";
       /**
        * <code>string instance = 1;</code>
+       * @return The instance.
        */
       public java.lang.String getInstance() {
         java.lang.Object ref = instance_;
@@ -5096,6 +5318,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 1;</code>
+       * @return The bytes for instance.
        */
       public com.google.protobuf.ByteString
           getInstanceBytes() {
@@ -5112,37 +5335,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string instance = 1;</code>
+       * @param value The instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstance(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         instance_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInstance() {
-        
         instance_ = getDefaultInstance().getInstance();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>string instance = 1;</code>
+       * @param value The bytes for instance to set.
+       * @return This builder for chaining.
        */
       public Builder setInstanceBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         instance_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5150,6 +5374,7 @@ public final class CollectionSetProtos {
       private java.lang.Object location_ = "";
       /**
        * <code>string location = 2;</code>
+       * @return The location.
        */
       public java.lang.String getLocation() {
         java.lang.Object ref = location_;
@@ -5165,6 +5390,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string location = 2;</code>
+       * @return The bytes for location.
        */
       public com.google.protobuf.ByteString
           getLocationBytes() {
@@ -5181,44 +5407,45 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string location = 2;</code>
+       * @param value The location to set.
+       * @return This builder for chaining.
        */
       public Builder setLocation(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         location_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
        * <code>string location = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLocation() {
-        
         location_ = getDefaultInstance().getLocation();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
        * <code>string location = 2;</code>
+       * @param value The bytes for location to set.
+       * @return This builder for chaining.
        */
       public Builder setLocationBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         location_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -5248,7 +5475,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ResponseTimeResource(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5274,10 +5512,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
     boolean hasNode();
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode();
     /**
@@ -5287,10 +5527,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.InterfaceLevelResource interface = 2;</code>
+     * @return Whether the interface field is set.
      */
     boolean hasInterface();
     /**
      * <code>.InterfaceLevelResource interface = 2;</code>
+     * @return The interface.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource getInterface();
     /**
@@ -5300,10 +5542,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.GenericTypeResource generic = 3;</code>
+     * @return Whether the generic field is set.
      */
     boolean hasGeneric();
     /**
      * <code>.GenericTypeResource generic = 3;</code>
+     * @return The generic.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource getGeneric();
     /**
@@ -5313,10 +5557,12 @@ public final class CollectionSetProtos {
 
     /**
      * <code>.ResponseTimeResource response = 4;</code>
+     * @return Whether the response field is set.
      */
     boolean hasResponse();
     /**
      * <code>.ResponseTimeResource response = 4;</code>
+     * @return The response.
      */
     org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource getResponse();
     /**
@@ -5326,30 +5572,36 @@ public final class CollectionSetProtos {
 
     /**
      * <code>string resource_id = 5;</code>
+     * @return The resourceId.
      */
     java.lang.String getResourceId();
     /**
      * <code>string resource_id = 5;</code>
+     * @return The bytes for resourceId.
      */
     com.google.protobuf.ByteString
         getResourceIdBytes();
 
     /**
      * <code>string resource_name = 6;</code>
+     * @return The resourceName.
      */
     java.lang.String getResourceName();
     /**
      * <code>string resource_name = 6;</code>
+     * @return The bytes for resourceName.
      */
     com.google.protobuf.ByteString
         getResourceNameBytes();
 
     /**
      * <code>string resource_type_name = 7;</code>
+     * @return The resourceTypeName.
      */
     java.lang.String getResourceTypeName();
     /**
      * <code>string resource_type_name = 7;</code>
+     * @return The bytes for resourceTypeName.
      */
     com.google.protobuf.ByteString
         getResourceTypeNameBytes();
@@ -5402,12 +5654,12 @@ public final class CollectionSetProtos {
     org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttributeOrBuilder getNumericOrBuilder(
         int index);
 
-    public org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.ResourceCase getResourceCase();
+    org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.ResourceCase getResourceCase();
   }
   /**
    * Protobuf type {@code CollectionSetResource}
    */
-  public  static final class CollectionSetResource extends
+  public static final class CollectionSetResource extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CollectionSetResource)
       CollectionSetResourceOrBuilder {
@@ -5425,146 +5677,12 @@ public final class CollectionSetProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CollectionSetResource();
     }
-    private CollectionSetResource(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder subBuilder = null;
-              if (resourceCase_ == 1) {
-                subBuilder = ((org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) resource_).toBuilder();
-              }
-              resource_ =
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) resource_);
-                resource_ = subBuilder.buildPartial();
-              }
-              resourceCase_ = 1;
-              break;
-            }
-            case 18: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource.Builder subBuilder = null;
-              if (resourceCase_ == 2) {
-                subBuilder = ((org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) resource_).toBuilder();
-              }
-              resource_ =
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) resource_);
-                resource_ = subBuilder.buildPartial();
-              }
-              resourceCase_ = 2;
-              break;
-            }
-            case 26: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource.Builder subBuilder = null;
-              if (resourceCase_ == 3) {
-                subBuilder = ((org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) resource_).toBuilder();
-              }
-              resource_ =
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) resource_);
-                resource_ = subBuilder.buildPartial();
-              }
-              resourceCase_ = 3;
-              break;
-            }
-            case 34: {
-              org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource.Builder subBuilder = null;
-              if (resourceCase_ == 4) {
-                subBuilder = ((org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_).toBuilder();
-              }
-              resource_ =
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_);
-                resource_ = subBuilder.buildPartial();
-              }
-              resourceCase_ = 4;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
 
-              resourceId_ = s;
-              break;
-            }
-            case 50: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              resourceName_ = s;
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              resourceTypeName_ = s;
-              break;
-            }
-            case 82: {
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-                string_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute>();
-                mutable_bitField0_ |= 0x00000080;
-              }
-              string_.add(
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute.parser(), extensionRegistry));
-              break;
-            }
-            case 90: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-                numeric_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute>();
-                mutable_bitField0_ |= 0x00000100;
-              }
-              numeric_.add(
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
-          string_ = java.util.Collections.unmodifiableList(string_);
-        }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-          numeric_ = java.util.Collections.unmodifiableList(numeric_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_CollectionSetResource_descriptor;
@@ -5578,11 +5696,12 @@ public final class CollectionSetProtos {
               org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.class, org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.Builder.class);
     }
 
-    private int bitField0_;
     private int resourceCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object resource_;
     public enum ResourceCase
-        implements com.google.protobuf.Internal.EnumLite {
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
       NODE(1),
       INTERFACE(2),
       GENERIC(3),
@@ -5593,6 +5712,8 @@ public final class CollectionSetProtos {
         this.value = value;
       }
       /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -5624,13 +5745,17 @@ public final class CollectionSetProtos {
     public static final int NODE_FIELD_NUMBER = 1;
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return Whether the node field is set.
      */
+    @java.lang.Override
     public boolean hasNode() {
       return resourceCase_ == 1;
     }
     /**
      * <code>.NodeLevelResource node = 1;</code>
+     * @return The node.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
       if (resourceCase_ == 1) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) resource_;
@@ -5640,6 +5765,7 @@ public final class CollectionSetProtos {
     /**
      * <code>.NodeLevelResource node = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder getNodeOrBuilder() {
       if (resourceCase_ == 1) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource) resource_;
@@ -5650,13 +5776,17 @@ public final class CollectionSetProtos {
     public static final int INTERFACE_FIELD_NUMBER = 2;
     /**
      * <code>.InterfaceLevelResource interface = 2;</code>
+     * @return Whether the interface field is set.
      */
+    @java.lang.Override
     public boolean hasInterface() {
       return resourceCase_ == 2;
     }
     /**
      * <code>.InterfaceLevelResource interface = 2;</code>
+     * @return The interface.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource getInterface() {
       if (resourceCase_ == 2) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) resource_;
@@ -5666,6 +5796,7 @@ public final class CollectionSetProtos {
     /**
      * <code>.InterfaceLevelResource interface = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResourceOrBuilder getInterfaceOrBuilder() {
       if (resourceCase_ == 2) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource) resource_;
@@ -5676,13 +5807,17 @@ public final class CollectionSetProtos {
     public static final int GENERIC_FIELD_NUMBER = 3;
     /**
      * <code>.GenericTypeResource generic = 3;</code>
+     * @return Whether the generic field is set.
      */
+    @java.lang.Override
     public boolean hasGeneric() {
       return resourceCase_ == 3;
     }
     /**
      * <code>.GenericTypeResource generic = 3;</code>
+     * @return The generic.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource getGeneric() {
       if (resourceCase_ == 3) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) resource_;
@@ -5692,6 +5827,7 @@ public final class CollectionSetProtos {
     /**
      * <code>.GenericTypeResource generic = 3;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResourceOrBuilder getGenericOrBuilder() {
       if (resourceCase_ == 3) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource) resource_;
@@ -5702,13 +5838,17 @@ public final class CollectionSetProtos {
     public static final int RESPONSE_FIELD_NUMBER = 4;
     /**
      * <code>.ResponseTimeResource response = 4;</code>
+     * @return Whether the response field is set.
      */
+    @java.lang.Override
     public boolean hasResponse() {
       return resourceCase_ == 4;
     }
     /**
      * <code>.ResponseTimeResource response = 4;</code>
+     * @return The response.
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource getResponse() {
       if (resourceCase_ == 4) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_;
@@ -5718,6 +5858,7 @@ public final class CollectionSetProtos {
     /**
      * <code>.ResponseTimeResource response = 4;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResourceOrBuilder getResponseOrBuilder() {
       if (resourceCase_ == 4) {
          return (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_;
@@ -5726,10 +5867,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int RESOURCE_ID_FIELD_NUMBER = 5;
-    private volatile java.lang.Object resourceId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object resourceId_ = "";
     /**
      * <code>string resource_id = 5;</code>
+     * @return The resourceId.
      */
+    @java.lang.Override
     public java.lang.String getResourceId() {
       java.lang.Object ref = resourceId_;
       if (ref instanceof java.lang.String) {
@@ -5744,7 +5888,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string resource_id = 5;</code>
+     * @return The bytes for resourceId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getResourceIdBytes() {
       java.lang.Object ref = resourceId_;
@@ -5760,10 +5906,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int RESOURCE_NAME_FIELD_NUMBER = 6;
-    private volatile java.lang.Object resourceName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object resourceName_ = "";
     /**
      * <code>string resource_name = 6;</code>
+     * @return The resourceName.
      */
+    @java.lang.Override
     public java.lang.String getResourceName() {
       java.lang.Object ref = resourceName_;
       if (ref instanceof java.lang.String) {
@@ -5778,7 +5927,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string resource_name = 6;</code>
+     * @return The bytes for resourceName.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getResourceNameBytes() {
       java.lang.Object ref = resourceName_;
@@ -5794,10 +5945,13 @@ public final class CollectionSetProtos {
     }
 
     public static final int RESOURCE_TYPE_NAME_FIELD_NUMBER = 7;
-    private volatile java.lang.Object resourceTypeName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object resourceTypeName_ = "";
     /**
      * <code>string resource_type_name = 7;</code>
+     * @return The resourceTypeName.
      */
+    @java.lang.Override
     public java.lang.String getResourceTypeName() {
       java.lang.Object ref = resourceTypeName_;
       if (ref instanceof java.lang.String) {
@@ -5812,7 +5966,9 @@ public final class CollectionSetProtos {
     }
     /**
      * <code>string resource_type_name = 7;</code>
+     * @return The bytes for resourceTypeName.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getResourceTypeNameBytes() {
       java.lang.Object ref = resourceTypeName_;
@@ -5828,16 +5984,19 @@ public final class CollectionSetProtos {
     }
 
     public static final int STRING_FIELD_NUMBER = 10;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute> string_;
     /**
      * <code>repeated .StringAttribute string = 10;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute> getStringList() {
       return string_;
     }
     /**
      * <code>repeated .StringAttribute string = 10;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttributeOrBuilder> 
         getStringOrBuilderList() {
       return string_;
@@ -5845,34 +6004,40 @@ public final class CollectionSetProtos {
     /**
      * <code>repeated .StringAttribute string = 10;</code>
      */
+    @java.lang.Override
     public int getStringCount() {
       return string_.size();
     }
     /**
      * <code>repeated .StringAttribute string = 10;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute getString(int index) {
       return string_.get(index);
     }
     /**
      * <code>repeated .StringAttribute string = 10;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttributeOrBuilder getStringOrBuilder(
         int index) {
       return string_.get(index);
     }
 
     public static final int NUMERIC_FIELD_NUMBER = 11;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute> numeric_;
     /**
      * <code>repeated .NumericAttribute numeric = 11;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute> getNumericList() {
       return numeric_;
     }
     /**
      * <code>repeated .NumericAttribute numeric = 11;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttributeOrBuilder> 
         getNumericOrBuilderList() {
       return numeric_;
@@ -5880,18 +6045,21 @@ public final class CollectionSetProtos {
     /**
      * <code>repeated .NumericAttribute numeric = 11;</code>
      */
+    @java.lang.Override
     public int getNumericCount() {
       return numeric_.size();
     }
     /**
      * <code>repeated .NumericAttribute numeric = 11;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute getNumeric(int index) {
       return numeric_.get(index);
     }
     /**
      * <code>repeated .NumericAttribute numeric = 11;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttributeOrBuilder getNumericOrBuilder(
         int index) {
       return numeric_.get(index);
@@ -5923,13 +6091,13 @@ public final class CollectionSetProtos {
       if (resourceCase_ == 4) {
         output.writeMessage(4, (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_);
       }
-      if (!getResourceIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, resourceId_);
       }
-      if (!getResourceNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, resourceName_);
       }
-      if (!getResourceTypeNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceTypeName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 7, resourceTypeName_);
       }
       for (int i = 0; i < string_.size(); i++) {
@@ -5938,7 +6106,7 @@ public final class CollectionSetProtos {
       for (int i = 0; i < numeric_.size(); i++) {
         output.writeMessage(11, numeric_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5963,13 +6131,13 @@ public final class CollectionSetProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, (org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource) resource_);
       }
-      if (!getResourceIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, resourceId_);
       }
-      if (!getResourceNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, resourceName_);
       }
-      if (!getResourceTypeNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceTypeName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, resourceTypeName_);
       }
       for (int i = 0; i < string_.size(); i++) {
@@ -5980,7 +6148,7 @@ public final class CollectionSetProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(11, numeric_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5995,42 +6163,39 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource) obj;
 
-      boolean result = true;
-      result = result && getResourceId()
-          .equals(other.getResourceId());
-      result = result && getResourceName()
-          .equals(other.getResourceName());
-      result = result && getResourceTypeName()
-          .equals(other.getResourceTypeName());
-      result = result && getStringList()
-          .equals(other.getStringList());
-      result = result && getNumericList()
-          .equals(other.getNumericList());
-      result = result && getResourceCase().equals(
-          other.getResourceCase());
-      if (!result) return false;
+      if (!getResourceId()
+          .equals(other.getResourceId())) return false;
+      if (!getResourceName()
+          .equals(other.getResourceName())) return false;
+      if (!getResourceTypeName()
+          .equals(other.getResourceTypeName())) return false;
+      if (!getStringList()
+          .equals(other.getStringList())) return false;
+      if (!getNumericList()
+          .equals(other.getNumericList())) return false;
+      if (!getResourceCase().equals(other.getResourceCase())) return false;
       switch (resourceCase_) {
         case 1:
-          result = result && getNode()
-              .equals(other.getNode());
+          if (!getNode()
+              .equals(other.getNode())) return false;
           break;
         case 2:
-          result = result && getInterface()
-              .equals(other.getInterface());
+          if (!getInterface()
+              .equals(other.getInterface())) return false;
           break;
         case 3:
-          result = result && getGeneric()
-              .equals(other.getGeneric());
+          if (!getGeneric()
+              .equals(other.getGeneric())) return false;
           break;
         case 4:
-          result = result && getResponse()
-              .equals(other.getResponse());
+          if (!getResponse()
+              .equals(other.getResponse())) return false;
           break;
         case 0:
         default:
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -6074,7 +6239,7 @@ public final class CollectionSetProtos {
         case 0:
         default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6123,11 +6288,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6191,42 +6358,47 @@ public final class CollectionSetProtos {
 
       // Construct using org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getStringFieldBuilder();
-          getNumericFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
+        if (nodeBuilder_ != null) {
+          nodeBuilder_.clear();
+        }
+        if (interfaceBuilder_ != null) {
+          interfaceBuilder_.clear();
+        }
+        if (genericBuilder_ != null) {
+          genericBuilder_.clear();
+        }
+        if (responseBuilder_ != null) {
+          responseBuilder_.clear();
+        }
         resourceId_ = "";
-
         resourceName_ = "";
-
         resourceTypeName_ = "";
-
         if (stringBuilder_ == null) {
           string_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
         } else {
+          string_ = null;
           stringBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000080);
         if (numericBuilder_ == null) {
           numeric_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
         } else {
+          numeric_ = null;
           numericBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000100);
         resourceCase_ = 0;
         resource_ = null;
         return this;
@@ -6255,41 +6427,16 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (resourceCase_ == 1) {
-          if (nodeBuilder_ == null) {
-            result.resource_ = resource_;
-          } else {
-            result.resource_ = nodeBuilder_.build();
-          }
-        }
-        if (resourceCase_ == 2) {
-          if (interfaceBuilder_ == null) {
-            result.resource_ = resource_;
-          } else {
-            result.resource_ = interfaceBuilder_.build();
-          }
-        }
-        if (resourceCase_ == 3) {
-          if (genericBuilder_ == null) {
-            result.resource_ = resource_;
-          } else {
-            result.resource_ = genericBuilder_.build();
-          }
-        }
-        if (resourceCase_ == 4) {
-          if (responseBuilder_ == null) {
-            result.resource_ = resource_;
-          } else {
-            result.resource_ = responseBuilder_.build();
-          }
-        }
-        result.resourceId_ = resourceId_;
-        result.resourceName_ = resourceName_;
-        result.resourceTypeName_ = resourceTypeName_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource result) {
         if (stringBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          if (((bitField0_ & 0x00000080) != 0)) {
             string_ = java.util.Collections.unmodifiableList(string_);
             bitField0_ = (bitField0_ & ~0x00000080);
           }
@@ -6298,7 +6445,7 @@ public final class CollectionSetProtos {
           result.string_ = stringBuilder_.build();
         }
         if (numericBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          if (((bitField0_ & 0x00000100) != 0)) {
             numeric_ = java.util.Collections.unmodifiableList(numeric_);
             bitField0_ = (bitField0_ & ~0x00000100);
           }
@@ -6306,43 +6453,73 @@ public final class CollectionSetProtos {
         } else {
           result.numeric_ = numericBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
+      }
+
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.resourceId_ = resourceId_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.resourceName_ = resourceName_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.resourceTypeName_ = resourceTypeName_;
+        }
+      }
+
+      private void buildPartialOneofs(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource result) {
         result.resourceCase_ = resourceCase_;
-        onBuilt();
-        return result;
+        result.resource_ = this.resource_;
+        if (resourceCase_ == 1 &&
+            nodeBuilder_ != null) {
+          result.resource_ = nodeBuilder_.build();
+        }
+        if (resourceCase_ == 2 &&
+            interfaceBuilder_ != null) {
+          result.resource_ = interfaceBuilder_.build();
+        }
+        if (resourceCase_ == 3 &&
+            genericBuilder_ != null) {
+          result.resource_ = genericBuilder_.build();
+        }
+        if (resourceCase_ == 4 &&
+            responseBuilder_ != null) {
+          result.resource_ = responseBuilder_.build();
+        }
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6358,14 +6535,17 @@ public final class CollectionSetProtos {
         if (other == org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.getDefaultInstance()) return this;
         if (!other.getResourceId().isEmpty()) {
           resourceId_ = other.resourceId_;
+          bitField0_ |= 0x00000010;
           onChanged();
         }
         if (!other.getResourceName().isEmpty()) {
           resourceName_ = other.resourceName_;
+          bitField0_ |= 0x00000020;
           onChanged();
         }
         if (!other.getResourceTypeName().isEmpty()) {
           resourceTypeName_ = other.resourceTypeName_;
+          bitField0_ |= 0x00000040;
           onChanged();
         }
         if (stringBuilder_ == null) {
@@ -6441,7 +6621,7 @@ public final class CollectionSetProtos {
             break;
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6456,17 +6636,99 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getNodeFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                resourceCase_ = 1;
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getInterfaceFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                resourceCase_ = 2;
+                break;
+              } // case 18
+              case 26: {
+                input.readMessage(
+                    getGenericFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                resourceCase_ = 3;
+                break;
+              } // case 26
+              case 34: {
+                input.readMessage(
+                    getResponseFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                resourceCase_ = 4;
+                break;
+              } // case 34
+              case 42: {
+                resourceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              case 50: {
+                resourceName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              case 58: {
+                resourceTypeName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 58
+              case 82: {
+                org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute m =
+                    input.readMessage(
+                        org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute.parser(),
+                        extensionRegistry);
+                if (stringBuilder_ == null) {
+                  ensureStringIsMutable();
+                  string_.add(m);
+                } else {
+                  stringBuilder_.addMessage(m);
+                }
+                break;
+              } // case 82
+              case 90: {
+                org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute m =
+                    input.readMessage(
+                        org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.parser(),
+                        extensionRegistry);
+                if (numericBuilder_ == null) {
+                  ensureNumericIsMutable();
+                  numeric_.add(m);
+                } else {
+                  numericBuilder_.addMessage(m);
+                }
+                break;
+              } // case 90
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int resourceCase_ = 0;
@@ -6490,13 +6752,17 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder> nodeBuilder_;
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return Whether the node field is set.
        */
+      @java.lang.Override
       public boolean hasNode() {
         return resourceCase_ == 1;
       }
       /**
        * <code>.NodeLevelResource node = 1;</code>
+       * @return The node.
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResource getNode() {
         if (nodeBuilder_ == null) {
           if (resourceCase_ == 1) {
@@ -6556,8 +6822,9 @@ public final class CollectionSetProtos {
         } else {
           if (resourceCase_ == 1) {
             nodeBuilder_.mergeFrom(value);
+          } else {
+            nodeBuilder_.setMessage(value);
           }
-          nodeBuilder_.setMessage(value);
         }
         resourceCase_ = 1;
         return this;
@@ -6590,6 +6857,7 @@ public final class CollectionSetProtos {
       /**
        * <code>.NodeLevelResource node = 1;</code>
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.NodeLevelResourceOrBuilder getNodeOrBuilder() {
         if ((resourceCase_ == 1) && (nodeBuilder_ != null)) {
           return nodeBuilder_.getMessageOrBuilder();
@@ -6618,7 +6886,7 @@ public final class CollectionSetProtos {
           resource_ = null;
         }
         resourceCase_ = 1;
-        onChanged();;
+        onChanged();
         return nodeBuilder_;
       }
 
@@ -6626,13 +6894,17 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResourceOrBuilder> interfaceBuilder_;
       /**
        * <code>.InterfaceLevelResource interface = 2;</code>
+       * @return Whether the interface field is set.
        */
+      @java.lang.Override
       public boolean hasInterface() {
         return resourceCase_ == 2;
       }
       /**
        * <code>.InterfaceLevelResource interface = 2;</code>
+       * @return The interface.
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResource getInterface() {
         if (interfaceBuilder_ == null) {
           if (resourceCase_ == 2) {
@@ -6692,8 +6964,9 @@ public final class CollectionSetProtos {
         } else {
           if (resourceCase_ == 2) {
             interfaceBuilder_.mergeFrom(value);
+          } else {
+            interfaceBuilder_.setMessage(value);
           }
-          interfaceBuilder_.setMessage(value);
         }
         resourceCase_ = 2;
         return this;
@@ -6726,6 +6999,7 @@ public final class CollectionSetProtos {
       /**
        * <code>.InterfaceLevelResource interface = 2;</code>
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.InterfaceLevelResourceOrBuilder getInterfaceOrBuilder() {
         if ((resourceCase_ == 2) && (interfaceBuilder_ != null)) {
           return interfaceBuilder_.getMessageOrBuilder();
@@ -6754,7 +7028,7 @@ public final class CollectionSetProtos {
           resource_ = null;
         }
         resourceCase_ = 2;
-        onChanged();;
+        onChanged();
         return interfaceBuilder_;
       }
 
@@ -6762,13 +7036,17 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResourceOrBuilder> genericBuilder_;
       /**
        * <code>.GenericTypeResource generic = 3;</code>
+       * @return Whether the generic field is set.
        */
+      @java.lang.Override
       public boolean hasGeneric() {
         return resourceCase_ == 3;
       }
       /**
        * <code>.GenericTypeResource generic = 3;</code>
+       * @return The generic.
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResource getGeneric() {
         if (genericBuilder_ == null) {
           if (resourceCase_ == 3) {
@@ -6828,8 +7106,9 @@ public final class CollectionSetProtos {
         } else {
           if (resourceCase_ == 3) {
             genericBuilder_.mergeFrom(value);
+          } else {
+            genericBuilder_.setMessage(value);
           }
-          genericBuilder_.setMessage(value);
         }
         resourceCase_ = 3;
         return this;
@@ -6862,6 +7141,7 @@ public final class CollectionSetProtos {
       /**
        * <code>.GenericTypeResource generic = 3;</code>
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.GenericTypeResourceOrBuilder getGenericOrBuilder() {
         if ((resourceCase_ == 3) && (genericBuilder_ != null)) {
           return genericBuilder_.getMessageOrBuilder();
@@ -6890,7 +7170,7 @@ public final class CollectionSetProtos {
           resource_ = null;
         }
         resourceCase_ = 3;
-        onChanged();;
+        onChanged();
         return genericBuilder_;
       }
 
@@ -6898,13 +7178,17 @@ public final class CollectionSetProtos {
           org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResourceOrBuilder> responseBuilder_;
       /**
        * <code>.ResponseTimeResource response = 4;</code>
+       * @return Whether the response field is set.
        */
+      @java.lang.Override
       public boolean hasResponse() {
         return resourceCase_ == 4;
       }
       /**
        * <code>.ResponseTimeResource response = 4;</code>
+       * @return The response.
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResource getResponse() {
         if (responseBuilder_ == null) {
           if (resourceCase_ == 4) {
@@ -6964,8 +7248,9 @@ public final class CollectionSetProtos {
         } else {
           if (resourceCase_ == 4) {
             responseBuilder_.mergeFrom(value);
+          } else {
+            responseBuilder_.setMessage(value);
           }
-          responseBuilder_.setMessage(value);
         }
         resourceCase_ = 4;
         return this;
@@ -6998,6 +7283,7 @@ public final class CollectionSetProtos {
       /**
        * <code>.ResponseTimeResource response = 4;</code>
        */
+      @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.ResponseTimeResourceOrBuilder getResponseOrBuilder() {
         if ((resourceCase_ == 4) && (responseBuilder_ != null)) {
           return responseBuilder_.getMessageOrBuilder();
@@ -7026,13 +7312,14 @@ public final class CollectionSetProtos {
           resource_ = null;
         }
         resourceCase_ = 4;
-        onChanged();;
+        onChanged();
         return responseBuilder_;
       }
 
       private java.lang.Object resourceId_ = "";
       /**
        * <code>string resource_id = 5;</code>
+       * @return The resourceId.
        */
       public java.lang.String getResourceId() {
         java.lang.Object ref = resourceId_;
@@ -7048,6 +7335,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_id = 5;</code>
+       * @return The bytes for resourceId.
        */
       public com.google.protobuf.ByteString
           getResourceIdBytes() {
@@ -7064,37 +7352,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_id = 5;</code>
+       * @param value The resourceId to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         resourceId_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
       /**
        * <code>string resource_id = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearResourceId() {
-        
         resourceId_ = getDefaultInstance().getResourceId();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
       /**
        * <code>string resource_id = 5;</code>
+       * @param value The bytes for resourceId to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         resourceId_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -7102,6 +7391,7 @@ public final class CollectionSetProtos {
       private java.lang.Object resourceName_ = "";
       /**
        * <code>string resource_name = 6;</code>
+       * @return The resourceName.
        */
       public java.lang.String getResourceName() {
         java.lang.Object ref = resourceName_;
@@ -7117,6 +7407,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_name = 6;</code>
+       * @return The bytes for resourceName.
        */
       public com.google.protobuf.ByteString
           getResourceNameBytes() {
@@ -7133,37 +7424,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_name = 6;</code>
+       * @param value The resourceName to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         resourceName_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
       /**
        * <code>string resource_name = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearResourceName() {
-        
         resourceName_ = getDefaultInstance().getResourceName();
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
       /**
        * <code>string resource_name = 6;</code>
+       * @param value The bytes for resourceName to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         resourceName_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -7171,6 +7463,7 @@ public final class CollectionSetProtos {
       private java.lang.Object resourceTypeName_ = "";
       /**
        * <code>string resource_type_name = 7;</code>
+       * @return The resourceTypeName.
        */
       public java.lang.String getResourceTypeName() {
         java.lang.Object ref = resourceTypeName_;
@@ -7186,6 +7479,7 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_type_name = 7;</code>
+       * @return The bytes for resourceTypeName.
        */
       public com.google.protobuf.ByteString
           getResourceTypeNameBytes() {
@@ -7202,37 +7496,38 @@ public final class CollectionSetProtos {
       }
       /**
        * <code>string resource_type_name = 7;</code>
+       * @param value The resourceTypeName to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceTypeName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         resourceTypeName_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
       /**
        * <code>string resource_type_name = 7;</code>
+       * @return This builder for chaining.
        */
       public Builder clearResourceTypeName() {
-        
         resourceTypeName_ = getDefaultInstance().getResourceTypeName();
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
       /**
        * <code>string resource_type_name = 7;</code>
+       * @param value The bytes for resourceTypeName to set.
+       * @return This builder for chaining.
        */
       public Builder setResourceTypeNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         resourceTypeName_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -7240,7 +7535,7 @@ public final class CollectionSetProtos {
       private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute> string_ =
         java.util.Collections.emptyList();
       private void ensureStringIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000080) != 0)) {
           string_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute>(string_);
           bitField0_ |= 0x00000080;
          }
@@ -7469,7 +7764,7 @@ public final class CollectionSetProtos {
           stringBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute, org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttribute.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.StringAttributeOrBuilder>(
                   string_,
-                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  ((bitField0_ & 0x00000080) != 0),
                   getParentForChildren(),
                   isClean());
           string_ = null;
@@ -7480,7 +7775,7 @@ public final class CollectionSetProtos {
       private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute> numeric_ =
         java.util.Collections.emptyList();
       private void ensureNumericIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+        if (!((bitField0_ & 0x00000100) != 0)) {
           numeric_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute>(numeric_);
           bitField0_ |= 0x00000100;
          }
@@ -7709,7 +8004,7 @@ public final class CollectionSetProtos {
           numericBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute, org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttributeOrBuilder>(
                   numeric_,
-                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  ((bitField0_ & 0x00000100) != 0),
                   getParentForChildren(),
                   isClean());
           numeric_ = null;
@@ -7719,7 +8014,7 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -7749,7 +8044,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CollectionSetResource(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7775,6 +8081,7 @@ public final class CollectionSetProtos {
 
     /**
      * <code>int64 timestamp = 1;</code>
+     * @return The timestamp.
      */
     long getTimestamp();
 
@@ -7805,7 +8112,7 @@ public final class CollectionSetProtos {
   /**
    * Protobuf type {@code CollectionSet}
    */
-  public  static final class CollectionSet extends
+  public static final class CollectionSet extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CollectionSet)
       CollectionSetOrBuilder {
@@ -7815,70 +8122,16 @@ public final class CollectionSetProtos {
       super(builder);
     }
     private CollectionSet() {
-      timestamp_ = 0L;
       resource_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CollectionSet();
     }
-    private CollectionSet(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
 
-              timestamp_ = input.readInt64();
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                resource_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource>();
-                mutable_bitField0_ |= 0x00000002;
-              }
-              resource_.add(
-                  input.readMessage(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          resource_ = java.util.Collections.unmodifiableList(resource_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.kafka.producer.model.CollectionSetProtos.internal_static_CollectionSet_descriptor;
@@ -7892,27 +8145,31 @@ public final class CollectionSetProtos {
               org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet.class, org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet.Builder.class);
     }
 
-    private int bitField0_;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <code>int64 timestamp = 1;</code>
+     * @return The timestamp.
      */
+    @java.lang.Override
     public long getTimestamp() {
       return timestamp_;
     }
 
     public static final int RESOURCE_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource> resource_;
     /**
      * <code>repeated .CollectionSetResource resource = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource> getResourceList() {
       return resource_;
     }
     /**
      * <code>repeated .CollectionSetResource resource = 2;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResourceOrBuilder> 
         getResourceOrBuilderList() {
       return resource_;
@@ -7920,18 +8177,21 @@ public final class CollectionSetProtos {
     /**
      * <code>repeated .CollectionSetResource resource = 2;</code>
      */
+    @java.lang.Override
     public int getResourceCount() {
       return resource_.size();
     }
     /**
      * <code>repeated .CollectionSetResource resource = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource getResource(int index) {
       return resource_.get(index);
     }
     /**
      * <code>repeated .CollectionSetResource resource = 2;</code>
      */
+    @java.lang.Override
     public org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResourceOrBuilder getResourceOrBuilder(
         int index) {
       return resource_.get(index);
@@ -7957,7 +8217,7 @@ public final class CollectionSetProtos {
       for (int i = 0; i < resource_.size(); i++) {
         output.writeMessage(2, resource_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7974,7 +8234,7 @@ public final class CollectionSetProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, resource_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7989,13 +8249,12 @@ public final class CollectionSetProtos {
       }
       org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet other = (org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet) obj;
 
-      boolean result = true;
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && getResourceList()
-          .equals(other.getResourceList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (!getResourceList()
+          .equals(other.getResourceList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -8012,7 +8271,7 @@ public final class CollectionSetProtos {
         hash = (37 * hash) + RESOURCE_FIELD_NUMBER;
         hash = (53 * hash) + getResourceList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -8061,11 +8320,13 @@ public final class CollectionSetProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8129,31 +8390,26 @@ public final class CollectionSetProtos {
 
       // Construct using org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getResourceFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-
         if (resourceBuilder_ == null) {
           resource_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
+          resource_ = null;
           resourceBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -8180,11 +8436,15 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet buildPartial() {
         org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet result = new org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        result.timestamp_ = timestamp_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet result) {
         if (resourceBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             resource_ = java.util.Collections.unmodifiableList(resource_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -8192,42 +8452,46 @@ public final class CollectionSetProtos {
         } else {
           result.resource_ = resourceBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8270,7 +8534,7 @@ public final class CollectionSetProtos {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -8285,17 +8549,48 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                timestamp_ = input.readInt64();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              case 18: {
+                org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource m =
+                    input.readMessage(
+                        org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.parser(),
+                        extensionRegistry);
+                if (resourceBuilder_ == null) {
+                  ensureResourceIsMutable();
+                  resource_.add(m);
+                } else {
+                  resourceBuilder_.addMessage(m);
+                }
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSet) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -8303,24 +8598,30 @@ public final class CollectionSetProtos {
       private long timestamp_ ;
       /**
        * <code>int64 timestamp = 1;</code>
+       * @return The timestamp.
        */
+      @java.lang.Override
       public long getTimestamp() {
         return timestamp_;
       }
       /**
        * <code>int64 timestamp = 1;</code>
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
        * <code>int64 timestamp = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -8329,7 +8630,7 @@ public final class CollectionSetProtos {
       private java.util.List<org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource> resource_ =
         java.util.Collections.emptyList();
       private void ensureResourceIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           resource_ = new java.util.ArrayList<org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource>(resource_);
           bitField0_ |= 0x00000002;
          }
@@ -8558,7 +8859,7 @@ public final class CollectionSetProtos {
           resourceBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource, org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource.Builder, org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResourceOrBuilder>(
                   resource_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           resource_ = null;
@@ -8568,7 +8869,7 @@ public final class CollectionSetProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -8598,7 +8899,18 @@ public final class CollectionSetProtos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CollectionSet(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -8697,19 +9009,11 @@ public final class CollectionSetProtos {
       ")org.opennms.features.kafka.producer.mod" +
       "elB\023CollectionSetProtosb\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.WrappersProto.getDescriptor(),
-        }, assigner);
+        });
     internal_static_StringAttribute_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_StringAttribute_fieldAccessorTable = new

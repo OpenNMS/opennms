@@ -21,13 +21,13 @@
   <packaging>bundle</packaging>
 
   <build>
-    <extensions>
+    <!--<extensions>
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>${osMavenPluginVersion}</version>
+        <version>${maven.os.plugin.version}</version>
       </extension>
-    </extensions>
+    </extensions>-->
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -41,15 +41,14 @@
           </instructions>
         </configuration>
       </plugin>
-    <!-- Enable when you need to generate java source files from proto -->
-<!--      <plugin>
+      <!-- Enable when you need to generate java source files from proto -->
+      <!--<plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:${protobufVersion}:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.24.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpcVersion}:exe:${os.detected.classifier}</pluginArtifact>
         </configuration>
         <executions>
           <execution>

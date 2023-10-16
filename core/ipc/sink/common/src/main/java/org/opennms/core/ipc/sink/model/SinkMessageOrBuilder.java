@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,26 +37,31 @@ public interface SinkMessageOrBuilder extends
 
   /**
    * <code>string message_id = 1;</code>
+   * @return The messageId.
    */
   java.lang.String getMessageId();
   /**
    * <code>string message_id = 1;</code>
+   * @return The bytes for messageId.
    */
   com.google.protobuf.ByteString
       getMessageIdBytes();
 
   /**
    * <code>bytes content = 2;</code>
+   * @return The content.
    */
   com.google.protobuf.ByteString getContent();
 
   /**
    * <code>int32 current_chunk_number = 3;</code>
+   * @return The currentChunkNumber.
    */
   int getCurrentChunkNumber();
 
   /**
    * <code>int32 total_chunks = 4;</code>
+   * @return The totalChunks.
    */
   int getTotalChunks();
 
@@ -83,14 +88,14 @@ public interface SinkMessageOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
-
-  java.lang.String getTracingInfoOrDefault(
+  /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
-
   java.lang.String getTracingInfoOrThrow(
       java.lang.String key);
 }

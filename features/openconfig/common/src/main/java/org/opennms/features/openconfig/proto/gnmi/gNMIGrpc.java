@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.features.openconfig.proto.gnmi;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.24.0)",
+    value = "by gRPC proto compiler (version 1.46.0)",
     comments = "Source: gnmi.proto")
+@io.grpc.stub.annotations.GrpcGenerated
 public final class gNMIGrpc {
 
   private gNMIGrpc() {}
@@ -179,7 +171,14 @@ public final class gNMIGrpc {
    * Creates a new async stub that supports all call types for the service
    */
   public static gNMIStub newStub(io.grpc.Channel channel) {
-    return new gNMIStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<gNMIStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<gNMIStub>() {
+        @java.lang.Override
+        public gNMIStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new gNMIStub(channel, callOptions);
+        }
+      };
+    return gNMIStub.newStub(factory, channel);
   }
 
   /**
@@ -187,7 +186,14 @@ public final class gNMIGrpc {
    */
   public static gNMIBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new gNMIBlockingStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<gNMIBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<gNMIBlockingStub>() {
+        @java.lang.Override
+        public gNMIBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new gNMIBlockingStub(channel, callOptions);
+        }
+      };
+    return gNMIBlockingStub.newStub(factory, channel);
   }
 
   /**
@@ -195,7 +201,14 @@ public final class gNMIGrpc {
    */
   public static gNMIFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new gNMIFutureStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<gNMIFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<gNMIFutureStub>() {
+        @java.lang.Override
+        public gNMIFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new gNMIFutureStub(channel, callOptions);
+        }
+      };
+    return gNMIFutureStub.newStub(factory, channel);
   }
 
   /**
@@ -214,7 +227,7 @@ public final class gNMIGrpc {
      */
     public void capabilities(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getCapabilitiesMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getCapabilitiesMethod(), responseObserver);
     }
 
     /**
@@ -228,7 +241,7 @@ public final class gNMIGrpc {
      */
     public void get(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetMethod(), responseObserver);
     }
 
     /**
@@ -241,7 +254,7 @@ public final class gNMIGrpc {
      */
     public void set(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getSetMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSetMethod(), responseObserver);
     }
 
     /**
@@ -255,35 +268,35 @@ public final class gNMIGrpc {
      */
     public io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest> subscribe(
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse> responseObserver) {
-      return asyncUnimplementedStreamingCall(getSubscribeMethod(), responseObserver);
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getSubscribeMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getCapabilitiesMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest,
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse>(
                   this, METHODID_CAPABILITIES)))
           .addMethod(
             getGetMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest,
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse>(
                   this, METHODID_GET)))
           .addMethod(
             getSetMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest,
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse>(
                   this, METHODID_SET)))
           .addMethod(
             getSubscribeMethod(),
-            asyncBidiStreamingCall(
+            io.grpc.stub.ServerCalls.asyncBidiStreamingCall(
               new MethodHandlers<
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest,
                 org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse>(
@@ -294,19 +307,15 @@ public final class gNMIGrpc {
 
   /**
    */
-  public static final class gNMIStub extends io.grpc.stub.AbstractStub<gNMIStub> {
-    private gNMIStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private gNMIStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class gNMIStub extends io.grpc.stub.AbstractAsyncStub<gNMIStub> {
+    private gNMIStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected gNMIStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected gNMIStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new gNMIStub(channel, callOptions);
     }
 
@@ -322,7 +331,7 @@ public final class gNMIGrpc {
      */
     public void capabilities(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getCapabilitiesMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -337,7 +346,7 @@ public final class gNMIGrpc {
      */
     public void get(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -351,7 +360,7 @@ public final class gNMIGrpc {
      */
     public void set(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest request,
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSetMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -366,26 +375,22 @@ public final class gNMIGrpc {
      */
     public io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest> subscribe(
         io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse> responseObserver) {
-      return asyncBidiStreamingCall(
+      return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
           getChannel().newCall(getSubscribeMethod(), getCallOptions()), responseObserver);
     }
   }
 
   /**
    */
-  public static final class gNMIBlockingStub extends io.grpc.stub.AbstractStub<gNMIBlockingStub> {
-    private gNMIBlockingStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private gNMIBlockingStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class gNMIBlockingStub extends io.grpc.stub.AbstractBlockingStub<gNMIBlockingStub> {
+    private gNMIBlockingStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected gNMIBlockingStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected gNMIBlockingStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new gNMIBlockingStub(channel, callOptions);
     }
 
@@ -400,7 +405,7 @@ public final class gNMIGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse capabilities(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getCapabilitiesMethod(), getCallOptions(), request);
     }
 
@@ -414,7 +419,7 @@ public final class gNMIGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse get(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetMethod(), getCallOptions(), request);
     }
 
@@ -427,26 +432,22 @@ public final class gNMIGrpc {
      * </pre>
      */
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse set(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSetMethod(), getCallOptions(), request);
     }
   }
 
   /**
    */
-  public static final class gNMIFutureStub extends io.grpc.stub.AbstractStub<gNMIFutureStub> {
-    private gNMIFutureStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private gNMIFutureStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class gNMIFutureStub extends io.grpc.stub.AbstractFutureStub<gNMIFutureStub> {
+    private gNMIFutureStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected gNMIFutureStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected gNMIFutureStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new gNMIFutureStub(channel, callOptions);
     }
 
@@ -462,7 +463,7 @@ public final class gNMIGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse> capabilities(
         org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getCapabilitiesMethod(), getCallOptions()), request);
     }
 
@@ -477,7 +478,7 @@ public final class gNMIGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse> get(
         org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetMethod(), getCallOptions()), request);
     }
 
@@ -491,7 +492,7 @@ public final class gNMIGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse> set(
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSetMethod(), getCallOptions()), request);
     }
   }
