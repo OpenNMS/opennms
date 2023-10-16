@@ -32,18 +32,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
-import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
+import javax.validation.Valid;
+
 import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message.Level;
+import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.marshalling.KieMarshallers;
 import org.kie.api.marshalling.Marshaller;
@@ -141,7 +144,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
      *
      * @throws Exception the exception
      */
-    private void initializeDroolsEngine() throws Exception {
+    private void initializeDroolsEngine() {
         KieServices ks = KieServices.Factory.get();
         KieFileSystem kFileSystem = ks.newKieFileSystem();
 
@@ -158,12 +161,11 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         }
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
-        AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_engine.getAssertBehaviour());
-        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
-        ruleBaseConfig.setAssertBehaviour(behaviour);
-        ruleBaseConfig.setEventProcessingMode(EventProcessingOption.STREAM);
+        final KieBaseConfiguration kConf = KieServices.get().newKieBaseConfiguration();
+        kConf.setProperty(EqualityBehaviorOption.PROPERTY_NAME, m_engine.getAssertBehaviour());
+        kConf.setOption( EventProcessingOption.STREAM );
 
-        m_kieBase = kContainer.newKieBase(ruleBaseConfig);
+        m_kieBase = kContainer.newKieBase(kConf);
         m_kieSession = m_kieBase.newKieSession();
         m_kieSession.setGlobal("engine", this);
 
@@ -198,7 +200,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
             LOG.warn("Drools Northbounder {} has not been properly initialized, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
-        if (!getConfig().isEnabled()) {
+        if (Boolean.FALSE.equals(getConfig().isEnabled())) {
             LOG.warn("Drools Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
@@ -260,7 +262,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
      *
      * @param event the event
      */
-    public void sendEvent(final Event event) {
+    public void sendEvent(final @Valid Event event) {
         try {
             m_eventProxy.send(event);
         } catch (EventProxyException e) {
@@ -322,7 +324,7 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         final Marshaller marshaller = kMarshallers.newMarshaller( m_kieBase, new ObjectMarshallingStrategy[]{ oms } );
         try (FileInputStream fin = new FileInputStream(stateFile)) {
             marshaller.unmarshall( fin, m_kieSession );
-            stateFile.delete();
+            Files.delete(stateFile.toPath());
             LOG.info("Sucessfully restored state for engine {} from {}. There are {} elements on the working memory.", getName(), stateFile, m_kieSession.getObjects().size());
         } catch (IOException | ClassNotFoundException e) {
             LOG.error("Failed to restore state for engine {} from {}.", getName(), stateFile, e);
