@@ -80,32 +80,20 @@
     </FeatherList>
   </FeatherExpansionPanel>
   <div class="search-autocomplete-panel">
-    <h1 class="title">Metadata Search</h1>
-    <FeatherAutocomplete
-      v-model="metaSearchString"
-      type="multi"
-      :results="metadataSearchResults"
-      label="Search"
-      class="map-search"
-      @search="resetMetaSearch"
-      :loading="loading"
-      :hideLabel="true"
-      text-prop="label"
-      @update:modelValue="selectMetaItem"
-      :labels="metaLabels"
-    ></FeatherAutocomplete>
+    <h1 class="title">Extended Search</h1>
+    <ExtendedSearchPanel />
   </div>
 </template>
 
 <script setup lang="ts">
 import ClearIcon from '@featherds/icon/action/Cancel'
-import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherList, FeatherListItem } from '@featherds/list'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { Category, MonitoringLocation, SetOperator } from '@/types'
+import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 
 const nodeStructureStore = useNodeStructureStore()
 const clearIcon = ref(ClearIcon)
@@ -116,24 +104,7 @@ const locations = computed<MonitoringLocation[]>(() => nodeStructureStore.monito
 const selectedCategoryCount = computed<number>(() => nodeStructureStore.queryFilter.selectedCategories?.length || 0)
 const selectedFlowCount = computed<number>(() => nodeStructureStore.queryFilter.selectedFlows?.length || 0)
 const selectedLocationCount = computed<number>(() => nodeStructureStore.queryFilter.selectedMonitoringLocations?.length || 0)
-const isAnyFilterSelected = computed<boolean>(() => nodeStructureStore.queryFilter.searchTerm?.length > 0 || selectedCategoryCount.value > 0 || selectedFlowCount.value > 0 || selectedLocationCount.value > 0)
-
-const metaSearchString = ref()
-const loading = ref(false)
-const defaultMetaLabels = { noResults: 'Searching...' }
-const metaLabels = ref(defaultMetaLabels)
-
-const metadataSearchResults = computed(() => {
-  return ['cat', 'dog', 'parakeet'].map(x => ({ _text: x }))
-})
-
-const selectMetaItem = (obj: any) => {
-  console.log('selectMetaItem')
-}
-
-const resetMetaSearch = () => {
-  console.log('resetMetaSearch')
-}
+const isAnyFilterSelected = computed<boolean>(() => nodeStructureStore.isAnyFilterSelected())
 
 const categoryModeUpdated = (val: any) => {
   nodeStructureStore.setCategoryMode(val)

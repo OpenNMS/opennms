@@ -2,18 +2,39 @@ import {
   Category,
   MonitoringLocation,
   NodeQueryFilter,
+  NodeQuerySnmpParams,
   QueryParameters,
   SetOperator
 } from '@/types'
+import {
+  parseCategories,
+  parseFlows,
+  parseIplike,
+  parseMonitoringLocation,
+  parseNodeLabel,
+  parseSnmpParams
+} from './queryStringParser'
 
 export const useNodeQuery = () => {
+  const getDefaultNodeQuerySnmpParams = () => {
+    return {
+      snmpIfAlias: '',
+      snmpIfDesc: '',
+      snmpIfIndex: '',
+      snmpIfName: '',
+      snmpIfType: ''
+    } as NodeQuerySnmpParams
+  }
+
   const getDefaultNodeQueryFilter = () => {
     return {
       searchTerm: '',
       categoryMode: SetOperator.Union,
       selectedCategories: [] as Category[],
       selectedFlows: [] as string[],
-      selectedMonitoringLocations: [] as MonitoringLocation[]
+      selectedMonitoringLocations: [] as MonitoringLocation[],
+      ipAddress: '',
+      snmpParams: getDefaultNodeQuerySnmpParams()
     } as NodeQueryFilter
   }
 
@@ -36,7 +57,18 @@ export const useNodeQuery = () => {
   }
 
   const trackedNodeQueryStringProperties = new Set([
-    'nodename', 'nodeLabel', 'categories'
+    'categories',
+    'flows',
+    'ipAddress',
+    'iplike',
+    'monitoringLocation',
+    'nodeLabel',
+    'nodename',
+    'snmpifalias',
+    'snmpifdesc',
+    'snmpifindex',
+    'snmpifname',
+    'snmpphysaddr'
   ])
 
   /**
@@ -54,44 +86,37 @@ export const useNodeQuery = () => {
    *
    * @param query query object from vue-router route.query
    */
-  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[]) => {
+  const buildNodeQueryFilterFromQueryString = (queryObject: any, categories: Category[], monitoringLocations: MonitoringLocation[]) => {
     const filter: NodeQueryFilter = getDefaultNodeQueryFilter()
 
-    const nodeLabel = queryObject.nodename as string || queryObject.nodeLabel as string
+    filter.searchTerm = parseNodeLabel(queryObject)
 
-    if (nodeLabel) {
-      filter.searchTerm = nodeLabel
-    }
-
-    // 'categories' can be a comma or semicolon separated list of either numeric Category ids or names
-    // comma: Union; semicolon: Intersection
-    const selectedCategories = queryObject.categories as string ?? ''
+    const { categoryMode, selectedCategories } = parseCategories(queryObject, categories)
 
     if (selectedCategories.length > 0) {
-      filter.categoryMode = selectedCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
+      filter.categoryMode = categoryMode
+      filter.selectedCategories = selectedCategories
+    }
 
-      const cats: string[] = selectedCategories.replace(';', ',').split(',')
+    const location = parseMonitoringLocation(queryObject, monitoringLocations)
 
-      // add any valid categories
-      cats.forEach(c => {
-        if (/\d+/.test(c)) {
-          // category id number
-          const id = parseInt(c)
+    if (location) {
+      filter.selectedMonitoringLocations.push(location)
+    }
 
-          const item = categories.find(x => x.id === id)
+    filter.selectedFlows = parseFlows(queryObject)
 
-          if (item) {
-            filter.selectedCategories.push(item)
-          }
-        } else {
-          // category name, case insensitive
-          const item = categories.find(x => x.name.toLowerCase() === c.toLowerCase())
+    // TODO: Implement ipaddress or iplike filtering
+    const ip = parseIplike(queryObject)
 
-          if (item) {
-            filter.selectedCategories.push(item)
-          }
-        }
-      })
+    if (ip) {
+      filter.ipAddress = ip
+    }
+
+    const snmpParams = parseSnmpParams(queryObject)
+
+    if (snmpParams) {
+      filter.snmpParams = snmpParams
     }
 
     return filter
@@ -101,8 +126,27 @@ export const useNodeQuery = () => {
     buildNodeQueryFilterFromQueryString,
     buildUpdatedNodeStructureQueryParameters,
     getDefaultNodeQueryFilter,
+    getDefaultNodeQuerySnmpParams,
     queryStringHasTrackedValues
   }
+}
+
+/**
+ * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
+ */
+const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
+  const searchQuery = buildSearchQuery(filter.searchTerm)
+  const ipAddressQuery = buildIpAddressQuery(filter.ipAddress)
+  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
+  const flowsQuery = buildFlowsQuery(filter.selectedFlows)
+  const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
+  const snmpQuery = buildSnmpQuery(filter.snmpParams)
+
+  // TODO: filter on regex to screen out bad FIQL characters like ',', ';', etc.
+  // and/or restrict characters in the FeatherInput above
+  const query = [searchQuery, ipAddressQuery, snmpQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(';')
+
+  return query
 }
 
 const buildSearchQuery = (searchTerm: string) => {
@@ -115,20 +159,12 @@ const buildSearchQuery = (searchTerm: string) => {
   return ''
 }
 
-/**
- * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
- */
-const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
-  const searchQuery = buildSearchQuery(filter.searchTerm)
-  const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
-  const flowsQuery = buildFlowsQuery(filter.selectedFlows)
-  const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
+const buildIpAddressQuery = (ipAddress?: string) => {
+  if (ipAddress) {
+    return `ipInterface.ipAddress==${ipAddress}`
+  }
 
-  // TODO: filter on regex to screen out bad FIQL characters like ',', ';', etc.
-  // and/or restrict characters in the FeatherInput above
-  const query = [searchQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(';')
-
-  return query
+  return ''
 }
 
 const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOperator) => {
@@ -171,5 +207,37 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
     return `(${locationItems.join(',')})`
   }
 
+  return ''
+}
+
+const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
+  if (snmpParams) {
+    const arr: string[] = []
+
+    if (snmpParams.snmpIfAlias) {
+      arr.push(`snmpInterface.ifAlias==${snmpParams.snmpIfAlias}`)
+    }
+
+    if (snmpParams.snmpIfDesc) {
+      arr.push(`snmpInterface.ifDesc==${snmpParams.snmpIfDesc}`)
+    }
+
+    if (snmpParams.snmpIfIndex) {
+      arr.push(`snmpInterface.ifIndex==${snmpParams.snmpIfIndex}`)
+    }
+
+    if (snmpParams.snmpIfName) {
+      arr.push(`snmpInterface.ifName==${snmpParams.snmpIfName}`)
+    }
+
+    if (snmpParams.snmpIfType) {
+      arr.push(`snmpInterface.ifType==${snmpParams.snmpIfType}`)
+    }
+
+    if (arr.length > 0) {
+      return arr.join(';')
+    }
+  }
+  
   return ''
 }
