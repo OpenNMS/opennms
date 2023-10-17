@@ -217,6 +217,8 @@
                           <feature>netty</feature>
                           <feature>org.json</feature>
                           <feature>pax-jetty</feature>
+                          <feature>protobuf</feature>
+                          <feature>protobuf-util</feature>
                           <feature>scv-api</feature>
                           <feature>scv-jceks-impl</feature>
                           <feature>scv-shell</feature>

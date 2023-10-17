@@ -104,6 +104,7 @@
         <feature>sentinel-timeseries-api</feature>
 
         <feature version="${netty4Version}">netty</feature>
+        <feature version="${protobufVersion}">protobuf</feature>
         <feature>dropwizard-metrics</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
@@ -115,8 +116,6 @@
         <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
         <feature>opennms-util</feature>
-
-        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
@@ -135,6 +134,8 @@
         <feature>commons-csv</feature>
         <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature version="${protobufVersion}">protobuf</feature>
+        <feature version="${protobufVersion}">protobuf-util</feature>
         <feature>rate-limited-logger</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
@@ -143,7 +144,6 @@
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
