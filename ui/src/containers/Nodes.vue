@@ -21,16 +21,22 @@
 </template>
   
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { loadNodePreferences } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
-import { BreadCrumb } from '@/types'
+import { BreadCrumb, NodePreferences } from '@/types'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
+const { buildNodeQueryFilterFromQueryString, queryStringHasTrackedValues } = useNodeQuery()
+
+const route = useRoute()
+const router = useRouter()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
@@ -43,6 +49,21 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 onMounted(() => {
   // load any saved preferences
   const prefs = loadNodePreferences()
+
+  if (queryStringHasTrackedValues(route.query)) {
+    const nodeFilter = buildNodeQueryFilterFromQueryString(route.query, nodeStructureStore.categories)
+
+    const newPrefs = {
+      nodeColumns: prefs?.nodeColumns || [],
+      nodeFilter
+    } as NodePreferences
+
+    nodeStructureStore.setFromNodePreferences(newPrefs)
+
+    // TODO: Save prefs???
+    router.replace({ name: 'Nodes' })
+    return
+  }
 
   if (prefs) {
     nodeStructureStore.setFromNodePreferences(prefs)

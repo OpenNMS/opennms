@@ -501,7 +501,9 @@ export enum SetOperator {
   Intersection = 2
 }
 
-export interface NodeFilterPreferences {
+/** All components of a node structure query */
+export interface NodeQueryFilter {
+  searchTerm: string
   categoryMode: SetOperator
   selectedCategories: Category[]
   selectedFlows: string[]
@@ -510,9 +512,16 @@ export interface NodeFilterPreferences {
 
 export interface NodePreferences {
   nodeColumns: NodeColumnSelectionItem[]
-  nodeFilter?: NodeFilterPreferences
+  nodeFilter?: NodeQueryFilter
 }
 
 export interface OpenNmsPreferences {
   nodePreferences: NodePreferences
+}
+
+export interface IpInterfaceInfo {
+  label: string
+  managed: boolean
+  primaryLabel: string
+  primaryType: string
 }

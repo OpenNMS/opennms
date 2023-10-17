@@ -22,6 +22,7 @@
           </div>
           <div class="feather-col-9 search-filter-column">
             <FeatherInput
+              v-model="currentSearch"
               @update:modelValue="searchFilterHandler"
               label="Search node label"
             />
@@ -42,7 +43,7 @@
             <thead>
               <tr>
                 <th scope="column" />
-                <template v-for="column in columns" :key="column.id">
+                <template v-for="column in nodeStructureStore.columns" :key="column.id">
                   <FeatherSortHeader
                     scope="col"
                     :property="column.id"
@@ -68,7 +69,7 @@
                   />
                 </td>
 
-                <template v-for="column in columns" :key="column.id">
+                <template v-for="column in nodeStructureStore.columns" :key="column.id">
                   <td v-if="isSelectedColumn(column, 'id')">
                     <a
                       :href="computeNodeLink(node.id)"
@@ -110,11 +111,12 @@
         </div>
       </div>
     </div>
-    <Pagination
-      :parameters="queryParameters"
-      @update-query-parameters="updateQueryParameters"
-      :query="nodeQuery"
-      :getTotalCount="getNodeTotalCount"
+    <FeatherPagination
+      v-model="pageNumber"
+      :pageSize="queryParameters.limit"
+      :total="nodeStore.totalCount"
+      @update:modelValue="updatePageNumber"
+      @update:pageSize="updatePageSize"
     />
   </div>
   <NodeDetailsDialog
@@ -137,7 +139,21 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Settings from '@featherds/icon/action/Settings'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+
+import useSnackbar from '@/composables/useSnackbar'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStore } from '@/stores/nodeStore'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import {
+  FeatherSortObject,
+  Node,
+  NodeColumnSelectionItem,
+  QueryParameters,
+  UpdateModelFunction } from '@/types'
+import { MainMenu } from '@/types/mainMenu'
+
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
@@ -145,36 +161,18 @@ import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodePreferencesDialog from './NodePreferencesDialog.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
-import Pagination from '../Common/Pagination.vue'
-import {
-  buildUpdatedNodeStructureQueryParams,
-  generateBlob,
-  generateDownload,
-  getExportData,
-  getTableCssClasses,
-  NodeStructureQueryParams
-} from './utils'
-import useQueryParameters from '@/composables/useQueryParams'
-import useSnackbar from '@/composables/useSnackbar'
-import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
-import {
-  Category,
-  FeatherSortObject,
-  MonitoringLocation,
-  Node,
-  NodeColumnSelectionItem,
-  QueryParameters,
-  SetOperator,
-  UpdateModelFunction } from '@/types'
-import { MainMenu } from '@/types/mainMenu'
+import { useNodeQuery } from './hooks/useNodeQuery'
+import { useNodeExport } from './hooks/useNodeExport'
+import { getTableCssClasses } from './utils'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const settingsIcon = markRaw(Settings)
+
+const { generateBlob, generateDownload, getExportData } = useNodeExport()
+const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
 
 const sortStates: any = reactive({
   id: SORT.NONE,
@@ -206,58 +204,63 @@ const sortStateForId = (label: string) => {
   return SORT.NONE
 }
 
-const currentSearch = ref('')
+const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
-const selectedCategories = computed<Category[]>(() => nodeStructureStore.selectedCategories)
-const selectedFlows = computed<string[]>(() => nodeStructureStore.selectedFlows)
-const selectedLocations = computed<MonitoringLocation[]>(() => nodeStructureStore.selectedMonitoringLocations)
-const categoryMode = computed<SetOperator>(() => nodeStructureStore.categoryMode)
+
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
 const preferencesVisible = ref(false)
-const columns = computed<NodeColumnSelectionItem[]>(() => nodeStructureStore.columns)
-const tableCssClasses = computed<string[]>(() => getTableCssClasses(columns.value))
+const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
+const queryParameters = ref({ limit: 20, offset: 0, orderBy: 'label' } as QueryParameters)
+const pageNumber = ref(1)
 
 const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
   return column.selected && column.id === id
 }
 
-const nodeQuery = async (params: QueryParameters) => {
-  nodeStore.getNodes(params, true)
+const updatePageNumber = (page: number) => {
+  pageNumber.value = page
+  const pageSize = queryParameters.value.limit || 0
+  queryParameters.value = { ...queryParameters.value, offset: (page - 1) * pageSize }
+  updateQuery()
 }
 
-const getNodeTotalCount = () => {
-  return nodeStore.totalCount
+const updatePageSize = (size: number) => {
+  queryParameters.value = { ...queryParameters.value, limit: size }
+  updateQuery()
 }
-
-const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
-  limit: 20,
-  offset: 0,
-  orderBy: 'label'
-}, nodeQuery)
 
 const sortChanged = (sortObj: FeatherSortObject) => {
   // currently we don't support sorting by ipaddress
-  if (sortObj.value === 'ipaddress') {
+  if (sortObj.property === 'ipaddress') {
     return
   }
 
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }
+
   sortStates[`${sortObj.property}`] = sortObj.value
-  sort(sortObj)
+
+  queryParameters.value = {
+    ...queryParameters.value,
+    orderBy: sortObj.property,
+    order: sortObj.value
+  }
+
+  updateQuery()
 }
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
-  currentSearch.value = val
-  updateQuery(val)
+  if (val !== nodeStructureStore.queryFilter.searchTerm) {
+    nodeStructureStore.setSearchTerm(val)
+  }
 }
 
 const onDownload = async (format: string) => {
-  const queryParams = buildNodeStructureQueryParams(currentSearch.value)
-  const data = await getExportData(format, queryParams,  queryParameters.value, columns.value)
+  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParameters.value, nodeStructureStore.queryFilter)
+  const data = await getExportData(format, updatedParams, nodeStructureStore.columns)
 
   if (!data) {
     showSnackBar({
@@ -286,24 +289,6 @@ const openPreferences = () => {
   preferencesVisible.value = true
 }
 
-const buildNodeStructureQueryParams = (searchVal: string) => {
-  return {
-    searchVal,
-    selectedCategories: selectedCategories.value,
-    categoryMode: categoryMode.value,
-    selectedFlows: selectedFlows.value,
-    selectedLocations: selectedLocations.value
-  } as NodeStructureQueryParams
-}
-
-const updateQuery = (searchVal?: string) => {
-  const queryParams = buildNodeStructureQueryParams(searchVal || currentSearch.value)
-  const updatedParams = buildUpdatedNodeStructureQueryParams(queryParameters.value, queryParams)
-
-  nodeStore.getNodes(updatedParams, true)
-  queryParameters.value = updatedParams
-}
-
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
@@ -316,7 +301,18 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
-watch([categoryMode, selectedCategories, selectedFlows, selectedLocations], () => {
+const updateQuery = () => {
+  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParameters.value, nodeStructureStore.queryFilter)
+  queryParameters.value = updatedParams
+
+  nodeStore.getNodes(updatedParams, true)
+}
+
+watch([() => nodeStructureStore.queryFilter], () => {
+  if (nodeStructureStore.queryFilter.searchTerm !== currentSearch.value) {
+    currentSearch.value = nodeStructureStore.queryFilter.searchTerm
+  }
+
   updateQuery()
 })
 </script>

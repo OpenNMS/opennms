@@ -16,7 +16,10 @@
 import { IpInterface, Node } from '@/types'
 import { FeatherTooltip, PointerAlignment, PopoverPlacement } from '@featherds/tooltip'
 import { PropType } from 'vue'
-import { IpInterfaceInfo, getBestIpInterfaceForNode } from './utils'
+import { IpInterfaceInfo } from '@/types'
+import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
+
+const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
 
 const props = defineProps({
   computeNodeIpInterfaceLink: {
