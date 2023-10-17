@@ -1432,10 +1432,12 @@
   dependencies:
     "@volar/language-core" "1.10.4"
 
-"@vue-leaflet/vue-leaflet@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@vue-leaflet/vue-leaflet/-/vue-leaflet-0.7.0.tgz#5497ede3346ca3bd009c5636dba2512ea01579d7"
-  integrity sha512-YY1bcg+7ftGZk4ihCOckOSFMfuhimGxEpPabtpBpaaaquABliB0dkANNFx5d8Y5Vadko5Yjc8Vq74hb/dg4gQw==
+"@vue-leaflet/vue-leaflet@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@vue-leaflet/vue-leaflet/-/vue-leaflet-0.10.1.tgz#17330515629d500ac113009a49f8cf98d140e8cc"
+  integrity sha512-RNEDk8TbnwrJl8ujdbKgZRFygLCxd0aBcWLQ05q/pGv4+d0jamE3KXQgQBqGAteE1mbQsk3xoNcqqUgaIGfWVg==
+  dependencies:
+    vue "^3.2.25"
 
 "@vue/compiler-core@3.3.4":
   version "3.3.4"
@@ -4075,7 +4077,7 @@ vue@^2.0.0:
     "@vue/compiler-sfc" "2.7.14"
     csstype "^3.1.0"
 
-vue@^3.1.0, vue@^3.1.0-0, vue@^3.3.4:
+vue@^3.1.0, vue@^3.1.0-0, vue@^3.2.25, vue@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.3.4.tgz#8ed945d3873667df1d0fcf3b2463ada028f88bd6"
   integrity sha512-VTyEYn3yvIeY1Py0WaYGZsXnz3y5UnGi62GjVEqvEGPl6nxbOrCXbVOTQWBEJUqAyTUk2uJ5JLVnYJ6ZzGbrSw==
