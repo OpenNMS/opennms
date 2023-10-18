@@ -41,18 +41,22 @@ const nodeStructureStore = useNodeStructureStore()
 const searchTerm = ref('')
 const currentSelection = ref<ISelectItemType | undefined>(undefined)
 
-const onCurrentSearchUpdated = (item: string) => {
-  if (currentSelection.value?.value === 'ipAddress') {
-    if (!isIP(item)) {
-      // prevent search with invalid IP addresses, they'll just cause 500 errors
-      return
-    }
-    nodeStructureStore.setFilterWithIpAddress(item)
-  } else if ((currentSelection.value?.value as string || '').startsWith('snmp')) {
-    nodeStructureStore.setFilterWithSnmpParams((currentSelection.value?.value as string), item)
-  }
+const onCurrentSearchUpdated = (updatedValue: any) => {
+  const item = (updatedValue as string) ?? ''
 
-  updateQuery()
+  if (item) {
+    if (currentSelection.value?.value === 'ipAddress') {
+      if (!isIP(item)) {
+        // prevent search with invalid IP addresses, they'll just cause 500 errors
+        return
+      }
+      nodeStructureStore.setFilterWithIpAddress(item)
+    } else if ((currentSelection.value?.value as string || '').startsWith('snmp')) {
+      nodeStructureStore.setFilterWithSnmpParams((currentSelection.value?.value as string), item)
+    }
+
+    updateQuery()
+  }
 }
 
 const onSelectionUpdated: UpdateModelFunction = (selected: any) => {
