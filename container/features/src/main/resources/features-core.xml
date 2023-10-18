@@ -229,6 +229,12 @@
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
 
+    <feature name="log4j2" version="${log4j2Version}" description="Apache Log4J 2.x">
+        <bundle dependency="true">mvn:org.apache.logging.log4j/log4j-1.2-api/${log4j2Version}</bundle>
+        <bundle dependency="true">mvn:org.apache.logging.log4j/log4j-api/${log4j2Version}</bundle>
+        <bundle dependency="true">mvn:org.apache.logging.log4j/log4j-core/${log4j2Version}</bundle>
+    </feature>
+
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
         <!-- asm 9.2+ is needed for spifly 1.3.x -->
         <feature version="${asmVersion}">asm</feature>

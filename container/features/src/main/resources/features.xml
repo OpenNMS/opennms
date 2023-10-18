@@ -677,7 +677,12 @@
         <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
     </feature>
     <feature name="opennms-snmp" version="${project.version}" description="OpenNMS :: Core :: SNMP">
+        <feature>commons-io</feature>
+        <feature>commons-lang</feature>
+        <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>log4j2</feature>
         <feature>org.json</feature>
+        <feature>opennms-util</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>

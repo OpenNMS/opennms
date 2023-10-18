@@ -228,6 +228,7 @@
                           <feature>opennms-health</feature>
                           <feature>opennms-health-api</feature>
                           <feature>opennms-newts</feature>
+                          <feature>opennms-snmp</feature>
                           <feature>opennms-timeseries-api</feature>
 
                           <!-- minion features -->
@@ -237,6 +238,7 @@
                           <feature>opennms-dao-minion</feature>
                           <feature>opennms-trapd-listener</feature>
 
+                          <!-- sentinel features -->
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-timeseries-api</feature>
                       </features>

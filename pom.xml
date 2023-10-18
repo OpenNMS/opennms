@@ -1717,7 +1717,7 @@
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
-    <log4j2Version>2.20.0</log4j2Version>
+    <log4j2Version>2.21.0</log4j2Version>
     <logbackClassicVersion>1.2.12</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.4</mavenApiVersion>
@@ -1728,7 +1728,7 @@
     <netty4Version>4.1.95.Final</netty4Version>
     <newtsVersion>1.5.7</newtsVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
-    <paxLoggingVersion>2.0.14</paxLoggingVersion>
+    <paxLoggingVersion>2.0.19</paxLoggingVersion>
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
