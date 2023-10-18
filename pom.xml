@@ -1707,7 +1707,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.11</jschVersion>
-    <jsonVersion>20230618</jsonVersion>
+    <jsonVersion>20231013</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
