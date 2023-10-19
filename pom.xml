@@ -1687,8 +1687,8 @@
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.51.v20230217</jettyVersion>
-    <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
+    <jettyVersion>9.4.53.v20231009</jettyVersion>
+    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
@@ -1732,7 +1732,7 @@
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.95.Final</netty4Version>
+    <netty4Version>4.1.100.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
@@ -1771,7 +1771,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.10.3</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
