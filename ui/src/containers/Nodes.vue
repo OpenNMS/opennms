@@ -51,7 +51,7 @@ onMounted(() => {
   const prefs = loadNodePreferences()
 
   if (queryStringHasTrackedValues(route.query)) {
-    const nodeFilter = buildNodeQueryFilterFromQueryString(route.query, nodeStructureStore.categories)
+    const nodeFilter = buildNodeQueryFilterFromQueryString(route.query, nodeStructureStore.categories, nodeStructureStore.monitoringLocations)
 
     const newPrefs = {
       nodeColumns: prefs?.nodeColumns || [],

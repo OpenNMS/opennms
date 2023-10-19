@@ -212,7 +212,7 @@ const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
 const preferencesVisible = ref(false)
 const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
-const queryParameters = ref({ limit: 20, offset: 0, orderBy: 'label' } as QueryParameters)
+const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
 
 const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
@@ -223,11 +223,15 @@ const updatePageNumber = (page: number) => {
   pageNumber.value = page
   const pageSize = queryParameters.value.limit || 0
   queryParameters.value = { ...queryParameters.value, offset: (page - 1) * pageSize }
+  nodeStore.setNodeQueryParameters(queryParameters.value)
+
   updateQuery()
 }
 
 const updatePageSize = (size: number) => {
   queryParameters.value = { ...queryParameters.value, limit: size }
+  nodeStore.setNodeQueryParameters(queryParameters.value)
+
   updateQuery()
 }
 
@@ -302,7 +306,10 @@ const onNodeLinkClick = (nodeId: number | string) => {
 }
 
 const updateQuery = () => {
-  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParameters.value, nodeStructureStore.queryFilter)
+  // make sure anything setting nodeStore.nodeQueryParameters has been processed
+  nextTick()
+
+  const updatedParams = buildUpdatedNodeStructureQueryParameters(nodeStore.nodeQueryParameters, nodeStructureStore.queryFilter)
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)

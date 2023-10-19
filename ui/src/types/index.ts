@@ -501,13 +501,23 @@ export enum SetOperator {
   Intersection = 2
 }
 
+export interface NodeQuerySnmpParams {
+  snmpIfAlias: string
+  snmpIfDesc: string
+  snmpIfIndex: string
+  snmpIfName: string
+  snmpIfType: string
+}
+
 /** All components of a node structure query */
 export interface NodeQueryFilter {
   searchTerm: string
+  ipAddress?: string
   categoryMode: SetOperator
   selectedCategories: Category[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
+  snmpParams?: NodeQuerySnmpParams
 }
 
 export interface NodePreferences {

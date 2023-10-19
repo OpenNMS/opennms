@@ -6,11 +6,12 @@ import {
   NodeColumnSelectionItem,
   NodeQueryFilter,
   NodePreferences,
-  SetOperator
+  SetOperator,
+  NodeQuerySnmpParams
 } from '@/types'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 
-const { getDefaultNodeQueryFilter } = useNodeQuery()
+const { getDefaultNodeQueryFilter, getDefaultNodeQuerySnmpParams } = useNodeQuery()
 
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
@@ -30,7 +31,6 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const categoryCount = computed(() => categories.value.length)
   const monitoringLocations = ref<MonitoringLocation[]>([])
   const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
-
   const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
 
   const getCategories = async () => {
@@ -47,6 +47,27 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     if (resp) {
       monitoringLocations.value = resp.location
     }
+  }
+
+  const isSnmpParamSelected = (snmpParams?: NodeQuerySnmpParams) => {
+    if (!snmpParams) {
+      return false
+    }
+
+    const keys = Object.getOwnPropertyNames(snmpParams)
+
+    return keys.some(k => !!(snmpParams as any)[k]?.length)
+  }
+
+  const isAnyFilterSelected = () => {
+    return (
+      queryFilter.value.searchTerm?.length > 0 ||
+      queryFilter.value.selectedCategories.length > 0 ||
+      queryFilter.value.selectedFlows.length > 0 ||
+      queryFilter.value.selectedMonitoringLocations.length > 0 ||
+      !!queryFilter.value.ipAddress?.length ||
+      isSnmpParamSelected(queryFilter.value.snmpParams)
+    )
   }
 
   const resetColumnSelectionToDefault = async () => {
@@ -90,6 +111,34 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
   const setNodeColumnSelection = async (cols: NodeColumnSelectionItem[]) => {
     columns.value = [...cols]
+  }
+
+  /**
+   * Set filter with IP address, clearing out any SNMP params (currently these are mutually exclusive extended searches)
+  */
+  const setFilterWithIpAddress = async (ipAddress: string) => {
+    queryFilter.value = {
+      ...queryFilter.value,
+      ipAddress,
+      snmpParams: getDefaultNodeQuerySnmpParams()
+    }
+  }
+
+  /**
+   * Set filter with SNMP parameters, clearing out any IP addresses (currently these are mutually exclusive extended searches)
+  */
+  const setFilterWithSnmpParams = async (key: string, value: string) => {
+    // key should be an actual property of NodeQuerySnmpParams
+    const snmpParams = {
+      ...getDefaultNodeQuerySnmpParams(),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      ipAddress: '',
+      snmpParams
+    }
   }
 
   const updateNodeColumnSelection = async (column: NodeColumnSelectionItem) => {
@@ -148,6 +197,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
         filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
       }
+
+      if (prefs.nodeFilter.snmpParams) {
+        filter.snmpParams = { ...prefs.nodeFilter.snmpParams }
+      }
     }
 
     queryFilter.value = filter
@@ -163,8 +216,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     getCategories,
     getMonitoringLocations,
     getNodePreferences,
+    isAnyFilterSelected,
     resetColumnSelectionToDefault,
     setCategoryMode,
+    setFilterWithIpAddress,
+    setFilterWithSnmpParams,
     setFromNodePreferences,
     setNodeColumnSelection,
     setSearchTerm,

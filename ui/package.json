@@ -58,6 +58,7 @@
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "ip-regex": "^5.0.0",
+    "is-ip": "^5.0.1",
     "is-valid-domain": "^0.1.6",
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
