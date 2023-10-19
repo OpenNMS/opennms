@@ -145,21 +145,6 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     /**
-     * Returns the names of the dataousrces required to evaluate this threshold entity
-     *
-     * @return Collection of the names of datasources
-     */
-    public Collection<String> getRequiredDatasources() {
-        if (hasThresholds()) {
-            final Set<String> dataSources = new HashSet<String>();
-            dataSources.addAll(getThresholdConfig().getRequiredDatasources());
-            dataSources.addAll(getThresholdConfig().getFilterDatasources());
-            return dataSources;
-        } else {
-            throw new IllegalStateException("No thresholds have been added.");
-        }
-    }
-    /**
      * Returns a copy of this ThresholdEntity object.
      *
      * NOTE: The m_lowThreshold and m_highThreshold member variables are not
@@ -333,7 +318,7 @@ public final class ThresholdEntity implements Cloneable {
         return events;
     }
 
-    private Scope getScopeForResource(CollectionResourceWrapper resource) {
+    public Scope getScopeForResource(CollectionResourceWrapper resource) {
         // Default to empty scopes and then attempt to populate each of node, interface, and service
         // scopes below
         Scope[] scopes = new Scope[]{EmptyScope.EMPTY, EmptyScope.EMPTY, EmptyScope.EMPTY};

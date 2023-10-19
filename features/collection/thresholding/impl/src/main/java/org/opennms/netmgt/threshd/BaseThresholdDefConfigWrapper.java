@@ -76,20 +76,7 @@ public abstract class BaseThresholdDefConfigWrapper {
         }
         return null;
     }
-    
-    /**
-     * Returns the names of the datasources required from the resource filters
-     *
-     * @return Collection of the names of datasources
-     */
-    public List<String> getFilterDatasources() {
-        final List<String> dataSources = new ArrayList<>();
-        for (ResourceFilter s : getBasethresholddef().getResourceFilters()) {
-            dataSources.add(s.getField());
-        }
-        return dataSources;
-    }
-    
+
     /**
      * <p>getDatasourceExpression</p>
      *
