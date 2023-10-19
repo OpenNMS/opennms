@@ -113,6 +113,7 @@
       </div>
       <div class="card-body">
         <form method="post" name="deleteNode" action="admin/deleteSelNodes" onSubmit="return applyChanges();">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
           <div class="form-group">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" name="nodeCheck" id="nodeCheck" value='<%= nodeId %>'>
