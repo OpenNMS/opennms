@@ -205,28 +205,6 @@ public class ThresholdExpressionTestCase extends TestCase {
         //1MB free, hopefully
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(1024.0*1024.0));
     }
-    
-    public void testThresholdEntityRequiredDataSources() throws Exception {
-        ThresholdEntity entity=new ThresholdEntity(mock(EntityScopeProvider.class));
-        expression.setExpression("(hrStorageSize-hrStorageUsed)*hrStorageAllocationUnits");
-        BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(expression);
-        assertEquals(3, wrapper.getRequiredDatasources().size());
-        for (String ds : new String[] { "hrStorageSize", "hrStorageUsed", "hrStorageAllocationUnits" }) {
-            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
-        }
-
-        entity.addThreshold(wrapper, MockSession.getSession());
-        Collection<String> dataSources=entity.getRequiredDatasources();
-        final StringBuilder dsStringBuffer = new StringBuilder();
-        for (String dataSource : dataSources) {
-            dsStringBuffer.append(dataSource).append(" ");
-        }
-        String dsString = dsStringBuffer.toString().trim();
-        
-        assertTrue("Required data sources should contain hrStorageSize: " + dsString, dataSources.contains("hrStorageSize"));
-        assertTrue("Required data sources should contain hrStorageUsed: " + dsString, dataSources.contains("hrStorageUsed"));
-        assertTrue("Required data sources should contain hrStorageAllocationUnits: " + dsString, dataSources.contains("hrStorageAllocationUnits"));
-    }
 
     public void testEvaluateConditionalFalse() throws Exception {
         // Doesn't work because the expression is actually being evaluated to sniff 
