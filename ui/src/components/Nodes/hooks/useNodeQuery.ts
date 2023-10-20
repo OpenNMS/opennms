@@ -1,3 +1,4 @@
+import { isConvertibleToInteger } from '@/lib/utils'
 import {
   Category,
   MonitoringLocation,
@@ -19,7 +20,7 @@ export const useNodeQuery = () => {
   const getDefaultNodeQuerySnmpParams = () => {
     return {
       snmpIfAlias: '',
-      snmpIfDesc: '',
+      snmpIfDescription: '',
       snmpIfIndex: '',
       snmpIfName: '',
       snmpIfType: ''
@@ -61,13 +62,16 @@ export const useNodeQuery = () => {
     'flows',
     'ipAddress',
     'iplike',
+    'listInterfaces',
+    'monitoredService',
     'monitoringLocation',
     'nodeLabel',
     'nodename',
     'snmpifalias',
-    'snmpifdesc',
+    'snmpifdescription',
     'snmpifindex',
     'snmpifname',
+    'snmpMatchType',
     'snmpphysaddr'
   ])
 
@@ -210,28 +214,46 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
   return ''
 }
 
+const getSnmpSearchTerm = (name: string, field: any) => {
+  const fieldStr = (field as string) || ''
+
+  return `snmpInterface.${name}==${fieldStr}`
+}
+
+const isValidParam = (value: string) => {
+  return !!value && !!value.trim()
+}
+
+const isValidIntegerParam = (value: string) => {
+  return isValidParam(value) && isConvertibleToInteger(value.trim())
+}
+
+/**
+ * Note, FIQL / SNMP search does not currently support 'like' or 'contains' matches, so we always
+ * do an 'equals' (exact match) search.
+ */
 const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
   if (snmpParams) {
     const arr: string[] = []
 
-    if (snmpParams.snmpIfAlias) {
-      arr.push(`snmpInterface.ifAlias==${snmpParams.snmpIfAlias}`)
+    if (isValidParam(snmpParams.snmpIfAlias)) {
+      arr.push(getSnmpSearchTerm('ifAlias', snmpParams.snmpIfAlias))
     }
 
-    if (snmpParams.snmpIfDesc) {
-      arr.push(`snmpInterface.ifDesc==${snmpParams.snmpIfDesc}`)
+    if (isValidParam(snmpParams.snmpIfDescription)) {
+      arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription))
     }
 
-    if (snmpParams.snmpIfIndex) {
-      arr.push(`snmpInterface.ifIndex==${snmpParams.snmpIfIndex}`)
+    if (isValidIntegerParam(snmpParams.snmpIfIndex)) {
+      arr.push(getSnmpSearchTerm('ifIndex', snmpParams.snmpIfIndex))
     }
 
-    if (snmpParams.snmpIfName) {
-      arr.push(`snmpInterface.ifName==${snmpParams.snmpIfName}`)
+    if (isValidParam(snmpParams.snmpIfName)) {
+      arr.push(getSnmpSearchTerm('ifName', snmpParams.snmpIfName))
     }
 
-    if (snmpParams.snmpIfType) {
-      arr.push(`snmpInterface.ifType==${snmpParams.snmpIfType}`)
+    if (isValidIntegerParam(snmpParams.snmpIfType)) {
+      arr.push(getSnmpSearchTerm('ifType', snmpParams.snmpIfType))
     }
 
     if (arr.length > 0) {
