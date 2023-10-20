@@ -80,6 +80,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() {
+        LOG.info("ClassificationRulePageIT.setUp()");
         uiPage = new Page(getBaseUrlInternal());
         expectedTabs = Lists.newArrayList(
                 new Tab(uiPage, Tabs.SETTINGS, "Settings", 0, false),
@@ -92,8 +93,10 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyTabs() {
+        LOG.info("ClassificationRulePageIT.verifyTabs()");
         // Verify expectation
         for (Tab expectedTab : expectedTabs) {
+            LOG.info("ClassificationRulePageIT.verifyTabs() expectedTab={}", expectedTab);
             Tab actualTab = uiPage.getTab(expectedTab.getName());
             assertThat(expectedTab.getCount(), is(actualTab.getCount()));
             assertThat(expectedTab.getName(), is(actualTab.getName()));
@@ -111,12 +114,14 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifySettingsTab() {
+        LOG.info("ClassificationRulePageIT.verifySettingsTab()");
         // Load tab
         SettingsTab settings = new SettingsTab(uiPage).click();
 
         // Verify 2 groups are shown (atm only 2 are supported)
         assertThat(settings.getGroups(), hasSize(2));
 
+        LOG.info("ClassificationRulePageIT.verifySettingsTab(): user-defined");
         // Verify user-defined group
         settings = new SettingsTab(uiPage).click();
         Group userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED);
@@ -124,6 +129,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(userDefinedGroup.isEnabled(), is(true));
         assertThat(userDefinedGroup.getPosition(), is(0));
 
+        LOG.info("ClassificationRulePageIT.verifySettingsTab(): pre-defined");
         // Verify pre-defined group
         settings = new SettingsTab(uiPage).click();
         Group preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED);
@@ -131,6 +137,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(preDefinedGroup.isEnabled(), is(true));
         assertThat(preDefinedGroup.getPosition(), is(1));
 
+        LOG.info("ClassificationRulePageIT.verifySettingsTab(): disabled");
         // Verify disable groups
         userDefinedGroup.setEnabled(false);
         preDefinedGroup.setEnabled(false);
@@ -141,6 +148,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(preDefinedGroup.isEnabled(), is(false));
         assertThat(uiPage.getTabs(), hasSize(1));
 
+        LOG.info("ClassificationRulePageIT.verifySettingsTab(): enabled");
         // Verify enable groups
         userDefinedGroup.setEnabled(true);
         preDefinedGroup.setEnabled(true);
@@ -150,6 +158,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(userDefinedGroup.isEnabled(), is(true));
         assertThat(preDefinedGroup.isEnabled(), is(true));
 
+        LOG.info("ClassificationRulePageIT.verifySettingsTab(): refresh");
         // Verify refresh
         settings = new SettingsTab(uiPage).click();
         settings.refresh();
@@ -159,9 +168,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyRuleCRUD() {
+        LOG.info("ClassificationRulePageIT.verifyRuleCRUD()");
         final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
         assertThat(groupTab.isEmpty(), is(true));
 
+        LOG.info("ClassificationRulePageIT.verifyRuleCRUD(): create");
         // Create dummy group
         groupTab.addNewRule(new RuleDTOBuilder()
                 .withName("http")
@@ -181,6 +192,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(rule.getSrcPort(), is(""));
         assertThat(rule.getExporterFilter(), is(""));
 
+        LOG.info("ClassificationRulePageIT.verifyRuleCRUD(): edit");
         // Edit rule
         groupTab.editRule(rule.getPosition(),
                 createFrom(rule)
@@ -194,6 +206,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                 .build()
         );
 
+        LOG.info("ClassificationRulePageIT.verifyRuleCRUD(): cancel");
         // Edit, but cancel
         groupTab.editModal(0).setInput(createFrom(rule).build()).cancel();
 
@@ -207,6 +220,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(modifiedRule.getSrcPort(), is("55557"));
         assertThat(modifiedRule.getExporterFilter(), is("categoryName == 'Routers'"));
 
+        LOG.info("ClassificationRulePageIT.verifyRuleCRUD(): delete");
         // Delete rule
         groupTab.deleteGroup(rule.getPosition());
         assertThat(groupTab.getRules(), hasSize(0));
@@ -214,11 +228,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyRulePaginationAndDeleteAll() {
+        LOG.info("ClassificationRulePageIT.verifyRulePaginationAndDeleteAll()");
         // Navigate to group
         final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
         assertThat(groupTab.isEmpty(), is(true));
         assertThat(groupTab.isEditable(), is(true));
 
+        LOG.info("ClassificationRulePageIT.verifyRulePaginationAndDeleteAll(): create dummy rules");
         // Insert dummy rules
         final int NUMBER_OF_RULES = 42;
         for (int i=0; i<NUMBER_OF_RULES; i++) {
@@ -229,6 +245,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             groupTab.addNewRule(rule);
         }
 
+        LOG.info("ClassificationRulePageIT.verifyRulePaginationAndDeleteAll(): iterate rules");
         // Iterate through pages
         final int ITEMS_PER_PAGE = 20; //defined in ui
         final int NUMBER_OF_PAGES = NUMBER_OF_RULES / ITEMS_PER_PAGE;
@@ -245,6 +262,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             assertThat(groupTab.getRules(), hasSize(i < NUMBER_OF_PAGES ? ITEMS_PER_PAGE : ITEMS_LAST_PAGE));
         }
 
+        LOG.info("ClassificationRulePageIT.verifyRulePaginationAndDeleteAll(): delete rules");
         // Delete all afterwards
         groupTab.deleteAll();
         assertThat(groupTab.isEmpty(), is(true));
@@ -253,6 +271,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifySearch() {
+        LOG.info("ClassificationRulePageIT.verifySearch()");
         final GroupTab tab = new GroupTab(uiPage, Tabs.PRE_DEFINED).click();
         tab.search("icmpd");
 
@@ -281,6 +300,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyClassification() {
+        LOG.info("ClassificationRulePageIT.verifyClassification()");
         final ClassificationRequestDTO classificationRequestDTO = new ClassificationRequestDTO();
         classificationRequestDTO.setSrcAddress("127.0.0.1");
         classificationRequestDTO.setSrcPort("55556");
@@ -289,13 +309,16 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequestDTO.setProtocol("tcp");
         classificationRequestDTO.setExporterAddress("10.0.0.5");
 
+        LOG.info("ClassificationRulePageIT.verifyClassification(): http");
         // try http
         uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("http"));
 
+        LOG.info("ClassificationRulePageIT.verifyClassification(): http-alt");
         // try http-alt
         classificationRequestDTO.setDstPort("8080");
         uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("http-alt"));
 
+        LOG.info("ClassificationRulePageIT.verifyClassification(): no mapping");
         // try no mapping found
         classificationRequestDTO.setDstPort("12");
         uiPage.classifyAndWaitUntilAsserted(classificationRequestDTO, responseIsAssertion("No mapping found"));
@@ -303,6 +326,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyReadOnlyGroup() {
+        LOG.info("ClassificationRulePageIT.verifyReadOnlyGroup()");
         // Navigate to pre-defined rules, which are readonly by default
         final GroupTab groupTab = new GroupTab(uiPage, Tabs.PRE_DEFINED).click();
 
@@ -310,6 +334,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(groupTab.isEditable(), is(false));
         assertThat(groupTab.isEmpty(), is(false));
 
+        LOG.info("ClassificationRulePageIT.verifyReadOnlyGroup(): iterate");
         // iterate over existing rules, but not more than 5 and verify it is actually not editable
         int ruleCount = groupTab.getRules().size();
         for (int i=0; i < Math.min(5, ruleCount); i++) {
@@ -322,6 +347,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
     // See NMS-9880
     @Test
     public void verifyErrorMessageReset() {
+        LOG.info("ClassificationRulePageIT.verifyErrorMessageReset()");
         final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
         classificationRequest.setSrcAddress("127.0.0.1");
         classificationRequest.setSrcPort("55557");
@@ -330,6 +356,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequest.setDstPort("X"); // invalid
         classificationRequest.setProtocol("tcp");
 
+        LOG.info("ClassificationRulePageIT.verifyErrorMessageReset(): classification fails");
         // try classification, should fail
         uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
             // Error should be displayed, but response should not
@@ -337,6 +364,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             assertThat(false, is(driver.findElement(By.id("classification-response")).isDisplayed()));
         });
 
+        LOG.info("ClassificationRulePageIT.verifyErrorMessageReset(): fix and retry");
         // fix classification request and retry
         classificationRequest.setDstPort("80");
         uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
@@ -345,6 +373,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             assertThat(true, is(driver.findElement(By.id("classification-response")).isDisplayed()));
         });
 
+        LOG.info("ClassificationRulePageIT.verifyErrorMessageReset(): invalid request and try again");
         // make an invalid request and try again
         classificationRequest.setDstPort("x");
         uiPage.classifyAndWaitUntilAsserted(classificationRequest, () -> {
@@ -356,6 +385,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifySrcValues() {
+        LOG.info("ClassificationRulePageIT.verifySrcValues()");
         // Add custom rules
         final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
         groupTab.addNewRule(new RuleDTOBuilder()
@@ -378,9 +408,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         classificationRequest.setDstPort("8980");
         classificationRequest.setProtocol("tcp");
 
+        LOG.info("ClassificationRulePageIT.verifySrcValues(): no match");
         // Src Address does not match, so OpenNMS should be the result
         uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS"));
 
+        LOG.info("ClassificationRulePageIT.verifySrcValues(): match");
         // Update srcAddress
         classificationRequest.setSrcAddress("10.0.0.5");
         uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS Monitoring"));
@@ -388,6 +420,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyExporterFilter() {
+        LOG.info("ClassificationRulePageIT.verifyExporterFilter()");
         try {
             // Add requisition to use exporter filter (otherwise no exporter nodes exist)
             final String requisitionXML = "<model-import foreign-source=\"" + REQUISITION_NAME + "\">" +
@@ -402,6 +435,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
                     "</model-import>";
             createRequisition(REQUISITION_NAME , requisitionXML, 1);
 
+            LOG.info("ClassificationRulePageIT.verifyExporterFilter(): add custom rules");
             // Add custom rules
             final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
             groupTab.addNewRule(new RuleDTOBuilder()
@@ -426,9 +460,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             classificationRequest.setDstPort("8980");
             classificationRequest.setProtocol("tcp");
 
+            LOG.info("ClassificationRulePageIT.verifyExporterFilter(): matched filter");
             // exporter filter should apply
             uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("test"));
 
+            LOG.info("ClassificationRulePageIT.verifyExporterFilter(): unmatched filter");
             // update exporter address and have exporterFilter not apply
             classificationRequest.setExporterAddress("10.0.0.5");
             uiPage.classifyAndWaitUntilAsserted(classificationRequest, responseIsAssertion("OpenNMS"));
