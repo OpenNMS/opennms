@@ -58,10 +58,10 @@ Also includes service detection and policy results.
 
 == Provisiond thread configuration
 
-Provisiond uses for a few thread pools for managing various tasks.
-These can be configured via the Web UI by going to menu:Info[External Requisitions] in the top menu bar.
+Provisiond uses for a few thread pools to manage various tasks.
+You can configure these via the Web UI by selecting menu:Info[External Requisitions] in the top menu bar.
 
-NOTE: Any changes to the thread pools requires a restart of the {page-component-title} service to apply the new thread limits.
+NOTE: Any changes to the thread pools require a restart of the {page-component-title} service to apply the new thread limits.
 
 
 .Provisiond thread pool descriptions
