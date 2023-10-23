@@ -1820,7 +1820,7 @@
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
-    <xmlschemaVersion>2.3.0</xmlschemaVersion>
+    <xmlschemaVersion>2.3.1</xmlschemaVersion>
 
     <re2jVersion>1.7</re2jVersion>
 
