@@ -1,5 +1,6 @@
 import {
   Category,
+  MatchType,
   MonitoringLocation,
   NodeQuerySnmpParams,
   SetOperator
@@ -101,16 +102,18 @@ export const parseIplike = (queryObject: any) => {
 
 export const parseSnmpParams = (queryObject: any) => {
   const snmpIfAlias = queryObject.snmpifalias as string || ''
-  const snmpIfDesc = queryObject.snmpifdesc as string || ''
+  const snmpIfDescription = queryObject.snmpifdescription as string || ''
   const snmpIfIndex = queryObject.snmpifindex as string || ''
   const snmpIfName = queryObject.snmpifname as string || ''
+  const snmpMatchType = (queryObject.snmpMatchType as string) === 'contains' ? MatchType.Contains : MatchType.Equals
 
-  if (snmpIfAlias || snmpIfDesc || snmpIfIndex || snmpIfName) {
+  if (snmpIfAlias || snmpIfDescription || snmpIfIndex || snmpIfName) {
     return {
       snmpIfAlias,
-      snmpIfDesc,
+      snmpIfDescription,
       snmpIfIndex,
-      snmpIfName
+      snmpIfName,
+      snmpMatchType
     } as NodeQuerySnmpParams
   }
 

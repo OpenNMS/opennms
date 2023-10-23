@@ -20,42 +20,35 @@
 import { isIP } from 'is-ip'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { useNodeQuery } from './hooks/useNodeQuery'
-import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeQueryFilter, UpdateModelFunction } from '@/types'
 
 const searchOptions: ISelectItemType[] = [
   { title: 'IP Address', value: 'ipAddress' },
   { title: 'SNMP Alias', value: 'snmpIfAlias' },
-  { title: 'SNMP Description', value: 'snmpIfDesc' },
+  { title: 'SNMP Description', value: 'snmpIfDescription' },
   { title: 'SNMP Index', value: 'snmpIfIndex' },
   { title: 'SNMP Name', value: 'snmpIfName' },
   { title: 'SNMP Type', value: 'snmpIfType' }
 ]
-const snmpKeys = ['snmpIfAlias', 'snmpIfDesc', 'snmpIfIndex', 'snmpIfName', 'snmpIfType']
+const snmpKeys = ['snmpIfAlias', 'snmpIfDescription', 'snmpIfIndex', 'snmpIfName', 'snmpIfType']
 
-const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
-const nodeStore = useNodeStore()
 const nodeStructureStore = useNodeStructureStore()
 const searchTerm = ref('')
 const currentSelection = ref<ISelectItemType | undefined>(undefined)
 
 const onCurrentSearchUpdated = (updatedValue: any) => {
   const item = (updatedValue as string) ?? ''
+  const curSel = currentSelection.value?.value as string || ''
 
-  if (item) {
-    if (currentSelection.value?.value === 'ipAddress') {
-      if (!isIP(item)) {
-        // prevent search with invalid IP addresses, they'll just cause 500 errors
-        return
-      }
+  if (curSel === 'ipAddress') {
+    if ((item === '' || isIP(item)) && item != nodeStructureStore.queryFilter.ipAddress) {
       nodeStructureStore.setFilterWithIpAddress(item)
-    } else if ((currentSelection.value?.value as string || '').startsWith('snmp')) {
+    }
+  } else if (curSel.startsWith('snmp')) {
+    if (!nodeStructureStore.queryFilter.snmpParams || ((nodeStructureStore.queryFilter.snmpParams as any)[curSel] !== item)) {
       nodeStructureStore.setFilterWithSnmpParams((currentSelection.value?.value as string), item)
     }
-
-    updateQuery()
   }
 }
 
@@ -65,8 +58,6 @@ const onSelectionUpdated: UpdateModelFunction = (selected: any) => {
   } else if ((selected.value as string || '').startsWith('snmp')) {
     nodeStructureStore.setFilterWithSnmpParams(selected.value, searchTerm.value)
   }
-
-  updateQuery()
 }
 
 // helper used in getOptionFromFilter
@@ -103,22 +94,21 @@ const getOptionFromFilter = (queryFilter: NodeQueryFilter) => {
   return undefined
 }
 
-const updateQuery = () => {
-  // make sure anything setting nodeStore.nodeQueryParameters has been processed
-  nextTick()
-  const updatedParams = buildUpdatedNodeStructureQueryParameters(nodeStore.nodeQueryParameters, nodeStructureStore.queryFilter)
-
-  nodeStore.getNodes(updatedParams, true)
-}
-
 const updateFromStore = () => {
   const option = getOptionFromFilter(nodeStructureStore.queryFilter)
 
   if (option) {
-    searchTerm.value = option.value
-    currentSelection.value = option.searchOption
+    if (option.value !== searchTerm.value) {
+      searchTerm.value = option.value
+    }
+
+    if (currentSelection.value !== option.searchOption) {
+      currentSelection.value = option.searchOption
+    }
   } else {
-    searchTerm.value = ''
+    if (searchTerm.value !== '') {
+      searchTerm.value = ''
+    }
   }
 }
 

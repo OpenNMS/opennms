@@ -501,12 +501,18 @@ export enum SetOperator {
   Intersection = 2
 }
 
+export enum MatchType {
+  Equals = 1,
+  Contains = 2
+}
+
 export interface NodeQuerySnmpParams {
   snmpIfAlias: string
-  snmpIfDesc: string
+  snmpIfDescription: string
   snmpIfIndex: string
   snmpIfName: string
   snmpIfType: string
+  snmpMatchType: MatchType
 }
 
 /** All components of a node structure query */
