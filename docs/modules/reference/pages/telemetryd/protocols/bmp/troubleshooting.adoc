@@ -1,0 +1,10 @@
+
+= Troubleshooting BMP
+
+Debug and trigger statistics
+
+[]
+----
+admin@opennms()> log:set DEBUG org.opennms.netmgt.telemetry.protocols.bmp
+admin@opennms()> bmp-stats-update
+----
