@@ -28,8 +28,6 @@
 
 package org.opennms.web.utils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.taglibs.standard.lang.support.ExpressionEvaluatorManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,21 +35,23 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
+import java.util.HashSet;
 
 public class Bootstrap {
 
     private final PageContext pageContext;
 
-    private final List<String> headTitles = Lists.newArrayList();
+    private final List<String> headTitles = new ArrayList<>();
 
-    private final List<Breadcrumb> breadcrumbs = Lists.newArrayList();
+    private final List<Breadcrumb> breadcrumbs = new ArrayList<>();
 
     private String ngApp;
     private String scrollSpy;
 
-    private Set<String> flags = Sets.newHashSet();
+    private Set<String> flags = new HashSet<>();
 
     private Bootstrap(final PageContext pageContext) {
         this.pageContext = Objects.requireNonNull(pageContext);
