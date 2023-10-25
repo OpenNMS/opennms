@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -82,34 +84,46 @@ public class SpringSecurityContextServiceTest {
 
 	@Test
 	public void testUserCredentials() {
-		assertTrue("Check if user name is opennms.",
-				"opennms".equals(this.m_securityContextService
-						.getUsername()));
-		assertFalse("Check if unknown is a not valid user name.",
-				"unknown".equals(this.m_securityContextService
-						.getUsername()));
-		assertTrue("Check if password is correct.",
-				PASS.equals(this.m_securityContextService.getPassword()));
-		assertFalse("Check if wrong_pass is not correct.",
-				"wrong_pass".equals(PASS));
+		assertEquals("Check if user name is opennms.",
+		        "opennms", this.m_securityContextService.getUsername());
+		assertNotEquals("Check if unknown is a not valid user name.",
+				"unknown", this.m_securityContextService.getUsername());
+		assertEquals("Check if password is correct.",
+				PASS, this.m_securityContextService.getPassword());
+		assertNotEquals("Check if wrong_pass is not correct.",
+				"wrong_pass", PASS);
 	}
 
-	@Test
-	public void testUserRoles() {
-		assertTrue("Check if user is in " + ROLE_ADMIN,
-				this.m_securityContextService.hasRole(ROLE_ADMIN
-						.toString()));
-		assertTrue("Check if user is in " + ROLE_PROVISION,
-				this.m_securityContextService.hasRole(ROLE_PROVISION
-						.toString()));
-		assertFalse("Check if user is not in " + ROLE_USER,
-				this.m_securityContextService.hasRole(ROLE_USER
-						.toString()));
-		assertFalse("Check if user is not in " + ROLE_ANONYMOUS,
-				this.m_securityContextService.hasRole(ROLE_ANONYMOUS
-						.toString()));
-		assertFalse("Check if user is not in " + ROLE_DASHBOARD,
-				this.m_securityContextService.hasRole(ROLE_DASHBOARD
-						.toString()));
-	}
+    @Test
+    public void testUserRoles() {
+        assertTrue("Check if user is in " + ROLE_ADMIN,
+                this.m_securityContextService.hasRole(ROLE_ADMIN
+                        .toString()));
+        assertTrue("Check if user is in " + ROLE_PROVISION,
+                this.m_securityContextService.hasRole(ROLE_PROVISION
+                        .toString()));
+        assertFalse("Check if user is not in " + ROLE_USER,
+                this.m_securityContextService.hasRole(ROLE_USER
+                        .toString()));
+        assertFalse("Check if user is not in " + ROLE_ANONYMOUS,
+                this.m_securityContextService.hasRole(ROLE_ANONYMOUS
+                        .toString()));
+        assertFalse("Check if user is not in " + ROLE_DASHBOARD,
+                this.m_securityContextService.hasRole(ROLE_DASHBOARD
+                        .toString()));
+    }
+
+    @Test
+    public void testUserRolesLowerCase() {
+        assertTrue("Check if user is in " + ROLE_ADMIN,
+                this.m_securityContextService.hasRole("admin"));
+        assertTrue("Check if user is in " + ROLE_PROVISION,
+                this.m_securityContextService.hasRole("provision"));
+        assertFalse("Check if user is not in " + ROLE_USER,
+                this.m_securityContextService.hasRole("user"));
+        assertFalse("Check if user is not in " + ROLE_ANONYMOUS,
+                this.m_securityContextService.hasRole("anonymous"));
+        assertFalse("Check if user is not in " + ROLE_DASHBOARD,
+                this.m_securityContextService.hasRole("dashboard"));
+    }
 }

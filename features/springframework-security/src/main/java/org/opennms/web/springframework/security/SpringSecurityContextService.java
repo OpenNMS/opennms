@@ -64,17 +64,9 @@ public class SpringSecurityContextService implements SecurityContextService {
 	}
 	
 	@Override
-	public boolean hasRole(String role) {
-		boolean hasRole = false;
-		UserDetails userDetails = getUserDetails();
-		if (userDetails != null) {
-
-			Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-			if (isRolePresent(authorities, role)) {
-				hasRole = true;
-			}
-		}
-		return hasRole;
+	public boolean hasRole(final String role) {
+	    final var authorities = getUserDetails().getAuthorities();
+		return isRolePresent(authorities, role);
 	}
 
 	@Override
@@ -93,12 +85,20 @@ public class SpringSecurityContextService implements SecurityContextService {
 	 * @return true if role is present, otherwise false
 	 */
 	private boolean isRolePresent(Collection<? extends GrantedAuthority> authorities, String role) {
-		boolean isRolePresent = false;
-		for (GrantedAuthority grantedAuthority : authorities) {
-			isRolePresent = grantedAuthority.getAuthority().equals(role);
-			if (isRolePresent)
-				break;
+		for (final GrantedAuthority grantedAuthority : authorities) {
+	        final var ucRole = role.toUpperCase();
+	        final var authority = grantedAuthority.getAuthority().toUpperCase();
+	        if (authority.equals(ucRole)) {
+	            return true;
+	        }
+	        if (authority.equals("ROLE_" + ucRole)) {
+	            return true;
+	        }
+	        if (ucRole.equals("ROLE_" + authority)) {
+	            return true;
+	        }
 		}
-		return isRolePresent;
+		return false;
 	}
+
 }

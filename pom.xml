@@ -1750,6 +1750,7 @@
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.6.0</kafkaVersion>
+    <keycloakVersion>23.0.6</keycloakVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
