@@ -34,13 +34,15 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Import/Export Assets" />
-  <jsp:param name="headTitle" value="Import/Export" />
-  <jsp:param name="headTitle" value="Assets" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Import/Export Assets" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Import/Export")
+          .headTitle("Assets")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Import/Export Assets")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-6">

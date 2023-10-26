@@ -1,7 +1,9 @@
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Log out" />
-  <jsp:param name="nonavbar" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .flags("nonavbar")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core' %>
 <%--
 /*******************************************************************************

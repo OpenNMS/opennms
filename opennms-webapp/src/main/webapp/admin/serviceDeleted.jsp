@@ -89,14 +89,16 @@
   <c:param name="intf" value="<%=ipAddr%>"/>
 </c:url>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Service" />
-  <jsp:param name="headTitle" value="<%= headTitle %>" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${nodeLink}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${interfaceLink}'>Interface</a>" />
-  <jsp:param name="breadcrumb" value="Service Deleted" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(headTitle)
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Interface", "${interfaceLink}")
+          .breadcrumb("Service Deleted")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

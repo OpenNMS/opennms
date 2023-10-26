@@ -30,15 +30,16 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Resource Graphs" />
-  <jsp:param name="ngapp" value="onms-resources" />
-  <jsp:param name="headTitle" value="Resource Graphs" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="location" value="performance" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="Resource Graphs" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Resource Graphs")
+          .headTitle("Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Resource Graphs")
+          .ngApp("onms-resources")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="container-fluid" ng-controller="NodeListCtrl">
 

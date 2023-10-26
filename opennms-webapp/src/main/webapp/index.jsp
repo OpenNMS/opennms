@@ -28,11 +28,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%><jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Web Console" />
-	<jsp:param name="useionicons" value="true" />
-	<jsp:param name="ngapp" value="onms.default.apps" />
-</jsp:include>
+--%><%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .ngApp("onms.default.apps")
+          .flags("useionicons")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
 	<!-- Left Column -->

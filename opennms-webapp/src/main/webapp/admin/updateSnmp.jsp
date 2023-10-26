@@ -89,15 +89,17 @@
   <c:param name="intf" value="<%=ipAddr%>"/>
 </c:url>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Update SNMP Information" />
-  <jsp:param name="headTitle" value="Rescan" />
-  <jsp:param name="headTitle" value="SNMP Information" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
-  <jsp:param name="breadcrumb" value="Update SNMP Information" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Rescan")
+          .headTitle("SNMP Information")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Interface", "${interfaceLink}")
+          .breadcrumb("Update SNMP Information")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">
