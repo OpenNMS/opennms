@@ -1,0 +1,230 @@
+---
+# Sentinel configuration schema
+#
+# See the readme SENTINEL_CONFIG_SCHEMA_README.md for more information.
+
+# Version of Minion this schema configuration is applicable to
+version: "@VERSION@"
+revision: "@REVISION@"
+branch: "@BRANCH@"
+buildnumber: @BUILD_NUMBER@
+
+# The root set of categories configurable on a Sentinel container. Ordering here is used only to determine order for
+# display purposes.
+categories:
+  # General
+  - name: "general"
+    label: "General"
+    description: "Generic Minion configuration settings"
+    config:
+      - name: "instance-id"
+        type:
+          name: "string"
+          validation: "TODO"
+        label: "Core instance ID"
+        description: "Identifier for core instance used as queue prefix in message broker"
+        key: "/org.opennms.instance.id"
+        example: "OpenNMS"
+      - name: "system-properties"
+        type:
+          name: "properties"
+        label: "System Properties"
+        description: "Generic Java system properties"
+        key: "/system/properties"
+        example: "JAEGER_AGENT_HOST: my-jaeger-host"
+      - name: "server-certificates"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Certificate Name"
+            type:
+              name: "string"
+        label: "Server Certificates"
+        description: "TLS certificates for public communication endpoints"
+        key: "/server-certs"
+        example: "TODO"
+    categories:
+      # General :: Controller
+      - name: "controller"
+        label: "Sentinel Controller"
+        description: "Sentinel controller configuration for a location and communication endpoints"
+        config:
+          - name: "location"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Location"
+            description: "Name of location where Sentinel is deployed"
+            key: "/location"
+            example: "my-remote-office-nyc"
+          - name: "id"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Minion Id"
+            description: "Unique Sentinel identifier in the location"
+            key: "/id"
+            example: "id: my-minion-nyc"
+          - name: "broker-url"
+            type:
+              name: "url"
+            label: "Message broker URL"
+            description: "Message broker connection URL"
+            key: "/broker-url"
+            example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
+  # Java Agent
+  - name: "java"
+    label: "Java"
+    description: "Java configuration parameters."
+    categories:
+  # Minion Environment
+  - name: "environment"
+    label: "Environment"
+    description: "Sentinel Java environment settings"
+    config:
+      - name: "java-opts"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Option"
+            type:
+              name: "string"
+        label: "JVM Options"
+        description: "Additional Java options"
+        key: "/process-env/java-opts"
+        example: "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896"
+  # IPC Configuration
+  - name: "ipc"
+    label: "IPC"
+    description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
+    categories:
+      # IPC Configuration :: Sink
+      - name: "sink"
+        label: "Sink"
+        description: "Message sink configuration"
+        config:
+          - name: "offheap"
+            type:
+              name: "properties"
+            label: "Off Heap"
+            description: "Configuration for off-heap storage for sink messages"
+            key: "/ipc/sink/offheap"
+            example: "offHeapSize: 1GB"
+      # IPC Configuration :: Kafka IPC
+      - name: "kafka"
+        label: "Kafka IPC"
+        description: "Configuration settings for Kafka IPC"
+        config:
+          - name: "bootstrap-servers"
+            type:
+              name: "collection"
+              strategy: "concat"
+              items:
+                label: "Server"
+                type:
+                  name: "host-with-port"
+                separator: ","
+            label: "Bootstrap Servers"
+            description: "Kafka bootstrap servers"
+            key: "/ipc/kafka/bootstrap.servers"
+            example: "kafka-01-ip:9092, kafka-02-ip:9092"
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Additional Kafka configuration properties"
+            key: "/ipc/kafka"
+            example: "compression.type: gzip"
+
+  # Telemetry
+  - name: "telemetry"
+    label: "Telemetry"
+    description: "Telemetry daemon configuration"
+    categories:
+      # Telemetry :: Flows
+      - name: "flows"
+        label: "Flows"
+        description: "Configuration for network flow collectors"
+        config:
+          - name: "flow-listener-def"
+            type:
+              name: "objects"
+              fields:
+                - name: "listener-name"
+                  label: "Listener Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "class-name"
+                  label: "Class Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "parameters"
+                  label: "Parameters"
+                  type:
+                    name: "properties"
+                - name: "parsers"
+                  label: "Flow Parser Definition"
+                  type:
+                    name: "objects"
+                    fields:
+                      - name: "name"
+                        label: "Parser Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "class-name"
+                        label: "Class Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "parameters"
+                        label: "Parameters"
+                        type:
+                          name: "properties"
+                    index-type: "field"
+                    index-field: "name"
+              index-type: "field"
+              index-field: "listener-name"
+            label: "Flow Listener Definition"
+            description: "Configure listener for network flow packets"
+            key: "/telemetry/flows/listeners"
+            example: "TODO"
+        categories:
+          # Telemetry :: Flows :: Single Port Listener
+          - name: "single-port-listener"
+            label: "Single Port Listener"
+            description: "Configuration for single port flow listener"
+            config:
+              - name: "enabled"
+                type:
+                  name: "boolean"
+                label: "Enable Single Port Listener"
+                description: "Enable or disable the single port flow listener."
+                key: "/telemetry/flows/single-port-listener/enabled"
+                example: "true"
+              - name: "name"
+                type:
+                  name: "string"
+                  validation: "TODO"
+                label: "Name"
+                description: "Single port listener name"
+                key: "/telemetry/flows/single-port-listener/name"
+                example: "Name for the single port listener."
+              - name: "parameters"
+                type:
+                  name: "properties"
+                label: "Parameters"
+                description: "Configuration parameter for the single port listener"
+                key: "/telemetry/flows/single-port-listener/parameters"
+                example: "port: 50000"
+              - name: "parser-parameters"
+                type:
+                  name: "properties"
+                label: "Parser Parameters"
+                description: "Flow packet parser configuration parameters"
+                key: "/telemetry/flows/single-port-listener/parser-parameters"
+                example: "queue: Netflow-9"
