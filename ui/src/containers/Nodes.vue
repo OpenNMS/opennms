@@ -46,10 +46,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-onMounted(() => {
-  // load any saved preferences
-  const prefs = loadNodePreferences()
-
+const handleQuery = (prefs: NodePreferences | null) => {
   if (queryStringHasTrackedValues(route.query)) {
     const nodeFilter = buildNodeQueryFilterFromQueryString(route.query, nodeStructureStore.categories, nodeStructureStore.monitoringLocations)
 
@@ -62,12 +59,28 @@ onMounted(() => {
 
     // TODO: Save prefs???
     router.replace({ name: 'Nodes' })
+    return true
+  }
+
+  return false
+}
+
+onMounted(() => {
+  // load any saved preferences
+  const prefs = loadNodePreferences()
+
+  if (handleQuery(prefs)) {
     return
   }
 
   if (prefs) {
     nodeStructureStore.setFromNodePreferences(prefs)
   }
+})
+
+watch (() => route.query, () => {
+  const prefs = loadNodePreferences()
+  handleQuery(prefs)
 })
 </script>
   
