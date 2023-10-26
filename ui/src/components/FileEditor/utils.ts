@@ -1,25 +1,31 @@
-import { IFile } from '@/store/fileEditor/state'
+import { IFile } from '@/stores/fileEditorStore'
 
 export const sortFilesAndFolders = (files: IFile[]): IFile[] => {
-  // move folders to top, alphabetical
+  // move folders to top, alphabetically
   for (const file of files) {
     if (file.children) {
       file.children = sortFilesAndFolders(file.children)
     }
   }
+
   const folders = files.filter((x) => x.children).sort((a, b) => a.name.localeCompare(b.name))
   const noFolders = files.filter((x) => !x.children).sort((a, b) => a.name.localeCompare(b.name))
+
   return [...folders, ...noFolders]
 }
 
 const getFolderPath = (folder: string, fullPath: string) => {
   const path = []
   const fullPathSplit = fullPath.split('/')
+
   // folder path should only reach the folder name
   for (const part of fullPathSplit) {
     path.push(part)
-    if (part === folder) break
+    if (part === folder) {
+      break
+    }
   }
+
   return path.join('/')
 }
 
@@ -39,25 +45,30 @@ const addFileOrCreateFolder = (folder: IFile[], file: string, fullPath: string):
     const remaining = fileNamePieces.join('/')
     const existingFolder = folder.filter((x) => x.name === folderName)[0] as Required<IFile>
 
-    if (existingFolder) addFileOrCreateFolder(existingFolder.children, remaining, fullPath)
-    else
+    if (existingFolder) {
+      addFileOrCreateFolder(existingFolder.children, remaining, fullPath)
+    } else {
       folder.push({
         name: folderName,
         children: addFileOrCreateFolder([], remaining, fullPath),
         fullPath: getFolderPath(folderName, fullPath)
       })
+    }
   } else {
     // add file to the folder
     folder.push({ name: file, fullPath })
   }
+
   return folder
 }
 
 export const filesToFolders = (fileNames: string[]): IFile => {
   const files: IFile[] = []
+
   for (const file of fileNames) {
     addFileOrCreateFolder(files, file, file)
   }
+
   return { name: 'etc', children: sortFilesAndFolders(files) }
 }
 

@@ -35,7 +35,19 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'happy-dom'
+    environment: 'happy-dom',
+    css: {
+      include: /.+/
+    },
+    server: {
+      deps: {
+        // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
+        // https://github.com/vitest-dev/vitest/issues/3862
+        inline: [
+          /@featherds\/\w+/
+        ]
+      }
+    }
   },
   build: {
     target: 'esnext'

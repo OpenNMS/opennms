@@ -148,7 +148,7 @@
          <parameter key="collection" value="${requisition:collection|detector:collection|PostgreSQL}" />
          <parameter key="thresholding-enabled" value="true" />
          <parameter key="driver" value="${requisition:driver|detector:driver|org.postgresql.Driver}" />
-         <parameter key="data-source" value="${requisition:data-source|detector:data-source|opennms-admin}" />
+         <parameter key="data-source" value="${requisition:data-source|detector:data-source|opennms-monitor}" />
       </service>
    </package>
    <package name="example1" remote="false">

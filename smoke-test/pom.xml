@@ -63,7 +63,7 @@
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <slf4jVersion>2.0.7</slf4jVersion>
     <testcontainers.version>1.19.0</testcontainers.version>
-    <netty4Version>4.1.96.Final</netty4Version>
+    <netty4Version>4.1.99.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
     <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
@@ -160,7 +160,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.8</version>
+          <version>3.6.0</version>
           <executions>
           <execution>
             <id>copy-jar-with-dependencies</id>

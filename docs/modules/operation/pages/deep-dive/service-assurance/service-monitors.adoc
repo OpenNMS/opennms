@@ -1,6 +1,6 @@
 
 = Service Monitors
-:description: Overview of how service monitors work with OpenNMS Horizon/Meridian.
+:description: Overview of how service monitors work with {page-component-title}.
 
 The pollerd service uses service monitors to check the status of services running on nodes.
 These monitors will track if services are up or down, and will generate outages if the desired service state is not met.

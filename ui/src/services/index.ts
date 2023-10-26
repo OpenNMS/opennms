@@ -6,7 +6,9 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
-import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
+import { getCategories } from './categoryService'
+import { getMonitoringLocations } from './monitoringLocationService'
+import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
   getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
@@ -31,7 +33,7 @@ import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
-import { getIpInterfaces } from './ipInterfaceService'
+import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
@@ -57,10 +59,13 @@ export default {
   getNodeOutages,
   getNodeIfServices,
   getIpInterfaces,
+  getNodeIpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getCategories,
+  getMonitoringLocations,
   getLog,
   getLogs,
   getFile,
@@ -75,7 +80,6 @@ export default {
   getOpenApiV1,
   getOpenApi,
   getProvisionDService,
-  populateProvisionD,
   putProvisionDService,
   getResources,
   getGraphMetrics,

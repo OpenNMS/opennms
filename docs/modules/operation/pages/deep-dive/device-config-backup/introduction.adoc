@@ -1,6 +1,6 @@
 
 = Device Configuration Backup
-:description: Back up configuration for devices like routers, firewalls, switches with OpenNMS Horizon/Meridian, for better disaster recovery and change management.
+:description: Back up configuration for devices like routers, firewalls, switches with {page-component-title}, for better disaster recovery and change management.
 
 OpenNMS lets you back up the configuration of devices like routers, firewalls, and switches.
 This allows for a better disaster recovery framework in the case of network failure.

@@ -19,12 +19,14 @@
   lang="ts"
 >
 import { debounce } from 'lodash'
-import { useStore } from 'vuex'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
+import { useMapStore } from '@/stores/mapStore'
+import { useSearchStore } from '@/stores/searchStore'
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
-const store = useStore()
+const mapStore = useMapStore()
+const searchStore = useSearchStore()
 const searchStr = ref()
 const loading = ref(false)
 const outsideSearch = ref(false)
@@ -33,7 +35,7 @@ const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
-  store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
+  mapStore.setSearchedNodeLabels(nodeLabels)
 
   if (nodeLabels.length) {
     if (nodeLabels.length === 1) {
@@ -52,22 +54,28 @@ const resetLabelsAndSearch = (value: string) => {
 }
 
 const search = debounce(async (value: string) => {
-  if (!value) return
+  if (!value) {
+    return
+  }
+
   loading.value = true
-  await store.dispatch('searchModule/search', value)
+
+  await searchStore.search(value)
+
   labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
 
 const results = computed(() => {
-  if (store.state.searchModule.searchResults[0]) {
-    return store.state.searchModule.searchResults[0].results
+  if (searchStore.searchResults.length > 0 && searchStore.searchResults[0]) {
+    return searchStore.searchResults[0].results
   }
+
   return []
 })
 
 // search term set by an outside component rather than from user text input, i.e. from MapNodesGrid
-const nodeSearchTerm = computed<string>(() => store.state.mapModule.nodeSearchTerm)
+const nodeSearchTerm = computed<string>(() => mapStore.nodeSearchTerm)
 
 // when results are updated as a result of a search initiated from an outside component,
 // select the item (which may also perform the fly-to-node behavior)
@@ -93,7 +101,7 @@ watchEffect(async () => {
 
     loading.value = true
     outsideSearch.value = true
-    await store.dispatch('searchModule/search', nodeSearchTerm.value)
+    await searchStore.search(nodeSearchTerm.value)
     labels.value = { noResults: 'No results found' }
     loading.value = false
   }
@@ -118,4 +126,3 @@ watch(results, (newResults) => {
   }
 }
 </style>
-

@@ -217,11 +217,11 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         </tr>
         <tr> 
           <th>Description</th>
-          <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
+          <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfDescription())%></td>
         </tr>
         <tr>
           <th>Alias</th>
-          <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+          <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfAlias())%></td>
         </tr>
       </table>
     </div>

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.MapContext;
@@ -49,7 +50,9 @@ import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +67,7 @@ import io.opentracing.Span;
  */
 public class IpInterfaceScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceScan.class);
+    public static final String METADATA_CONTEXT_DETECTOR = "detector";
 
     private final ProvisionService m_provisionService;
     private final InetAddress m_address;
@@ -176,7 +180,11 @@ public class IpInterfaceScan implements RunInBatch {
                             new RunInBatch() {
                                 @Override
                                 public void run(final BatchTask batch) {
-                                    service.addMonitoredService(nodeId, hostAddress, serviceName, null);
+                                    final var metaData = detectorConfig.getParameterMap().entrySet().stream()
+                                            .map(attribute -> new OnmsMetaData(METADATA_CONTEXT_DETECTOR, attribute.getKey(), attribute.getValue()))
+                                            .collect(Collectors.toList());
+
+                                    service.addMonitoredService(nodeId, hostAddress, serviceName, null, metaData);
                                 }
                             },
                             new RunInBatch() {

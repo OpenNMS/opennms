@@ -257,10 +257,11 @@ import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import UpdateUtilities from '@featherds/icon/action/UpdateUtilities'
 import Person from '@featherds/icon/action/Person'
 import Logo from '@/assets/LogoHorizon.vue'
+import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { usePluginStore } from '@/stores/pluginStore'
 import { Plugin } from '@/types'
 import Search from './Search.vue'
-import { useStore } from 'vuex'
 
 import {
   MainMenu,
@@ -272,8 +273,9 @@ import {
 } from '@/types/mainMenu'
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 
-const store = useStore()
+const appStore = useAppStore()
 const menuStore = useMenuStore()
+const pluginStore = usePluginStore()
 const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
@@ -289,7 +291,7 @@ const PluginIndex = 3
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()
 })
-const plugins = computed<Plugin[]>(() => store.state.pluginModule.plugins)
+const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
@@ -397,7 +399,7 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   // save the new theme in data and localStorage
   theme.value = newTheme
   localStorage.setItem('theme', theme.value)
-  store.dispatch('appModule/setTheme', theme.value)
+  appStore.setTheme(theme.value)
 }
 
 const computeLink = (url: string, isVueLink?: boolean | null) => {

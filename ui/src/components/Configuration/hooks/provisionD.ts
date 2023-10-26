@@ -1,9 +1,9 @@
-import { useStore } from 'vuex'
+import { useConfigurationStore } from '@/stores/configurationStore'
 import { LocalConfiguration, LocalConfigurationWrapper, ProvisionDServerConfiguration } from '../configuration.types'
 import { ConfigurationHelper } from '../ConfigurationHelper'
 
 export const useProvisionD = () => {
-  const store = useStore()
+  const configurationStore = computed(() => useConfigurationStore())
 
   /**
    * State
@@ -13,7 +13,8 @@ export const useProvisionD = () => {
   const loading = ref(false)
   const provisionDList = computed(() => {
     const defaultList: Array<ProvisionDServerConfiguration> =
-      store?.state?.configuration?.provisionDService?.['requisition-def']
+      configurationStore.value.provisionDService?.['requisition-def']
+
     return (
       defaultList?.map((item, index): ProvisionDServerConfiguration => {
         item.originalIndex = index

@@ -139,10 +139,10 @@
         <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=3.6.10&amp;Export-Package=org.hibernate*;version="3.6.10"</bundle>
         <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=3.2.0</bundle>
     </feature>
-    <feature name="hibernate-validator41" version="4.1.0.Final" description="Hibernate :: Hibernate Validator">
+    <feature name="hibernate-validator4" version="${hibernateValidatorVersion}" description="Hibernate :: Hibernate Validator">
         <feature>javax.validation</feature>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator.annotation-processor&amp;Bundle-Version=4.1.0</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator&amp;Bundle-Version=4.1.0</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/${hibernateValidatorAnnotationProcessorVersion}$Bundle-SymbolicName=org.hibernate.validator.annotation-processor&amp;Bundle-Version=${hibernateValidatorAnnotationProcessorVersion}</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator/${hibernateValidatorVersion}$Bundle-SymbolicName=org.hibernate.validator&amp;Bundle-Version=${hibernateValidatorVersion}</bundle>
     </feature>
     <feature name="jaxb" version="${eclipselinkVersion}" description="EclipseLink :: MOXy">
         <feature>javax.mail</feature>
@@ -542,7 +542,7 @@
     <feature name="opennms-dao" version="${project.version}" description="OpenNMS :: DAO">
         <feature>commons-jxpath</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature>hibernate-validator41</feature>
+        <feature>hibernate-validator4</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-collection-core</feature>
         <feature>opennms-collection-persistence-rrd</feature>

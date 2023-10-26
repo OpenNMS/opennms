@@ -43,6 +43,7 @@
     <module>lib</module>
     <module>logging-api</module>
     <module>mate</module>
+    <module>password</module>
     <module>profiler</module>
     <module>runtime</module>
     <module>schema</module>

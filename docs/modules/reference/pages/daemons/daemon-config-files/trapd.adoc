@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-trapd]]
 = Trapd
+:description: Learn about trapd in OpenNMS {page-component-title}, which processes SNMP traps into events.
 
 Handles processing of xref:operation:deep-dive/events/sources/snmp-traps.adoc[SNMP traps] into events.
 Based around traditional UDP-based SNMP traps, it receives traps that remote devices create.

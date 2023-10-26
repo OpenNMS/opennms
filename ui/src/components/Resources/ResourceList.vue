@@ -19,24 +19,26 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import {
   FeatherListHeader,
   FeatherListItem,
   FeatherList
 } from '@featherds/list'
+import { useGraphStore } from '@/stores/graphStore'
+import { useResourceStore } from '@/stores/resourceStore'
 import { Resource, UpdateModelFunction } from '@/types'
 
-const store = useStore()
-
+const graphStore = useGraphStore()
+const resourceStore = useResourceStore()
 const searchValue = ref('')
 
-const resources = computed<Resource[]>(() => store.getters['resourceModule/getFilteredResourcesList'])
+const resources = computed<Resource[]>(() => resourceStore.getFilteredResourcesList())
 
-const search: UpdateModelFunction = (val: string) => store.dispatch('resourceModule/setSearchValue', val || '')
-const selectResource = (name: string) => { 
-  store.dispatch('resourceModule/getResourcesForNode', name)
-  store.dispatch('graphModule/getPreFabGraphs', name)
+const search: UpdateModelFunction = (val: string) => resourceStore.setSearchValue(val || '')
+
+const selectResource = (name: string) => {
+  resourceStore.getResourcesForNode(name)
+  graphStore.getPreFabGraphs(name)
 }
 </script>

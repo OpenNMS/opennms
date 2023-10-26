@@ -12,20 +12,17 @@
   
 <script setup lang="ts">
 import { FeatherPagination } from '@featherds/pagination'
-import { useStore } from 'vuex'
+import { PropType } from 'vue'
+import { QueryParameters } from '@/types'
 
 const props = defineProps({
-  moduleName: {
-    type: String,
-    required: true
+  query: {
+    required: true,
+    type: Function as PropType<(params: QueryParameters) => void>
   },
-  functionName: {
-    type: String,
-    required: true
-  },
-  totalCountStateName: {
-    type: String,
-    required: true
+  getTotalCount: {
+    required: true,
+    type: Function as PropType<() => number>
   },
   parameters: {
     type: Object,
@@ -36,27 +33,33 @@ const props = defineProps({
     required: false
   }
 })
+
 const emit = defineEmits(['update-query-parameters'])
-const store = useStore()
 const pageSize = ref(props.parameters.limit)
 const page = ref(1)
 
-onMounted(() => store.dispatch(`${props.moduleName}/${props.functionName}`, props.payload || props.parameters))
+onMounted(() => props.query(props.payload || props.parameters))
 
 const totalCount = computed(() => {
-  const totalCount = store.state[props.moduleName][props.totalCountStateName]
-  if (totalCount && !isNaN(totalCount)) return totalCount
+  const totalCount = props.getTotalCount()
+
+  if (totalCount && !isNaN(totalCount)) {
+    return totalCount
+  }
+
   return 0
 })
 
 const updatePage = () => {
   const updatedParameters = { ...props.parameters, limit: pageSize.value, offset: (page.value - 1) * pageSize.value }
   emit('update-query-parameters', updatedParameters)
+
   if (props.payload) {
-    store.dispatch(`${props.moduleName}/${props.functionName}`, { ...props.payload, queryParameters: updatedParameters })
+    props.query({ ...props.payload, queryParameters: updatedParameters })
     return
   }
-  store.dispatch(`${props.moduleName}/${props.functionName}`, updatedParameters)
+
+  props.query(updatedParameters)
 }
 
 const updatePageSize = (v: number) => {

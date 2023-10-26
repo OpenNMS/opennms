@@ -1,4 +1,5 @@
 = Sentinel Features
+:description: Discover some of the Sentinel features you can install manually in {page-component-title}: core, Java Message Service (JMS), Kafka, flows, and so on.
 
 The following list contains some features which may be installed manually:
 

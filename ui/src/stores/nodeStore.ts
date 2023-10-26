@@ -1,6 +1,8 @@
+import { NodeQueryFilter } from './../types/index';
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
+import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
@@ -13,13 +15,22 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const availability = ref({} as NodeAvailability)
   const outages = ref([] as Outage[])
   const outagesTotalCount = ref(0)
+  const nodeQueryParameters = ref({ limit: 20, offset: 0, orderBy: 'label' } as QueryParameters)
 
-  const getNodes = async (queryParameters?: QueryParameters) => {
+  // map of nodeId to IpInterfaces associated with that node
+  const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
+
+  const getNodes = async (queryParameters?: QueryParameters, includeIpInterfaces?: boolean) => {
     const resp = await API.getNodes(queryParameters)
 
     if (resp) {
       totalCount.value = resp.totalCount
       nodes.value = resp.node
+
+      if (includeIpInterfaces === true) {
+        const nodeIds = resp.node.map(n => n.id)
+        getIpInterfacesForNodes(nodeIds, false)
+      }
     }
   }
 
@@ -49,6 +60,31 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  /**
+   * Get the IpInterfaces for the given nodes, then update the nodeToIpInterfaceMap.
+   */
+  const getIpInterfacesForNodes = async (nodeIds: string[], managedOnly: boolean) => {
+    if (nodeIds.length === 0) {
+      return
+    }
+
+    const query = getNodeIpInterfaceQuery(nodeIds, managedOnly)
+    const queryParameters = {
+      limit: nodeIds.length,
+      _s: query
+    } as QueryParameters
+
+    const resp = await API.getIpInterfaces(queryParameters)
+
+    if (resp) {
+      // find updated list of IpInterfaces for each node and update the node => ip map
+      for (const id of nodeIds) {
+        const ipsThisNode = resp.ipInterface.filter(ip => ip.nodeId.toString() === id)
+        nodeToIpInterfaceMap.value.set(id, ipsThisNode)
+      }
+    }
+  }
+
   const getNodeAvailabilityPercentage = async (id: string) => {
     const av = await API.getNodeAvailabilityPercentage(id)
 
@@ -66,6 +102,12 @@ export const useNodeStore = defineStore('nodeStore', () => {
     }
   }
 
+  const setNodeQueryParameters = async (params: QueryParameters) => {
+    nodeQueryParameters.value = {
+      ...params
+    }
+  }
+
   return {
     nodes,
     totalCount,
@@ -75,13 +117,17 @@ export const useNodeStore = defineStore('nodeStore', () => {
     ipInterfaces,
     ipInterfacesTotalCount,
     availability,
+    nodeToIpInterfaceMap,
+    nodeQueryParameters,
     outages,
     outagesTotalCount,
+    getIpInterfacesForNodes,
     getNodes,
     getNodeById,
     getNodeSnmpInterfaces,
     getNodeIpInterfaces,
     getNodeAvailabilityPercentage,
-    getNodeOutages
+    getNodeOutages,
+    setNodeQueryParameters
   }
 })

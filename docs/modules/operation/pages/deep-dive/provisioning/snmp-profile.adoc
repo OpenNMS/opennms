@@ -1,5 +1,5 @@
 = SNMP Profiles
-:description: How to use SNMP profiles in OpenNMS Horizon/Meridian to help with provisioning.
+:description: How to use SNMP profiles in {page-component-title} to help with provisioning.
 
 SNMP Profiles are prefabricated sets of SNMP configuration that are automatically "fitted" against eligible IP addresses at provisioning time.
 Each profile may have a unique label and an optional filter expression.

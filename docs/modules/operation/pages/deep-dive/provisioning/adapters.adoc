@@ -1,6 +1,6 @@
 [[adapters]]
 = Adapters
-:description: Overview of provisioning adapters in OpenNMS Horizon/Meridian to integrate with external systems during inventory import.
+:description: Overview of provisioning adapters in {page-component-title} to integrate with external systems during inventory import.
 
 The {page-component-title} Provisiond API supports provisioning adapters (plugins) for integration with external systems during the provisioning import phase.
 These adapters let OpenNMS exchange data with other systems, allowing the enrichment of node data.

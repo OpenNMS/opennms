@@ -1,7 +1,7 @@
 
 [[ga-service-assurance-downtime-model]]
 = Detect Short Service Outages
-:description: How to detect short service outages with OpenNMS Horizon/Meridian using a downtime model to reduce the monitoring interval to every 30 seconds.
+:description: How to detect short service outages with {page-component-title} using a downtime model to reduce the monitoring interval to every 30 seconds.
 
 By default, the monitoring interval for a service is five minutes.
 You can use the configurable downtime model to detect short service outages, like those caused by automatic network rerouting.

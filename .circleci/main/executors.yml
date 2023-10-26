@@ -4,10 +4,10 @@ executors:
       - image: cimg/base:stable-20.04
   build-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11-b9919
+      - image: opennms/build-env:circleci-ubuntu-jdk11-b10007
   docs-executor:
     docker:
-      - image: opennms/antora:3.1.1-b9916
+      - image: opennms/antora:3.1.1-b9990
   integration-test-executor:
     machine:
       image: ubuntu-2204:current
@@ -16,4 +16,4 @@ executors:
       image: ubuntu-2204:current
   ui-executor:
     docker:
-      - image: cimg/node:16.3.0
+      - image: cimg/node:18.18.1

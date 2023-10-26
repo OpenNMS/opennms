@@ -54,7 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
@@ -62,12 +61,13 @@ import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Remove from '@featherds/icon/action/Remove'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
 import useSnackbar from '@/composables/useSnackbar'
+import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { UsageStatisticsData, UsageStatisticsStatus } from '@/types/usageStatistics'
 
 const { showSnackBar } = useSnackbar()
-const store = useStore()
-const status = computed<UsageStatisticsStatus>(() => store.state.usageStatisticsModule.status )
-const statistics = computed<UsageStatisticsData>(() => store.state.usageStatisticsModule.statistics )
+const usageStatisticsStore = useUsageStatisticsStore()
+const status = computed<UsageStatisticsStatus>(() => usageStatisticsStore.status )
+const statistics = computed<UsageStatisticsData>(() => usageStatisticsStore.statistics )
 
 const copyJson = async () => {
   const json = JSON.stringify(statistics.value, null, 2)
@@ -88,9 +88,9 @@ const copyJson = async () => {
 
 const updateStatus = () => {
   if (status.value.enabled) {
-    store.dispatch('usageStatisticsModule/disableSharing')
+    usageStatisticsStore.disableSharing()
   } else {
-    store.dispatch('usageStatisticsModule/enableSharing')
+    usageStatisticsStore.enableSharing()
   }
 }
 </script>

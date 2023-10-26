@@ -1,7 +1,7 @@
 
 [[flows-basic]]
 = Basic Flows Setup
-:description: Get started with flows data collection in OpenNMS Horizon/Meridian including configuring Elasticsearch, Kafka, and protocol listeners.
+:description: Get started with flows data collection in {page-component-title} including configuring Elasticsearch, Kafka, and protocol listeners.
 
 This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
 

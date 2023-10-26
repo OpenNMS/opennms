@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -134,10 +135,7 @@ public interface ProvisionService {
     OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
 
     @Transactional
-    OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName, String monitorKey);
-
-    @Transactional
-    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName, String monitorKey);
+    OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName, String monitorKey, List<OnmsMetaData> metaData);
 
     @Transactional
     OnmsMonitoredService updateMonitoredServiceState(Integer nodeId, String ipAddress, String serviceName);

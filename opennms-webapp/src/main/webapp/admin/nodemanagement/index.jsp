@@ -67,6 +67,8 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
+<%@ page import="org.opennms.netmgt.model.OnmsIpInterface" %>
+<%@ page import="org.opennms.core.utils.InetAddressUtils" %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node Management" />
   <jsp:param name="headTitle" value="Node Management" />
@@ -119,6 +121,17 @@
     Configure SNMP Data Collection per Interface</a>
   </p>
 
+  <%
+    final OnmsIpInterface onmsIpInterface = node_db.getPrimaryInterface();
+    if (onmsIpInterface != null) {
+      final String primaryIpAddress = InetAddressUtils.str(onmsIpInterface.getIpAddress());
+      %>
+        <p>
+          <a href="admin/snmpConfig?action=get&ipAddress=<%=primaryIpAddress%>#updateForm">Configure SNMP Community Strings</a>
+        </p>
+      <%
+    }
+  %>
   <% if (!isRequisitioned) { %>
   <p>
     <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete

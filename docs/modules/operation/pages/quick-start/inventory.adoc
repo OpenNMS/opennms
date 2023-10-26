@@ -1,6 +1,6 @@
 
 = Step 3: Provision Inventory
-:description: Step 3 of OpenNMS Horizon/Meridian setup: configure SNMP for provisioning, create a requisition, and configure a discovery.
+:description: Step 3 of {page-component-title} setup: configure SNMP for provisioning, create a requisition, and configure a discovery.
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) that you want to monitor.
 The default configuration also enables self-monitoring of the OpenNMS service, and discovers a single node with the interface `127.0.0.1` (see xref:deployment:core/getting-started.adoc#first-monitored-node[First monitored node]).

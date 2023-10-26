@@ -1,11 +1,4 @@
-import { Commit, Dispatch } from 'vuex'
 import { SORT } from '@featherds/table'
-
-
-export interface VuexContext {
-  commit: Commit
-  dispatch: Dispatch
-}
 
 export type UpdateModelFunction = (_value: any) => any
 
@@ -41,7 +34,8 @@ export interface SearchResultItem {
     matches: SearchResultMatch[];
     weight: number;
 }
-export type SearchResultsByContext = Array<{label:string,results:SearchResultResponse[]}>
+
+export type SearchResultsByContext = Array<{label: string, results: SearchResultResponse[]}>
 
 export interface ApiResponse {
   count: number
@@ -49,6 +43,9 @@ export interface ApiResponse {
   totalCount: number
 }
 
+export interface CategoryApiResponse extends ApiResponse {
+  category: Category[]
+}
 export interface NodeApiResponse extends ApiResponse {
   node: Node[]
 }
@@ -80,6 +77,10 @@ export interface IfServiceApiResponse extends ApiResponse {
   'monitored-service': IfService[]
 }
 
+export interface MonitoringLocationApiResponse extends ApiResponse {
+  location: MonitoringLocation[]
+}
+
 export interface Node {
   location: string
   type: string
@@ -95,8 +96,8 @@ export interface Node {
   createTime: number
   foreignId: string
   foreignSource: string
-  lastEgressFlow: any
-  lastIngressFlow: any
+  lastEgressFlow: number      // timestamp
+  lastIngressFlow: number
   labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
@@ -105,6 +106,13 @@ export interface Node {
   sysName: string
   sysContact: string
   sysLocation: string
+}
+
+export interface NodeColumnSelectionItem {
+  id: string
+  label: string
+  selected: boolean
+  order: number // 0-based
 }
 
 export interface MapNode {
@@ -151,6 +159,18 @@ export interface Event {
   source: string
   time: number
   uei: string
+}
+
+export interface MonitoringLocation {
+  tags: string[]
+  geolocation: string
+  longitude: number
+  latitude: number
+  priority: number
+  'location-name': string
+  'monitoring-area': string
+  name: string    // mapped from 'location-name' after API GET call response
+  area: string    // mapped from 'monitoring-area' after API GET call response
 }
 
 export interface SnmpInterface {
@@ -474,4 +494,50 @@ export interface Plugin {
   menuEntry: string
   moduleFileName: string
   resourceRootPath: string
+}
+
+export enum SetOperator {
+  Union = 1,
+  Intersection = 2
+}
+
+export enum MatchType {
+  Equals = 1,
+  Contains = 2
+}
+
+export interface NodeQuerySnmpParams {
+  snmpIfAlias: string
+  snmpIfDescription: string
+  snmpIfIndex: string
+  snmpIfName: string
+  snmpIfType: string
+  snmpMatchType: MatchType
+}
+
+/** All components of a node structure query */
+export interface NodeQueryFilter {
+  searchTerm: string
+  ipAddress?: string
+  categoryMode: SetOperator
+  selectedCategories: Category[]
+  selectedFlows: string[]
+  selectedMonitoringLocations: MonitoringLocation[]
+  snmpParams?: NodeQuerySnmpParams
+}
+
+export interface NodePreferences {
+  nodeColumns: NodeColumnSelectionItem[]
+  nodeFilter?: NodeQueryFilter
+}
+
+export interface OpenNmsPreferences {
+  nodePreferences: NodePreferences
+}
+
+export interface IpInterfaceInfo {
+  label: string
+  managed: boolean
+  primaryLabel: string
+  primaryType: string
 }

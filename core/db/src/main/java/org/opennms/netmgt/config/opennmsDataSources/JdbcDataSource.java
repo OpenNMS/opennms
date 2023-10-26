@@ -79,6 +79,9 @@ public class JdbcDataSource implements java.io.Serializable {
     @XmlAttribute(name = "password")
     private String rawPassword;
 
+    @XmlElement(name = "connection-pool")
+    private ConnectionPool connectionPool;
+
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
 
@@ -118,6 +121,14 @@ public class JdbcDataSource implements java.io.Serializable {
         return java.util.Collections.enumeration(this.paramList);
     }
 
+    public ConnectionPool getConnectionPool() {
+        return this.connectionPool;
+    }
+
+    public void setConnectionPool(final ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+    }
+
     /**
      * Overrides the Object.equals method.
      * 
@@ -139,7 +150,8 @@ public class JdbcDataSource implements java.io.Serializable {
                 && Objects.equals(temp.className, className)
                 && Objects.equals(temp.rawUserName, rawUserName)
                 && Objects.equals(temp.rawPassword, rawPassword)
-                && Objects.equals(temp.paramList, paramList);
+                && Objects.equals(temp.paramList, paramList)
+                && Objects.equals(temp.connectionPool, connectionPool);
         }
         return false;
     }
@@ -272,7 +284,8 @@ public class JdbcDataSource implements java.io.Serializable {
             className, 
             rawUserName,
             rawPassword,
-            paramList);
+            paramList,
+            connectionPool);
     }
 
     /**
