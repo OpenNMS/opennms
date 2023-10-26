@@ -28,15 +28,15 @@
  *******************************************************************************/
 
 --%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
-
-    <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="ngapp" value="onms.classifications" />
-    <jsp:param name="headTitle" value="Flow Classification" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Flow Classification" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Flow Classification")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Flow Classification")
+          .ngApp("onms.classifications")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="onms-classifications" />

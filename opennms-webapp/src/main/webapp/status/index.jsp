@@ -34,12 +34,14 @@
     String type = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "type"));
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="<%= title %>" />
-    <jsp:param name="headTitle" value="<%= title %>" />
-    <jsp:param name="breadcrumb" value="<%= title %>" />
-    <jsp:param name="ngapp" value="onms.default.apps" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(title)
+          .breadcrumb(title)
+          .ngApp("onms.default.apps")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="angular-status" />

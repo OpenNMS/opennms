@@ -35,14 +35,15 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Statistics Reports List" />
-  <jsp:param name="headTitle" value="Statistics Reports List" />
-  <jsp:param name="location" value="reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Report</a>"/>
-  <jsp:param name="breadcrumb" value="<a href='statisticsReports/index.htm'>Statistics Reports</a>"/>
-  <jsp:param name="breadcrumb" value="List"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Statistics Reports List")
+          .breadcrumb("Report", "report/index.jsp")
+          .breadcrumb("Statistics Reports", "statisticsReports/index.htm")
+          .breadcrumb("List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">
