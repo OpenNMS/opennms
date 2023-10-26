@@ -456,6 +456,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             } catch (ObjectNotFoundException ex) {
                 // This may be triggered if the event attached to the alarm entity is already gone
                 LoggerFactory.getLogger("NMS-15734").warn("Event gone while processing alarm.", new Exception(ex));
+                LoggerFactory.getLogger("NMS-15734").warn("Event: id={}, uei={}, src={}",
+                        alarm.getLastEvent().getId(),
+                        alarm.getLastEvent().getEventUei(),
+                        alarm.getLastEvent().getEventSource());
                 alarm.setLastEvent(null);
             }
         }
