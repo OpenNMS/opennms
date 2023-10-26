@@ -27,7 +27,7 @@ export const parseCategories = (queryObject: any, categories: Category[]) => {
 
   const queryCategories = queryObject.categories as string ?? ''
 
-  if (selectedCategories.length > 0) {
+  if (categories.length > 0) {
     categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
 
     const cats: string[] = queryCategories.replace(';', ',').split(',')
