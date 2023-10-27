@@ -1657,7 +1657,7 @@
     <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
     <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
-    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
+    <hibernateValidatorVersion>8.0.1.Final</hibernateValidatorVersion>
     <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
