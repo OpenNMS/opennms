@@ -7,7 +7,7 @@
       hint="Human-friendly name. Must be unique."
       :error="errors.name"
       :modelValue="config.name"
-      @update:modelValue="(val) => updateFormValue('name', val)"
+      @update:modelValue="(val: any) => updateFormValue('name', val)"
     />
     <div class="flex-center">
       <FeatherSelect
@@ -38,7 +38,7 @@
         class="side-input host-update mb-m"
         :error="errors.host"
         :modelValue="config.host"
-        @update:modelValue="(val) => updateFormValue('host', val)"
+        @update:modelValue="(val: any) => updateFormValue('host', val)"
         :hint="hostHint || 'vCenter server host or IP address'"
       />
     </div>
@@ -48,7 +48,7 @@
         class="side-input mb-m"
         :error="errors.urlPath"
         :modelValue="config.urlPath"
-        @update:modelValue="(val) => updateFormValue('urlPath', val)"
+        @update:modelValue="(val: any) => updateFormValue('urlPath', val)"
         hint="URL path starting with a /"
       />
     </div>
@@ -59,7 +59,7 @@
         hint=""
         label="Requisition Plugin"
         :options="requisitionSubTypes"
-        @update:modelValue="(val) => updateFormValue('subType', val)"
+        @update:modelValue="(val: any) => updateFormValue('subType', val)"
         :modelValue="config.subType"
       />
     </div>
@@ -69,7 +69,7 @@
         class="side-input mb-m"
         :error="errors.zone"
         :modelValue="config.zone"
-        @update:modelValue="(val) => updateFormValue('zone', val)"
+        @update:modelValue="(val: any) => updateFormValue('zone', val)"
         hint="DNS zone to use as basis for this definition"
       />
     </div>
@@ -79,7 +79,7 @@
         class="side-input mb-m"
         :error="errors.foreignSource"
         :modelValue="config.foreignSource"
-        @update:modelValue="(val) => updateFormValue('foreignSource', val)"
+        @update:modelValue="(val: any) => updateFormValue('foreignSource', val)"
         hint="Name to use for resulting requisition"
       />
     </div>
@@ -90,7 +90,7 @@
           class="side-input full-width mr-m mb-m"
           :error="errors.username"
           :modelValue="config.username"
-          @update:modelValue="(val) => updateFormValue('username', val)"
+          @update:modelValue="(val: any) => updateFormValue('username', val)"
           hint="vSphere username (optional)"
         />
         <FeatherInput
@@ -99,7 +99,7 @@
           class="side-input full-width mb-m"
           :error="errors.password"
           :modelValue="config.password"
-          @update:modelValue="(val) => updateFormValue('password', val)"
+          @update:modelValue="(val: any) => updateFormValue('password', val)"
           hint="vSphere password (optional)"
         />
       </div>
@@ -110,7 +110,7 @@
         class="side-input mb-m"
         :error="errors.path"
         :modelValue="config.path"
-        @update:modelValue="(val) => updateFormValue('path', val)"
+        @update:modelValue="(val: any) => updateFormValue('path', val)"
         hint="File path starting with a /"
       />
     </div>
@@ -124,7 +124,7 @@
         class="side-label"
         label="Rescan Behavior"
         :modelValue="config.rescanBehavior"
-        @update:modelValue="(val) => updateFormValue('rescanBehavior', val)"
+        @update:modelValue="(val: any) => updateFormValue('rescanBehavior', val)"
       >
         <FeatherRadio
           v-for="({value, name}) in rescanItems"

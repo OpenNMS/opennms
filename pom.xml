@@ -1823,8 +1823,8 @@
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.12.1</frontendPluginVersion>
-    <nodeVersion>v18.18.1</nodeVersion>
+    <frontendPluginVersion>1.14.2</frontendPluginVersion>
+    <nodeVersion>v18.18.2</nodeVersion>
     <npmVersion>9.8.1</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
