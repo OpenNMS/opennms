@@ -1814,9 +1814,9 @@
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.12.1</frontendPluginVersion>
-    <nodeVersion>v16.18.1</nodeVersion>
-    <npmVersion>8.19.3</npmVersion>
+    <frontendPluginVersion>1.14.2</frontendPluginVersion>
+    <nodeVersion>v16.20.2</nodeVersion>
+    <npmVersion>8.19.4</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
