@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,30 +28,11 @@
 
 package org.opennms.web.rest.support.menu;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainMenu {
-    public String baseHref;
-    public String homeUrl;
-    public String formattedTime;
-    public String noticeStatus;
-    public String username;
-    public String baseNodeUrl;
-    public String copyrightDates;
-    public String version;
-    final public List<TileProviderItem> userTileProviders = new ArrayList<>();
-
-    final public List<TopMenuEntry> menus = new ArrayList<>();
-    public TopMenuEntry helpMenu;
-    public TopMenuEntry selfServiceMenu;
-    public TopMenuEntry userNotificationMenu;
-    public MenuEntry provisionMenu;
-    public MenuEntry flowsMenu;
-    public MenuEntry configurationMenu; // aka admin menu, the "cogs"
-    public Notices notices;
-
-    public void addTopMenu(TopMenuEntry entry) {
-        this.menus.add(entry);
-    }
+/**
+ * Geographical Map tile provider info for adding additional tile maps.
+ */
+public class TileProviderItem {
+    public String name;
+    public String url;
+    public String attribution;
 }
