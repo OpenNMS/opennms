@@ -271,15 +271,17 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="onms-interfaces" />
-  <jsp:param name="title" value="Node" />
-  <jsp:param name="headTitle" value="${model.label}" />
-  <jsp:param name="headTitle" value="ID ${model.id}" />
-  <jsp:param name="headTitle" value="Node" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="Node" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${model.label}")
+          .headTitle("ID ${model.id}")
+          .headTitle("Node")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node")
+          .ngApp("onms-interfaces")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="angular-js" />

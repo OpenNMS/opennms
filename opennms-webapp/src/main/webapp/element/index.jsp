@@ -56,12 +56,13 @@
     List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Element Search" />
-  <jsp:param name="headTitle" value="Element Search" />
-  <jsp:param name="location" value="element" />
-  <jsp:param name="breadcrumb" value="Search" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Element Search")
+          .breadcrumb("Search")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-lg-6 col-md-8">

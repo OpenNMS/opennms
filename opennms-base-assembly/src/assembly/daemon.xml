@@ -93,6 +93,15 @@
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>opennms_password.jar</outputFileNameMapping>
+      <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <include>org.opennms.core:org.opennms.core.password:jar:${project.version}</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
       <useStrictFiltering>true</useStrictFiltering>
@@ -107,8 +116,9 @@
       <excludes>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
-        <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
         <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
+        <exclude>org.opennms.core:org.opennms.core.password</exclude>
+        <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
         <exclude>io.pyroscope:agent</exclude>
         <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>

@@ -104,13 +104,15 @@
 <c:set var="acknowledgeEvent" value="<%=acknowledgeEvent%>"/>
 <c:set var="showParms" value="<%=showParms%>"/>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Event Detail" />
-  <jsp:param name="headTitle" value="Detail" />
-  <jsp:param name="headTtitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Detail")
+          .headTitle("Events")
+          .breadcrumb("Events", "event/index")
+          .breadcrumb("Event " + (event == null? "Not Found" : event.getId()))
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <% if (event == null ) { %>
     <p>Event not found in database.</p>
