@@ -1670,6 +1670,10 @@
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
+    <hibernateVersion>3.6.11.ONMS_RELEASE_1</hibernateVersion>
+    <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
+    <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
+    <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.4.15</httpcoreVersion>
