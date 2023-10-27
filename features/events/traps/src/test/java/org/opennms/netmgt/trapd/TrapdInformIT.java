@@ -120,6 +120,7 @@ public class TrapdInformIT {
     @Before
     public void setUp() {
         m_mockEventIpcManager.setSynchronous(true);
+        m_trapd.setSecureCredentialsVault(new TrapdIT.MockSecureCredentialsVault());
         m_trapd.onStart();
     }
 
@@ -140,7 +141,7 @@ public class TrapdInformIT {
                 .orElseThrow(() -> new IllegalStateException("No existing SNMPv3 user configured with security level: " + securityLevel));
 
         ScopedPDU scopedPDU = createPDU();
-        Snmp4JAgentConfig agentConfig = createAgentConfig(v3User, scopedPDU);
+        Snmp4JAgentConfig agentConfig = createAgentConfig(m_trapd.interpolateUser(v3User), scopedPDU);
         Snmp session = createSession(agentConfig);
         if(session == null) {
             Assert.fail("Session couldn't be created");

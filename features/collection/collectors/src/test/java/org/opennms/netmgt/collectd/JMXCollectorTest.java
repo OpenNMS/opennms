@@ -51,6 +51,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.collection.test.CollectionSetUtils;
 import org.opennms.core.collection.test.MockCollectionAgent;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTest;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTestMBean;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -184,7 +186,7 @@ public class JMXCollectorTest {
         final Map<String, Object> parms = new HashMap<String, Object>();
         parms.put(ParameterName.COLLECTION.toString(), "collectBasicJvmValues");
         parms.putAll(jmxCollector.getRuntimeAttributes(collectionAgent, parms));
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, parms);
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, Interpolator.interpolateAttributes(parms, EmptyScope.EMPTY));
         assertEquals("Collection of jvm values failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
@@ -212,7 +214,7 @@ public class JMXCollectorTest {
         parms.putAll(jmxCollector.getRuntimeAttributes(collectionAgent, parms));
 
         //start collection
-        final CollectionSet collectionSet = jmxCollector.collect(collectionAgent, parms);
+        final CollectionSet collectionSet = jmxCollector.collect(collectionAgent, Interpolator.interpolateAttributes(parms, EmptyScope.EMPTY));
 
         assertEquals("Collection: " + collectionName + " failed", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 

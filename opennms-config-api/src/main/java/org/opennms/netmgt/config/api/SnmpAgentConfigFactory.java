@@ -61,7 +61,11 @@ public interface SnmpAgentConfigFactory {
      * @param address a {@link InetAddress} object.
      * @return a {@link SnmpAgentConfig} object.
      */
-    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address);
+    default SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+        return getAgentConfigFromProfile(snmpProfile, address, true);
+    }
+
+    SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address, boolean metaDataInterpolation);
 
     /**
      * Merge this definition into current config.

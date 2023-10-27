@@ -34,9 +34,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.FatalBeanException;
 
 /**
  * Provides access to the default javamail configuration data.
@@ -45,8 +50,31 @@ public abstract class JavaMailerConfig {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailerConfig.class);
 
+    private static Scope secureCredentialsVaultScope;
 
-    
+    private static synchronized Scope getSecureCredentialsScope() {
+        if (secureCredentialsVaultScope == null) {
+            try {
+                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
+
+                if (entityScopeProvider != null) {
+                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
+                } else {
+                    LOG.warn("JavaMailConfig: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
+                }
+            } catch (FatalBeanException e) {
+                e.printStackTrace();
+                LOG.warn("JavaMailConfig: Error retrieving EntityScopeProvider bean");
+            }
+        }
+
+        return secureCredentialsVaultScope;
+    }
+
+    public static void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
+        JavaMailerConfig.secureCredentialsVaultScope = secureCredentialsVaultScope;
+    }
+
     /**
      * This loads the configuration file.
      *
@@ -54,13 +82,47 @@ public abstract class JavaMailerConfig {
      * @throws java.io.IOException if any.
      */
     public static synchronized Properties getProperties() throws IOException {
-        LOG.debug("Loading javamail properties.");
+        LOG.debug("JavaMailConfig: Loading javamail properties");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
         in.close();
+        return interpolate(properties);
+    }
+
+    private static Properties interpolate(final Properties properties, final String key, final Scope scope) {
+        final String value = properties.getProperty(key);
+
+        if (value != null) {
+            properties.put(key, Interpolator.interpolate(value, scope).output);
+        }
+
         return properties;
     }
 
+    private static Properties interpolate(final Properties properties) {
+        final Scope scope = getSecureCredentialsScope();
+
+        if (scope == null) {
+            LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of properties");
+            return properties;
+        }
+
+        interpolate(properties, "org.opennms.core.utils.authenticateUser", scope);
+        interpolate(properties, "org.opennms.core.utils.authenticatePassword", scope);
+
+        return properties;
+    }
+
+    public static String interpolate(final String string) {
+        final Scope scope = getSecureCredentialsScope();
+
+        if (scope == null) {
+            LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of string");
+            return string;
+        }
+
+        return Interpolator.interpolate(string, scope).output;
+    }
 }

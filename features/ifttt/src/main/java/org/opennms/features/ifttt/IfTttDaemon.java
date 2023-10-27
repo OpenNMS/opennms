@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.ifttt.config.IfTttConfig;
@@ -88,6 +90,8 @@ public class IfTttDaemon {
      */
     private final File ifTttConfigFile;
 
+    private final EntityScopeProvider entityScopeProvider;
+
     /**
      * Constructor to create the daemon instance with a given configuraton file
 
@@ -95,10 +99,11 @@ public class IfTttDaemon {
      * @param transactionOperations the transaction template to be used
      * @param ifTttConfigFile       the configuration file to be used
      */
-    public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations, final File ifTttConfigFile) {
+    public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations, final EntityScopeProvider entityScopeProvider, final File ifTttConfigFile) {
         this.alarmDao = alarmDao;
         this.transactionOperations = transactionOperations;
         this.ifTttConfigFile = ifTttConfigFile;
+        this.entityScopeProvider = entityScopeProvider;
         // initialize the FileReloadContainer instance for the configuration file
 
         this.m_fileReloadContainer = new FileReloadContainer<>(ifTttConfigFile, (object, resource) -> {
@@ -113,8 +118,8 @@ public class IfTttDaemon {
      * @param alarmDao              the alarm dao instance to be used
      * @param transactionOperations the transaction template to be used
      */
-    public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations) {
-        this(alarmDao, transactionOperations, Paths.get(System.getProperty("opennms.home", ""), "etc", "ifttt-config.xml").toFile());
+    public IfTttDaemon(final AlarmDao alarmDao, final TransactionOperations transactionOperations, final EntityScopeProvider entityScopeProvider) {
+        this(alarmDao, transactionOperations, entityScopeProvider, Paths.get(System.getProperty("opennms.home", ""), "etc", "ifttt-config.xml").toFile());
     }
 
     /**
@@ -341,7 +346,7 @@ public class IfTttDaemon {
                 for (final Trigger trigger : triggerSet.getTriggers()) {
 
                     new IfTttTrigger()
-                            .key(ifTttConfig.getKey())
+                            .key(Interpolator.interpolate(ifTttConfig.getKey(), entityScopeProvider.getScopeForScv()).output)
                             .event(trigger.getEventName())
                             .value1(variableNameExpansion.replace(trigger.getValue1()))
                             .value2(variableNameExpansion.replace(trigger.getValue2()))
@@ -360,5 +365,9 @@ public class IfTttDaemon {
         } else {
             LOG.error("Error retrieving trigger package for filter {}.", filterKey);
         }
+    }
+
+    FileReloadContainer<IfTttConfig> getFileReloadContainer() {
+        return m_fileReloadContainer;
     }
 }

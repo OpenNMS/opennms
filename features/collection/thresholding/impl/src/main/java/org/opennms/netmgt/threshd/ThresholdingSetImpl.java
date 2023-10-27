@@ -47,6 +47,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -233,30 +234,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         return m_hasThresholds;
     }
 
-    private boolean hasThresholds(final String resourceTypeName, final String attributeName) {
-        boolean ok = false;
-        synchronized(m_thresholdGroups) {
-            for (ThresholdGroup group : m_thresholdGroups) {
-                Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
-                if (entityMap != null) {
-                    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
-                        final Set<ThresholdEntity> value = entry.getValue();
-                        for (final ThresholdEntity thresholdEntity : value) {
-                            final Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
-                            if (requiredDatasources.contains(attributeName)) {
-                                ok = true;
-                                LOG.debug("hasThresholds: {}@{}? {}", resourceTypeName, attributeName, ok);
-                            } else {
-                                LOG.trace("hasThresholds: {}@{}? {}", resourceTypeName, attributeName, ok);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return ok;
-    }
-
     public final boolean isNodeInOutage() {
         boolean outageFound = false;
         synchronized(m_scheduledOutages) {
@@ -314,7 +291,10 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                                 }
                                 if(!valueMissing || relaxed) {
                                     LOG.info("applyThresholds: All attributes found for {}, evaluating", resourceWrapper);
-                                    resourceWrapper.setDsLabel(thresholdEntity.getDatasourceLabel());
+
+                                    final var scope = thresholdEntity.getScopeForResource(resourceWrapper);
+
+                                    resourceWrapper.setDsLabel(Interpolator.interpolate(thresholdEntity.getDatasourceLabel(), scope).output);
                                     try {
                                         List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
                                         eventsList.addAll(thresholdEvents);
@@ -352,11 +332,14 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         for (ResourceFilter f : filters) {
             LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent().orElse(null));
             count++;
+
+            final var scope = thresholdEntity.getScopeForResource(resource);
+
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = resource.getFieldValue(f.getField());
+            String attr = resource.getFieldValue(Interpolator.interpolate(f.getField(), scope).output);
             if (attr != null) {
                 try {
-                    final Pattern p = Pattern.compile(f.getContent().orElse(""));
+                    final Pattern p = Pattern.compile(f.getContent().map(s -> Interpolator.interpolate(s, scope).output).orElse(""));
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
                     LOG.debug("passedThresholdFilters: the value of {} is {}. Pass filter? {}", f.getField(), attr, pass);
@@ -512,18 +495,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     public void setCounterReset(boolean counterReset) {
         this.m_counterReset = counterReset;
-    }
-
-    public boolean hasThresholds(CollectionAttribute attribute) {
-        CollectionResource resource = attribute.getResource();
-        if (attribute == null || resource == null) {
-            return false;
-        }
-        if (!isCollectionEnabled(resource))
-            return false;
-        if (resource instanceof AliasedResource && !storeByIfAlias())
-            return false;
-        return hasThresholds(resource.getResourceTypeName(), attribute.getName());
     }
 
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap,

@@ -28,19 +28,21 @@
 
 package org.opennms.core.mate.api;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.xml.JaxbUtils;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.xml.JaxbUtils;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 public class Interpolator {
     private static final String OUTER_REGEXP = "\\$\\{([^\\{\\}]+?:[^\\{\\}]+?)\\}";
@@ -50,7 +52,26 @@ public class Interpolator {
 
     private static final int MAX_RECURSION_DEPTH = SystemProperties.getInteger("org.opennms.mate.maxRecursionDepth", 8);
 
+    private static class ToBeInterpolated {
+        private final Object value;
+        public ToBeInterpolated(Object value) {
+            this.value = value;
+        }
+    }
+
     private Interpolator() {}
+
+    public static Map<String, Object> interpolateAttributes(final Map<String, Object> attributes, final Scope scope) {
+        return Maps.transformValues(attributes, (raw) -> interpolateAttribute(raw, scope));
+    }
+
+    public static ToBeInterpolated pleaseInterpolate(final Object value) {
+        return new ToBeInterpolated(value);
+    }
+
+    public static Map<String, Object> pleaseInterpolate(final Map<String, ?> map) {
+        return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> pleaseInterpolate(e.getValue())));
+    }
 
     public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final Scope scope) {
         return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
@@ -58,6 +79,17 @@ public class Interpolator {
 
     public static Map<String, String> interpolateStrings(final Map<String, String> attributes, final Scope scope) {
         return Maps.transformValues(attributes, (raw) -> raw != null ? interpolate(raw, scope).output : null);
+    }
+
+    private static Object interpolateAttribute(final Object value, final Scope scope) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof ToBeInterpolated) {
+            return interpolate(((ToBeInterpolated) value).value, scope);
+        }
+
+        return value;
     }
 
     public static Object interpolate(final Object value, final Scope scope) {

@@ -38,6 +38,8 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.junit.Test;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.netmgt.config.wsman.credentials.Definition;
@@ -127,7 +129,7 @@ public class WSManMonitorTest {
         when(svc.getIpAddr()).thenReturn("127.0.0.1");
         when(svc.getNodeLabel()).thenReturn("C7BBBP1");
 
-        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        Map<String, Object> subbedParams = Interpolator.interpolateAttributes(monitor.getRuntimeAttributes(svc, parameters), EmptyScope.EMPTY);
         // this would normally happen in the poller request builder implementation
         subbedParams.forEach((k, v) -> {
             parameters.put(k, v);

@@ -1062,7 +1062,7 @@ public class NodeScan implements Scan {
         // profiles.
         try {
             Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
-                    .getAgentConfigFromProfiles(address, getLocationName())
+                    .getAgentConfigFromProfiles(address, getLocationName(), false)
                     .get();
             if (validConfig.isPresent()) {
                 SnmpAgentConfig agentConfig = validConfig.get();

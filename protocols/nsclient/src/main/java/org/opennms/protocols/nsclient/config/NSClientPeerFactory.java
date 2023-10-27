@@ -48,6 +48,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
@@ -59,6 +64,7 @@ import org.opennms.netmgt.config.nsclient.Range;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -101,6 +107,8 @@ public class NSClientPeerFactory {
      */
     private static boolean m_loaded = false;
 
+    private Scope secureCredentialsVaultScope = null;
+
     /**
      * Private constructor
      * 
@@ -129,6 +137,29 @@ public class NSClientPeerFactory {
 
     public Lock getWriteLock() {
         return m_writeLock;
+    }
+
+    private synchronized Scope getSecureCredentialsScope() {
+        if (secureCredentialsVaultScope == null) {
+            try {
+                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
+
+                if (entityScopeProvider != null) {
+                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
+                } else {
+                    LOG.warn("NSClientPeerFactory: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
+                }
+            } catch (FatalBeanException e) {
+                e.printStackTrace();
+                LOG.warn("NSClientPeerFactory: Error retrieving EntityScopeProvider bean");
+            }
+        }
+
+        return secureCredentialsVaultScope;
+    }
+
+    public void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
+        this.secureCredentialsVaultScope = secureCredentialsVaultScope;
     }
 
     /**
@@ -465,7 +496,7 @@ public class NSClientPeerFactory {
      * @return
      */
     private String determinePassword(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        return Interpolator.interpolate((def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword()), getSecureCredentialsScope()).output;
     }
 
     /**

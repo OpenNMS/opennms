@@ -69,6 +69,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -142,7 +143,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         if (collection == null) {
             throw new IllegalArgumentException(String.format("HttpCollector: No collection found with name '%s'.",  collectionName));
         }
-        runtimeAttributes.put(HTTP_COLLECTION_KEY, collection);
+        runtimeAttributes.put(HTTP_COLLECTION_KEY, Interpolator.pleaseInterpolate(collection));
         return runtimeAttributes;
     }
 

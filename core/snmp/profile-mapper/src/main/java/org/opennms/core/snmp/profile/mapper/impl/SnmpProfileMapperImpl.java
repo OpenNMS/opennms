@@ -77,7 +77,7 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
     }
 
     @Override
-    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid) {
+    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid, boolean metaDataInterpolation) {
 
         CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
         List<SnmpProfile> snmpProfiles = agentConfigFactory.getProfiles();
@@ -110,13 +110,14 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
         SnmpObjId snmpObjectId = this.snmpObjId;
         //Get agent config from profile.
-        final SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
+        final SnmpAgentConfig interpolatedAgentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress);
+        final SnmpAgentConfig agentConfig = agentConfigFactory.getAgentConfigFromProfile(snmpProfile, inetAddress, false);
         //If OID is specified, get snmp object for that OID.
         if (!Strings.isNullOrEmpty(oid)) {
             snmpObjectId = SnmpObjId.get(oid);
         }
         CompletableFuture<Optional<SnmpAgentConfig>> future = new CompletableFuture<>();
-        CompletableFuture<SnmpValue> snmpResult = locationAwareSnmpClient.get(agentConfig, snmpObjectId)
+        CompletableFuture<SnmpValue> snmpResult = locationAwareSnmpClient.get(interpolatedAgentConfig, snmpObjectId)
                 .withLocation(location)
                 .withDescription("Snmp-Profile:" + snmpProfile.getLabel())
                 .execute();
@@ -139,8 +140,8 @@ public class SnmpProfileMapperImpl implements SnmpProfileMapper {
 
 
     @Override
-    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location) {
-        return getAgentConfigFromProfiles(inetAddress, location, null);
+    public CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, boolean metaDataInterpolation) {
+        return getAgentConfigFromProfiles(inetAddress, location, null, metaDataInterpolation);
     }
 
     @Override

@@ -39,6 +39,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
@@ -57,9 +58,9 @@ import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.config.vmware.vijava.Attrib;
 import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
 import org.opennms.netmgt.config.vmware.vijava.VmwareGroup;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.dao.vmware.VmwareDatacollectionConfigDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -81,7 +82,6 @@ import com.vmware.vim25.mo.ManagedEntity;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 public class VmwareCollector extends AbstractRemoteServiceCollector {
-
     /**
      * logging for VMware data collection
      */
@@ -121,7 +121,6 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
      */
     @Override
     public void initialize() throws CollectionInitializationException {
-
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         }
@@ -190,7 +189,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
                 if (vmwareServer == null) {
                     throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
                 }
-                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
+                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, Interpolator.pleaseInterpolate(vmwareServer));
 
                 return null;
             }

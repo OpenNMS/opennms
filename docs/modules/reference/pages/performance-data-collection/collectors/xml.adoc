@@ -77,7 +77,10 @@ XML collections are defined in `$\{OPENNMS_HOME}/etc/xml-datacollection-config.x
 </xml-collection>
 ----
 
-The `url` attribute of the `<xml-source>` supports node and IpInterface <<reference:configuration/filters/parameters.adoc#filter-parameters, field placeholders>>, though it does not support metadata tokens.
+The `url` attribute of the `<xml-source>` supports node and IpInterface <<reference:configuration/filters/parameters.adoc#filter-parameters, field placeholders>>.
+
+NOTE: Metadata expressions can also be used in attributes of the `xml-datacollection-config.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
 
 .The referenced `opennms-nodes.xml` file
 [source, xml]

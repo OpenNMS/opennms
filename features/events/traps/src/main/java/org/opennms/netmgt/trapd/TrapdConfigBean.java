@@ -32,16 +32,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is a bean container that can be used as a {@link TrapdConfig}

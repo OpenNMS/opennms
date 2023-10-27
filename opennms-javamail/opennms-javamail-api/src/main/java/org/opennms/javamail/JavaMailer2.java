@@ -100,7 +100,7 @@ public abstract class JavaMailer2 {
         auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, password);
+                return new PasswordAuthentication(JavaMailerConfig.interpolate(user), JavaMailerConfig.interpolate(password));
             }
         };
         return auth;

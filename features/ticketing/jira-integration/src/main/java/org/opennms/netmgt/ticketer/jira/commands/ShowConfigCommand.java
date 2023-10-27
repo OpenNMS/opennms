@@ -34,6 +34,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 
 @Command(scope = "opennms", name = "jira-show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
@@ -41,9 +42,15 @@ import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 @Service
 public class ShowConfigCommand extends OsgiCommandSupport implements Action {
 
+    protected EntityScopeProvider entityScopeProvider;
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
+    }
+
     @Override
     public Object execute() throws Exception {
-        Properties properties = JiraTicketerPlugin.getConfig().getProperties();
+        Properties properties = JiraTicketerPlugin.getConfig(entityScopeProvider).getProperties();
         for (String eachKey : properties.stringPropertyNames()) {
             System.out.println(eachKey + " = " + properties.getProperty(eachKey));
         }

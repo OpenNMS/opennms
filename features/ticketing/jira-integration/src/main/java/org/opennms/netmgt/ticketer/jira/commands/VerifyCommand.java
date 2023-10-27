@@ -41,6 +41,7 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.ticketer.jira.Config;
 import org.opennms.netmgt.ticketer.jira.JiraClientUtils;
 import org.opennms.netmgt.ticketer.jira.JiraConnectionFactory;
@@ -56,13 +57,16 @@ import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 @Service
 public class VerifyCommand extends OsgiCommandSupport implements Action {
 
-    private Config config = JiraTicketerPlugin.getConfig();
+    protected EntityScopeProvider entityScopeProvider;
+
+    private Config config;
 
     @Option(name="-f", aliases="--field", description="Verifies the existence of the defined field(s).", required = false, multiValued = true)
     String[] field;
 
     @Override
     public Object execute() throws Exception {
+        config = JiraTicketerPlugin.getConfig(entityScopeProvider);
         JiraRestClient connection = null;
         // Validate all settings
         try {
@@ -78,6 +82,10 @@ public class VerifyCommand extends OsgiCommandSupport implements Action {
                 connection.close();
             }
         }
+    }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 
     @Override

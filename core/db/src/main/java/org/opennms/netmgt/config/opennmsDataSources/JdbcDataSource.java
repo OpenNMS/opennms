@@ -29,9 +29,6 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -61,9 +58,6 @@ public class JdbcDataSource implements java.io.Serializable {
     private static final long serialVersionUID = -1120653287571635877L;
     private static final Logger LOG = LoggerFactory.getLogger(JdbcDataSource.class);
 
-    private static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
-    private static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
-
     @XmlAttribute(name = "name", required = true)
     private String name;
 
@@ -90,9 +84,6 @@ public class JdbcDataSource implements java.io.Serializable {
 
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
-
-    private transient String keystorePassword;
-    private transient String keystoreFilename;
 
     public JdbcDataSource() {
         this.paramList = new java.util.ArrayList<>();
@@ -454,35 +445,11 @@ public class JdbcDataSource implements java.io.Serializable {
         this.rawUserName = rawUserName;
     }
 
-    protected String getKeystoreFilename() {
-        if (this.keystoreFilename == null) {
-            var opennmsHome = System.getProperty("opennms.home");
-            if (opennmsHome == null) {
-                try {
-                    LOG.warn("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
-                    opennmsHome = Files.createTempDirectory("opennms-home-").toString();
-                } catch (final IOException e) {
-                    throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
-                }
-            }
-            this.keystoreFilename = Paths.get(opennmsHome, "etc", "scv.jce").toString();
-        }
-        return this.keystoreFilename;
-    }
-
-    protected String getKeystorePassword() {
-        if (this.keystorePassword == null) {
-            this.keystorePassword = System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
-        }
-        return this.keystorePassword;
-    }
-
     public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, this.getKeystoreFilename(), this.getKeystorePassword());
+        return interpolateAttribute(value, JCEKSSecureCredentialsVault.defaultScv());
     }
 
-    public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile, password);
+    public String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
         final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
         return result.output;
     }

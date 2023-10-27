@@ -96,6 +96,7 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         TrapdConfigBean config = new TrapdConfigBean(m_trapdConfig);
         config.setSnmpTrapPort(newPort);
         m_trapdConfig.update(config);
+        m_trapd.setSecureCredentialsVault(new TrapdIT.MockSecureCredentialsVault());
         m_trapd.start();
     }
 

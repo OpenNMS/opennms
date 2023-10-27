@@ -59,6 +59,8 @@ import org.apache.http.nio.conn.SchemeIOSessionStrategy;
 import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
+import org.checkerframework.checker.units.qual.K;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.features.jest.client.credentials.CredentialsParser;
 import org.opennms.features.jest.client.credentials.CredentialsProvider;
 import org.opennms.features.jest.client.executors.LimitedRetriesRequestExecutor;
@@ -101,6 +103,7 @@ public class RestClientFactory {
 	private JestClient client;
 	private boolean httpCompression = false;
 	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new LimitedRetriesRequestExecutor(m_timeout, m_retries);
+	private EntityScopeProvider entityScopeProvider;
 
 	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
 		this(elasticSearchURL, null, null);
@@ -155,6 +158,14 @@ public class RestClientFactory {
 		}
 	}
 
+	public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+		this.entityScopeProvider = entityScopeProvider;
+	}
+
+	public EntityScopeProvider getEntityScopeProvider() {
+		return this.entityScopeProvider;
+	}
+
 	/**
 	 * Set the number of times the REST operation will be retried if
 	 * an exception is thrown during the operation.
@@ -169,7 +180,7 @@ public class RestClientFactory {
 	 * Set the socket timeout (SO_TIMEOUT) for the REST connections. This is the
 	 * maximum period of inactivity while waiting for incoming data.
 	 * 
-	 * A default value of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T,K>}.
+	 * A default value of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T, K >}.
 	 * 
 	 * @param timeout Timeout in milliseconds.
 	 */
@@ -264,7 +275,7 @@ public class RestClientFactory {
 
 	public void setCredentials(final CredentialsProvider credentialsProvider) throws IOException {
 		if (credentialsProvider != null) {
-			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials());
+			final Map<AuthScope, Credentials> credentials = new CredentialsParser().parse(credentialsProvider.getCredentials(), getEntityScopeProvider());
 			if (!credentials.isEmpty()) {
 				final BasicCredentialsProvider customCredentialsProvider = new BasicCredentialsProvider();
 				clientConfigBuilder.credentialsProvider(customCredentialsProvider);

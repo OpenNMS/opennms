@@ -42,7 +42,11 @@ public interface SnmpProfileMapper {
      * @param oid         OID with which SNMP get needs to be performed.
      * @return snmpAgentConfig, a @{@link SnmpAgentConfig} from the matching profile.
      */
-    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid);
+    default CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid) {
+        return getAgentConfigFromProfiles(inetAddress, location, oid, true);
+    }
+
+    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, String oid, boolean metaDataInterpolation);
 
     /**
      * Get @{@link SnmpAgentConfig} from SNMP profiles.
@@ -51,7 +55,11 @@ public interface SnmpProfileMapper {
      * @param location    location of IP address.
      * @return snmpAgentConfig, a @{@link SnmpAgentConfig} from the matching profile.
      */
-    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location);
+    default CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location) {
+        return getAgentConfigFromProfiles(inetAddress, location, true);
+    }
+
+    CompletableFuture<Optional<SnmpAgentConfig>> getAgentConfigFromProfiles(InetAddress inetAddress, String location, boolean metaDataInterpolation);
 
     /**
      * Fit a profile with specified IP address and label. If no label is specified, it will try to find first matching profile.
