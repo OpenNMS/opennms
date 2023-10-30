@@ -17,10 +17,10 @@ These startup arguments can be passed in the `command` definition of the Docker 
 | Start the process in the foreground and use existing data and configuration.
 
 | `-i`
-| One-time command to initialize or update database and configuration files and do *NOT* start.
+| One-time command to initialize or update database and configuration files and do not start.
 
 | `-s`
-| Command to initialize or update database and configuration files and start OpenNMS in the foreground.
+| Command to initialize or update database and configuration files and start {page-component-title} in the foreground.
 
 | `-t`
 | One-time command to run the config-tester against the configuration.
@@ -28,7 +28,7 @@ These startup arguments can be passed in the `command` definition of the Docker 
 
 == Directory conventions
 
-The containerized version of {page-component-title} provides some extra mount points that can be used to persist data and configuration.
+The containerized version of {page-component-title} provides extra mount points you can use to persist data and configuration.
 
 [options="header, %autowidth"]
 |===
@@ -38,18 +38,18 @@ The containerized version of {page-component-title} provides some extra mount po
 | Files placed here will be copied to `$\{OPENNMS-HOME}` on container startup.
 
 | /opennms-data
-| Directory with RRDTool/JRobin files and generated PDF reports sent to the file system.
+| Directory with RRDtool/JRobin files and generated PDF reports sent to the file system.
 |===
 
 == Configuration settings
 
-{page-component-title} containers utilize confd to apply select configuration options to the container.
-These settings can either be set in the `docker-compose.yml` as environment variables, or through a mapped YAML file.
+{page-component-title} containers use confd to apply select configuration options to the container.
+You can set these options in either the `docker-compose.yml` as environment variables, or through a mapped YAML file.
 See the <<configuration-options>> section below for possible values.
 
 If you want to use a separate YAML to define configuration, the following files must be mounted:
 
-* A yaml file to the following path: `/opt/opennms-overlay/confd/{page-component-name}-config.yaml`.
+* A YAML file to the following path: `/opt/opennms-overlay/confd/{page-component-name}-config.yaml`.
 * A file mapped to `/etc/confd/confd.toml` with the following contents:
 +
 [subs="attributes"]
@@ -93,8 +93,8 @@ opennms:
 3+| *Optional*
 
 | JAVA_OPTS
-| Allows you to add additional Java options.
-This option is only available as an environment variable, and not via a YAML config file.
+| Lets you add additional Java options.
+This option is available only as an environment variable, and not via a YAML config file.
 |
 |===
 
@@ -160,7 +160,7 @@ See the link:https://jdbc.postgresql.org/documentation/ssl/[PostgreSQL documenta
 | 3
 
 | OPENNMS_DATABASE_CONNECTION_MINPOOL
-| Minimal connection pool size
+| Minimum connection pool size
 | 50
 
 | OPENNMS_DATABASE_CONNECTION_MAXPOOL
@@ -183,19 +183,19 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.t
 3+| *Optional*
 
 | OPENNMS_TIMESERIES_STRATEGY
-| Used Timeseries storage strategy
+| Specified timeseries storage strategy
 | rrd
 
 | OPENNMS_RRD_STOREBYFOREIGNSOURCE
-| Store timeseries data by foreign source instead of the database node id
+| Store timeseries data by foreign source instead of the database node ID
 | true
 
 | OPENNMS_RRD_STRATEGYCLASS
-| Java RRD Strategy class
+| Java RRD strategy class
 | org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
 
 | OPENNMS_RRD_INTERFACEJAR
-| Java RRD Interface library
+| Java RRD interface library
 | /usr/share/java/jrrd2.jar
 
 | OPENNMS_LIBRARY_JRRD2
@@ -276,7 +276,7 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.n
 3+| *Optional*
 
 | REPLICATION_FACTOR
-| Set Cassandra replication factor for the newts keyspace if Newts is used.
+| Set Cassandra replication factor for the Newts keyspace if Newts is used.
 | 1
 
 | OPENNMS_CASSANDRA_HOSTNAMES
@@ -284,7 +284,7 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.n
 | localhost
 
 | OPENNMS_CASSANDRA_KEYSPACE
-| Name of the keyspace used by Newts
+| Name of the keyspace Newts uses
 | newts
 
 | OPENNMS_CASSANDRA_PORT
@@ -302,37 +302,28 @@ These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.n
 
 === Daemon control
 
-Select daemons are able to be enabled or disabled through the container definition with the following boolean variables.
+You can enable or disable select daemons through the container definition with the following Boolean variables.
 
 [options="header, %autowidth"]
 |===
 | Environment variable
 
-| *Optional*
-
-| OPENNMS_DAEMONS_CORRELATOR
-
-| OPENNMS_DAEMONS_ENLINKD
-
-| OPENNMS_DAEMONS_SNMPPOLLER
-
-| OPENNMS_DAEMONS_SYSLOGD
-
-| OPENNMS_DAEMONS_TELEMETRYD
-
-| OPENNMS_DAEMONS_TICKETER
-
-| OPENNMS_DAEMONS_TRAPD
-|===
+* OPENNMS_DAEMONS_CORRELATOR
+* OPENNMS_DAEMONS_ENLINKD
+* OPENNMS_DAEMONS_SNMPPOLLER
+* OPENNMS_DAEMONS_SYSLOGD
+* OPENNMS_DAEMONS_TELEMETRYD
+* OPENNMS_DAEMONS_TICKETER
+* OPENNMS_DAEMONS_TRAPD
 
 === RRD/RRA definitions
 
-Data collection retention RRA definitions can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+You can define data collection retention RRA definitions only via `{page-component-name}-config.yaml` and not by environment variables.
 If RRA definitions are provided, any `<rra>` elements will be replaced across all `\*datacollection*` files and any files located in `$\{OPENNMS_HOME}/etc/\*datacollection*.d/` subdirectories.
 This does not change the RRA definitions for pollerd services.
 
-IMPORTANT: If you change the RRA definitions once datacollection has already run, you will need to manually delete any existing RRD/JRB files so they can be recreated with the new definition.
-No new metrics will be collected until the files are deleted or the RRA definitions reverted back to their previous values.
+IMPORTANT: If you change the RRA definitions after datacollection has already run, you will need to manually delete any existing RRD/JRB files so they can be recreated with the new definition.
+No new metrics will be collected until the files are deleted or the RRA definitions revert back to their previous values.
 
 WARNING: If you want to have different RRA definitions for different collections, do not use this setting and instead overlay the specific config files as necessary.
 
@@ -350,7 +341,7 @@ opennms:
 
 === Kafka broker configuration
 
-Kafka broker settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+You can define Kafka broker settings only via `{page-component-name}-config.yaml` and not by environment variables.
 These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.kafka.properties`.
 
 [source, yaml]
@@ -377,7 +368,7 @@ The first broker server to respond will be used to provide a full list of all br
 
 === Kafka consumer configuration
 
-Kafka Consumer settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+You can define Kafka consumer settings only via `{page-component-name}-config.yaml` and not by environment variables.
 
 [source, yaml]
 ----
@@ -391,7 +382,7 @@ opennms:
       key: value <3>
 ----
 <1> Topic will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.cfg`.
-<2> If you have multiple Kafka brokers in your cluster, Kafka Consumer will attempt to connect to each listed server in order.
+<2> If you have multiple Kafka brokers in your cluster, Kafka consumer will attempt to connect to each listed server in order.
 The first broker server to respond will be used to provide a full list of all brokers in the cluster.
 This setting will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka.consumer.client.cfg`.
 `$\{OPENNMS_HOME}/etc/featuresBoot.d/kafka-consumer.boot` will also be created when bootstrap servers have been defined.
@@ -399,7 +390,7 @@ This setting will be written to `$\{OPENNMS_HOME}/etc/org.opennms.features.kafka
 
 === Elastic flows configuration
 
-Elastic settings can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+You can define Elastic settings only via `{page-component-name}-config.yaml` and not by environment variables.
 
 [source, yaml]
 ----
@@ -423,7 +414,7 @@ Alternatively, you can define `globalElasticUser` and `globalElasticPassword` in
 
 === System properties
 
-System properties can only be defined via `{page-component-name}-config.yaml` and not by environment variables.
+You can define system properties only via `{page-component-name}-config.yaml` and not by environment variables.
 These options are written to `$\{OPENNMS_HOME}/etc/opennms.properties.d/_confd.custom.properties`.
 Any valid {page-component-title} property can be passed.
 
