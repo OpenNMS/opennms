@@ -129,15 +129,15 @@
     <feature name="dom4j" version="${dom4jVersion}" description="DOM4J">
         <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}$Bundle-SymbolicName=org.dom4j&amp;Bundle-Version=${dom4jVersion}</bundle>
     </feature>
-    <feature name="hibernate36" version="3.6.11.ONMS_RELEASE_1" description="Hibernate :: Hibernate ORM">
+    <feature name="hibernate36" version="${hibernateVersion}" description="Hibernate :: Hibernate ORM">
         <feature>commons-collections</feature>
         <feature>dom4j</feature>
         <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.ast</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final$Bundle-SymbolicName=org.hibernate.jpa20.api&amp;Bundle-Version=1.0.1</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.11.ONMS_RELEASE_1$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=3.6.11&amp;Export-Package=org.hibernate*;version="3.6.11"</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=3.2.0</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-core/${hibernateVersion}$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=${hibernateOsgiVersion}&amp;Export-Package=org.hibernate*;version="${hibernateOsgiVersion}"</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/${hibernateAnnotationsVersion}$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=${hibernateAnnotationsOsgiVersion}</bundle>
     </feature>
     <feature name="hibernate-validator4" version="${hibernateValidatorVersion}" description="Hibernate :: Hibernate Validator">
         <feature>javax.validation</feature>
