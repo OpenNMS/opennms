@@ -1,4 +1,4 @@
-MINION_ETC_DIR="/opt/sentinel/etc"
+SENTINEL_ETC_DIR="/opt/sentinel/etc"
 STATIC_DIR="/opt/sentinel/confd/static"
 
 # Checks if the given file is empty and if so deletes it.

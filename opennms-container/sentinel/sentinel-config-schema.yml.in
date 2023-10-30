@@ -3,7 +3,7 @@
 #
 # See the readme SENTINEL_CONFIG_SCHEMA_README.md for more information.
 
-# Version of Minion this schema configuration is applicable to
+# Version of Sentinel this schema configuration is applicable to
 version: "@VERSION@"
 revision: "@REVISION@"
 branch: "@BRANCH@"
@@ -15,7 +15,7 @@ categories:
   # General
   - name: "general"
     label: "General"
-    description: "Generic Minion configuration settings"
+    description: "Generic Sentinel configuration settings"
     config:
       - name: "instance-id"
         type:
@@ -32,19 +32,87 @@ categories:
         description: "Generic Java system properties"
         key: "/system/properties"
         example: "JAEGER_AGENT_HOST: my-jaeger-host"
-      - name: "server-certificates"
-        type:
-          name: "collection"
-          strategy: "indexed"
-          items:
-            label: "Certificate Name"
+    categories:
+      - name: "elasticsearch"
+        label: "Sentinel Elasticsearch Configuration"
+        description: "Sentinel Elasticsearch configuration"
+        config:
+          - name: "url"
             type:
               name: "string"
-        label: "Server Certificates"
-        description: "TLS certificates for public communication endpoints"
-        key: "/server-certs"
-        example: "TODO"
-    categories:
+              validation: "TODO"
+            label: "Url"
+            description: "Elasticsearch Url"
+            key: "/elastic/url"
+            example: "http://elastic-ip:9200"
+          - name: "index-strategy"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Url"
+            description: "Elasticsearch Index Strategy"
+            key: "/elastic/index-stratey"
+            example: "hourly"
+          - name: "replicas"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Replicas"
+            description: "Elasticsearch Replicas"
+            key: "/elastic/replicas"
+            example: "0"
+          - name: "conn-timeout"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Connection Timeout"
+            description: "Elasticsearch Connection Timeout"
+            key: "/elastic/conn-timeout"
+            example: "30000"
+          - name: "read-timeout"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Read Timeout"
+            description: "Elasticsearch Read Timeout"
+            key: "/elastic/read-timeout"
+            example: "60000"
+      - name: "datasource"
+        label: "Sentinel Datasource"
+        description: "Sentinel datasource configuration"
+        config:
+          - name: "url"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Url"
+            description: "Datasource Url"
+            key: "/datasource/url"
+            example: "jdbc:postgresql://localhost:5432/opennms"
+          - name: "username"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Url"
+            description: "Datasource Username"
+            key: "/datasource/username"
+            example: "opennms"
+          - name: "password"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Url"
+            description: "Datasource Password"
+            key: "/datasource/password"
+            example: "secret123!"
+          - name: "database-name"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Database name"
+            description: "Datasource Database Name"
+            key: "/datasource/database-name"
+            example: "opennms"
       # General :: Controller
       - name: "controller"
         label: "Sentinel Controller"
@@ -62,10 +130,10 @@ categories:
             type:
               name: "string"
               validation: "TODO"
-            label: "Minion Id"
+            label: "Sentinel Id"
             description: "Unique Sentinel identifier in the location"
             key: "/id"
-            example: "id: my-minion-nyc"
+            example: "id: my-sentinel-nyc"
           - name: "broker-url"
             type:
               name: "url"
@@ -78,7 +146,7 @@ categories:
     label: "Java"
     description: "Java configuration parameters."
     categories:
-  # Minion Environment
+  # Sentinel Environment
   - name: "environment"
     label: "Environment"
     description: "Sentinel Java environment settings"
@@ -98,20 +166,8 @@ categories:
   # IPC Configuration
   - name: "ipc"
     label: "IPC"
-    description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
+    description: "Core, Sentinel, and Sentinel distributed inter-process communication (IPC) settings"
     categories:
-      # IPC Configuration :: Sink
-      - name: "sink"
-        label: "Sink"
-        description: "Message sink configuration"
-        config:
-          - name: "offheap"
-            type:
-              name: "properties"
-            label: "Off Heap"
-            description: "Configuration for off-heap storage for sink messages"
-            key: "/ipc/sink/offheap"
-            example: "offHeapSize: 1GB"
       # IPC Configuration :: Kafka IPC
       - name: "kafka"
         label: "Kafka IPC"
@@ -148,12 +204,12 @@ categories:
         label: "Flows"
         description: "Configuration for network flow collectors"
         config:
-          - name: "flow-listener-def"
+          - name: "flow-adapter-def"
             type:
               name: "objects"
               fields:
-                - name: "listener-name"
-                  label: "Listener Name"
+                - name: "adapter-name"
+                  label: "Adapter Name"
                   type:
                     name: "string"
                     validation: "TODO"
@@ -166,65 +222,10 @@ categories:
                   label: "Parameters"
                   type:
                     name: "properties"
-                - name: "parsers"
-                  label: "Flow Parser Definition"
-                  type:
-                    name: "objects"
-                    fields:
-                      - name: "name"
-                        label: "Parser Name"
-                        type:
-                          name: "string"
-                          validation: "TODO"
-                      - name: "class-name"
-                        label: "Class Name"
-                        type:
-                          name: "string"
-                          validation: "TODO"
-                      - name: "parameters"
-                        label: "Parameters"
-                        type:
-                          name: "properties"
-                    index-type: "field"
-                    index-field: "name"
               index-type: "field"
-              index-field: "listener-name"
-            label: "Flow Listener Definition"
-            description: "Configure listener for network flow packets"
-            key: "/telemetry/flows/listeners"
+              index-field: "adapter-name"
+            label: "Flow Adapter Definition"
+            description: "Configure adapter for network flow packets"
+            key: "/telemetry/flows/adapters"
             example: "TODO"
-        categories:
-          # Telemetry :: Flows :: Single Port Listener
-          - name: "single-port-listener"
-            label: "Single Port Listener"
-            description: "Configuration for single port flow listener"
-            config:
-              - name: "enabled"
-                type:
-                  name: "boolean"
-                label: "Enable Single Port Listener"
-                description: "Enable or disable the single port flow listener."
-                key: "/telemetry/flows/single-port-listener/enabled"
-                example: "true"
-              - name: "name"
-                type:
-                  name: "string"
-                  validation: "TODO"
-                label: "Name"
-                description: "Single port listener name"
-                key: "/telemetry/flows/single-port-listener/name"
-                example: "Name for the single port listener."
-              - name: "parameters"
-                type:
-                  name: "properties"
-                label: "Parameters"
-                description: "Configuration parameter for the single port listener"
-                key: "/telemetry/flows/single-port-listener/parameters"
-                example: "port: 50000"
-              - name: "parser-parameters"
-                type:
-                  name: "properties"
-                label: "Parser Parameters"
-                description: "Flow packet parser configuration parameters"
-                key: "/telemetry/flows/single-port-listener/parser-parameters"
-                example: "queue: Netflow-9"
+
