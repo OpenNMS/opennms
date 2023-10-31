@@ -10,6 +10,20 @@
   <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
   <name>OpenNMS :: Features :: Flows :: Classification :: Engine :: API</name>
   <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.flows</groupId>

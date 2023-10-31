@@ -24,6 +24,7 @@
             <!-- Don't export any packages, expose services only. -->
             <Export-Package></Export-Package>
             <Import-Package>
+              ${guavaImportPackage},
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.opennms.core.network,

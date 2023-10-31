@@ -19,6 +19,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.opennms.netmgt.graph.rest.impl*</Private-Package>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -26,6 +26,7 @@
               org.opennms.api.reporting.parameter.*;version="${project.version}",
               org.opennms.api.reporting.*;version="${project.version}"
             </Export-Package>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

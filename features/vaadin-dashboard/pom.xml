@@ -49,6 +49,7 @@
                         <Vaadin-Package-Version>1</Vaadin-Package-Version>
                         <Vaadin-Widgetsets>org.opennms.features.vaadin.dashboard.DashboardWidgetSet</Vaadin-Widgetsets>
                         <Include-Resource>{maven-resources},target/gwt/</Include-Resource>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

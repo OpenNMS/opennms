@@ -19,6 +19,7 @@
                 <configuration>
                     <instructions>
                         <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

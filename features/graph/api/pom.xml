@@ -21,6 +21,7 @@
                     <instructions>
                         <Export-Package>{local-packages}</Export-Package>
                         <Private-Package></Private-Package>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

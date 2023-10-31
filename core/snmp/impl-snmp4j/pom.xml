@@ -27,6 +27,7 @@
               org.snmp4j.*
             </Export-Package>
             <Import-Package>
+              ${guavaImportPackage},
               org.apache.commons.lang;resolution:=optional,
               org.apache.log4j;resolution:=optional,
               *

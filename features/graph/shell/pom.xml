@@ -19,8 +19,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>{local-packages}</Private-Package>
                         <Karaf-Commands>*</Karaf-Commands>
+                        <Import-Package>${guavaImportPackage},*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

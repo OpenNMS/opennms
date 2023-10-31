@@ -21,6 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Newts 1.x uses 18, and 25 is the last fully-compatible version before google started deprecating/freezing APIs -->
             <Import-Package>
               com.google.common.*;version="[18.0,26)",
               *

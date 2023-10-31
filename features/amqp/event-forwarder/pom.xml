@@ -39,7 +39,11 @@
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <!-- Add classes that are included in Camel routes -->
-            <Import-Package>org.opennms.core.xml,*</Import-Package>
+            <Import-Package>
+              ${guavaImportPackage},
+              org.opennms.core.xml,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

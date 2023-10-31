@@ -30,6 +30,7 @@
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
+    <module>jest-complete-osgi</module>
     <module>jfreechart</module>
     <module>jinterop</module>
     <module>jmx</module>

@@ -19,8 +19,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>*,edu.uci.ics.jung.graph</Import-Package>
-                        <Private-Package>{local-packages}</Private-Package>
+                        <Import-Package>
+                            ${guavaImportPackage},
+                            edu.uci.ics.jung.graph,
+                            *
+                        </Import-Package>
                         <Export-Package></Export-Package>
                     </instructions>
                 </configuration>

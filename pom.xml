@@ -1817,6 +1817,9 @@
     <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
 
+    <!-- use to easily template adding Guava to Import-Packages in bundles -->
+    <guavaImportPackage>com.google.common.*;version="${guavaVersion}"</guavaImportPackage>
+
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
     <nodeVersion>v16.20.2</nodeVersion>
@@ -2950,6 +2953,11 @@
         <artifactId>jcifs-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jest-complete-osgi</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -4533,6 +4541,16 @@
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jakartaXmlBindVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.searchbox</groupId>
+        <artifactId>jest</artifactId>
+        <version>${jestVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.searchbox</groupId>
+        <artifactId>jest-common</artifactId>
+        <version>${jestVersion}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>

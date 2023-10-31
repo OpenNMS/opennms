@@ -25,6 +25,7 @@
               org.opennms.core.config.api.*;version="${project.version}",
               org.opennms.core.network;version="${project.version}"
             </Export-Package>
+            <Import-Package>${guavaImportPackage},*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

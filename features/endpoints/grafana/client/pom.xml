@@ -24,6 +24,7 @@
             <Embed-Dependency>*;artifactId=okhttp|gson|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
+              ${guavaImportPackage},
               dalvik.system;resolution:=optional,
               android.net;resolution:=optional,
               android.net.http;resolution:=optional,
