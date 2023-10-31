@@ -1,0 +1,15 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.opennms.core.RewriteConfig
+displayName: common rewrite patterns for the OpenNMS codebase
+recipeList:
+  - org.openrewrite.java.OrderImports:
+      removeUnused: true
+#  - org.openrewrite.java.apache.httpclient4.MigrateDefaultHttpClient
+#  - org.openrewrite.java.logging.slf4j.ParameterizedLogging
+#  - org.openrewrite.java.logging.slf4j.Slf4jBestPractices
+#  - org.openrewrite.java.migrate.UseJavaUtilBase64
+#  - org.openrewrite.java.migrate.apache.commons.codec.ApacheBase64ToJavaBase64
+#  - org.openrewrite.java.migrate.apache.commons.io.ApacheCommonsFileUtilsRecipes
+#  - org.openrewrite.java.migrate.apache.commons.io.ApacheFileUtilsToJavaFiles
+#  - org.openrewrite.java.migrate.apache.commons.io.ApacheCommonsFileUtilsRecipes$WriteStringToFileRecipe
