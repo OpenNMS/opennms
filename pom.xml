@@ -1705,7 +1705,8 @@
     <jnaVersion>5.12.1</jnaVersion>
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
-    <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
+    <!-- Jolokia has to match the version provided in our Karaf -->
+    <jolokiaClientVersion>1.7.1</jolokiaClientVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
