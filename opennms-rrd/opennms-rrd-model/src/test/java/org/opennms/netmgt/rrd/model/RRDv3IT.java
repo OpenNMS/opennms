@@ -32,16 +32,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.AbstractRRD;
-import org.opennms.netmgt.rrd.model.Row;
 import org.opennms.netmgt.rrd.model.v3.CFType;
 import org.opennms.netmgt.rrd.model.v3.DSType;
 import org.opennms.netmgt.rrd.model.v3.RRA;

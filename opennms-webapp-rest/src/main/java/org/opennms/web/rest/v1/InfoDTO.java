@@ -34,7 +34,6 @@ import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @XmlRootElement(name="info")

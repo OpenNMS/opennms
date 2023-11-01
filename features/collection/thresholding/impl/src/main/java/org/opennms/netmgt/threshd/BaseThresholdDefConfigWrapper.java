@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,7 +37,6 @@ import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
-import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 

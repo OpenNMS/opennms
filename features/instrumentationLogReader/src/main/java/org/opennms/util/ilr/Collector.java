@@ -45,7 +45,8 @@ import java.util.Map;
 import java.util.Set;
 
 
-import static org.opennms.util.ilr.Filter.*;
+import static org.opennms.util.ilr.Filter.byPartialServiceID;
+import static org.opennms.util.ilr.Filter.filter;
 
 public class Collector {
 

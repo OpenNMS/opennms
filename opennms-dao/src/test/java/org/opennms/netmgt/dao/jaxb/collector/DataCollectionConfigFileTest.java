@@ -35,8 +35,6 @@ import java.lang.reflect.Method;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.jaxb.InvocationAnticipator;
-import org.opennms.netmgt.dao.jaxb.collector.DataCollectionConfigFile;
-import org.opennms.netmgt.dao.jaxb.collector.DataCollectionVisitor;
 import org.springframework.core.io.ClassPathResource;
 
 public class DataCollectionConfigFileTest extends TestCase {

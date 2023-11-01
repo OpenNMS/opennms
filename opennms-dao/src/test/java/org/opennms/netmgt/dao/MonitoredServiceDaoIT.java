@@ -36,12 +36,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;

@@ -29,10 +29,6 @@
 package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.net.InetAddress;
-import java.util.Date;
-import java.util.List;
-
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
 

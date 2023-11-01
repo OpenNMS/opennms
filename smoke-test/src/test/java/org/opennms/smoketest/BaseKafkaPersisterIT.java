@@ -28,12 +28,6 @@
 
 package org.opennms.smoketest;
 
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotNull;
-
 /** Abstract methods and tests corresponding to kafka persister **/
 public abstract class BaseKafkaPersisterIT {
 

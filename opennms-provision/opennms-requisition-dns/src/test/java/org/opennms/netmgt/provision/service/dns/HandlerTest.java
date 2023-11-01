@@ -28,18 +28,10 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.springframework.core.io.UrlResource;
-
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 

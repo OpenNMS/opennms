@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.support;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.collections.LazySet;

@@ -45,7 +45,6 @@ import javax.xml.validation.Validator;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.JaxbUtils;

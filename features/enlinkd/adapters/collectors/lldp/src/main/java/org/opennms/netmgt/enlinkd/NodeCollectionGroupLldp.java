@@ -28,18 +28,12 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
-import org.opennms.netmgt.scheduler.Executable;
 import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 

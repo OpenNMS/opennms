@@ -54,14 +54,12 @@ import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.opennms.netmgt.timeseries.stats.StatisticsCollectorImpl;
 import org.opennms.newts.api.Resource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class RingBufferTimeseriesWriterTest {
 

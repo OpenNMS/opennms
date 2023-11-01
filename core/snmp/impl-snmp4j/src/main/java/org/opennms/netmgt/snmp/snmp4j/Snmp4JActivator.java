@@ -33,7 +33,6 @@ import java.util.Hashtable;
 
 import org.opennms.netmgt.snmp.SnmpStrategy;
 
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

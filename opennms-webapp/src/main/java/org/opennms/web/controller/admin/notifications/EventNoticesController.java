@@ -37,7 +37,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifications.Notification;

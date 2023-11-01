@@ -83,7 +83,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
 import org.opennms.netmgt.threshd.ThresholdingServiceImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;

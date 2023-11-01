@@ -35,9 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsEngine;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfig;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**

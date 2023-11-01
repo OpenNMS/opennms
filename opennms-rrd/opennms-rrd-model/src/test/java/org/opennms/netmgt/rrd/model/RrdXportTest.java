@@ -33,7 +33,6 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.RrdXport;
 
 /**
  * The Class RRD Export Test.

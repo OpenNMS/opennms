@@ -45,7 +45,6 @@ import java.util.List;
 
 
 import org.junit.Test;
-import org.opennms.util.ilr.Collector;
 import org.opennms.util.ilr.Collector.SortColumn;
 import org.opennms.util.ilr.Collector.SortOrder;
 

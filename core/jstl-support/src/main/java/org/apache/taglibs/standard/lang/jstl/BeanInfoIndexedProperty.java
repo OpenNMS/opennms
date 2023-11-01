@@ -31,8 +31,6 @@ package org.apache.taglibs.standard.lang.jstl;
 
 import java.beans.IndexedPropertyDescriptor;
 
-import java.beans.PropertyDescriptor;
-
 import java.lang.reflect.Method;
 
 

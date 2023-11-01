@@ -39,8 +39,6 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.protocols.json.collector.JsonCollectorITCase;
-import org.opennms.protocols.json.collector.MockDocumentBuilder;
 
 /**
  * The Test class for JSON Collector for Solaris Zones Statistics

@@ -40,7 +40,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
-import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;

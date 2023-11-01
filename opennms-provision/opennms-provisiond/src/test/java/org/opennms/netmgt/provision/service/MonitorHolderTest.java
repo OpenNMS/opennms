@@ -31,11 +31,6 @@ package org.opennms.netmgt.provision.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
 public class MonitorHolderTest {

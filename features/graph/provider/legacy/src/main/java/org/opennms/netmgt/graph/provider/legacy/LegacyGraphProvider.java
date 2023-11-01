@@ -29,25 +29,10 @@
 package org.opennms.netmgt.graph.provider.legacy;
 
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.focus.Focus;
-import org.opennms.netmgt.graph.api.focus.FocusStrategy;
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
-
-import com.google.common.collect.Lists;
 
 public class LegacyGraphProvider implements GraphProvider {
 

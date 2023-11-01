@@ -28,15 +28,11 @@
 
 package org.opennms.netmgt.perspectivepoller;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.core.tracing.api.TracerConstants;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.config.poller.Service;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

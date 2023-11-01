@@ -46,7 +46,6 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
-import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.agent.Definition;
 import org.opennms.netmgt.config.wmi.agent.Range;

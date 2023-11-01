@@ -35,7 +35,6 @@ import java.util.List;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfAreaDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
 /**

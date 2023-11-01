@@ -38,11 +38,8 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Objects;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 
 

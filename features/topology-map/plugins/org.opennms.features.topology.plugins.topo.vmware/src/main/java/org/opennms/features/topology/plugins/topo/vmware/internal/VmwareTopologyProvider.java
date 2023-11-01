@@ -56,8 +56,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 public class VmwareTopologyProvider extends AbstractTopologyProvider {
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);

@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;

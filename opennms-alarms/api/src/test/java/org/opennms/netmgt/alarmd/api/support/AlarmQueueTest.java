@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.api.support.AlarmQueue;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 /**

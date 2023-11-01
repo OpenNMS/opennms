@@ -40,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
-import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.listeners.utils.NettyEventListener;
 import org.slf4j.Logger;

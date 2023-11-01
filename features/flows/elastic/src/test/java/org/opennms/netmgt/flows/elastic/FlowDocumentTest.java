@@ -37,7 +37,6 @@ import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 

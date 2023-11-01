@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;

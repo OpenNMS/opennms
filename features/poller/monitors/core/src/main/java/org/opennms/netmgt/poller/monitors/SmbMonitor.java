@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import jcifs.CIFSContext;
 import jcifs.NameServiceClient;
-import jcifs.context.BaseContext;
 import jcifs.context.SingletonContext;
 import jcifs.netbios.NameServiceClientImpl;
 import jcifs.netbios.NbtAddress;

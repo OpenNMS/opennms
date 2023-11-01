@@ -30,7 +30,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
-import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 

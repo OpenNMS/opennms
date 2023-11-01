@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.support;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.ObjectNameStorageStrategy;
 import org.opennms.netmgt.config.datacollection.Parameter;

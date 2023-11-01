@@ -32,7 +32,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.FilterFavoriteDao;
-import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.springframework.orm.hibernate3.HibernateCallback;
 

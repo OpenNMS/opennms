@@ -45,7 +45,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-import javax.validation.Validation;
 import javax.xml.bind.ValidationException;
 
 /**

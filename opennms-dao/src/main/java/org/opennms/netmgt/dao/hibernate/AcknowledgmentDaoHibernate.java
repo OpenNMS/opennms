@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;

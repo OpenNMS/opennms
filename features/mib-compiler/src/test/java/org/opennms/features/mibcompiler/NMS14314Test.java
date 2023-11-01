@@ -28,23 +28,20 @@
 
 package org.opennms.features.mibcompiler;
 
-import org.jsmiparser.parser.SmiDefaultParser;
-import org.jsmiparser.smi.SmiMib;
-import org.jsmiparser.smi.SmiModule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.mibcompiler.services.JsmiMibParser;
 import org.opennms.features.namecutter.NameCutter;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
-import org.opennms.netmgt.xml.eventconf.Events;
 
 import java.io.File;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 

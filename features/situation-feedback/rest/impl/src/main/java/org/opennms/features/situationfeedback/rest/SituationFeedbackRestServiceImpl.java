@@ -27,13 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.rest;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;

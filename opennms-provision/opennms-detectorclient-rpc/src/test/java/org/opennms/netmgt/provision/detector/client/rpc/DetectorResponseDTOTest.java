@@ -33,7 +33,6 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.netmgt.provision.detector.client.rpc.DetectorResponseDTO;
 
 public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO> {
 

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.passive;
 
-import org.opennms.netmgt.passive.PassiveStatusKey;
-
 import junit.framework.TestCase;
 
 public class PassiveStatusTest extends TestCase {

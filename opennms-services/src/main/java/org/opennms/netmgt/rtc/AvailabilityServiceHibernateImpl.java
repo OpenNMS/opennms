@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
@@ -42,7 +41,6 @@ import org.opennms.core.criteria.restrictions.LeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.events.api.EventConstants;

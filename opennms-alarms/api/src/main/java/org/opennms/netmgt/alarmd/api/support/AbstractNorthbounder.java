@@ -49,7 +49,6 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.x733ProbableCause;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;

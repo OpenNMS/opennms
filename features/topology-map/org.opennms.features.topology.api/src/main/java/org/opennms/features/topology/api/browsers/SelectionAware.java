@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.api.browsers;
 
-import static org.opennms.features.topology.api.browsers.SelectionChangedListener.*;
+import static org.opennms.features.topology.api.browsers.SelectionChangedListener.Selection;
 
 import java.util.List;
 

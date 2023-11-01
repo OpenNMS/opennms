@@ -29,11 +29,8 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-
-import com.google.common.collect.Iterables;
 
 public interface InterfaceToNodeCache {
 

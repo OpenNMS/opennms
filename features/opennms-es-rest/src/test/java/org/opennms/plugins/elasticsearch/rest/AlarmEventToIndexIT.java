@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.netmgt.model.OnmsSeverity;

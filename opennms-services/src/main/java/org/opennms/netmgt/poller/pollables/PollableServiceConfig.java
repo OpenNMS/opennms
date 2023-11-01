@@ -31,9 +31,7 @@ package org.opennms.netmgt.poller.pollables;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;

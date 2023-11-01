@@ -36,12 +36,10 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 import org.jfree.chart.JFreeChart;
 import org.junit.After;
@@ -55,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.charts.ChartUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)

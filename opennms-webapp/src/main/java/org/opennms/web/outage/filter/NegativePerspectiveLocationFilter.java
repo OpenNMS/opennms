@@ -33,7 +33,6 @@ import java.util.Objects;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.filter.NotEqualsFilterNullAware;
 import org.opennms.web.filter.SQLType;
-import org.opennms.web.outage.OutageUtil;
 
 public class NegativePerspectiveLocationFilter extends NotEqualsFilterNullAware {
     public static final String TYPE = "notperspective";

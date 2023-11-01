@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;

@@ -34,7 +34,6 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.netmgt.model.OnmsAssetRecord;
 
 import com.google.common.collect.Lists;
 

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
@@ -46,9 +45,7 @@ import org.quartz.TriggerKey;
 import org.quartz.JobBuilder;
 import org.quartz.TriggerBuilder;
 import org.quartz.CronScheduleBuilder;
-import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.spi.JobFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -38,8 +38,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.Test;
-import org.opennms.core.soa.support.MultivaluedMap;
-import org.opennms.core.soa.support.MultivaluedMapImpl;
 
 
 /**

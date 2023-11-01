@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;

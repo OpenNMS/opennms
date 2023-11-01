@@ -35,7 +35,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.Row;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.netmgt.rrd.model.v3.RRA;
 

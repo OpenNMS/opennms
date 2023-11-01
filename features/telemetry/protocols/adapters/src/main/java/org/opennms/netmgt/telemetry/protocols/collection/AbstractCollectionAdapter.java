@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
-import static com.codahale.metrics.MetricRegistry.name;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.Objects;

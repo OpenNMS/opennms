@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
 import org.opennms.netmgt.notifd.api.NotificationConfigProvider;
 import org.opennms.netmgt.notifd.api.NotificationTester;
-import org.opennms.netmgt.provision.service.MonitorHolder;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.springframework.beans.factory.annotation.Autowired;

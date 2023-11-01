@@ -31,7 +31,6 @@ package org.opennms.features.scv.rest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class CredentialsDTO {
 

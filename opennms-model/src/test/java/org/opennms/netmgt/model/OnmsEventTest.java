@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.hibernate.collection.PersistentBag;
 import org.junit.Test;
 
 public class OnmsEventTest {

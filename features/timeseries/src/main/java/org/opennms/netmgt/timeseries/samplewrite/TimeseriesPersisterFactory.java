@@ -48,7 +48,6 @@ import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Factory for {@link TimeseriesPersister}.

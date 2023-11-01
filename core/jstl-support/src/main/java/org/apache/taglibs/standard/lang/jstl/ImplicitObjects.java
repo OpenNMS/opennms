@@ -31,10 +31,6 @@ package org.apache.taglibs.standard.lang.jstl;
 
 import java.util.ArrayList;
 
-import java.util.Collections;
-
-import java.util.Date;
-
 import java.util.Enumeration;
 
 import java.util.HashMap;

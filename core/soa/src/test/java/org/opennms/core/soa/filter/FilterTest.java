@@ -28,8 +28,9 @@
 
 package org.opennms.core.soa.filter;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;

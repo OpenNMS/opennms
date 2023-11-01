@@ -29,9 +29,7 @@
 package org.opennms.netmgt.provision.service.dns;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,7 +53,6 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
-import org.xbill.DNS.ZoneTransferIn.Delta;
 import org.xbill.DNS.ZoneTransferIn.ZoneTransferHandler;
 
 import com.google.common.base.Strings;

@@ -18,7 +18,6 @@
 package org.opennms.vaadin.extender.internal.extender;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;

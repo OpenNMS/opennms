@@ -36,7 +36,6 @@ import java.util.Objects;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class OptionState {
     public final int templateId;

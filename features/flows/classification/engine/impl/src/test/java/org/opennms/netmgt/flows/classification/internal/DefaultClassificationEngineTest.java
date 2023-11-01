@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
-import org.opennms.core.network.IPAddress;
-import org.opennms.core.network.IPAddressRange;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;

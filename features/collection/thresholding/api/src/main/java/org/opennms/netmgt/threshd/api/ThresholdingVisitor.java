@@ -29,7 +29,6 @@
 package org.opennms.netmgt.threshd.api;
 
 import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 

@@ -30,7 +30,6 @@ package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 

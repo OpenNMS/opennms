@@ -34,7 +34,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.integration.api.v1.detectors.DetectorClient;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
 /**

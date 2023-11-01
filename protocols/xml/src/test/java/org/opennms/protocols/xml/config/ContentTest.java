@@ -34,7 +34,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.http.FormFields;
-import org.opennms.protocols.xml.config.Request;
 
 /**
  * The Test Class for Content.

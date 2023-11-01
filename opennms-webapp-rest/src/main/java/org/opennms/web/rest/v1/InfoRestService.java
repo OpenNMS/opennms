@@ -30,9 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;

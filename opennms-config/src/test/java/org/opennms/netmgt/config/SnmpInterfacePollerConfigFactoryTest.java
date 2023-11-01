@@ -35,12 +35,10 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.snmpinterfacepoller.*;
 import org.opennms.netmgt.config.snmpinterfacepoller.Package;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SnmpInterfacePollerConfigFactoryTest {
     private SnmpInterfacePollerConfigFactory m_factory;

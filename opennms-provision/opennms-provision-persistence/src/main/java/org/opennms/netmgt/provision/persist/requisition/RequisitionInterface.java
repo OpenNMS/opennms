@@ -42,9 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.net.InetAddress;
 
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -56,7 +54,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.network.IPAddress;
-import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeAdapter;

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.config.dao.thresholding.api;
 
-import java.util.Optional;
-
 import org.opennms.netmgt.config.dao.common.api.ReadableDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;

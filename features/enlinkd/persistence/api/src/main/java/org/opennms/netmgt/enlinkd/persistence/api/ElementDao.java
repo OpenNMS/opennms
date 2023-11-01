@@ -29,8 +29,6 @@
 package org.opennms.netmgt.enlinkd.persistence.api;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 

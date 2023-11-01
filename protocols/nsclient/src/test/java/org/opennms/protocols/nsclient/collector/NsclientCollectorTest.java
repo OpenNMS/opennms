@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockPlatformTransactionManager;
-import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collection.api.CollectionAgent;

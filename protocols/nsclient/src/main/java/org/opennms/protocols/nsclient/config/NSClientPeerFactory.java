@@ -51,7 +51,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;

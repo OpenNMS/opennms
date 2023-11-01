@@ -51,7 +51,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
 @RunWith(MockitoJUnitRunner.class)

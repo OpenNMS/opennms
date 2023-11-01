@@ -28,24 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.opennms.core.collections.LazySet;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 
 /**
  * Perspective response time resources are stored in paths like:

@@ -42,13 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Collections;
 import java.util.Map;
-import java.util.regex.PatternSyntaxException;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -61,13 +59,11 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.config.keys.writer.openssh.OpenSSHKeyPairResourceWriter;
-import org.springframework.util.FileSystemUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

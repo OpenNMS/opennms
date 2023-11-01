@@ -32,12 +32,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Properties;
 
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 public class PropertiesFileCheckerTest {
 

@@ -31,15 +31,12 @@ package org.opennms.netmgt.trapd;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import javax.jms.MessageProducer;
 
@@ -55,18 +52,13 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
-import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.distributed.core.api.RestClient;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
-import org.opennms.netmgt.trapd.jmx.Trapd;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

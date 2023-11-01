@@ -41,7 +41,6 @@ import org.opennms.features.deviceconfig.service.DeviceConfigService.DeviceConfi
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 

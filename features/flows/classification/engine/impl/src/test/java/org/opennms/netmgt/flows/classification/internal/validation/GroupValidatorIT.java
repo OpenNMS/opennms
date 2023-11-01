@@ -33,7 +33,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.flows.classification.internal.validation.ValidatorTestUtils.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,6 @@ import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
-import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;

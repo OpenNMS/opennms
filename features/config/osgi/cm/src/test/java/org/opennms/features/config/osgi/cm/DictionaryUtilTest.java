@@ -28,7 +28,8 @@
 
 package org.opennms.features.config.osgi.cm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.opennms.features.config.osgi.cm.DictionaryUtil.createFromJson;
 import static org.opennms.features.config.osgi.cm.DictionaryUtil.writeToJson;
 import static org.osgi.framework.Constants.SERVICE_PID;

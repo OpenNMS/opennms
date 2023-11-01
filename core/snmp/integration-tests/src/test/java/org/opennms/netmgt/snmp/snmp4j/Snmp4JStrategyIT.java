@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;

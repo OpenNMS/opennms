@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.common.SchedulableNodeCollectorGroup;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;

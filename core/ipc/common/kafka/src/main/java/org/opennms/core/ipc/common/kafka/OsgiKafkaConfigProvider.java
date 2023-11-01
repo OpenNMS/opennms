@@ -31,7 +31,6 @@ package org.opennms.core.ipc.common.kafka;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.Properties;
 
 import org.osgi.service.cm.ConfigurationAdmin;

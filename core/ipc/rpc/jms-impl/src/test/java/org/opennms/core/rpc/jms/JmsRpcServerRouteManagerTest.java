@@ -31,7 +31,6 @@ package org.opennms.core.rpc.jms;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opennms.core.rpc.jms.JmsRpcServerRouteManager;
 
 public class JmsRpcServerRouteManagerTest {
 

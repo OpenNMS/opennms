@@ -30,14 +30,10 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.AlarmAssociationDao;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAlarm;
 

@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollerConfig;

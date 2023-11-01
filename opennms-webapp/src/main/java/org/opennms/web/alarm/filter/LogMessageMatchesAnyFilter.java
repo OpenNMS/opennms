@@ -28,7 +28,6 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.filter.SubstringFilter;
 
 /**

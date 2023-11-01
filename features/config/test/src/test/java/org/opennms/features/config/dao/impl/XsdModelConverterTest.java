@@ -29,11 +29,9 @@
 package org.opennms.features.config.dao.impl;
 
 import com.google.common.io.Resources;
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 

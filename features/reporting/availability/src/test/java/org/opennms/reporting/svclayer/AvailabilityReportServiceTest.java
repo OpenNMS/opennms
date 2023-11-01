@@ -28,7 +28,7 @@
 
 package org.opennms.reporting.svclayer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.After;
 import org.junit.Test;

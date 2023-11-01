@@ -43,7 +43,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.test.MockLogAppender;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;

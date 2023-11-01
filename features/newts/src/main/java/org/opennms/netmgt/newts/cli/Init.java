@@ -37,8 +37,6 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.newts.cassandra.Schema;
 import org.opennms.newts.cassandra.SchemaManager;
 
-import javax.inject.Named;
-
 public class Init implements Command {
 
     private static final ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);

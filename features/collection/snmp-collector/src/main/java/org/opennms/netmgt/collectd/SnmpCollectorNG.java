@@ -28,24 +28,18 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
-import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -30,7 +30,6 @@ package org.opennms.core.ipc.common.kafka;
 
 import java.util.Properties;
 
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.PropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -31,8 +31,6 @@ package liquibase.ext.opennms.setsequence;
 import static org.junit.Assert.assertEquals;
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
-import liquibase.ext.opennms.setsequence.SetSequenceGenerator;
-import liquibase.ext.opennms.setsequence.SetSequenceStatement;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.AbstractSqlGeneratorTest;
 import liquibase.sqlgenerator.SqlGenerator;

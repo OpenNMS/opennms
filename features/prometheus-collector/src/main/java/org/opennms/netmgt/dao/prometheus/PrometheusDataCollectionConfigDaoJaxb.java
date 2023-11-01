@@ -40,7 +40,6 @@ import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.config.prometheus.Collection;
 import org.opennms.netmgt.config.prometheus.Group;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDao;
 
 public class PrometheusDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigDao<PrometheusDatacollectionConfig, PrometheusDatacollectionConfig> implements PrometheusDataCollectionConfigDao {
 

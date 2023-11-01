@@ -40,26 +40,12 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.TagMatcher;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesData;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.newts.api.Resource;
-
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class OffheapTimeseriesWriterTest {

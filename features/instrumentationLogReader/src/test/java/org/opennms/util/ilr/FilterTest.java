@@ -28,7 +28,8 @@
 
 package org.opennms.util.ilr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.opennms.util.ilr.Filter.*;
 
 import java.util.Arrays;

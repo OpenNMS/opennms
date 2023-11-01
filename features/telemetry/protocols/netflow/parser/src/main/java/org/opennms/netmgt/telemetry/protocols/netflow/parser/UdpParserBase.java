@@ -44,7 +44,6 @@ import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;

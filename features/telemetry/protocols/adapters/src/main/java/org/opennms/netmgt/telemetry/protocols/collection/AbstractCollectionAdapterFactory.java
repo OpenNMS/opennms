@@ -32,11 +32,8 @@ import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.telemetry.api.adapter.AdapterFactory;
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;

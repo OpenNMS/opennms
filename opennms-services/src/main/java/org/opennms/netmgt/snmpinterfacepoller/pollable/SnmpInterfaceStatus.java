@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.snmpinterfacepoller.pollable;
 
-import org.opennms.netmgt.xml.event.Snmp;
-
 import java.util.HashSet;
 import java.util.Set;
 

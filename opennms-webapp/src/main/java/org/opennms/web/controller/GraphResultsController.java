@@ -43,8 +43,6 @@ import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
-import org.opennms.core.utils.jexl.OnmsJexlSandbox;
-import org.opennms.core.utils.jexl.OnmsJexlUberspect;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;

@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.function.BiConsumer;
 
 public class TwinUpdate {
 

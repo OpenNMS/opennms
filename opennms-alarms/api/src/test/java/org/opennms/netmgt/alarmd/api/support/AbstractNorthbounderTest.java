@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 /**

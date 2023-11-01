@@ -29,23 +29,11 @@
 package org.opennms.netmgt.measurements.filters.impl;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import org.apache.commons.math3.fitting.leastsquares.EvaluationRmsChecker;
-import org.apache.commons.math3.fitting.leastsquares.GaussNewtonOptimizer;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
 import org.opennms.netmgt.integrations.R.RScriptException;
-import org.opennms.netmgt.integrations.R.RScriptExecutor;
-import org.opennms.netmgt.integrations.R.RScriptInput;
-import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
@@ -54,8 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 
 /**

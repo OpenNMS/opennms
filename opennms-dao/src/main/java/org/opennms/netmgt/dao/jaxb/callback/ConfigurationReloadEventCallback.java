@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.jaxb.callback;
 
 import org.opennms.features.config.service.api.CmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;

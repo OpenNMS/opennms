@@ -28,13 +28,10 @@
 
 package org.opennms.netmgt.enlinkd.service.api;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
 
 public interface TopologyService {
     static <L, R> TopologyConnection<L, R>  of(L left, R right) {

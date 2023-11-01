@@ -34,8 +34,6 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.OspfArea;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.model.OnmsNode;
 
 
 public interface OspfAreaDao extends OnmsDao<OspfArea, Integer> {

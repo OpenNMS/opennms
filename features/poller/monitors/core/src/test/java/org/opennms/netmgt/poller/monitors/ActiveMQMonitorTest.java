@@ -34,7 +34,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.opennms.core.test.activemq.ActiveMQBroker;

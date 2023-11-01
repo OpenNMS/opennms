@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.api.AttributeType;
-
 /**
  * <p>CollectionAttribute interface.</p>
  *

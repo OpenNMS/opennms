@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.enlinkd.persistence.api;
 
-import java.util.Date;
-import java.util.List;
-
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 

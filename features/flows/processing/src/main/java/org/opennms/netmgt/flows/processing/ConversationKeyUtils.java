@@ -32,7 +32,6 @@ import java.io.StringWriter;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
-import org.opennms.netmgt.flows.api.Flow;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

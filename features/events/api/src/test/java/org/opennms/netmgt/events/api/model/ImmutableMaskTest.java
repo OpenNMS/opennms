@@ -30,9 +30,10 @@ package org.opennms.netmgt.events.api.model;
 
 import org.junit.Test;
 import org.opennms.core.test.xml.XmlTest;
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Mask;
+import org.opennms.netmgt.xml.event.Maskelement;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * A test class to verify mapping an immutability properties of '{@link ImmutableMask}'.

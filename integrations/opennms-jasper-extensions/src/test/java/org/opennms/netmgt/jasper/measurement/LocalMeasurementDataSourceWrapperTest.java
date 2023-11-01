@@ -38,7 +38,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 import org.opennms.netmgt.jasper.helper.SpringHelper;
-import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
 import org.opennms.netmgt.jasper.measurement.local.LocalMeasurementDataSourceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

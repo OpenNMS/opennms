@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.provision.persist.RequisitionProvider;
 import org.opennms.netmgt.provision.persist.RequisitionProviderRegistry;
 import org.slf4j.Logger;

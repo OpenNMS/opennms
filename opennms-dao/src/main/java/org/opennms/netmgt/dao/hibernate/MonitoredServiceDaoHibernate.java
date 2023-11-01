@@ -35,9 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsApplication;

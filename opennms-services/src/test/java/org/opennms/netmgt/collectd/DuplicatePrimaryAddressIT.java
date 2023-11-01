@@ -62,7 +62,6 @@ import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;

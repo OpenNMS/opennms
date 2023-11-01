@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 

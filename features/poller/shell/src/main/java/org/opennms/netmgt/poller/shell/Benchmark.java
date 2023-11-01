@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.poller.shell;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
@@ -42,7 +39,6 @@ import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GeRestriction;
 import org.opennms.core.criteria.restrictions.InRestriction;
-import org.opennms.core.daemon.DaemonReloadEnum;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -63,7 +59,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;

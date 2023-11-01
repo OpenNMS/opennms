@@ -41,8 +41,6 @@ import org.opennms.netmgt.notifd.browser.BrowserNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.json.JSONSerializer;
-
 public class NotificationStreamServlet extends WebSocketServlet {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStreamServlet.class);
 

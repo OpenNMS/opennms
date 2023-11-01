@@ -30,7 +30,6 @@ package org.opennms.distributed.core.impl;
 
 import java.util.concurrent.Callable;
 
-import org.opennms.core.health.api.CachingHealthCheck;
 import org.opennms.core.health.api.HealthCheckResponseCache;
 import org.opennms.core.health.api.Response;
 import org.opennms.distributed.core.api.RestClient;

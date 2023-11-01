@@ -28,48 +28,21 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
-import org.opennms.core.test.http.annotations.JUnitHttpServer;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
-import org.opennms.netmgt.dao.mock.MockNodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)

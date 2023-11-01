@@ -52,7 +52,6 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.DetectorRequestBuilder;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

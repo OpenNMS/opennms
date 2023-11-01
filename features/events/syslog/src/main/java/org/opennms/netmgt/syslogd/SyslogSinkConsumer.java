@@ -31,7 +31,6 @@ package org.opennms.netmgt.syslogd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
-import java.util.Set;
 
 import com.codahale.metrics.Gauge;
 import com.google.common.cache.Cache;
@@ -40,7 +39,6 @@ import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;

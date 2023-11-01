@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

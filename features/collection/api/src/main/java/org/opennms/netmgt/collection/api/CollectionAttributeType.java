@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.api.AttributeType;
-
 /**
  * This class encapsulates the immutable parts of a {@link CollectionAttribute} such as the name,
  * metric type, and group membership.

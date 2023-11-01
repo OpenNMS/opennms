@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.enrichment;
 
-import static org.opennms.netmgt.graph.enrichment.EnrichmentUtils.*;
+import static org.opennms.netmgt.graph.enrichment.EnrichmentUtils.parseBoolean;
 
 import java.util.List;
 import java.util.Objects;

@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.awt.Point;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;

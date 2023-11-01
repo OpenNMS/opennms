@@ -30,7 +30,6 @@ package org.opennms.web.rest.api;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.web.rest.api.ApiVersion;
 
 public class ApiVersionTest {
 
