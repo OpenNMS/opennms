@@ -186,7 +186,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             type(Type.BusinessService);
             label(businessService.getName());
             isLeaf(false);
-            reductionKeys(ImmutableSet.of());
+            reductionKeys(Set.of());
             property("reduceFunction", businessService.getReduceFunction());
             property(Properties.BusinessService.id, businessService.getId());
             return this;
@@ -212,7 +212,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             type(Type.ReductionKey);
             label(getLabelFromReductionKey(reductionKey));
             isLeaf(true);
-            reductionKeys(ImmutableSet.of(reductionKey));
+            reductionKeys(Set.of(reductionKey));
             return this;
         }
 

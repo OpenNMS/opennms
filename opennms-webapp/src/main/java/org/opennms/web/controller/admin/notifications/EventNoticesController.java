@@ -30,6 +30,7 @@ package org.opennms.web.controller.admin.notifications;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +44,6 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
-import com.google.common.collect.Lists;
 
 public class EventNoticesController extends AbstractController {
     @Autowired
@@ -64,7 +63,7 @@ public class EventNoticesController extends AbstractController {
     }
 
     private List<EventNotification> getNotifications() throws IOException {
-        List<EventNotification> notifications = Lists.newLinkedList();
+        List<EventNotification> notifications = new LinkedList<>();
         Map<String, Notification> noticeMap = m_notificationFactory.getNotifications();
         for(String name : noticeMap.keySet()) {
             notifications.add(new EventNotification(name, noticeMap.get(name)));

@@ -31,6 +31,7 @@ package org.opennms.netmgt.notifd;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -39,8 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.netmgt.model.notifd.Argument;
-
-import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
 public class SlackCompatibleNotificationStrategyTest {
@@ -64,7 +63,7 @@ public class SlackCompatibleNotificationStrategyTest {
 
     @Test
     public void verifyArgumentsWorkWithAndWithoutSlash() {
-        final List<Argument> arguments = Lists.newArrayList();
+        final List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument("-url", null, "http://localhost:1234/hooks/hooky", false));
         arguments.add(new Argument("-channel", null, "channel", false));
         arguments.add(new Argument("-username", null, "opennms", false));

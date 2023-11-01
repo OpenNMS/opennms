@@ -30,6 +30,7 @@ package org.opennms.minion.heartbeat.consumer;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -74,7 +75,6 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
@@ -251,7 +251,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             return;
         }
 
-        final Set<String> alteredForeignSources = Sets.newHashSet();
+        final Set<String> alteredForeignSources = new HashSet<>();
 
         // Remove the node from the previous requisition, if location has changed
         if (!Objects.equals(prevForeignSource, nextForeignSource)) {

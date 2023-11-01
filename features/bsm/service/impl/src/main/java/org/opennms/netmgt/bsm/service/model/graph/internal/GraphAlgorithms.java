@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine;
@@ -41,8 +38,6 @@ import org.opennms.netmgt.bsm.service.model.StatusWithIndices;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
-
-import com.google.common.collect.Lists;
 
 public class GraphAlgorithms {
 
@@ -59,7 +54,7 @@ public class GraphAlgorithms {
                 .collect(Collectors.toList());
 
         // Recurse
-        final List<GraphVertex> causes = Lists.newArrayList(childVerticesWithImpact);
+        final List<GraphVertex> causes = new ArrayList<>(childVerticesWithImpact);
         for (GraphVertex childVertexWithImpact : childVerticesWithImpact) {
             causes.addAll(calculateRootCause(graph, childVertexWithImpact));
         }
@@ -79,7 +74,7 @@ public class GraphAlgorithms {
                 .collect(Collectors.toList());
 
         // Recurse
-        final List<GraphVertex> impacts = Lists.newArrayList(impactedParentVertices);
+        final List<GraphVertex> impacts = new ArrayList<>(impactedParentVertices);
         for (GraphVertex impactedParentVertex : impactedParentVertices) {
             impacts.addAll(calculateImpact(graph, impactedParentVertex));
         }

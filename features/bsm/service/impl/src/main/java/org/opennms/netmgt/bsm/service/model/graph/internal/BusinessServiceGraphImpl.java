@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -50,7 +45,6 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
@@ -195,7 +189,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private void calculateAndIndexLevels() {
         // Start by finding the root vertices
         // These are the vertices with no incoming edges
-        final Set<GraphVertex> rootVertices = Sets.newHashSet();
+        final Set<GraphVertex> rootVertices = new HashSet<>();
         for (GraphVertex vertex : getVertices()) {
             if (getInEdges(vertex).size() == 0) {
                 rootVertices.add(vertex);
@@ -217,7 +211,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         for (GraphVertex vertex : getVertices()) {
             Set<GraphVertex> verticesAtLevel = m_verticesByLevel.get(vertex.getLevel());
             if (verticesAtLevel == null) {
-                verticesAtLevel = Sets.newHashSet();
+                verticesAtLevel = new HashSet<>();
                 m_verticesByLevel.put(vertex.getLevel(), verticesAtLevel);
             }
             verticesAtLevel.add(vertex);

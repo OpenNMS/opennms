@@ -29,6 +29,7 @@
 package org.opennms.api.reporting;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -53,12 +54,12 @@ public class ReportParameterBuilder {
         List<String> ALL = Lists.newArrayList(Years, Months, Days);
     }
 
-    private final List<ReportStringParm> stringParams = Lists.newArrayList();
-    private final List<ReportIntParm> intParams = Lists.newArrayList();
-    private final List<ReportFloatParm> floatParams = Lists.newArrayList();
-    private final List<ReportDateParm> dateParams = Lists.newArrayList();
-    private final List<ReportDoubleParm> doubleParms = Lists.newArrayList();
-    private final List<ReportTimezoneParm> timezoneParms = Lists.newArrayList();
+    private final List<ReportStringParm> stringParams = new ArrayList<>();
+    private final List<ReportIntParm> intParams = new ArrayList<>();
+    private final List<ReportFloatParm> floatParams = new ArrayList<>();
+    private final List<ReportDateParm> dateParams = new ArrayList<>();
+    private final List<ReportDoubleParm> doubleParms = new ArrayList<>();
+    private final List<ReportTimezoneParm> timezoneParms = new ArrayList<>();
 
     public ReportParameterBuilder withString(String name, String value) {
         Objects.requireNonNull(name);

@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.search.providers.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-
-import com.google.common.collect.Lists;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Action {
@@ -50,11 +49,11 @@ public class Action {
 
     @XmlElementWrapper(name="roles")
     @XmlElement(name="role")
-    private List<String> privilegedRoles = Lists.newArrayList();
+    private List<String> privilegedRoles = new ArrayList<>();
 
     @XmlElementWrapper(name="aliases")
     @XmlElement(name="alias")
-    private List<String> aliases = Lists.newArrayList();
+    private List<String> aliases = new ArrayList<>();
 
     @XmlElement(name="weight")
     private int weight;

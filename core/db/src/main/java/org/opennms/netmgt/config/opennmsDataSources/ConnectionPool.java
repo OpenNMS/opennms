@@ -29,8 +29,6 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import com.google.common.base.MoreObjects;
-
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -340,12 +338,12 @@ public class ConnectionPool implements java.io.Serializable {
         }
 
         final var pool = new ConnectionPool();
-        pool.factory = MoreObjects.firstNonNull(a.factory, b.factory);
-        pool.idleTimeout = MoreObjects.firstNonNull(a.idleTimeout, b.idleTimeout);
-        pool.loginTimeout = MoreObjects.firstNonNull(a.loginTimeout, b.loginTimeout);
-        pool.minPool = MoreObjects.firstNonNull(a.minPool, b.minPool);
-        pool.maxPool = MoreObjects.firstNonNull(a.maxPool, b.maxPool);
-        pool.maxSize = MoreObjects.firstNonNull(a.maxSize, b.maxSize);
+        pool.factory = Objects.requireNonNullElse(a.factory, b.factory);
+        pool.idleTimeout = Objects.requireNonNullElse(a.idleTimeout, b.idleTimeout);
+        pool.loginTimeout = Objects.requireNonNullElse(a.loginTimeout, b.loginTimeout);
+        pool.minPool = Objects.requireNonNullElse(a.minPool, b.minPool);
+        pool.maxPool = Objects.requireNonNullElse(a.maxPool, b.maxPool);
+        pool.maxSize = Objects.requireNonNullElse(a.maxSize, b.maxSize);
 
         return pool;
     }

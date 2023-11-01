@@ -34,6 +34,7 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -171,7 +172,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        Set<OnmsAttribute> attributes = Sets.newHashSet();
+        Set<OnmsAttribute> attributes = new HashSet<>();
 
         // Fetch the resource-level attributes in parallel
         Future<Map<String, String>> stringAttributes = ForkJoinPool.commonPool()

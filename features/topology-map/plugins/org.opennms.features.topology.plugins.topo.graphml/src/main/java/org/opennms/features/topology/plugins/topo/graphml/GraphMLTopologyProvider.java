@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -52,7 +55,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -146,7 +148,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             String[] split = property.split(",");
             return Lists.newArrayList(split);
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
     private static int getDefaultSzl(GraphMLGraph graph) {
@@ -170,7 +172,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
                 .withPreferredLayout(preferredLayout)
                 .withCriteria(() -> {
                     List<VertexHopCriteria> focusCriteria = focusStrategy.getFocusCriteria(graph, focusIds.toArray(new String[focusIds.size()]));
-                    return Lists.newArrayList(focusCriteria);
+                    return new ArrayList<>(focusCriteria);
                 });
     }
 
@@ -193,7 +195,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node)).contains(type);
     }
 
     public VertexStatusProviderType getVertexStatusProviderType() {

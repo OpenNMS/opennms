@@ -28,9 +28,8 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import com.google.common.base.Objects;
-
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Straight forward implementation of {@link java.util.Map.Entry}.<br/>
@@ -73,7 +72,7 @@ public class SimpleEntry<T> implements Entry<T, T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(key, value);
+		return Objects.hash(key, value);
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class SimpleEntry<T> implements Entry<T, T> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (!(obj instanceof Entry)) return false;
-		return Objects.equal(this.key, ((Entry) obj).getKey()) && Objects.equal(this.value, ((Entry) obj).getValue());
+		return Objects.equals(this.key, ((Entry) obj).getKey()) && Objects.equals(this.value, ((Entry) obj).getValue());
 	}
 
 	@Override

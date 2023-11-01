@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.graphml;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -138,7 +139,7 @@ public class GraphmlToGraphConverter {
             String[] split = property.split(",");
             return Lists.newArrayList(split);
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
     // The graphML specification does not allow for an id on the graphML object itself

@@ -33,6 +33,7 @@ import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessService;
 
 import java.util.Objects;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -69,7 +70,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -191,9 +191,9 @@ public class BusinessServiceManagerImplIT {
         businessServiceManager.addChildEdge(service_p_2, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
         businessServiceManager.addChildEdge(service_p_2, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
 
-        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+        Assert.assertEquals(Set.of(service_p_1, service_p_2),
                             service_c_1.getParentServices());
-        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+        Assert.assertEquals(Set.of(service_p_1, service_p_2),
                             service_c_2.getParentServices());
     }
 
@@ -212,7 +212,7 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
 
         service_c_1.delete();
-        Assert.assertEquals(ImmutableSet.of(service_c_2),
+        Assert.assertEquals(Set.of(service_c_2),
                             service_p.getChildServices());
         Assert.assertEquals(1, edgeDao.countAll()); // verify that the edge is also gone
     }
@@ -232,7 +232,7 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
 
         service_c_1.delete();
-        Assert.assertEquals(ImmutableSet.of(),
+        Assert.assertEquals(Set.of(),
                 service_p.getChildServices());
         Assert.assertEquals(0, edgeDao.countAll()); // verify that the edge is also gon
     }
@@ -251,39 +251,33 @@ public class BusinessServiceManagerImplIT {
         BusinessService bs2 = getBusinessService(serviceId2);
         BusinessService bs3 = getBusinessService(serviceId3);
 
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId2), businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId1), businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-                                            businessServiceManager.getBusinessServiceById(serviceId2)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId1), businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
         businessServiceManager.addChildEdge(bs1, bs2, new Identity(), Edge.DEFAULT_WEIGHT);
         bs1.save();
         bs2.save();
 
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId2), businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-                                            businessServiceManager.getBusinessServiceById(serviceId2)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId1), businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
         businessServiceManager.addChildEdge(bs2, bs3, new Identity(), Edge.DEFAULT_WEIGHT);
         bs2.save();
         bs3.save();
 
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId2), businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
+        Assert.assertEquals(Set.of(businessServiceManager.getBusinessServiceById(serviceId3)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-        Assert.assertEquals(ImmutableSet.of(),
+        Assert.assertEquals(Set.of(),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
     }
 

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
@@ -94,7 +95,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
-    private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
+    private final Set<AlarmPersisterExtension> extensions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private boolean m_createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
     

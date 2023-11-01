@@ -85,7 +85,7 @@ public class PathOutageStatusProvider implements StatusProvider {
 
 		final List<String> paramNames = Lists.newArrayList("nodeIds");
 		final List<Object> paramValues = new ArrayList();
-		paramValues.add(Lists.newArrayList(nodeIds));
+		paramValues.add(new ArrayList<>(nodeIds));
 		final List<Object[]> retvals = this.persistenceAccessor.findUsingNamedParameters(hql.toString(),
 																						 paramNames.toArray(new String[paramNames.size()]),
 																						 paramValues.toArray());

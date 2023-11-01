@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -114,14 +116,14 @@ public class Expression {
        }
        final Expression other = (Expression) obj;
 
-       return   com.google.common.base.Objects.equal(this.label, other.label)
-             && com.google.common.base.Objects.equal(this.expression, other.expression)
-             && com.google.common.base.Objects.equal(this.isTransient, other.isTransient);
+       return   Objects.equals(this.label, other.label)
+             && Objects.equals(this.expression, other.expression)
+             && Objects.equals(this.isTransient, other.isTransient);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.label, this.expression, this.isTransient);
     }
 

@@ -106,13 +106,13 @@ public class OnmsMetaData implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OnmsMetaData that = (OnmsMetaData) o;
-        return com.google.common.base.Objects.equal(context, that.context) &&
-                com.google.common.base.Objects.equal(key, that.key) &&
-                com.google.common.base.Objects.equal(value, that.value);
+        return Objects.equals(context, that.context) &&
+                Objects.equals(key, that.key) &&
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(context, key, value);
+        return Objects.hash(context, key, value);
     }
 }

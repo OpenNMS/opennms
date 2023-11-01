@@ -49,6 +49,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,7 +63,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
 
 /**
  * Java Keystore based credentials store
@@ -211,7 +211,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     @Override
     public Set<String> getAliases() {
         try {
-            return Sets.newHashSet(Collections.list(m_keystore.aliases()));
+            return new HashSet<>(Collections.list(m_keystore.aliases()));
         } catch (KeyStoreException e) {
             throw Throwables.propagate(e);
         }

@@ -380,7 +380,7 @@ public class BundleContextHistoryManagerTest  {
 
     private void setBehaviour(GraphProvider graphProviderMock) {
         BackendGraph graphMock = mock(BackendGraph.class);
-        when(graphMock.getVertices(any())).thenReturn(Lists.newArrayList());
+        when(graphMock.getVertices(any())).thenReturn(new ArrayList<>());
         when(graphMock.getNamespace()).thenReturn("test");
 
         when(graphProviderMock.getCurrentGraph()).thenReturn(graphMock);
@@ -397,7 +397,7 @@ public class BundleContextHistoryManagerTest  {
 
     private void setBehaviour(ServiceLocator serviceLocator) {
         when(serviceLocator.findServices(SearchProvider.class, null))
-               .thenAnswer(invocationOnMock -> Lists.newArrayList(startingProviders.values()));
+               .thenAnswer(invocationOnMock -> new ArrayList<>(startingProviders.values()));
 
         when(serviceLocator.findServices(MetaTopologyProvider.class, null))
                .thenAnswer(invocationOnMock -> Lists.newArrayList(new SimpleMetaTopologyProvider(graphProviderMock)));

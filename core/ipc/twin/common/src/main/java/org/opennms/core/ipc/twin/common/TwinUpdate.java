@@ -28,11 +28,10 @@
 
 package org.opennms.core.ipc.twin.common;
 
-import com.google.common.base.Objects;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.BiConsumer;
 
@@ -128,14 +127,14 @@ public class TwinUpdate {
         if (!(o instanceof TwinUpdate)) return false;
         TwinUpdate that = (TwinUpdate) o;
         return version == that.version && isPatch == that.isPatch
-                && Objects.equal(twinRequest, that.twinRequest)
-                && Objects.equal(object, that.object)
-                && Objects.equal(sessionId, that.sessionId);
+                && Objects.equals(twinRequest, that.twinRequest)
+                && Objects.equals(object, that.object)
+                && Objects.equals(sessionId, that.sessionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(twinRequest, object, version, isPatch, sessionId);
+        return Objects.hash(twinRequest, object, version, isPatch, sessionId);
     }
 
     @Override

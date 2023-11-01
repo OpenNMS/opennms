@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -57,7 +58,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -106,7 +106,7 @@ public class TopologyUpdaterIT {
                     throw Throwables.propagate(e);
                 }
                 final OnmsTopology onmsTopology = new OnmsTopology();
-                final Set<OnmsTopologyVertex> vertexSet = Sets.newHashSet();
+                final Set<OnmsTopologyVertex> vertexSet = new HashSet<>();
                 vertexSet.add(OnmsTopologyVertex.create("v1", "Vertex 1","127.0.0.1", "defaultKey"));
                 vertexSet.add(OnmsTopologyVertex.create("v2", "Vertex 2", "127.0.0.1", "defaultKey"));
                 onmsTopology.setVertices(vertexSet);

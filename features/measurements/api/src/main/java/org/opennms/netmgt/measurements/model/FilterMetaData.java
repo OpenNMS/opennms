@@ -29,7 +29,9 @@
 package org.opennms.netmgt.measurements.model;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,7 +44,6 @@ import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 /**
  * Used to represent a {@link org.opennms.netmgt.measurements.api.Filter} and it's parameters.
@@ -84,7 +85,7 @@ public class FilterMetaData {
         description = info.description();
         backend = info.backend();
 
-        parameters = Lists.newArrayList();
+        parameters = new ArrayList<>();
         for(Field field : type.getDeclaredFields()) {
             FilterParam filterParam = field.getAnnotation(FilterParam.class);
             if (filterParam == null) {
@@ -146,16 +147,16 @@ public class FilterMetaData {
        }
        final FilterMetaData other = (FilterMetaData) obj;
 
-       return   com.google.common.base.Objects.equal(this.canonicalName, other.canonicalName)
-             && com.google.common.base.Objects.equal(this.name, other.name)
-             && com.google.common.base.Objects.equal(this.description, other.description)
-             && com.google.common.base.Objects.equal(this.backend, other.backend)
-             && com.google.common.base.Objects.equal(this.parameters, other.parameters);
+       return   Objects.equals(this.canonicalName, other.canonicalName)
+             && Objects.equals(this.name, other.name)
+             && Objects.equals(this.description, other.description)
+             && Objects.equals(this.backend, other.backend)
+             && Objects.equals(this.parameters, other.parameters);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.canonicalName, this.name, this.description, this.backend, this.parameters);
     }
 

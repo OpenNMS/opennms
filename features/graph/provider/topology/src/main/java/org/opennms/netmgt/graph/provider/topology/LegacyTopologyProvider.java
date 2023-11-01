@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -45,9 +43,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class LegacyTopologyProvider implements GraphProvider {
 
@@ -102,7 +97,7 @@ public class LegacyTopologyProvider implements GraphProvider {
                     if (backendGraph != null) {
                         return backendGraph.getDefaultCriteria();
                     }
-                    return Lists.newArrayList();
+                    return new ArrayList<>();
                 });
     }
 
@@ -131,6 +126,6 @@ public class LegacyTopologyProvider implements GraphProvider {
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node)).contains(type);
     }
 }

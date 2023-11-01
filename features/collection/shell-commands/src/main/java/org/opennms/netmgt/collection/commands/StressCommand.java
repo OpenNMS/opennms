@@ -72,7 +72,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -223,7 +222,7 @@ public class StressCommand implements Action {
         if (rras != null && rras.size() > 0) {
             repository.setRraList(rras);
         } else {
-            repository.setRraList(Lists.newArrayList(CollectCommand.DEFAULT_RRA));
+            repository.setRraList(new ArrayList<>(CollectCommand.DEFAULT_RRA));
         }
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 

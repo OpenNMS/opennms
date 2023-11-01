@@ -28,12 +28,7 @@
 
 package org.opennms.features.topology.shell;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -42,8 +37,6 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.Operation;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-
-import com.google.common.collect.Lists;
 
 @Command(scope = "opennms", name = "topo-list-operations", description="Lists the available OpenNMS topology operations.")
 @Service
@@ -55,7 +48,7 @@ public class OperationListShellCommand implements Action {
     @Override
     public Object execute() throws Exception {
 
-    	final List<Operation> operations = Lists.newArrayList();
+    	final List<Operation> operations = new ArrayList<>();
     	final Map<Operation,Map<String,Object>> properties = new HashMap<>();
 
     	final Collection<ServiceReference<Operation>> services = this.bundleContext.getServiceReferences(Operation.class, null);

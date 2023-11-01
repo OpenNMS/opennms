@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -130,6 +131,6 @@ public class Config {
         if (!Strings.isNullOrEmpty(input)) {
             return Arrays.stream(input.split(",")).map(String::trim).filter(v -> !v.isEmpty()).collect(Collectors.toList());
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 }

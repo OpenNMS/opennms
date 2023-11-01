@@ -29,11 +29,7 @@
 package org.opennms.netmgt.graph.provider.graphml;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
@@ -44,7 +40,6 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphMLContainerProviderServiceFactory implements ManagedServiceFactory {
@@ -98,7 +93,7 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
 
     private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl, Dictionary<String, Object> serviceProperties) {
         final ServiceRegistration<T> serviceRegistration = bundleContext.registerService(serviceType, serviceImpl, serviceProperties);
-        containerRegistrations.putIfAbsent(pid, Lists.newArrayList());
+        containerRegistrations.putIfAbsent(pid, new ArrayList<>());
         containerRegistrations.get(pid).add(serviceRegistration);
     }
 }

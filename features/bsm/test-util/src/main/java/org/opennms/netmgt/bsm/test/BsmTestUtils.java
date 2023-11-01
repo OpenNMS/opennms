@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,6 @@ import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.meta.FunctionsManager;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
 
 /**
  * Helper class to create all kinds of objects for writing BSM tests.
@@ -147,7 +147,7 @@ public class BsmTestUtils {
         response.setReductionKeys(input.getReductionKeyEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
         response.setIpServices(input.getIpServiceEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
         response.setChildren(input.getChildEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
-        response.setParentServices(Sets.newHashSet()); // do not know that here
+        response.setParentServices(new HashSet<>()); // do not know that here
         return response;
     }
 

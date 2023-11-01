@@ -79,8 +79,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ImmutableMap;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
@@ -561,10 +559,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(SERVER3_NAME, values.getString(2));
 
         // Test a query with a limit
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", ImmutableMap.of(
-            "q", "server",
-            "limit", "1"
-        ), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("q", "server", "limit", "1"), 200));
         Assert.assertEquals(1, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
@@ -586,7 +581,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         System.setProperty("opennms.alarmTroubleTicketEnabled", "true");
         verifyAnticipatedEvents();
 
-        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, alarm, ImmutableMap.of("user", "ulf")));
+        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, alarm, Map.of("user", "ulf")));
         sendPost(url + alarm.getId() + "/ticket/create", "", 202);
         verifyAnticipatedEvents();
 

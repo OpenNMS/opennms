@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.search.providers.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,13 +36,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.google.common.collect.Lists;
-
 @XmlRootElement(name="actions")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Actions {
     @XmlElement(name="action")
-    private List<Action> actions = Lists.newArrayList();
+    private List<Action> actions = new ArrayList<>();
 
     public List<Action> getActions() {
         return actions;

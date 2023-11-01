@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,8 +45,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class LegacyStatusProvider implements StatusProvider, EdgeStatusProvider {
@@ -106,7 +99,7 @@ public class LegacyStatusProvider implements StatusProvider, EdgeStatusProvider 
 
                 @Override
                 public Map<String, String> getStatusProperties() {
-                    return ImmutableMap.of("status", "up");
+                    return Map.of("status", "up");
                 }
 
                 @Override
@@ -130,7 +123,7 @@ public class LegacyStatusProvider implements StatusProvider, EdgeStatusProvider 
 
 
     private Map<Integer, AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
-        return alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(Lists.newArrayList(nodeIds))
+        return alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<>(nodeIds))
                 .stream()
                 .collect(Collectors.toMap(AlarmSummary::getNodeId, Function.identity()));
     }

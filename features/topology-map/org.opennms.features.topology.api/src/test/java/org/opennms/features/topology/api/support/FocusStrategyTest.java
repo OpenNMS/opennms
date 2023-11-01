@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.api.support;
 
+import java.util.ArrayList;
+
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
@@ -46,7 +49,7 @@ public class FocusStrategyTest {
                 .vertex("2")
                 .vertex("3")
                 .get();
-        Assert.assertEquals(Lists.newArrayList(), FocusStrategy.EMPTY.getFocusCriteria(graph));
+        Assert.assertEquals(new ArrayList<>(), FocusStrategy.EMPTY.getFocusCriteria(graph));
         Assert.assertEquals(Lists.newArrayList(
                 hopCriteria("namespace1", "1"),
                 hopCriteria("namespace1", "2"),

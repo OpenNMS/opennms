@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.bsm.mock;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-
-import com.google.common.collect.Sets;
 
 public class MockChildEdge extends AbstractMockEdge implements ChildEdge {
     private BusinessService m_businessService;
@@ -47,7 +46,7 @@ public class MockChildEdge extends AbstractMockEdge implements ChildEdge {
 
     @Override
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override

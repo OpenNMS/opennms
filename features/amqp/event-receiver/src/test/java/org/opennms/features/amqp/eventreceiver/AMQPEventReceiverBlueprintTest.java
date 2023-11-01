@@ -28,6 +28,7 @@
 
 package org.opennms.features.amqp.eventreceiver;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,6 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.common.collect.Lists;
 
 /**
  * Simple test that verifies the Blueprint syntax.
@@ -87,7 +86,7 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
     @Test
     public void canReceiveEvent() throws Exception {
         // Register an event listener
-        final List<IEvent> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = new ArrayList<>();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {

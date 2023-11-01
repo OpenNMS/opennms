@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +65,6 @@ import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.collect.Lists;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
@@ -319,7 +319,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
             }
         }
 
-        return Lists.newArrayList(onmsAlarmMap.values());
+        return new ArrayList<>(onmsAlarmMap.values());
     }
 
     /**

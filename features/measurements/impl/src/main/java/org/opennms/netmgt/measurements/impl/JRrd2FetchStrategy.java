@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.measurements.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,7 +41,6 @@ import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
 import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
@@ -66,7 +66,7 @@ public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
         final Map<String, String> labelMap = Maps.newHashMap();
 
         int k = 0;
-        List<String> argv = Lists.newLinkedList();
+        List<String> argv = new LinkedList<>();
         for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
             final Source source = entry.getKey();
             final String rrdFile = entry.getValue();

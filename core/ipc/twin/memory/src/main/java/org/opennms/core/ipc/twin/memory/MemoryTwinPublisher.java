@@ -30,23 +30,20 @@ package org.opennms.core.ipc.twin.memory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class MemoryTwinPublisher implements TwinPublisher {
 
     private final Map<SessionKey, SessionImpl<?>> sessions = Maps.newConcurrentMap();
 
-    private final Set<Subscription<?>> pending = Sets.newConcurrentHashSet();
+    private final Set<Subscription<?>> pending = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public MemoryTwinPublisher() {
     }
@@ -153,7 +150,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
 
         private final AtomicReference<T> current = new AtomicReference<>();
 
-        private final Set<Subscription<T>> subscriptions = Sets.newConcurrentHashSet();
+        private final Set<Subscription<T>> subscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         private SessionImpl(final SessionKey key,
                             final Class<T> clazz) {

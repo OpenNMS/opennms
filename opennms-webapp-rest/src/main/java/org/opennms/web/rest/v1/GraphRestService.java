@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,6 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -86,7 +86,7 @@ public class GraphRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
     public GraphNameCollection getGraphNames() {
-        List<String> graphNames = Lists.newLinkedList();
+        List<String> graphNames = new LinkedList<>();
         for (PrefabGraph prefabGraph : m_graphDao.getAllPrefabGraphs()) {
             graphNames.add(prefabGraph.getName());
         }
@@ -120,7 +120,7 @@ public class GraphRestService extends OnmsRestService {
     }
 
     private GraphNameCollection getGraphNamesForResource(final OnmsResource resource) {
-        List<String> graphNames = Lists.newLinkedList();
+        List<String> graphNames = new LinkedList<>();
         for (PrefabGraph prefabGraph : m_graphDao.getPrefabGraphsForResource(resource)) {
             graphNames.add(prefabGraph.getName());
         }

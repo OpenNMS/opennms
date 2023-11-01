@@ -29,6 +29,7 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	protected abstract String formatWebhookErrorResponse(int statusCode, String contents);
 
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractSlackCompatibleNotificationStrategy.class);
-	private final List<Argument> m_arguments = Lists.newArrayList();
+	private final List<Argument> m_arguments = new ArrayList<>();
 
 	protected void setArguments(List<Argument> arguments) {
 		m_arguments.clear();

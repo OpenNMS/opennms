@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.search;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,8 +43,6 @@ import org.opennms.netmgt.graph.api.search.SearchProvider;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.model.OnmsNode;
-
-import com.google.common.collect.Lists;
 
 public class NodeSearchProvider implements SearchProvider {
 
@@ -68,7 +67,7 @@ public class NodeSearchProvider implements SearchProvider {
                 .limit(searchContext.getSuggestionsLimit())
                 .toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
-        final List<SearchSuggestion> suggestions = Lists.newArrayList();
+        final List<SearchSuggestion> suggestions = new ArrayList<>();
         for (OnmsNode eachNode : matchingNodes) {
             final SearchSuggestion suggestion = new SearchSuggestion(
                     getProviderId(),

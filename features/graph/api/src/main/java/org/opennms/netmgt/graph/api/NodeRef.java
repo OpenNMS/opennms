@@ -37,7 +37,6 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 /**
  * Object to reference a node.
@@ -178,7 +177,7 @@ public class NodeRef {
         final String foreignSource = vertex.getProperty(GenericProperties.FOREIGN_SOURCE);
         final String foreignId = vertex.getProperty(GenericProperties.FOREIGN_ID);
         final String nodeRef = vertex.getProperty(GenericProperties.NODE_CRITERIA);
-        final List<NodeRef> nodeRefs = Lists.newArrayList();
+        final List<NodeRef> nodeRefs = new ArrayList<>();
         if (nodeId != null) {
             if (nodeId instanceof String) {
                 nodeRefs.add(NodeRef.from((String) nodeId));

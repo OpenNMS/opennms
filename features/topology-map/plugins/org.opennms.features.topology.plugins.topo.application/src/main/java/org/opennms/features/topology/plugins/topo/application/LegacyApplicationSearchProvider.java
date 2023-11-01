@@ -28,10 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
@@ -49,9 +46,6 @@ import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * We call here the new search implementation and use it in the legacy world. This class will disappear eventually and the
@@ -98,7 +92,7 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
             suggestedVertices.addAll(graphSearchService.search(searchCriteria));
         }
 
-        List<SearchResult> results = Lists.newArrayList();
+        List<SearchResult> results = new ArrayList<>();
         for (GenericVertex genericVertex : suggestedVertices) {
             ApplicationVertex applicationVertex = new ApplicationVertex(genericVertex);
             final LegacyApplicationVertex legacyApplicationVertex = new LegacyApplicationVertex(applicationVertex);
@@ -113,7 +107,7 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         VertexRef vertexToFocus = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
-        return Sets.newHashSet(vertexToFocus);
+        return new HashSet<>(Arrays.asList(vertexToFocus));
     }
 
     @Override

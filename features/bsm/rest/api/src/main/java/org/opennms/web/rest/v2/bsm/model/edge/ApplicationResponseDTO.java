@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -42,7 +44,6 @@ import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvi
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 @XmlRootElement(name = "application")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -96,14 +97,14 @@ public class ApplicationResponseDTO {
             return false;
         }
         final ApplicationResponseDTO other = (ApplicationResponseDTO) obj;
-        final boolean equals = Objects.equal(m_id, other.m_id)
-                && Objects.equal(m_applicationName, other.m_applicationName);
+        final boolean equals = Objects.equals(m_id, other.m_id)
+                && Objects.equals(m_applicationName, other.m_applicationName);
         return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(m_id,
+        return Objects.hash(m_id,
                 m_applicationName);
     }
 

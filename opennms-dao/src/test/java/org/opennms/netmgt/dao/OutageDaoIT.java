@@ -36,15 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
@@ -84,8 +76,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.google.common.collect.Sets;
 
 /**
  * @author mhuot
@@ -326,8 +316,8 @@ public class OutageDaoIT implements InitializingBean {
         app1.getPerspectiveLocations().add(fulda);
         int app1Id = this.m_applicationDao.save(app1);
 
-        app1Service1.setApplications(Sets.newHashSet(app1));
-        app1Service2.setApplications(Sets.newHashSet(app1));
+        app1Service1.setApplications(new HashSet<>(Arrays.asList(app1)));
+        app1Service2.setApplications(new HashSet<>(Arrays.asList(app1)));
         this.m_monitoredServiceDao.saveOrUpdate(app1Service1);
         this.m_monitoredServiceDao.saveOrUpdate(app1Service2);
 

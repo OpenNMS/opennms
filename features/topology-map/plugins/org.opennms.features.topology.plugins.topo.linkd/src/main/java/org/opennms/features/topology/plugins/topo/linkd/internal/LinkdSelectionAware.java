@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -40,7 +38,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 
 public class LinkdSelectionAware implements SelectionAware {
 
@@ -63,7 +60,7 @@ public class LinkdSelectionAware implements SelectionAware {
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node)).contains(type);
     }
 
     /**

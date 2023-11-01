@@ -116,7 +116,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     @Override
     public List<GenericVertex> resolveVertices(NodeRef nodeRef) {
         Objects.requireNonNull(nodeRef);
-        final List<GenericVertex> resolvedVertices = Lists.newArrayList();
+        final List<GenericVertex> resolvedVertices = new ArrayList<>();
         for (NodeRef eachVariant : nodeRef.getVariants()) {
             if (nodeRefToVertexMap.containsKey(eachVariant)) {
                 resolvedVertices.addAll(nodeRefToVertexMap.get(eachVariant));
@@ -367,7 +367,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
         public List<GenericVertex> resolveVertices(NodeRef nodeRef) {
             Objects.requireNonNull(nodeRef);
-            final List<GenericVertex> resolvedVertices = Lists.newArrayList();
+            final List<GenericVertex> resolvedVertices = new ArrayList<>();
             for (NodeRef eachVariant : nodeRef.getVariants()) {
                 if (nodeRefToVertexMap.containsKey(eachVariant)) {
                     resolvedVertices.addAll(nodeRefToVertexMap.get(eachVariant));
@@ -406,7 +406,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
 
         public List<GenericVertex> getVertices() {
-            return Lists.newArrayList(vertexToIdMap.values());
+            return new ArrayList<>(vertexToIdMap.values());
         }
 
         /**
@@ -454,7 +454,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             public Focus build() {
                 switch(focusStrategy) {
                     case FocusStrategy.FIRST:
-                        final List<VertexRef> list = Lists.newArrayList();
+                        final List<VertexRef> list = new ArrayList<>();
                         if (!vertexToIdMap.isEmpty()) {
                             list.add(vertexToIdMap.values().iterator().next().getVertexRef());
                         }

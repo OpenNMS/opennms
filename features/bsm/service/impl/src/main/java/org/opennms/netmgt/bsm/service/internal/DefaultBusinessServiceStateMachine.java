@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,7 +77,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
@@ -90,7 +90,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     @Autowired
     private AlarmProvider m_alarmProvider;
 
-    private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
+    private final List<BusinessServiceStateChangeHandler> m_handlers = new ArrayList<>();
     private final ReadWriteLock m_rwLock = new ReentrantReadWriteLock();
     private BusinessServiceGraph m_g = new BusinessServiceGraphImpl(Collections.emptyList());
 
@@ -109,7 +109,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // Prime the graph with the state from the previous graph and
             // keep track of the new reductions keys
-            Set<String> reductionsKeysToLookup = Sets.newHashSet();
+            Set<String> reductionsKeysToLookup = new HashSet<>();
             for (String reductionKey : g.getReductionKeys()) {
                 GraphVertex reductionKeyVertex = m_g.getVertexByReductionKey(reductionKey);
                 if (reductionKeyVertex != null) {
@@ -202,7 +202,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         onStatusUpdated(graph, vertex, previousStatus);
 
         // Update the edges with the mapped status
-        List<GraphEdge> updatedEges = Lists.newArrayList();
+        List<GraphEdge> updatedEges = new ArrayList<>();
         for (GraphEdge edge : graph.getInEdges(vertex)) {
             Status mappedStatus = newStatus;
             if (newStatus.isGreaterThan(MIN_SEVERITY)) {
@@ -274,7 +274,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 .orElse(1);
 
         // Multiply the statuses based on their relative weight
-        List<StatusWithIndex> statuses = Lists.newArrayList();
+        List<StatusWithIndex> statuses = new ArrayList<>();
         int k = 0;
         for (Entry<GraphEdge, Status> entry : edgesWithStatus.entrySet()) {
             int relativeWeight = Math.floorDiv(entry.getKey().getWeight(), gcd);

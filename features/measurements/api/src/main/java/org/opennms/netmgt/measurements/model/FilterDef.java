@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.google.common.collect.Lists;
 
 /**
  * Used to reference a filter and set it's parameters.
@@ -51,7 +52,7 @@ public class FilterDef {
     private String name;
 
     @XmlElement(name="parameter")
-    private List<FilterParamDef> parameters = Lists.newArrayListWithCapacity(0);
+    private List<FilterParamDef> parameters = new ArrayList<>(0);
 
     /**
      * Zero-arg constructor for JAXB.
@@ -64,7 +65,7 @@ public class FilterDef {
         if (paramNamesAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("Must have an even number of parameter names and values");
         }
-        List<FilterParamDef> parameters = Lists.newLinkedList();
+        List<FilterParamDef> parameters = new LinkedList<>();
         for (int i = 0; i < paramNamesAndValues.length; i+=2) {
             parameters.add(new FilterParamDef(
                     paramNamesAndValues[i], paramNamesAndValues[i+1]));
@@ -97,13 +98,13 @@ public class FilterDef {
        }
        final FilterDef other = (FilterDef) obj;
 
-       return   com.google.common.base.Objects.equal(this.name, other.name)
-             && com.google.common.base.Objects.equal(this.parameters, other.parameters);
+       return   Objects.equals(this.name, other.name)
+             && Objects.equals(this.parameters, other.parameters);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.name, this.parameters);
     }
 

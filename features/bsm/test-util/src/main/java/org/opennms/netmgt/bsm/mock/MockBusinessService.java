@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.mock;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,14 +46,13 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class MockBusinessService implements BusinessService {
     private final long m_id;
     private String m_name;
     private ReductionFunction m_reductionFunction = new HighestSeverity();
     private Map<String, String> attributes = Maps.newHashMap();
-    private Set<Edge> m_edges = Sets.newHashSet();
+    private Set<Edge> m_edges = new HashSet<>();
 
     public MockBusinessService(long id) {
         m_id = id;
@@ -79,12 +79,12 @@ public class MockBusinessService implements BusinessService {
 
     @Override
     public Set<BusinessService> getChildServices() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override
     public Set<BusinessService> getParentServices() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override
@@ -168,7 +168,7 @@ public class MockBusinessService implements BusinessService {
 
     @Override
     public Set<ReductionKeyEdge> getReductionKeyEdges() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override

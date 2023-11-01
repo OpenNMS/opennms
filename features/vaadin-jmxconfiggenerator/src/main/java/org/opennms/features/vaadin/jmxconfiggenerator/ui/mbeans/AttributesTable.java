@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.vaadin.ui.AbstractComponent;

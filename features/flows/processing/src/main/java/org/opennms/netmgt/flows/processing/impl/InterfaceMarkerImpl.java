@@ -30,10 +30,8 @@ package org.opennms.netmgt.flows.processing.impl;
 
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -146,13 +144,13 @@ public class InterfaceMarkerImpl {
 
                 Set<Integer> ingressMarkerCache = this.markerCache.get(Direction.INGRESS).getIfPresent(nodeId);
                 if (ingressMarkerCache == null) {
-                    this.markerCache.get(Direction.INGRESS).put(nodeId, ingressMarkerCache = Sets.newConcurrentHashSet());
+                    this.markerCache.get(Direction.INGRESS).put(nodeId, ingressMarkerCache = Collections.newSetFromMap(new ConcurrentHashMap<>()));
                     nodesToUpdate.get(Direction.INGRESS).add(nodeId);
                 }
 
                 if (!ingressMarkerCache.contains(flow.getInputSnmp())) {
                     ingressMarkerCache.add(flow.getInputSnmp());
-                    interfacesToUpdate.get(Direction.INGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    interfacesToUpdate.get(Direction.INGRESS).computeIfAbsent(nodeId, k -> new ArrayList<>()).add(flow.getInputSnmp());
                 }
             }
 
@@ -162,13 +160,13 @@ public class InterfaceMarkerImpl {
 
                 Set<Integer> egressMarkerCache = this.markerCache.get(Direction.EGRESS).getIfPresent(nodeId);
                 if (egressMarkerCache == null) {
-                    this.markerCache.get(Direction.EGRESS).put(nodeId, egressMarkerCache = Sets.newConcurrentHashSet());
+                    this.markerCache.get(Direction.EGRESS).put(nodeId, egressMarkerCache = Collections.newSetFromMap(new ConcurrentHashMap<>()));
                     nodesToUpdate.get(Direction.EGRESS).add(nodeId);
                 }
 
                 if (!egressMarkerCache.contains(flow.getOutputSnmp())) {
                     egressMarkerCache.add(flow.getOutputSnmp());
-                    interfacesToUpdate.get(Direction.EGRESS).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    interfacesToUpdate.get(Direction.EGRESS).computeIfAbsent(nodeId, k -> new ArrayList<>()).add(flow.getOutputSnmp());
                 }
             }
         }

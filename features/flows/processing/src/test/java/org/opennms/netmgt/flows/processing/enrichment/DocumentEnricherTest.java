@@ -35,6 +35,7 @@ import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -72,7 +73,7 @@ public class DocumentEnricherTest {
         nodeDao.save(createOnmsNode(2, "my-requisition"));
         nodeDao.save(createOnmsNode(3, "my-requisition"));
 
-        final List<Flow> documents = Lists.newArrayList();
+        final List<Flow> documents = new ArrayList<>();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
         enricher.enrich(documents, new FlowSource("Default", "127.0.0.1", null));

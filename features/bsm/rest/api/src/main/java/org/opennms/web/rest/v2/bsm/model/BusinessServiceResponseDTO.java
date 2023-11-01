@@ -28,10 +28,7 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,9 +49,7 @@ import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
@@ -73,23 +68,23 @@ public class BusinessServiceResponseDTO {
 
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
-    private List<IpServiceEdgeResponseDTO> m_ipServices = Lists.newArrayList();
+    private List<IpServiceEdgeResponseDTO> m_ipServices = new ArrayList<>();
 
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
-    private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = Lists.newArrayList();
+    private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = new ArrayList<>();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
-    private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
+    private List<ChildEdgeResponseDTO> m_children = new ArrayList<>();;
 
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
-    private List<ApplicationEdgeResponseDTO> m_applications = Lists.newArrayList();
+    private List<ApplicationEdgeResponseDTO> m_applications = new ArrayList<>();
 
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
-    private Set<Long> m_parentServices = Sets.newLinkedHashSet();
+    private Set<Long> m_parentServices = new LinkedHashSet<>();
 
     @XmlElement(name="reduce-function")
     private ReduceFunctionDTO m_reduceFunction;

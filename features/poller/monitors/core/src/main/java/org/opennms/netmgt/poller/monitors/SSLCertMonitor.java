@@ -46,6 +46,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLParameters;
@@ -53,7 +54,6 @@ import javax.net.ssl.SSLSocket;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -212,7 +212,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                 // Use the server name as as SNI host name if available
                 if (!Strings.isNullOrEmpty(serverName)) {
                     final SSLParameters sslParameters = sslSocket.getSSLParameters();
-                    sslParameters.setServerNames(ImmutableList.of(new SNIHostName(serverName)));
+                    sslParameters.setServerNames(List.of(new SNIHostName(serverName)));
                     sslSocket.setSSLParameters(sslParameters);
 
                     // Check certificates host name

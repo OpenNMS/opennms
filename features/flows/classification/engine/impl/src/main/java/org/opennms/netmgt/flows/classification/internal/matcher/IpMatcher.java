@@ -29,12 +29,11 @@
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.flows.classification.internal.value.IpValue;
-
-import com.google.common.base.Function;
 
 class IpMatcher implements Matcher {
 

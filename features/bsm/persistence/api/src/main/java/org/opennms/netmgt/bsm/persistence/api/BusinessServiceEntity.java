@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -55,7 +56,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @Entity
 @Table(name = "bsm_service")
@@ -67,7 +67,7 @@ public class BusinessServiceEntity {
 
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    private Set<BusinessServiceEdgeEntity> m_edges = Sets.newLinkedHashSet();
+    private Set<BusinessServiceEdgeEntity> m_edges = new LinkedHashSet<>();
 
     private AbstractReductionFunctionEntity m_reductionFunction;
 

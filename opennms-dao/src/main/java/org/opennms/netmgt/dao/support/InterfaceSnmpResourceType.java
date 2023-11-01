@@ -32,8 +32,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,9 +61,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Interface SNMP resources are stored in paths like:
@@ -152,7 +152,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         }
 
         // Leverage the existing function for retrieving the resource list
-        final List<OnmsResource> resources = getNodeResources(parent.getPath(), Sets.newHashSet(name), node);
+        final List<OnmsResource> resources = getNodeResources(parent.getPath(), new HashSet<>(Arrays.asList(name)), node);
         if (resources.size() != 1) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No resource with name '" + name + "' found.");
         }
@@ -302,7 +302,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
 
     private List<OnmsResource> getDomainResources(ResourcePath parent, Set<String> intfNames) {
-        final List<OnmsResource> resources = Lists.newLinkedList();
+        final List<OnmsResource> resources = new LinkedList<>();
         for (String intfName : intfNames) {
             OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName); 
             try {

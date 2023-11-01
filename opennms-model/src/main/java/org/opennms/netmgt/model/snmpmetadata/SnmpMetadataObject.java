@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model.snmpmetadata;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 
 import org.opennms.netmgt.model.OnmsMetaData;
 
@@ -38,12 +37,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -166,7 +167,7 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
     }
 
     private static SnmpMetadataBase createStructuredMetaData(final SnmpMetadataBase structure, final Map<String, String> data, final String prefix) {
-        final Set<String> prefixes = Sets.newConcurrentHashSet();
+        final Set<String> prefixes = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         if (data.containsKey(prefix)) {
             if (structure instanceof SnmpMetadataObject) {

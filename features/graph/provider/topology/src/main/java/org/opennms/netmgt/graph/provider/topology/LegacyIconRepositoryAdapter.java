@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,8 +36,6 @@ import java.util.stream.Collectors;
 import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-
-import com.google.common.collect.Sets;
 
 public class LegacyIconRepositoryAdapter implements IconRepository {
 
@@ -64,6 +63,6 @@ public class LegacyIconRepositoryAdapter implements IconRepository {
                     .collect(Collectors.toSet());
             return iconIds;
         }
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 }

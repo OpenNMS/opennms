@@ -10,3 +10,46 @@ recipeList:
   - org.openrewrite.java.migrate.apache.commons.codec.ApacheBase64ToJavaBase64
   - org.openrewrite.java.migrate.apache.commons.io.ApacheCommonsFileUtilsRecipes
   - org.openrewrite.java.migrate.apache.commons.lang.ApacheCommonsStringUtilsRecipes
+  - org.openrewrite.java.migrate.guava.NoGuavaCreateTempDir
+  - org.openrewrite.java.migrate.guava.NoGuavaDirectExecutor
+  - org.openrewrite.java.migrate.guava.NoGuavaListsNewArrayList
+  - org.openrewrite.java.migrate.guava.NoGuavaListsNewCopyOnWriteArrayList
+  - org.openrewrite.java.migrate.guava.NoGuavaListsNewLinkedList
+  - org.openrewrite.java.migrate.guava.NoGuavaSetsNewHashSet
+  - org.openrewrite.java.migrate.guava.NoGuavaSetsNewConcurrentHashSet
+  - org.openrewrite.java.migrate.guava.NoGuavaSetsNewLinkedHashSet
+  - org.openrewrite.java.migrate.guava.PreferJavaNioCharsetStandardCharsets
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilFunction
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilPredicate
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsEquals
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsHashCode
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsRequireNonNull
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilCollectionsUnmodifiableNavigableMap
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilCollectionsSynchronizedNavigableMap
+  - org.openrewrite.java.migrate.guava.PreferCharCompare
+  - org.openrewrite.java.migrate.guava.PreferIntegerCompare
+  - org.openrewrite.java.migrate.guava.PreferLongCompare
+  - org.openrewrite.java.migrate.guava.PreferShortCompare
+  - org.openrewrite.java.migrate.guava.PreferIntegerCompareUnsigned
+  - org.openrewrite.java.migrate.guava.PreferIntegerDivideUnsigned
+  - org.openrewrite.java.migrate.guava.PreferIntegerParseUnsignedInt
+  - org.openrewrite.java.migrate.guava.PreferLongCompareUnsigned
+  - org.openrewrite.java.migrate.guava.PreferLongDivideUnsigned
+  - org.openrewrite.java.migrate.guava.PreferLongParseUnsignedLong
+  - org.openrewrite.java.migrate.guava.PreferLongRemainderUnsigned
+  - org.openrewrite.java.migrate.guava.PreferMathAddExact
+  - org.openrewrite.java.migrate.guava.PreferMathSubtractExact
+  - org.openrewrite.java.migrate.guava.PreferMathMultiplyExact
+  - org.openrewrite.java.migrate.guava.NoGuavaAtomicsNewReference
+  - org.openrewrite.java.migrate.guava.NoGuavaImmutableListOf
+  - org.openrewrite.java.migrate.guava.NoGuavaImmutableMapOf
+  - org.openrewrite.java.migrate.guava.NoGuavaImmutableSetOf
+  - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsRequireNonNullElse
+#  - org.openrewrite.java.migrate.lang.StringRulesRecipes
+#  - org.openrewrite.java.migrate.lang.UseVar
+#  - org.openrewrite.java.migrate.lang.JavaLangAPIs
+#  - org.openrewrite.java.migrate.net.JavaNetAPIs
+#  - org.openrewrite.java.migrate.sql.JavaSqlAPIs
+#  - org.openrewrite.java.migrate.util.JavaUtilAPIs
+#  - org.openrewrite.java.migrate.concurrent.JavaConcurrentAPIs
+#  - org.openrewrite.java.migrate.logging.JavaLoggingAPIs

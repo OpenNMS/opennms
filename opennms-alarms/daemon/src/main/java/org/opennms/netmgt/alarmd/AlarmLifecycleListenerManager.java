@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.alarmd;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -54,8 +50,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
-
 public class AlarmLifecycleListenerManager implements AlarmEntityListener, InitializingBean, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmLifecycleListenerManager.class);
@@ -63,7 +57,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     public static final String ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP = "org.opennms.alarms.snapshot.sync.ms";
     public static final long ALARM_SNAPSHOT_INTERVAL_MS = SystemProperties.getLong(ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP, TimeUnit.MINUTES.toMillis(2));
 
-    private final Set<AlarmLifecycleListener> listeners = Sets.newConcurrentHashSet();
+    private final Set<AlarmLifecycleListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private Timer timer;
 
     @Autowired

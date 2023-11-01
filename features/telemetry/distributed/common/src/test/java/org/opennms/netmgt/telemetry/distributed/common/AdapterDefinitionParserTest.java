@@ -37,8 +37,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
-import com.google.common.collect.ImmutableMap;
-
 public class AdapterDefinitionParserTest {
 
     @Test
@@ -58,14 +56,11 @@ public class AdapterDefinitionParserTest {
         Assert.assertThat(adapters, CoreMatchers.hasItems(
                 new MapBasedAdapterDef(
                         "Test",
-                        PropertyTree.from(ImmutableMap.of("name", "SFlow-Parser",
-                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
+                        PropertyTree.from(Map.of("name", "SFlow-Parser", "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
                 ),
                 new MapBasedAdapterDef(
                         "Test",
-                        PropertyTree.from(ImmutableMap.of("name", "SFLOW-Telemetry",
-                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter",
-                                "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
+                        PropertyTree.from(Map.of("name", "SFLOW-Telemetry", "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter", "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
                 )
         ));
     }
@@ -110,14 +105,11 @@ public class AdapterDefinitionParserTest {
         Assert.assertThat(adapters, CoreMatchers.hasItems(
                 new MapBasedAdapterDef(
                         "Test",
-                        PropertyTree.from(ImmutableMap.of("name", "SFlow-Parser",
-                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
+                        PropertyTree.from(Map.of("name", "SFlow-Parser", "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
                 ),
                 new MapBasedAdapterDef(
                         "Test",
-                        PropertyTree.from(ImmutableMap.of("name", "SFLOW-Telemetry",
-                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter",
-                                "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
+                        PropertyTree.from(Map.of("name", "SFLOW-Telemetry", "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter", "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
                 )
         ));
     }

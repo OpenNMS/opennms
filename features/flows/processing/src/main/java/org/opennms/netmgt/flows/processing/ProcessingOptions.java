@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.flows.processing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
-
-import com.google.common.collect.Lists;
 
 public class ProcessingOptions {
 
@@ -51,7 +50,7 @@ public class ProcessingOptions {
         private boolean applicationThresholding;
         private boolean applicationDataCollection;
 
-        private List<? extends PackageDefinition> packages = Lists.newArrayList();
+        private List<? extends PackageDefinition> packages = new ArrayList<>();
 
         private Builder() {}
 

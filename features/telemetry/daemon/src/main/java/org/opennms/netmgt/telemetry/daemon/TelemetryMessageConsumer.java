@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -52,8 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
-
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
@@ -66,7 +60,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     private final List<AdapterDefinition> adapterDefs;
 
     // Actual adapters implementing the logic
-    private final Set<Adapter> adapters = Sets.newHashSet();
+    private final Set<Adapter> adapters = new HashSet<>();
 
     public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
         this(queueConfig,

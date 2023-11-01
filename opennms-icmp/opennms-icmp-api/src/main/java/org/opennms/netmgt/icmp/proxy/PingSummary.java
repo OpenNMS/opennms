@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.icmp.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-
 public class PingSummary {
 
-    private final List<PingSequence> sequences = Lists.newArrayList();
+    private final List<PingSequence> sequences = new ArrayList<>();
     private final int numberRequests;
     private final PingRequest request;
 

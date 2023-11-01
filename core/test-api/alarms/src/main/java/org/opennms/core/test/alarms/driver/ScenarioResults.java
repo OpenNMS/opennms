@@ -182,7 +182,7 @@ public class ScenarioResults {
     public void addAlarms(long time, List<OnmsAlarm> alarms) {
         alarmsByTime.compute(time, (k, v) -> {
             if (v == null) {
-                return Lists.newArrayList(alarms);
+                return new ArrayList<>(alarms);
             }
             v.addAll(alarms);
             return v;

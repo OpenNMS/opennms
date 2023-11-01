@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,8 +41,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 
-import com.google.common.collect.Lists;
-
 public class BusinessServiceSearchProvider extends SimpleSearchProvider {
 
     private BusinessServiceManager businessServiceManager;
@@ -53,7 +52,7 @@ public class BusinessServiceSearchProvider extends SimpleSearchProvider {
 
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
-        List<BusinessServiceVertex> results = Lists.newArrayList();
+        List<BusinessServiceVertex> results = new ArrayList<>();
 
         String queryString = searchQuery.getQueryString();
         CriteriaBuilder bldr = new CriteriaBuilder(BusinessService.class);

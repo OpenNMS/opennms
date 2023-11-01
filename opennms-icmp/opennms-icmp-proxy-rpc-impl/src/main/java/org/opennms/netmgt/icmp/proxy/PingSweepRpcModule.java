@@ -30,15 +30,11 @@ package org.opennms.netmgt.icmp.proxy;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -54,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -121,7 +116,7 @@ public class PingSweepRpcModule extends AbstractXmlRpcModule<PingSweepRequestDTO
     private static class PingSweepResultTracker extends CompletableFuture<PingSweepResponseDTO>
             implements PingResponseCallback {
 
-        private final Set<InetAddress> waitingFor = Sets.newConcurrentHashSet();
+        private final Set<InetAddress> waitingFor = Collections.newSetFromMap(new ConcurrentHashMap<>());
         private final CountDownLatch m_doneSignal = new CountDownLatch(1);
         private final PingSweepResponseDTO responseDTO = new PingSweepResponseDTO();
 

@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.snmp.proxy.common.testutils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.provision.service.IPAddressTableTracker;
 
-import com.google.common.collect.Lists;
-
 public class IPAddressGatheringTracker extends IPAddressTableTracker {
-    private final List<IPAddressTableTracker.IPAddressRow> ipAddressRows = Lists.newArrayList();
+    private final List<IPAddressTableTracker.IPAddressRow> ipAddressRows = new ArrayList<>();
 
     public String getDescription() {
         return"IP address tables";

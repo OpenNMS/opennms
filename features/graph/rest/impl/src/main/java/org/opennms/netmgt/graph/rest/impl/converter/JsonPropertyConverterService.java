@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.graph.rest.impl.converter;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import org.json.JSONObject;
 import org.opennms.netmgt.graph.rest.api.PropertyConverter;
@@ -46,8 +42,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 public class JsonPropertyConverterService {
 
@@ -79,7 +73,7 @@ public class JsonPropertyConverterService {
     }
 
     private List<PropertyConverter> getConverters() {
-        final List<PropertyConverter> propertyConverters = Lists.newArrayList();
+        final List<PropertyConverter> propertyConverters = new ArrayList<>();
         propertyConverters.add(new PrimitiveConverter());
         propertyConverters.add(new NodeInfoConverter());
         propertyConverters.add(new IpInfoConverter());

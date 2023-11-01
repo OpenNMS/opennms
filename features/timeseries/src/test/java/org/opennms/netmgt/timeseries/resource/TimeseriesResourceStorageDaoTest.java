@@ -42,10 +42,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +60,6 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.re2j.Pattern;
 
 /**
@@ -186,8 +182,8 @@ public class TimeseriesResourceStorageDaoTest {
         
 
         // Metrics from all buckets should be present
-        index(ResourcePath.get("a", "bucket1"), Sets.newHashSet("metric11", "metric12"));
-        index(ResourcePath.get("a", "bucket2"), Sets.newHashSet("metric21", "metric22"));
+        index(ResourcePath.get("a", "bucket1"), new HashSet<>(Arrays.asList("metric11", "metric12")));
+        index(ResourcePath.get("a", "bucket2"), new HashSet<>(Arrays.asList("metric21", "metric22")));
         replay();
         Set<OnmsAttribute> attributes = resourceStorageDao.getAttributes(ResourcePath.get("a"));
         assertEquals(4, attributes.size());
@@ -209,7 +205,7 @@ public class TimeseriesResourceStorageDaoTest {
 
     @Test
     public void getResponseTimeAttributes() throws StorageException {
-        index(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1", "strafeping"), Sets.newHashSet("ping1", "ping2"));
+        index(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1", "strafeping"), new HashSet<>(Arrays.asList("ping1", "ping2")));
         replay();
         Set<OnmsAttribute> attributes = resourceStorageDao.getAttributes(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1"));
 
@@ -221,7 +217,7 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void index(ResourcePath path) {
-        index(path, Sets.newHashSet());
+        index(path, new HashSet<>());
     }
 
     private void index(ResourcePath path, Set<String> metrics) {

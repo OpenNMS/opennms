@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.browsers;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.features.topology.api.TopologyServiceClient;
@@ -39,7 +40,6 @@ import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.UI;
 
@@ -48,7 +48,7 @@ public abstract class AbstractSelectionLinkGenerator implements Table.ColumnGene
     private EventProxy m_eventProxy;
 
     protected void fireVertexUpdatedEvent(Collection<VertexRef> vertexRefs) {
-        Set<VertexRef> vertexRefSet = Sets.newHashSet(vertexRefs);
+        Set<VertexRef> vertexRefSet = new HashSet<>(vertexRefs);
         getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefSet, getGraphProvider()));
     }
 

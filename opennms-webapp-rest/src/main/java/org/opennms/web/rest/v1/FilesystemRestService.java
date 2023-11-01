@@ -75,22 +75,13 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.google.common.collect.ImmutableSet;
-
 @Component
 @Path("filesystem")
 @Tag(name = "FileSystem", description = "File System API")
 public class FilesystemRestService {
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemRestService.class);
 
-    private static final Set<String> SUPPORTED_FILE_EXTENSIONS = ImmutableSet.of("xml",
-            "properties",
-            "boot",
-            "cfg",
-            "drl",
-            "groovy",
-            "bsh",
-            "dcb");
+    private static final Set<String> SUPPORTED_FILE_EXTENSIONS = Set.of("xml", "properties", "boot", "cfg", "drl", "groovy", "bsh", "dcb");
     private final java.nio.file.Path usersXml;
 
     public FilesystemRestService() {

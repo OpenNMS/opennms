@@ -28,11 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.internal;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.features.topology.api.IconRepository;
-
-import com.google.common.collect.Sets;
 
 /**
  * Simple {@link IconRepository} for the {@link org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider}.
@@ -47,7 +46,7 @@ import com.google.common.collect.Sets;
  */
 public class GraphMLIconRepository implements IconRepository {
 
-    private Set<String> knownIconKeys = Sets.newHashSet();
+    private Set<String> knownIconKeys = new HashSet<>();
 
     public GraphMLIconRepository(Set<String> knownIconKeys) {
         this.knownIconKeys = knownIconKeys;

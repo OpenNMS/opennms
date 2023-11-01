@@ -36,11 +36,7 @@ import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -93,7 +89,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * Used to test the business services REST endpoints using both
@@ -336,7 +331,7 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
      * Verifies that the given reduction key is atached to the provided Business Service
      */
     private void verifyReductionKey(String reductionKey, BusinessServiceResponseDTO responseDTO) {
-        final Set<String> reductionKeys = Sets.newHashSet();
+        final Set<String> reductionKeys = new HashSet<>();
         responseDTO.getReductionKeys().forEach(e -> reductionKeys.addAll(e.getReductionKeys()));
         Assert.assertTrue("Expect reduction key '" + reductionKey + "' to be present in retrieved BusinessServiceResponseDTO.", reductionKeys.contains(reductionKey));
     }
@@ -427,8 +422,8 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
 
         // save hierarchy for later use
         final Map<BusinessServiceEntity, Set<BusinessServiceEdgeEntity>> edgeMap = Maps.newHashMap();
-        testData.getServices().forEach(eachEntity -> edgeMap.put(eachEntity, Sets.newHashSet(eachEntity.getEdges())));
-        testData.getServices().forEach(eachEntity -> eachEntity.setEdges(Sets.newHashSet())); // clear hierarchy
+        testData.getServices().forEach(eachEntity -> edgeMap.put(eachEntity, new HashSet<>(eachEntity.getEdges())));
+        testData.getServices().forEach(eachEntity -> eachEntity.setEdges(new HashSet<>())); // clear hierarchy
 
         // save business services to database
         for (BusinessServiceEntity eachEntity : testData.getServices()) {
@@ -550,7 +545,7 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
         Assert.assertEquals(1, bs.getReductionKeyEdges().size());
         Assert.assertEquals(1, bs.getEdges().size());
         Assert.assertEquals(1, m_businessServiceDao.findAll().size());
-        Assert.assertEquals(Sets.newHashSet(), bs.getIpServiceEdges());
+        Assert.assertEquals(new HashSet<>(), bs.getIpServiceEdges());
         BusinessServiceResponseDTO responseDTO = verifyResponse(bs);
         verifyReductionKey("key1updated", responseDTO);
     }

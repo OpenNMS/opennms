@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -35,7 +36,6 @@ import java.util.Set;
 import org.opennms.netmgt.flows.api.Directional;
 
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
 public class TableUtils {
@@ -62,7 +62,7 @@ public class TableUtils {
             }
         }
 
-        final Set<String> knownKeys = Sets.newHashSet(rowKeys);
+        final Set<String> knownKeys = new HashSet<>(rowKeys);
         for (Directional<String> rowKey : table.rowKeySet()) {
             // Append any rows that were not previously matched, in the same order as they appear
             if (!knownKeys.contains(rowKey.getValue())) {

@@ -35,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class PathOutageProviderIT {
 	 * @param criteria
 	 */
 	private void checkProvider(List<VertexHopCriteria> criteria) {
-		List<Vertex> vertices = this.pathOutageProvider.getCurrentGraph().getVertices(Lists.newArrayList(criteria).toArray(new Criteria[criteria.size()]));
+		List<Vertex> vertices = this.pathOutageProvider.getCurrentGraph().getVertices(new ArrayList<>(criteria).toArray(new Criteria[criteria.size()]));
 		assertEquals(vertices.size(), this.nodesMap.size());
 		for (Vertex vertex : vertices) {
 			Integer id = Integer.parseInt(vertex.getId());

@@ -86,14 +86,14 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 				.withSemanticZoomLevel(0)
 				.withPreferredLayout("Hierarchy Layout")
 				.withCriteria(() -> {
-					final Map<? extends VertexRef, ? extends Status> resultMap = statusProvider.getStatusForVertices(graph, Lists.newArrayList(graph.getVertices()), new Criteria[0]);
+					final Map<? extends VertexRef, ? extends Status> resultMap = statusProvider.getStatusForVertices(graph, new ArrayList<>(graph.getVertices()), new Criteria[0]);
 					final Optional<? extends Map.Entry<? extends VertexRef, ? extends Status>> max = resultMap.entrySet().stream().max(Comparator.comparing(e -> OnmsSeverity.get(e.getValue().computeStatus())));
 					if (max.isPresent()) {
 						return Lists.newArrayList(new DefaultVertexHopCriteria(max.get().getKey()));
 					} else if (graph.getVertexTotalCount() > 0) {
 						return Lists.newArrayList(new DefaultVertexHopCriteria(graph.getVertices().get(0)));
 					} else {
-						return Lists.newArrayList();
+						return new ArrayList<>();
 					}
 				});
 	}

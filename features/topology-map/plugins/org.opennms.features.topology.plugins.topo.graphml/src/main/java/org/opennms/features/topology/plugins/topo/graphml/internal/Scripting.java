@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.topology.plugins.topo.graphml.internal;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Status;
@@ -48,12 +47,7 @@ import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -115,7 +109,7 @@ public class Scripting<E extends Ref, S extends Status> {
     }
 
     private List<StatusScript<S>> loadScripts() {
-        final List<StatusScript<S>> scripts = Lists.newArrayList();
+        final List<StatusScript<S>> scripts = new ArrayList<>();
         try (final DirectoryStream<Path> stream = Files.newDirectoryStream(this.scriptPath)) {
             for (final Path path : stream) {
                 final String extension = FilenameUtils.getExtension(path.toString());

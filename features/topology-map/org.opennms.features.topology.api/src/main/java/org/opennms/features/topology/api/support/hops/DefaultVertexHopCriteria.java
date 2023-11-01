@@ -28,12 +28,12 @@
 
 package org.opennms.features.topology.api.support.hops;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import com.google.common.collect.Sets;
 
 /**
  * Helper criteria class to reference to existing VertexRefs.
@@ -50,7 +50,7 @@ public class DefaultVertexHopCriteria extends VertexHopCriteria {
 
     @Override
     public Set<VertexRef> getVertices() {
-        return Sets.newHashSet(vertexRef);
+        return new HashSet<>(Arrays.asList(vertexRef));
     }
 
     @Override

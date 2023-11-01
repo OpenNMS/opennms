@@ -28,7 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
@@ -38,6 +37,7 @@ import com.vaadin.v7.data.util.VaadinPropertyDescriptor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * This class represents a vaadin container (data source). Therefore it extends

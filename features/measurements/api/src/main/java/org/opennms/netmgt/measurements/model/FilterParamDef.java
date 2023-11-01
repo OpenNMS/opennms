@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -88,13 +90,13 @@ public class FilterParamDef {
        }
        final FilterParamDef other = (FilterParamDef) obj;
 
-       return   com.google.common.base.Objects.equal(this.key, other.key)
-             && com.google.common.base.Objects.equal(this.value, other.value);
+       return   Objects.equals(this.key, other.key)
+             && Objects.equals(this.value, other.value);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.key, this.value);
     }
 

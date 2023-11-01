@@ -216,7 +216,7 @@ public class DefaultClassificationEngineTest {
     // See NMS-12429
     @Test
     public void verifyDoesNotRunOutOfMemory() throws InterruptedException {
-        final List<Rule> rules = Lists.newArrayList();
+        final List<Rule> rules = new ArrayList<>();
         for (int i=0; i<100; i++) {
             final Rule rule = new RuleBuilder().withName("rule1").withPosition(i+1).withProtocol("UDP").withDstAddress("192.168.0." + i).build();
             rules.add(rule);

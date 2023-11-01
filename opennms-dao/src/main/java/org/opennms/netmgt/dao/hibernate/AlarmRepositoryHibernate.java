@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -246,7 +245,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
 
     private Set<Integer> findRelatedAlarms(int[] alarmIds) {
         final Set<Integer> allAlarmIds = new HashSet<>();
-        Set<Integer> toBeChecked = Sets.newHashSet(ArrayUtils.toObject(alarmIds));
+        Set<Integer> toBeChecked = new HashSet<>(Arrays.asList(ArrayUtils.toObject(alarmIds)));
 
         do {
             allAlarmIds.addAll(toBeChecked);

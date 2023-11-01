@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +49,6 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.google.common.collect.Lists;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -243,7 +243,7 @@ public class AlarmsDashlet extends AbstractDashlet {
             }
         }
 
-        return Lists.newArrayList(onmsAlarmMap.values());
+        return new ArrayList<>(onmsAlarmMap.values());
     }
 
     /**

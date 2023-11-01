@@ -45,8 +45,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.collect.Lists;
-
 public class ManagedDroolsContextIT {
 
     @Rule
@@ -190,7 +188,7 @@ public class ManagedDroolsContextIT {
         }
 
         public synchronized List<Notification> getSent() {
-            return Lists.newArrayList(sent);
+            return new ArrayList<>(sent);
         }
 
         public synchronized void clearSent() {

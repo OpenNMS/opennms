@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.bsm.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
-
-import com.google.common.collect.Lists;
 
 public class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
 
@@ -69,7 +68,7 @@ public class LoggingStateChangeHandler implements BusinessServiceStateChangeHand
         }
     }
 
-    private final List<StateChange> m_stateChanges = Lists.newArrayList();
+    private final List<StateChange> m_stateChanges = new ArrayList<>();
 
     @Override
     public void handleBusinessServiceStateChanged(BusinessServiceGraph graph, BusinessService businessService, Status newStatus, Status prevStatus) {

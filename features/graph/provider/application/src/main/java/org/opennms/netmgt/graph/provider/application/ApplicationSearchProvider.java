@@ -48,8 +48,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 public class ApplicationSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);
@@ -97,7 +95,7 @@ public class ApplicationSearchProvider implements SearchProvider {
                     .collect(Collectors.toList());
         } catch (NumberFormatException ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot convert string '{}' to number: {}", applicationIdString, ex.getMessage(), ex);
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
     }
 

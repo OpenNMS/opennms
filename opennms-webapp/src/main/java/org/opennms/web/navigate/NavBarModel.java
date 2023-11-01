@@ -28,12 +28,11 @@
 
 package org.opennms.web.navigate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.google.common.collect.Lists;
 
 public class NavBarModel {
     private final HttpServletRequest m_request;
@@ -43,7 +42,7 @@ public class NavBarModel {
     public NavBarModel(final HttpServletRequest request, final Map<NavBarEntry, DisplayStatus> entries) {
         m_request = request;
         m_entries = entries;
-        m_entryList = Lists.newArrayList(m_entries.entrySet());
+        m_entryList = new ArrayList<>(m_entries.entrySet());
     }
 
     public HttpServletRequest getRequest() {

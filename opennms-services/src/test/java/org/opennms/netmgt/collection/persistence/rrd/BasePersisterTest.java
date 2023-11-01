@@ -37,8 +37,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -77,8 +79,6 @@ import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import com.google.common.collect.Sets;
 
 /**
  * JUnit TestCase for the BasePersister.
@@ -194,7 +194,7 @@ public class BasePersisterTest {
         
         m_persister.pushShouldPersist(attribute);
 
-        m_persister.setBuilder(m_persister.createBuilder(attribute.getResource(), attribute.getName(), Sets.newHashSet(attribute.getAttributeType())));
+        m_persister.setBuilder(m_persister.createBuilder(attribute.getResource(), attribute.getName(), new HashSet<>(Arrays.asList(attribute.getAttributeType()))));
 
         // This will end up calling m_persister.persistStringAttribute(attribute);
         m_persister.storeAttribute(attribute);

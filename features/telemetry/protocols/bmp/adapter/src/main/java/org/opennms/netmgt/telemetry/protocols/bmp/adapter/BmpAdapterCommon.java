@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -259,7 +258,7 @@ public class BmpAdapterCommon {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, List.of(collector)), context);
     }
 
     public static void handleInitiationMessage(final BmpMessageHandler messageHandler,
@@ -283,7 +282,7 @@ public class BmpAdapterCommon {
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, List.of(router)), context);
     }
 
     public static void handleTerminationMessage(final BmpMessageHandler messageHandler, final Transport.Message message,
@@ -324,7 +323,7 @@ public class BmpAdapterCommon {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, List.of(router)), context);
     }
 
     public static void handlePeerUpNotification(final BmpMessageHandler messageHandler, final Transport.Message message,
@@ -370,7 +369,7 @@ public class BmpAdapterCommon {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = peerUp.getTableName();
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.PEER, List.of(peer)), context);
     }
 
     public static void handlePeerDownNotification(final BmpMessageHandler messageHandler,
@@ -433,7 +432,7 @@ public class BmpAdapterCommon {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = "";
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.PEER, List.of(peer)), context);
     }
 
     public static void handleStatisticReport(final BmpMessageHandler messageHandler,
@@ -462,7 +461,7 @@ public class BmpAdapterCommon {
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
-        messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)), context);
+        messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, List.of(stat)), context);
     }
 
     private static BaseAttribute toBaseAttributeRecord(final Transport.RouteMonitoringPacket routeMonitoring,
@@ -709,7 +708,7 @@ public class BmpAdapterCommon {
 
         // Forward the messages to the handler
         if (baseAttr != null) {
-            messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)), context);
+            messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, List.of(baseAttr)), context);
         }
 
         messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords), context);

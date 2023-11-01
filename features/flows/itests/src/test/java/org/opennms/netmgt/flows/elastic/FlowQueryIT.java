@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -105,7 +106,6 @@ import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
@@ -266,7 +266,7 @@ public class FlowQueryIT {
         assertThat(appTrafficSummary, hasSize(1));
 
         appTrafficSummary =
-                smartQueryService.getApplicationSummaries(ImmutableSet.of("https", "http"), false, getFilters()).get();
+                smartQueryService.getApplicationSummaries(Set.of("https", "http"), false, getFilters()).get();
 
         assertThat(appTrafficSummary, hasSize(2));
         TrafficSummary<String> https = appTrafficSummary.get(0);
@@ -321,12 +321,12 @@ public class FlowQueryIT {
         assertThat(appTraffic.rowKeySet(), hasSize(4));
 
         // Get https and http
-        appTraffic = smartQueryService.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
+        appTraffic = smartQueryService.getApplicationSeries(Set.of("http", "https"), 10,
                 false, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(4));
 
         // Get https and http and include others
-        appTraffic = smartQueryService.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
+        appTraffic = smartQueryService.getApplicationSeries(Set.of("http", "https"), 10,
                 true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
     }
@@ -432,7 +432,7 @@ public class FlowQueryIT {
 
         // Get summaries for two specific hosts
         hostTrafficSummary =
-                smartQueryService.getHostSummaries(ImmutableSet.of("10.1.1.11", "10.1.1.12"), false, getFilters()).get();
+                smartQueryService.getHostSummaries(Set.of("10.1.1.11", "10.1.1.12"), false, getFilters()).get();
 
         assertThat(hostTrafficSummary, hasSize(2));
         TrafficSummary<Host> first = hostTrafficSummary.get(0);
@@ -447,7 +447,7 @@ public class FlowQueryIT {
 
         // Try with only one host to let Others accumulate the rest
         hostTrafficSummary =
-                smartQueryService.getHostSummaries(ImmutableSet.of("10.1.1.11"), true, getFilters()).get();
+                smartQueryService.getHostSummaries(Set.of("10.1.1.11"), true, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(2));
         first = hostTrafficSummary.get(0);
         assertThat(first.getEntity(), equalTo(new Host("10.1.1.11")));
@@ -501,12 +501,12 @@ public class FlowQueryIT {
         assertThat(hostTraffic.rowKeySet(), hasSize(4));
 
         // Get 10.1.1.12 and 192.168.1.100
-        hostTraffic = smartQueryService.getHostSeries(ImmutableSet.of("10.1.1.12", "192.168.1.100"), 10,
+        hostTraffic = smartQueryService.getHostSeries(Set.of("10.1.1.12", "192.168.1.100"), 10,
                 false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(4));
 
         // Get 10.1.1.12 and 192.168.1.100 and include others
-        hostTraffic = smartQueryService.getHostSeries(ImmutableSet.of("10.1.1.12", "192.168.1.100"), 10,
+        hostTraffic = smartQueryService.getHostSeries(Set.of("10.1.1.12", "192.168.1.100"), 10,
                 true, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(6));
     }
@@ -563,7 +563,7 @@ public class FlowQueryIT {
 
         // Get a specific conversation
         List<TrafficSummary<Conversation>> convoTrafficSummary =
-                smartQueryService.getConversationSummaries(ImmutableSet.of("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"),
+                smartQueryService.getConversationSummaries(Set.of("[\"test\",6,\"10.1.1.11\",\"192.168.1.100\",\"http\"]"),
                         false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(1));
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
@@ -575,7 +575,7 @@ public class FlowQueryIT {
 
         // Get a specific conversation plus others
         convoTrafficSummary = smartQueryService.getConversationSummaries(
-                ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), true,
+                Set.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), true,
                 getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
         convo = convoTrafficSummary.get(0);
@@ -600,7 +600,7 @@ public class FlowQueryIT {
         loadDefaultFlows();
 
         // Get series for specific host
-        Table<Directional<Conversation>, Long, Double> convoTraffic = smartQueryService.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
+        Table<Directional<Conversation>, Long, Double> convoTraffic = smartQueryService.getConversationSeries(Set.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(2));
         verifyHttpsSeries(convoTraffic, Conversation.builder()
                 .withLocation("test")
@@ -611,7 +611,7 @@ public class FlowQueryIT {
                 .withApplication("https").build());
 
         // Get series for same host and include others
-        convoTraffic = smartQueryService.getConversationSeries(ImmutableSet.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, true, getFilters()).get();
+        convoTraffic = smartQueryService.getConversationSeries(Set.of("[\"test\",6,\"10.1.1.12\",\"192.168.1.100\",\"https\"]"), 10, true, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(4));
     }
 

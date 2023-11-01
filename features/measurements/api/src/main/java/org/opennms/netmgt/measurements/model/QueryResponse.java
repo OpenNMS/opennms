@@ -37,10 +37,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Query response.
@@ -229,11 +226,11 @@ public class QueryResponse {
        }
        final QueryResponse other = (QueryResponse) obj;
 
-       return   com.google.common.base.Objects.equal(this.step, other.step)
-             && com.google.common.base.Objects.equal(this.start, other.start)
-             && com.google.common.base.Objects.equal(this.end, other.end)
-             && com.google.common.base.Objects.equal(this.constants, other.constants)
-             && com.google.common.base.Objects.equal(this.metadata, other.metadata)
+       return   Objects.equals(this.step, other.step)
+             && Objects.equals(this.start, other.start)
+             && Objects.equals(this.end, other.end)
+             && Objects.equals(this.constants, other.constants)
+             && Objects.equals(this.metadata, other.metadata)
              && Arrays.equals(this.timestamps, other.timestamps)
              && Arrays.equals(this.labels, other.labels)
              && Arrays.equals(this.columns, other.columns);
@@ -241,7 +238,7 @@ public class QueryResponse {
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.step, this.start, this.end, this.timestamps, this.labels, this.columns, this.constants, this.metadata);
     }
 
@@ -301,7 +298,7 @@ public class QueryResponse {
 
         @Override
         public int hashCode() {
-           return com.google.common.base.Objects.hashCode(this.values);
+           return Objects.hash(this.values);
         }
 
         @Override

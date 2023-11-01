@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.support;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -37,8 +38,6 @@ import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.BackendGraph;
-
-import com.google.common.collect.Lists;
 
 /**
  * Different strategies to determine the vertices in Focus.
@@ -50,7 +49,7 @@ public enum FocusStrategy {
     /**
      * Empty focus
      */
-    EMPTY((FocusStrategyImplementation) (graph, arguments) -> Lists.newArrayList()),
+    EMPTY((FocusStrategyImplementation) (graph, arguments) -> new ArrayList<>()),
 
     /**
      * Adds all Vertices to focus.
@@ -67,7 +66,7 @@ public enum FocusStrategy {
         if (!collected.isEmpty()) {
             return collected.subList(0, 1);
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }),
 
     /**

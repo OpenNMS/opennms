@@ -42,7 +42,6 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 public class SemanticZoomLevelTransformer {
     private final Collection<GenericVertex> verticesInFocus;
@@ -67,7 +66,7 @@ public class SemanticZoomLevelTransformer {
 
         // Determine all vertices according to szl
         final List<Vertex> alreadyProcessedVertices = new ArrayList<>();
-        final List<GenericVertex> verticesToProcess = Lists.newArrayList(knownVerticesInFocus);
+        final List<GenericVertex> verticesToProcess = new ArrayList<>(knownVerticesInFocus);
         for (int i=0; i<szl; i++) {
             final List<GenericVertex> tmpVertices = new ArrayList<>();
             for (GenericVertex eachVertex : verticesToProcess) {

@@ -35,18 +35,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -63,8 +52,6 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
-
-import com.google.common.collect.Lists;
 
 /**
  * Allows Maven repositories, feature repositories and features to boot
@@ -254,10 +241,10 @@ public class KarafExtender {
     public List<Repository> getRepositories() throws IOException {
         final List<Path> repositoryPaths = getRepositoryFolders(m_repositories);
 
-        final List<Repository> repositories = Lists.newLinkedList();
+        final List<Repository> repositories = new LinkedList<>();
         for (Path repositoryPath : repositoryPaths) {
             try {
-                List<URI> featureUris = Lists.newLinkedList();
+                List<URI> featureUris = new LinkedList<>();
                 Path featuresUriPath = repositoryPath.resolve(FEATURES_URI);
                 if (featuresUriPath.toFile().isFile()) {
                     for (String line : getLinesIn(featuresUriPath)) {
@@ -298,7 +285,7 @@ public class KarafExtender {
     }
 
     public List<Feature> getFeaturesIn(Path featuresBootFile) throws IOException {
-        final List<Feature> features = Lists.newLinkedList();
+        final List<Feature> features = new LinkedList<>();
         for (String line : getLinesIn(featuresBootFile)) {
             final Matcher m = FEATURE_VERSION_PATTERN.matcher(line);
             if (!m.matches()) {
@@ -316,7 +303,7 @@ public class KarafExtender {
     }
 
     public List<Feature> getFeaturesBoot() throws IOException {
-        final List<Feature> features = Lists.newLinkedList();
+        final List<Feature> features = new LinkedList<>();
         for (Path featuresBootFile : getFilesIn(m_featuresBootDotD)) {
             features.addAll(getFeaturesIn(featuresBootFile));
         }
@@ -382,7 +369,7 @@ public class KarafExtender {
     }
 
     private static List<Path> getRepositoryFolders(Path folder) throws IOException {
-        final List<Path> paths = Lists.newLinkedList();
+        final List<Path> paths = new LinkedList<>();
         if (!folder.toFile().exists()) {
             LOG.info("Repository folder {} does not exist. No repositories will be added.", folder);
             return paths;

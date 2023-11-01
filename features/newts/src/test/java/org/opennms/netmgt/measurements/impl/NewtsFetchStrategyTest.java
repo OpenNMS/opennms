@@ -39,11 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -71,7 +67,6 @@ import org.opennms.newts.api.query.ResultDescriptor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class NewtsFetchStrategyTest {
     private Context m_context;
@@ -278,7 +273,7 @@ public class NewtsFetchStrategyTest {
         final ResourceId resourceId = parentId.resolve("responseTime", node);
         OnmsResource parent = m_resources.get(parentId);
         if (parent == null) {
-            parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, Sets.newHashSet(), ResourcePath.get("foo"));
+            parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, new HashSet<>(), ResourcePath.get("foo"));
             final OnmsNode entity = new OnmsNode();
             entity.setId(nodeId);
             entity.setForeignSource("NODES");
@@ -289,7 +284,7 @@ public class NewtsFetchStrategyTest {
         }
         OnmsResource resource = m_resources.get(resourceId);
         if (resource == null) {
-            resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
+            resource = new OnmsResource(attr, label, type, new HashSet<>(), ResourcePath.get("foo"));
             resource.setParent(parent);
             m_resources.put(resourceId, resource);
         }

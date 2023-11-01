@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,7 +60,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
@@ -120,7 +120,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                     if (!Objects.equals(sourceNamespace, targetNamespace)) {
                         List<VertexRef> opposites = oppositeVertices.get(sourceVertex);
                         if (opposites == null) {
-                            opposites = Lists.newArrayList();
+                            opposites = new ArrayList<>();
                             oppositeVertices.put(sourceVertex, opposites);
                         }
                         opposites.add(targetVertex);

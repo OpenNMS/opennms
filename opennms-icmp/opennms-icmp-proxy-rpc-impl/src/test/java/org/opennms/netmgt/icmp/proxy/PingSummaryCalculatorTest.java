@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.icmp.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 public class PingSummaryCalculatorTest {
 
@@ -66,7 +66,7 @@ public class PingSummaryCalculatorTest {
         Preconditions.checkArgument(numberErrors >= 0, "numberErrors must be >= 0");
         Preconditions.checkArgument(numberTimeouts >= 0, "numberTimeouts must be >= 0");
 
-        final List<PingSequence> sequences = Lists.newArrayList();
+        final List<PingSequence> sequences = new ArrayList<>();
         for (int i=0; i<numberRequests; i++) {
             if (numberErrors > 0) {
                 sequences.add(new PingSequence(i, new Exception()));

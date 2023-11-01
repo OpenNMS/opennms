@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -55,7 +57,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class BusinessServicesTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -165,7 +166,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                     return Lists.newArrayList(Restrictions.isNull("id")); // is always false, so nothing is shown
                 };
             case BusinessService:
-                final Set<Long> businessServiceIds = Sets.newHashSet();
+                final Set<Long> businessServiceIds = new HashSet<>();
 
                 // Business Service
                 filteredSet.stream()
@@ -207,6 +208,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node, ContentType.BusinessService).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node, ContentType.BusinessService)).contains(type);
     }
 }

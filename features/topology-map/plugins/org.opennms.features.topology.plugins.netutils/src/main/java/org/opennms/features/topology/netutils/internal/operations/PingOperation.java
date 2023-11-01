@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.netutils.internal.operations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -75,7 +76,7 @@ public class PingOperation extends AbstractOperation {
                 : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
 
         final List<String> ipAddresses = node.isPresent()
-                ? Lists.newArrayList(node.get().getIpInterfaces()).stream().map(eachInterface -> InetAddressUtils.str(eachInterface.getIpAddress())).collect(Collectors.toList())
+                ? new ArrayList<>(node.get().getIpInterfaces()).stream().map(eachInterface -> InetAddressUtils.str(eachInterface.getIpAddress())).collect(Collectors.toList())
                 : Lists.newArrayList(vertex.getIpAddress());
         final String defaultIp = getDefaultIp(vertex, node);
 

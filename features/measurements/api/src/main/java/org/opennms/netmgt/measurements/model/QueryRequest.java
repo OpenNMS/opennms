@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.google.common.collect.Lists;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -86,11 +86,11 @@ public class QueryRequest {
      */
     private boolean relaxed = false;
 
-    private List<Source> sources = Lists.newArrayListWithCapacity(0);
+    private List<Source> sources = new ArrayList<>(0);
 
-    private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
+    private List<Expression> expressions = new ArrayList<>(0);
 
-    private List<FilterDef> filters = Lists.newArrayListWithCapacity(0);
+    private List<FilterDef> filters = new ArrayList<>(0);
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -194,21 +194,21 @@ public class QueryRequest {
        }
        final QueryRequest other = (QueryRequest) obj;
 
-       return   com.google.common.base.Objects.equal(this.step, other.step)
-             && com.google.common.base.Objects.equal(this.start, other.start)
-             && com.google.common.base.Objects.equal(this.end, other.end)
-             && com.google.common.base.Objects.equal(this.maxrows, other.maxrows)
-             && com.google.common.base.Objects.equal(this.interval, other.interval)
-             && com.google.common.base.Objects.equal(this.heartbeat, other.heartbeat)
-             && com.google.common.base.Objects.equal(this.sources, other.sources)
-             && com.google.common.base.Objects.equal(this.expressions, other.expressions)
-             && com.google.common.base.Objects.equal(this.filters, other.filters)
-             && com.google.common.base.Objects.equal(this.relaxed, other.relaxed);
+       return   Objects.equals(this.step, other.step)
+             && Objects.equals(this.start, other.start)
+             && Objects.equals(this.end, other.end)
+             && Objects.equals(this.maxrows, other.maxrows)
+             && Objects.equals(this.interval, other.interval)
+             && Objects.equals(this.heartbeat, other.heartbeat)
+             && Objects.equals(this.sources, other.sources)
+             && Objects.equals(this.expressions, other.expressions)
+             && Objects.equals(this.filters, other.filters)
+             && Objects.equals(this.relaxed, other.relaxed);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.step, this.start, this.end, this.relaxed, this.maxrows, this.interval,
                  this.heartbeat ,this.sources, this.expressions, this.filters);
     }

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -185,16 +187,16 @@ public class Source {
        }
        final Source other = (Source) obj;
 
-       return   com.google.common.base.Objects.equal(this.label, other.label)
-             && com.google.common.base.Objects.equal(this.resourceId, other.resourceId)
-             && com.google.common.base.Objects.equal(this.attribute, other.attribute)
-             && com.google.common.base.Objects.equal(this.datasource, other.datasource)
-             && com.google.common.base.Objects.equal(this.isTransient, other.isTransient);
+       return   Objects.equals(this.label, other.label)
+             && Objects.equals(this.resourceId, other.resourceId)
+             && Objects.equals(this.attribute, other.attribute)
+             && Objects.equals(this.datasource, other.datasource)
+             && Objects.equals(this.isTransient, other.isTransient);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.label, this.resourceId, this.attribute, this.datasource, this.isTransient);
     }
 

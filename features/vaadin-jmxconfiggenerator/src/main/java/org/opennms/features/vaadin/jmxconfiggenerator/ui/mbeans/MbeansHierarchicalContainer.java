@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -126,7 +127,7 @@ public class MbeansHierarchicalContainer extends HierarchicalContainer {
 	}
 
 	public Collection<Mbean> getSelectedMbeans() {
-		return Collections2.filter(getMBeans(), new com.google.common.base.Predicate<Mbean>() {
+		return Collections2.filter(getMBeans(), new java.util.function.Predicate<Mbean>() {
 			@Override
 			public boolean apply(Mbean input) {
 				return isSelected(dataToItemIdMapping.get(input));

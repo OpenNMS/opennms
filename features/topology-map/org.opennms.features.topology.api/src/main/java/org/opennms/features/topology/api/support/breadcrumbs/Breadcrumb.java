@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.support.breadcrumbs;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -45,8 +46,6 @@ import org.opennms.features.topology.api.support.VertexRefAdapter;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.google.common.collect.Lists;
-
 /**
  * Element to describe a breadcrumb.
  *
@@ -59,7 +58,7 @@ public class Breadcrumb implements ClickListener {
     @XmlElement(name="source-vertex")
     @XmlElementWrapper(name="source-vertices")
     @XmlJavaTypeAdapter(value= VertexRefAdapter.class)
-    private List<VertexRef> sourceVertices = Lists.newArrayList();
+    private List<VertexRef> sourceVertices = new ArrayList<>();
 
     @XmlElement(name="target-namespace")
     private String targetNamespace;
@@ -76,7 +75,7 @@ public class Breadcrumb implements ClickListener {
 
     public Breadcrumb(String targetNamespace, List<VertexRef> vertices) {
         this.targetNamespace = targetNamespace;
-        this.sourceVertices = Lists.newArrayList(vertices);
+        this.sourceVertices = new ArrayList<>(vertices);
     }
 
     public Breadcrumb(String targetNamespace) {

@@ -38,12 +38,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -123,7 +125,6 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -154,7 +155,7 @@ public class BmpParser implements TcpParser {
 
     private ScheduledFuture<?> heartbeatFuture;
 
-    private Set<InetAddress> connections = Sets.newConcurrentHashSet();
+    private Set<InetAddress> connections = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private final DnsResolver dnsResolver;
     private boolean dnsLookupsEnabled = true;

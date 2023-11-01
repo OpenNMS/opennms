@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,6 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
@@ -184,7 +184,7 @@ public class BusinessServiceVertexStatusInfoPanelItemProvider extends VertexInfo
                     .collect(Collectors.toSet());
         }
         LOG.warn("Try to calculate impacting vertices for more than {} edges. This is currently not supported. See http://http://issues.opennms.org/browse/NMS-8527.", MAX_EDGES_FOR_IMPACTING);
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 }
 

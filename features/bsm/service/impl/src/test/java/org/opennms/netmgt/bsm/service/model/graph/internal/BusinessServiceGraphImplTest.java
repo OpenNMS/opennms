@@ -30,10 +30,7 @@ package org.opennms.netmgt.bsm.service.model.graph.internal;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -43,7 +40,6 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class BusinessServiceGraphImplTest {
 
@@ -86,11 +82,11 @@ public class BusinessServiceGraphImplTest {
 
         // Verify the services at every level
         Map<Integer, Set<BusinessService>> servicesByLevel = Maps.newTreeMap();
-        servicesByLevel.put(0, Sets.newHashSet(h.getBusinessServiceById(1), h.getBusinessServiceById(5), h.getBusinessServiceById(6), h.getBusinessServiceById(7)));
-        servicesByLevel.put(1, Sets.newHashSet(h.getBusinessServiceById(2)));
-        servicesByLevel.put(2, Sets.newHashSet(h.getBusinessServiceById(3)));
-        servicesByLevel.put(3, Sets.newHashSet(h.getBusinessServiceById(4)));
-        servicesByLevel.put(4, Sets.newHashSet());
+        servicesByLevel.put(0, new HashSet<>(Arrays.asList(h.getBusinessServiceById(1), h.getBusinessServiceById(5), h.getBusinessServiceById(6), h.getBusinessServiceById(7))));
+        servicesByLevel.put(1, new HashSet<>(Arrays.asList(h.getBusinessServiceById(2))));
+        servicesByLevel.put(2, new HashSet<>(Arrays.asList(h.getBusinessServiceById(3))));
+        servicesByLevel.put(3, new HashSet<>(Arrays.asList(h.getBusinessServiceById(4))));
+        servicesByLevel.put(4, new HashSet<>());
         for (Entry<Integer, Set<BusinessService>> entry : servicesByLevel.entrySet()) {
             int level = entry.getKey();
             Set<BusinessService> servicesAtLevel = graph.getVerticesByLevel(level).stream()

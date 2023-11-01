@@ -28,10 +28,7 @@
 
 package org.opennms.features.status.api.node.strategy;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -57,9 +54,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -127,49 +121,49 @@ public class DefaultNodeStatusCalculatorIT {
         verifyStatus(6, nodeDao.findAll().stream().collect(Collectors.toMap(n -> n.getId(), n -> OnmsSeverity.NORMAL)), statusCalculator.calculateStatus(config));
 
         // No alarm exists, status should be normal
-        config.setNodeIds(Sets.newHashSet(node.getId()));
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
+        config.setNodeIds(new HashSet<>(Arrays.asList(node.getId())));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
 
         // Create an alarm and verify status
         OnmsAlarm alarm = createAndPersistAlarm(node, OnmsSeverity.WARNING);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
 
         // Create an alarm for same node and verify
         OnmsAlarm alarm2 = createAndPersistAlarm(node, OnmsSeverity.MINOR);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
 
         // Create an alarm for another node and verify
         createAndPersistAlarm(databasePopulator.getNode2(), OnmsSeverity.CRITICAL);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
 
         // Acknowledge alarms
         alarm2.setAlarmAckTime(new Date());
         alarm2.setAlarmAckUser("ulf");
         alarmDao.saveOrUpdate(alarm2);
         alarmDao.flush();
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
         alarm.setAlarmAckTime(new Date());
         alarm.setAlarmAckUser("ulf");
         alarmDao.saveOrUpdate(alarm);
         alarmDao.flush();
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
 
         // Include acknowledged alarms
         config.setIncludeAcknowledgedAlarms(true);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
 
         // Apply severity filter
         config.setSeverity(OnmsSeverity.WARNING);
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
         config.setSeverity(OnmsSeverity.MINOR);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
         config.setSeverity(OnmsSeverity.MAJOR);
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
 
         // reset severity filter and apply location filter
         config.setSeverity(null);
         config.setLocation(distPollerDao.whoami().getLocation());
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
         config.setLocation("XXX");
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
     }
@@ -180,7 +174,7 @@ public class DefaultNodeStatusCalculatorIT {
         final OnmsNode node = databasePopulator.getNode1();
         final OnmsMonitoredService icmpService = node.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService snmpService = node.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServiceByServiceType("SNMP");
-        final Set<Integer> nodeIds = Sets.newHashSet(node.getId());
+        final Set<Integer> nodeIds = new HashSet<>(Arrays.asList(node.getId()));
         final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
         config.setCalculationStrategy(NodeStatusCalculationStrategy.Outages);
 
@@ -189,35 +183,33 @@ public class DefaultNodeStatusCalculatorIT {
 
         // No outage exist, status should be normal
         config.setNodeIds(nodeIds);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
 
         // Create an alarm and verify status
         final OnmsOutage outage = createOutage(icmpService, createEvent(node, OnmsSeverity.WARNING));
         saveOrUpdate(outage);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
 
         // Create another outage on same interface and verify
         final OnmsOutage outage2 = createOutage(snmpService, createEvent(node, OnmsSeverity.MINOR));
         saveOrUpdate(outage2);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
 
         // Create another outage on another interface and verify
         final OnmsMonitoredService httpService = node.getIpInterfaceByIpAddress("192.168.1.2").getMonitoredServiceByServiceType("HTTP");
         saveOrUpdate(createOutage(httpService, createEvent(node, OnmsSeverity.MAJOR)));
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
 
         // Create another outage on another node and verify
         saveOrUpdate(createOutage(databasePopulator.getNode2().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP"),
                 createEvent(databasePopulator.getNode2(), OnmsSeverity.CRITICAL)));
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
 
         // calculate status for both
-        config.setNodeIds(Sets.newHashSet(node.getId(), databasePopulator.getNode2().getId()));
+        config.setNodeIds(new HashSet<>(Arrays.asList(node.getId(), databasePopulator.getNode2().getId())));
         verifyStatus(
                 2,
-                ImmutableMap.of(
-                        node.getId(), OnmsSeverity.MAJOR,
-                        databasePopulator.getNode2().getId(), OnmsSeverity.CRITICAL),
+                Map.of(node.getId(), OnmsSeverity.MAJOR, databasePopulator.getNode2().getId(), OnmsSeverity.CRITICAL),
                 statusCalculator.calculateStatus(config));
 
         // Resolve the Warning Outage
@@ -225,7 +217,7 @@ public class DefaultNodeStatusCalculatorIT {
         outage.setServiceRegainedEvent(createEvent(node, OnmsSeverity.WARNING));
         outage.setIfRegainedService(new Date());
         saveOrUpdate(outage);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
 
         // Apply severity filter
         config.setSeverity(OnmsSeverity.WARNING);
@@ -233,14 +225,14 @@ public class DefaultNodeStatusCalculatorIT {
         config.setSeverity(OnmsSeverity.MINOR);
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
         config.setSeverity(OnmsSeverity.MAJOR);
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
         config.setSeverity(OnmsSeverity.CRITICAL);
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
 
         // reset severity filter and apply location filter
         config.setSeverity(null);
         config.setLocation(distPollerDao.whoami().getLocation());
-        verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
+        verifyStatus(1, Map.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
         config.setLocation("XXX");
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
     }

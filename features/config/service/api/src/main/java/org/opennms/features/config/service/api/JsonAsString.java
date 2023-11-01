@@ -28,7 +28,7 @@
 
 package org.opennms.features.config.service.api;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 /**
  * Ideally we would use JSONObject instead. BUT: we can't make Osgi and Spring to load only once. We run into
@@ -51,11 +51,11 @@ public class JsonAsString {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JsonAsString that = (JsonAsString) o;
-        return Objects.equal(json, that.json);
+        return Objects.equals(json, that.json);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(json);
+        return Objects.hash(json);
     }
 }

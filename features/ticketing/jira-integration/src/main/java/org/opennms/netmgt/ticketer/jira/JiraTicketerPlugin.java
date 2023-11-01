@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,8 +71,6 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
@@ -189,7 +188,7 @@ public class JiraTicketerPlugin implements Plugin {
 
         for (Entry<Ticket.State, List<String>> entry : ticketStateToJiraStatusMap.entrySet()) {
             // Grab the value for the given property and all of the names to the set
-            Set<String> knownStateIds = Sets.newHashSet(entry.getValue());
+            Set<String> knownStateIds = new HashSet<>(entry.getValue());
 
             // If there's a match, return the current ticket state
             if (knownStateIds.contains(ticketStatusName)) {
@@ -340,7 +339,7 @@ public class JiraTicketerPlugin implements Plugin {
         if (!ticket.hasAttributes()) {
             return;
         }
-        final List<String> populatedFields = Lists.newArrayList(); // List of fields already populated
+        final List<String> populatedFields = new ArrayList<>(); // List of fields already populated
         final Collection<CimFieldInfo> fields = getFields();
         for (Entry<String, String> eachEntry : ticket.getAttributes().entrySet()) {
             if (!Strings.isNullOrEmpty(eachEntry.getValue())) { // ignore null or empty values

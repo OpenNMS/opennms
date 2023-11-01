@@ -36,6 +36,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,7 +86,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -174,7 +174,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         newtsResourceId = newtsResourceId.substring(File.separator.length(), newtsResourceId.length());
                     }
 
-                    List<Source> listOfSources = sourcesByNewtsResourceId.computeIfAbsent(newtsResourceId, k -> Lists.newLinkedList());
+                    List<Source> listOfSources = sourcesByNewtsResourceId.computeIfAbsent(newtsResourceId, k -> new LinkedList<>());
                     // Create the list if it doesn't exist
                     listOfSources.add(source);
                 }

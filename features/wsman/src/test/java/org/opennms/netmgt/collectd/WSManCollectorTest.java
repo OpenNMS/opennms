@@ -35,6 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,7 +77,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 
@@ -326,7 +326,7 @@ public class WSManCollectorTest {
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/NumElements[null,2.0]"),
                 CollectionSetUtils.flatten(collectionSet));
-        assertEquals(Sets.newHashSet("c0", "c1"), CollectionSetUtils.getResourcesByLabel(collectionSet).keySet());
+        assertEquals(new HashSet<>(Arrays.asList("c0", "c1")), CollectionSetUtils.getResourcesByLabel(collectionSet).keySet());
     }
 
     private static void addAttribute(Group group, String name, String alias, AttributeType type) {

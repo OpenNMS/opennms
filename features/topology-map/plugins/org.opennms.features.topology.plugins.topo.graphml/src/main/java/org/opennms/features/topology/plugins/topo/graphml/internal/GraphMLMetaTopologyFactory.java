@@ -29,13 +29,7 @@
 package org.opennms.features.topology.plugins.topo.graphml.internal;
 
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptEngineManager;
@@ -64,7 +58,6 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
@@ -157,7 +150,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 	private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl, Dictionary<String, Object> serviceProperties) {
 		final ServiceRegistration<T> serviceRegistration = m_bundleContext.registerService(serviceType, serviceImpl, serviceProperties);
-		m_serviceRegistration.putIfAbsent(pid, Lists.newArrayList());
+		m_serviceRegistration.putIfAbsent(pid, new ArrayList<>());
 		m_serviceRegistration.get(pid).add(serviceRegistration);
 	}
 

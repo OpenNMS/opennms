@@ -33,6 +33,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +71,6 @@ import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
@@ -444,7 +444,7 @@ public abstract class ParserBase implements Parser {
     }
 
     private List<String> correctFlow(final FlowMessage.Builder flow) {
-        final List<String> corrections = Lists.newArrayList();
+        final List<String> corrections = new ArrayList<>();
 
         if (flow.getFirstSwitched().getValue() > flow.getLastSwitched().getValue()) {
             corrections.add(String.format("Malformed flow: lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",

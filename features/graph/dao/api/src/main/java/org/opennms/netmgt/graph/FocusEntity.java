@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,8 +42,6 @@ import javax.persistence.Table;
 
 import org.json.JSONArray;
 import org.json.JSONTokener;
-
-import com.google.common.collect.Lists;
 
 @Entity
 @Table(name="graph_focus")
@@ -107,7 +106,7 @@ public class FocusEntity {
         final String jsonString = this.selection;
         final JSONTokener tokener = new JSONTokener(jsonString);
         final JSONArray jsonArray = new JSONArray(tokener);
-        final List<String> vertices = Lists.newArrayList();
+        final List<String> vertices = new ArrayList<>();
         for (int i=0; i<jsonArray.length(); i++) {
             final String vertexId = jsonArray.getString(i);
             vertices.add(vertexId);

@@ -33,6 +33,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class GraphMLVertexStatus extends GraphMLStatus {
@@ -88,14 +89,14 @@ public class GraphMLVertexStatus extends GraphMLStatus {
         }
 
         final GraphMLVertexStatus that = (GraphMLVertexStatus) o;
-        return com.google.common.base.Objects.equal(this.getSeverity(), that.getSeverity()) &&
-               com.google.common.base.Objects.equal(this.getAlarmCount(), that.getAlarmCount()) &&
-               com.google.common.base.Objects.equal(this.getStyleProperties(), that.getStyleProperties());
+        return Objects.equals(this.getSeverity(), that.getSeverity()) &&
+               Objects.equals(this.getAlarmCount(), that.getAlarmCount()) &&
+               Objects.equals(this.getStyleProperties(), that.getStyleProperties());
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(this.getSeverity(),
+        return Objects.hash(this.getSeverity(),
                                                        this.getAlarmCount(),
                                                        this.getStyleProperties());
     }

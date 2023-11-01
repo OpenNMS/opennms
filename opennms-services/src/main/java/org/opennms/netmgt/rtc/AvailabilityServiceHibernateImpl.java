@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.rtc;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -151,7 +151,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         for (final int nodeId : nodeIds) {
             List<OnmsOutage> outages = outagesByNode.get(nodeId);
             if (outages == null) {
-                outages = Lists.newArrayList();
+                outages = new ArrayList<>();
             }
 
             // sum the outage time

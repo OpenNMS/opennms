@@ -106,7 +106,7 @@ public class BreadcrumbPathCalculatorTest {
 
             @Override
             public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
-                return Optional.ofNullable(oppositesMap.get(vertexRef)).orElse(Lists.newArrayList());
+                return Optional.ofNullable(oppositesMap.get(vertexRef)).orElse(new ArrayList<>());
             }
 
             @Override
@@ -139,8 +139,8 @@ public class BreadcrumbPathCalculatorTest {
     @Test
     public void testFindPathByVertex() throws IOException {
         // Verify elements, which are not available
-        Assert.assertEquals(Lists.newArrayList(), findPath(topologyServiceClient, new DefaultVertexRef("nope", "nope", "I do not exist")));
-        Assert.assertEquals(Lists.newArrayList(), findPath(topologyServiceClient, new DefaultVertexRef("layer3", "C6")));
+        Assert.assertEquals(new ArrayList<>(), findPath(topologyServiceClient, new DefaultVertexRef("nope", "nope", "I do not exist")));
+        Assert.assertEquals(new ArrayList<>(), findPath(topologyServiceClient, new DefaultVertexRef("layer3", "C6")));
 
         // Verify the path to A2 (very simple)
         Assert.assertEquals(

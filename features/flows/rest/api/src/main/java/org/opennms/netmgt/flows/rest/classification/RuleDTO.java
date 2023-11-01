@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-
 public class RuleDTO {
     private Integer id;
     private String name;
@@ -100,7 +98,7 @@ public class RuleDTO {
 
     public void setProtocol(String protocol) {
         if (protocol == null) {
-            setProtocols(Lists.newArrayList());
+            setProtocols(new ArrayList<>());
         } else {
             setProtocols(Arrays.stream(protocol.split(","))
                     .map(segment -> segment.trim())

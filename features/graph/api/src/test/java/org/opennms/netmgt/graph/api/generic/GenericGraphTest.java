@@ -33,6 +33,7 @@ import static org.junit.Assert.assertThat;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -44,7 +45,6 @@ import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.validation.exception.InvalidNamespaceException;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class GenericGraphTest {
@@ -126,7 +126,7 @@ public class GenericGraphTest {
 
         assertThrowsException(IllegalStateException.class, () -> graphBuilder.namespace(otherNamespace));
         assertThrowsException(IllegalStateException.class, () -> graphBuilder.property(GenericProperties.NAMESPACE, otherNamespace));
-        assertThrowsException(IllegalStateException.class, () -> graphBuilder.properties(ImmutableMap.of(GenericProperties.NAMESPACE, otherNamespace)));
+        assertThrowsException(IllegalStateException.class, () -> graphBuilder.properties(Map.of(GenericProperties.NAMESPACE, otherNamespace)));
     }
 
     @Test

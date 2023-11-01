@@ -30,6 +30,7 @@
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
@@ -42,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import io.netty.buffer.ByteBuf;
 
@@ -85,7 +85,7 @@ public abstract class Record<T> {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(enterpriseNumber, formatNumber);
+            return Objects.hash(enterpriseNumber, formatNumber);
         }
 
         public static DataFormat from(final int formatNumber) {

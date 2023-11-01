@@ -29,11 +29,10 @@
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
-
-import com.google.common.base.Function;
 
 class PortMatcher implements Matcher {
 

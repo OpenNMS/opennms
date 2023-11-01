@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,8 +42,6 @@ import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
-
-import com.google.common.base.Objects;
 
 @XmlRootElement(name = "ip-service")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -117,17 +117,17 @@ public class IpServiceResponseDTO {
             return false;
         }
         final IpServiceResponseDTO other = (IpServiceResponseDTO) obj;
-        final boolean equals = Objects.equal(m_id, other.m_id)
-                && Objects.equal(m_serviceName, other.m_serviceName)
-                && Objects.equal(m_nodeLabel, other.m_nodeLabel)
-                && Objects.equal(m_ipAddress, other.m_ipAddress)
-                && Objects.equal(location, other.location);
+        final boolean equals = Objects.equals(m_id, other.m_id)
+                && Objects.equals(m_serviceName, other.m_serviceName)
+                && Objects.equals(m_nodeLabel, other.m_nodeLabel)
+                && Objects.equals(m_ipAddress, other.m_ipAddress)
+                && Objects.equals(location, other.location);
         return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(m_id,
+        return Objects.hash(m_id,
                 m_serviceName,
                 m_nodeLabel,
                 m_ipAddress,

@@ -37,12 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -69,8 +64,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 /**
  * Tests for Acknowledgment DAO
@@ -226,7 +219,7 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         situation.setSeverity(OnmsSeverity.CRITICAL);
         situation.setReductionKey("n1:situation");
         situation.setLastEventTime(new Date(2000));
-        situation.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1, alarm2)));
         situation.setCounter(new Integer(1));
         situation.setDistPoller(m_distPollerDao.whoami());
         m_alarmDao.save(situation);

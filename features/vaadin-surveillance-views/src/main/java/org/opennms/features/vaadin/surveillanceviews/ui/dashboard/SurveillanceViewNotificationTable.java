@@ -47,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
@@ -438,6 +437,6 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                     LOG.error("Exception in task", e.getCause());
                 }
             }
-        }, MoreExecutors.directExecutor());
+        }, Runnable::run);
     }
 }

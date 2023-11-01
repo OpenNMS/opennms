@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
@@ -67,8 +68,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.transaction.support.TransactionCallback;
 import org.w3c.dom.Node;
-
-import com.google.common.collect.Lists;
 
 @EventListener(name = "WsManAssetProvisioningAdapter")
 public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
@@ -167,7 +166,7 @@ public class WsManAssetProvisioningAdapter extends SimplerQueuedProvisioningAdap
         final List<String> resourceUris = new ArrayList<>();
         final List<String> values = new ArrayList<>();
         for (final WqlObj wqlobj : wqlObjs) {
-            List<Node> nodes = Lists.newLinkedList();
+            List<Node> nodes = new LinkedList<>();
             aliases.add(wqlobj.getAlias());
             wqls.add(wqlobj.getWql());
             resourceUris.add(wqlobj.getResourceUri());

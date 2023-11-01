@@ -43,6 +43,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -62,8 +63,6 @@ import org.opennms.netmgt.model.TroubleTicketState;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * 
@@ -188,7 +187,7 @@ public class DroolsTicketerServiceLayerTest {
                 assertEquals("Not Test Description", ticket.getDetails());
                 assertEquals("Jesse", ticket.getUser());
                 assertEquals(
-                        ImmutableMap.of("custom-key", "custom-value"),
+                        Map.of("custom-key", "custom-value"),
                         ticket.getAttributes());
                 return null;
             }

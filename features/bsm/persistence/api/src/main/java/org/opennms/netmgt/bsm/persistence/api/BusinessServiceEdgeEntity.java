@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -51,7 +52,6 @@ import javax.persistence.Transient;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 
 /**
  * Base edges that includes properties common to all edge types.
@@ -120,7 +120,7 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
     @Override
     @Transient
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     public void setWeight(int weight) {

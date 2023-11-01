@@ -32,6 +32,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +70,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -251,7 +250,7 @@ public class PathOutageStatusProviderIT {
 	 */
 	private Map<VertexRef, Status> calculateStatuses() {
 		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider.getCurrentGraph(),
-				Lists.newArrayList(pathOutageProvider.getCurrentGraph().getVertices()), null);
+                new ArrayList<>(pathOutageProvider.getCurrentGraph().getVertices()), null);
 		return retvals;
 	}
 

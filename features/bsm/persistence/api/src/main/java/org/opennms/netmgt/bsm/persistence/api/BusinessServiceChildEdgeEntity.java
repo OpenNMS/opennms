@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,8 +39,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.google.common.collect.Sets;
 
 @Entity
 @Table(name = "bsm_service_children")
@@ -63,7 +62,7 @@ public class BusinessServiceChildEdgeEntity extends BusinessServiceEdgeEntity {
     @Transient
     @Override
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.measurements.filters.impl;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * Helps automate the creation of {@link Filter} objects using the annotated parameters. 
@@ -82,7 +82,7 @@ public abstract class AbstractFilterFactory<T extends Filter> implements FilterF
         }
 
         // Keep track of the parameters that we set, but not used by the fitler
-        Set<String> unusedParams = Sets.newHashSet();
+        Set<String> unusedParams = new HashSet<>();
         unusedParams.addAll(parameterMap.keySet());
 
         T filter;

@@ -29,8 +29,10 @@
 package org.opennms.protocols.xml.collector;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -59,7 +61,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Sets;
 
 /**
  * The Class XmlCollector.
@@ -79,7 +80,7 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
             new SimpleEntry<>(XML_DATACOLLECTION_KEY, XmlDataCollection.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
-    private static final Set<String> PROPERTY_BLACKLIST = Sets.newHashSet("SERVICE", "collection", "xml-collection", "handler-class");
+    private static final Set<String> PROPERTY_BLACKLIST = new HashSet<>(Arrays.asList("SERVICE", "collection", "xml-collection", "handler-class"));
 
     /** The XML Data Collection DAO. */
     private XmlDataCollectionConfigDao m_xmlCollectionDao;

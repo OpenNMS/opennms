@@ -70,7 +70,6 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * <p>DefaultNodeListService class.</p>
@@ -81,8 +80,7 @@ import com.google.common.collect.Sets;
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
     private static final Comparator<OnmsSnmpInterface> SNMP_INTERFACE_COMPARATOR = new SnmpInterfaceComparator();
-    private static final Set<String> ACCEPTED_SNMP_PARAM_NAMES = Sets.newLinkedHashSet(
-            Lists.newArrayList("snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
+    private static final Set<String> ACCEPTED_SNMP_PARAM_NAMES = new LinkedHashSet<>(Lists.newArrayList("snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
             "snmpifspeed", "snmpifadminstatus", "snmpifoperstatus", "snmpifalias", "snmpcollect",
             "snmplastcapsdpoll", "snmppoll", "snmplastsnmppoll"));
     

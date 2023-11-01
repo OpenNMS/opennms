@@ -53,8 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import com.google.common.collect.Lists;
-
 public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplication, Integer> implements ApplicationDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ApplicationDaoHibernate.class);
@@ -137,7 +135,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 
 		// Avoid querying the database if unnecessary
 		if (services.isEmpty() || reductionKeys.isEmpty()) {
-			return Lists.newArrayList();
+			return new ArrayList<>();
 		}
 
 		// Convert to object

@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentracing.References;
@@ -54,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -227,7 +227,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     private class Subscription {
         private final String key;
 
-        private final Set<Consumer<JsonNode>> consumers = Sets.newConcurrentHashSet();
+        private final Set<Consumer<JsonNode>> consumers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         private Value value = null;
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.provider.bsm;
 import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.BusinessServiceVertexBuilder;
 import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,7 +85,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         if (defaultFocusVertex != null) {
             bsmGraph.focus().selection(defaultFocusVertex).apply();
         } else {
-            bsmGraph.focus().selection(Lists.newArrayList()).apply();
+            bsmGraph.focus().selection(new ArrayList<>()).apply();
         }
         return bsmGraph.build();
     }

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -50,8 +51,6 @@ import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
-
-import com.google.common.collect.Sets;
 
 public class BusinessServiceImpl implements BusinessService {
 
@@ -131,7 +130,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Set<Edge> getEdges() {
-        Set<org.opennms.netmgt.bsm.service.model.edge.Edge> edges = Sets.newHashSet();
+        Set<org.opennms.netmgt.bsm.service.model.edge.Edge> edges = new HashSet<>();
         edges.addAll(getIpServiceEdges());
         edges.addAll(getReductionKeyEdges());
         edges.addAll(getChildEdges());

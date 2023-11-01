@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.dao;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -42,8 +43,6 @@ import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.model.Node;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-
-import com.google.common.collect.Lists;
 
 public class NodeDaoImpl implements NodeDao {
 
@@ -74,7 +73,7 @@ public class NodeDaoImpl implements NodeDao {
 
     @Override
     public List<Integer> getNodeIds() {
-        return sessionUtils.withReadOnlyTransaction(() -> Lists.newArrayList(nodeDao.getNodeIds()));
+        return sessionUtils.withReadOnlyTransaction(() -> new ArrayList<>(nodeDao.getNodeIds()));
     }
 
     @Override

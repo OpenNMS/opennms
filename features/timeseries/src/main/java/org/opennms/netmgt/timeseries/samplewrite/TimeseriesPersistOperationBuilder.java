@@ -29,7 +29,10 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,9 +63,7 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * Used to collect attribute values and meta-data for a given resource group
@@ -122,7 +123,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
      * => Group level attributes
      */
     public void persistStringAttributeForMetricLevel(ResourcePath path, String metricName, String key, String value) {
-        Set<Tag> intrinsicTags = Sets.newHashSet(new ImmutableTag(IntrinsicTagNames.resourceId, TimeseriesUtils.toResourceId(path)), new ImmutableTag(IntrinsicTagNames.name, metricName));
+        Set<Tag> intrinsicTags = new HashSet<>(Arrays.asList(new ImmutableTag(IntrinsicTagNames.resourceId, TimeseriesUtils.toResourceId(path)), new ImmutableTag(IntrinsicTagNames.name, metricName)));
         Map<String, String> stringAttributesForPath = this.stringAttributesByResourceIdAndName.computeIfAbsent(intrinsicTags, k -> Maps.newLinkedHashMap());
         stringAttributesForPath.put(key, value);
     }
@@ -143,8 +144,8 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     public List<Sample> getSamplesToInsert() {
-        final Set<Tag> resourceIdLevelExternalData = Sets.newHashSet();
-        final List<Sample> samples = Lists.newLinkedList();
+        final Set<Tag> resourceIdLevelExternalData = new HashSet<>();
+        final List<Sample> samples = new LinkedList<>();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), groupName));
 
         // Collect resource and group level attributes

@@ -30,12 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm.operations;
 
 import static org.opennms.features.topology.plugins.topo.bsm.GraphVertexToTopologyVertexConverter.createTopologyVertex;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -55,8 +50,6 @@ import org.opennms.netmgt.vaadin.core.InfoDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 public abstract class AbstractAnalysisOperation implements Operation {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAnalysisOperation.class);
 
@@ -73,7 +66,7 @@ public abstract class AbstractAnalysisOperation implements Operation {
         final List<AbstractBusinessServiceVertex> vertices = getVertices(targets);
         final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
                 operationContext.getGraphContainer().getCriteria());
-        final Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
+        final Set<GraphVertex> graphVerticesToFocus = new HashSet<>();
         final BusinessServiceVertexVisitor<Collection<GraphVertex>> visitor = getVisitorForVerticesToFocus(stateMachine);
         for (AbstractBusinessServiceVertex vertex : vertices) {
             graphVerticesToFocus.addAll(vertex.accept(visitor));

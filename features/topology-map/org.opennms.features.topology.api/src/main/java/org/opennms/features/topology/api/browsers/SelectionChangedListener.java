@@ -30,15 +30,12 @@ package org.opennms.features.topology.api.browsers;
 
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Listener to deal with selection changes.
@@ -61,7 +58,7 @@ public interface SelectionChangedListener {
         Selection NONE = new Selection() {
             @Override
             public List<Restriction> toRestrictions() {
-                return Lists.newArrayList();
+                return new ArrayList<>();
             }
         };
 
@@ -89,7 +86,7 @@ public interface SelectionChangedListener {
         private final Set<T> selectedIds;
 
         public IdSelection(Collection<T> selectedIds) {
-            this.selectedIds = Sets.newHashSet(selectedIds);
+            this.selectedIds = new HashSet<>(selectedIds);
         }
 
         @Override
@@ -112,7 +109,7 @@ public interface SelectionChangedListener {
         private final Set<Integer> selectedNodeIds;
 
         public AlarmNodeIdSelection(Collection<Integer> selectedNodeIds) {
-            this.selectedNodeIds = Sets.newHashSet(selectedNodeIds);
+            this.selectedNodeIds = new HashSet<>(selectedNodeIds);
         }
 
         @Override

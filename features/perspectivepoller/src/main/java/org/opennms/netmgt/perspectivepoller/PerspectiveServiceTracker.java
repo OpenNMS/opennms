@@ -30,6 +30,7 @@ package org.opennms.netmgt.perspectivepoller;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -131,7 +132,7 @@ public class PerspectiveServiceTracker implements DisposableBean {
 
     private final ApplicationDao applicationDao;
 
-    private final Set<Session> sessions = Sets.newHashSet();
+    private final Set<Session> sessions = new HashSet<>();
 
     private final Timer timer = new Timer("PerspectiveServiceTracker-Timer");
 
@@ -196,7 +197,7 @@ public class PerspectiveServiceTracker implements DisposableBean {
 
         private final Listener listener;
 
-        private final Set<ServicePerspectiveRef> active = Sets.newHashSet();
+        private final Set<ServicePerspectiveRef> active = new HashSet<>();
 
         private Instant lastRefresh = Instant.MIN;
         private boolean dirty = true;
@@ -236,7 +237,7 @@ public class PerspectiveServiceTracker implements DisposableBean {
                 final Map<ServicePerspectiveRef, ServicePerspective> candidates = PerspectiveServiceTracker.this.applicationDao.getServicePerspectives().stream()
                                                                                                                                .collect(Collectors.toMap(ServicePerspectiveRef::from, Function.identity()));
 
-                final Set<ServicePerspectiveRef> current = Sets.newHashSet(this.active);
+                final Set<ServicePerspectiveRef> current = new HashSet<>(this.active);
                 final Set<ServicePerspectiveRef> additions = Sets.difference(candidates.keySet(), current);
                 final Set<ServicePerspectiveRef> removals = Sets.difference(current, candidates.keySet());
 

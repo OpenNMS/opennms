@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -80,7 +81,6 @@ import org.w3c.dom.Node;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 
 /**
  * WS-Man Collector
@@ -208,7 +208,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
         }
 
         // Enumerate
-        List<Node> nodes = Lists.newLinkedList();
+        List<Node> nodes = new LinkedList<>();
         RetryNTimesLoop retryLoop = new RetryNTimesLoop(retries);
         while (retryLoop.shouldContinue()) {
             try {

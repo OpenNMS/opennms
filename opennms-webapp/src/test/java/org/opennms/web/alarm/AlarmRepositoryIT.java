@@ -32,7 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,8 +67,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -339,7 +339,7 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm2.setLastEvent(event);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
-        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        alarm2.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
         m_dbPopulator.getAlarmDao().save(alarm2);
         m_dbPopulator.getAlarmDao().flush();
 
@@ -400,7 +400,7 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm2.setLastEvent(event);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
-        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        alarm2.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
         m_dbPopulator.getAlarmDao().save(alarm2);
         m_dbPopulator.getAlarmDao().flush();
 
@@ -412,7 +412,7 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm3.setLastEvent(event);
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
-        alarm3.setRelatedAlarms(Sets.newHashSet(alarm2));
+        alarm3.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm2)));
         m_dbPopulator.getAlarmDao().save(alarm3);
         m_dbPopulator.getAlarmDao().flush();
 

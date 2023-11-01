@@ -51,7 +51,7 @@ public class FocusTest {
         assertEquals(new Focus(FocusStrategy.SELECTION), new Focus(FocusStrategy.SELECTION));
 
         // Different ids, but same list should not match
-        assertThat(new Focus(FocusStrategy.EMPTY, Lists.newArrayList()), not(equalTo(new Focus(FocusStrategy.SELECTION, Lists.newArrayList()))));
+        assertThat(new Focus(FocusStrategy.EMPTY, new ArrayList<>()), not(equalTo(new Focus(FocusStrategy.SELECTION, new ArrayList<>()))));
 
         // Verify same lists match
         final ArrayList<VertexRef> singleList = Lists.newArrayList(new VertexRef("dummy", "v1"));

@@ -66,8 +66,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * Immutable class that stores a snapshot of the topology state (layout, selected/focused vertices, etc) at a given time.
  */
@@ -91,12 +89,12 @@ public class SavedHistory {
     @XmlElementWrapper(name="selection")
     @XmlElement(name="vertex")
     @XmlJavaTypeAdapter(VertexRefAdapter.class)
-    private Set<VertexRef> m_selectedVertices = Sets.newHashSet();
+    private Set<VertexRef> m_selectedVertices = new HashSet<>();
 
     @XmlElementWrapper(name="focus")
     @XmlElement(name="vertex")
     @XmlJavaTypeAdapter(VertexRefAdapter.class)
-    private Set<VertexRef> m_focusVertices = Sets.newHashSet();
+    private Set<VertexRef> m_focusVertices = new HashSet<>();
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.

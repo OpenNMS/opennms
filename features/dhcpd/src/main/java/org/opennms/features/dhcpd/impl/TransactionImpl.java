@@ -29,6 +29,8 @@
 package org.opennms.features.dhcpd.impl;
 
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import org.dhcp4java.DHCPConstants;
 import org.opennms.core.utils.InetAddressUtils;
@@ -37,11 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Sets;
 
 public class TransactionImpl implements Transaction {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionImpl.class);
-    private static final Set<Byte> EXTENDED_MODE_ACCEPTED_RESPONSES = Sets.newHashSet(DHCPConstants.DHCPOFFER, DHCPConstants.DHCPACK, DHCPConstants.DHCPNAK);
+    private static final Set<Byte> EXTENDED_MODE_ACCEPTED_RESPONSES = new HashSet<>(Arrays.asList(DHCPConstants.DHCPOFFER, DHCPConstants.DHCPACK, DHCPConstants.DHCPNAK));
     private static final int MAC_ADDRESS_LENGTH = 6;
     private static final byte[] DEFAULT_MAC_ADDRESS = {(byte) 0x00,
             (byte) 0x06, (byte) 0x0d, (byte) 0xbe, (byte) 0x9c, (byte) 0xb2,

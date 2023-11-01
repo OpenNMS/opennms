@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class HighestSeverityAboveTest {
         HighestSeverityAbove reduceFunction = new HighestSeverityAbove();
         reduceFunction.setThreshold(Status.MAJOR);
 
-        assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList()));
+        assertEquals(Optional.empty(), reduceFunction.reduce(new ArrayList<>()));
         assertEquals(Optional.empty(), reduceFunction.reduce(StatusUtils.toListWithIndices(Lists.newArrayList(
                 Status.MINOR, Status.MAJOR, Status.WARNING))));
 

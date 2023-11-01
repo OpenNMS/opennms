@@ -29,11 +29,11 @@
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class GraphMLEdgeStatus extends GraphMLStatus {
@@ -66,13 +66,13 @@ public class GraphMLEdgeStatus extends GraphMLStatus {
         }
 
         final GraphMLEdgeStatus that = (GraphMLEdgeStatus) o;
-        return Objects.equal(this.getSeverity(), that.getSeverity()) &&
-               Objects.equal(this.getStyleProperties(), that.getStyleProperties());
+        return Objects.equals(this.getSeverity(), that.getSeverity()) &&
+               Objects.equals(this.getStyleProperties(), that.getStyleProperties());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getSeverity(),
+        return Objects.hash(this.getSeverity(),
                                 this.getStyleProperties());
     }
 

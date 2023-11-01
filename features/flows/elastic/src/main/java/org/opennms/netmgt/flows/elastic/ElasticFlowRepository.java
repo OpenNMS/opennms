@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import io.opentracing.Scope;
@@ -98,7 +98,7 @@ public class ElasticFlowRepository implements FlowRepository {
     private int bulkFlushMs = 500;
 
     private class FlowBulk {
-        private List<FlowDocument> documents = Lists.newArrayListWithCapacity(ElasticFlowRepository.this.bulkSize);
+        private List<FlowDocument> documents = new ArrayList<>(ElasticFlowRepository.this.bulkSize);
         private ReentrantLock lock = new ReentrantLock();
         private long lastPersist = 0;
 

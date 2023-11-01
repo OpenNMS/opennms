@@ -28,11 +28,7 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -53,8 +49,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -128,13 +122,13 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         app2.getPerspectiveLocations().add(fulda);
         app2Id = this.applicationDao.save(app2);
 
-        app1Service1.setApplications(Sets.newHashSet(app1));
-        app1Service2.setApplications(Sets.newHashSet(app1));
+        app1Service1.setApplications(new HashSet<>(Arrays.asList(app1)));
+        app1Service2.setApplications(new HashSet<>(Arrays.asList(app1)));
         this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(app1Service1);
         this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(app1Service2);
 
-        app2Service1.setApplications(Sets.newHashSet(app2));
-        app2Service2.setApplications(Sets.newHashSet(app2));
+        app2Service1.setApplications(new HashSet<>(Arrays.asList(app2)));
+        app2Service2.setApplications(new HashSet<>(Arrays.asList(app2)));
         this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(app2Service1);
         this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(app2Service2);
 

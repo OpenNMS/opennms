@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -179,7 +180,7 @@ public class LinkdTopologyFactory {
                         return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel(),this));
                     }
                     LOG.info("getDefaults: default vertex not found");
-                    return Lists.newArrayList();
+                    return new ArrayList<>();
                 });
     }
 

@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -44,8 +45,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 
 public class LinkdSearchProvider implements SearchProvider {
@@ -64,7 +63,7 @@ public class LinkdSearchProvider implements SearchProvider {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
         List<Vertex> vertices =  m_linkdTopologyFactory.getDelegate().getCurrentGraph().getVertices();
-        List<SearchResult> searchResults = Lists.newArrayList();
+        List<SearchResult> searchResults = new ArrayList<>();
 
         for(Vertex vertex : vertices){
             if(searchQuery.matches(vertex.getLabel())) {

@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.VirtualMachinePowerState;
@@ -65,7 +65,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
     /**
      * valid states for vSphere alarms
      */
-    private static final Set<String> VALID_VSPHERE_ALARM_STATES = Sets.newHashSet("red", "yellow", "green", "gray");
+    private static final Set<String> VALID_VSPHERE_ALARM_STATES = new HashSet<>(Arrays.asList("red", "yellow", "green", "gray"));
 
     /**
      * logging for VMware monitor

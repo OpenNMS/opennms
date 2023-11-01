@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.distributed.common;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -76,8 +77,8 @@ public class PropertyTreeTest {
         assertEquals(Optional.empty(), props.getOptionalInteger("b", "b", "x"));
         assertEquals(Optional.empty(), props.getOptionalInteger("b", "b", "y", "z"));
 
-        assertEquals(ImmutableMap.of("a", "6", "b", "7"), props.getMap("b", "c"));
-        assertEquals(ImmutableMap.of("a.b", "0", "a.b.c", "1", "a.b.d", "2"), props.getFlatMap("x", "y", "z"));
+        assertEquals(Map.of("a", "6", "b", "7"), props.getMap("b", "c"));
+        assertEquals(Map.of("a.b", "0", "a.b.c", "1", "a.b.d", "2"), props.getFlatMap("x", "y", "z"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "x"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "y", "z"));
 
@@ -106,6 +107,6 @@ public class PropertyTreeTest {
         assertEquals(Optional.of(1), props.getOptionalInteger("a"));
         assertEquals(Optional.of(2), props.getOptionalInteger("b"));
 
-        assertEquals(ImmutableMap.of("a.b", "1", "a.c", "2"), props.getFlatMap("x", "y", "z"));
+        assertEquals(Map.of("a.b", "1", "a.c", "2"), props.getFlatMap("x", "y", "z"));
     }
 }

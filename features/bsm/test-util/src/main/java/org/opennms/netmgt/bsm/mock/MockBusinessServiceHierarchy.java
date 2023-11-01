@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.mock;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,6 @@ import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * Fluent API for building hierarchies.
@@ -61,7 +61,7 @@ public class MockBusinessServiceHierarchy {
             private final HierarchyBuilder m_root;
             private final Builder m_parent;
             private final MockBusinessService m_businessService;
-            private final Set<Edge> m_edges = Sets.newHashSet();
+            private final Set<Edge> m_edges = new HashSet<>();
 
             private BusinessServiceBuilder(HierarchyBuilder root, Builder parent, MockBusinessService businessService) {
                 m_root = root;

@@ -34,6 +34,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -81,7 +82,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class FlowThresholdingImpl implements Closeable, ClassificationEngine.ClassificationRulesReloadedListener {
@@ -206,7 +206,7 @@ public class FlowThresholdingImpl implements Closeable, ClassificationEngine.Cla
         // Use one timestamp for the whole timer task run...
         final Date timerTaskDate = new Date();
 
-        final List<ExporterKey> idleSessions = Lists.newArrayList();
+        final List<ExporterKey> idleSessions = new ArrayList<>();
 
         LOG.debug("Running Timer task for {} session(s)...", this.sessions.entrySet().size());
 

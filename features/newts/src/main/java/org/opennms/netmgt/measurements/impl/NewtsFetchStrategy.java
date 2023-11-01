@@ -31,6 +31,7 @@ package org.opennms.netmgt.measurements.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -78,7 +79,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -195,7 +195,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                 List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
                 // Create the list if it doesn't exist
                 if (listOfSources == null) {
-                    listOfSources = Lists.newLinkedList();
+                    listOfSources = new LinkedList<>();
                     sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
                 }
                 listOfSources.add(source);

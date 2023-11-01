@@ -30,10 +30,7 @@ package org.opennms.netmgt.collection.commands;
 
 import java.net.InetAddress;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -161,7 +158,7 @@ public class CollectCommand implements Action {
             if (rras != null && rras.size() > 0) {
                 repository.setRraList(rras);
             } else {
-                repository.setRraList(Lists.newArrayList(DEFAULT_RRA));
+                repository.setRraList(new ArrayList<>(DEFAULT_RRA));
             }
             repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"), "share", "rrd", "snmp").toFile());
         }

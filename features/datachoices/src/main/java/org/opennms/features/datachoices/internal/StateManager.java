@@ -28,12 +28,9 @@
 
 package org.opennms.features.datachoices.internal;
 
-import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.CmProperties;
@@ -65,7 +62,7 @@ public class StateManager {
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY = "initialNoticeAcknowledgedAt";
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_BY_KEY = "initialNoticeAcknowledgedBy";
 
-    private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
+    private final List<StateChangeHandler> m_listeners = new ArrayList<>();
     private final CmProperties propertiesCache;
 
     public interface StateChangeHandler {

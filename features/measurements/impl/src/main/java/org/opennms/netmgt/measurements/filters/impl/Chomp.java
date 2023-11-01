@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.measurements.filters.impl;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.measurements.api.Filter;
@@ -36,7 +37,6 @@ import org.opennms.netmgt.measurements.api.FilterParam;
 import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
 
 import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.Sets;
 
 /**
  * Strips leading and trailing rows that contain
@@ -85,14 +85,14 @@ public class Chomp implements Filter {
             // Excluding the timestamp column, determine the
             // index of the first and last rows which don't contain
             // completely NaN values
-            Set<String> columnNamesNoTs = Sets.newHashSet(qrAsTable.columnKeySet());
+            Set<String> columnNamesNoTs = new HashSet<>(qrAsTable.columnKeySet());
             columnNamesNoTs.remove(TIMESTAMP_COLUMN_NAME);
             TableLimits limits = Utils.getRowsWithValues(qrAsTable, columnNamesNoTs.toArray(new String[0]));
             firstRowToKeep = Math.max(firstRowToKeep, limits.firstRowWithValues);
             lastRowToKeep = Math.min(lastRowToKeep, limits.lastRowWithValues);
         }
 
-        Set<String> columnNames = Sets.newHashSet(qrAsTable.columnKeySet());
+        Set<String> columnNames = new HashSet<>(qrAsTable.columnKeySet());
 
         // Remove all of the trailing rows
         for (long i = lastRowToKeep+1; i < numRowsInTable; i++) {

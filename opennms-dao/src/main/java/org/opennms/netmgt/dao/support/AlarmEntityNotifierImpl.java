@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.opennms.netmgt.dao.api.AlarmEntityListener;
@@ -43,13 +45,11 @@ import org.opennms.netmgt.model.TroubleTicketState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmEntityNotifierImpl.class);
 
-    private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();
+    private Set<AlarmEntityListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Override
     public void didCreateAlarm(OnmsAlarm alarm) {

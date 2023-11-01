@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.wsman;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.wsman.WSManClient;
@@ -44,8 +45,6 @@ import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import com.google.common.collect.Lists;
 
 /**
  * Detects a service from the result of a WQL query against a resource URI. 
@@ -88,7 +87,7 @@ public class WsManWQLDetector extends SyncAbstractDetector {
     public DetectResults isServiceDetected(InetAddress address, WSManEndpoint endpoint) {
 
         // Issue the query!
-        List<Node> nodes = Lists.newLinkedList();
+        List<Node> nodes = new LinkedList<>();
         final WSManClient client = m_factory.getClient(endpoint);
         try {
             LOG.debug("Issuing an ENUM on '{}' with query '{}'", resourceUri, wql);

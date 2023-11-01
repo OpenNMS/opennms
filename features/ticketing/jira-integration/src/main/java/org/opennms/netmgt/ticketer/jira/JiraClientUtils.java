@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class JiraClientUtils {
                 return fields.values();
             }
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 
     /**
@@ -124,6 +125,6 @@ public class JiraClientUtils {
         if (cimProjects.iterator().hasNext()) {
             return cimProjects.iterator().next().getIssueTypes();
         }
-        return Lists.newArrayList();
+        return new ArrayList<>();
     }
 }

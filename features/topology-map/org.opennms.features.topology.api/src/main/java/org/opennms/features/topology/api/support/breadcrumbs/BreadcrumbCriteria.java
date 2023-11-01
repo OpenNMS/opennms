@@ -28,11 +28,7 @@
 
 package org.opennms.features.topology.api.support.breadcrumbs;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Callbacks;
@@ -43,8 +39,6 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.google.common.collect.Lists;
-
 /**
  * Criteria to store breadcrumbs in order allow Navigation backwards.
  *
@@ -52,7 +46,7 @@ import com.google.common.collect.Lists;
  */
 public class BreadcrumbCriteria extends Criteria {
 
-    private List<Breadcrumb> breadcrumbs = Lists.newArrayList();
+    private List<Breadcrumb> breadcrumbs = new ArrayList<>();
 
     public BreadcrumbCriteria() {
 
@@ -111,7 +105,7 @@ public class BreadcrumbCriteria extends Criteria {
     }
 
     public void setBreadcrumbs(List<Breadcrumb> breadcrumbs) {
-        this.breadcrumbs = Lists.newArrayList(Objects.requireNonNull(breadcrumbs));
+        this.breadcrumbs = new ArrayList<>(Objects.requireNonNull(breadcrumbs));
     }
 
     private Breadcrumb getNext(Breadcrumb breadcrumb) {

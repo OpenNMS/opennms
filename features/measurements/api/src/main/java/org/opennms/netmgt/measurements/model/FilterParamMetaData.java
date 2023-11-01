@@ -29,6 +29,7 @@
 package org.opennms.netmgt.measurements.model;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -138,17 +139,17 @@ public class FilterParamMetaData {
        }
        final FilterParamMetaData other = (FilterParamMetaData) obj;
 
-       return   com.google.common.base.Objects.equal(this.key, other.key)
-             && com.google.common.base.Objects.equal(this.type, other.type)
-             && com.google.common.base.Objects.equal(this.displayName, other.displayName)
-             && com.google.common.base.Objects.equal(this.description, other.description)
-             && com.google.common.base.Objects.equal(this.defaultValue, other.defaultValue)
-             && com.google.common.base.Objects.equal(this.required, other.required);
+       return   Objects.equals(this.key, other.key)
+             && Objects.equals(this.type, other.type)
+             && Objects.equals(this.displayName, other.displayName)
+             && Objects.equals(this.description, other.description)
+             && Objects.equals(this.defaultValue, other.defaultValue)
+             && Objects.equals(this.required, other.required);
     }
 
     @Override
     public int hashCode() {
-       return com.google.common.base.Objects.hashCode(
+       return Objects.hash(
                  this.key, this.type, this.displayName, this.description, this.defaultValue, this.required);
     }
 

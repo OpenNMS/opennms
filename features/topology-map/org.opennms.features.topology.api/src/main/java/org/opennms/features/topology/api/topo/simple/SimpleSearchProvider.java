@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo.simple;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,8 +43,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 public abstract class SimpleSearchProvider extends AbstractSearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleSearchProvider.class);
@@ -80,7 +79,7 @@ public abstract class SimpleSearchProvider extends AbstractSearchProvider {
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         final VertexRef vertexToFocus = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
-        return Sets.newHashSet(vertexToFocus);
+        return new HashSet<>(Arrays.asList(vertexToFocus));
     }
 
     @Override

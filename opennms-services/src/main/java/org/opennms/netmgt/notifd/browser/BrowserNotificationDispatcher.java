@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.notifd.browser;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-
-import com.google.common.collect.Sets;
 
 public class BrowserNotificationDispatcher {
 
@@ -47,7 +47,7 @@ public class BrowserNotificationDispatcher {
         }
     }
 
-    private final Set<Handler> handlers = Sets.newConcurrentHashSet();
+    private final Set<Handler> handlers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public Handler subscribe(final String user, final Consumer<BrowserNotificationMessage> consumer) {
         final Handler handler = new Handler(user, consumer);

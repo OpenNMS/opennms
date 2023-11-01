@@ -37,8 +37,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * Downtime model. This determines the rates at which addresses are to be
  * polled when they remain down for extended periods. Usually polling is done
@@ -55,7 +53,7 @@ public class Downtime implements Serializable {
     public static final String DELETE_MANAGED = "managed";
     public static final String DELETE_NEVER = "never";
 
-    private static final List<String> s_deleteValues = ImmutableList.of(DELETE_ALWAYS, DELETE_MANAGED, DELETE_NEVER);
+    private static final List<String> s_deleteValues = List.of(DELETE_ALWAYS, DELETE_MANAGED, DELETE_NEVER);
 
     /**
      * Start of the interval.

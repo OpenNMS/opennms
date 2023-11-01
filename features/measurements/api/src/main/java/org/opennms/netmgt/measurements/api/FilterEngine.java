@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.measurements.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -102,7 +103,7 @@ public class FilterEngine {
             return filterMetaDatas;
         }
 
-        filterMetaDatas = Lists.newArrayList();
+        filterMetaDatas = new ArrayList<>();
         for (FilterFactory module : filterFactories) {
             filterMetaDatas.add(new FilterMetaData(module.getFilterType()));
         }

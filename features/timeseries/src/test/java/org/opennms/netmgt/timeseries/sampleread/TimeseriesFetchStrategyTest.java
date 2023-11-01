@@ -40,8 +40,10 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -79,7 +81,6 @@ import org.opennms.newts.api.Timestamp;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class TimeseriesFetchStrategyTest {
 
@@ -195,7 +196,7 @@ public class TimeseriesFetchStrategyTest {
 
     @Test
     public void testFetchWithNoResults() throws Exception {
-        List<Source> sources = Lists.newArrayList();
+        List<Source> sources = new ArrayList<>();
         replay();
 
         FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
@@ -254,7 +255,7 @@ public class TimeseriesFetchStrategyTest {
         final ResourceId resourceId = parentId.resolve("responseTime", node);
         OnmsResource parent = resources.get(parentId);
         if (parent == null) {
-            parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, Sets.newHashSet(), ResourcePath.get("foo"));
+            parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, new HashSet<>(), ResourcePath.get("foo"));
             final OnmsNode entity = new OnmsNode();
             entity.setId(nodeId);
             entity.setForeignSource("NODES");
@@ -265,7 +266,7 @@ public class TimeseriesFetchStrategyTest {
         }
         OnmsResource resource = resources.get(resourceId);
         if (resource == null) {
-            resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
+            resource = new OnmsResource(attr, label, type, new HashSet<>(), ResourcePath.get("foo"));
             resource.setParent(parent);
             resources.put(resourceId, resource);
         }

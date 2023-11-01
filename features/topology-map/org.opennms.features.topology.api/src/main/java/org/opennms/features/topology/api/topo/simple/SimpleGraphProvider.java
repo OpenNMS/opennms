@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.api.topo.simple;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -37,8 +39,6 @@ import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import com.google.common.collect.Sets;
 
 public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -63,6 +63,6 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node)).contains(type);
     }
 }

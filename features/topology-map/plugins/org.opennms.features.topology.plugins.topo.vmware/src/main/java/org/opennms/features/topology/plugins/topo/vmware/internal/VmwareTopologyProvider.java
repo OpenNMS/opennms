@@ -31,7 +31,9 @@ package org.opennms.features.topology.plugins.topo.vmware.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,8 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class VmwareTopologyProvider extends AbstractTopologyProvider {
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
@@ -158,7 +158,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         return new Defaults()
                 .withCriteria(() -> {
                     if (graph.getVertices().isEmpty()) {
-                        return Lists.newArrayList();
+                        return new ArrayList<>();
                     }
                     return graph.getVertices().stream().filter(e -> Icons.DATACENTER.equals(e.getIconKey())).map(DefaultVertexHopCriteria::new).collect(Collectors.toList());
                 });
@@ -171,7 +171,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Alarm, ContentType.Node)).contains(type);
     }
 
     private AbstractVertex createEntityVertex(String vertexId, String vertexName, String iconKey) {

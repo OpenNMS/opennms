@@ -34,12 +34,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,8 +51,6 @@ import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
 import org.opennms.netmgt.model.OnmsNode;
-
-import com.google.common.collect.Sets;
 
 public class BroadcastDomainTest extends EnLinkdTestHelper {
 
@@ -185,7 +178,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.calculate();
 
         // this resulted in a NPE because of the unknown Id 3333, see NMS-9852
-        domain.printTopologyFromLevel(Sets.newHashSet( topology.nodeAId, topology.nodeBId, 3333), 5);
+        domain.printTopologyFromLevel(new HashSet<>(Arrays.asList(topology.nodeAId, topology.nodeBId, 3333)), 5);
     }
 
     @Test

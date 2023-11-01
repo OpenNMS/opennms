@@ -44,8 +44,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * A classification engine that uses a decision tree to select applicable classification rules.
  * <p>
@@ -80,7 +78,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         var invalid = new ArrayList<Rule>();
 
         // Load all rules and validate them
-        final List<PreprocessedRule> preprocessedRules = Lists.newArrayList();
+        final List<PreprocessedRule> preprocessedRules = new ArrayList<>();
         final var rules = ruleProvider.getRules();
         rules.forEach(rule -> {
             try {

@@ -33,8 +33,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +76,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -575,7 +576,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm2.setLastEvent(event);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
-        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+        alarm2.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
         m_dbPopulator.getAlarmDao().save(alarm2);
         m_dbPopulator.getAlarmDao().flush();
 
@@ -668,7 +669,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm3.setLastEvent(event);
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
-        alarm2.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        alarm2.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1, alarm2)));
         m_dbPopulator.getAlarmDao().save(alarm3);
         m_dbPopulator.getAlarmDao().flush();
 
@@ -692,9 +693,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         // check for the single situation
         checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(new SituationFilter(true)), 10, 0, 1, 1);
         // check for all, first page of two
-        checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(), 10, 0, 14, 10);
+        checkFilteringAndSorting(SortStyle.ID, new ArrayList<>(), 10, 0, 14, 10);
         // check for second page
-        checkFilteringAndSorting(SortStyle.ID, Lists.newArrayList(), 10, 1, 14, 4);
+        checkFilteringAndSorting(SortStyle.ID, new ArrayList<>(), 10, 1, 14, 4);
         // check that all the sort styles work
         for(SortStyle sortStyle : SortStyle.values()) {
             checkFilteringAndSorting(sortStyle, Lists.newArrayList(new SituationFilter(true)), 10, 0, 1, 1);

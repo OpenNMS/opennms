@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -159,7 +159,7 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     public synchronized void unregisterAllConsumers() throws Exception {
         // Copy the list of consumers before we iterate to avoid concurrent modification exceptions
-        final List<MessageConsumer<?, Message>> consumers = Lists.newArrayList(consumersByModule.values());
+        final List<MessageConsumer<?, Message>> consumers = new ArrayList<>(consumersByModule.values());
         for (MessageConsumer<?, Message> consumer : consumers) {
             unregisterConsumer(consumer);
         }

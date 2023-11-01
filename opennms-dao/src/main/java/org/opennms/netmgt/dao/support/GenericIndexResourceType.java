@@ -55,7 +55,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -140,7 +139,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
             return Collections.emptyList();
         }
 
-        List<OnmsResource> resources = Lists.newArrayList();
+        List<OnmsResource> resources = new ArrayList<>();
 
         List<String> indexes = getQueryableIndexes(new ResourcePath(parent.getPath(), m_name));
         for (String index : indexes) {

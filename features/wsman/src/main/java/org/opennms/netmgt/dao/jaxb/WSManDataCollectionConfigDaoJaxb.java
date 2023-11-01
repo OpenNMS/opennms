@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.jaxb;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigDao<WsmanDatacollectionConfig, WsmanDatacollectionConfig> implements WSManDataCollectionConfigDao {
@@ -95,7 +95,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
         final Map<String, Group> groupsByName = Maps.uniqueIndex(getConfig().getGroup(), Group::getName);
 
         // Gather the groups from all of the supported system definitions
-        final List<Group> groups = Lists.newArrayList();
+        final List<Group> groups = new ArrayList<>();
         for (SystemDefinition sysDef : sysDefs) {
             if (isAgentSupportedBySystemDefinition(sysDef, agent, agentConfig, node)) {
                 for (String groupName : sysDef.getIncludeGroup()) {
@@ -120,7 +120,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             // Map all of the available system definitions by name for easy lookup
             final Map<String, SystemDefinition> sysDefsByName = Maps.uniqueIndex(getConfig().getSystemDefinition(), SystemDefinition::getName);
             // Gather the requested system definitions
-            final List<SystemDefinition> sysDefs = Lists.newArrayList();
+            final List<SystemDefinition> sysDefs = new ArrayList<>();
             for (String sysDefName : collection.getIncludeSystemDefinition()) {
                 SystemDefinition sysDef = sysDefsByName.get(sysDefName);
                 if (sysDef == null) {

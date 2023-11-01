@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.bsm.mock;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
-
-import com.google.common.collect.Sets;
 
 public abstract class AbstractMockEdge implements Edge {
 
@@ -47,7 +46,7 @@ public abstract class AbstractMockEdge implements Edge {
 
     private MapFunction mapFunction;
 
-    private Set<String> reductionKeys = Sets.newHashSet();
+    private Set<String> reductionKeys = new HashSet<>();
 
     private long id;
 

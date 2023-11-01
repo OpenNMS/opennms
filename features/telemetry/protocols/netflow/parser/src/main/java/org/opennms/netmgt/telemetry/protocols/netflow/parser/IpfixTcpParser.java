@@ -31,9 +31,11 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -48,7 +50,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ParserState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Sets;
 
 import io.netty.buffer.ByteBuf;
 
@@ -56,7 +57,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
 
-    private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
+    private final Set<TcpSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,

@@ -137,7 +137,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        Set<OnmsAttribute> attributes = Sets.newHashSet();
+        Set<OnmsAttribute> attributes = new HashSet<>();
 
         // Gather the list of metrics available under the resource path
         Set<Metric> metrics = searchFor(path, 0);

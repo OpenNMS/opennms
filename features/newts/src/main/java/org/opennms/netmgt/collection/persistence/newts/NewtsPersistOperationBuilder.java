@@ -30,6 +30,7 @@ package org.opennms.netmgt.collection.persistence.newts;
 
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -127,7 +127,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     public List<Sample> getSamplesToInsert() {
-        final List<Sample> samples = Lists.newLinkedList();
+        final List<Sample> samples = new LinkedList<>();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, ResourcePath.get(m_resource.getPath(), m_name));
 
         // Add extra attributes that can be used to walk the resource tree.
@@ -165,7 +165,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     public List<Sample> getSamplesToIndex() {
-        final List<Sample> samples = Lists.newLinkedList();
+        final List<Sample> samples = new LinkedList<>();
 
         // Convert string attributes to samples
         for (Entry<ResourcePath, Map<String, String>> entry : m_stringAttributesByPath.entrySet()) {

@@ -35,6 +35,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getD
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.bson.BsonDocument;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Lists;
 
 public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
 
@@ -72,7 +72,7 @@ public class SFlowAdapter extends AbstractFlowAdapter<BsonDocument> {
     }
 
     public static List<Flow> convertDocument(final BsonDocument packet, final Instant receivedAt) {
-        final List<Flow> result = Lists.newLinkedList();
+        final List<Flow> result = new LinkedList<>();
 
         final SFlow.Header header = new SFlow.Header(packet);
 

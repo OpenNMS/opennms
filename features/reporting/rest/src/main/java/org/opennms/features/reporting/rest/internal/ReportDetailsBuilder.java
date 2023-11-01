@@ -29,6 +29,7 @@
 package org.opennms.features.reporting.rest.internal;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
@@ -63,7 +64,7 @@ public class ReportDetailsBuilder {
     }
 
     public ReportDetailsBuilder withCategories(Collection<Category> categories) {
-        reportDetails.setCategories(Lists.newArrayList(categories));
+        reportDetails.setCategories(new ArrayList<>(categories));
         return this;
     }
 

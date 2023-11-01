@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -75,8 +76,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -284,7 +283,7 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm2.setLastEvent(event);
 		alarm2.setCounter(1);
 		alarm2.setDistPoller(m_distPollerDao.whoami());
-		alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
+		alarm2.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
 		m_alarmDao.save(alarm2);
 
 		m_alarmDao.findAll();
@@ -331,7 +330,7 @@ public class AlarmDaoIT implements InitializingBean {
 			situation.setLastEvent(event);
 			situation.setCounter(1);
 			situation.setDistPoller(m_distPollerDao.whoami());
-			situation.setRelatedAlarms(Sets.newHashSet(alarm1));
+			situation.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
 			m_alarmDao.save(situation);
 		}
 

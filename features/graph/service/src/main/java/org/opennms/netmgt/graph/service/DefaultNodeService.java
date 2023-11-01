@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.graph.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,7 +43,6 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DefaultNodeService implements NodeService {
@@ -115,7 +110,7 @@ public class DefaultNodeService implements NodeService {
     }
 
     private Map<Integer, AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
-        return alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(Lists.newArrayList(nodeIds))
+        return alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<>(nodeIds))
                 .stream()
                 .collect(Collectors.toMap(AlarmSummary::getNodeId, Function.identity()));
     }
@@ -136,7 +131,7 @@ public class DefaultNodeService implements NodeService {
 
             // no data provided => empty list
             if (nodeIds.isEmpty() && foreignSources.isEmpty() && foreignIds.isEmpty()) {
-                return Lists.newArrayList();
+                return new ArrayList<>();
             }
 
             // only nodeIds are defined

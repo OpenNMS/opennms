@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import static org.opennms.web.svclayer.support.DefaultGraphResultsService.RESOURCE_IDS_CONTEXT;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,7 +66,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 /**
@@ -98,7 +98,7 @@ public class ResourceRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
     public ResourceDTOCollection getResources(@DefaultValue("1") @QueryParam("depth") final int depth) {
-        List<ResourceDTO> resources = Lists.newLinkedList();
+        List<ResourceDTO> resources = new LinkedList<>();
         for (OnmsResource resource : m_resourceDao.findTopLevelResources()) {
             resources.add(ResourceDTO.fromResource(resource, depth));
         }

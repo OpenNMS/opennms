@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.v7.data.util.BeanItemContainer;
@@ -246,6 +245,6 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
                     LOG.error("Exception in task", e.getCause());
                 }
             }
-        }, MoreExecutors.directExecutor());
+        }, Runnable::run);
     }
 }

@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Used to isolate and trigger specific Drools rules in the default ruleset for Alarmd.
@@ -675,7 +675,7 @@ public class DroolsAlarmContextIT {
         situation.setSeverity(OnmsSeverity.WARNING);
         situation.setReductionKey("n1:situation");
         situation.setLastEventTime(new Date(2000));
-        situation.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1, alarm2)));
 
         when(alarmDao.get(alarm1.getId())).thenReturn(alarm1);
         when(alarmDao.get(alarm2.getId())).thenReturn(alarm2);
@@ -691,7 +691,7 @@ public class DroolsAlarmContextIT {
 
         // Now remove the 2nd alarm from the situation
         situation.setLastEventTime(new Date(3000));
-        situation.setRelatedAlarms(Sets.newHashSet(alarm1));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(alarm1)));
 
         dac.getClock().advanceTime(1000, TimeUnit.MILLISECONDS);
         dac.handleNewOrUpdatedAlarm(situation);

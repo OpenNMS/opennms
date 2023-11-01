@@ -27,7 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -49,8 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -105,7 +105,7 @@ public class NMS14048_IT implements InitializingBean {
         surveillanceViewService.setOutageDao(databasePopulator.getOutageDao());
         final OnmsCategory cat1 = databasePopulator.getCategoryDao().findByName("Routers");
         final OnmsCategory cat2 = databasePopulator.getCategoryDao().findByName("DEV_AC");
-        final List<SurveillanceViewService.NodeRtc> nodeRtcList = surveillanceViewService.getNodeRtcsForCategories(Sets.newHashSet(cat1), Sets.newHashSet(cat2));
+        final List<SurveillanceViewService.NodeRtc> nodeRtcList = surveillanceViewService.getNodeRtcsForCategories(new HashSet<>(Arrays.asList(cat1)), new HashSet<>(Arrays.asList(cat2)));
 
         Assert.assertNotNull(nodeRtcList);
         Assert.assertTrue("Availability must not exceed 100%.", nodeRtcList.get(0).getAvailability() <= 100.0);

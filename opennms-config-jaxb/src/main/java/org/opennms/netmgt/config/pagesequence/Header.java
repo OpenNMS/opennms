@@ -29,14 +29,13 @@
 package org.opennms.netmgt.config.pagesequence;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import com.google.common.base.Objects;
 
 @XmlRootElement(name="header")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -79,13 +78,13 @@ public class Header implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Header header = (Header) o;
-        return Objects.equal(m_name, header.m_name) &&
-                Objects.equal(m_value, header.m_value);
+        return Objects.equals(m_name, header.m_name) &&
+                Objects.equals(m_value, header.m_value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(m_name, m_value);
+        return Objects.hash(m_name, m_value);
     }
 
     @Override

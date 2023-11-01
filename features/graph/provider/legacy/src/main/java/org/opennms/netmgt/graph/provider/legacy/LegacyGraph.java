@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.legacy;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,6 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
-
-import com.google.common.collect.Lists;
 
 public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
 
@@ -89,7 +88,7 @@ public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
                 .flatMap(c -> c.getVertices().stream())
                 .map(v -> new org.opennms.netmgt.graph.api.VertexRef(v.getNamespace(), v.getId()))
                 .collect(Collectors.toSet());
-        builder.focus(new Focus(FocusStrategy.SELECTION, Lists.newArrayList(focus)));
+        builder.focus(new Focus(FocusStrategy.SELECTION, new ArrayList<>(focus)));
         return builder.build();
     }
 

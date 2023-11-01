@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2.bsm;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -83,8 +84,6 @@ import org.opennms.web.rest.v2.bsm.model.meta.FunctionsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @Component
 @Path("business-services")
@@ -215,10 +214,10 @@ public class BusinessServiceRestService {
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
         service.setReduceFunction(transform(request.getReduceFunction()));
-        service.setReductionKeyEdges(Sets.newHashSet());
-        service.setIpServiceEdges(Sets.newHashSet());
-        service.setApplicationEdges(Sets.newHashSet());
-        service.setChildEdges(Sets.newHashSet());
+        service.setReductionKeyEdges(new HashSet<>());
+        service.setIpServiceEdges(new HashSet<>());
+        service.setApplicationEdges(new HashSet<>());
+        service.setChildEdges(new HashSet<>());
 
         request.getEdges().forEach(eachEdge -> eachEdge.accept(new EdgeRequestDTOVisitor() {
 

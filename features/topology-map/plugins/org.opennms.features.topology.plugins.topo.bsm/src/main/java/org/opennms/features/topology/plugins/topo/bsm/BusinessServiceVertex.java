@@ -28,12 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
-
-import com.google.common.collect.Sets;
 
 public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
@@ -66,7 +65,7 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     @Override
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return new HashSet<>();
     }
 
     @Override

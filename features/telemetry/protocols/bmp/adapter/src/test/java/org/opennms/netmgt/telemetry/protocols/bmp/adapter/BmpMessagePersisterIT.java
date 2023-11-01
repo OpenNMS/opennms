@@ -71,8 +71,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.ImmutableList;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -123,7 +121,7 @@ public class BmpMessagePersisterIT {
         when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
         // Persist collector
         final Collector collector = getCollector();
-        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, List.of(collector));
         bmpMessageHandler.handle(msg, context);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
@@ -133,7 +131,7 @@ public class BmpMessagePersisterIT {
         // Persist router.
         final Router router1 = getRouter1();
         final Router router2 = getRouter2();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1, router2));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, List.of(router1, router2));
         bmpMessageHandler.handle(msg, context);
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertEquals(2, routers.size());
@@ -142,7 +140,7 @@ public class BmpMessagePersisterIT {
 
         // Change collector state to stop and persist collector again. Routers should be down when collector is stopped.
         collector.action = Collector.Action.STOPPED;
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, List.of(collector));
         bmpMessageHandler.handle(msg, context);
         collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
@@ -151,7 +149,7 @@ public class BmpMessagePersisterIT {
 
         // Persist peer.
         Peer peer = getPeer();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, List.of(peer));
         bmpMessageHandler.handle(msg, context);
         List<BmpPeer> peers = bmpPeerDao.findAll();
         Assert.assertThat(peers, Matchers.hasSize(1));
@@ -159,11 +157,11 @@ public class BmpMessagePersisterIT {
 
         //Set Router state to TERM and then again INIT which should update Peers state to Down.
         router1.action = Router.Action.TERM;
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, List.of(router1));
         bmpMessageHandler.handle(msg, context);
         router1.action = Router.Action.INIT;
         router1.timestamp = Instant.now();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, List.of(router1));
         bmpMessageHandler.handle(msg, context);
         peers = bmpPeerDao.findAll();
         Assert.assertTrue(peers.size() == 1);
@@ -171,7 +169,7 @@ public class BmpMessagePersisterIT {
         Assert.assertEquals(State.DOWN, bmpPeer.getState());
 
         UnicastPrefix unicastPrefix = getUnicastPrefix();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.UNICAST_PREFIX, ImmutableList.of(unicastPrefix));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.UNICAST_PREFIX, List.of(unicastPrefix));
         bmpMessageHandler.handle(msg, context);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
@@ -182,14 +180,14 @@ public class BmpMessagePersisterIT {
         //New Peer message should remove all previous prefixes.
         peer.action = Peer.Action.DOWN;
         peer.timestamp = Instant.now();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, List.of(peer));
         bmpMessageHandler.handle(msg, context);
         prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertTrue(prefixList.isEmpty());
 
         //Persist BMP Base attributes.
         BaseAttribute baseAttribute = getBmpBaseAttribute();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttribute));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.BASE_ATTRIBUTE, List.of(baseAttribute));
         bmpMessageHandler.handle(msg, context);
         List<BmpBaseAttribute> bmpBaseAttributes = bmpBaseAttributeDao.findAll();
         Assert.assertFalse(bmpBaseAttributes.isEmpty());
@@ -203,7 +201,7 @@ public class BmpMessagePersisterIT {
         when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
         // Persist collector
         final Collector collector = getCollector();
-        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, List.of(collector));
         bmpMessageHandler.handle(msg, context);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
@@ -211,12 +209,12 @@ public class BmpMessagePersisterIT {
         Assert.assertEquals(State.UP, bmpCollector.getState());
         // Send peer-up message before sending router initiation message.
         Peer peer = getPeer();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, List.of(peer));
         bmpMessageHandler.handle(msg, context);
         // Persist router.
         final Router router1 = getRouter1();
         final Router router2 = getRouter2();
-        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1, router2));
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, List.of(router1, router2));
         bmpMessageHandler.handle(msg, context);
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertEquals(2, routers.size());

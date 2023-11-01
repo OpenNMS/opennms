@@ -28,11 +28,10 @@
 
 package org.opennms.core.utils;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.collect.Sets;
 
 /**
  * Utility functions for regular expression patterns.
@@ -54,7 +53,7 @@ public class RegexUtils {
      * @return an ordered list of named capture group candidates
      */
     public static Set<String> getNamedCaptureGroupsFromPattern(String pattern) {
-        final Set<String> namedGroups = Sets.newLinkedHashSet();
+        final Set<String> namedGroups = new LinkedHashSet<>();
         final Matcher m = NAMED_CAPTURE_GROUPS_REGEX.matcher(pattern);
         while (m.find()) {
             namedGroups.add(m.group(1));

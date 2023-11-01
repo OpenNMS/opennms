@@ -38,6 +38,8 @@ import java.nio.file.Paths;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -50,8 +52,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-
-import com.google.common.collect.Sets;
 
 public class JCEKSSecureCredentialsVaultTest {
 
@@ -77,13 +77,13 @@ public class JCEKSSecureCredentialsVaultTest {
         Credentials creds = new Credentials("adm1n", "p@ssw0rd");
         scv.setCredentials("http", creds);
         // Aliases should contain "http"
-        assertEquals(Sets.newHashSet("http"), scv.getAliases());
+        assertEquals(new HashSet<>(Arrays.asList("http")), scv.getAliases());
         // Retrieve it back
         assertEquals(creds, scv.getCredentials("http"));
         // Recreate the store
         scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
         // And retrieve it again
-        assertEquals(Sets.newHashSet("http"), scv.getAliases());
+        assertEquals(new HashSet<>(Arrays.asList("http")), scv.getAliases());
         assertEquals(creds, scv.getCredentials("http"));
 
         // Now store credentials for another alias
@@ -110,7 +110,7 @@ public class JCEKSSecureCredentialsVaultTest {
         keystoreFile.delete();
         assertFalse(Files.exists(Paths.get(keystoreFile.getAbsolutePath())));
         assertEquals(2, scv.getAliases().size());
-        assertEquals(Sets.newHashSet("http", "ssh"), scv.getAliases());
+        assertEquals(new HashSet<>(Arrays.asList("http", "ssh")), scv.getAliases());
         assertEquals(credentials1, scv.getCredentials("http"));
         assertEquals(credentials2, scv.getCredentials("ssh"));
 

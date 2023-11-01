@@ -34,6 +34,7 @@ import static org.opennms.web.rest.v2.bsm.model.TestHelper.createReduceFunctionD
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
@@ -48,8 +49,6 @@ import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
-
-import com.google.common.collect.Sets;
 
 public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<BusinessServiceResponseDTO> {
 
@@ -361,7 +360,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setId(id);
         responseDTO.setWeight(9);
         responseDTO.setLocation(location);
-        responseDTO.setReductionKeys(Sets.newHashSet(reductionKey));
+        responseDTO.setReductionKeys(new HashSet<>(Arrays.asList(reductionKey)));
         responseDTO.setMapFunction(mapFunctionDTO);
         responseDTO.setFriendlyName(friendlyName);
         return responseDTO;

@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2.bsm.model.meta;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +43,6 @@ import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 @XmlRootElement(name="function")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -78,7 +78,7 @@ public class FunctionMetaDTO {
         name = functionAnnotation.name();
         description = functionAnnotation.description();
 
-        parameters = Lists.newArrayList();
+        parameters = new ArrayList<>();
         for(Field field : function.getDeclaredFields()) {
             Parameter filterParam = field.getAnnotation(Parameter.class);
             if (filterParam != null) { // only consider annotated fields

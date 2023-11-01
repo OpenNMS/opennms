@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
@@ -53,7 +54,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9M
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import io.netty.buffer.ByteBuf;
 
@@ -108,13 +108,13 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             final SessionKey that = (SessionKey) o;
-            return Objects.equal(this.localAddress, that.localAddress) &&
-                    Objects.equal(this.remoteAddress, that.remoteAddress);
+            return Objects.equals(this.localAddress, that.localAddress) &&
+                    Objects.equals(this.remoteAddress, that.remoteAddress);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.localAddress, this.remoteAddress);
+            return Objects.hash(this.localAddress, this.remoteAddress);
         }
 
         @Override

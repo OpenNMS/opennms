@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +41,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
 
 public class MultiprotocolUnreachableNlri implements Attribute {
@@ -49,8 +48,8 @@ public class MultiprotocolUnreachableNlri implements Attribute {
 
     public final int afi;
     public final int safi;
-    public List<UpdatePacket.Prefix> withdrawn = Lists.newArrayList();
-    public List<UpdatePacket.Prefix> vpnWithdrawn = Lists.newArrayList();
+    public List<UpdatePacket.Prefix> withdrawn = new ArrayList<>();
+    public List<UpdatePacket.Prefix> vpnWithdrawn = new ArrayList<>();
 
     public MultiprotocolUnreachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);

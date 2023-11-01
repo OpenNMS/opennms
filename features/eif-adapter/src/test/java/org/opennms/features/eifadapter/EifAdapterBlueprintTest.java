@@ -31,11 +31,10 @@ package org.opennms.features.eifadapter;
 import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import com.google.common.collect.Lists;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +80,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     @Test
     public void testCanParseEifPacketsAndGenerateEvents() throws Exception {
         // Register an event listener
-        final List<IEvent> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = new ArrayList<>();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -111,7 +110,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
     @Test
     public void testCanParseEifWithSemicolonsInSlotsAndGenerateEvents() throws Exception {
         // Register an event listener
-        final List<IEvent> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = new ArrayList<>();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -141,7 +140,7 @@ public class EifAdapterBlueprintTest extends CamelBlueprintTest {
    @Test
     public void testCanParseEifWith36ByteOffset() throws Exception {
         // Register an event listener
-        final List<IEvent> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = new ArrayList<>();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {

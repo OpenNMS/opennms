@@ -102,8 +102,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.google.common.collect.Sets;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -1337,7 +1335,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
     private static class QueueMultipleDownsHook implements SendNowHook {
         private final CountDownLatch m_latch;
 
-        private final Set<String> m_ueis = Sets.newHashSet();
+        private final Set<String> m_ueis = new HashSet<>();
 
         public QueueMultipleDownsHook(int count) {
             m_latch = new CountDownLatch(count);

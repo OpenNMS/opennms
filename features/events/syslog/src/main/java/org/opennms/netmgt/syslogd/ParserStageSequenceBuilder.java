@@ -50,8 +50,6 @@ import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * <p>This class is used to construct a sequence of {@link ParserStage} objects
  * that can parse {@link ByteBuffer} objects into tokens.</p>
@@ -180,7 +178,7 @@ public class ParserStageSequenceBuilder {
 	 */
 	private static CharPredicate getHostMatcherForPattern(GrokParserStageSequenceBuilder.GrokPattern pattern) {
 		// Match only valid hostname characters ('_' is technically invalid but we use it in tests)
-		final List<Character> hostNameCharacters = ImmutableList.of('-', '.', '_');
+		final List<Character> hostNameCharacters = List.of('-', '.', '_');
 		final CharPredicate hostNameMatcher = c -> Character.isDigit(c) || Character.isLetter(c) ||
 				hostNameCharacters.contains(c);
 		// Match only valid IPv4 address characters

@@ -33,7 +33,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.primitives.UnsignedLong;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -79,7 +78,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -438,7 +439,7 @@ public class NewtsConverter implements AutoCloseable {
         }
 
         // Get all groups declared in the ds.properties and process the RRD files
-        Sets.newHashSet(Iterables.transform(ds.values(), Object::toString))
+        new HashSet<>(Arrays.asList(Iterables.transform(ds.values(), Object::toString)))
             .forEach(group -> this.executor.execute(() -> processResource(path,
                                                                           group,
                                                                           group)));

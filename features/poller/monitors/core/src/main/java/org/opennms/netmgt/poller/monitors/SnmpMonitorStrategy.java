@@ -41,8 +41,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-
 /**
  * <p>Abstract SnmpMonitorStrategy class.</p>
  *
@@ -79,7 +77,7 @@ public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
         } catch (IOException e) {
             LOG.error("SnmpPeerFactory initialization failed.", e);
         }
-        return ImmutableMap.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress(), svc.getNodeLocation()));
+        return Map.of("agent", SnmpPeerFactory.getInstance().getAgentConfig(svc.getAddress(), svc.getNodeLocation()));
     }
 
     public SnmpAgentConfig getAgentConfig(MonitoredService svc, Map<String, Object> parameters) {

@@ -28,10 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,7 +49,6 @@ import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -155,10 +151,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return Sets.newHashSet(
-                ContentType.Application,
-                ContentType.Alarm,
-                ContentType.Node).contains(type);
+        return new HashSet<>(Arrays.asList(ContentType.Application, ContentType.Alarm, ContentType.Node)).contains(type);
     }
 
     private Set<Integer> extractNodeIds(Set<LegacyApplicationVertex> applicationVertices) {

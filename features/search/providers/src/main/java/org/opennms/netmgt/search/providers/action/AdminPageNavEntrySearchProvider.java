@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.search.providers.action;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -45,8 +46,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 /**
  * Allows to search for dynamically added {@link org.opennms.web.navigate.PageNavEntry}s.
@@ -86,7 +85,7 @@ public class AdminPageNavEntrySearchProvider implements SearchProvider {
 
     private List<PageNavEntry> getPageNavEntries(final SearchQuery query) {
         Objects.requireNonNull(query);
-        final List<PageNavEntry> totalMatches = Lists.newArrayList();
+        final List<PageNavEntry> totalMatches = new ArrayList<>();
         try {
             final Collection<ServiceReference<PageNavEntry>> serviceReferences = bundleContext.getServiceReferences(PageNavEntry.class, "(Page=admin)");
             if (serviceReferences != null) {

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistrat
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphContainerProviderManager {
@@ -74,7 +74,7 @@ public class GraphContainerProviderManager {
         final GraphContainerProvider containerProvider = containerProviderRegistration.getDelegate();
         final LegacyTopologyConfigurationImpl configuration = new LegacyTopologyConfigurationImpl(properties);
         if (configuration.isExposeToTopology()) {
-            serviceRegistrations.putIfAbsent(containerProvider, Lists.newArrayList());
+            serviceRegistrations.putIfAbsent(containerProvider, new ArrayList<>());
 
             // Expose Meta Topology Provider
             final GraphContainerInfo containerInfo = containerProvider.getContainerInfo();

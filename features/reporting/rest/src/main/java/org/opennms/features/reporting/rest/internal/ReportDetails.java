@@ -30,6 +30,7 @@ package org.opennms.features.reporting.rest.internal;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -52,17 +53,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public class ReportDetails {
 	private static final Logger LOG = LoggerFactory.getLogger(ReportDetails.class);
 
     private String reportId;
     private ReportParameters parameters = new ReportParameters();
-    private List<ReportFormat> formats = Lists.newArrayList();
-    private List<Category> categories = Lists.newArrayList();
-    private List<OnmsCategory> surveillanceCategories = Lists.newArrayList();
-    private List<String> timezones = Lists.newArrayList();
+    private List<ReportFormat> formats = new ArrayList<>();
+    private List<Category> categories = new ArrayList<>();
+    private List<OnmsCategory> surveillanceCategories = new ArrayList<>();
+    private List<String> timezones = new ArrayList<>();
     private DeliveryOptions deliveryOptions;
     private String cronExpression;
 

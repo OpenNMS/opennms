@@ -32,6 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import org.hamcrest.Matchers;
+
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +66,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -187,17 +188,17 @@ public class DefaultGraphRepositoryIT {
         final GenericVertex vertex = GenericVertex.builder()
                 .namespace(NAMESPACE)
                 .id("v1")
-                .property("collectionProperty", ImmutableList.of("E", "F")).build();
+                .property("collectionProperty", List.of("E", "F")).build();
 
         final GenericGraph graph = GenericGraph.builder()
                 .namespace(NAMESPACE)
-                .property("collectionProperty", ImmutableList.of("C", "D"))
+                .property("collectionProperty", List.of("C", "D"))
                 .addVertex(vertex)
                 .build();
 
         final GenericGraphContainer originalContainer = GenericGraphContainer.builder()
             .id(CONTAINER_ID)
-            .property("collectionProperty", ImmutableList.of("A", "B"))
+            .property("collectionProperty", List.of("A", "B"))
             .addGraph(graph).build();
 
         graphRepository.save(originalContainer);

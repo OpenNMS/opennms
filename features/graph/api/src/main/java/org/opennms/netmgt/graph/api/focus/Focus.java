@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.api.focus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,7 +37,6 @@ import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 public class Focus {
 
@@ -44,7 +44,7 @@ public class Focus {
     private final List<VertexRef> vertexRefs;
 
     public Focus(final String id) {
-        this(id, Lists.newArrayList());
+        this(id, new ArrayList<>());
     }
 
     public Focus(final String id, final List<VertexRef> vertexRefs) {

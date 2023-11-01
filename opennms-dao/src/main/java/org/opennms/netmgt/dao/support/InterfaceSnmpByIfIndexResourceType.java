@@ -28,20 +28,13 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-
-import com.google.common.collect.Sets;
 
 /**
  * This resource type provides an alias for the {@link InterfaceSnmpResourceType},
@@ -105,7 +98,7 @@ public class InterfaceSnmpByIfIndexResourceType implements OnmsResourceType {
         }
 
         // Compute the set of possible keys at which the interface resource may be stored
-        final Set<String> candidateInterfaceKeys = Sets.newHashSet();
+        final Set<String> candidateInterfaceKeys = new HashSet<>();
         candidateInterfaceKeys.addAll(Arrays.asList(InterfaceSnmpResourceType.getKeysFor(snmpInterface)));
 
         // Enumerate all of the available interfaces on the parent, and use the first match

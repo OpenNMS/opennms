@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.menu;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class MenuBuilderTest {
         builder.createPath("Edit");
         builder.addMenuItem(createEmptyMenuItem("Test"), "File");
 
-        MenuBar menuBar = builder.build(Lists.newArrayList(), createTestOperationContext());
+        MenuBar menuBar = builder.build(new ArrayList<>(), createTestOperationContext());
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(3, menuItems.size());
         assertEquals("File", menuItems.get(0).getText());
@@ -70,7 +71,7 @@ public class MenuBuilderTest {
         builder.createPath("Help");
         builder.createPath("View");
 
-        MenuBar menuBar = builder.build(Lists.newArrayList(), createTestOperationContext());
+        MenuBar menuBar = builder.build(new ArrayList<>(), createTestOperationContext());
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(6, menuItems.size());
         assertEquals("File", menuItems.get(0).getText());
@@ -91,7 +92,7 @@ public class MenuBuilderTest {
         builder.createPath("Help");
         builder.createPath("View");
 
-        MenuBar menuBar = builder.build(Lists.newArrayList(), createTestOperationContext());
+        MenuBar menuBar = builder.build(new ArrayList<>(), createTestOperationContext());
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(6, menuItems.size());
         assertEquals("Edit", menuItems.get(0).getText());
@@ -113,7 +114,7 @@ public class MenuBuilderTest {
         builder.createPath("Help");
         builder.createPath("View");
 
-        MenuBar menuBar = builder.build(Lists.newArrayList(), createTestOperationContext());
+        MenuBar menuBar = builder.build(new ArrayList<>(), createTestOperationContext());
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(6, menuItems.size());
         assertEquals("File", menuItems.get(0).getText());
@@ -129,7 +130,7 @@ public class MenuBuilderTest {
         MenuBuilder builder = new MenuBuilder();
         builder.addMenuItem(createEmptyMenuItem("Test"), "Layout");
 
-        MenuBar menubar = builder.build(Lists.newArrayList(), new TestOperationContext(null));
+        MenuBar menubar = builder.build(new ArrayList<>(), new TestOperationContext(null));
         TopologyContextMenu contextMenu = new TopologyContextMenu(mock(UI.class), menubar);
 
         final List<MenuBar.MenuItem> contextMenuItems = contextMenu.getItems();

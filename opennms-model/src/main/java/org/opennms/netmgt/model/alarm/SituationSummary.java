@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.alarm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -36,8 +37,6 @@ import java.util.stream.Stream;
 
 import org.opennms.core.utils.FuzzyDateFormatter;
 import org.opennms.netmgt.model.OnmsSeverity;
-
-import com.google.common.collect.Lists;
 
 public class SituationSummary {
     private int situationId;
@@ -73,7 +72,7 @@ public class SituationSummary {
     }
 
     public List<String> getSituationLocationList() {
-        return situationLocations == null ? Lists.newArrayList() : Stream.of(situationLocations.split(", ")).collect(Collectors.toList());
+        return situationLocations == null ? new ArrayList<>() : Stream.of(situationLocations.split(", ")).collect(Collectors.toList());
     }
 
     public long getAffectedNodes() {

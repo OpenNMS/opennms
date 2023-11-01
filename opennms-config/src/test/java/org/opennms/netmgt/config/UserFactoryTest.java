@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -36,8 +37,6 @@ import org.junit.Test;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.FileSystemUtils;
-
-import com.google.common.io.Files;
 
 public class UserFactoryTest {
 	@Test(expected=IllegalStateException.class)
@@ -93,7 +92,7 @@ public class UserFactoryTest {
 		daoTestConfig.afterPropertiesSet();
 
 		final Path opennmsHome = Paths.get(System.getProperty("opennms.home"));
-		final Path tempHome = Files.createTempDir().toPath();
+		final Path tempHome = Files.createTempDirectory(null).toFile().toPath();
 
 		System.err.println("opennms.home=" + tempHome);
 		FileSystemUtils.copyRecursively(opennmsHome.resolve("etc").toFile(), tempHome.resolve("etc").toFile());

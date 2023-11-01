@@ -30,14 +30,13 @@ package org.opennms.web.alarm.filter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.BooleanType;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.SQLType;
-
-import com.google.common.base.Objects;
 
 public class SituationFilter implements Filter {
     public static final String TYPE = "situation";
@@ -94,6 +93,6 @@ public class SituationFilter implements Filter {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return Objects.hash(value);
     }
 }

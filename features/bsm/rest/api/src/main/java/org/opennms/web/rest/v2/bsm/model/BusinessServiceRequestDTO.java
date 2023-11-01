@@ -48,7 +48,6 @@ import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
@@ -65,19 +64,19 @@ public class BusinessServiceRequestDTO {
 
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
-    private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
+    private List<IpServiceEdgeRequestDTO> m_ipServices = new ArrayList<>();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
-    private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
+    private List<ChildEdgeRequestDTO> m_childServices = new ArrayList<>();
 
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
-    private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
+    private List<ReductionKeyEdgeRequestDTO> reductionKeys = new ArrayList<>();
 
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
-    private List<ApplicationEdgeRequestDTO> m_applications = Lists.newArrayList();
+    private List<ApplicationEdgeRequestDTO> m_applications = new ArrayList<>();
 
     @XmlElement(name="reduce-function")
     private ReduceFunctionDTO reduceFunction;

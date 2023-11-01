@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.eventd.processor.expandable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,8 +39,6 @@ import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 /**
  * The {@link EventTemplate} represents the event input, containing place-holders, e.g. 'nodeLabel',
@@ -58,7 +57,7 @@ public class EventTemplate implements ExpandableToken {
 
     private final String input;
 
-    private final List<ExpandableToken> tokens = Lists.newArrayList();
+    private final List<ExpandableToken> tokens = new ArrayList<>();
 
     private final EventUtil eventUtil;
 

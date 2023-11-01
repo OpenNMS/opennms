@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.equalTo;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
@@ -41,8 +42,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
-
-import com.google.common.collect.ImmutableList;
 
 public class MessageTest {
 
@@ -58,7 +57,7 @@ public class MessageTest {
         long timeMicros = 1_582_456_123_795_452L;
         collector.timestamp = Instant.EPOCH.plus(timeMicros, ChronoUnit.MICROS);
 
-        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, List.of(collector));
 
         final StringBuffer buffer = new StringBuffer();
         msg.serialize(buffer);
@@ -87,7 +86,7 @@ public class MessageTest {
         peer.remotePort = 179;
         peer.localAsn = 651337L;
 
-        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, List.of(peer));
 
         final StringBuffer buffer = new StringBuffer();
         msg.serialize(buffer);
