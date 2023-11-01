@@ -38,7 +38,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class ConfigTesterTest {
 
     private static void setUpOpennmsHomeInTmpDir() throws IOException {
         String opennmsHomeOriginal = System.getProperty(OPENNMS_HOME_NAME);
-        opennmsHomeDir = Files.createTempDirectory(null).toFile();
+        opennmsHomeDir = Files.createTempDir();
         System.setProperty(OPENNMS_HOME_NAME, opennmsHomeDir.getAbsolutePath());
         FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "etc"), new File(opennmsHomeDir, "etc"));
         FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "../../../../protocols/xml/src/main/etc"), new File(opennmsHomeDir, "etc"));

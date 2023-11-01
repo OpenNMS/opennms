@@ -315,7 +315,7 @@ public class NewtsFetchStrategyTest {
     }
 
     private void replay() {
-        for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
+        for (final var entry : m_resources.entrySet()) {
             when(m_resourceDao.getResourceById(entry.getKey())).thenReturn(entry.getValue());
         }
     }

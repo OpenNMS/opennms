@@ -87,7 +87,7 @@ public class BusinessServiceGraphImplTest {
         servicesByLevel.put(2, new HashSet<>(Arrays.asList(h.getBusinessServiceById(3))));
         servicesByLevel.put(3, new HashSet<>(Arrays.asList(h.getBusinessServiceById(4))));
         servicesByLevel.put(4, new HashSet<>());
-        for (Entry<Integer, Set<BusinessService>> entry : servicesByLevel.entrySet()) {
+        for (final var entry : servicesByLevel.entrySet()) {
             int level = entry.getKey();
             Set<BusinessService> servicesAtLevel = graph.getVerticesByLevel(level).stream()
                 .filter(v -> v.getLevel() == level) // Used to verify the level on the actual vertex
@@ -142,7 +142,7 @@ public class BusinessServiceGraphImplTest {
         BusinessServiceGraph graph = new BusinessServiceGraphImpl(h.getBusinessServices());
 
         // Verify
-        for (Entry<Long, Integer> entry : businessServiceIdToLevel.entrySet()) {
+        for (final var entry : businessServiceIdToLevel.entrySet()) {
             long id = entry.getKey();
             int expectedLevel = entry.getValue();
             assertEquals(expectedLevel, graph.getVertexByBusinessServiceId(id).getLevel());

@@ -238,7 +238,7 @@ public class NewtsResourceStorageDaoTest {
                 String value = tq.getTerm().getValue();
 
                 SearchResults searchResults = new SearchResults();
-                for (Entry<ResourcePath, Set<String>> entry : m_indexedPaths.entrySet()) {
+                for (final var entry : m_indexedPaths.entrySet()) {
                     Map<String, String> attributes = Maps.newHashMap();
                     // Build the indexed attributes and attempt to match them against the given query
                     NewtsUtils.addIndicesToAttributes(entry.getKey(), attributes);

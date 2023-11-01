@@ -199,7 +199,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         // Now calculate the distance of every node to each of the root nodes
         final GraphLevelIndexer<GraphVertex, GraphEdge> levelIndexer = new GraphLevelIndexer<>();
         levelIndexer.indexLevel(this, rootVertices);
-        for (Entry<GraphVertex, Integer> entry : levelIndexer.getLevelMap().entrySet()) {
+        for (final var entry : levelIndexer.getLevelMap().entrySet()) {
             final int level = entry.getValue().intValue();
             final GraphVertexImpl vertex = (GraphVertexImpl)entry.getKey();
 

@@ -236,7 +236,7 @@ public class TimeseriesResourceStorageDaoTest {
 
                 String regex = toSearchRegex(resourcePath, depth + 1);
                 Set<Metric> metrics = new HashSet<>();
-                for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
+                for (final var entry : indexedPaths.entrySet()) {
                     Set<Tag> attributes = new HashSet<>();
                     if (Pattern.matches(regex, toResourceId(entry.getKey()))) { // find all paths that match our regex
                         for(String name : entry.getValue()) { // build the metric

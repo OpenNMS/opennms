@@ -19,8 +19,6 @@ recipeList:
   - org.openrewrite.java.migrate.guava.NoGuavaSetsNewConcurrentHashSet
   - org.openrewrite.java.migrate.guava.NoGuavaSetsNewLinkedHashSet
   - org.openrewrite.java.migrate.guava.PreferJavaNioCharsetStandardCharsets
-  - org.openrewrite.java.migrate.guava.PreferJavaUtilFunction
-  - org.openrewrite.java.migrate.guava.PreferJavaUtilPredicate
   - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsEquals
   - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsHashCode
   - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsRequireNonNull
