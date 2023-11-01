@@ -35,10 +35,10 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.xml.bind.JAXBContext;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,7 +118,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	private void setSnmpConfigFile(final String snmpConfigContent) throws IOException {
 		m_snmpConfigFile = File.createTempFile("snmp-config-", ".xml");
 		m_snmpConfigFile.deleteOnExit();
-		FileUtils.writeStringToFile(m_snmpConfigFile, snmpConfigContent);
+        Files.write(m_snmpConfigFile.toPath(), snmpConfigContent.getBytes());
 		SnmpPeerFactory.setFile(m_snmpConfigFile);
 		SnmpPeerFactory.init();
 	}

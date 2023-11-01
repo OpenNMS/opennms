@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
@@ -69,7 +70,7 @@ class FileSystemBuilder {
 	
 	public FileSystemBuilder file(String name, String contents) throws IOException {
 		File file = new File(getCurrentDir(), name);
-		FileUtils.writeStringToFile(file, contents);
+        Files.write(file.toPath(), contents.getBytes());
 		file.deleteOnExit();
 		return this;
 	}
