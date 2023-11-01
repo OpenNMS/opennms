@@ -72,7 +72,7 @@
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- for surefire and failsafe -->
-    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.1</maven.testing.plugin.version>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
     <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>

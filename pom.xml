@@ -1496,7 +1496,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.1</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
@@ -1802,7 +1802,7 @@
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.10.0</minaSshdVersion>
+    <minaSshdVersion>2.11.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
