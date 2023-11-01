@@ -46,10 +46,10 @@ The first match that produces a successful SNMP `GET-REQUEST` on the scalar inst
 
 NOTE: `default` as profile label is reserved for default SNMP config.
 
-== Manually fit a SNMP profile
+== Manually fit an SNMP profile
 
 The `opennms:snmp-fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
-Matching or "fitting" an SNMP profile is successfuly if the IP passes the profile's filter expression and is successful in getting the scalar `sysObjectID` instance.
+Matching or "fitting" an SNMP profile is successful if the IP passes the profile's filter expression and gets the scalar `sysObjectID` instance.
 
 [source, console]
 ----
@@ -62,7 +62,7 @@ admin@opennms()> opennms:snmp-fit -s -n -f Switches 172.1.1.107 profile2 <3>
 <1> Searches the profiles that fit the IP address `172.1.1.105` at location `MINION` and saves the resulting configuration as a definition for future use.
 <2> Checks whether the profile with label `profile1` is a fit for IP address `172.1.1.106`, but does not save the resulting configuration if it is a fit.
 <3> Checks whether the profile labeled `profile2` is a fit for IP address `172.1.1.107`.
-If a match, it will save the resulting configuration and also send a `newSuspect` event, telling {page-component-title} to auto-provision the node at that IP address into the `Switches` requisition.
+If a match, it saves the resulting configuration and also sends a `newSuspect` event, telling {page-component-title} to auto-provision the node at that IP address into the `Switches` requisition.
 
 == Remove an IP address from definition.
 
