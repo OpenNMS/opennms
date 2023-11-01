@@ -157,22 +157,19 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         return RpcExceptionUtils.handleException(t, new RpcExceptionHandler<>() {
             @Override
             public PollStatus onInterrupted(Throwable cause) {
-                LOG.warn("Interrupted while invoking the poll for {}."
-                        + " Marking the service as UNKNOWN.", service);
+                LOG.warn("Interrupted while invoking the poll for {}. Marking the service as UNKNOWN.", service);
                 return PollStatus.unknown("Interrupted while invoking the poll for "+service+". "+t);
             }
 
             @Override
             public PollStatus onTimedOut(Throwable cause) {
-                LOG.warn("No response received when remotely invoking the poll for {}."
-                        + " Marking the service as UNKNOWN.", service);
+                LOG.warn("No response received when remotely invoking the poll for {}. Marking the service as UNKNOWN.", service);
                 return PollStatus.unknown(String.format("No response received for %s. %s", service, cause));
             }
 
             @Override
             public PollStatus onRejected(Throwable cause) {
-                LOG.warn("The request to remotely invoke the poll for {} was rejected."
-                        + " Marking the service as UNKNOWN.", service);
+                LOG.warn("The request to remotely invoke the poll for {} was rejected. Marking the service as UNKNOWN.", service);
                 return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", service, cause));
             }
 

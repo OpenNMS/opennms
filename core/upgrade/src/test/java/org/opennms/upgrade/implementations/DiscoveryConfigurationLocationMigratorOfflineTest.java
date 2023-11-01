@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DiscoveryConfigurationLocationMigratorOfflineTest {
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigurationMigratorOfflineTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigurationLocationMigratorOfflineTest.class);
 
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();

@@ -99,7 +99,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Testing GET Collection
         String xml = sendRequest(GET, "/groups", 200);
         assertTrue(xml.contains("Admin"));
-        LOG.debug("testGroup: XML = " + xml);
+        LOG.debug("testGroup: XML = {}", xml);
         OnmsGroupList list = JaxbUtils.unmarshal(OnmsGroupList.class, xml);
         assertEquals(1, list.getGroups().size());
         assertEquals(xml, "Admin", list.getGroups().get(0).getName());

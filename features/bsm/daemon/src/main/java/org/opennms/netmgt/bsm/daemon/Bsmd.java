@@ -254,7 +254,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 try {
                     m_eventIpcManager.send(event);
                 } catch (EventProxyException ex) {
-                    LOG.error("Cannot send event " + event.getUei(), ex);
+                    LOG.error("Cannot send event {}", event.getUei(), ex);
                 }
             }
         }

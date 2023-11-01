@@ -134,8 +134,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         // does not import the required classes from the kafka-streams bundle
         streams = Utils.runWithGivenClassLoader(() -> new KafkaStreams(topology, streamProperties), KStream.class.getClassLoader());
 
-        streams.setUncaughtExceptionHandler((t, e) -> LOG.error(
-                String.format("Stream error on thread: %s", t.getName()), e));
+        streams.setUncaughtExceptionHandler((t, e) -> LOG.error("Stream error on thread: {}", t.getName(), e));
 
         // Defer startup to another thread
         scheduler = Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder()

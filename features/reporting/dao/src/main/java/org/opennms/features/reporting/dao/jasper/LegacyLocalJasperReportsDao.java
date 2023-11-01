@@ -84,7 +84,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
         try {
             loadConfiguration();
         } catch (Exception e) {
-            logger.error("Error could not load jasper-reports.xml. Error message: '{}'", e.getMessage());
+            logger.error("Error could not load jasper-reports.xml. Error message: '{}'", e.getMessage(), e);
         }
         logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }

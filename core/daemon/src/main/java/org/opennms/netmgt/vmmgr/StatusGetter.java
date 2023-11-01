@@ -90,7 +90,7 @@ public class StatusGetter {
         try {
             results = this.retrieveStatus();
         } catch (final IllegalStateException e) {
-            LOG.debug("Could not fetch status: " + e.getMessage());
+            LOG.debug("Could not fetch status: {}", e.getMessage(), e);
             if (m_controller.isVerbose()) {
                 System.out.println("Could not connect to the OpenNMS JVM"
                         + " (OpenNMS might not be running or "

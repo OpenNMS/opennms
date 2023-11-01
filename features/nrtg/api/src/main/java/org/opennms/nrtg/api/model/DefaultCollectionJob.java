@@ -210,7 +210,7 @@ public class DefaultCollectionJob implements CollectionJob {
                 // modifying the destination set to include the already defined set
                 destinationSetToUse.addAll(alreadyDefinedDestinationSet);
 
-                logger.debug("Metric " + metricId + "already exists in " + alreadyDefinedDestinationSet + ", moving metric to " + destinationSetToUse);
+                logger.debug("Metric {}already exists in {}, moving metric to {}", metricId, alreadyDefinedDestinationSet, destinationSetToUse);
             }
         }
 

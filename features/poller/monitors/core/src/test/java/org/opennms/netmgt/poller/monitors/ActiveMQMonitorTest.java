@@ -61,12 +61,12 @@ public class ActiveMQMonitorTest {
 
     @Before
     public void startUp() throws Exception {
-        LOG.info("======== Starting test " + m_test.getMethodName());
+        LOG.info("======== Starting test {}", m_test.getMethodName());
     }
 
     @After
     public void tearDown() throws Exception {
-        LOG.info("======== Finished test " + m_test.getMethodName());
+        LOG.info("======== Finished test {}", m_test.getMethodName());
     }
 
     /**

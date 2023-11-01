@@ -139,7 +139,7 @@ public class CollectionJobListener implements MessageListener {
                 logger.trace("** sending to 'error'");
             }
         } catch (JMSException ex) {
-            logger.error(ex.getMessage());
+            logger.error("", ex);
             // FIXME react, don't continue
         } catch (MessageConversionException ex) {
             logger.error(ex.getMessage());

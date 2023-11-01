@@ -231,7 +231,7 @@ public class CriteriaBuilderHelper {
         CriteriaParser<?> criteriaParser = m_parsers.get(clazz);
 
         if (criteriaParser == null) {
-            LoggerFactory.getLogger(CriteriaBuilderHelper.class).error("No parser for class " + clazz.getSimpleName() + " found");
+            LoggerFactory.getLogger(CriteriaBuilderHelper.class).error("No parser for class {} found", clazz.getSimpleName());
             return null;
         } else {
             return criteriaParser.parse(value);
@@ -339,7 +339,7 @@ public class CriteriaBuilderHelper {
                             sortedMap.put(propertyName, clazz);
                         }
                     } else {
-                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("No parser for class " + clazz.getSimpleName() + " found, ignoring property " + propertyName);
+                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("No parser for class {} found, ignoring property {}", clazz.getSimpleName(), propertyName);
                     }
                 }
             }

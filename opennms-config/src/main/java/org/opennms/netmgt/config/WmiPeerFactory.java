@@ -33,10 +33,10 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.apache.commons.codec.binary.Base64;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
@@ -462,7 +462,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     private String determinePassword(final Definition def) {
         String literalPass = def.getPassword().orElse(getConfig().getPassword().orElse(WmiAgentConfig.DEFAULT_PASSWORD));
         if (literalPass.endsWith("===")) {
-            return new String(Base64.decodeBase64(literalPass));
+            return new String(Base64.getDecoder().decode(literalPass));
         }
         return Interpolator.interpolate(literalPass, getSecureCredentialsScope()).output;
     }

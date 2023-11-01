@@ -71,12 +71,12 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
     public LegacyLocalReportsDao(Resource configResource) {
         m_configResource = configResource;
         Assert.notNull(m_configResource, "property configResource must be set to a non-null value");
-        logger.debug("Config resource is set to " + m_configResource.toString());
+        logger.debug("Config resource is set to {}", m_configResource.toString());
         
         try {
             loadConfiguration();
         } catch (Exception e) {
-            logger.error("Error could not load database-reports.xml. Error message: '{}'", e.getMessage());
+            logger.error("Error could not load database-reports.xml. Error message: '{}'", e.getMessage(), e);
         }
         logger.debug("Configuration '{}' successfully loaded and unmarshalled.", m_configResource.getFilename());
     }

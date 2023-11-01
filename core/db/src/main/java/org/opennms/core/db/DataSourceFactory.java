@@ -170,7 +170,7 @@ public abstract class DataSourceFactory {
             setInstance(dsName, dataSource);
         } catch (final Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("configuration is unfiltered")) {
-                LOG.warn(e.getMessage());
+                LOG.warn("", e);
                 return;
             }
             throw e;

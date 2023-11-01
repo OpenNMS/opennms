@@ -112,7 +112,8 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
         try {
             final GeocoderResult result = activeGeocoder.resolveAddress(addressString);
             if (result.hasError()) {
-                LOG.error("Error resolving address '{}': {}", addressString, result.getThrowable().getMessage(), result.getThrowable());
+                final var th = result.getThrowable();
+                LOG.error("Error resolving address '{}': {}", addressString, th.getMessage(), th);
                 return null;
             }
             if (result.isEmpty()) {

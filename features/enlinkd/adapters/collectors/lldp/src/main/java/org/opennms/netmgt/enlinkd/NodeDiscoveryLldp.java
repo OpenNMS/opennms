@@ -101,12 +101,12 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                           .execute()
                           .get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: LLDP_MIB not supported {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: LLDP_MIB not supported {}",
+                    getNodeId(), e.getMessage(), e);
                 return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: LLDP_MIB not supported {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: LLDP_MIB not supported {}",
+                    getNodeId(), e.getMessage(), e);
                 return;
         }
         
@@ -178,11 +178,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                     .get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return false;
         } catch (final InterruptedException e) {
             LOG.debug("run: node [{}]: InterruptedException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return false;
         }
         if (links.isEmpty()) {
@@ -248,11 +248,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                     .get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return false;
         } catch (final InterruptedException e) {
             LOG.debug("run: node [{}]: InterruptedException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return false;
         }
 
@@ -289,11 +289,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                     .get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
             LOG.debug("run: node [{}]: InterruptedException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());

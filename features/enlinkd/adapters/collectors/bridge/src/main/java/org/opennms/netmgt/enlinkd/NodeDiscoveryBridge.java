@@ -174,12 +174,12 @@ public final class NodeDiscoveryBridge extends NodeCollector {
         try {
             getLocationAwareSnmpClient().walk(peer, dot1dbase).withDescription("dot1dbase").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: BRIDGE_MIB not supported: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: BRIDGE_MIB not supported: {}",
+                    getNodeId(), e.getMessage(), e);
             return null; 
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: BRIDGE_MIB not supported: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: BRIDGE_MIB not supported: {}",
+                    getNodeId(), e.getMessage(), e);
             return null;
         }
 
@@ -232,12 +232,12 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.debug("run: node [{}]: ExecutionException: vtpVersion: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: vtpVersion: {}",
+                    getNodeId(), e.getMessage(), e);
            return vlanmap;
        } catch (final InterruptedException e) {
-           LOG.debug("run: node [{}]: InterruptedException: vtpVersion: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: vtpVersion: {}",
+                    getNodeId(), e.getMessage(), e);
            return vlanmap;
        }
 
@@ -263,11 +263,11 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
         }
         return vlanmap;
     }
@@ -289,11 +289,11 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
         }
         return bridgetoifindex;
     }
@@ -358,11 +358,11 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             getLocationAwareSnmpClient().walk(peer,
                                                       dot1dTpFdbTableTracker).withDescription("dot1dTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
         }
         return bft;
     }
@@ -507,11 +507,11 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             getLocationAwareSnmpClient().walk(peer,
                                                       dot1qTpFdbTableTracker).withDescription("dot1qTbFdbPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
         }
         return bft;
     }
@@ -551,11 +551,11 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             getLocationAwareSnmpClient().walk(peer,
                                                       stpPortTableTracker).withDescription("dot1dStpPortTable").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
         }
         return stplinks;
     }

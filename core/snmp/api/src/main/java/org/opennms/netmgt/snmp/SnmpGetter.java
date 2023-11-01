@@ -77,11 +77,11 @@ public class SnmpGetter extends TableTracker {
            val = m_client.get(m_agentConfig, oids).withLocation(m_location).execute().get();
        } catch (InterruptedException e) {
            LOG.error("get: InterruptedException: snmp GET {}: {}",
-                    oids, e.getMessage());
+                   oids, e.getMessage(), e);
            return null;
        } catch (ExecutionException e) {
            LOG.error("get: ExecutionException: snmp GET {}: {}",
-                    oids, e.getMessage());
+                   oids, e.getMessage(), e);
            return null;
        }
        LOG.debug("get: oid '{}' found value '{}'", oids, val);

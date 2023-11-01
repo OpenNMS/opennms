@@ -140,7 +140,7 @@ public final class Authentication extends Object {
                     }
                 }
             } catch (Exception e) {
-                LOG.warn("Can't load security roles from {}, because: {}", configFile, e.getMessage());
+                LOG.warn("Can't load security roles from {}, because: {}", configFile, e.getMessage(), e);
             }
         }
     }

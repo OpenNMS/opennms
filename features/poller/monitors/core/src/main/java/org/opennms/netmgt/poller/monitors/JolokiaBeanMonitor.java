@@ -148,12 +148,12 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
 
-        LOGGER.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+        LOGGER.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         strURL = strURL.replace("${ipaddr}", hostAddress);
         strURL = strURL.replace("${port}", ((Integer) port).toString());
 
-        LOGGER.debug("poll: final URL address = " + strURL);
+        LOGGER.debug("poll: final URL address = {}", strURL);
 
         // Give it a whirl
         PollStatus serviceStatus = PollStatus.unknown("Initialized");
@@ -170,7 +170,7 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
                 J4pClient j4pClient = j4pClientBuilder.build();
 
-                LOGGER.debug("JolokiaBeanMonitor: connected to URLhost: " + strURL);
+                LOGGER.debug("JolokiaBeanMonitor: connected to URLhost: {}", strURL);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -197,15 +197,15 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
                     //Default Inputs
                     if (strInput1 == null && strInput2 == null) {
-                        LOGGER.debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName);
+                        LOGGER.debug("JolokiaBeanMonitor - execute bean: {} method: {}", strBeanName, strMethodName);
                         execReq = new J4pExecRequest(strBeanName, strMethodName);
                     } else if (strInput1 != null && strInput2 == null) {
                         //Single Input
-                        LOGGER.debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1);
+                        LOGGER.debug("JolokiaBeanMonitor - execute bean: {} method: {} args: {}", strBeanName, strMethodName, strInput1);
                         execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1);
                     } else {
                         //Double Input
-                        LOGGER.debug("JolokiaBeanMonitor - execute bean: " + strBeanName + " method: " + strMethodName + " args: " + strInput1 + " " + strInput2);
+                        LOGGER.debug("JolokiaBeanMonitor - execute bean: {} method: {} args: {} {}", strBeanName, strMethodName, strInput1, strInput2);
                         execReq = new J4pExecRequest(strBeanName, strMethodName, strInput1, strInput2);
                     }
 
@@ -220,8 +220,8 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
                     continue;
                 }
 
-                LOGGER.debug("poll: banner = " + response);
-                LOGGER.debug("poll: responseTime = " + responseTime + "ms");
+                LOGGER.debug("poll: banner = {}", response);
+                LOGGER.debug("poll: responseTime = {}ms", responseTime);
 
                 //Could it be a regex?
                 if (strBannerMatch.charAt(0) == '~') {

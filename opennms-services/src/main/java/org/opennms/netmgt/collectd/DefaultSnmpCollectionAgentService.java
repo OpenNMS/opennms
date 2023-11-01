@@ -55,7 +55,7 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 //@Transactional(propagation=Propagation.REQUIRED)
 public class DefaultSnmpCollectionAgentService extends DefaultCollectionAgentService implements SnmpCollectionAgentService {
     
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgentService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSnmpCollectionAgentService.class);
     
     /**
      * <p>create</p>

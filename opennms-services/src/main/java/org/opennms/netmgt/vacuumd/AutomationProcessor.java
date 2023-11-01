@@ -396,7 +396,7 @@ public class AutomationProcessor implements ReadyRunnable {
                     }
                 } catch (SQLException e) {
                     LOG.warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: {}", actionColumnName);
-                    LOG.warn(e.getMessage());
+                    LOG.warn("", e);
                     verified = false;
                 }
             }
@@ -411,7 +411,7 @@ public class AutomationProcessor implements ReadyRunnable {
      */
     static class AutoEventProcessor {
 
-    	private static final Logger LOG = LoggerFactory.getLogger(ActionProcessor.class);
+    	private static final Logger LOG = LoggerFactory.getLogger(AutoEventProcessor.class);
 
     	private final String m_automationName;
         private final AutoEvent m_autoEvent;
@@ -679,7 +679,7 @@ public class AutomationProcessor implements ReadyRunnable {
             try {
                 runAutomation();
             } catch (SQLException e) {
-                LOG.warn("Error running automation: {}, {}", getAutomation().getName(), e.getMessage());
+                LOG.warn("Error running automation: {}, {}", getAutomation().getName(), e.getMessage(), e);
             } finally {
                 setReady(true);
             }

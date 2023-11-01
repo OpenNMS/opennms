@@ -250,7 +250,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                                     .append(subject).append(" by ").append(issuer)
                                     .append(" is not yet valid. Current time is before start time. It is valid from ")
                                     .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
-                            LOG.debug(reasonBuilder.toString());
+                            LOG.debug("{}", reasonBuilder);
                             serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                             break;
                         } else if (calCurrent.before(calAfter)) {
@@ -259,7 +259,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                                         .append(subject).append(" by ").append(issuer)
                                         .append(" is valid. It is valid from ")
                                         .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
-                                LOG.debug(reasonBuilder.toString());
+                                LOG.debug("{}", reasonBuilder);
                                 serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                                 break;
                             } else {
@@ -267,7 +267,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                                         .append(subject).append(" by ").append(issuer)
                                         .append(" is valid, but will expire within ").append(validityDays).append(" days. It is valid from ")
                                         .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
-                                LOG.debug(reasonBuilder.toString());
+                                LOG.debug("{}", reasonBuilder);
                                 serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                                 break;
                             }
@@ -276,7 +276,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                                     .append(subject).append(" by ").append(issuer)
                                     .append(" is no longer valid. It was valid from ").append(certx.getNotBefore().toString())
                                     .append(" until ").append(certx.getNotAfter()).append(".");
-                            LOG.debug(reasonBuilder.toString());
+                            LOG.debug("{}", reasonBuilder);
                             serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                             break;
                         }

@@ -106,7 +106,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
         // retrieve the node
         final OnmsNode node = nodeDao.get(nodeId);
         if (node == null) {
-            LOG.debug("Failed to return node for given nodeId: {}" + nodeId);
+            LOG.debug("Failed to return node for given nodeId: {}{}", nodeId);
             return;
         }
 
@@ -164,7 +164,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
                         results.addAll(processEntry(CONTEXT, rootOId.append(entry.getTree()), config.getName(), entry, resultFuture.get(), new ArrayList<>()));
                     }
                 } catch (ExecutionException e) {
-                    LOG.error("Aborting SNMP walk for " + agentConfig, e);
+                    LOG.error("Aborting SNMP walk for {}", agentConfig, e);
                     throw new SnmpMetadataException("Agent failed for OId " + config.getTree() + ": " + e.getMessage());
                 } catch (final InterruptedException e) {
                     throw new SnmpMetadataException("SNMP walk interrupted, exiting");

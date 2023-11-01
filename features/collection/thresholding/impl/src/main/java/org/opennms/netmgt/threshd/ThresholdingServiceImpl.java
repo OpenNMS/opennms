@@ -162,14 +162,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     public void nodeGainedService(IEvent event) {
-        LOG.debug(event.toString());
+        LOG.debug("{}", event);
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
         threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
     public void handleNodeCategoryChanged(IEvent event) {
-        LOG.debug(event.toString());
+        LOG.debug("{}", event);
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
         threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);

@@ -165,7 +165,7 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
             jcifsConfig = new PropertyConfiguration(jcifsProps);
             baseCtx = new BaseContext(jcifsConfig);
         } catch (CIFSException cifse) {
-            logger.warn("Unable to configure CIFS timeout properties due to {}. Using defaults.", cifse.getMessage());
+            logger.warn("Unable to configure CIFS timeout properties due to {}. Using defaults.", cifse.getMessage(), cifse);
             baseCtx = SingletonContext.getInstance();
         }
         CIFSContext authedCtx = baseCtx.withCredentials(new NtlmPasswordAuthenticator(domain, username, password));
@@ -228,10 +228,10 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
                     }
 
                 } catch (final MalformedURLException exception) {
-                    logger.error("Malformed URL on '{}' with error: '{}'", smbHost, exception.getMessage());
+                    logger.error("Malformed URL on '{}' with error: '{}'", smbHost, exception.getMessage(), exception);
                     serviceStatus = PollStatus.down(exception.getMessage());
                 } catch (final SmbException exception) {
-                    logger.error("SMB error on '{}' with error: '{}'", smbHost, exception.getMessage());
+                    logger.error("SMB error on '{}' with error: '{}'", smbHost, exception.getMessage(), exception);
                     serviceStatus = PollStatus.down("Failed to query to " + smbHost + ": " + exception.getMessage());
                 } finally {
                     if (smbFile != null) {

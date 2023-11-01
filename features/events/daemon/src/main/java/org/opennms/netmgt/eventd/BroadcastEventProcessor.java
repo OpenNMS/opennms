@@ -125,7 +125,7 @@ public class BroadcastEventProcessor implements EventListener {
         EventBuilder ebldr = null;
         
         if (isReloadConfigEvent(event)) {
-            LOG.info("onEvent: Reloading events configuration in response to event with UEI " + event.getUei());
+            LOG.info("onEvent: Reloading events configuration in response to event with UEI {}", event.getUei());
             try {
                 m_eventConfDao.reload();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());

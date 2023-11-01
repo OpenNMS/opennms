@@ -81,12 +81,12 @@ public final class NodeDiscoveryIsis extends NodeCollector {
             getLocationAwareSnmpClient().walk(peer,
                                                       isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: Is-Is mib not supported: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: Is-Is mib not supported: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: Is-Is mib not supported: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: Is-Is mib not supported: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         
@@ -116,12 +116,12 @@ public final class NodeDiscoveryIsis extends NodeCollector {
                       .execute()
                       .get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
        } catch (final InterruptedException e) {
-           LOG.debug("run: node [{}]: InterruptedException: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         
@@ -145,12 +145,12 @@ public final class NodeDiscoveryIsis extends NodeCollector {
                               .withLocation(getLocation())
                               .execute().get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: isisCircTable: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: isisCircTable: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: isisCircTable: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: isisCircTable: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         

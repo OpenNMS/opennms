@@ -138,7 +138,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                     try {
                         dataSet = new DataSet(this, setHeader, resolver, payloadBuffer);
                     } catch (final MissingTemplateException ex) {
-                        LOG.debug("Skipping data-set due to missing template: {}", ex.getMessage());
+                        LOG.debug("Skipping data-set due to missing template: {}", ex.getMessage(), ex);
                         break;
                     }
 

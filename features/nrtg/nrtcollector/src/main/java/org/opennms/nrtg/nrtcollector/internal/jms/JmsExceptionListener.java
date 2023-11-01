@@ -42,6 +42,6 @@ public class JmsExceptionListener implements ExceptionListener {
 
     @Override
     public void onException(final JMSException e) {
-        logger.error("JmsException '{}'", e.getMessage());
+        logger.error("JmsException '{}'", e.getMessage(), e);
     }
 }

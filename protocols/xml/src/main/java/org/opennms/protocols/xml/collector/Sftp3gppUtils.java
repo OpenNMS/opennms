@@ -123,7 +123,7 @@ public abstract class Sftp3gppUtils {
         try {
             connection.deleteFile(fileName);
         } catch (Exception e) {
-            LOG.warn("Can't delete file {} from {} because {}", fileName, connection.getURL().getHost(), e.getMessage());
+            LOG.warn("Can't delete file {} from {} because {}", fileName, connection.getURL().getHost(), e.getMessage(), e);
         }
     }
 
@@ -158,7 +158,7 @@ public abstract class Sftp3gppUtils {
                     m_pmGroups.load(Sftp3gppUtils.class.getResourceAsStream("/" + PM_GROUPS_FILENAME));
                 }
             } catch (Exception e) {
-                LOG.warn("Can't load 3GPP PM Groups format because {}", e.getMessage());
+                LOG.warn("Can't load 3GPP PM Groups format because {}", e.getMessage(), e);
             }
         }
         return m_pmGroups.getProperty(resourceType);

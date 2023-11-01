@@ -79,7 +79,7 @@ public class IndexNameFunction implements PropertiesFunction {
         String result = remainder.toLowerCase() + "-" + df.format(date);
 
         if(LOG.isTraceEnabled()) {
-            LOG.trace("IndexNameFunction.apply=" + result);
+            LOG.trace("IndexNameFunction.apply={}", result);
         }
 
         return result;

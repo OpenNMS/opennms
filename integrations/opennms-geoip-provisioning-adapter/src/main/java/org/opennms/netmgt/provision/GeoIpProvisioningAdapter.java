@@ -267,9 +267,9 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
                     assetRecordDao.saveOrUpdate(assetRecord);
                     assetRecordDao.flush();
                 } catch (IOException e) {
-                    LOG.error("Error looking up location for IP address '" + InetAddressUtils.str(addressToUse) + "'", e);
+                    LOG.error("Error looking up location for IP address '{}'", InetAddressUtils.str(addressToUse), e);
                 } catch (GeoIp2Exception e) {
-                    LOG.warn("No location data found for IP address '" + InetAddressUtils.str(addressToUse) + "'");
+                    LOG.warn("No location data found for IP address '{}'", InetAddressUtils.str(addressToUse));
                 }
             }
         }

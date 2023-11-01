@@ -171,7 +171,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             try {
                 passed = exp.getValue(context, Boolean.class);
             } catch (Exception e) {
-                LOG.error("Failed to evaluate expression {} for agent {} with context {}. System defintion with name {} will not be used. Msg: {}", rule, agent, context, sysDef.getName(), e.getMessage());
+                LOG.error("Failed to evaluate expression {} for agent {} with context {}. System defintion with name {} will not be used. Msg: {}", rule, agent, context, sysDef.getName(), e.getMessage(), e);
             }
             LOG.debug("Rule '{}' on {} passed? {}", rule, agent, passed);
 

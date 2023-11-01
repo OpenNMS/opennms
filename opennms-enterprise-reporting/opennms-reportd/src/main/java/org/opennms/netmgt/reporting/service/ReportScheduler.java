@@ -159,7 +159,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
                 sb.append(t.getTimeZone());
                 sb.append(", priority: ");
                 sb.append(t.getPriority());
-                LOG.info(sb.toString());
+                LOG.info("{}", sb);
             }
 
         } catch (Throwable e) {

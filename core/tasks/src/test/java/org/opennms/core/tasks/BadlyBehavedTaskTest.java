@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BadlyBehavedTaskTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BadlyBehavedTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BadlyBehavedTaskTest.class);
 
     private DefaultTaskCoordinator m_coordinator;
 
@@ -143,7 +143,7 @@ public class BadlyBehavedTaskTest {
         public void doSubmit() {
             if (m_taskLatch != null) m_taskLatch.doSubmitLatch.countDown();
             if (m_failures.contains(Failure.DOSUBMIT)) {
-                LOG.warn(m_name + " behaving badly! doSubmit()");
+                LOG.warn("{} behaving badly! doSubmit()", m_name);
                 throw new IllegalStateException();
             } else {
                 super.doSubmit();
@@ -162,7 +162,7 @@ public class BadlyBehavedTaskTest {
         public void preSchedule() {
             if (m_taskLatch != null) m_taskLatch.preScheduleLatch.countDown();
             if (m_failures.contains(Failure.PRESCHEDULE)) {
-                LOG.warn(m_name + " behaving badly! preSchedule()");
+                LOG.warn("{} behaving badly! preSchedule()", m_name);
                 throw new IllegalStateException();
             } else {
                 super.preSchedule();
@@ -173,7 +173,7 @@ public class BadlyBehavedTaskTest {
         public void postSchedule() {
             if (m_taskLatch != null) m_taskLatch.postScheduleLatch.countDown();
             if (m_failures.contains(Failure.POSTSCHEDULE)) {
-                LOG.warn(m_name + " behaving badly! postSchedule()");
+                LOG.warn("{} behaving badly! postSchedule()", m_name);
                 throw new IllegalStateException();
             } else {
                 super.postSchedule();

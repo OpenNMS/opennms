@@ -322,7 +322,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                         LOG.debug("The xml marshalled from the JAXB classes is saved in {}", outputFile.getAbsoluteFile());
                         fileWriter.close();
                     } catch (final Exception e) {
-                        LOG.error("Failed to write marshal " + outputFile, e);
+                        LOG.error("Failed to write marshal {}", outputFile, e);
                         throw e;
                     }
                     return null;

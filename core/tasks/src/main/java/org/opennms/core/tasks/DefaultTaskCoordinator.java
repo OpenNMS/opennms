@@ -287,7 +287,7 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
             future = CompletableFuture.runAsync(r, m_actorExecutor);
         }
         future.exceptionally(e -> {
-            LOG.warn("Unexpected exception during actor runnable: " + e.getMessage(), e);
+            LOG.warn("Unexpected exception during actor runnable: {}", e.getMessage(), e);
             return null;
         });
     }
@@ -398,14 +398,14 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
             .runAsync(workToBeDone, getExecutor(executorPreference))
             // Log any uncaught exceptions from the task execution
             .exceptionally(e -> {
-                LOG.warn("Unexpected exception during task execution: " + e.getMessage(), e);
+                LOG.warn("Unexpected exception during task execution: {}", e.getMessage(), e);
                 return null;
             })
             // Then run the completer on the actor executor
             .thenRunAsync(taskCompleter(owningTask), m_actorExecutor)
             // Log any uncaught exceptions from the task completer
             .exceptionally(e -> {
-                LOG.warn("Unexpected exception during task completion: " + e.getMessage(), e);
+                LOG.warn("Unexpected exception during task completion: {}", e.getMessage(), e);
                 return null;
             });
     }

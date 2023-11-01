@@ -212,7 +212,7 @@ public enum CriteriaRestriction {
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
                     if (object == null) {
-                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("Cannot parse value '" + values[i] + "' for class " + clazz.getSimpleName());
+                        LoggerFactory.getLogger(CriteriaRestriction.class).warn("Cannot parse value '{}' for class {}", values[i], clazz.getSimpleName());
                         return;
                     } else {
                         listOfObjects.add(object);
@@ -225,7 +225,7 @@ public enum CriteriaRestriction {
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
                     if (object == null) {
-                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("Cannot parse value '" + values[i] + "' for class " + clazz.getSimpleName());
+                        LoggerFactory.getLogger(CriteriaRestriction.class).warn("Cannot parse value '{}' for class {}", values[i], clazz.getSimpleName());
                         return;
                     } else {
                         listOfObjects.add(object);
@@ -238,7 +238,7 @@ public enum CriteriaRestriction {
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
                     if (object == null) {
-                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("Cannot parse value '" + values[i] + "' for class " + clazz.getSimpleName());
+                        LoggerFactory.getLogger(CriteriaRestriction.class).warn("Cannot parse value '{}' for class {}", values[i], clazz.getSimpleName());
                         return;
                     } else {
                         listOfObjects.add(object);

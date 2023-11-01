@@ -54,7 +54,7 @@ import liquibase.util.file.FilenameUtils;
 
 public class ImportConfigurationUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ImportConfigurationUtil.class);
 
     public static void importConfig(
             final ConfigurationManagerService configurationManagerService,

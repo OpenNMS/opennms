@@ -160,7 +160,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
                     session.accept(collectionSet);
                 }
             } catch (ThresholdInitializationException e) {
-                LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
+                LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent(), e);
             }
         });
     }

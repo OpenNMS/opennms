@@ -51,7 +51,7 @@ public class OpenNMSlLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
         String targetUrl = determineTargetUrl(request, response);
         targetUrl = Util.calculateUrlBase(request, targetUrl);
         if (response.isCommitted()) {
-            LOGGER.debug("Response has already been committed. Unable to redirect to " + targetUrl);
+            LOGGER.debug("Response has already been committed. Unable to redirect to {}", targetUrl);
         } else {
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }

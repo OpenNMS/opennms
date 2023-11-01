@@ -193,7 +193,7 @@ public abstract class AbstractTask implements Task {
             try {
                 doSubmit();
             } catch (Throwable e) {
-                LOG.error("Unexpected throwable while trying to submit task: " + this, e);
+                LOG.error("Unexpected throwable while trying to submit task: {}", this, e);
             } finally {
                 submitted();
                 completeSubmit();
@@ -270,13 +270,13 @@ public abstract class AbstractTask implements Task {
         try {
             preSchedule();
         } catch (Throwable e) {
-            LOG.error("preSchedule() failed for task " + this, e);
+            LOG.error("preSchedule() failed for task {}", this, e);
         }
         getCoordinator().schedule(this);
         try {
             postSchedule();
         } catch (Throwable e) {
-            LOG.error("postSchedule() failed for task " + this, e);
+            LOG.error("postSchedule() failed for task {}", this, e);
         }
     }
         

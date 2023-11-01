@@ -93,7 +93,7 @@ public class RequisitionImplementationIT implements InitializingBean, Applicatio
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final ForeignSourceRepository fsr = entry.getValue();
-            LOG.info("=== " + bundleName + " ===");
+            LOG.info("=== {} ===", bundleName);
             fsr.resetDefaultForeignSource();
             fsr.flush();
             try {

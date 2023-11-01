@@ -227,7 +227,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                     condition.accept(visitor);
                 }
             } catch (SearchParseException | ArrayIndexOutOfBoundsException e) {
-                LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
+                LOG.warn("{} while parsing FIQL search, ignoring: {}", e.getClass().getSimpleName(), e.getMessage(), e);
                 throw new IllegalArgumentException("Error parsing FIQL search");
             }
         }
@@ -394,7 +394,7 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
                             try {
                                 return ISO8601DateEditor.stringToDate(v);
                             } catch (IllegalArgumentException|UnsupportedOperationException e) {
-                                LOG.error("Invalid date in value list: " + v, e);
+                                LOG.error("Invalid date in value list: {}", v, e);
                                 return null;
                             }
                         })

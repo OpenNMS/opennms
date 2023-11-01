@@ -429,24 +429,28 @@ public class Snmp4JStrategy implements SnmpStrategy {
     static SnmpValue[] processResponse(Snmp4JAgentConfig agentConfig, ResponseEvent responseEvent, PDU requestPdu) throws IOException, SnmpAgentTimeoutException, SnmpException {
         SnmpValue[] retvalues = { null };
 
-        if (responseEvent.getResponse() == null) {
-            LOG.warn("processResponse: Timeout.  Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
+        final var response = responseEvent.getResponse();
+        final var request = responseEvent.getRequest();
+        final var err = responseEvent.getError();
+
+        if (response == null) {
+            LOG.warn("processResponse: Timeout.  Agent: {}, requestID={}", agentConfig, request.getRequestID());
             throw new SnmpAgentTimeoutException(agentConfig.getInetAddress());
-        } else if (responseEvent.getError() != null) {
-            LOG.warn("processResponse: Error during get operation.  Error: {}, requestID={}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError(), responseEvent.getRequest().getRequestID());
-            String errorMsg = "SNMP Internal error for: " + agentConfig.getInetAddress() + " Error : " + responseEvent.getError();
+        } else if (err != null) {
+            LOG.warn("processResponse: Error during get operation.  Error: {}, requestID={}", err.getLocalizedMessage(), request.getRequestID(), err);
+            String errorMsg = "SNMP Internal error for: " + agentConfig.getInetAddress() + " Error : " + err.getLocalizedMessage();
             throw new SnmpException(errorMsg);
-        } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
-            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}, requestID={}", responseEvent.getResponse().getVariableBindings(), responseEvent.getRequest().getRequestID());
-            String errorMsg = "Error during get operation.  Report returned with varbinds: " + responseEvent.getResponse().getVariableBindings() + " , requestID=" + responseEvent.getRequest().getRequestID();
+        } else if (response.getType() == PDU.REPORT) {
+            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}, requestID={}", response.getVariableBindings(), request.getRequestID());
+            String errorMsg = "Error during get operation.  Report returned with varbinds: " + response.getVariableBindings() + " , requestID=" + request.getRequestID();
             throw new SnmpException(errorMsg);
-        } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
-            LOG.warn("processResponse: Received PDU with 0 varbinds. Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
-            String errorMsg =  "Received PDU with 0 varbinds. Agent: " + agentConfig + ", requestID= " + responseEvent.getRequest().getRequestID();
+        } else if (response.getVariableBindings().size() < 1) {
+            LOG.warn("processResponse: Received PDU with 0 varbinds. Agent: {}, requestID={}", agentConfig, request.getRequestID());
+            String errorMsg =  "Received PDU with 0 varbinds. Agent: " + agentConfig + ", requestID= " + request.getRequestID();
             throw new SnmpException(errorMsg);
-        } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-            LOG.info("processResponse: Null value returned in varbind: {}. Agent: {}, requestID={}", responseEvent.getResponse().get(0), agentConfig, responseEvent.getRequest().getRequestID());
-            String errorMsg = "Null value returned in varbind: " + responseEvent.getResponse().get(0) + " Agent: " + agentConfig + " requestID = " + responseEvent.getRequest().getRequestID();
+        } else if (response.get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
+            LOG.info("processResponse: Null value returned in varbind: {}. Agent: {}, requestID={}", response.get(0), agentConfig, request.getRequestID());
+            String errorMsg = "Null value returned in varbind: " + response.get(0) + " Agent: " + agentConfig + " requestID = " + request.getRequestID();
             throw new SnmpException(errorMsg);
         } else {
             retvalues = convertResponseToValues(agentConfig, responseEvent, requestPdu);

@@ -213,7 +213,7 @@ public class PollableNetwork extends PollableContainer {
     
     static class DumpVisitor extends PollableVisitorAdaptor {
         
-        private static final Logger LOG = LoggerFactory.getLogger(PollableNetwork.DumpVisitor.class);
+        private static final Logger LOG = LoggerFactory.getLogger(DumpVisitor.class);
         
         @Override
         public void visitNode(PollableNode pNode) {

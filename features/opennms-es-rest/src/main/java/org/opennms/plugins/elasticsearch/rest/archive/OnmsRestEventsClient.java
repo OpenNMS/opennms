@@ -85,7 +85,7 @@ public class OnmsRestEventsClient {
 			final HttpGet request = new HttpGet(baseUrl + EVENT_COUNT_URI);
 			request.addHeader("accept", "text/plain");
 
-			LOG.debug("Executing request " + request.getRequestLine());
+			LOG.debug("Executing request {}", request.getRequestLine());
 			try (CloseableHttpResponse response = client.execute(request)) {
 				if (response.getStatusLine().getStatusCode() != 200) {
 					throw new RuntimeException("Failed : HTTP error code : "
@@ -119,7 +119,7 @@ public class OnmsRestEventsClient {
 			final HttpGet request = new HttpGet(baseUrl + EVENTS_URI + query);
 			request.addHeader("accept", "application/xml");
 
-			LOG.debug("Executing request " + request.getRequestLine());
+			LOG.debug("Executing request {}", request.getRequestLine());
 			try (CloseableHttpResponse response = httpclient.execute(request)) {
 				if (response.getStatusLine().getStatusCode() != 200) {
 					throw new RuntimeException("Failed : HTTP error code : "

@@ -69,12 +69,12 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
-            LOG.error(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error("{}: Event with no node ID: {}", EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, event.toString());
             return;
         }
         OnmsNode node = m_nodeDao.get(nodeId.intValue());
         if (node == null) {
-            LOG.warn(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            LOG.warn("{}: Cannot find node in DB: {}", EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, nodeId);
             return;
         }
         // add to known nodes
@@ -87,12 +87,12 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
-            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error("{}: Event with no node ID: {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event.toString());
             return;
         }
         OnmsNode node = m_nodeDao.get(nodeId.intValue());
         if (node == null) {
-            LOG.warn(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Cannot find node in DB: " + nodeId);
+            LOG.warn("{}: Cannot find node in DB: {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, nodeId);
             return;
         }
         // remove from known nodes
@@ -108,24 +108,24 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
         final String newNodeId = event.getParm(EventConstants.PARM_NEW_NODEID).getValue().getContent();
 
         if (oldNodeId == null) {
-            LOG.error(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error("{}: Event with no node ID: {}", EventConstants.INTERFACE_REPARENTED_EVENT_UEI, event.toString());
             return;
         }
 
         if (newNodeId == null) {
-            LOG.error(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Event with no node ID: " + event.toString());
+            LOG.error("{}: Event with no node ID: {}", EventConstants.INTERFACE_REPARENTED_EVENT_UEI, event.toString());
             return;
         }
 
         final OnmsNode oldNode = m_nodeDao.get(oldNodeId);
         if (oldNode == null) {
-            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + oldNodeId);
+            LOG.warn("{}: Cannot find node in DB: {}", EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNodeId);
             return;
         }
 
         final OnmsNode newNode = m_nodeDao.get(newNodeId);
         if (newNode == null) {
-            LOG.warn(EventConstants.INTERFACE_REPARENTED_EVENT_UEI + ": Cannot find node in DB: " + newNodeId);
+            LOG.warn("{}: Cannot find node in DB: {}", EventConstants.INTERFACE_REPARENTED_EVENT_UEI, newNodeId);
             return;
         }
 

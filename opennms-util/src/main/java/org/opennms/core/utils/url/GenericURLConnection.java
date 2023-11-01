@@ -148,7 +148,7 @@ public abstract class GenericURLConnection extends URLConnection {
                 decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 // Your system does not support UTF-8 encoding
-                logger.error("Unsupported {} encoding for URL query string: '{}'. Error message: '{}'", StandardCharsets.UTF_8.name(), queryString, e.getMessage());
+                logger.error("Unsupported {} encoding for URL query string: '{}'. Error message: '{}'", StandardCharsets.UTF_8.name(), queryString, e.getMessage(), e);
             }
 
             // queryString is everthing behind "?"

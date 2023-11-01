@@ -191,7 +191,7 @@ public class CdpGlobalGroupTracker extends AggregateTracker
     	    try {
     	        cdpElement.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.get(getCdpGlobalDeviceFormat()));
     	    } catch (IllegalArgumentException e) {
-    	        LOG.info("setCdpGlobalDeviceIdFormat not supported: {}", e.getLocalizedMessage());
+                LOG.info("setCdpGlobalDeviceIdFormat not supported: {}", e.getLocalizedMessage(), e);
     	    }
     	}    	
     	return cdpElement;

@@ -233,7 +233,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         } else if (addr instanceof Inet6Address && v6 != null) {
             send(v6, (Inet6Address)addr);
         } else {
-            LOG.error("Cannot ping " + InetAddressUtils.str(addr) + ": No pinger found that can handle this address");
+            LOG.error("Cannot ping {}: No pinger found that can handle this address", InetAddressUtils.str(addr));
         }
     }
 

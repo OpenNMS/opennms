@@ -180,7 +180,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             try {
                 m_userManager.update();
             } catch (final Throwable t) {
-                LOG.warn("Attempting to update users failed because: {}. Continuing with previous cache of users.", t.getLocalizedMessage());
+                LOG.warn("Attempting to update users failed because: {}. Continuing with previous cache of users.", t.getLocalizedMessage(), t);
             }
             return m_usersLastModified != m_userManager.getLastModified();
         }

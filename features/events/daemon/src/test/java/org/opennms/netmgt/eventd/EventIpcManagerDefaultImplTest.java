@@ -593,7 +593,7 @@ public class EventIpcManagerDefaultImplTest {
 
             @Override
             public void onEvent(IEvent event) {
-                LOG.info("Hello, here is event: " + event.getUei());
+                LOG.info("Hello, here is event: {}", event.getUei());
                 try {
                     Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
                 } catch (InterruptedException e) {

@@ -121,7 +121,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 			xmppManager.sendMessage(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
 
 		} catch (Throwable e) {
-			LOG.error(e.getMessage());
+            LOG.error("", e);
 			return 1;
 		}
 

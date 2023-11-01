@@ -172,7 +172,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                     jsonStr = IOUtils.toString(in, StandardCharsets.UTF_8);
                 }
             } catch (IOException e) {
-                LOG.error("FAIL to read file: {} message: {}", tmpConfigFile, e.getMessage());
+                LOG.error("FAIL to read file: {} message: {}", tmpConfigFile, e.getMessage(), e);
             }
         }
 
@@ -193,7 +193,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                 ConfigConverter converter = XsdHelper.getConverter(def.get());
                 jsonStr = converter.xmlToJson(xmlStr);
             } catch (IOException e) {
-                LOG.error("FAIL to convert xml: {}, message: {}", xmlStr, e.getMessage());
+                LOG.error("FAIL to convert xml: {}, message: {}", xmlStr, e.getMessage(), e);
             }
         }
         if (jsonStr != null) {

@@ -48,7 +48,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class DefaultRequisitionProviderRegistry implements RequisitionProviderRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultServiceMonitorRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultRequisitionProviderRegistry.class);
 
     private static final String TYPE = "type";
 

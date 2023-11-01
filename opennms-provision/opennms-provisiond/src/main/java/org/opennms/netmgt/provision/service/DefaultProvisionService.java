@@ -1383,7 +1383,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             m_foreignSourceRepository.save(r);
             m_foreignSourceRepository.flush();
         } catch (ForeignSourceRepositoryException e) {
-            LOG.error("Couldn't create/update requistion for newSuspect "+addrString, e);
+            LOG.error("Couldn't create/update requistion for newSuspect {}", addrString, e);
             return false;
         }
         LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);

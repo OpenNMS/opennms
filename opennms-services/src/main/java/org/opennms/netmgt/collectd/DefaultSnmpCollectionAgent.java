@@ -208,9 +208,7 @@ public class DefaultSnmpCollectionAgent extends DefaultCollectionAgent implement
 
         for (final SnmpIfData ifData : snmpIfData) {
             if (Strings.isNullOrEmpty(ifData.getLabelForRRD())) {
-                LOG.warn("Unable to compute resource index for interface: {}. " +
-                        "Associated metrics will not be added to the CollectionSet and will not be considered" +
-                        " for persistence,thresholding or other processing.", ifData);
+                LOG.warn("Unable to compute resource index for interface: {}. Associated metrics will not be added to the CollectionSet and will not be considered for persistence,thresholding or other processing.", ifData);
                 continue;
             }
             ifInfos.add(new IfInfo(type, this, ifData));

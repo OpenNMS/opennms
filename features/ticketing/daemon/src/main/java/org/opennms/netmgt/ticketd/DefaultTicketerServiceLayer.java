@@ -302,7 +302,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             }
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.UPDATE_FAILED);
-            LOG.error("Unable to update ticket for alarm: {}", e.getMessage());
+            LOG.error("Unable to update ticket for alarm: {}", e.getMessage(), e);
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 

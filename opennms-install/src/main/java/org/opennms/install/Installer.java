@@ -246,10 +246,10 @@ public class Installer {
         }
 
         if (doDatabase) {
-            LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migrator.getAdminUser()));
-            LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migrator.getDatabaseName()));
+            LOG.info("* using '{}' as the PostgreSQL user for OpenNMS", m_migrator.getAdminUser());
+            LOG.info("* using '{}' as the PostgreSQL database name for OpenNMS", m_migrator.getDatabaseName());
             if (m_migrator.getSchemaName() != null) {
-                LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
+                LOG.info("* using '{}' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName());
             }
 
             m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);

@@ -107,9 +107,9 @@ public class FRLayoutTest extends AbstractLayoutTest {
         double distance = calcDistance(layout, v1, v2);
         double distance2 = calcDistance(layout, v2, v3);
         double distance3 = calcDistance(layout, v1, v3);
-        LOG.info("distance: " + distance);
-        LOG.info("distance2: " + distance2);
-        LOG.info("distance3: " + distance3);
+        LOG.info("distance: {}", distance);
+        LOG.info("distance2: {}", distance2);
+        LOG.info("distance3: {}", distance3);
 
 
 
@@ -119,18 +119,18 @@ public class FRLayoutTest extends AbstractLayoutTest {
         distance = calcDistance(layout2, v1, v2);
         distance2 = calcDistance(layout2, v2, v3);
         distance3 = calcDistance(layout2, v1, v3);
-        LOG.info("distance: " + distance);
-        LOG.info("distance2: " + distance2);
-        LOG.info("distance3: " + distance3);
+        LOG.info("distance: {}", distance);
+        LOG.info("distance2: {}", distance2);
+        LOG.info("distance3: {}", distance3);
 
         TopoFRLayout<VertexRef, EdgeRef> layout3 = runFRLayout(g, g.getLayout(), vertices);
 
         distance = calcDistance(layout3, v1, v2);
         distance2 = calcDistance(layout3, v2, v3);
         distance3 = calcDistance(layout3, v1, v3);
-        LOG.info("distance: " + distance);
-        LOG.info("distance2: " + distance2);
-        LOG.info("distance3: " + distance3);
+        LOG.info("distance: {}", distance);
+        LOG.info("distance2: {}", distance2);
+        LOG.info("distance3: {}", distance3);
 
     }
 
@@ -150,7 +150,7 @@ public class FRLayoutTest extends AbstractLayoutTest {
 
         for(Vertex v : vertices) {
             graphLayout.setLocation(v, new Point(layout.getX(v) - size.getWidth()/2.0, layout.getY(v) - size.getHeight()/2.0) );
-            LOG.info("layout.getX(): " + layout.getX(v) + " layout.getY(): " + layout.getY(v));
+            LOG.info("layout.getX(): {} layout.getY(): {}", layout.getX(v), layout.getY(v));
         }
         LOG.info("/******** End FRLayout Run **********/");
 

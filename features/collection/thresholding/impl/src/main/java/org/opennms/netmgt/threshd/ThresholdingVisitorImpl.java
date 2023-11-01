@@ -67,7 +67,7 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class ThresholdingVisitorImpl extends AbstractCollectionSetVisitor implements ThresholdingVisitor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorImpl.class);
 
 	/**
      * Holds thresholds configuration for a node/interface/service

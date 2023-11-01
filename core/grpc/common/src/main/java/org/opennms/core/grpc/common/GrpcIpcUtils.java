@@ -51,7 +51,7 @@ import java.util.Properties;
 
 public class GrpcIpcUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcClientBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcIpcUtils.class);
     public static final String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
     public static final String GRPC_SERVER_PID = "org.opennms.core.ipc.grpc.server";
     public static final String LOG_PREFIX = "ipc";

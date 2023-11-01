@@ -59,7 +59,7 @@ public class AssetGraphDefinitionRepositoryTest {
 				.withPreferredLayout("Grid Layout")
 				.withBreadcrumbStrategy("SHORTEST_PATH_TO_ROOT")
 				.build();
-		LOG.debug("config1: "+config1);
+		LOG.debug("config1: {}", config1);
 
 		final GeneratorConfig config2 = new GeneratorConfigBuilder()
 				.withProviderId("asset2")
@@ -69,7 +69,7 @@ public class AssetGraphDefinitionRepositoryTest {
 				.withPreferredLayout("Grid Layout")
 				.withBreadcrumbStrategy("SHORTEST_PATH_TO_ROOT")
 				.build();
-		LOG.debug("config2: "+config2);
+		LOG.debug("config2: {}", config2);
 
 		assetGraphDefinitionRepository.addConfigDefinition(config1);
 

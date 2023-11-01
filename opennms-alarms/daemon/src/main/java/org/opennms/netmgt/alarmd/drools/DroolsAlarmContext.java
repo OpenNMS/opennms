@@ -229,8 +229,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 @Override
                 public void afterCompletion(int status) {
                     if (status != TransactionSynchronization.STATUS_COMMITTED) {
-                        RATE_LIMITED_LOGGER.warn("A database transaction did not complete successfully. " +
-                                "The alarms facts in the session may be out of sync until the next snapshot.");
+                        RATE_LIMITED_LOGGER.warn("A database transaction did not complete successfully. The alarms facts in the session may be out of sync until the next snapshot.");
                         return;
                     }
                     submitOrRun(atomicAction);
@@ -250,8 +249,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // Track the number of atomic actions waiting to be executed
             final long numActionsInFlight = atomicActionsInFlight.incrementAndGet();
             if (numActionsInFlight > MAX_NUM_ACTIONS_IN_FLIGHT) {
-                RATE_LIMITED_LOGGER.error("Dropping action - number of actions in flight exceed {}! " +
-                        "Alarms in Drools context will not match those in the database until the next successful sync.", MAX_NUM_ACTIONS_IN_FLIGHT);
+                RATE_LIMITED_LOGGER.error("Dropping action - number of actions in flight exceed {}! Alarms in Drools context will not match those in the database until the next successful sync.", MAX_NUM_ACTIONS_IN_FLIGHT);
                 atomicActionsDropped.mark();
                 atomicActionsInFlight.decrementAndGet();
                 return;

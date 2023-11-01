@@ -92,7 +92,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 			Event event = eb.getEvent();
 			event.setDbid(101);
 
-			LOG.debug("ecreated node lost service event:"+event.toString());
+			LOG.debug("ecreated node lost service event:{}", event.toString());
 
 			// forward event to Elasticsearch
 			eventToIndex.forwardEvents(Collections.singletonList(event));
@@ -112,7 +112,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 					+ "\n        }"
 					+ "\n     }";
 
-			LOG.debug("event check search query: "+eventquery);
+			LOG.debug("event check search query: {}", eventquery);
 
 			Search eventsearch = new Search.Builder(eventquery)
 			// multiple index or types can be added.
@@ -121,9 +121,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 
 			SearchResult eventsresult = jestClient.execute(eventsearch);
 
-			LOG.debug("received search eventsresult: "+eventsresult.getJsonString()
-					+ "\n   response code:" +eventsresult.getResponseCode() 
-					+ "\n   error message: "+eventsresult.getErrorMessage());
+			LOG.debug("received search eventsresult: {}\n   response code:{}\n   error message: {}", eventsresult.getJsonString(), eventsresult.getResponseCode(), eventsresult.getErrorMessage());
 
 			assertEquals(200, eventsresult.getResponseCode());
 			assertEquals(1L, SearchResultUtils.getTotal(eventsresult));
@@ -134,17 +132,17 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 
 			JSONObject eventhits = (JSONObject) eventsresultValues.get("hits");
 			JSONArray eventhitsvalues = (JSONArray) eventhits.get("hits");
-			LOG.debug("   eventhitsvalues: "+eventhitsvalues.toJSONString());
+			LOG.debug("   eventhitsvalues: {}", eventhitsvalues.toJSONString());
 
 			JSONObject hitObj = (JSONObject) eventhitsvalues.get(0);
-			LOG.debug("   hitsObj: "+hitObj.toJSONString());
+			LOG.debug("   hitsObj: {}", hitObj.toJSONString());
 
 			JSONObject sourceObj = (JSONObject) hitObj.get("_source");
-			LOG.debug("   sourceObj: "+sourceObj.toJSONString());
+			LOG.debug("   sourceObj: {}", sourceObj.toJSONString());
 
 			String eventUeiStr =  sourceObj.get("eventuei").toString();
 
-			LOG.debug("search result event eventueistr="+eventUeiStr);
+			LOG.debug("search result event eventueistr={}", eventUeiStr);
 			assertEquals(NODE_LOST_SERVICE_EVENT, eventUeiStr);
 
 		LOG.debug("***************** end of test jestClientRawEventToESTest");

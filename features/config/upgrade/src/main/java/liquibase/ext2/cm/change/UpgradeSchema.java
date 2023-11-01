@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @DatabaseChange(name = "importSchemaFromXsd", description = "Imports a schema from a xsd file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class UpgradeSchema extends AbstractSchemaChange {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpgradeSchema.class);
 
     protected String id;
     protected String xsdFileName;

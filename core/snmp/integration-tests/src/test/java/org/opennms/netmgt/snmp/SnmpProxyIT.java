@@ -144,7 +144,7 @@ public class SnmpProxyIT {
         tmpFile = configFile; // to be deleted later
         Files.write(configFile.toPath(), xml.getBytes());
 
-        LOG.info("Configuration from org/opennms/netmgt/snmp/SnmpProxyIT.xml:\n" + xml);
+        LOG.info("Configuration from org/opennms/netmgt/snmp/SnmpProxyIT.xml:\n{}", xml);
         return new PathResource(configFile.toPath());
     }
 

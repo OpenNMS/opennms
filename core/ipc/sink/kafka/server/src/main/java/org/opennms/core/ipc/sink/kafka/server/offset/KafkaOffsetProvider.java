@@ -309,7 +309,7 @@ public class KafkaOffsetProvider {
 
     public void closeConnection() throws InterruptedException {
         for (Map.Entry<String, KafkaConsumer> consumer : consumerMap.entrySet()) {
-            LOGGER.info("Closing connection for: " + consumer.getKey());
+            LOGGER.info("Closing connection for: {}", consumer.getKey());
             consumer.getValue().close();
         }
     }

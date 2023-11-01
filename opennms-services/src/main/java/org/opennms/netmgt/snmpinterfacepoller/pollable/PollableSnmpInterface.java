@@ -409,7 +409,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     try {
                         update(iface);
                     } catch (Throwable e) {
-                        LOG.warn("Failing updating Interface {} {}", iface.getIfName(), e.getLocalizedMessage());
+                        LOG.warn("Failing updating Interface {} {}", iface.getIfName(), e.getLocalizedMessage(), e);
                         refresh = true;
                     }
                 } else {

@@ -323,7 +323,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
             try {
                 proxy = Util.createEventProxy();
             } catch (Throwable me) {
-                LOG.error(me.getMessage());
+                LOG.error("", me);
             }
 
             if (proxy == null) {
@@ -337,7 +337,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
             try {
                 proxy.send(bldr.getEvent());
             } catch (Throwable me) {
-                LOG.error(me.getMessage());
+                LOG.error("", me);
             }
 
             LOG.info("Restart Discovery requested!");  

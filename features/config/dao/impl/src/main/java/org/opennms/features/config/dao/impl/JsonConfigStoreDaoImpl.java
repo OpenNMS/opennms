@@ -226,7 +226,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         this.getConfigDefinition(configName).ifPresentOrElse(
                 def -> this.validateConfigData(def, configData),
                 () -> {
-                    LOG.error("ConfigDefinition not found! configName: " + configName);
+                    LOG.error("ConfigDefinition not found! configName: {}", configName);
                     throw new ConfigNotFoundException("ConfigDefinition not found! configName: " + configName);
                 });
     }
@@ -249,7 +249,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         this.getConfigDefinition(configName).ifPresentOrElse(
                 def -> this.validateConfig(def, configObject),
                 () -> {
-                    LOG.error("ConfigDefinition not found! configName: " + configName);
+                    LOG.error("ConfigDefinition not found! configName: {}", configName);
                     throw new ConfigNotFoundException("ConfigDefinition not found! configName: " + configName);
                 });
     }

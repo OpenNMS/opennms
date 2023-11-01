@@ -96,7 +96,7 @@ public class MinaSshMonitorIT {
 
     @BeforeClass
     public static void startSshServer() throws Exception {
-        LOG.info("======== BeforeClass " + MinaSshMonitorIT.class);
+        LOG.info("======== BeforeClass {}", MinaSshMonitorIT.class);
 
         tmpDir = Files.createTempDirectory(MinaSshMonitorIT.class.getSimpleName());
         identityFilePath = File.createTempFile(MinaSshMonitorIT.class.getSimpleName(), null, tmpDir.toFile()).toPath();
@@ -148,17 +148,17 @@ public class MinaSshMonitorIT {
             }
         }
         //FileSystemUtils.deleteRecursively(tmpDir.toFile());
-        LOG.info("======== AfterClass " + MinaSshMonitorIT.class);
+        LOG.info("======== AfterClass {}", MinaSshMonitorIT.class);
     }
 
     @Before
     public void startUp() throws Exception {
-        LOG.info("======== Starting test " + m_test.getMethodName());
+        LOG.info("======== Starting test {}", m_test.getMethodName());
     }
 
     @After
     public void tearDown() throws Exception {
-        LOG.info("======== Finished test " + m_test.getMethodName());
+        LOG.info("======== Finished test {}", m_test.getMethodName());
     }
 
     @Test

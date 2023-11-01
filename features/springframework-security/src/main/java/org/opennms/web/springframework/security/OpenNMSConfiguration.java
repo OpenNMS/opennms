@@ -73,7 +73,7 @@ public class OpenNMSConfiguration extends Configuration {
                     if (c != null) {
                         // gather all configurations that are found, until the Karaf implementation is loaded
                         if (m_delegates.add(c)) {
-                            LOG.trace("OpenNMSConfiguration found existing configuration: " + c.getClass().getName());
+                            LOG.trace("OpenNMSConfiguration found existing configuration: {}", c.getClass().getName());
                             if (c.getClass().getName().contains("OsgiConfiguration")) {
                                 LOG.debug("Found Karaf OSGi JAAS configuration.  Inserting OpenNMS redirector.");
                                 break;
@@ -101,7 +101,7 @@ public class OpenNMSConfiguration extends Configuration {
 
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
-        LOG.debug("getAppConfigurationEntry(" + name +")");
+        LOG.debug("getAppConfigurationEntry({})", name);
         if ("opennms".equals(name)) {
             LOG.debug("getAppConfigurationEntry: Overriding.");
             return new AppConfigurationEntry[] { new AppConfigurationEntry(OpenNMSProxyLoginModule.class.getName(), LoginModuleControlFlag.REQUIRED, Collections.emptyMap()) };

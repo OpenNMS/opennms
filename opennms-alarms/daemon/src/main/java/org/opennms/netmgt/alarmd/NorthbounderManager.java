@@ -140,7 +140,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
                             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, Alarmd.NAME);
                             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
                         } catch (NorthbounderException ex) {
-                            LOG.error("Can't reload the northbound configuration for " + nbi.getName(), ex);
+                            LOG.error("Can't reload the northbound configuration for {}", nbi.getName(), ex);
                             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, Alarmd.NAME);
                             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
                             ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());

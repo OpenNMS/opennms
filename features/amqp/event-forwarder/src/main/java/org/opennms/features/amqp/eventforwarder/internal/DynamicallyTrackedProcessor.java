@@ -76,7 +76,7 @@ public class DynamicallyTrackedProcessor implements Processor {
             LOG.debug("Processing exchange with: {}", processor.getClass());
             processor.process(exchange);
         } catch (Throwable e) {
-            LOG.warn("Message dispatch failed: " + e.getMessage(), e);
+            LOG.warn("Message dispatch failed: {}", e.getMessage(), e);
             exchange.setException(e);
         }
     }

@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class XADataSourceFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(XADataSourceFactory.class);
 
 	private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
 	

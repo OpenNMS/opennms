@@ -118,8 +118,7 @@ public class EventBuilder {
 
     protected void checkForIllegalUei(){
         if(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI.equals(this.m_event.getUei())){
-            LOG.warn("The use of EventBuilder is deprecated for UEI="+EventConstants.NODE_LABEL_CHANGED_EVENT_UEI
-                    +", use NodeLabelChangedEventBuilder instead");
+            LOG.warn("The use of EventBuilder is deprecated for UEI={}, use NodeLabelChangedEventBuilder instead", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
         }
     }
 

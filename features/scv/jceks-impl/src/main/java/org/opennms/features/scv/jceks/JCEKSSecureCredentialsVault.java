@@ -46,6 +46,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
@@ -55,7 +56,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
@@ -195,11 +195,11 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(o);
         out.close();
-        return Base64.encodeBase64(baos.toByteArray());
+        return Base64.getEncoder().encode(baos.toByteArray());
     }
 
     private static <T extends Serializable> T fromBase64EncodedByteArray(byte[] bytes) throws IOException, ClassNotFoundException {
-        byte decodedBytes[] = Base64.decodeBase64(bytes);
+        byte decodedBytes[] = Base64.getDecoder().decode(bytes);
         ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
         ObjectInputStream in = new ObjectInputStream(bais);
         @SuppressWarnings("unchecked")

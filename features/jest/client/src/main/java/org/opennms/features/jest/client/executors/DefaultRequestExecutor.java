@@ -79,7 +79,7 @@ public class DefaultRequestExecutor implements RequestExecutor, RequestExecutorF
             // Retry-Logic
             LOG.debug("Request was not executed properly. Attempting Retry...");
             if (cooldownInMs > 0) {
-                LOG.debug("Sleep " + cooldownInMs + " before retrying");
+                LOG.debug("Sleep {} before retrying", cooldownInMs);
                 try {
                     Thread.sleep(cooldownInMs);
                 } catch (InterruptedException e) {

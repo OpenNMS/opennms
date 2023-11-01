@@ -79,7 +79,7 @@ class CallbackManager {
             cmPersistenceManager.setPidMapping(config.getPid(), cmPid);
             config.update();
         } catch (IOException e) {
-            LOG.error("Cannot create configuration for pid=" + cmPid, e);
+            LOG.error("Cannot create configuration for pid={}", cmPid, e);
         }
     }
 
@@ -92,7 +92,7 @@ class CallbackManager {
                     .getConfiguration(osgiPid)
                     .update();
         } catch (IOException e) {
-            LOG.error("Cannot update configuration for identifier=" + identifier, e);
+            LOG.error("Cannot update configuration for identifier={}", identifier, e);
         }
     }
 
@@ -105,7 +105,7 @@ class CallbackManager {
                     .getConfiguration(osgiPid)
                     .delete();
         } catch (IOException e) {
-            LOG.error("Cannot delete configuration for identifier=" + identifier, e);
+            LOG.error("Cannot delete configuration for identifier={}", identifier, e);
         }
     }
 }

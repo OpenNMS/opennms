@@ -100,12 +100,12 @@ public final class NodeDiscoveryIpNetToMedia extends NodeCollector {
             getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
             LOG.debug("run: node [{}]: InterruptedException: {}",
-                     getNodeId(),e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return;       
         }
 

@@ -65,7 +65,7 @@ public class TimeoutTest {
         long delta = System.currentTimeMillis() - startTime;
         assertEquals(PollStatus.down(), pollStatus);
 
-        LOG.info("Checking " + delta + " <= " + limit);
+        LOG.info("Checking {} <= {}", delta, limit);
         assertTrue("Limit reached " + delta + " > " + limit, delta <= limit);
     }
 

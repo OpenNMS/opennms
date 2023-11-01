@@ -237,7 +237,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
 
             final String expectedValue = getVbvalue();
             if (this.m_isTable) {
-                LOG.debug(getServiceName() + ": table detect enabled");
+                LOG.debug("{}: table detect enabled", getServiceName());
                 final SnmpObjId snmpObjId = SnmpObjId.get(getOid());
                 final Map<SnmpInstId, SnmpValue> table = SnmpUtils.getOidValues(agentConfig, DEFAULT_SERVICE_NAME, snmpObjId);
                 final List<String> retrievedValues = table.values().stream().map(snmpValue -> m_hex ? snmpValue.toHexString() : snmpValue.toString()).collect(Collectors.toList());

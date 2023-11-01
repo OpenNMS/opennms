@@ -394,7 +394,7 @@ public class EventConstantsTest {
     public void testFormatToString() throws Exception {
         System.setProperty("org.opennms.events.legacyFormatter", "false");
         String formatted = EventConstants.getEventDatetimeFormatter().format(new Date(m_timestamp));
-        LOG.debug("formatted date as " + m_testLocale.getDisplayLanguage() + ", " + m_testTimeZone.getID() + ": " + formatted);
+        LOG.debug("formatted date as {}, {}: {}", m_testLocale.getDisplayLanguage(), m_testTimeZone.getID(), formatted);
         assertEquals(m_testLocale + ": formatted string should equal " + m_gmtText, m_gmtText, formatted);
     }
 
@@ -402,12 +402,12 @@ public class EventConstantsTest {
     public void testFormatToStringLegacyFormatter() throws Exception {
         System.setProperty("org.opennms.events.legacyFormatter", "true");
         String formatted = EventConstants.getEventDatetimeFormatter().format(new Date(m_timestamp));
-        LOG.debug("formatted date as " + m_testLocale.getDisplayLanguage() + ", " + m_testTimeZone.getID() + ": " + formatted + " (legacy)");
+        LOG.debug("formatted date as {}, {}: {} (legacy)", m_testLocale.getDisplayLanguage(), m_testTimeZone.getID(), formatted);
         assertEquals(m_testLocale + ": formatted string should equal " + m_gmtText, m_gmtText, formatted);
     }
 
     private void parseText(final String text) throws ParseException {
-        LOG.debug("parsing text as " + m_testLocale.getDisplayLanguage() + ", " + m_testTimeZone.getID() + ": " + text);
+        LOG.debug("parsing text as {}, {}: {}", m_testLocale.getDisplayLanguage(), m_testTimeZone.getID(), text);
         try {
             Date date = EventConstants.getEventDatetimeFormatter().parse(text);
             assertEquals(m_testLocale + ": time should equal " + m_timestamp, m_timestamp.longValue(), date.getTime());

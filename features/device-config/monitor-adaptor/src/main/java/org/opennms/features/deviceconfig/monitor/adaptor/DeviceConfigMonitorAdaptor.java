@@ -197,13 +197,13 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
         Long nodeId = event.getNodeid();
         Integer ipInterfaceId = -1;
         if (nodeId == null) {
-            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no node ID: " + event);
+            LOG.error("{}: Event with no node ID: {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event);
             return;
         }
 
         InetAddress ipAddress = event.getInterfaceAddress();
         if (ipAddress == null) {
-            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no Interface Address : " + event);
+            LOG.error("{}: Event with no Interface Address : {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event);
             return;
         }
         IParm iParm = event.getParm(PARM_IPINTERFACE_ID);
@@ -212,7 +212,7 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
             ipInterfaceId = StringUtils.parseInt(value, ipInterfaceId);
         }
         if(ipInterfaceId < 0) {
-            LOG.error(EventConstants.INTERFACE_DELETED_EVENT_UEI + ": Event with no Interface Id : " + event);
+            LOG.error("{}: Event with no Interface Id : {}", EventConstants.INTERFACE_DELETED_EVENT_UEI, event);
             return;
         }
         final  Integer interfaceId = ipInterfaceId;

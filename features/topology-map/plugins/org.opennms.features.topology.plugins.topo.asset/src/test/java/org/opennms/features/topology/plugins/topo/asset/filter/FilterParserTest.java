@@ -59,19 +59,19 @@ public class FilterParserTest {
 	public void testMockNodes(){
 		List<OnmsNode> nodelist = getMockNodeList();
 		String s1 = nodelistToString(nodelist);
-		LOG.debug("End testMockNodes():"+s1);
+		LOG.debug("End testMockNodes():{}", s1);
 	}
 
 	@Test
 	public void testEmptyFilter(){
 		List<OnmsNode> nodeList = getMockNodeList();
 		String expected = nodelistToString(nodeList);
-		LOG.debug("Start testEmptyFilter() before(and expected):"+expected);
+		LOG.debug("Start testEmptyFilter() before(and expected):{}", expected);
 
 		Map<String, Filter> filterMap=new HashMap<String, Filter>();
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
-		LOG.debug("End testEmptyFilter()  after:"+s2);
+		LOG.debug("End testEmptyFilter()  after:{}", s2);
 		assertEquals(expected,s2);
 	}
 
@@ -81,7 +81,7 @@ public class FilterParserTest {
 
 		List<OnmsNode> nodeList = getMockNodeList();
 		String s1 = nodelistToString(nodeList);
-		LOG.debug("Start testRawFilter() before:"+s1+ " expected:"+expected);
+		LOG.debug("Start testRawFilter() before:{} expected:{}", s1, expected);
 
 		Map<String, Filter> filterMap=new HashMap<String, Filter>();
 		filterMap.put(NodeParamLabels.ASSET_DISPLAYCATEGORY, 
@@ -89,7 +89,7 @@ public class FilterParserTest {
 
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
-		LOG.debug("End testRawFilter()  after:"+s2);
+		LOG.debug("End testRawFilter()  after:{}", s2);
 
 		assertEquals(expected,s2);
 	}
@@ -104,7 +104,7 @@ public class FilterParserTest {
 		List<OnmsNode> nodeList = getMockNodeList();
 		String expected = nodelistToString(nodeList);
 
-		LOG.debug("Start testEmptyFilterString(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testEmptyFilterString(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testEmptyFilterString()");
@@ -117,7 +117,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_0,asset-displaycategory_5";
 		String expected="nodeList:{ [0] [5] }";
 
-		LOG.debug("Start testFilterString1(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString1(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString1()");
@@ -131,7 +131,7 @@ public class FilterParserTest {
 				+ ";"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_5";
 		String expected="nodeList:{ [0] [5] }";
 
-		LOG.debug("Start testFilterString2(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString2(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString2()");
@@ -144,7 +144,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory";
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString3(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString3(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString3()");
@@ -157,7 +157,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.NODE_FOREIGNSOURCE+"=!testForeignSource1,!testForeignSource2,!testForeignSource3";
 		String expected="nodeList:{ [0] [1] [2] [3] [4] }";
 
-		LOG.debug("Start testFilterString4(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString4(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString4()");
@@ -172,7 +172,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] }";
 
-		LOG.debug("Start testFilterString5(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString5(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString5()");
@@ -187,7 +187,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString6(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString6(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString6()");
@@ -202,7 +202,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString7(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString7(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString7()");
@@ -215,7 +215,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=~.*_.*,!asset-displaycategory_5";
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString8(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString8(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString8()");
@@ -228,7 +228,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=testDisplayCategory,~.*_5";
 		String expected="nodeList:{ [5] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
 
-		LOG.debug("Start testFilterString9(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString9(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString9()");
@@ -241,7 +241,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!~.*_5";
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
 
-		LOG.debug("Start testFilterString10(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString10(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString10()");
@@ -256,13 +256,13 @@ public class FilterParserTest {
 	public void testFilterString11(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!~{.*_5";
 
-		LOG.debug("Start testFilterString11() filter="+filter);
+		LOG.debug("Start testFilterString11() filter={}", filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
 		} catch ( IllegalArgumentException e){
 			expectedException=true;
-			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+            LOG.debug("    expected IllegalArgumentException thrown={}", e.getMessage(), e);
 		}
 		assertEquals(true,expectedException);
 
@@ -276,13 +276,13 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
 				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeign=Source2";
 
-		LOG.debug("Start testFilterString12() filter="+filter);
+		LOG.debug("Start testFilterString12() filter={}", filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
 		} catch ( IllegalArgumentException e){
 			expectedException=true;
-			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+            LOG.debug("    expected IllegalArgumentException thrown={}", e.getMessage(), e);
 		}
 		assertEquals(true,expectedException);
 
@@ -296,13 +296,13 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
 				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,,testForeignSource2";
 
-		LOG.debug("Start testFilterString13() filter="+filter);
+		LOG.debug("Start testFilterString13() filter={}", filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
 		} catch ( IllegalArgumentException e){
 			expectedException=true;
-			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+            LOG.debug("    expected IllegalArgumentException thrown={}", e.getMessage(), e);
 		}
 		assertEquals(true,expectedException);
 
@@ -316,13 +316,13 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!"
 				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
-		LOG.debug("Start testFilterString14() filter="+filter);
+		LOG.debug("Start testFilterString14() filter={}", filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
 		} catch ( IllegalArgumentException e){
 			expectedException=true;
-			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+            LOG.debug("    expected IllegalArgumentException thrown={}", e.getMessage(), e);
 		}
 		assertEquals(true,expectedException);
 
@@ -336,13 +336,13 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=~"
 				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
-		LOG.debug("Start testFilterString15() filter="+filter);
+		LOG.debug("Start testFilterString15() filter={}", filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
 		} catch ( IllegalArgumentException e){
 			expectedException=true;
-			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+            LOG.debug("    expected IllegalArgumentException thrown={}", e.getMessage(), e);
 		}
 		assertEquals(true,expectedException);
 
@@ -360,7 +360,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString16(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString16(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString16()");
@@ -374,7 +374,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
 
-		LOG.debug("Start testFilterString17(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString17(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString17()");
@@ -388,7 +388,7 @@ public class FilterParserTest {
 
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
 
-		LOG.debug("Start testFilterString18(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString18(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString18()");
@@ -401,7 +401,7 @@ public class FilterParserTest {
 		String filter=NodeParamLabels.NODE_CATEGORIES+"=category1,!~.*4";
 		String expected="nodeList:{ [0] [1] [2] [3] [4] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
 
-		LOG.debug("Start testFilterString19(): filter="+filter+" expected="+expected);
+		LOG.debug("Start testFilterString19(): filter={} expected={}", filter, expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString19()");
@@ -419,7 +419,7 @@ public class FilterParserTest {
 
 		List<OnmsNode> nodeList = getMockNodeList();
 		String s1 = nodelistToString(nodeList);
-		LOG.debug("  before:"+s1);
+		LOG.debug("  before:{}", s1);
 
 		final GeneratorConfig config = new GeneratorConfigBuilder()
 		.withFilters(filter)
@@ -429,7 +429,7 @@ public class FilterParserTest {
 
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
-		LOG.debug("   after:"+s2);
+		LOG.debug("   after:{}", s2);
 		return s2;
 	}
 

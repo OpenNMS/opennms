@@ -62,7 +62,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         try {
             return repository.getTags(prefix);
         } catch (FeedbackException e) {
-            LOG.error("Error retrieving tags for [{}]: {}", prefix, e.getMessage());
+            LOG.error("Error retrieving tags for [{}]: {}", prefix, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -72,7 +72,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         try {
             return repository.getFeedback(getReductionKey(situationId));
         } catch (FeedbackException e) {
-            LOG.error("Error retrieving alarm correlation feedback for [{}]: {}", situationId, e.getMessage());
+            LOG.error("Error retrieving alarm correlation feedback for [{}]: {}", situationId, e.getMessage(), e);
             return Collections.emptyList();
         }
     }

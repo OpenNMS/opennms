@@ -139,7 +139,7 @@ public class SavedHistory {
         m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
         m_searchQueries.addAll(Objects.requireNonNull(searchQueries));
-        LOG.debug("Created " + toString());
+        LOG.debug("Created {}", toString());
     }
 
     public int getSemanticZoomLevel() {
@@ -193,7 +193,7 @@ public class SavedHistory {
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations, ServiceLocator serviceLocator) {
-        LOG.debug("Applying " + toString());
+        LOG.debug("Applying {}", toString());
 
         graphContainer.clearCriteria();
 

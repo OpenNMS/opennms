@@ -77,7 +77,7 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 if (!this.isAlwaysUseDefaultTargetUrl() && (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
                     this.clearAuthenticationAttributes(request);
                     final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
-                    this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+                    this.logger.debug("Redirecting to DefaultSavedRequest Url: {}", targetUrl);
                     this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
                 } else {
                     this.requestCache.removeRequest(request, response);
@@ -92,7 +92,7 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
      */
     private void handleDefaultAdminLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String targetUrl = Util.calculateUrlBase(request, "/account/selfService/passwordGate.jsp");
-        this.logger.debug("User used default admin password. Redirecting to Password Gate, url: " + targetUrl);
+        this.logger.debug("User used default admin password. Redirecting to Password Gate, url: {}", targetUrl);
         super.clearAuthenticationAttributes(request);
         this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

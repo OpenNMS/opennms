@@ -55,7 +55,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 public class SnmpTrapMapping {
 
     /** The Constant LOG. */
-    public static final Logger LOG = LoggerFactory.getLogger(SnmpTrapMappingGroup.class);
+    public static final Logger LOG = LoggerFactory.getLogger(SnmpTrapMapping.class);
 
     /** The name. */
     @XmlAttribute(name = "name", required = false)
@@ -203,7 +203,7 @@ public class SnmpTrapMapping {
         try {
             passed = (Boolean)exp.getValue(context, Boolean.class);
         } catch (Exception e) {
-            LOG.warn("mapping accepts: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage());
+            LOG.warn("mapping accepts: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage(), e);
         }
         LOG.debug("mapping accepts: checking {} ? {}", getRule(), passed);
         return passed;

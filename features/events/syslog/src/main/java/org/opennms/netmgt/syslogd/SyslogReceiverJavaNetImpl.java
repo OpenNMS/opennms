@@ -149,7 +149,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
             LOG.debug("Creating syslog socket");
             m_dgSock = new DatagramSocket(null);
         } catch (SocketException e) {
-            LOG.warn("Could not create syslog socket: " + e.getMessage(), e);
+            LOG.warn("Could not create syslog socket: {}", e.getMessage(), e);
             return;
         }
 
@@ -231,7 +231,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
             } catch (IOException e) {
                 if (m_stop) {
                     // A SocketException can be thrown during normal shutdown so log as debug
-                    LOG.debug("Shutting down the datagram receipt port: " + e.getMessage());
+                    LOG.debug("Shutting down the datagram receipt port: {}", e.getMessage(), e);
                 } else {
                     LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 }

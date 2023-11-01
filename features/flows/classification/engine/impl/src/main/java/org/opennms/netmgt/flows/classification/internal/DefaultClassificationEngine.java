@@ -116,7 +116,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                     .append("minLeafSize : " + tree.info.minLeafSize).append('\n')
                     .append("maxLeafSize : " + tree.info.maxLeafSize).append('\n')
                     .append("avgLeafSize : " + (double) tree.info.sumLeafSize / tree.info.leaves).append('\n');
-            LOG.info(sb.toString());
+            LOG.info("{}", sb);
         }
 
         treeAndInvalidRules.set(new TreeAndInvalidRules(tree, invalid));

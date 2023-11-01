@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "Discovery", description = "Discovery API")
 public class DiscoveryRestService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(org.opennms.web.rest.v2.DiscoveryRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryRestService.class);
 
     @XmlRootElement(name = "discoveryConfiguration")
     public static class DiscoveryConfigurationDTO {

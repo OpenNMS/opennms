@@ -82,7 +82,7 @@ public class CollectionCommanderStarter {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    logger.error("'{}'", e.getMessage());
+                    logger.error("'{}'", e.getMessage(), e);
                 }
             }
         }

@@ -429,7 +429,7 @@ public class MinionStatusTracker implements InitializingBean {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
             final IllegalStateException ex = new IllegalStateException("Unable to retrieve minion. The node (ID: " + nodeId + ") does not exist!");
-            LOG.warn(ex.getMessage());
+            LOG.warn("", ex);
             throw ex;
         }
         m_nodeDao.initialize(node.getLocation());

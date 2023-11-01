@@ -87,7 +87,7 @@ public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "": e.getCause().getMessage()));
-                LOG.info(message.toString());
+                LOG.info("{}", message);
                 isAServer = false;
             }
         }

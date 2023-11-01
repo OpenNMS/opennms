@@ -228,7 +228,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             try {
                 vmwarePerformanceValues = vmwareViJavaAccess.queryPerformanceValues(managedEntity);
             } catch (RemoteException e) {
-                logger.warn("Error retrieving performance values from VMware management server '" + vmwareManagementServer + "' for managed object '" + vmwareManagedObjectId + "'", e.getMessage());
+                logger.warn("Error retrieving performance values from VMware management server '{}' for managed object '{}'", vmwareManagementServer, vmwareManagedObjectId, e.getMessage());
                 return builder.build();
             }
             for (final VmwareGroup vmwareGroup : collection.getVmwareGroup()) {
@@ -287,7 +287,7 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
             }
             builder.withStatus(CollectionStatus.SUCCEEDED);
         } catch (MalformedURLException e) {
-            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause(), e);
             return builder.build();
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());

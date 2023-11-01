@@ -119,7 +119,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 webCallResult = getBuilder(target).get(new GenericType<List<RemoteReportSDO>>() {});
             } catch (Exception e) {
-                logger.error("Error requesting report template from repository. Error message: '{}' Uri was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting report template from repository. Error message: '{}' Uri was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
 
@@ -143,7 +143,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 webCallResult = getBuilder(target).get(new GenericType<List<RemoteReportSDO>>() {});
             } catch (Exception e) {
-                logger.error("Error requesting online reports. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting online reports. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
             
@@ -166,7 +166,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = getBuilder(target).get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting report service by report id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting report service by report id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
             logger.debug("getReportService for id / result: '{}' URI was: '{}' ", reportId + " / " + result, target.getUri());
@@ -186,7 +186,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = getBuilder(target).get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting display name by report id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting display name by report id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
             
@@ -208,7 +208,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 result = getBuilder(target).get(String.class);
             } catch (Exception e) {
-                logger.error("Error requesting engine by id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting engine by id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
             
@@ -230,7 +230,7 @@ public class DefaultRemoteRepository implements ReportRepository {
             try {
                 templateStreamResult = getBuilder(target).get(InputStream.class);
             } catch (Exception e) {
-                logger.error("Error requesting template stream by id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri());
+                logger.error("Error requesting template stream by id. Error message: '{}' URI was: '{}'", e.getMessage(), target.getUri(), e);
                 e.printStackTrace();
             }
             

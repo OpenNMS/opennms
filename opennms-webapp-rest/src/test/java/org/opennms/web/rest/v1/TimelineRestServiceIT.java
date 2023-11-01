@@ -61,7 +61,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class TimelineRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TimelineRestServiceIT.class);
 
     @Override
     protected void afterServletStart() throws Exception {

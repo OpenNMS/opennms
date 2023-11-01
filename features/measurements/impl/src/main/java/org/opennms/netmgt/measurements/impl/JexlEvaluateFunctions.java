@@ -61,7 +61,7 @@ public class JexlEvaluateFunctions {
 		try {
 			return (Double) m_jexl.createExpression(formula).evaluate(m_context);
 		} catch (Exception ex){
-			LOG.error("jexl:evaluate problem evaluating string formula '"+formula+"'",ex);
+			LOG.error("jexl:evaluate problem evaluating string formula '{}'", formula, ex);
 			return Double.NaN;
 		}
 	}

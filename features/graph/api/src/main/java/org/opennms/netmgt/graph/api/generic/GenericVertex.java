@@ -56,7 +56,7 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeR
             return null;
         }
         if (nodeRefs.size() > 1) {
-            LoggerFactory.getLogger(getClass()).warn("Vertex has multiple node references: {}. Using first one: {}", nodeRefs, nodeRefs.get(0));
+            LoggerFactory.getLogger(GenericVertex.class).warn("Vertex has multiple node references: {}. Using first one: {}", nodeRefs, nodeRefs.get(0));
         }
         return nodeRefs.get(0);
     }

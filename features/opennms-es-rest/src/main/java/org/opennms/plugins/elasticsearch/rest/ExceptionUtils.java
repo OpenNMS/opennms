@@ -40,7 +40,7 @@ public abstract class ExceptionUtils {
     private ExceptionUtils() {}
 
     public static void handle(Class context, ConnectionPoolShutdownException ex, List<Event> events) {
-        final Logger LOG = LoggerFactory.getLogger(context);
+        final Logger LOG = LoggerFactory.getLogger(ExceptionUtils.class);
         LOG.error("Connection pool was shut down. Cannot recover.", ex);
         LOG.debug("The following events are not forwarded: {}", events);
     }

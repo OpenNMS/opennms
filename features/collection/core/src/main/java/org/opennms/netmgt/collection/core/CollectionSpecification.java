@@ -197,7 +197,7 @@ public class CollectionSpecification {
                 sb.append(p.getKey());
                 sb.append(" of value ");
                 sb.append(p.getValue());
-                LOG.debug(sb.toString());
+                LOG.debug("{}", sb);
             }
             m.put(p.getKey(), p.getValue());
         }
@@ -234,7 +234,7 @@ public class CollectionSpecification {
                 sb.append(storeFlagOverride());
                 sb.append(", ifAliasComment = ");
                 sb.append(ifAliasComment());
-                LOG.debug(sb.toString());
+                LOG.debug("{}", sb);
             }
         }
         m.put("packageName", m_package.getName());

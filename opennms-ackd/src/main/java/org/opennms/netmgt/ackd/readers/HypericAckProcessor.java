@@ -372,7 +372,7 @@ public class HypericAckProcessor implements AckProcessor {
 
                     }
                 } catch (Throwable e) {
-                    LOG.warn("run: threw exception when processing alarms for Hyperic system {}", hypericSystem, e.getMessage());
+                    LOG.warn("run: threw exception when processing alarms for Hyperic system {}", hypericSystem, e);
                     LOG.warn("run: {} acknowledgements processed successfully before exception", acks.size());
                 } finally {
                     if (acks.size() > 0) {

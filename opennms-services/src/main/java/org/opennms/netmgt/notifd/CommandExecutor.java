@@ -109,7 +109,7 @@ public class CommandExecutor implements ExecutorStrategy {
                     list.append(commandArray[i]);
                 }
                 list.append(" }");
-                LOG.debug(list.toString());
+                LOG.debug("{}", list);
             }
 
             Process command = Runtime.getRuntime().exec(commandArray);

@@ -70,8 +70,7 @@ public class TimeseriesStorageManagerImpl implements TimeseriesStorageManager {
             if(storage != null) {
                 this.stackOfStorages.addIfAbsent(storage);
             } else {
-                LOG.warn("Could not find a TimeSeriesStorage implementation. The collection of metrics won't work properly." +
-                        " Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
+                LOG.warn("Could not find a TimeSeriesStorage implementation. The collection of metrics won't work properly. Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
             }
         }
         return Optional.ofNullable(getOrNull()).orElseThrow(() -> new StorageException("No timeseries storage implementation found"));

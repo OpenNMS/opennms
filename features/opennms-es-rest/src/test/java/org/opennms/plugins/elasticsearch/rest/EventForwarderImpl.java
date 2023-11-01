@@ -46,7 +46,7 @@ public class EventForwarderImpl implements EventForwarder {
 	@Override
 	public void sendNow(Event event) {
 		if (event != null) {
-			LOG.debug("Event to send received: " + event.toString());
+			LOG.debug("Event to send received: {}", event.toString());
 			sendNow(Collections.singletonList(event));
 		}
 	}

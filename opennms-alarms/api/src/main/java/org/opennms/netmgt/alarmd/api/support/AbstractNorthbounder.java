@@ -319,7 +319,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
         }
 
         if (alarm.getNodeId() != null) {
-            LOG.debug("Adding nodeId: " + alarm.getNodeId().toString());
+            LOG.debug("Adding nodeId: {}", alarm.getNodeId().toString());
             mapping.put("nodeId", alarm.getNodeId().toString());
             mapping.put("nodeLabel", alarm.getNodeLabel() == null ? "?" : alarm.getNodeLabel());
             mapping.put("nodeSysObjectId", alarm.getNodeSysObjectId() == null ? "?" : alarm.getNodeSysObjectId());

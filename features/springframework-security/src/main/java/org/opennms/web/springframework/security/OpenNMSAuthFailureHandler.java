@@ -64,10 +64,10 @@ public class OpenNMSAuthFailureHandler implements AuthenticationFailureHandler {
             String targetURL = Util.calculateUrlBase(request, defaultFailureUrl);
             this.saveException(request, exception);
             if (this.forwardToDestination) {
-                this.logger.debug("Forwarding to " + this.defaultFailureUrl);
+                this.logger.debug("Forwarding to {}", this.defaultFailureUrl);
                 request.getRequestDispatcher(targetURL).forward(request, response);
             } else {
-                this.logger.debug("Redirecting to " + this.defaultFailureUrl);
+                this.logger.debug("Redirecting to {}", this.defaultFailureUrl);
                 this.redirectStrategy.sendRedirect(request, response, targetURL);
             }
         }

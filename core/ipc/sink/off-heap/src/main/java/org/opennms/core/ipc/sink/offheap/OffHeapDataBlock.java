@@ -115,7 +115,7 @@ public abstract class OffHeapDataBlock<T> implements DataBlock<T> {
             }
             return true;
         } catch (IllegalStateException ex) {
-            LOG.error(ex.getMessage());
+            LOG.error("", ex);
             return false;
         }
     }

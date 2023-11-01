@@ -376,7 +376,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
                                                                statusInformation);
                     LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
                 } catch (MessageException ex) {
-                    LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID());
+                    LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID(), ex);
                 } finally {
                     // Restoring original settings
                     command.setErrorIndex(errorIndex);

@@ -621,14 +621,14 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
                         executeQueryAndVerify("_s=alarmAckTime%3D%3D1970-01-01T00:00:00.000-0000;alarm.severity%3Dge%3DNORMAL;(node.label%3D%3D*sp01*;node.label%3D%3D*sp02*);(node.label%3D%3D*.asp*,node.label%3D%3D*sbx*);(lastEventTime%3Dge%3D2017-08-15T15:33:53.610-0000;lastEventTime%3Dle%3D2017-08-22T15:33:53.610-0000)", 0);
                         successes.incrementAndGet();
                     } catch (Throwable e) {
-                        LOG.error("Unexpected exception during executeQueryAndVerify: " + e.getMessage(), e);
+                        LOG.error("Unexpected exception during executeQueryAndVerify: {}", e.getMessage(), e);
                         failures.incrementAndGet();
                         fail(e.getMessage());
                     }
                 }
             }, pool)
             .exceptionally(e -> {
-                LOG.error("Unexpected exception in thread: " + e.getMessage(), e);
+                LOG.error("Unexpected exception in thread: {}", e.getMessage(), e);
                 fail();
                 return null;
             });

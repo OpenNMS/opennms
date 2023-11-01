@@ -148,7 +148,7 @@ public class EventMetricsCollector implements EventListener {
                     EventMetricsCollector.class.getSimpleName(), new ServiceParameters(Collections.emptyMap()));
             session.accept(collectionSet);
         } catch (ThresholdInitializationException | NullPointerException e) {
-            LOG.warn("FAIL to initialize Thresholding. Error: {}", e.getMessage());
+            LOG.warn("FAIL to initialize Thresholding. Error: {}", e.getMessage(), e);
         }
     }
 

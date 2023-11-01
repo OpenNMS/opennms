@@ -166,7 +166,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
             }
         } catch (IOException e) {
-            LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
+            LOG.error("Could not unmarshal configuration file: {}", ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
             throw e;
         }
     }

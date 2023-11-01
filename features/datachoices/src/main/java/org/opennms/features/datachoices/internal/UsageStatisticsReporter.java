@@ -236,7 +236,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 client.execute(httpRequest);
                 LOG.info("Succesfully sent usage statistics report.");
             } catch (IOException e) {
-                LOG.info("The usage statistics report was not succesfully delivered: {}", e.getMessage());
+                LOG.info("The usage statistics report was not succesfully delivered: {}", e.getMessage(), e);
             }
         }
     }
@@ -257,8 +257,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         try {
             usageStatisticsReport.setSystemId(m_stateManager.getOrGenerateSystemId());
         } catch (IOException e) {
-            LOG.warn("An error occurred while retrieving the system id. " +
-                        "The usage report will be submitted with a null system id.", e);
+            LOG.warn("An error occurred while retrieving the system id. The usage report will be submitted with a null system id.", e);
         }
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
@@ -369,14 +368,14 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         try {
             objNameActual = new ObjectName(objectName);
         } catch (MalformedObjectNameException e) {
-            LOG.warn("Failed to query from object name " + objectName, e);
+            LOG.warn("Failed to query from object name {}", objectName, e);
             return null;
         }
         try {
             return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
         } catch (InstanceNotFoundException | AttributeNotFoundException
                  | ReflectionException | MBeanException e) {
-            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            LOG.warn("Failed to query from attribute name {} on object {}", attributeName, objectName, e);
             return null;
         }
     }

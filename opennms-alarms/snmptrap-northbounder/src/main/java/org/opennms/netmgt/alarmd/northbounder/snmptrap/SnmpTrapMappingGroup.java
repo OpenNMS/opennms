@@ -146,7 +146,7 @@ public class SnmpTrapMappingGroup {
                 passed = mappingAccepted;
             }
         } catch (Exception e) {
-            LOG.warn("mapping group accepts: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage());
+            LOG.warn("mapping group accepts: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage(), e);
         }
         LOG.debug("mapping group accepts: {} ? {}", getRule(), passed);
         return passed;

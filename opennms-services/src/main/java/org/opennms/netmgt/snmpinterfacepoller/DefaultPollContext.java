@@ -207,7 +207,7 @@ public class DefaultPollContext implements PollContext {
     @Override
     public Event createEvent(final String uei, final int nodeId, final String addr, final String netMask, final Date date, final OnmsSnmpInterface snmpinterface) {
         
-        log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
+        log().debug("createEvent: uei = {} nodeid = {} date = {}", uei, nodeId, date);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
@@ -246,13 +246,13 @@ public class DefaultPollContext implements PollContext {
     public void update(OnmsSnmpInterface snmpinterface) {
     	OnmsSnmpInterface dbSnmpInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(snmpinterface.getNode().getId(), snmpinterface.getIfIndex());
     	if (dbSnmpInterface == null)  {
-        	log().debug("updating SnmpInterface: no interface found on db for: " + snmpinterface.toString());
+        	log().debug("updating SnmpInterface: no interface found on db for: {}", snmpinterface.toString());
     	} else {
     		dbSnmpInterface.setIfOperStatus(snmpinterface.getIfOperStatus());
     		dbSnmpInterface.setIfAdminStatus(snmpinterface.getIfAdminStatus());
     		dbSnmpInterface.setLastSnmpPoll(snmpinterface.getLastSnmpPoll());
             dbSnmpInterface.setPoll(snmpinterface.getPoll());
-    		log().debug("updating SnmpInterface: " + dbSnmpInterface.toString());
+    		log().debug("updating SnmpInterface: {}", dbSnmpInterface.toString());
     		getSnmpInterfaceDao().update(dbSnmpInterface);
     	}
     }

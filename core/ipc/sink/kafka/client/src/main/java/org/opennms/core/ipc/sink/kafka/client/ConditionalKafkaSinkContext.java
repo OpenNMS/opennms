@@ -47,7 +47,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @Conditional(ConditionalKafkaSinkContext.Condition.class)
 @ImportResource("/META-INF/opennms/applicationContext-ipc-sink-kafka-client.xml")
 public class ConditionalKafkaSinkContext {
-    private static final Logger LOG = LoggerFactory.getLogger(org.opennms.core.ipc.sink.kafka.server.ConditionalKafkaSinkContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConditionalKafkaSinkContext.class);
 
     static class Condition implements ConfigurationCondition {
         @Override

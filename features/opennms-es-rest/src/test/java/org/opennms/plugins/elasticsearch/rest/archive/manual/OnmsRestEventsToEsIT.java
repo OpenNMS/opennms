@@ -58,7 +58,7 @@ public class OnmsRestEventsToEsIT {
 		} else {
 			LOG.debug("\nTEST RECEIVED EVENTS ----------------------------------------");
 			for(Event event : receivedEvents){
-				LOG.debug("Event id: "+ event.getDbid()+" uei: "+ event.getUei());
+				LOG.debug("Event id: {} uei: {}", event.getDbid(), event.getUei());
 			}
 			LOG.debug("\nEND OF TEST RECEIVED EVENTS ----------------------------------------");
 		}

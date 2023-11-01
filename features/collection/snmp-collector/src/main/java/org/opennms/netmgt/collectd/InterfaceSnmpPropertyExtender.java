@@ -93,7 +93,7 @@ public class InterfaceSnmpPropertyExtender implements SnmpPropertyExtender {
                         targetIfIndex = attribute.getStringValue();
                     }
                 } catch (Exception e) {
-                    LOG.error("Error: " + e, e);
+                    LOG.error("Error: {}", e, e);
                 }
             }
         }
@@ -111,7 +111,7 @@ public class InterfaceSnmpPropertyExtender implements SnmpPropertyExtender {
                     sourceResource = srcAttr.getResource();
                 }
             } catch (Exception e) {
-                LOG.error("Error: " + e, e);
+                LOG.error("Error: {}", e, e);
             }
         }
 

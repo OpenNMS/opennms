@@ -103,14 +103,14 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
             logger.debug("Local report repository is set to '{}'", m_localReportRepository.toString());
             Assert.notNull(m_localReportRepository, "local report repository property must be set to a non-null value");
         } catch (Exception e) {
-            logger.error("Error during create a default global report repository. Error message: '{}'", e.getMessage());
+            logger.error("Error during create a default global report repository. Error message: '{}'", e.getMessage(), e);
         }
 
         try {
             logger.debug("JasperReports version is set to '{}'", m_jasperReportVersion);
             Assert.notNull(m_jasperReportVersion, "jasper report version must be set to a non-null value");
         } catch (Exception e) {
-            logger.error("Jasper report version must be set in opennms.properties. Error message: '{}'", e.getMessage());
+            logger.error("Jasper report version must be set in opennms.properties. Error message: '{}'", e.getMessage(), e);
         }
         setRemoteRepositoryConfigDao(remoteRepositoryConfigDao);
     }
@@ -327,7 +327,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
                 this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion));
             }
         } catch (Exception e) {
-            logger.error("Could not add configured remote repositories in default global report repository. Error message: '{}'", e.getMessage());
+            logger.error("Could not add configured remote repositories in default global report repository. Error message: '{}'", e.getMessage(), e);
         }
     }
 
@@ -348,7 +348,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
             this.setRemoteRepositoryConfigDao(m_remoteRepositoryConfigDao);
             m_localReportRepository.loadConfiguration();
         } catch (Exception e) {
-            logger.error("Could not reload configuration on repositories: '{}'", e.getMessage());
+            logger.error("Could not reload configuration on repositories: '{}'", e.getMessage(), e);
         }
     }
 }

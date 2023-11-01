@@ -79,7 +79,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
     public void handleMessage(DeviceConfigSinkDTO message) {
         try {
             var address = InetAddress.getByAddress(message.address);
-            LOG.debug("handle message - location: " + message.location + "; address: " + address.getHostAddress() + "; fileName: " + message.fileName);
+            LOG.debug("handle message - location: {}; address: {}; fileName: {}", message.location, address.getHostAddress(), message.fileName);
             OnmsIpInterface ipInterface = findMatchingInterface(address.getHostAddress(), message.location);
             if (ipInterface != null) {
                 byte[] content = message.config;
@@ -100,7 +100,7 @@ public class DeviceConfigConsumer implements MessageConsumer<DeviceConfigSinkDTO
                         message.fileName
                 );
             } else {
-                LOG.warn("can not persist device config; did not find interface - location: "+ message.location + "; " + address.getHostAddress());
+                LOG.warn("can not persist device config; did not find interface - location: {}; {}", message.location, address.getHostAddress());
             }
         } catch (Exception e) {
             LOG.error("could not handle device config backup message", e);

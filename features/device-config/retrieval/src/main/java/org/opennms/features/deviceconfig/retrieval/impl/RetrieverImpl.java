@@ -97,7 +97,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
             Map<String, String> vars,
             Duration timeout
     ) {
-        LOG.debug("retrieve config: " + target);
+        LOG.debug("retrieve config: {}", target);
         var vs = new HashMap<String, String>();
         vs.putAll(vars);
         // generate a unique filename suffix
@@ -219,7 +219,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                 // upload was triggered
                 // -> just to be sure check that the future is set
                 if (future != null) {
-                    LOG.debug("received config - target: " + this.target + "; address: " + address.getHostAddress());
+                    LOG.debug("received config - target: {}; address: {}", this.target, address.getHostAddress());
                     // At this point the script has successfully sent the file via TFTP, but the tftp command
                     // and any following lines may not have been fully processed by the scripting service yet.
                     // Give it one second to finish up any remaining trivial commands and complete preparing debug output.

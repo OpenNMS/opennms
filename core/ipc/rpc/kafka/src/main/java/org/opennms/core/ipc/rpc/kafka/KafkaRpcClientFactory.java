@@ -520,8 +520,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             messageCache.remove(rpcId);
                             currentChunkCache.remove(rpcId);
                         } else {
-                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id." +
-                                    "The request may have timed out or the response may be a duplicate.", record.key());
+                            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id.The request may have timed out or the response may be a duplicate.", record.key());
                         }
                     }
                 } catch (InvalidProtocolBufferException e) {

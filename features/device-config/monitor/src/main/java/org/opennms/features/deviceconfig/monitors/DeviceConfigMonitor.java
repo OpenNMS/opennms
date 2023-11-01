@@ -200,7 +200,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
                             return pollStatus;
                         },
                         success -> {
-                            LOG.debug("Retrieved device configuration - target: " + target);
+                            LOG.debug("Retrieved device configuration - target: {}", target);
                             var pollStatus = PollStatus.up();
                             pollStatus.setDeviceConfig(new DeviceConfig(success.config, success.filename, success.scriptOutput));
                             return pollStatus;
@@ -212,7 +212,7 @@ public class DeviceConfigMonitor extends AbstractServiceMonitor {
             LOG.debug("Starting retrieval, waiting at most {} milliseconds", timeout);
             return future.toCompletableFuture().get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            LOG.error("Device config retrieval failed - target: " + target, e);
+            LOG.error("Device config retrieval failed - target: {}", target, e);
             final var pollStatus = PollStatus.unavailable("Device config retrieval failed - target: " + target + "; message: " + e.getMessage());
             pollStatus.setDeviceConfig(new DeviceConfig());
             return pollStatus;

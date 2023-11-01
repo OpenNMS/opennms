@@ -120,7 +120,7 @@ public class LegacyPriorityExecutorTest {
             try {
                 LOG.info("Taking");
                 Integer poll = queue.take();
-                LOG.info("Taked: " + poll);
+                LOG.info("Taked: {}", poll);
             } catch (InterruptedException e) {
                 e.printStackTrace();
 

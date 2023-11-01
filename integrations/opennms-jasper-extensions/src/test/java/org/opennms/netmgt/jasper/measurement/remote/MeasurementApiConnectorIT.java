@@ -62,7 +62,7 @@ import com.google.common.io.ByteStreams;
 @net.jcip.annotations.NotThreadSafe
 public class MeasurementApiConnectorIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiClientTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiConnectorIT.class);
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()

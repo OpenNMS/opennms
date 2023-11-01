@@ -131,7 +131,7 @@ public class Scripting<E extends Ref, S extends Status> {
                 }
             }
         } catch (final IOException e) {
-            LOG.error("Failed to walk template directory: " + this.scriptPath, e);
+            LOG.error("Failed to walk template directory: {}", this.scriptPath, e);
             return Collections.emptyList();
         }
 
@@ -160,7 +160,7 @@ public class Scripting<E extends Ref, S extends Status> {
                               LOG.error("Failed to execute script: {}", e);
                               return Stream.empty();
                           } finally {
-                              LOG.info(writer.toString());
+                              LOG.info("{}", writer);
                           }
                       })
                       .filter(Objects::nonNull)

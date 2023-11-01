@@ -197,7 +197,7 @@ public class VmwareImporter {
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname());
             } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", request.getHostname(), e.getMessage());
+                logger.warn("Error initialising VMware connection to '{}': '{}'", request.getHostname(), e.getMessage(), e);
                 return null;
             }
         } else {
@@ -209,7 +209,7 @@ public class VmwareImporter {
         try {
             vmwareViJavaAccess.connect(request.getTimeout());
         } catch (MalformedURLException e) {
-            logger.warn("Error connecting VMware management server '{}': '{}'", request.getHostname(), e.getMessage());
+            logger.warn("Error connecting VMware management server '{}': '{}'", request.getHostname(), e.getMessage(), e);
             return null;
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}'", request.getHostname(), e.getMessage());
@@ -289,7 +289,7 @@ public class VmwareImporter {
                         }
                     }
                 } catch (UnknownHostException unknownHostException) {
-                    logger.warn("Invalid IP address '{}'", unknownHostException.getMessage());
+                    logger.warn("Invalid IP address '{}'", unknownHostException.getMessage(), unknownHostException);
                 }
             }
         } else {
@@ -327,7 +327,7 @@ public class VmwareImporter {
                         }
 
                     } catch (UnknownHostException unknownHostException) {
-                        logger.warn("Invalid IP address '{}'", unknownHostException.getMessage());
+                        logger.warn("Invalid IP address '{}'", unknownHostException.getMessage(), unknownHostException);
                     }
                 }
 
@@ -378,10 +378,10 @@ public class VmwareImporter {
                 if (parentEntity != null && parentEntity.getMOR() != null) {
                     vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), StandardCharsets.UTF_8.name()));
                 } else {
-                    logger.warn("Can't add topologyInformation because either the parentEntity or the MOR is null for " + managedEntity.getName());
+                    logger.warn("Can't add topologyInformation because either the parentEntity or the MOR is null for {}", managedEntity.getName());
                 }
             } catch (UnsupportedEncodingException e) {
-                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
             }
             parentEntity = parentEntity == null ? null : parentEntity.getParent();
         } while (parentEntity != null);
@@ -412,7 +412,7 @@ public class VmwareImporter {
                         try {
                             vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), StandardCharsets.UTF_8.name()));
                         } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
                         }
                     }
                 }
@@ -431,7 +431,7 @@ public class VmwareImporter {
                                 vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), StandardCharsets.UTF_8.name()));
                             }
                         } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
                         }
                     }
                 }
@@ -465,7 +465,7 @@ public class VmwareImporter {
                             try {
                                 vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), StandardCharsets.UTF_8.name()));
                             } catch (UnsupportedEncodingException e) {
-                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                                logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
                             }
                         }
                     }
@@ -483,7 +483,7 @@ public class VmwareImporter {
                                     vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), StandardCharsets.UTF_8.name()));
                                 }
                             } catch (UnsupportedEncodingException e) {
-                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                                logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
                             }
                         }
                     }
@@ -502,7 +502,7 @@ public class VmwareImporter {
                         logger.warn("Problem building topology information for virtual machine '{}' with power state '{}' running on host system '{}'", virtualMachine.getMOR().getVal(), powerState, virtualMachine.getRuntime().getHost().getVal());
                     }
                 } catch (UnsupportedEncodingException e) {
-                    logger.warn("Unsupported encoding '{}'", e.getMessage());
+                    logger.warn("Unsupported encoding '{}'", e.getMessage(), e);
                 }
             } else {
                 logger.error("Undefined type of managedEntity '{}'", managedEntity.getMOR().getType());

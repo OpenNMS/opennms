@@ -124,7 +124,7 @@ public abstract class IpListFromUrl {
                 LOG.warn("URL does not exist: {}", url);
             }
         } catch (final IOException e) {
-            LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
+            LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage(), e);
         } finally {
             closeQuietly(br);
             closeQuietly(isr);

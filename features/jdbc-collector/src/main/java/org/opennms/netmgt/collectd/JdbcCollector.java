@@ -208,7 +208,7 @@ public class JdbcCollector extends AbstractRemoteServiceCollector {
                     }
                 } catch(SQLException e) {
                     // Close the statement but retain the connection, log the exception and continue to the next query.
-                    LOG.warn("There was a problem executing query '{}' Please review the query or configuration. Reason: {}", query.getQueryName(), e.getMessage());
+                    LOG.warn("There was a problem executing query '{}' Please review the query or configuration. Reason: {}", query.getQueryName(), e.getMessage(), e);
                     continue;
                 } finally {
                     agentState.closeResultSet(results);

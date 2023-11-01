@@ -71,7 +71,7 @@ public class OnmsHistoricEventsToEsIT {
 		
 		String msg = eventsToES.sendEventsToEs();
 		
-		LOG.debug("message from forwarder: "+msg);
+		LOG.debug("message from forwarder: {}", msg);
 
 		LOG.debug("end of test OnmsHistoricEventsToEsTest");
 	}

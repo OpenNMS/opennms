@@ -159,8 +159,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                     } else if (dataPacket == null || !(dataPacket instanceof TFTPDataPacket)) {
                         if (!shutdownTransfer) {
                             statistics.incErrors();
-                            LOG.error("Unexpected response from tftp client during transfer ("
-                                             + dataPacket + ").  Transfer aborted.");
+                            LOG.error("Unexpected response from tftp client during transfer ({}).  Transfer aborted.", dataPacket);
                         }
                         break;
                     } else {
@@ -276,7 +275,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                     handleWrite((TFTPWriteRequestPacket) tftpPacket_);
                 } else {
                     statistics.incWarnings();
-                    LOG.warn("Unsupported TFTP request (" + tftpPacket_ + ") - ignored.");
+                    LOG.warn("Unsupported TFTP request ({}) - ignored.", tftpPacket_);
                 }
             } catch (final Exception e) {
                 if (!shutdownTransfer) {
@@ -440,7 +439,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
      * start the server, throw an error if it can't start.
      */
     public void launch() throws IOException {
-        LOG.info("Starting TFTP Server on port " + port_);
+        LOG.info("Starting TFTP Server on port {}", port_);
         shutdownServer = false;
         serverTftp_ = new TFTP();
 

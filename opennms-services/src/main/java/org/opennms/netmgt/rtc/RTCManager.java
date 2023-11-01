@@ -150,7 +150,7 @@ public final class RTCManager extends AbstractServiceDaemon {
         m_timer.schedule(new RTCTimerTask(), 0, 120000);
 
         if (log().isDebugEnabled())
-            log().debug("userTimer" + " scheduled");
+            log().debug("userTimer scheduled");
         
         if (log().isDebugEnabled()) {
             log().debug("RTC ready to receive events");

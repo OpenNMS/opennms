@@ -375,7 +375,7 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
-        LOG.info("testTimeoutNoRetries processing took " + elapsedTime);
+        LOG.info("testTimeoutNoRetries processing took {}", elapsedTime);
 
         // no more than two millis should pass before the timeout is processed
         assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(TIMEOUT + 30)) );
@@ -411,7 +411,7 @@ public class RequestTrackerTest {
 
         long elapsedTime = cb.timeoutTimestamp - req.getSentTimestamp();
 
-        LOG.info("testTimeoutOneRetry processing took " + elapsedTime);
+        LOG.info("testTimeoutOneRetry processing took {}", elapsedTime);
 
         // no more than two millis should pass before the timeout is processed
         assertThat( "Timeout processing elapsed time", elapsedTime, is(lessThan(2 * TIMEOUT + 30)) );

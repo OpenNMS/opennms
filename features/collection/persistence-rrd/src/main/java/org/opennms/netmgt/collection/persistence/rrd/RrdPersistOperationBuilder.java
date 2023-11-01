@@ -211,7 +211,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
                 updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
             }
         } catch (FileNotFoundException e) {
-            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
+            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: {}", e.getMessage(), e);
             return;
         } catch (RrdException e) {
             throw new PersistException(e);

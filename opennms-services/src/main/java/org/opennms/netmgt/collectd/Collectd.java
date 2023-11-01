@@ -493,9 +493,9 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Fixes bug NMS-3324.
                 // http://issues.opennms.org/browse/NMS-3324
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace(sb.toString(), e);
+                    LOG.trace("{}", sb);
                 } else {
-                    LOG.info(sb.toString());
+                    LOG.info("{}", sb);
                 }
             } catch (Throwable t) {
                 LOG.error("scheduleInterface: Uncaught exception, failed to schedule interface {}/{}.", iface, svcName, t);
@@ -691,7 +691,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param e a {@link org.opennms.core.utils.InsufficientInformationException} object.
      */
     protected void handleInsufficientInfo(InsufficientInformationException e) {
-        LOG.info(e.getMessage());
+        LOG.info("", e);
     }
 
     private void handleDupNodeDeleted(IEvent event)

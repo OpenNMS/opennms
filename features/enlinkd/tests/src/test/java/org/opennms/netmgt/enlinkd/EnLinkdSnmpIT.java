@@ -664,12 +664,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         LldpElement lldpElement01 = lldpLocalGroup01.getLldpElement();
         LldpElement lldpElement02 = lldpLocalGroup02.getLldpElement();
-        LOG.warn("01 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
-        LOG.warn("01 local chassis id: " + lldpElement01.getLldpChassisId());
-        LOG.warn("01 local sysname: " + lldpElement01.getLldpSysname());
-        LOG.warn("02 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
-        LOG.warn("02 local chassis id: " + lldpElement02.getLldpChassisId());
-        LOG.warn("02 local sysname: " + lldpElement02.getLldpSysname());
+        LOG.warn("01 local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
+        LOG.warn("01 local chassis id: {}", lldpElement01.getLldpChassisId());
+        LOG.warn("01 local sysname: {}", lldpElement01.getLldpSysname());
+        LOG.warn("02 local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
+        LOG.warn("02 local chassis id: {}", lldpElement02.getLldpChassisId());
+        LOG.warn("02 local sysname: {}", lldpElement02.getLldpSysname());
 
         assertEquals(ZHBGO1Zsr001_LLDP_ID, lldpElement01.getLldpChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement01.getLldpChassisIdSubType());
@@ -846,12 +846,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
 
         LldpElement lldpElement05 = lldpLocalGroup05.getLldpElement();
-        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
-        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
-        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
-        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
-        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
-        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
+        LOG.warn("local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: {}", lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: {}", lldpElement05.getLldpSysname());
+        LOG.warn("local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: {}", lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: {}", lldpElement05.getLldpSysname());
 
         assertEquals(srv005_LLDP_ID, lldpElement05.getLldpChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement05.getLldpChassisIdSubType());
@@ -935,7 +935,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertEquals(CISCO_SW01_LLDP_ID,lldpLocalGroup00.getLldpElement().getLldpChassisId());
@@ -959,7 +959,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertEquals(9, links00.size());
@@ -1016,7 +1016,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertNull(lldpLocalGroup01.getLldpLocChassisid());
@@ -1041,7 +1041,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertEquals(5,links01.size());
@@ -1065,7 +1065,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         final Map<Integer, Integer> mtxrNeighborMap01 = new HashMap<>();
@@ -1084,7 +1084,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         links01.forEach(row -> {
@@ -1160,7 +1160,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertNull(lldpLocalGroup02.getLldpLocChassisid());
@@ -1216,7 +1216,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
         assertEquals(5, mtxrNeighborMap02.size());
         assertEquals(5, links02.size());
@@ -1298,7 +1298,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
 
         assertNull(lldpLocalGroup03.getLldpLocChassisid());
@@ -1354,7 +1354,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage(), e);
         }
         assertEquals(27, mtxrNeighborMap03.size());
         assertEquals(27, links03.size());

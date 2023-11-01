@@ -255,7 +255,7 @@ public class VarbindMapping {
             Expression exp = parser.parseExpression(expression);
             return (String) exp.getValue(context, String.class);
         } catch (Exception e) {
-            LOG.warn("Can't evaluate expression {} for alarm {} because: {}", getValue(), alarm.getUei(), e.getMessage());
+            LOG.warn("Can't evaluate expression {} for alarm {} because: {}", getValue(), alarm.getUei(), e.getMessage(), e);
         }
         return null;
     }

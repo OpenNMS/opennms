@@ -159,7 +159,7 @@ public class EventToIndex implements AutoCloseable {
 				// Send the events to Elasticsearch
 				.thenAcceptAsync(this::sendEvents, executor)
 				.exceptionally(e -> {
-					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+					LOG.error("Unexpected exception during task completion: {}", e.getMessage(), e);
 					if (e.getCause() instanceof ConnectionPoolShutdownException) {
 						ExceptionUtils.handle(getClass(), (ConnectionPoolShutdownException) e.getCause(), events);
 					}

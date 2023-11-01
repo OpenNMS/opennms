@@ -276,7 +276,7 @@ public class DataBlocksOffHeapQueue<T> implements DispatchQueue<T> {
                 data = readData();
             }
         } catch (ReadFailedException e) {
-            LOG.error("Fail to dequeue. {}", e.getMessage());
+            LOG.error("Fail to dequeue. {}", e.getMessage(), e);
             return null;
         } finally {
             headLock.unlock();

@@ -92,7 +92,7 @@ public class PointerLikeIndexPropertyExtender implements SnmpPropertyExtender {
                         pointerLikeIndexValue = attribute.getStringValue();
                     }
                 } catch (Exception e) {
-                    LOG.error("Error: " + e, e);
+                    LOG.error("Error: {}", e, e);
                 }
             }
         }

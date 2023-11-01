@@ -411,7 +411,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
                 try {
                     m_ipAddress = new IPAddress(m_ipAddressStr).toInetAddress();
                 } catch (IllegalArgumentException iae) {
-                    LOG.warn(String.format("Invalid IP address %s", m_ipAddressStr));
+                    LOG.warn("Invalid IP address {}", m_ipAddressStr);
                     throw new IPValidationException(String.format("Invalid IP address %s", m_ipAddressStr), iae);
                 }
             }

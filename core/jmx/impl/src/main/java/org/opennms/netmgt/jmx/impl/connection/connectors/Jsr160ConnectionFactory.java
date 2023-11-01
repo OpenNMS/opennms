@@ -77,7 +77,7 @@ public abstract class Jsr160ConnectionFactory {
             return connectionWrapper;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             final String url = JmxConnectionConfigBuilder.buildFrom(address, propertiesMap).build().getUrl();
-            LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
+            LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage(), e);
             if (!future.isDone()) {
                 future.cancel(true);
                 LOG.info(" the task {}", future.isCancelled() ? "was cancelled" : "could not be cancelled");

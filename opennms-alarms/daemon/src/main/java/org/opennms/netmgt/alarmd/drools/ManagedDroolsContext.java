@@ -79,7 +79,7 @@ import com.codahale.metrics.Timer;
  * @author jwhite
  */
 public class ManagedDroolsContext {
-    private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ManagedDroolsContext.class);
 
     private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
 

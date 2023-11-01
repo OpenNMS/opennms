@@ -195,7 +195,7 @@ public class Manager implements ManagerMBean {
             }
 
 
-            LOG.info("calling System.exit(" + exitCode.get() + ") very shortly");
+            LOG.info("calling System.exit({}) very shortly", exitCode.get());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

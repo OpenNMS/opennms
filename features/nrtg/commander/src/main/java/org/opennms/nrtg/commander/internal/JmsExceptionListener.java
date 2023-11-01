@@ -37,10 +37,10 @@ import javax.jms.JMSException;
 
 @Component
 public class JmsExceptionListener implements ExceptionListener {
-    private static final Logger logger = LoggerFactory.getLogger(CollectionCommanderStarter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JmsExceptionListener.class);
 
     @Override
     public void onException(final JMSException e) {
-        logger.error("JmsException '{}'", e.getMessage());
+        logger.error("JmsException '{}'", e.getMessage(), e);
     }
 }

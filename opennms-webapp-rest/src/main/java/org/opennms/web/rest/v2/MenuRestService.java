@@ -103,7 +103,7 @@ public class MenuRestService {
                 HttpMenuRequestContext context = new HttpMenuRequestContext(request);
                 mainMenu = this.menuProvider.getMainMenu(context);
             } catch (Exception e) {
-                LOG.error("Error creating menu entries: " + e.getMessage(), e);
+                LOG.error("Error creating menu entries: {}", e.getMessage(), e);
                 throw e;
             }
         }

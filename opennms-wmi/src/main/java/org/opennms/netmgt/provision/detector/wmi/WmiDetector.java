@@ -166,7 +166,7 @@ public class WmiDetector extends AgentBasedSyncAbstractDetector<WmiAgentConfig> 
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "" : e.getCause().getMessage()));
-                LOG.info(message.toString());
+                LOG.info("{}", message);
                 isAServer = false;
             } finally {
                 if (mgr != null) {

@@ -274,7 +274,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         try {
             future.get();
         } catch (ExecutionException e) {
-            LOG.error("Aborting entities scan for " + agentConfig, e);
+            LOG.error("Aborting entities scan for {}", agentConfig, e);
             throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + e.getMessage());
         } catch (final InterruptedException e) {
             throw new SnmpHardwareInventoryException("ENTITY-MIB node collection interrupted, exiting");
@@ -291,7 +291,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             // overlay aliases onto physicalEntities recursively from the root
             addAliasesToEntities(aliasMap, root);
         } catch (ExecutionException e) {
-            LOG.error("Aborting aliasMapping for " + agentConfig, e);
+            LOG.error("Aborting aliasMapping for {}", agentConfig, e);
             throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the entHwAliasMib" + '_' + node.getLabel() + ": " + e.getMessage());
         } catch (final InterruptedException e) {
             throw new SnmpHardwareInventoryException("ENTITY-ALIAS-MIB node collection interrupted, exiting");

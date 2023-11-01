@@ -134,7 +134,7 @@ public class DispatcherWhiteboard {
         } catch (Throwable e) {
             // If anything goes wrong, log an error message
             // TODO: Use a dead-letter channel?
-            LOG.warn("Message dispatch failed: " + e.getMessage(), e);
+            LOG.warn("Message dispatch failed: {}", e.getMessage(), e);
         }
     }
 }

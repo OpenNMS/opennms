@@ -405,7 +405,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 int code = response.getStatusLine().getStatusCode();
                 if (!getRange().contains(code)) {
-                    LOG.debug("Response code out of range for URI:" + uri + ".  Expected " + getRange() + " but received " + code);
+                    LOG.debug("Response code out of range for URI:{}.  Expected {} but received {}", uri, getRange(), code);
                     throw new PageSequenceMonitorException("Response code out of range for URI:" + uri + ".  Expected " + getRange() + " but received " + code);
                 }
 
@@ -722,7 +722,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 LOG.error("Invalid parameters to monitor", e);
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
             } catch (Throwable e) {
-                LOG.error("Unexpected exception: " + e.getMessage(), e);
+                LOG.error("Unexpected exception: {}", e.getMessage(), e);
                 serviceStatus = PollStatus.unavailable("Unexpected exception: " + e.getMessage());
             } finally {
                 serviceStatus.setProperties(responseTimes);

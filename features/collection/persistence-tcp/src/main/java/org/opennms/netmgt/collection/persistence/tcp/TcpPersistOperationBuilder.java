@@ -110,7 +110,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
 
             m_tcpStrategy.updateData(rrdFile, ownerName, new Long(time), getDblValues(), getStrValues());
         } catch (FileNotFoundException e) {
-            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
+            LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: {}", e.getMessage(), e);
             return;
         } catch (Exception e) {
             throw new PersistException(e);

@@ -169,9 +169,9 @@ public class AssetGraphMLProvider implements EventListener {
 				failed=true;
 			}
 		}
-		LOG.debug(logmsg.toString());
+		LOG.debug("{}", logmsg);
 		if(failed) {
-			LOG.error(errmsg.toString());
+			LOG.error("{}", errmsg);
 			throw new RuntimeException(errmsg.toString());
 		}
 
@@ -208,7 +208,7 @@ public class AssetGraphMLProvider implements EventListener {
 				regenerateAllAssetTopologies();
 			}
 		} catch (Exception ex) {
-			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);
+			LOG.error("asset topology provider problem processing event {}", e.getUei(), ex);
 		}
 	}
 

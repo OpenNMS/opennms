@@ -206,7 +206,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             if (cause != null) {
                 if (cause instanceof IOException) {
                     if (retryAttempt == 0) {
-                        LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
+                        LOG.info("Service {} detected false: {}: {}", getServiceName(), cause.getClass().getName(), cause.getMessage(), cause);
                         detectFuture.setServiceDetected(false);
                     } else {
                         LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);

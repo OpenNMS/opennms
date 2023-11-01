@@ -78,7 +78,7 @@ public class JobManager {
 
         private void handleError(final UI ui, final TaskRunException trex) {
             ui.access(() -> {
-                LOG.error(trex.getMessage(), trex.getCause());
+                LOG.error(trex.getMessage(), trex.getCause(), trex);
 
                 final StringBuilder errorMessage = new StringBuilder(100);
                 errorMessage.append(trex.getMessage());

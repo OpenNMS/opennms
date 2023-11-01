@@ -106,9 +106,7 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
     @Override
     public Connection getConnection() throws SQLException {
         if (DEADLOCK_DETECTION_ENABLED && TransactionSynchronizationManager.isSynchronizationActive()) {
-            LOG.error("Possible database deadlock detected: " +
-                    "Attempting to acquire connection in thread while existing transaction active.",
-                    new Exception("Possible deadlock"));
+            LOG.error("Possible database deadlock detected: Attempting to acquire connection in thread while existing transaction active.", new Exception("Possible deadlock"));
         }
         return m_pool.getConnection();
     }

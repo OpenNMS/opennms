@@ -179,7 +179,7 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
                     long queueSize = m_myQueue.size();
                     long queueRemaining = m_myQueue.remainingCapacity();
                     long sentReadings = m_consumer.getSentReadings();
-                    LOG.info("Queue offers: " + totalOffers + " total, " + goodOffers + " good, " + badOffers + " bad; queue drains: " + queueChecks + " checks, " + queueDrains + " drains, " + sentReadings + " readings; queue state: " + queueSize + " elements, " + queueRemaining + " remaining capacity");
+                    LOG.info("Queue offers: {} total, {} good, {} bad; queue drains: {} checks, {} drains, {} readings; queue state: {} elements, {} remaining capacity", totalOffers, goodOffers, badOffers, queueChecks, queueDrains, sentReadings, queueSize, queueRemaining);
                     m_strategy.clearOfferStats();
                     m_consumer.clearDrainStats();
                     Thread.sleep(LOGGING_INTERVAL);

@@ -131,8 +131,7 @@ public class ModelMappers {
             // which has a different class for this loaded then what is being thrown
             // Resort to comparing the name instead
             if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
-                LOG.debug("The last event for alarm with id {} was deleted before we could perform the mapping." +
-                        " Last event will be null.", alarm.getId());
+                LOG.debug("The last event for alarm with id {} was deleted before we could perform the mapping. Last event will be null.", alarm.getId());
             } else {
                 // Rethrow
                 throw e;

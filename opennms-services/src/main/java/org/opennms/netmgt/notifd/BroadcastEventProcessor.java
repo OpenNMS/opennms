@@ -526,7 +526,7 @@ public final class BroadcastEventProcessor implements EventListener {
             }
         } catch (Throwable e) {
             continueNotice = true;
-            LOG.error("Not able to get notify status for service {} on interface/node {}/{}. Continuing notice... {}", service, ipAddr, nodeID, e.getMessage());
+            LOG.error("Not able to get notify status for service {} on interface/node {}/{}. Continuing notice... {}", service, ipAddr, nodeID, e.getMessage(), e);
         }
 
         // in case of a error we will return false

@@ -92,7 +92,7 @@ public class ConfigSwaggerConverter {
                 objectMapper = Yaml.mapper();
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MediaType: {} error: {} using media type = yaml instead.", acceptType, e.getMessage());
+            LOG.warn("UNKNOWN MediaType: {} error: {} using media type = yaml instead.", acceptType, e.getMessage(), e);
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 

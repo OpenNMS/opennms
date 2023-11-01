@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "UserDefinedLinks", description = "User Defined Links API")
 public class UserDefinedLinkRestService extends AbstractDaoRestService<UserDefinedLink,UserDefinedLink,Integer,Integer> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeCategoriesRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserDefinedLinkRestService.class);
 
     @Autowired(required=false)
     private UserDefinedLinkDao m_dao;

@@ -56,7 +56,7 @@ import com.google.common.collect.TreeBasedTable;
  */
 @FilterInfo(name="HoltWintersR", description="Performs Holt-Winters forecasting.", backend="R")
 public class HWRForecast implements Filter {
-    private static final Logger LOG = LoggerFactory.getLogger(HWForecast.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HWRForecast.class);
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/holtWinters.R";
 
     @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")

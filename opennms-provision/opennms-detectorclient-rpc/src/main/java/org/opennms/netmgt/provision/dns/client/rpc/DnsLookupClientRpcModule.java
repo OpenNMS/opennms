@@ -86,8 +86,7 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
                         try {
                             hostName = Address.getHostName(addr);
                         } catch (UnknownHostException e) {
-                            LOG.warn("Failed to retrieve the fully qualified domain name for {}. "
-                                    + "Using the textual representation of the IP address.", addr);
+                            LOG.warn("Failed to retrieve the fully qualified domain name for {}. Using the textual representation of the IP address.", addr);
                         }
                     }
                     dto.setHostResponse(hostName);

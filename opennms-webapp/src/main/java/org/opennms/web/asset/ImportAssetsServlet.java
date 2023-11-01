@@ -289,12 +289,12 @@ public class ImportAssetsServlet extends HttpServlet {
                 } catch (NoSuchElementException e) {
                     errors.add("Ignoring malformed import for entry " + count + ", not enough values.");
                 } catch (NumberFormatException e) {
-                    logger.error("NodeId parsing to int faild, ignoreing malformed import for entry number '{}' exception message:'{}'", count, e.getMessage());
+                    logger.error("NodeId parsing to int faild, ignoreing malformed import for entry number '{}' exception message:'{}'", count, e.getMessage(), e);
                     errors.add("Ignoring malformed import for entry " + count + ", node id not a number.");
                 }
             }
         } catch (IOException|CsvValidationException e) {
-            logger.error("An error occurred reading the CSV input. Message:'{}'", e.getMessage());
+            logger.error("An error occurred reading the CSV input. Message:'{}'", e.getMessage(), e);
             throw new AssetException("An error occurred reading the CSV input.", e);
         } finally {
             IOUtils.closeQuietly(stringReader);

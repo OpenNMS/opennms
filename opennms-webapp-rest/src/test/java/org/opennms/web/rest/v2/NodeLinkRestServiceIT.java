@@ -168,7 +168,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.info(resultStr);
         ObjectMapper mapper = new ObjectMapper();
         EnlinkdDTO result = mapper.readValue(resultStr, EnlinkdDTO.class);
-        LOG.info(result.toString());
+        LOG.info("{}", result);
         Assert.assertEquals(1, result.getLldpLinkNodeDTOs().size());
         Assert.assertEquals(1, result.getBridgeLinkNodeDTOS().size());
         Assert.assertEquals(1, result.getCdpLinkNodeDTOS().size());
@@ -269,7 +269,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
-        LOG.info(result.toString());
+        LOG.info("{}", result);
         Assert.assertEquals("lldpSysname", result.getLldpSysName());
     }
 

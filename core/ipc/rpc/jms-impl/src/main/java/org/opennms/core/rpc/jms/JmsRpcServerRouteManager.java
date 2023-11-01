@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JmsRpcServerRouteManager extends CamelRpcServerRouteManager {
-    private static final Logger LOG = LoggerFactory.getLogger(CamelRpcServerRouteManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JmsRpcServerRouteManager.class);
 
     private final TracerRegistry tracerRegistry;
 

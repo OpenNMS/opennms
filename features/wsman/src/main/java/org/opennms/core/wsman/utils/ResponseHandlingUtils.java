@@ -102,7 +102,7 @@ public class ResponseHandlingUtils {
                 return depth;
             }
         } catch (Exception e) {
-            LOG.error("Failed to evaluate expression {}. Msg: {}", exp.getExpressionString(), e.getMessage());
+            LOG.error("Failed to evaluate expression {}. Msg: {}", exp.getExpressionString(), e.getMessage(), e);
             throw new NoSuchElementException();
         }
 
@@ -132,7 +132,7 @@ public class ResponseHandlingUtils {
         try {
             return exp.getValue(context, Boolean.class);
         } catch (Exception e) {
-            LOG.error("Failed to evaluate expression {}. Assuming match is negative. Msg: {}", exp.getExpressionString(), e.getMessage());
+            LOG.error("Failed to evaluate expression {}. Assuming match is negative. Msg: {}", exp.getExpressionString(), e.getMessage(), e);
             throw Throwables.propagate(e);
         }
     }

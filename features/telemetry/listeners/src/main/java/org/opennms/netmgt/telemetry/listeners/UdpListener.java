@@ -252,7 +252,7 @@ public class UdpListener implements GracefulShutdownListener {
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                    LOG.warn("Invalid packet: {}", cause.getMessage());
+                    LOG.warn("Invalid packet: {}", cause.getMessage(), cause);
                     RATE_LIMITED_LOG.debug("", cause);
                 }
             });

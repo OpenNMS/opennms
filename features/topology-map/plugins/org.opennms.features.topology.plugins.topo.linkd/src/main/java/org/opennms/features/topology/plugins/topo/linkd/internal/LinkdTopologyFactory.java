@@ -152,7 +152,7 @@ public class LinkdTopologyFactory {
             try {
                 topology = m_onmsTopologyDao.getTopology(protocol.name());
             } catch (Exception e) {
-                LOG.error("getDefaultVertex: {}: {}: no topology found {}", graph.getNamespace(), protocol, e.getMessage());
+                LOG.error("getDefaultVertex: {}: {}: no topology found {}", graph.getNamespace(), protocol, e.getMessage(), e);
                 continue;
             }
 

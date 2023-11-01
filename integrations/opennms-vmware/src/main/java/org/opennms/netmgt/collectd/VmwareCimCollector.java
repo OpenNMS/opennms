@@ -467,7 +467,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
                         try {
                             cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getAddress()));
                         } catch (Exception e) {
-                            logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
+                            logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage(), e);
                             return builder.build();
                         }
                         cimObjects.put(cimClass, cimList);
@@ -502,7 +502,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
                                 String value = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName());
                                 if (valueModifiers.containsKey(attrib.getName())) {
                                     final String modifiedValue = valueModifiers.get(attrib.getName()).modifyValue(attrib.getName(), value, cimObject, vmwareViJavaAccess);
-                                    logger.debug("Applying value modifier for instance value " + attrib.getName() + "[" + instance + "]='" + value + "' => '" + modifiedValue + "' for node " + agent.getNodeId());
+                                    logger.debug("Applying value modifier for instance value {}[{}]='{}' => '{}' for node {}", attrib.getName(), instance, value, modifiedValue, agent.getNodeId());
                                     value = modifiedValue;
                                 }
                                 builder.withAttribute(resource, vmwareCimGroup.getName(), attrib.getAlias(), value, type);
@@ -513,7 +513,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
                 builder.withStatus(CollectionStatus.SUCCEEDED);
             }
         } catch (MalformedURLException e) {
-            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
+            logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause(), e);
             return builder.build();
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());

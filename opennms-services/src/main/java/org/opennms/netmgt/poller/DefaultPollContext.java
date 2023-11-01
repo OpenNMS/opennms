@@ -432,7 +432,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
                     // Thread-safe and idempotent
                     processPending(pollEvent);
                 } catch (Throwable e) {
-                    LOG.error("Unexpected exception while processing pollEvent: " + pollEvent, e);
+                    LOG.error("Unexpected exception while processing pollEvent: {}", pollEvent, e);
                 }
                 // TODO: Should we remove the task before processing it? This would
                 // reduce the chances that two threads could process the same event
@@ -478,8 +478,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
 
     private boolean testCriticalPath(CriticalPath criticalPath) {
         if (!"ICMP".equalsIgnoreCase(criticalPath.getServiceName())) {
-            LOG.warn("Critical paths using services other than ICMP are not currently supported."
-                    + " ICMP will be used for testing {}.", criticalPath);
+            LOG.warn("Critical paths using services other than ICMP are not currently supported. ICMP will be used for testing {}.", criticalPath);
         }
 
         final InetAddress ipAddress = criticalPath.getIpAddress();
@@ -505,12 +504,10 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
         } catch (Throwable e) {
             final Throwable cause = e.getCause();
             if (cause != null && cause instanceof RequestTimedOutException) {
-                LOG.warn("No response was received when remotely testing {}."
-                        + " Marking the path as available.", criticalPath);
+                LOG.warn("No response was received when remotely testing {}. Marking the path as available.", criticalPath);
                 available = true;
             } else if (cause != null && cause instanceof RequestRejectedException) {
-                LOG.warn("Request was rejected when attemtping to test the remote path {}."
-                        + " Marking the path as available.", criticalPath);
+                LOG.warn("Request was rejected when attemtping to test the remote path {}. Marking the path as available.", criticalPath);
                 available = true;
             }
             LOG.warn("An unknown error occured while testing the critical path: {}."

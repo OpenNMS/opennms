@@ -236,7 +236,7 @@ public class Executor {
         try {
             mapScripts = m_eventScriptMap.get(m_event.getUei());
         } catch (Throwable e) {
-            LOG.warn("Unexpected exception: " + e.getMessage(), e);
+            LOG.warn("Unexpected exception: {}", e.getMessage(), e);
         }
 
         if (attachedScripts.length > 0 || mapScripts != null || m_eventScripts.size() > 0) {
@@ -292,7 +292,7 @@ public class Executor {
                     try {
                         m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent().get());
                     } catch (BSFException e) {
-                        LOG.error("Non-UEI-specific event handler script execution failed : " + script, e);
+                        LOG.error("Non-UEI-specific event handler script execution failed : {}", script, e);
                     }
                 } else {
                     LOG.warn("Non-UEI-specific event handler script missing contents: {}", script);
@@ -363,10 +363,10 @@ public class Executor {
                 try {
                     m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent().get());
                 } catch (BSFException e) {
-                    LOG.error("Start script failed: " + startScript, e);
+                    LOG.error("Start script failed: {}", startScript, e);
                 }
             } else {
-                LOG.warn("Start script has no script content: " + startScript);
+                LOG.warn("Start script has no script content: {}", startScript);
             }
         }
 
@@ -411,10 +411,10 @@ public class Executor {
                 try {
                     m_scriptManager.exec(stopScript.getLanguage(), "", 0, 0, stopScript.getContent().get());
                 } catch (BSFException e) {
-                    LOG.error("Stop script failed: " + stopScript, e);
+                    LOG.error("Stop script failed: {}", stopScript, e);
                 }
             } else {
-                LOG.warn("Stop script has no script contents: " + stopScript);
+                LOG.warn("Stop script has no script contents: {}", stopScript);
             }
         }
 

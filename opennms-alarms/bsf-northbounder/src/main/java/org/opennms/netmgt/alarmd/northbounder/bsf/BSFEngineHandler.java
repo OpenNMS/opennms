@@ -262,7 +262,7 @@ public class BSFEngineHandler implements Destination {
             try {
                 passed = (Boolean)exp.getValue(context, Boolean.class);
             } catch (Exception e) {
-                LOG.warn("accepts: can't evaluate expression {} for alarm {} because: {}", getFilter(), alarm.getUei(), e.getMessage());
+                LOG.warn("accepts: can't evaluate expression {} for alarm {} because: {}", getFilter(), alarm.getUei(), e.getMessage(), e);
             }
             LOG.debug("accepts: checking {} ? {}", m_filter, passed);
             return passed;

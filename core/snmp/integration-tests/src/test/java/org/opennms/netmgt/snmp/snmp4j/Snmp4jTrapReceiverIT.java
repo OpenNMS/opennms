@@ -355,15 +355,15 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
     @Override
     public synchronized void processPdu(final CommandResponderEvent cmdRespEvent) {
         final PDU pdu = cmdRespEvent.getPDU();
-        LOG.debug("Received PDU... " + pdu);
+        LOG.debug("Received PDU... {}", pdu);
 
         if (pdu != null) {
             LOG.debug(pdu.getClass().getName());
-            LOG.debug("trapType = " + pdu.getType());
-            LOG.debug("isPDUv1 = " + (pdu instanceof PDUv1));
-            LOG.debug("isTrap = " + (pdu.getType() == PDU.TRAP));
-            LOG.debug("isInform = " + (pdu.getType() == PDU.INFORM));
-            LOG.debug("variableBindings = " + pdu.getVariableBindings());
+            LOG.debug("trapType = {}", pdu.getType());
+            LOG.debug("isPDUv1 = {}", (pdu instanceof PDUv1));
+            LOG.debug("isTrap = {}", (pdu.getType() == PDU.TRAP));
+            LOG.debug("isInform = {}", (pdu.getType() == PDU.INFORM));
+            LOG.debug("variableBindings = {}", pdu.getVariableBindings());
             m_trapCount++;
         } else {
             LOG.debug("ERROR: Can't create PDU");

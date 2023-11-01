@@ -299,7 +299,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                                         List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
                                         eventsList.addAll(thresholdEvents);
                                     } catch (Exception e) {
-                                        LOG.warn("applyThresholds: Can't evaluate {} on {} because {}", key, resourceWrapper, e.getMessage());
+                                        LOG.warn("applyThresholds: Can't evaluate {} on {} because {}", key, resourceWrapper, e.getMessage(), e);
                                     }
                                 }
                             } else {
@@ -380,14 +380,14 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 defaultThresholdsDao.afterPropertiesSet();
             } catch (final Throwable t) {
                 final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize DefaultThresholdsDao.", t);
-                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
+                LOG.error("initThresholdsDao: {}", tie.getLocalizedMessage(), t);
                 throw tie;
             }
             try {
                 m_threshdDao.reload();
             } catch (final Throwable t) {
                 final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize ThreshdConfigFactory.", t);
-                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
+                LOG.error("initThresholdsDao: {}", tie.getLocalizedMessage(), t);
                 throw tie;
             }
             m_thresholdsDao = defaultThresholdsDao;

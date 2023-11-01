@@ -626,7 +626,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
                 try {
                     zeroOp.mergeUpdates(this);
                 } catch (IllegalArgumentException e) {
-                    m_log.debug("Unable to mergeUpdates {}", e.getMessage());
+                    m_log.debug("Unable to mergeUpdates {}", e.getMessage(), e);
                     super.addToPendingList(pendingOperations);
                 }
             } else {

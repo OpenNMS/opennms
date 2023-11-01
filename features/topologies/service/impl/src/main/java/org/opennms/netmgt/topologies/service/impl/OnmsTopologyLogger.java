@@ -75,7 +75,7 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
         txt.append("-");
         txt.append(message.getMessagebody().getId());
         message.getMessagebody().accept(new TopologyVisitor(txt));
-        LOG.debug(txt.toString());
+        LOG.debug("{}", txt);
     }
 
     public List<OnmsTopologyMessage> getQueue() {

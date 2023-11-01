@@ -118,7 +118,7 @@ public class Syslogd extends AbstractServiceDaemon {
             try {
                 m_udpEventReceiver.stop();
             } catch (InterruptedException e) {
-                LOG.info("stop: Exception when stopping the Syslog UDP receiver: " + e.getMessage());
+                LOG.info("stop: Exception when stopping the Syslog UDP receiver: {}", e.getMessage(), e);
             } catch (Throwable e) {
                 LOG.error("stop: Failed to stop the Syslog UDP receiver", e);
                 throw new UndeclaredThrowableException(e);

@@ -74,7 +74,7 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
         final SpringSecurityUser user = m_userDao.getByUsername(authUsername);
 
         if (user == null) {
-            LOG.warn("User not found: " + authUsername);
+            LOG.warn("User not found: {}", authUsername);
             throw new BadCredentialsException("Bad credentials");
         }
 
@@ -108,12 +108,12 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
 
         if (hasUser) {
             if (!m_userManager.comparePasswords(authUsername, authPassword)) {
-                LOG.warn("Password auth failed for user: " + authUsername);
+                LOG.warn("Password auth failed for user: {}", authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         } else {
             if (!m_userManager.checkSaltedPassword(authPassword, existingPassword)) {
-                LOG.warn("Salted password auth failed for user: " + authUsername);
+                LOG.warn("Salted password auth failed for user: {}", authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         }

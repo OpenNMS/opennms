@@ -81,7 +81,7 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 		final SnmpStrategy strategy = m_strategies.get(strategyClass);
 		if (strategy == null) {
 			if (m_strategies.isEmpty()) {
-			    LOG.warn("There is no SnmpStrategy registered. Unable to find strategy "+strategyClass + ". Falling back to ClassBasedStrategyResolver.");
+			    LOG.warn("There is no SnmpStrategy registered. Unable to find strategy {}. Falling back to ClassBasedStrategyResolver.", strategyClass);
 			    return s_classBasedStrategyResolver.getStrategy();
 			} else {
 				Map.Entry<String, SnmpStrategy> entry = m_strategies.entrySet().iterator().next();

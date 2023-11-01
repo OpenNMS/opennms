@@ -112,7 +112,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         try {
             bulkRequest.execute();
         } catch (IOException e) {
-            LOG.error("Failed to persist feedback [{}]: {}", feedback, e.getMessage());
+            LOG.error("Failed to persist feedback [{}]: {}", feedback, e.getMessage(), e);
             throw new FeedbackException("Failed to persist feedback", e);
         }
 

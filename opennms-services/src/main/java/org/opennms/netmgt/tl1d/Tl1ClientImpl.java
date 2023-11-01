@@ -152,7 +152,7 @@ public class Tl1ClientImpl implements Tl1Client {
                 
             } catch (IOException e) {
                 LOG.error("TL1 Connection Failed to {}:{}", m_host, m_port);
-                LOG.debug(e.getMessage());
+                LOG.debug("", e);
                 
                 waitUntilNextConnectTime();
             } 

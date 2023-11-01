@@ -58,7 +58,7 @@ public abstract class NrtCollectorStarter {
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
-                logger.error("'{}'", e.getMessage());
+                logger.error("'{}'", e.getMessage(), e);
             }
         }
         context.close();

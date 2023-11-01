@@ -271,7 +271,7 @@ public class DataSender implements Fiber {
                         // These exceptions will be thrown if we try to POST RTC data before the web UI is available.
                         // Don't log a large stack trace for this because it will happen during startup before the
                         // RTCPostServlet is ready to handle requests.
-                        LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage());
+                        LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage(), e);
                     } catch (final Throwable t) {
                         LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
                     } finally {

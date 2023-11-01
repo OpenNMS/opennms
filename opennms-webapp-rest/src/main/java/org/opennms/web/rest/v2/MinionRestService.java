@@ -140,7 +140,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
         try {
             m_eventProxy.send(eventBuilder.getEvent());
         } catch (final EventProxyException e) {
-            LOG.warn("Failed to send Event on Minion deletion " + e.getMessage(), e);
+            LOG.warn("Failed to send Event on Minion deletion {}", e.getMessage(), e);
         }
 
         /*

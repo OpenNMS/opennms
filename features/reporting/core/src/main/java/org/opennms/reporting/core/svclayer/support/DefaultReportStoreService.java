@@ -159,7 +159,7 @@ public class DefaultReportStoreService implements ReportStoreService {
                 try {
                     reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
                 } catch (ReportException e) {
-                    LOG.error("unable to render report " + id, e);
+                    LOG.error("unable to render report {}", id, e);
                 }
             }
         });

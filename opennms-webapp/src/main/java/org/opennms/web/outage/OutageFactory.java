@@ -281,7 +281,7 @@ public class OutageFactory extends Object {
                 select.append(offset);
             }
 
-            LOG.debug(select.toString());
+            LOG.debug("{}", select);
 
             final PreparedStatement stmt = conn.prepareStatement(select.toString());
             d.watch(stmt);

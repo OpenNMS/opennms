@@ -122,10 +122,10 @@ public class LegacyLocalReportRepository implements ReportRepository {
                 // Community reports are allowed by default, no permission restriction
                 resultReport.setAllowAccess(true);
             } catch (IllegalAccessException e) {
-                logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
+                logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage(), e);
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
-                logger.error("InvocationTargetException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
+                logger.error("InvocationTargetException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage(), e);
                 e.printStackTrace();
             }
             resultList.add(resultReport);
@@ -147,10 +147,10 @@ public class LegacyLocalReportRepository implements ReportRepository {
                 // Community reports are allowed by default, no permission restriction
                 resultReport.setAllowAccess(true);
             } catch (IllegalAccessException e) {
-                logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
+                logger.error("IllegalAccessException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage(), e);
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
-                logger.error("InvocationTargetException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage());
+                logger.error("InvocationTargetException during BeanUtils.copyProperties for BasicReportDefinion '{}'", e.getMessage(), e);
                 e.printStackTrace();
             }
             resultList.add(resultReport);

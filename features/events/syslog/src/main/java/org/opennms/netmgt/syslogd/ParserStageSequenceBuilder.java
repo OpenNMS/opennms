@@ -341,7 +341,7 @@ public class ParserStageSequenceBuilder {
 			if (incomingState == null) {
 				return null;
 			} else {
-				LOG.trace("Starting stage: " + this);
+				LOG.trace("Starting stage: {}", this);
 			}
 
 			ParserState state = incomingState.clone();
@@ -381,7 +381,7 @@ public class ParserStageSequenceBuilder {
 						return new ParserState(stageState.buffer, state.message);
 					} else {
 						// Reached end of buffer, match failed
-						LOG.trace("Parse failed due to buffer underflow: " + this);
+						LOG.trace("Parse failed due to buffer underflow: {}", this);
 						return null;
 					}
 				}

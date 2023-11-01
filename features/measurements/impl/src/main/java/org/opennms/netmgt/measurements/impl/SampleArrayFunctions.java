@@ -72,7 +72,7 @@ public class SampleArrayFunctions {
 			
 			sample = (double[]) m_context.get("__"+sampleName);
 			if(sample==null) {
-				LOG.warn("fn:arrayZero attribute not in jexl context: __"+sampleName);
+				LOG.warn("fn:arrayZero attribute not in jexl context: __{}", sampleName);
 				return Double.NaN;
 			}
 			
@@ -84,7 +84,7 @@ public class SampleArrayFunctions {
 			return sample[i-n];
 			
 		} catch (Exception ex){
-			LOG.error("fn:arrayZero problem retrieving prior attribute sample  "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayZero problem retrieving prior attribute sample  {} (i - n) ({}-{})", sampleName, i, n, ex);
 		}
 		return Double.NaN;
 	}
@@ -107,7 +107,7 @@ public class SampleArrayFunctions {
 			
 			sample = (double[]) m_context.get("__"+sampleName);
 			if(sample==null) {
-				LOG.warn("fn:arrayFirst attribute not in jexl context: __"+sampleName);
+				LOG.warn("fn:arrayFirst attribute not in jexl context: __{}", sampleName);
 				return Double.NaN;
 			}
 			
@@ -119,7 +119,7 @@ public class SampleArrayFunctions {
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("fn:arrayFirst problem retrieving prior attribute sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayFirst problem retrieving prior attribute sample {} (i - n) ({}-{})", sampleName, i, n, ex);
 		}
 		return Double.NaN;
 	}
@@ -142,7 +142,7 @@ public class SampleArrayFunctions {
 			
 			sample = (double[]) m_context.get("__"+sampleName);
 			if(sample==null) {
-				LOG.warn("fn:arrayNaN attribute not in jexl context: __"+sampleName);
+				LOG.warn("fn:arrayNaN attribute not in jexl context: __{}", sampleName);
 				return Double.NaN;
 			}
 			
@@ -154,7 +154,7 @@ public class SampleArrayFunctions {
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("fn:arrayNaN problem retrieving prior attribute sample "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayNaN problem retrieving prior attribute sample {} (i - n) ({}-{})", sampleName, i, n, ex);
 		}
 		return Double.NaN;
 	}
@@ -178,7 +178,7 @@ public class SampleArrayFunctions {
 			
 			sample = (double[]) m_context.get("__"+sampleName);
 			if(sample==null) {
-				LOG.warn("fn:arrayStart attribute not in jexl context: __"+sampleName);
+				LOG.warn("fn:arrayStart attribute not in jexl context: __{}", sampleName);
 				return Double.NaN;
 			}
 			
@@ -190,7 +190,7 @@ public class SampleArrayFunctions {
 			return sample[i-n];
 		}
 		catch (Exception ex){
-			LOG.error("fn:arrayStart problem retrieving prior attribute sample  "+sampleName+" (i - n) ("+i+"-"+n+")",ex);
+			LOG.error("fn:arrayStart problem retrieving prior attribute sample  {} (i - n) ({}-{})", sampleName, i, n, ex);
 		}
 		return Double.NaN;
 	}

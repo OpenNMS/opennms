@@ -129,7 +129,7 @@ public class TopologyGenerator {
         public TopologyGenerator build() {
             if(progressCallback == null) {
                 // Default: use a logger
-                Logger log = LoggerFactory.getLogger(TopologyGenerator.class);
+                Logger log = LoggerFactory.getLogger(TopologyGeneratorBuilder.class);
                 progressCallback = new ProgressCallback(log::info);
             }
             return new TopologyGenerator(persister, progressCallback);

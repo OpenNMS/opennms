@@ -159,8 +159,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
 
             if (alarm != null) {
-                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
-                        "A new alarm will be instantiated to manage the problem.", reductionKey);
+                LOG.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; A new alarm will be instantiated to manage the problem.", reductionKey);
                 alarm.archive();
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();

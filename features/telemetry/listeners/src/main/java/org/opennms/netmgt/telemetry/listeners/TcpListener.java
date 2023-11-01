@@ -159,7 +159,7 @@ public class TcpListener implements GracefulShutdownListener {
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-                                        LOG.warn("Invalid packet: {}", cause.getMessage());
+                                        LOG.warn("Invalid packet: {}", cause.getMessage(), cause);
                                         LOG.debug("", cause);
 
                                         session.inactive();

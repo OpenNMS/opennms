@@ -297,7 +297,7 @@ public class EventRestService extends OnmsRestService {
                 for (final ConstraintViolation<?> error : errors) {
                     sb.append(error.toString()).append("\n");
                 }
-                LOG.debug(sb.toString());
+                LOG.debug("{}", sb);
                 throw getException(Status.BAD_REQUEST, errors.size() + " errors found while validating event.");
             }
             m_eventForwarder.sendNow(event);

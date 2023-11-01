@@ -57,7 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NodeTopologyServiceImpl extends TopologyServiceImpl implements NodeTopologyService {
-    private final static Logger LOG = LoggerFactory.getLogger(TopologyServiceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(NodeTopologyServiceImpl.class);
 
     private NodeDao m_nodeDao;
     @Override
@@ -176,7 +176,7 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
 
         if (!downlevels.isEmpty() && subnetworks.size() > 0) {
             for (SubNetwork level : downlevels) {
-                LOG.info("getConnected: iterating on: " + level);
+                LOG.info("getConnected: iterating on: {}", level);
                 priority = getConnected(level, subnetworks, priorityMap, priority);
             }
         }

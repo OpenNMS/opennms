@@ -89,7 +89,7 @@ import org.springframework.test.context.ContextConfiguration;
 @DirtiesContext
 public class NodeScanIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanExistingFalseIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeScanIT.class);
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;

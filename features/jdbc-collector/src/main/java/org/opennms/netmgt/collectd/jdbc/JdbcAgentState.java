@@ -131,7 +131,7 @@ public class JdbcAgentState {
         try {
             return con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         } catch(SQLException e) {
-            LOG.warn("Unable to create SQL statement: {}", e.getMessage());
+            LOG.warn("Unable to create SQL statement: {}", e.getMessage(), e);
             throw new JdbcCollectorException("Unable to create SQL statement: " + e.getMessage(), e);
         }
     }

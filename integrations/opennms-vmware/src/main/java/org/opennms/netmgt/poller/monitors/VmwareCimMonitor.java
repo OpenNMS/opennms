@@ -144,7 +144,7 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
                     try {
                         cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
                     } catch (Exception e) {
-                        logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
+                        logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e);
                         return PollStatus.unavailable("Error retrieving cim values from host system '" + vmwareManagedObjectId + "'");
                     }
                     boolean success = true;
@@ -181,7 +181,7 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
                     }
                 }
             } catch (MalformedURLException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause(), e);
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             } catch (RemoteException e) {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());

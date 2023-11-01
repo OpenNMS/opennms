@@ -144,7 +144,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 helper.setTo(configMsg.getTo());
                 helper.setSubject(configMsg.getSubject());
             } catch (final MessagingException e) {
-                LOG.warn("found a problem building message: {}", e.getMessage());
+                LOG.warn("found a problem building message: {}", e.getMessage(), e);
             }
         } else {
             LOG.warn("Missing sendmail message configuration. This MIME message will probably be wrong.");

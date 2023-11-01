@@ -48,7 +48,7 @@ import io.netty.handler.logging.LoggingHandler;
 
 public class TcpListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;

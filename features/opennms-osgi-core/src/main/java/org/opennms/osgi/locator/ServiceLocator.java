@@ -50,7 +50,7 @@ public class ServiceLocator {
             }
             return (T) bundleContext.getService(serviceReferences[0]);
         } catch (InvalidSyntaxException ex) {
-            Log.warn(String.format("Error while retrieving %s", lookupClass), ex);
+            Log.warn("Error while retrieving {}", lookupClass, ex);
         }
         Log.warn("No {} found", lookupClass);
         return null;

@@ -49,12 +49,12 @@ public final class ExampleActivator
     public void start( BundleContext bc )
         throws Exception
     {
-        LoggerFactory.getLogger(getClass()).debug("STARTING {}", ExampleService.class.getName());
+        LoggerFactory.getLogger(ExampleActivator.class).debug("STARTING {}", ExampleService.class.getName());
 
         Dictionary<String,Object> props = new Hashtable<String,Object>();
         // add specific service properties here...
 
-        LoggerFactory.getLogger(getClass()).debug("REGISTER {}", ExampleService.class.getName());
+        LoggerFactory.getLogger(ExampleActivator.class).debug("REGISTER {}", ExampleService.class.getName());
 
         // Register our example service implementation in the OSGi service registry
         bc.registerService( ExampleService.class, new ExampleServiceImpl(), props );
@@ -67,7 +67,7 @@ public final class ExampleActivator
     public void stop( BundleContext bc )
         throws Exception
     {
-        LoggerFactory.getLogger(getClass()).debug("STOPPING {}", ExampleService.class.getName());
+        LoggerFactory.getLogger(ExampleActivator.class).debug("STOPPING {}", ExampleService.class.getName());
 
         // no need to unregister our service - the OSGi framework handles it for us
     }

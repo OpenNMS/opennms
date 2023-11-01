@@ -54,10 +54,7 @@ public class NrtCollectorJMSDLMC implements NrtCollector {
 
     @Override
     public void start() {
-        logger.info("Starting instance: " + this.hashCode()
-                + " with destination: ["
-                + listenerContainer.getDestinationName() + "] msgListener: ["
-                + listenerContainer.getMessageListener() + "]");
+        logger.info("Starting instance: {} with destination: [{}] msgListener: [{}]", this.hashCode(), listenerContainer.getDestinationName(), listenerContainer.getMessageListener());
 
         listenerContainer.start();
     }
@@ -69,7 +66,7 @@ public class NrtCollectorJMSDLMC implements NrtCollector {
 
     @Override
     public void stop() {
-        logger.info("Stopping instance: " + this.hashCode());
+        logger.info("Stopping instance: {}", this.hashCode());
         listenerContainer.stop();
         listenerContainer.destroy();
     }

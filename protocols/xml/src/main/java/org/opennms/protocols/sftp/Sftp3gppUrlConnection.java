@@ -163,7 +163,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
                 DateTime dateTime = dtf.parseDateTime(value);
                 return dateTime.getMillis();
             } catch (Exception e) {
-                LOG.warn("getTimeStampFromFile: malformed 3GPP file {}, because {}", fileName, e.getMessage());
+                LOG.warn("getTimeStampFromFile: malformed 3GPP file {}, because {}", fileName, e.getMessage(), e);
                 return 0;
             }
         }

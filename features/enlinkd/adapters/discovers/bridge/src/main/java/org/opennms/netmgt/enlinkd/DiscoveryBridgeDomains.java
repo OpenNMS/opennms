@@ -210,7 +210,7 @@ public class DiscoveryBridgeDomains extends Schedulable {
                 LOG.info("run: added Task {}", nodebridgetopology.getInfo());
             } catch (BridgeTopologyException e) {
                 LOG.error("run: node: [{}], getting broadcast domain. Failed {}",
-                          nodeid, e.getMessage());
+                        nodeid, e.getMessage(), e);
             }
         }
 

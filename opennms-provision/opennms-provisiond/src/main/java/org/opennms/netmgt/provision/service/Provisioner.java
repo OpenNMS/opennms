@@ -335,7 +335,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
      */
     public ForceRescanScan createForceRescanScan(Integer nodeId, String monitorKey) {
-        LOG.info("createForceRescanScan called with nodeId: "+nodeId);
+        LOG.info("createForceRescanScan called with nodeId: {}", nodeId);
         return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, monitorHolder.getMonitor(monitorKey), monitorHolder.getOverallMonitorForMetric(monitorKey));
     }
 

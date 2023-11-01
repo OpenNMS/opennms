@@ -77,12 +77,12 @@ public class SimpleDataSource implements DataSource {
             try {
                 boolean isRegistered = (boolean)driverClass.getMethod("isRegistered").invoke(null, (Object[])null);
                 if (!isRegistered) {
-                    LOG.info(org.postgresql.Driver.class.getName() + " is not registered, reregistering...");
+                    LOG.info("{} is not registered, reregistering...", org.postgresql.Driver.class.getName());
                     driverClass.getMethod("register").invoke(null, (Object[])null);
-                    LOG.info(org.postgresql.Driver.class.getName() + " is registered");
+                    LOG.info("{} is registered", org.postgresql.Driver.class.getName());
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                LOG.warn("Exception while trying to check the registration on the " + org.postgresql.Driver.class.getName() + " driver", e);
+                LOG.warn("Exception while trying to check the registration on the {} driver", org.postgresql.Driver.class.getName(), e);
             }
         }
     }

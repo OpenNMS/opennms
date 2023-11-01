@@ -1188,7 +1188,7 @@ public class AvailCalculations extends Object {
                         final IfService ifservice = entry.getKey();
                         final OutageSvcTimesList outageList = entry.getValue();
 
-                        LOG.debug(ifservice.toString());
+                        LOG.debug("{}", ifservice);
 
                         if (outageList != null) {
                             outage = outageList.getDownTime(curTime, ROLLING_WINDOW);

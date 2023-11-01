@@ -88,12 +88,12 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: ospf mib not supported {}", 
-                    getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: ospf mib not supported {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: ospf mib not supported {}", 
-                    getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: ospf mib not supported {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        }
 
@@ -133,12 +133,12 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.debug("run: node [{}]: ExecutionException: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        } catch (final InterruptedException e) {
-           LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
        }
 
@@ -160,12 +160,12 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.debug("run: node [{}]: ExecutionException: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        } catch (final InterruptedException e) {
-           LOG.debug("run: node [{}]: InterruptedException: {}", 
-                    getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
        }
 
@@ -210,11 +210,11 @@ public final class NodeDiscoveryOspf extends NodeCollector {
                     get();
         } catch (ExecutionException e) {
             LOG.debug("run: node [{}]: ExecutionException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
             LOG.debug("run: node [{}]: InterruptedException: {}",
-                    getNodeId(), e.getMessage());
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         // Areas

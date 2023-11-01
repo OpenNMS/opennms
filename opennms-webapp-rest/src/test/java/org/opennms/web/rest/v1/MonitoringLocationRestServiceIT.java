@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(org.opennms.web.rest.v2.MonitoringLocationRestServiceIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestServiceIT.class);
 
     @Autowired
     private MockEventIpcManager eventIpcManager;

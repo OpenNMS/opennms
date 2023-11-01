@@ -424,7 +424,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 } catch (Exception e) {}
             }
         }
-        LOG.error("Can't find the MIB module for " + mibFile);
+        LOG.error("Can't find the MIB module for {}", mibFile);
         errorHandler.addError("Can't find the MIB module for " + mibFile);
         return null;
     }

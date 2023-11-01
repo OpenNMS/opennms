@@ -133,9 +133,9 @@ public class HostResourceSWRunDetector extends SnmpDetector {
             }
 
         } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number {}", e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage(), e);
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface {}", hostAddress, t);
         }

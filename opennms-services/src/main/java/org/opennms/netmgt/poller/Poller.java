@@ -590,8 +590,7 @@ public class Poller extends AbstractServiceDaemon {
             return;
         }
 
-        LOG.warn("Outage {} was left open without a lost service event. "
-                + "The outage will be closed.", outage);
+        LOG.warn("Outage {} was left open without a lost service event. The outage will be closed.", outage);
         final Date now = new Date();
         outage.setIfRegainedService(now);
         m_outageDao.update(outage);

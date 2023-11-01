@@ -242,7 +242,7 @@ public class VmwareViJavaAccess implements AutoCloseable {
                         client.setConnectTimeout(timeout);
                         client.setReadTimeout(timeout);
                         m_timeout = timeout;
-                        logger.debug("Set VMware service instance timeout to " + timeout + " ms.");
+                        logger.debug("Set VMware service instance timeout to {} ms.", timeout);
                         return true;
                     }
                 }

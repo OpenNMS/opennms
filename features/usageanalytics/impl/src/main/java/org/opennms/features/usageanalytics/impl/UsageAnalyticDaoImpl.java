@@ -55,7 +55,7 @@ public class UsageAnalyticDaoImpl extends AbstractDaoHibernate<UsageAnalytic, Lo
     /** {@inheritDoc} */
     @Override
     public long getValueByMetricName(String metricName) {
-        LOG.info("Getting value of the object with metric name : " + metricName);
+        LOG.info("Getting value of the object with metric name : {}", metricName);
 
         UsageAnalytic ua = null;
 
@@ -76,7 +76,7 @@ public class UsageAnalyticDaoImpl extends AbstractDaoHibernate<UsageAnalytic, Lo
     /** {@inheritDoc} */
     @Override
     public void incrementCounterByMetricName(String metricName) {
-        LOG.info("Going to get UsageAnalytic object with metric name : " + metricName);
+        LOG.info("Going to get UsageAnalytic object with metric name : {}", metricName);
 
         UsageAnalytic ua = null;
 

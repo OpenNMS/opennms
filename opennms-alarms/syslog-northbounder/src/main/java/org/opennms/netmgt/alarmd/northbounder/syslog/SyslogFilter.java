@@ -181,7 +181,7 @@ public class SyslogFilter {
         try {
             passed = (Boolean)exp.getValue(context, Boolean.class);
         } catch (Exception e) {
-            LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage());
+            LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", getRule(), alarm.getUei(), e.getMessage(), e);
         }
         LOG.debug("passFilter: checking {} ? {}", getRule(), passed);
         return passed;

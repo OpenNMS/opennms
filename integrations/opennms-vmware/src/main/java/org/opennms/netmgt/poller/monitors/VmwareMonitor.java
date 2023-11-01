@@ -168,7 +168,7 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
                     }
                 }
             } catch (MalformedURLException | RemoteException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause(), e);
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
         }

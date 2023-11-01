@@ -77,7 +77,7 @@ public class KerberosServiceLdapAuthenticationProvider extends KerberosServiceAu
         byte[] token = auth.getToken();
         LOG.debug("Try to validate Kerberos Token");
         KerberosTicketValidation ticketValidation = m_kerberosTicketValidator.validateTicket(token);
-        LOG.debug("Succesfully validated " + ticketValidation.username());
+        LOG.debug("Succesfully validated {}", ticketValidation.username());
         
         /*
          * The incoming username will be in the form of a Kerberos user principal name,

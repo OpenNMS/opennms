@@ -42,7 +42,7 @@ import javax.jms.*;
  */
 public class SimpleJobPublisher implements JobPublisher {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobPublisher.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleJobPublisher.class);
 
     // URL of the JMS server. DEFAULT_BROKER_URL will just mean
     // that JMS server is on localhost
@@ -81,7 +81,7 @@ public class SimpleJobPublisher implements JobPublisher {
 
             connection.close();
         } catch (Exception e) {
-            logger.error("Exception during Job Publishing, sorry '{}'", e.getMessage());
+            logger.error("Exception during Job Publishing, sorry '{}'", e.getMessage(), e);
         }
     }
 }

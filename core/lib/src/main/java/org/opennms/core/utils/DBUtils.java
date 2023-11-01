@@ -67,7 +67,7 @@ public class DBUtils {
         m_statements = Collections.synchronizedSet(new HashSet<Statement>());
         m_resultSets = Collections.synchronizedSet(new HashSet<ResultSet>());
         m_connections = Collections.synchronizedSet(new HashSet<Connection>());
-        LOG = LoggerFactory.getLogger(loggingClass);
+        LOG = LoggerFactory.getLogger(DBUtils.class);
     }
 
     public DBUtils(Class<?> loggingClass, Object... targets) {
@@ -83,7 +83,7 @@ public class DBUtils {
      * @return a {@link org.opennms.core.utils.DBUtils} object.
      */
     public DBUtils setLoggingClass(Class<?> c) {
-        LOG = LoggerFactory.getLogger(c);
+        LOG = LoggerFactory.getLogger(DBUtils.class);
         return this;
     }
 

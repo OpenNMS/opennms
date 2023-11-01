@@ -101,7 +101,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
                         return req;
                     }
                 } catch(FileNotFoundException e) {
-                    LOG.debug(e.getLocalizedMessage());
+                    LOG.debug("", e);
                 }
             }
         } catch (Exception e) {

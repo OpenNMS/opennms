@@ -272,7 +272,7 @@ public class JiraTicketerPlugin implements Plugin {
             } catch (InterruptedException | ExecutionException e) {
                 throw new PluginException("Failed to create issue.", e);
             }
-            LOG.info("created ticket " + createdIssue);
+            LOG.info("created ticket {}", createdIssue);
 
             ticket.setId(createdIssue.getKey());
 

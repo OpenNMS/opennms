@@ -336,11 +336,11 @@ public class Controller {
         }
 
         if (foundVm == null) {
-            LOG.debug("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
+            LOG.debug("Could not find OpenNMS JVM (\"{}\") among JVMs ({})", OPENNMS_JVM_DISPLAY_NAME_SUBSTRING, vmNames);
         } else {
             try {
                 vm = VirtualMachine.attach(foundVm);
-                LOG.debug("Attached to OpenNMS JVM: " + foundVm.id() + " (" + foundVm.displayName() + ")");
+                LOG.debug("Attached to OpenNMS JVM: {} ({})", foundVm.id(), foundVm.displayName());
             } catch (AttachNotSupportedException e) {
                 // This exception is unexpected so log a warning
                 LOG.warn("Cannot attach to OpenNMS JVM", e);
@@ -356,14 +356,14 @@ public class Controller {
             } else {
                 try {
                     vm = VirtualMachine.attach(m_pid);
-                    LOG.debug("Attached to OpenNMS JVM with PID: " + m_pid);
+                    LOG.debug("Attached to OpenNMS JVM with PID: {}", m_pid);
                 } catch (AttachNotSupportedException e) {
                     // This exception is unexpected so log a warning
-                    LOG.warn("Cannot attach to OpenNMS JVM at PID: " + m_pid, e);
+                    LOG.warn("Cannot attach to OpenNMS JVM at PID: {}", m_pid, e);
                 } catch (IOException e) {
                     // This exception will occur if the PID cannot be found
                     // because the process has been terminated
-                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: " + m_pid + ": " + e.getMessage());
+                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: {}: {}", m_pid, e.getMessage(), e);
                 }
             }
         }
@@ -397,7 +397,7 @@ public class Controller {
         // If there is no local JMX connector URI, we need to launch the
         // JMX agent via this VirtualMachine attachment.
         if (connectorAddress == null) {
-            LOG.info("Starting local management agent in JVM with ID: " + vm.id());
+            LOG.info("Starting local management agent in JVM with ID: {}", vm.id());
 
             try {
                 vm.startLocalManagementAgent();

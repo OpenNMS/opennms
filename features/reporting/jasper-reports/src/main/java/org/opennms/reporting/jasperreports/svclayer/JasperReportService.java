@@ -395,7 +395,7 @@ public class JasperReportService implements ReportService {
                             throw new ReportException("No suitable datasource configured for report " + reportId);
                         }
                     } catch (final Exception e) {
-                        LOG.warn("Failed to run report " + reportId, e);
+                        LOG.warn("Failed to run report {}", reportId, e);
                         if (e instanceof ReportException) throw (ReportException)e;
                         throw new ReportException(e);
                     }

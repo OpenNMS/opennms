@@ -190,7 +190,7 @@ public class SyslogEventForwarder {
         try {
             passed = (Boolean)exp.getValue(context, Boolean.class);
         } catch (Exception e) {
-            LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", filter.getRule(), event.getUei(), e.getMessage());
+            LOG.warn("passFilter: can't evaluate expression {} for alarm {} because: {}", filter.getRule(), event.getUei(), e.getMessage(), e);
         }
         LOG.debug("passFilter: checking {} ? {}", filter.getRule(), passed);
         return passed;
@@ -216,7 +216,7 @@ public class SyslogEventForwarder {
             LOG.debug("getTranslatedMessage: {} ==> {}", msgFormat, msg);
             return msg;
         } catch (Exception e) {
-            LOG.warn("getTranslatedMessage: can't evaluate expression {} for alarm {} because: {}", msgFormat, event.getUei(), e.getMessage());
+            LOG.warn("getTranslatedMessage: can't evaluate expression {} for alarm {} because: {}", msgFormat, event.getUei(), e.getMessage(), e);
         }
         return null;
     }

@@ -184,7 +184,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
                     LOG.info("checkStatus: HTTP socket connection for service {} timed out with {}", serviceInfo, httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    LOG.info(String.format("checkStatus: HTTP connection for service {} interrupted after {} bytes transferred with {}", serviceInfo, e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    LOG.info("checkStatus: HTTP connection for service {} interrupted after {} bytes transferred with {}", serviceInfo, e.bytesTransferred, httpClient.getTimeoutTracker().toString(), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
                     LOG.warn("Connection exception for {}", serviceInfo, e);
@@ -464,7 +464,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
 
                     if (IPLike.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
                         if (HttpMonitor.LOG.isDebugEnabled()) {
-                            HttpMonitor.LOG.debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
+                            HttpMonitor.LOG.debug("determineServerResponse: valid server response: {} found.", serverResponseValue);
                         }
                         m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
@@ -525,7 +525,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
             if (m_responseText != null && m_currentLine != null && !m_responseTextFound) {
                 if (checkCurrentLineMatchesResponseText()) {
                     if (HttpMonitor.LOG.isDebugEnabled()) {
-                        HttpMonitor.LOG.debug("response-text: "+m_responseText+": found.");
+                        HttpMonitor.LOG.debug("response-text: {}: found.", m_responseText);
                     }
                     m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                 }
@@ -618,7 +618,7 @@ public class HttpMonitor extends ParameterSubstitutingMonitor {
                 setReason(getReason() + "/Ports: " + testedPorts.toString());
 
                 if (HttpMonitor.LOG.isDebugEnabled()) {
-                    HttpMonitor.LOG.debug("checkStatus: Reason: \""+getReason()+"\"");
+                    HttpMonitor.LOG.debug("checkStatus: Reason: \"{}\"", getReason());
                 }
                 return PollStatus.unavailable(getReason());
         

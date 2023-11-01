@@ -178,7 +178,7 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
                 return Snmp4JUtils.convertPduToBytes(trapInfo.getTrapAddress(), 0, trapInfo.getCommunity(), pdu);
             }
         } catch (Throwable e) {
-            LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage());
+            LOG.warn("Unable to convert PDU into bytes: {}", e.getMessage(), e);
         }
         return null;
     }

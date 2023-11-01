@@ -99,7 +99,7 @@ public class QueueFileOffHeapDispatchQueueFactory implements DispatchQueueFactor
             suffix = sizeWithSuffix.substring(sizeWithSuffix.length() - 2).toLowerCase();
             sizeValue = sizeWithSuffix.substring(0, sizeWithSuffix.length() - 2).trim();
         } catch (IndexOutOfBoundsException e) {
-            LOG.warn("Invalid file size '" + sizeWithSuffix + "'. The file size must include a size and the units. eg 128MB");
+            LOG.warn("Invalid file size '{}'. The file size must include a size and the units. eg 128MB", sizeWithSuffix);
             throw e;
         }
 
@@ -117,7 +117,7 @@ public class QueueFileOffHeapDispatchQueueFactory implements DispatchQueueFactor
                 bytes = (long) value * 1024 * 1024 * 1024;
                 break;
             default:
-                LOG.warn("Could not parse unit suffix of '" + suffix + "' from max file size '" + sizeWithSuffix + "'");
+                LOG.warn("Could not parse unit suffix of '{}' from max file size '{}'", suffix, sizeWithSuffix);
                 throw new IllegalArgumentException("Invalid unit suffix " + suffix);
         }
 

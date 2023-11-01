@@ -63,7 +63,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GraphMLMetaTopologyProvider.class);
 
     private final GraphMLServiceAccessor m_serviceAccessor;
 
@@ -99,7 +99,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             return;
         }
         if (!graphMLFile.exists()) {
-            LOG.warn("No graph found at location " + graphMLFile.toString());
+            LOG.warn("No graph found at location {}", graphMLFile.toString());
             return;
         }
         try (InputStream input = new FileInputStream(graphMLFile)) {

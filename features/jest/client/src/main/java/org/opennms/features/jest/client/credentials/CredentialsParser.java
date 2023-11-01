@@ -78,7 +78,7 @@ public class CredentialsParser {
                             new AuthScope(httpHost),
                             new UsernamePasswordCredentials(Interpolator.interpolate(scope.getUsername(), scvScope).output, Interpolator.interpolate(scope.getPassword(), scvScope).output));
                 } catch (MalformedURLException ex) {
-                    LOG.error("Defined url is invalid: {}", ex.getMessage());
+                    LOG.error("Defined url is invalid: {}", ex.getMessage(), ex);
                 }
             }
         }

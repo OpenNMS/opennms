@@ -85,12 +85,12 @@ public final class NodeDiscoveryCdp extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: CDP_MIB not supported {}", 
-                    getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: ExecutionException: CDP_MIB not supported {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: CDP_MIB not supported {}", 
-                    getNodeId(), e.getMessage());
+            LOG.info("run: node [{}]: InterruptedException: CDP_MIB not supported {}",
+                    getNodeId(), e.getMessage(), e);
            return;
        }
        if (cdpGlobalGroup.getCdpDeviceId() == null ) {
@@ -121,12 +121,12 @@ public final class NodeDiscoveryCdp extends NodeCollector {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage(), e);
             return;
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 

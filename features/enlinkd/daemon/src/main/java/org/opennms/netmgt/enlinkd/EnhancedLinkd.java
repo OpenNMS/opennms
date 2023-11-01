@@ -623,7 +623,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
-            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage(), e);
             return false;
         }
         reload();

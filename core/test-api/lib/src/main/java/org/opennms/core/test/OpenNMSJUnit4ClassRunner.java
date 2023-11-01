@@ -91,7 +91,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 				final TestExecutionListener listener = (TestExecutionListener)standardListenerClazz.getDeclaredConstructor().newInstance();
                 getTestContextManager().registerTestExecutionListeners(listener);
             } catch (final Exception e) {
-            	LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, e.getLocalizedMessage());
+                LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, e.getLocalizedMessage(), e);
             }
         }
 

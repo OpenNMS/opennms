@@ -108,7 +108,7 @@ public class TcpRrdStrategyTest {
 
                             Socket socket = ssocket.accept();
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
-                            LOG.debug("Number of messages in current packet: " + messages.getMessageCount());
+                            LOG.debug("Number of messages in current packet: {}", messages.getMessageCount());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 final StringBuilder values = new StringBuilder();
                                 values.append("{ ");
@@ -117,11 +117,7 @@ public class TcpRrdStrategyTest {
                                     values.append(message.getDblValue(i));
                                 }
                                 values.append(" }");
-                                LOG.debug("Message received: { " + 
-                                        "path: \"" + message.getPath() + "\", " + 
-                                        "owner: \"" + message.getOwner() + "\", " + 
-                                        "timestamp: \"" + message.getTimestamp() + "\", " + 
-                                        "values: " + values.toString() + " }");
+                                LOG.debug("Message received: { path: \"{}\", owner: \"{}\", timestamp: \"{}\", values: {} }", message.getPath(), message.getOwner(), message.getTimestamp(), values.toString());
 
                                 /*
                                  * See comments above re: Jython

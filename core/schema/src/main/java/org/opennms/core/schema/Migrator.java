@@ -569,7 +569,7 @@ public class Migrator {
      * @throws java.lang.Exception if any.
      */
     public void checkUnicode() throws Exception {
-        LOG.info("checking if database \"" + getDatabaseName() + "\" is unicode");
+        LOG.info("checking if database \"{}\" is unicode", getDatabaseName());
 
         Statement st = null;
         ResultSet rs = null;
@@ -828,7 +828,7 @@ public class Migrator {
      * @throws java.sql.SQLException if any.
      */
     public void dropDatabase() throws MigrationException {
-        LOG.info("removing database '" + getDatabaseName() + "'");
+        LOG.info("removing database '{}'", getDatabaseName());
 
         Connection c = null;
         Statement st = null;
@@ -985,7 +985,7 @@ public class Migrator {
     // Ensures that the database time and the system time running the installer match
     // If the difference is greater than 1s, it fails
     public void checkTime() throws Exception {
-        LOG.info("checking if time of database \"" + getDatabaseName() + "\" is matching system time");
+        LOG.info("checking if time of database \"{}\" is matching system time", getDatabaseName());
 
         try (Statement st = m_adminDataSource.getConnection().createStatement()) {
             final long beforeQueryTime = System.currentTimeMillis();

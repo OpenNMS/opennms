@@ -155,7 +155,7 @@ public class RequestTracker<ReqT extends Request<?, ReqT, ReplyT>, ReplyT extend
                     } catch (InterruptedException e) {
                         s_log.error("Thread {} interrupted!", this);
                     } catch (Throwable t) {
-                        s_log.error("Unexpected exception on Thread " + this + "!", t);
+                        s_log.error("Unexpected exception on Thread {}!", this, t);
                     }
                 }
             };
@@ -167,7 +167,7 @@ public class RequestTracker<ReqT extends Request<?, ReqT, ReplyT>, ReplyT extend
                     } catch (InterruptedException e) {
                         s_log.error("Thread {} interrupted!", this);
                     } catch (Throwable t) {
-                        s_log.error("Unexpected exception on Thread " + this + "!", t);
+                        s_log.error("Unexpected exception on Thread {}!", this, t);
                     }
                 }
             };
@@ -278,7 +278,7 @@ public class RequestTracker<ReqT extends Request<?, ReqT, ReplyT>, ReplyT extend
             try {
                 return m_requestLocator.locateMatchingRequest(reply);
             } catch (Throwable t) {
-                s_log.error("Unexpected error locating response to request " + reply + ". Discarding response!", t);
+                s_log.error("Unexpected error locating response to request {}. Discarding response!", reply, t);
                 return null;
             }
         }

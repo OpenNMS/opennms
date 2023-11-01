@@ -231,7 +231,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					// Try to use the same class as the outside CriteriaBuilder
 					builder = m_criteriaBuilder.getClass().getConstructor(Class.class).newInstance(m_class);
 				} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-					LOG.warn("Could not create " + m_criteriaBuilder.getClass().getSimpleName() + "; falling back to CriteriaBuilder: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                    LOG.warn("Could not create {}; falling back to CriteriaBuilder: {}: {}", m_criteriaBuilder.getClass().getSimpleName(), e.getClass().getSimpleName(), e.getMessage(), e);
 					builder = new CriteriaBuilder(m_class);
 				}
 				// Create a new visitor for the SearchCondition
@@ -262,7 +262,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					} else {
 						subRestriction = restrictions.iterator().next();
 					}
-					LOG.info(subRestriction.toString());
+					LOG.info("{}", subRestriction);
 					subRestrictions.add(subRestriction);
 				}
 			}

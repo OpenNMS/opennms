@@ -152,7 +152,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 return;
             }
         } catch (final IOException e) {
-            LOG.debug("No file associated with resource {}, skipping reload container initialization. Reason: ", resource, e.getMessage());
+            LOG.debug("No file associated with resource {}, skipping reload container initialization. Reason: ", resource, e);
         }
 
         // if we fall through to here, then the file was null, or something else went wrong store the config directly

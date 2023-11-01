@@ -108,7 +108,7 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
                 ExecRunner execRunner = new ExecRunner();
                 execRunner.setMaxRunTimeSecs(timeoutInSeconds);
 
-                LOGGER.debug("calling: " + script + " " + args);
+                LOGGER.debug("calling: {} {}", script, args);
 
                 exitStatus = execRunner.exec(script + " " + args);
 
@@ -163,12 +163,12 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable(reason);
 
             } catch (InterruptedException e) {
-                LOGGER.debug("Interruption for script " + script, e);
+                LOGGER.debug("Interruption for script {}", script, e);
                 serviceStatus = PollStatus.unavailable("Interruption for script " + script + " " + e.getMessage());
             }
         }
 
-        LOGGER.debug("Called: '" + script + " " + args + "' Result: " + serviceStatus + " ResponseTime: " + serviceStatus.getResponseTime());
+        LOGGER.debug("Called: '{} {}' Result: {} ResponseTime: {}", script, args, serviceStatus, serviceStatus.getResponseTime());
         return serviceStatus;
     }
 

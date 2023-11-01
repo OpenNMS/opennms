@@ -55,7 +55,7 @@ public class DashboardView extends DashboardBody implements View {
      */
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        LoggerFactory.getLogger(DashboardView.class).warn("enter(): " + event.getParameters());
+        LoggerFactory.getLogger(DashboardView.class).warn("enter(): {}", event.getParameters());
         if (event.getParameters() != null) {
             Wallboard wallboard = WallboardProvider.getInstance().getWallboard(event.getParameters());
             if (wallboard != null) {

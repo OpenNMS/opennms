@@ -161,7 +161,7 @@ public class CustomViewController extends AbstractController implements Initiali
             try {
                 Util.createEventProxy().send(eb.getEvent());
             } catch (Throwable e) {
-                LOG.error("Can't send event " + eb.getEvent(), e);
+                LOG.error("Can't send event {}", eb.getEvent(), e);
             }
         }
         List<Graph> graphCollection = report.getGraphs();

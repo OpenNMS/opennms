@@ -328,7 +328,7 @@ public class NrtController {
     private Map<String, String> getMetaDataForReport(final Set<RrdGraphAttribute> rrdGraphAttributes) {
         Map<String, String> metaData = new HashMap<String, String>();
 
-        logger.debug("getMetaDataForReport: " + rrdGraphAttributes);
+        logger.debug("getMetaDataForReport: {}", rrdGraphAttributes);
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {

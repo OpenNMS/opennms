@@ -95,7 +95,7 @@ public class IfTttTrigger {
 
     public void trigger() {
         try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build()) {
-            LOG.debug("Sending '" + event + "' event to IFTTT.");
+            LOG.debug("Sending '{}' event to IFTTT.", event);
 
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));
             httpPost.setHeader("Content-type", "application/json");

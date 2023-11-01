@@ -202,10 +202,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     
                     long startTime = System.currentTimeMillis();
                     if ("eval".equals(runType)) {
-                        LOG.debug("m_bsfManager's hashCode is " + 
-                                (m_bsfManager == null ? "null" : m_bsfManager.hashCode()) + 
-                                "; lang is " + lang + "; code's hashCode is " + 
-                                (code == null ? "null" : code.hashCode()));
+                        LOG.debug("m_bsfManager's hashCode is {}; lang is {}; code's hashCode is {}", (m_bsfManager == null ? "null" : m_bsfManager.hashCode()), lang, (code == null ? "null" : code.hashCode()));
                         results.put("status", m_bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString());
                     } else if ("exec".equals(runType)) {
                         m_bsfManager.exec(lang, "BSFMonitor", 0, 0, code);

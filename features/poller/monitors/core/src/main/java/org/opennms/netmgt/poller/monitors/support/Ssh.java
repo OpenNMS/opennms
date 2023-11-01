@@ -276,7 +276,7 @@ public class Ssh extends AbstractPoll {
             setError(e);
             disconnect();
         } catch (final ConnectException e) {
-            LOG.debug("connection failed: {}", e.getMessage());
+            LOG.debug("connection failed: {}", e.getMessage(), e);
             setError(e);
             disconnect();
         } catch (final Throwable e) {

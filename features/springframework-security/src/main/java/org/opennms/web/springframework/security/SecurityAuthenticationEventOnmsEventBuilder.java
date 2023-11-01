@@ -81,13 +81,15 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         
         if (event instanceof AbstractAuthenticationFailureEvent) {
             AbstractAuthenticationFailureEvent authEvent = (AbstractAuthenticationFailureEvent) event;
-            
-            LOG.debug("AbstractAuthenticationFailureEvent was received, exception message - {}", authEvent.getException().getMessage());
+
+            final var ex = authEvent.getException();
+
+            LOG.debug("AbstractAuthenticationFailureEvent was received, exception message - {}", ex.getMessage(), ex);
             EventBuilder builder = createEvent(FAILURE_UEI, authEvent);
             // Sync the timestamp
             builder.setTime(new Date(event.getTimestamp()));
-            builder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
-            builder.addParam("exceptionMessage", authEvent.getException().getMessage());
+            builder.addParam("exceptionName", ex.getClass().getSimpleName());
+            builder.addParam("exceptionMessage", ex.getMessage());
             sendEvent(builder.getEvent());
         }
         

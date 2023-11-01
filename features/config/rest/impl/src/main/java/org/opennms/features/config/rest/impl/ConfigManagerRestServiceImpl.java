@@ -91,7 +91,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
         } catch (ConfigRuntimeException e) {
-            LOG.error(e.getMessage());
+            LOG.error("", e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -102,7 +102,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             Set<String> ids = configurationManagerService.getConfigIds(configName);
             return Response.ok(ids).build();
         } catch (ConfigRuntimeException e) {
-            LOG.error("Fail to getConfigIds for configName: {}, message: {}", configName, e.getMessage());
+            LOG.error("Fail to getConfigIds for configName: {}, message: {}", configName, e.getMessage(), e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -250,7 +250,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         try {
             return Response.ok(configurationManagerService.getConfigNames()).build();
         } catch (ConfigRuntimeException e) {
-            LOG.error("listConfigs: " + e.getMessage());
+            LOG.error("listConfigs: {}", e.getMessage(), e);
             return Response.serverError().build();
         }
     }
