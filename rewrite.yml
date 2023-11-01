@@ -9,3 +9,4 @@ recipeList:
   - org.openrewrite.java.migrate.UseJavaUtilBase64
   - org.openrewrite.java.migrate.apache.commons.codec.ApacheBase64ToJavaBase64
   - org.openrewrite.java.migrate.apache.commons.io.ApacheCommonsFileUtilsRecipes
+  - org.openrewrite.java.migrate.apache.commons.lang.ApacheCommonsStringUtilsRecipes

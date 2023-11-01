@@ -38,13 +38,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.config.keys.AuthorizedKeyEntry;
 import org.apache.sshd.common.config.keys.KeyUtils;
 import org.apache.sshd.common.keyprovider.KeyPairProvider;
@@ -194,7 +190,7 @@ public class SshScriptingServiceImplIT {
         sshd.setShellFactory(new EchoShellFactory());
         sshd.setKeyPairProvider(KeyPairProvider.wrap(this.hostKey));
         sshd.setPasswordAuthenticator(
-                (user, password, session) -> StringUtils.equals(user, USER) && StringUtils.equals(password, PASSWORD)
+                (user, password, session) -> Objects.equals(user, USER) && Objects.equals(password, PASSWORD)
         );
         sshd.setPublickeyAuthenticator(new AuthorizedKeyEntriesPublickeyAuthenticator(null,
                                                                                       null,

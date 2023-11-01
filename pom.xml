@@ -1062,7 +1062,7 @@
        <version>5.9.1</version>
        <configuration>
          <activeRecipes>
-           <recipe>org.opennms.core.RewriteConfig</recipe>
+           <recipe>org.opennms.core.OpennmsRewriteConfig</recipe>
          </activeRecipes>
        </configuration>
        <dependencies>
