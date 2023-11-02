@@ -161,7 +161,7 @@ public class NotificationTesterImpl implements NotificationTester {
         // Next, we check and see if there is a user
         User user = userManager.getUser(target);
         if (user != null) {
-            return Collections.singletonList(user);
+            return List.of(user);
         }
 
         if (target.indexOf('@') >= 0) {
@@ -172,7 +172,7 @@ public class NotificationTesterImpl implements NotificationTester {
             contact.setType("email");
             contact.setInfo(target);
             user.addContact(contact);
-            return Collections.singletonList(user);
+            return List.of(user);
         }
 
         // Nothing found :(

@@ -52,7 +52,7 @@ public class ExistingResourceAccessor implements ResourceAccessor {
         if (m_resource == null) {
             return Collections.emptySet();
         } else {
-            return Collections.singleton(m_resource.createRelative(path).getInputStream());
+            return Set.of(m_resource.createRelative(path).getInputStream());
         }
     }
 

@@ -98,7 +98,7 @@ public class LineOrientedResponse {
      * @return a boolean.
      */
     public boolean matches(final String regex) {
-        return getResponse() != null && getResponse().toString().trim().matches(regex);
+        return getResponse() != null && getResponse().trim().matches(regex);
     }
     
     /**

@@ -1183,8 +1183,8 @@ public abstract class NotificationManager {
                 parmMap.put(
                             NotificationManager.PARAM_TEXT_MSG, 
                             expandNotifParms(
-                                             resolutionPrefix, 
-                                             Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                             resolutionPrefix,
+                                    Map.of("noticeid", String.valueOf(notifId))
                                     ) + rs.getString("textMsg")
                         );
                 if (skipNumericPrefix) {
@@ -1196,16 +1196,16 @@ public abstract class NotificationManager {
                     parmMap.put(
                                 NotificationManager.PARAM_NUM_MSG, 
                                 expandNotifParms(
-                                                 resolutionPrefix, 
-                                                 Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                                 resolutionPrefix,
+                                        Map.of("noticeid", String.valueOf(notifId))
                                         ) + rs.getString("numericMsg")
                             );
                 }
                 parmMap.put(
                             NotificationManager.PARAM_SUBJECT, 
                             expandNotifParms(
-                                             resolutionPrefix, 
-                                             Collections.singletonMap("noticeid", String.valueOf(notifId))
+                                             resolutionPrefix,
+                                    Map.of("noticeid", String.valueOf(notifId))
                                     ) + rs.getString("subject")
                         );
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getString("nodeID"));

@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -298,7 +297,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
             intf.setNode(node);
             m_ipInterfaceDao.save(intf);
 
-            node.setIpInterfaces(Collections.singleton(intf));
+            node.setIpInterfaces(Set.of(intf));
             m_nodeDao.saveOrUpdate(node);
         }
     }

@@ -34,8 +34,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
@@ -66,7 +66,7 @@ public class EventConfExtensionManagerTest {
         when(eventDefinitionA.getPriority()).thenReturn(100);
         when(eventDefinitionA.getSeverity()).thenReturn(Severity.CRITICAL);
         when(eventDefinitionA.getLogMessage()).thenReturn(logMessage);
-        when(ext1.getEventDefinitions()).thenReturn(Collections.singletonList(eventDefinitionA));
+        when(ext1.getEventDefinitions()).thenReturn(List.of(eventDefinitionA));
         eventConfExtensionMgr.onBind(ext1, new HashMap());
 
         // One event
@@ -82,7 +82,7 @@ public class EventConfExtensionManagerTest {
         when(eventDefinitionB.getPriority()).thenReturn(10);
         when(eventDefinitionB.getSeverity()).thenReturn(Severity.NORMAL);
         when(eventDefinitionB.getLogMessage()).thenReturn(logMessage);
-        when(ext2.getEventDefinitions()).thenReturn(Collections.singletonList(eventDefinitionB));
+        when(ext2.getEventDefinitions()).thenReturn(List.of(eventDefinitionB));
         eventConfExtensionMgr.onBind(ext2, new HashMap());
 
         // Aggregated events

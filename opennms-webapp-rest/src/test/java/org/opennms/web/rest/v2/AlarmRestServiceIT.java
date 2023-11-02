@@ -526,19 +526,19 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("server02", values.getString(1));
         assertEquals(SERVER3_NAME, values.getString(2));
 
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "1"), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("limit", "1"), 200));
         Assert.assertEquals(1, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
 
         // Using a limit less than 1 should result in an unlimited return value
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "0"), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("limit", "0"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
         assertEquals("server02", values.getString(1));
         assertEquals(SERVER3_NAME, values.getString(2));
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("limit", "-2"), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("limit", "-2"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));
@@ -546,12 +546,12 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(SERVER3_NAME, values.getString(2));
 
         // Test a query
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "02"), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("q", "02"), 200));
         Assert.assertEquals(1, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server02", values.getString(0));
 
-        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Collections.singletonMap("q", "server"), 200));
+        object = new JSONObject(sendRequest(GET, "/alarms/properties/node.label", Map.of("q", "server"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
         values = object.getJSONArray("value");
         assertEquals("server01", values.getString(0));

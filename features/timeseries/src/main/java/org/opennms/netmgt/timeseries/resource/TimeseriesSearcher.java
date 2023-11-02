@@ -33,7 +33,6 @@ import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -181,7 +180,7 @@ public class TimeseriesSearcher {
 
         @Override
         public Set<Metric> load(final TagMatcher tagMatcher) throws Exception {
-            List<Metric> metricList = timeseriesStorageManager.get().findMetrics(Collections.singletonList(tagMatcher));
+            List<Metric> metricList = timeseriesStorageManager.get().findMetrics(List.of(tagMatcher));
             Set<Metric> metrics = ConcurrentHashMap.newKeySet();
             metrics.addAll(metricList);
             return metrics;

@@ -119,7 +119,7 @@ public class Collectd extends AbstractServiceDaemon implements
         if (s_instrumentation == null) {
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
             try { 
-                s_instrumentation = (CollectionInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
+                s_instrumentation = (CollectionInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).getDeclaredConstructor().newInstance();
             } catch (Throwable e) {
                 s_instrumentation = new DefaultCollectdInstrumentation();
             }

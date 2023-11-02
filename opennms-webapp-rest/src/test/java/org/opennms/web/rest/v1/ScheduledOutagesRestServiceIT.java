@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -130,7 +130,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
         // Setup Filter DAO
         m_filterDao = mock(FilterDao.class);
-        when(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).thenReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress()));
+        when(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).thenReturn(List.of(InetAddressUtils.getLocalHostAddress()));
         
         FilterDaoFactory.setInstance(m_filterDao);
 

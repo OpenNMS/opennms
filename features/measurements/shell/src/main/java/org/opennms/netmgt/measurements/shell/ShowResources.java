@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.measurements.shell;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +87,7 @@ public class ShowResources implements Action {
     }
 
     private void displayResourceTree(OnmsResource resource) {
-        displayResourceTree( Collections.singletonList(resource));
+        displayResourceTree( List.of(resource));
     }
 
     private void displayResourceTree(List<OnmsResource> resources) {

@@ -30,8 +30,8 @@ package org.opennms.netmgt.config.dao.outages.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
@@ -57,7 +57,7 @@ public class OnmsPollOutagesDao extends AbstractPollOutagesDao implements Writea
         super(jsonStore);
         Objects.requireNonNull(configFile);
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(Outages.class, "poll-outages",
-                Collections.singleton(this::fileSystemConfigUpdated), configFile);
+                Set.of(this::fileSystemConfigUpdated), configFile);
         reload();
     }
 

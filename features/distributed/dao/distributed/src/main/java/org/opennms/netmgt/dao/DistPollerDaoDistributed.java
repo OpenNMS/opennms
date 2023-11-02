@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -95,7 +94,7 @@ public class DistPollerDaoDistributed implements DistPollerDao {
 
 	@Override
 	public List<OnmsDistPoller> findAll() {
-		return Collections.singletonList(whoami());
+		return List.of(whoami());
 	}
 
 	@Override

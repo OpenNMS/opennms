@@ -41,12 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Test;
@@ -131,9 +126,9 @@ public class ReportDefinitionTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo"));
 
-        when(m_resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(resource));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(List.of(resource));
         
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
@@ -160,21 +155,21 @@ public class ReportDefinitionTest {
         resourceType.setName("interfaceSnmp");
         OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
 
-        when(m_resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(resource));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(List.of(resource));
         
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey(externalValueAttribute.getName());
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
         ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
-        rrdAttribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(rrdAttribute), ResourcePath.get("foo")));
+        rrdAttribute.setResource(new OnmsResource("1", "Node One", resourceType, Set.of(rrdAttribute), ResourcePath.get("foo")));
         Source source = new Source();
         source.setLabel("result");
         source.setResourceId(rrdAttribute.getResource().getId().toString());
         source.setAttribute(rrdAttribute.getName());
         source.setAggregation("AVERAGE");
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},
-                                                Collections.singletonMap("result", new double[] {100.0}),
+                Map.of("result", new double[]{100.0}),
                                                 report.getEndTime() - report.getStartTime(),
                                                 Collections.emptyMap(),
                                                 null);
@@ -184,7 +179,7 @@ public class ReportDefinitionTest {
                                               0,
                                               null,
                                               null,
-                                              Collections.singletonList(source),
+                                              List.of(source),
                                               false))
                 .thenReturn(results);
 
@@ -206,7 +201,7 @@ public class ReportDefinitionTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
+        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, Set.of(attribute), ResourcePath.get("foo"));
 
         ReportDefinition def = createReportDefinition();
         def.getReport().getPackage().setFilter("");
@@ -265,7 +260,7 @@ public class ReportDefinitionTest {
         source.setAttribute(rrdAttribute.getName());
         source.setAggregation("AVERAGE");
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},
-                                                Collections.singletonMap("result", new double[] {100.0}),
+                Map.of("result", new double[]{100.0}),
                                                 report.getEndTime() - report.getStartTime(),
                                                 Collections.emptyMap(),
                                                 null);
@@ -275,7 +270,7 @@ public class ReportDefinitionTest {
                                               0,
                                               null,
                                               null,
-                                              Collections.singletonList(source),
+                                              List.of(source),
                                               false))
                 .thenReturn(results);
 

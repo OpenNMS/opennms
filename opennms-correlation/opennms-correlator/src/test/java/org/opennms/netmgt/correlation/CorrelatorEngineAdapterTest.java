@@ -36,9 +36,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-
 import org.junit.Test;
+
+import java.util.List;
 import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -60,7 +60,7 @@ public class CorrelatorEngineAdapterTest {
 
         Correlator correlator = new Correlator();
         correlator.setEventIpcManager(eventIpcManager);
-        correlator.setCorrelationEngines(Collections.singletonList(engine));
+        correlator.setCorrelationEngines(List.of(engine));
         correlator.afterPropertiesSet();
 
         // Grab the event listener for our engine

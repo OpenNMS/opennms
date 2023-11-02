@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -396,7 +395,7 @@ public class DatabasePopulator {
         locRDU.setLatitude(35.715751f);
         locRDU.setLongitude(-79.16262f);
         locRDU.setPriority(1L);
-        locRDU.setTags(Collections.singletonList("blah"));
+        locRDU.setTags(List.of("blah"));
         m_monitoringLocationDao.save(locRDU);
 
         locFD = new OnmsMonitoringLocation();
@@ -406,7 +405,7 @@ public class DatabasePopulator {
         locFD.setLatitude(50.5558f);
         locFD.setLongitude(9.6808f);
         locFD.setPriority(1L);
-        locFD.setTags(Collections.singletonList("blub"));
+        locFD.setTags(List.of("blub"));
         m_monitoringLocationDao.save(locFD);
 
         // added this to assure that the old behaviour before PerspectivePoller is still the same, see NMS-12792

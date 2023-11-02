@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.collection.persistence.tcp;
 
-import java.util.Collections;
+import java.util.Set;
+
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -44,7 +45,7 @@ public class TcpSinglePersister extends TcpBasePersister {
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
-            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
+            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Set.of(attribute.getAttributeType())));
             storeAttribute(attribute);
         }
     }

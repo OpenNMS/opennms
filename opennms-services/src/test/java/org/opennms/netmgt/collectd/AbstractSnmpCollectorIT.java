@@ -35,8 +35,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -330,7 +330,7 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
         RrdStrategy<RrdDef,RrdDb> m_rrdStrategy = new JRobinRrdStrategy();
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", RrdAttributeType.GAUGE, stepSize*2, "U", "U");
-        RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, List.of(rrdDataSource), List.of("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
 
         RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());

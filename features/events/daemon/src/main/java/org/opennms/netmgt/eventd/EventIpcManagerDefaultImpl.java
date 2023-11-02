@@ -30,7 +30,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -421,7 +420,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.notNull(listener, "listener argument cannot be null");
         Assert.notNull(uei, "uei argument cannot be null");
         
-        addEventListener(listener, Collections.singletonList(uei));
+        addEventListener(listener, List.of(uei));
     }
 
     /**

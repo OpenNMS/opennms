@@ -44,7 +44,6 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -233,7 +232,7 @@ public class DuplicatePrimaryAddressIT {
         collector.setClassName(MockServiceCollector.class.getName());
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(List.of(collector));
         when(m_collectdConfigFactory.getThreads()).thenReturn(2);
 
         m_ifaceDao = mock(IpInterfaceDao.class);
@@ -347,7 +346,7 @@ public class DuplicatePrimaryAddressIT {
         collector.addParameter("thresholding-enabled", "false");
         pkg.addService(collector);
 
-        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(List.of(pkg));
         when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 

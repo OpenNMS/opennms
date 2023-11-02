@@ -63,7 +63,7 @@ public class OpenNMSBackingEngine implements BackingEngine {
 
 	@Override
 	public List<UserPrincipal> listUsers() {
-		return Collections.singletonList(new UserPrincipal("admin"));
+		return List.of(new UserPrincipal("admin"));
 	}
 
 	@Override

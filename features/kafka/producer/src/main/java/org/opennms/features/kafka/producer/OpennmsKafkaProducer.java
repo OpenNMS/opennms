@@ -30,7 +30,6 @@ package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
@@ -507,7 +506,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     @Override
     public Set<OnmsTopologyProtocol> getProtocols() {
-        return Collections.singleton(OnmsTopologyProtocol.allProtocols());
+        return Set.of(OnmsTopologyProtocol.allProtocols());
     }
 
     @Override

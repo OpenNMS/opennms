@@ -31,7 +31,7 @@ package org.opennms.netmgt.config.httpdatacollection;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -72,9 +72,9 @@ public class HttpDatacollectionConfigTest extends XmlTestNoCastor<HttpDatacollec
         attrib.setMatchGroup(1);
         attrib.setType(AttributeType.COUNTER);
         
-        uri.setAttributes(Collections.singletonList(attrib));
+        uri.setAttributes(List.of(attrib));
 
-        httpCollection.setUris(Collections.singletonList(uri));
+        httpCollection.setUris(List.of(uri));
 
         config.getHttpCollection().add(httpCollection);
 

@@ -78,7 +78,7 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
         final String json = response.getContentAsString();
         assertEquals(expectedStatus, response.getStatus());
         if (expectedUrlSuffix != null) {
-            final String location = response.getHeader("Location").toString();
+            final String location = response.getHeader("Location");
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
         Thread.sleep(50);

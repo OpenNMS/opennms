@@ -34,7 +34,6 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +63,7 @@ public class DominionSecureCredentialsVaultIT {
     private static final String CLIENT_ID = "client.id";
     private static final String CLIENT_SECRET = "client.secret";
     private static final String SUPPORTED_ALIAS = "supported.alias";
-    private static final List<String> aliases = Collections.singletonList(SUPPORTED_ALIAS);
+    private static final List<String> aliases = List.of(SUPPORTED_ALIAS);
 
     private static final String USERNAME = "user";
     private static final String PASSWORD = "password";

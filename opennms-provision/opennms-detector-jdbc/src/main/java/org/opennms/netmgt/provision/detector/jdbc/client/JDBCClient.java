@@ -78,7 +78,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         LOG.info("connecting to JDBC on {}", address);
         LOG.debug("Loading JDBC driver: '{}'", getDbDriver());
-        Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
+        Driver driver = (Driver)Class.forName(getDbDriver()).getDeclaredConstructor().newInstance();
         LOG.debug("JDBC driver loaded: '{}'", getDbDriver());
 
         String url = DBTools.constructUrl(getUrl(), address.getCanonicalHostName());

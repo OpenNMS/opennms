@@ -427,7 +427,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private static Collection<String> getLockKeys(Event event) {
         if (event.getAlarmData().getClearKey() == null) {
-            return Collections.singletonList(event.getAlarmData().getReductionKey());
+            return List.of(event.getAlarmData().getReductionKey());
         } else {
             return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
         }

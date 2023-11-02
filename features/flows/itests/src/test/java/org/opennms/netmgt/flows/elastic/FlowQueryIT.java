@@ -169,7 +169,7 @@ public class FlowQueryIT {
         initializer.initialize();
 
         // The repository should be empty
-        assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, 0))).get(), equalTo(0L));
+        assertThat(smartQueryService.getFlowCount(List.of(new TimeRangeFilter(0, 0))).get(), equalTo(0L));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class FlowQueryIT {
 
         // Get only the first application
         List<String> applications = smartQueryService.getApplications("", 1, getFilters()).get();
-        assertThat(applications, equalTo(Collections.singletonList("http")));
+        assertThat(applications, equalTo(List.of("http")));
 
         // Get both applications
         applications = smartQueryService.getApplications("", 10, getFilters()).get();
@@ -191,7 +191,7 @@ public class FlowQueryIT {
 
         // Test the fuzzy matching
         applications = smartQueryService.getApplications("httz", 10, getFilters()).get();
-        assertThat(applications, equalTo(Collections.singletonList("http")));
+        assertThat(applications, equalTo(List.of("http")));
         applications = smartQueryService.getApplications("hyyps", 10, getFilters()).get();
         assertThat(applications, Matchers.empty());
     }
@@ -262,7 +262,7 @@ public class FlowQueryIT {
         loadDefaultFlows();
 
         List<TrafficSummary<String>> appTrafficSummary =
-                smartQueryService.getApplicationSummaries(Collections.singleton("https"), false, getFilters()).get();
+                smartQueryService.getApplicationSummaries(Set.of("https"), false, getFilters()).get();
         assertThat(appTrafficSummary, hasSize(1));
 
         appTrafficSummary =
@@ -310,13 +310,13 @@ public class FlowQueryIT {
 
         // Get just https
         Table<Directional<String>, Long, Double> appTraffic =
-                smartQueryService.getApplicationSeries(Collections.singleton("https"), 10,
+                smartQueryService.getApplicationSeries(Set.of("https"), 10,
                         false, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(2));
         verifyHttpsSeries(appTraffic, "https");
 
         // Get just https and include others
-        appTraffic = smartQueryService.getApplicationSeries(Collections.singleton("https"), 10,
+        appTraffic = smartQueryService.getApplicationSeries(Set.of("https"), 10,
                 true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(4));
 
@@ -355,7 +355,7 @@ public class FlowQueryIT {
 
         // Get only the first host
         List<String> hosts = smartQueryService.getHosts(".*", 1, getFilters()).get();
-        assertThat(hosts, equalTo(Collections.singletonList("10.1.1.11")));
+        assertThat(hosts, equalTo(List.of("10.1.1.11")));
 
         // Get first 10 hosts
         hosts = smartQueryService.getHosts(".*", 10, getFilters()).get();
@@ -427,7 +427,7 @@ public class FlowQueryIT {
 
         // Get one specific host and no others
         List<TrafficSummary<Host>> hostTrafficSummary =
-                smartQueryService.getHostSummaries(Collections.singleton("10.1.1.12"), false, getFilters()).get();
+                smartQueryService.getHostSummaries(Set.of("10.1.1.12"), false, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(1));
 
         // Get summaries for two specific hosts
@@ -490,13 +490,13 @@ public class FlowQueryIT {
 
         // Get just https
         Table<Directional<Host>, Long, Double> hostTraffic =
-                smartQueryService.getHostSeries(Collections.singleton("10.1.1.12"), 10,
+                smartQueryService.getHostSeries(Set.of("10.1.1.12"), 10,
                         false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
         verifyHttpsSeries(hostTraffic, new Host("10.1.1.12", "la.le.lu"));
 
         // Get just 10.1.1.12 and include others
-        hostTraffic = smartQueryService.getHostSeries(Collections.singleton("10.1.1.12"), 10,
+        hostTraffic = smartQueryService.getHostSeries(Set.of("10.1.1.12"), 10,
                 true, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(4));
 
@@ -1103,7 +1103,7 @@ public class FlowQueryIT {
         flowRepository.persist(enriched);
 
         // Retrieve all the flows we just persisted
-        await().atMost(60, TimeUnit.SECONDS).until(() -> smartQueryService.getFlowCount(Collections.singletonList(
+        await().atMost(60, TimeUnit.SECONDS).until(() -> smartQueryService.getFlowCount(List.of(
                 new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(Long.valueOf(flows.size())));
     }
 

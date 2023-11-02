@@ -123,7 +123,7 @@ public class RTCHashMap {
     }
     
     private void add(int nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
-        m_map.put(new RTCNodeKey(nodeid, ip, svcName), Collections.singletonList(rtcN));
+        m_map.put(new RTCNodeKey(nodeid, ip, svcName), List.of(rtcN));
     }
     
     /**

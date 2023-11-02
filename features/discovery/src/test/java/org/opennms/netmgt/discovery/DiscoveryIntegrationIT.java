@@ -148,7 +148,7 @@ public class DiscoveryIntegrationIT {
         anticipator.verifyAnticipated();
         anticipator.getAnticipatedEventsReceived().stream().forEach(eachEvent -> {
             String location = CUSTOM_LOCATION;
-            if ("127.0.0.1".equals(eachEvent.getInterface().toString())) {
+            if ("127.0.0.1".equals(eachEvent.getInterface())) {
                 // the default foreign source has 127.0.0.1 for JVM monitoring
                 location = DEFAULT_LOCATION_NAME;
             }

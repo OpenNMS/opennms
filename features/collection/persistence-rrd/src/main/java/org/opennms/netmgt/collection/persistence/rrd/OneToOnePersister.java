@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.collection.persistence.rrd;
 
-import java.util.Collections;
+import java.util.Set;
+
+
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -64,7 +66,7 @@ public class OneToOnePersister extends BasePersister {
         if (shouldPersist()) {
             final RrdPersistOperationBuilder builder = createBuilder(attribute.getResource(),
                                                                      attribute.getName(),
-                                                                     Collections.singleton(attribute.getAttributeType()));
+                    Set.of(attribute.getAttributeType()));
             builder.setAttributeMetadata("GROUP", m_group);
 
             setBuilder(builder);

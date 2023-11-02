@@ -98,7 +98,7 @@ public class OwnedInterval extends TimeInterval {
      * @param end a {@link java.util.Date} object.
      */
     public OwnedInterval(Owner owner, Date start, Date end) {
-        this(Collections.singletonList(owner), start, end);
+        this(List.of(owner), start, end);
     }
     
     /**

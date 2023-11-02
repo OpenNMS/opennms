@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -97,7 +96,7 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
 
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(TRAP_DESTINATION);
         SnmpV3User user = new SnmpV3User(config.getSecurityName(), config.getAuthProtocol(), config.getAuthPassPhrase(), config.getPrivProtocol(), config.getPrivPassPhrase());
-        SnmpUtils.registerForTraps(this, TRAP_DESTINATION, TRAP_PORT, Collections.singletonList(user));
+        SnmpUtils.registerForTraps(this, TRAP_DESTINATION, TRAP_PORT, List.of(user));
         LOG.info("Registered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
     }
 

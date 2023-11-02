@@ -288,7 +288,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         eventdIpcMgr.sendNow(MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode2()).getEvent());
         
         AlarmFeedback alarmFeedback = createTestalarmFeedback();
-        kafkaProducer.handleAlarmFeedback(Collections.singletonList(alarmFeedback));
+        kafkaProducer.handleAlarmFeedback(List.of(alarmFeedback));
 
         if (!kafkaProducer.getEventForwardedLatch().await(1, TimeUnit.MINUTES)) {
             throw new Exception("No events were successfully forwarded in time!");
@@ -444,7 +444,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 .until(() -> kafkaProducer.getDataSync().isReady());
         
         // Force an alarm sync
-        kafkaProducer.handleAlarmSnapshot(Collections.singletonList(alarm));
+        kafkaProducer.handleAlarmSnapshot(List.of(alarm));
 
         // Only the alarm explicitly sent should be consumed, there should not have been any alarms sync'd        
         try {            

@@ -30,7 +30,6 @@ package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -144,7 +143,7 @@ public class OwnedIntervalSequence extends AbstractTimeIntervalSequence<OwnedInt
         if (origInterval.isOwned() && removedInterval.isOwned() && reducedOwners.equals(origInterval.getOwners())) {
             // the removedInterval did not have any owners in common with the original interval 
             // so leave the interval intact
-            return Collections.singletonList(origInterval);
+            return List.of(origInterval);
         }
         
         // if we got here then there is some ownership change in the original interval

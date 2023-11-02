@@ -219,7 +219,7 @@ public class EventconfFactoryIT {
         public void setTrapIdentity(TrapIdentity trapIdentity) {
             setGeneric(trapIdentity.getGeneric());
             setSpecific(trapIdentity.getSpecific());
-            setEnterpriseId(trapIdentity.getEnterpriseId().toString());
+            setEnterpriseId(trapIdentity.getEnterpriseId());
         
             LOG.debug("setTrapIdentity: SNMP trap {}", trapIdentity);
         }

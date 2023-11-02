@@ -233,7 +233,7 @@ public class NewtsFetchStrategyTest {
 
     @Test
     public void canRetrieveValuesByDatasource() {
-        List<Source> sources = Collections.singletonList(
+        List<Source> sources = List.of(
                 createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
         replay();
 

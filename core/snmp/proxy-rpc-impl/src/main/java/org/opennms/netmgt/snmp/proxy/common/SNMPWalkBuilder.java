@@ -44,7 +44,7 @@ public class SNMPWalkBuilder extends AbstractSNMPRequestBuilder<List<SnmpResult>
     private static List<SnmpWalkRequestDTO> buildWalkRequests(List<SnmpObjId> oids) {
         final SnmpWalkRequestDTO walkRequest = new SnmpWalkRequestDTO();
         walkRequest.setOids(oids);
-        return Collections.singletonList(walkRequest);
+        return List.of(walkRequest);
     }
 
     @Override

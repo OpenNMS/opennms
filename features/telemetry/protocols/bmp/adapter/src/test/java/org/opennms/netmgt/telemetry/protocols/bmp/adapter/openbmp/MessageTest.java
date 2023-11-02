@@ -33,7 +33,6 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class MessageTest {
         collector.sequence = 8L;
         collector.adminId = "collector";
         collector.hash = "91e3a7ff9f5676ed6ae6fcd8a6b455ec";
-        collector.routers = Collections.singletonList(InetAddressUtils.addr("10.10.10.10"));
+        collector.routers = List.of(InetAddressUtils.addr("10.10.10.10"));
 
         long timeMicros = 1_582_456_123_795_452L;
         collector.timestamp = Instant.EPOCH.plus(timeMicros, ChronoUnit.MICROS);

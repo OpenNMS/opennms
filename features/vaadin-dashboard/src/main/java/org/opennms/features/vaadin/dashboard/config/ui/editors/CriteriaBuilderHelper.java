@@ -118,7 +118,7 @@ public class CriteriaBuilderHelper {
             @Override
             public OnmsSeverity parse(String string) {
                 for (OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
-                    if (onmsSeverity.name().toLowerCase().equals(string.toLowerCase())) {
+                    if (onmsSeverity.name().equalsIgnoreCase(string)) {
                         return onmsSeverity;
                     }
                 }

@@ -41,7 +41,6 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -221,7 +220,7 @@ public class TimeseriesFetchStrategyTest {
 
     @Test
     public void canRetrieveValuesByDatasource() throws StorageException {
-        List<Source> sources = Collections.singletonList(
+        List<Source> sources = List.of(
                 createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
         replay();
 

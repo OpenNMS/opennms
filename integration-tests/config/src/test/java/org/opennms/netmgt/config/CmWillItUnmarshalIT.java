@@ -177,7 +177,7 @@ public class CmWillItUnmarshalIT {
             // If we have an expected exception, the returned exception must
             // match - if not the test failed
             if (this.exception != null) {
-                assertEquals(this.exception, exception.toString());
+                assertEquals(this.exception, exception);
 
             } else {
                 throw new RuntimeException(ex);

@@ -42,8 +42,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -181,7 +181,7 @@ public class EventExpanderTest {
         eventConfig.setMask(mask);
         Maskelement me = new Maskelement();
         me.setMename("generic");
-        me.setMevalues(Collections.singletonList("6"));
+        me.setMevalues(List.of("6"));
         mask.addMaskelement(me);
         Varbind vb = new Varbind();
         vb.setVbnumber(1);

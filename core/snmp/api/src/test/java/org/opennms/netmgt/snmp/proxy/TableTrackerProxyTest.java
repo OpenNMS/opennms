@@ -74,10 +74,10 @@ public class TableTrackerProxyTest {
         // Build a response with an OID from the requested table
         SnmpValue value = mock(SnmpValue.class);
         SnmpResult result = new SnmpResult(table, SnmpInstId.INST_ZERO, value);
-        WalkResponse response = new WalkResponse(Collections.singletonList(result));
+        WalkResponse response = new WalkResponse(List.of(result));
 
         // Resolve the walker
-        tracker.handleWalkResponses(Collections.singletonList(response));
+        tracker.handleWalkResponses(List.of(response));
 
         // We should be finished, and have captured the expected value
         assertThat(tracker.isFinished(), equalTo(true));
@@ -90,7 +90,7 @@ public class TableTrackerProxyTest {
         WalkResponse response = new WalkResponse(Collections.emptyList());
 
         // Resolve the walker
-        tracker.handleWalkResponses(Collections.singletonList(response));
+        tracker.handleWalkResponses(List.of(response));
 
         // We should be finished, without any captured values
         assertThat(tracker.isFinished(), equalTo(true));

@@ -38,7 +38,6 @@ import java.rmi.RemoteException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -103,10 +102,7 @@ public final class MinaSshMonitor extends AbstractServiceMonitor {
      */
     public static final int DEFAULT_PORT = 22;
 
-    public static final List<UserAuthFactory> NONINTERACTIVE_USER_AUTH_FACTORIES = Collections.unmodifiableList(
-            Arrays.asList(
-                    UserAuthPublicKeyFactory.INSTANCE,
-                    UserAuthPasswordFactory.INSTANCE));
+    public static final List<UserAuthFactory> NONINTERACTIVE_USER_AUTH_FACTORIES = List.of(UserAuthPublicKeyFactory.INSTANCE, UserAuthPasswordFactory.INSTANCE);
 
     /**
      * {@inheritDoc}

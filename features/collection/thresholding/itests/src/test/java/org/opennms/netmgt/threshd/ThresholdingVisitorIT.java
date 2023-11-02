@@ -286,7 +286,7 @@ public class ThresholdingVisitorIT {
         m_hrStorageProperties = new HashMap<Integer, File>();
 
         m_filterDao = mock(FilterDao.class);
-        when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
+        when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(List.of(addr("127.0.0.1")));
         FilterDaoFactory.setInstance(m_filterDao);
 
         m_anticipator = new EventAnticipator();

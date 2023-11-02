@@ -33,8 +33,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -75,42 +75,42 @@ public class EventConfDataTest {
 
     @Test
     public void testEventValuePassesMaskValueExactFail() {
-        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", Collections.singletonList("George Clinton, teh father of funk")));
+        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", List.of("George Clinton, teh father of funk")));
     }
     
     @Test
     public void testEventValuePassesMaskValueExactPass() {
-        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", Collections.singletonList("George Clinton, father of funk")));
+        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", List.of("George Clinton, father of funk")));
     }
     
     @Test
     public void testEventValuePassesMaskValueSubStringFail() {
-        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, teh father of funk", Collections.singletonList("George Clinton, father of %")));
+        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, teh father of funk", List.of("George Clinton, father of %")));
     }
     
     @Test
     public void testEventValuePassesMaskValueSubStringPass() {
-        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", Collections.singletonList("George Clinton, father of %")));
+        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", List.of("George Clinton, father of %")));
     }
 
     @Test
     public void testEventValuePassesMaskValueSubStringPassEmpty() {
-        assertTrue(EventConfData.eventValuePassesMaskValue("", Collections.singletonList("%")));
+        assertTrue(EventConfData.eventValuePassesMaskValue("", List.of("%")));
     }
 
     @Test
     public void testEventValuePassesMaskValueRegexAnchoredFail() {
-        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", Collections.singletonList("~^Bill.*Clinton.*funk$")));
+        assertFalse(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", List.of("~^Bill.*Clinton.*funk$")));
     }
     
     @Test
     public void testEventValuePassesMaskValueRegexAnchoredPass() {
-        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", Collections.singletonList("~^George.*Clinton.*funk$")));
+        assertTrue(EventConfData.eventValuePassesMaskValue("George Clinton, father of funk", List.of("~^George.*Clinton.*funk$")));
     }
     
     @Test
     public void testEventValuePassesMaskValueRegexUnanchoredPass() {
-        assertTrue(EventConfData.eventValuePassesMaskValue("Is FooBar On Air", Collections.singletonList("~.*Foo[Bb]ar.*")));
+        assertTrue(EventConfData.eventValuePassesMaskValue("Is FooBar On Air", List.of("~.*Foo[Bb]ar.*")));
     }
 
     @Test

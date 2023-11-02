@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,10 +70,10 @@ public class SingleInstanceTrackerProxyTest {
         // Build a response with the requested OID
         SnmpValue value = mock(SnmpValue.class);
         SnmpResult result = new SnmpResult(base, instance, value);
-        WalkResponse response = new WalkResponse(Collections.singletonList(result));
+        WalkResponse response = new WalkResponse(List.of(result));
 
         // Resolve the walker
-        tracker.handleWalkResponses(Collections.singletonList(response));
+        tracker.handleWalkResponses(List.of(response));
 
         // We should be finished, and have captured the expected value
         assertThat(tracker.isFinished(), equalTo(true));
@@ -85,10 +86,10 @@ public class SingleInstanceTrackerProxyTest {
         // Build a response for another OID
         SnmpValue value = mock(SnmpValue.class);
         SnmpResult result = new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.1.1"), instance, value);
-        WalkResponse response = new WalkResponse(Collections.singletonList(result));
+        WalkResponse response = new WalkResponse(List.of(result));
 
         // Resolve the walker
-        tracker.handleWalkResponses(Collections.singletonList(response));
+        tracker.handleWalkResponses(List.of(response));
 
         // We should be finished, without any captured values
         assertThat(tracker.isFinished(), equalTo(true));

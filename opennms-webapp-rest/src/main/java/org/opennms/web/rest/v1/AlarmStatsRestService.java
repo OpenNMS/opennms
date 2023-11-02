@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -278,7 +277,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         @XmlElementWrapper(name="newestAcked")
         @XmlElement(name="alarm")
         public List<OnmsAlarm> getNewestAcknowledged() {
-            return Collections.singletonList(m_newestAcknowledged);
+            return List.of(m_newestAcknowledged);
         }
 
         public void setNewestAcknowledged(final OnmsAlarm alarm) {
@@ -288,7 +287,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         @XmlElementWrapper(name="newestUnacked")
         @XmlElement(name="alarm")
         public List<OnmsAlarm> getNewestUnacknowledged() {
-            return Collections.singletonList(m_newestUnacknowledged);
+            return List.of(m_newestUnacknowledged);
         }
 
         public void setNewestUnacknowledged(final OnmsAlarm alarm) {
@@ -298,7 +297,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         @XmlElementWrapper(name="oldestAcked")
         @XmlElement(name="alarm")
         public List<OnmsAlarm> getOldestAcknowledged() {
-            return Collections.singletonList(m_oldestAcknowledged);
+            return List.of(m_oldestAcknowledged);
         }
 
         public void setOldestAcknowledged(final OnmsAlarm alarm) {
@@ -308,7 +307,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         @XmlElementWrapper(name="oldestUnacked")
         @XmlElement(name="alarm")
         public List<OnmsAlarm> getOldestUnacknowledged() {
-            return Collections.singletonList(m_oldestUnacknowledged);
+            return List.of(m_oldestUnacknowledged);
         }
 
         public void setOldestUnacknowledged(final OnmsAlarm alarm) {

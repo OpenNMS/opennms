@@ -49,7 +49,7 @@ public abstract class FilterUtil {
                 if (i == 0) buffer.append("filter=");
                 else buffer.append( "&amp;filter=" );
                 String filterString = filters.get(i);
-                buffer.append( java.net.URLEncoder.encode(filterString) );
+                buffer.append( java.net.URLEncoder.encode(filterString, StandardCharsets.UTF_8) );
             }
         }
         return( buffer.toString() );

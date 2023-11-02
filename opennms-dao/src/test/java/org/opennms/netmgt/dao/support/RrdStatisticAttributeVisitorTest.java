@@ -37,6 +37,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -196,19 +199,19 @@ public class RrdStatisticAttributeVisitorTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
+        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo")));
         Source source = new Source();
         source.setLabel("result");
         source.setResourceId(attribute.getResource().getId().toString());
         source.setAttribute(attribute.getName());
         source.setAggregation(attributeVisitor.getConsolidationFunction().toUpperCase());
         FetchResults results = new FetchResults(new long[] {m_startTime},
-                                                Collections.singletonMap("result", new double[] {1.0}),
+                Map.of("result", new double[]{1.0}),
                                                 m_endTime - m_startTime,
                                                 Collections.emptyMap(),
                                                 null);
 
-        final var sourceList = Collections.singletonList(source);
+        final var sourceList = List.of(source);
         when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
@@ -239,7 +242,7 @@ public class RrdStatisticAttributeVisitorTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
         OnmsAttribute attribute = new StringPropertyAttribute("ifInOctets", "one billion octets!");
-        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
+        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo")));
 
         attributeVisitor.visit(attribute);
     }
@@ -257,18 +260,18 @@ public class RrdStatisticAttributeVisitorTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("somethingOtherThanInterfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
+        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo")));
         Source source = new Source();
         source.setLabel("result");
         source.setResourceId(attribute.getResource().getId().toString());
         source.setAttribute(attribute.getName());
         source.setAggregation(attributeVisitor.getConsolidationFunction().toUpperCase());
         FetchResults results = new FetchResults(new long[] {},
-                                                Collections.singletonMap("result", new double[] {}),
+                Map.of("result", new double[]{}),
                                                 m_endTime - m_startTime,
                                                 Collections.emptyMap(),
                                                 null);
-        final var sourceList = Collections.singletonList(source);
+        final var sourceList = List.of(source);
         when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
@@ -306,7 +309,7 @@ public class RrdStatisticAttributeVisitorTest {
         resourceType.setName("interfaceSnmp");
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
+        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo")));
 
         Source source = new Source();
         source.setLabel("result");
@@ -314,7 +317,7 @@ public class RrdStatisticAttributeVisitorTest {
         source.setAttribute(attribute.getName());
         source.setAggregation(attributeVisitor1.getConsolidationFunction().toUpperCase());
 
-        final var sourceList = Collections.singletonList(source);
+        final var sourceList = List.of(source);
         when(m_fetchStrategy.fetch(m_startTime,
                                      m_endTime,
                                      1,
@@ -324,7 +327,7 @@ public class RrdStatisticAttributeVisitorTest {
                                      sourceList,
                                      false))
                 .thenReturn(new FetchResults(new long[]{m_startTime},
-                                            Collections.singletonMap("result", new double[]{1.0}),
+                Map.of("result", new double[]{1.0}),
                                             m_endTime - m_startTime,
                                             Collections.emptyMap(),
                                             null));
@@ -339,7 +342,7 @@ public class RrdStatisticAttributeVisitorTest {
                                      sourceList,
                                      false))
                 .thenReturn(new FetchResults(new long[]{m_startTime},
-                                            Collections.singletonMap("result", new double[]{2.0}),
+                Map.of("result", new double[]{2.0}),
                                             m_endTime - m_startTime,
                                             Collections.emptyMap(),
                                             null));

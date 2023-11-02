@@ -37,8 +37,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -254,7 +254,7 @@ public class RrdPersistOperationBuilderTest {
         repository.setRrdBaseDir(getSnmpRrdDirectory());
         repository.setHeartBeat(600);
         repository.setStep(300);
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        repository.setRraList(List.of("RRA:AVERAGE:0.5:1:100"));
         return repository;
     }
 

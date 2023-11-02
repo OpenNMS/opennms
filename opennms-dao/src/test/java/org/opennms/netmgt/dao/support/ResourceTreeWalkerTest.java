@@ -36,7 +36,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -155,9 +154,9 @@ public class ResourceTreeWalkerTest {
         
         MockResourceType resourceType = new MockResourceType();
         OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
-        OnmsResource topResource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), Collections.singletonList(childResource), new ResourcePath("foo"));
+        OnmsResource topResource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), List.of(childResource), new ResourcePath("foo"));
 
-        when(m_resourceDao.findTopLevelResources()).thenReturn(Collections.singletonList(topResource));
+        when(m_resourceDao.findTopLevelResources()).thenReturn(List.of(topResource));
 
         m_visitor.visit(topResource);
         m_visitor.visit(childResource);

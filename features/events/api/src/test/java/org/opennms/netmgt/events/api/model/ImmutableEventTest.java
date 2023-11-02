@@ -34,6 +34,7 @@ import org.opennms.netmgt.xml.event.*;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A test class to verify mapping an immutability properties of '{@link ImmutableEvent}'.
@@ -147,7 +148,7 @@ public class ImmutableEventTest {
         Value value = new Value();
         value.setContent("test-parm-value");
         parm.setValue(value);
-        event.setParmCollection(Collections.singletonList(parm));
+        event.setParmCollection(List.of(parm));
 
         event.setDescr("test-descr");
 

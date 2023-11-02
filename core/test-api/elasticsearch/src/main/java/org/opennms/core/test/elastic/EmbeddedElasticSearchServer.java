@@ -48,7 +48,7 @@ import org.elasticsearch.transport.Netty4Plugin;
  */
 public class EmbeddedElasticSearchServer {
 
-    private static final List<Class<? extends Plugin>> ALWAYS_ON_PLUGINS = Collections.singletonList(Netty4Plugin.class);
+    private static final List<Class<? extends Plugin>> ALWAYS_ON_PLUGINS = List.of(Netty4Plugin.class);
 
     // The embedded ES instance
     private Node node;

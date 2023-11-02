@@ -29,7 +29,7 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -111,7 +111,7 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
 
         // Verify the nortbound alarm and send it to the test receiver
         Assert.assertTrue(nbi.accepts(alarm));
-        nbi.forwardAlarms(Collections.singletonList(alarm));
+        nbi.forwardAlarms(List.of(alarm));
         Thread.sleep(5000); // Introduce a delay to make sure the trap was sent and received.
         Assert.assertEquals(1, getTrapsReceivedCount());
     }

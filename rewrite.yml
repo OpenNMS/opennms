@@ -44,10 +44,9 @@ recipeList:
   - org.openrewrite.java.migrate.guava.NoGuavaImmutableSetOf
   - org.openrewrite.java.migrate.guava.PreferJavaUtilObjectsRequireNonNullElse
   - org.openrewrite.java.migrate.lang.StringRulesRecipes
-  - org.openrewrite.java.migrate.lang.UseVar
   - org.openrewrite.java.migrate.lang.JavaLangAPIs
-#  - org.openrewrite.java.migrate.net.JavaNetAPIs
-#  - org.openrewrite.java.migrate.sql.JavaSqlAPIs
-#  - org.openrewrite.java.migrate.util.JavaUtilAPIs
-#  - org.openrewrite.java.migrate.concurrent.JavaConcurrentAPIs
-#  - org.openrewrite.java.migrate.logging.JavaLoggingAPIs
+  - org.openrewrite.java.migrate.net.JavaNetAPIs
+  - org.openrewrite.java.migrate.sql.JavaSqlAPIs
+  - org.openrewrite.java.migrate.util.JavaUtilAPIs
+  - org.openrewrite.java.migrate.concurrent.JavaConcurrentAPIs
+  - org.openrewrite.java.migrate.logging.JavaLoggingAPIs

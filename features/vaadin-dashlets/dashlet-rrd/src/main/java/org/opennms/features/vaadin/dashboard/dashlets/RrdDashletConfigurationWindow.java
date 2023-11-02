@@ -357,8 +357,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                 /**
                  * saving the data
                  */
-                m_dashletSpec.getParameters().put("width", m_widthField.getValue().toString());
-                m_dashletSpec.getParameters().put("height", m_heightField.getValue().toString());
+                m_dashletSpec.getParameters().put("width", m_widthField.getValue());
+                m_dashletSpec.getParameters().put("height", m_heightField.getValue());
                 m_dashletSpec.getParameters().put("columns", m_columnsSelect.getValue().toString());
                 m_dashletSpec.getParameters().put("rows", m_rowsSelect.getValue().toString());
 
@@ -366,7 +366,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                 int timeFrameType;
 
                 try {
-                    timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue().toString());
+                    timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue());
                 } catch (NumberFormatException numberFormatException) {
                     timeFrameValue = 1;
                 }
@@ -556,7 +556,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         int timeFrameType;
 
         try {
-            timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue().toString());
+            timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue());
         } catch (NumberFormatException numberFormatException) {
             timeFrameValue = 1;
         }
@@ -607,7 +607,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         int timeFrameType;
 
         try {
-            timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue().toString());
+            timeFrameValue = Integer.parseInt(m_timeFrameValue.getValue());
         } catch (NumberFormatException numberFormatException) {
             timeFrameValue = 1;
         }

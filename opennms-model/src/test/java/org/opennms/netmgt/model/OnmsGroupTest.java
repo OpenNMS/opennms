@@ -31,7 +31,7 @@ package org.opennms.netmgt.model;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -46,7 +46,7 @@ public class OnmsGroupTest extends XmlTestNoCastor<OnmsGroup> {
     public static Collection<Object[]> data() throws ParseException {
         final OnmsGroup group = new OnmsGroup();
         group.setName("Admin");
-        group.setUsers(Collections.singletonList("admin"));
+        group.setUsers(List.of("admin"));
 
         return Arrays.asList(new Object[][] {
             {

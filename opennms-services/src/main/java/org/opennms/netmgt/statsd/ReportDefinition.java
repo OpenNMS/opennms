@@ -258,7 +258,7 @@ public class ReportDefinition implements InitializingBean {
         
         AttributeStatisticVisitorWithResults visitor;
         try {
-            visitor = getReportClass().newInstance();
+            visitor = getReportClass().getDeclaredConstructor().newInstance();
         } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Could not instantiate visitor object; nested exception: " + e, e);
         }

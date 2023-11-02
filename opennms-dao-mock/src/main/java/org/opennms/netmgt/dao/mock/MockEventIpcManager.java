@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -224,7 +223,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     @Override
     public void addEventListener(final EventListener listener, final String uei) {
-        m_listeners.add(new ListenerKeeper(listener, Collections.singleton(uei)));
+        m_listeners.add(new ListenerKeeper(listener, Set.of(uei)));
     }
 
     public int getEventListenerCount() {
@@ -273,7 +272,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     @Override
     public void removeEventListener(final EventListener listener, final String uei) {
-        m_listeners.remove(new ListenerKeeper(listener, Collections.singleton(uei)));
+        m_listeners.remove(new ListenerKeeper(listener, Set.of(uei)));
     }
     
     public synchronized void setEventDelay(final int millis) {

@@ -38,8 +38,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -147,7 +147,7 @@ public class TimeseriesSearcherTest {
                 .intrinsicTag(IntrinsicTagNames.name, name);
         Metric metric = metricBuilder.build();
 
-        storage.store(Collections.singletonList(ImmutableSample.builder().metric(metric).time(Instant.now()).value(3.0).build()));
+        storage.store(List.of(ImmutableSample.builder().metric(metric).time(Instant.now()).value(3.0).build()));
         return metric;
     }
 

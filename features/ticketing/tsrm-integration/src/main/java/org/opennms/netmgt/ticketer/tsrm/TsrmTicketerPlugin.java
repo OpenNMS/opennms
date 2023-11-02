@@ -482,9 +482,9 @@ public class TsrmTicketerPlugin implements Plugin {
         }
 
         LOG.debug("Loaded endpointURL {} ",
-                  props.getProperty("tsrm.url").toString());
+                props.getProperty("tsrm.url"));
         LOG.debug("Loaded disableSSLCheck {} ",
-                  props.getProperty("tsrm.ssl.strict").toString());
+                props.getProperty("tsrm.ssl.strict"));
 
         return props;
     }

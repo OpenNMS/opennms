@@ -36,6 +36,7 @@ import org.opennms.web.filter.QueryParameters;
 
 import javax.servlet.ServletContext;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.opennms.web.filter.FilterUtil.getFilterParameters;
@@ -77,7 +78,7 @@ public abstract class AbstractFilterCallback implements FilterCallback {
         for (int i=0; i< filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");
-                filterParameter[i] = URLDecoder.decode(filterParameter[i]);
+                filterParameter[i] = URLDecoder.decode(filterParameter[i], StandardCharsets.UTF_8);
             }
         }
         return parse(filterParameter);

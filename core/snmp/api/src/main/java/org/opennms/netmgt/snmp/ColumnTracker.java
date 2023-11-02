@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.snmp.proxy.WalkRequest;
@@ -206,7 +205,7 @@ public class ColumnTracker extends CollectionTracker {
     public List<WalkRequest> getWalkRequests() {
         final WalkRequest walkRequest = new WalkRequest(m_base);
         walkRequest.setMaxRepetitions(m_maxRepetitions);
-        return Collections.singletonList(walkRequest);
+        return List.of(walkRequest);
     }
 
     @Override

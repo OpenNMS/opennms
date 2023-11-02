@@ -176,7 +176,7 @@ public class SnmpAttributeTest {
         attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection, m_locationAwareSnmpClient), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
 
         RrdRepository repository = createRrdRepository();
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
+        repository.setRraList(List.of("RRA:AVERAGE:0.5:1:2016"));
 
         RrdPersisterFactory persisterFactory = new RrdPersisterFactory();
         persisterFactory.setRrdStrategy(m_rrdStrategy);
@@ -217,7 +217,7 @@ public class SnmpAttributeTest {
         repository.setRrdBaseDir(getSnmpRrdDirectory());
         repository.setHeartBeat(600);
         repository.setStep(300);
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        repository.setRraList(List.of("RRA:AVERAGE:0.5:1:100"));
         return repository;
     }
 

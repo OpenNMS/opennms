@@ -38,7 +38,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -64,13 +63,13 @@ public class CorrelatorTest {
 		m_eventIpcManager = mock(EventIpcManager.class);
 		m_engine = mock(CorrelationEngine.class);
 		
-		m_interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
+		m_interestingEvents = List.of("uei.opennms.org:/testEvent");
 
 		when(m_engine.getName()).thenReturn("myMockEngine");
-		when(m_engine.getInterestingEvents()).thenReturn(Collections.singletonList("uei.opennms.org:/testEvent"));
+		when(m_engine.getInterestingEvents()).thenReturn(List.of("uei.opennms.org:/testEvent"));
 		m_engine.tearDown();
 
-		m_eventIpcManager.addEventListener(isA(EventListener.class), same(Collections.singletonList("uei.opennms.org:/testEvent")));
+		m_eventIpcManager.addEventListener(isA(EventListener.class), same(List.of("uei.opennms.org:/testEvent")));
 		m_eventIpcManager.addEventListener(isA(EventListener.class), same(EventConstants.RELOAD_DAEMON_CONFIG_UEI));
 
                 verify(m_eventIpcManager, times(1)).addEventListener((EventListener)null, (List<String>)null);
@@ -89,7 +88,7 @@ public class CorrelatorTest {
 
 		m_correlator = new Correlator();
 		m_correlator.setEventIpcManager(m_eventIpcManager);
-		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
+		m_correlator.setCorrelationEngines(List.of(m_engine));
 		m_correlator.afterPropertiesSet();
 
 		assertEquals("Expected the correlator to be init'd", Fiber.START_PENDING, m_correlator.getStatus());
@@ -109,7 +108,7 @@ public class CorrelatorTest {
 	public void testRegisterForEvents() throws Exception {
 		m_correlator = new Correlator();
 		m_correlator.setEventIpcManager(m_eventIpcManager);
-		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
+		m_correlator.setCorrelationEngines(List.of(m_engine));
 		m_correlator.afterPropertiesSet();
 
                 verify(m_eventIpcManager, times(1)).addEventListener(isA(Correlator.EngineAdapter.class), eq(m_interestingEvents));

@@ -162,7 +162,7 @@ public class CollectdMoreIT {
         collector.addParameter(param);
         
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(List.of(collector));
         when(m_collectdConfigFactory.getThreads()).thenReturn(1);
         
         m_ifaceDao = mock(IpInterfaceDao.class);
@@ -293,11 +293,11 @@ public class CollectdMoreIT {
         parm.setKey(TEST_KEY_PARM_NAME);
         parm.setValue(m_key);
         
-        collector.setParameters(Collections.singletonList(parm));
+        collector.setParameters(List.of(parm));
         
         pkg.addService(collector);
         
-        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(List.of(pkg));
         when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(pkg))).thenReturn(true);
     }
 

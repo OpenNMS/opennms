@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -78,14 +77,14 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
         assertEquals("%foo%", expandResult);
 
         // This is kinda non-intuitive... but expandNotifParms() only works on whitelisted expansion params
-        expandResult = NotificationManager.expandNotifParms("%foo%", Collections.singletonMap("foo", "bar"));
+        expandResult = NotificationManager.expandNotifParms("%foo%", Map.of("foo", "bar"));
         assertEquals("%foo%", expandResult);
 
         // The 'noticeid' param is in the whitelist
-        expandResult = NotificationManager.expandNotifParms("Notice #%noticeid% RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        expandResult = NotificationManager.expandNotifParms("Notice #%noticeid% RESOLVED: ", Map.of("noticeid", "999"));
         assertEquals("Notice #999 RESOLVED: ", expandResult);
 
-        expandResult = NotificationManager.expandNotifParms("RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        expandResult = NotificationManager.expandNotifParms("RESOLVED: ", Map.of("noticeid", "999"));
         assertEquals("RESOLVED: ", expandResult);
 
         // <notification name="Disk Threshold" status="on"> from bug 2888

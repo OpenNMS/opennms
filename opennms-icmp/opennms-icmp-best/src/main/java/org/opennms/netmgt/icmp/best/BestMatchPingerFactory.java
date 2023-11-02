@@ -61,7 +61,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
         final Pinger pinger;
         try {
-            pinger = pingerClass.newInstance();
+            pinger = pingerClass.getDeclaredConstructor().newInstance();
         } catch (final Throwable t) {
             LOG.info("Failed to get instance of {}: {}", pingerClass, t.getMessage(), t);
             LOG.trace("Failed to get instance of {}.", pingerClass, t);

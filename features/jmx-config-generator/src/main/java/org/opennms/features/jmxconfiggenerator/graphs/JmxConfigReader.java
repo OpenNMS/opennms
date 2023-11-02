@@ -87,7 +87,7 @@ public class JmxConfigReader {
     private Collection<Report> generateAttributeReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<>();
         for (Attrib attrib : mbean.getAttribList()) {
-            final String title = String.format("%s[%s]", mbean.getObjectname().toString() , attrib.getName());
+            final String title = String.format("%s[%s]", mbean.getObjectname() , attrib.getName());
             final String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
             Report report = new Report(reportId, title, title, "verticalLabel");
             report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));

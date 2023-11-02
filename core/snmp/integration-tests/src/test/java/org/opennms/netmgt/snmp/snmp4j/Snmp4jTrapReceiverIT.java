@@ -39,7 +39,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -160,7 +159,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         final TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
-            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, Collections.singletonList(user));
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, List.of(user));
             sendTraps(strategy, "MD5", SnmpConfiguration.AUTH_PRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
@@ -190,7 +189,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         final TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("opennmsUser", "SHA-256", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
-            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, Collections.singletonList(user));
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, List.of(user));
             sendTraps(strategy, "SHA-256", SnmpConfiguration.AUTH_PRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {
@@ -223,7 +222,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         try {
             long start = System.currentTimeMillis();
 
-            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, Collections.singletonList(user));
+            strategy.registerForTraps(trapListener, getAgentAddress(), 9162, List.of(user));
             sendTraps(strategy, null, SnmpConfiguration.NOAUTH_NOPRIV);
             await().atMost(5, SECONDS).until(() -> m_trapCount, equalTo(2));
         } catch (final IOException e) {

@@ -39,7 +39,6 @@ import static org.opennms.netmgt.events.api.EventConstants.TROUBLETICKET_CREATE_
 import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -96,7 +95,7 @@ public class ProtoBufMapperTest {
         String childLogMsg = "test msg";
         childAlarm.setLogMsg(childLogMsg);
 
-        parentAlarm.setRelatedAlarms(new HashSet<>(Collections.singletonList(childAlarm)));
+        parentAlarm.setRelatedAlarms(new HashSet<>(List.of(childAlarm)));
 
         OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(parentAlarm);
         List<OpennmsModelProtos.Alarm> relatedAlarms = mappedAlarm.getRelatedAlarmList();

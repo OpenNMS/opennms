@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -264,8 +265,8 @@ public class CollectdExternalIT implements TemporaryDatabaseAware<MockDatabase> 
         col.setClassName("org.opennms.netmgt.collectd.MockServiceCollector");
 
         this.collectdConfigFactory.setExternalData(
-                Collections.singletonList(pkg),
-                Collections.singletonList(col));
+                List.of(pkg),
+                List.of(col));
 
         this.eventIpcManager.sendNow(
                 new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")

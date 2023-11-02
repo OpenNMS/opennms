@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +96,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 
     	if (props == null || props.isEmpty()) {
             m_scope = new DefaultMOScope(new OID(".1"), false, new OID(".1"), false);
-            return Collections.singletonList((ManagedObject)this);
+            return List.of((ManagedObject)this);
     	}
 
     	m_vars = new TreeMap<OID, Object>();
@@ -121,7 +120,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 
         m_scope = new DefaultMOScope(m_vars.firstKey(), true, m_vars.lastKey(), true);
         
-        return Collections.singletonList((ManagedObject)this);
+        return List.of((ManagedObject)this);
     }
 
 	private Properties loadProperties(URL moFile) {
@@ -422,7 +421,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 			
 			// If the singleton initialization failed, then create a new instance
 			if(responder==null) {
-				responder = (DynamicVariable)dv.newInstance();
+				responder = (DynamicVariable)dv.getDeclaredConstructor().newInstance();
 			}
 		} catch(IllegalArgumentException e ) {
 			throw e;

@@ -28,8 +28,8 @@
 
 package org.opennms.core.test.http;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jetty.http.HttpVersion;
@@ -141,7 +141,7 @@ public class JUnitServer {
             mapping.setPathSpec("/*");
             mapping.setConstraint(constraint);
 
-            security.setConstraintMappings(Collections.singletonList(mapping), knownRoles);
+            security.setConstraintMappings(List.of(mapping), knownRoles);
             security.setAuthenticator(new BasicAuthenticator());
             security.setLoginService(loginService);
             security.setRealmName("MyRealm");

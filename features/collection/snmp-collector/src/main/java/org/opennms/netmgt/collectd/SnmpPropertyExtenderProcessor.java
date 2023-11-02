@@ -121,7 +121,7 @@ public class SnmpPropertyExtenderProcessor {
                 className = org.opennms.netmgt.collectd.RegExPropertyExtender.class.getName();
             }
             Class<?> clazz = Class.forName(className);
-            SnmpPropertyExtender extender = (SnmpPropertyExtender) clazz.newInstance();
+            SnmpPropertyExtender extender = (SnmpPropertyExtender) clazz.getDeclaredConstructor().newInstance();
             SnmpAttribute targetAttribute = extender.getTargetAttribute(sourceAttributes, targetResource, property);
             if (targetAttribute != null) {
                 LOG.debug("updateCollectionResource: adding property {} to resource {} with value {}", targetAttribute.getName(), targetResource, targetAttribute.getStringValue());

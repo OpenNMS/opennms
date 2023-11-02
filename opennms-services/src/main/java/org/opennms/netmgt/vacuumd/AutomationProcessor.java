@@ -617,7 +617,7 @@ public class AutomationProcessor implements ReadyRunnable {
             if (triggerResults.hasTrigger() && forEachResult()) {
                 return processTriggerResults(triggerResults);
             } else if (hasEvent()) {
-                return Collections.singletonList(getEvent());
+                return List.of(getEvent());
             }
             return Collections.emptyList();
         }

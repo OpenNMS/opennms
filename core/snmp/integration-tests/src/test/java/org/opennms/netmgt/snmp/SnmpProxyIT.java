@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -117,7 +116,7 @@ public class SnmpProxyIT {
     public void agentShouldUseConfiguredProxy(final SnmpPeerFactory snmpAgentConfigFactory,
                                               final String targetHost) throws Exception {
 
-        final List<SnmpObjId> snmpObjIds = Collections.singletonList(SnmpObjId.get(".1.3.6.1.2.1.1.2"));
+        final List<SnmpObjId> snmpObjIds = List.of(SnmpObjId.get(".1.3.6.1.2.1.1.2"));
 
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(targetHost));
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)

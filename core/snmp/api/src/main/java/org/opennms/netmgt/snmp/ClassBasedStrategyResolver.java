@@ -35,7 +35,7 @@ public class ClassBasedStrategyResolver implements StrategyResolver {
     public SnmpStrategy getStrategyInstance() {
         final String strategyClass = SnmpUtils.getStrategyClassName();
         try {
-            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).newInstance();
+            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Unable to instantiate class " + strategyClass, e);
         }

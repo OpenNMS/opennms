@@ -258,7 +258,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
 
         // Use a mock FilterDao that always returns 127.0.0.1 in the active IP list
         FilterDao filterDao = mock(FilterDao.class);
-        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(List.of(addr("127.0.0.1")));
         filterDao.flushActiveIpAddressListCache();
         FilterDaoFactory.setInstance(filterDao);
 

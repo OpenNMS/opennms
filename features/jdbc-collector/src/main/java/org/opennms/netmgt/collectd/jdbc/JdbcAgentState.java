@@ -92,7 +92,7 @@ public class JdbcAgentState {
         // Extract the driver class name and create a driver class instance.
         try {
             String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
-            m_driver = (Driver)Class.forName(driverClass).newInstance();
+            m_driver = (Driver)Class.forName(driverClass).getDeclaredConstructor().newInstance();
         } catch (Throwable exp) {
             throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
         }

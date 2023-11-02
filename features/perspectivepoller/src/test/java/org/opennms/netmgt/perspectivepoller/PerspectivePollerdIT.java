@@ -44,7 +44,7 @@ import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -585,7 +585,7 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
         // this will return 192.168.1.1 for each call for active IPs
         final FilterDao filterDao = mock(FilterDao.class);
-        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("192.168.1.1")));
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(List.of(addr("192.168.1.1")));
         FilterDaoFactory.setInstance(filterDao);
 
         // load the thresholds.xml and thresd-configuration.xml configuration

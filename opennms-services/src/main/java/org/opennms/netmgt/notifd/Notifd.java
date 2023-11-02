@@ -110,7 +110,7 @@ public final class Notifd extends AbstractServiceDaemon {
                 final NoticeQueue curQueue = new NoticeQueue();
 
                 Class<?> handlerClass = Class.forName(queue.getHandlerClass().getName());
-                NotifdQueueHandler handlerQueue = (NotifdQueueHandler) handlerClass.newInstance();
+                NotifdQueueHandler handlerQueue = (NotifdQueueHandler) handlerClass.getDeclaredConstructor().newInstance();
 
                 handlerQueue.setQueueID(queue.getQueueId());
                 handlerQueue.setNoticeQueue(curQueue);

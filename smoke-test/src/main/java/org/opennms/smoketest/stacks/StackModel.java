@@ -29,7 +29,6 @@
 package org.opennms.smoketest.stacks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -118,7 +117,7 @@ public class StackModel {
          * @return this builder
          */
         public Builder withMinion() {
-            minions = Collections.singletonList(MinionProfile.DEFAULT);
+            minions = List.of(MinionProfile.DEFAULT);
             return this;
         }
 
@@ -153,7 +152,7 @@ public class StackModel {
          * @return this builder
          */
         public Builder withSentinel() {
-            sentinels = Collections.singletonList(SentinelProfile.DEFAULT);
+            sentinels = List.of(SentinelProfile.DEFAULT);
             return this;
         }
 

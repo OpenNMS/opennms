@@ -398,7 +398,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected File zipFile(File sourceFile) throws OnmsUpgradeException {
-        return zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
+        return zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), List.of(sourceFile));
     }
 
     /**

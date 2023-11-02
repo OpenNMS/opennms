@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
@@ -63,7 +64,7 @@ public class OnmsThresholdingDao extends AbstractThresholdingDao implements Writ
                 .withFolder((accumulator, next) -> accumulator.getGroups().addAll(next.getGroups()))
                 .build();
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
-                Collections.singleton(this::fileSystemConfigUpdated), configFile);
+                Set.of(this::fileSystemConfigUpdated), configFile);
 
         reload();
     }

@@ -472,7 +472,7 @@ public class CollectionResourceWrapper {
         } else if ("iflabel".equalsIgnoreCase(ds)) {
             return getIfLabel();
         } else if ("id".equalsIgnoreCase(ds)) {
-            return m_resource.getPath().getName().toString();
+            return m_resource.getPath().getName();
         }
 
         try {

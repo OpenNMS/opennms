@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
@@ -63,7 +64,7 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
                 .withFolder((accumulator, next) -> accumulator.getPackages().addAll(next.getPackages()))
                 .build();
         saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThreshdConfiguration.class,
-                "threshd-configuration", Collections.singleton(this::fileSystemConfigUpdated), configFile);
+                "threshd-configuration", Set.of(this::fileSystemConfigUpdated), configFile);
 
         reload();
     }

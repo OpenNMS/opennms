@@ -100,15 +100,15 @@ public class ThresholdingConfigExtensionManagerTest {
         String expressionStr = "expression";
         when(expression.getExpression()).thenReturn(expressionStr);
         mockBaseThresholddef(expression);
-        when(groupDef.getExpressions()).thenReturn(Collections.singletonList(expression));
+        when(groupDef.getExpressions()).thenReturn(List.of(expression));
 
         Threshold threshold = mock(Threshold.class);
         String dsName = "ds name";
         when(threshold.getDsName()).thenReturn(dsName);
         mockBaseThresholddef(threshold);
-        when(groupDef.getThresholds()).thenReturn(Collections.singletonList(threshold));
+        when(groupDef.getThresholds()).thenReturn(List.of(threshold));
 
-        when(ext1.getGroupDefinitions()).thenReturn(Collections.singletonList(groupDef));
+        when(ext1.getGroupDefinitions()).thenReturn(List.of(groupDef));
 
         manager.onBind(ext1, Collections.emptyMap());
 
@@ -136,7 +136,7 @@ public class ThresholdingConfigExtensionManagerTest {
         when(groupDef2.getRrdRepository()).thenReturn(rrdRepository2);
         when(groupDef2.getThresholds()).thenReturn(Collections.emptyList());
         when(groupDef2.getExpressions()).thenReturn(Collections.emptyList());
-        when(ext2.getGroupDefinitions()).thenReturn(Collections.singletonList(groupDef2));
+        when(ext2.getGroupDefinitions()).thenReturn(List.of(groupDef2));
         manager.onBind(ext2, Collections.emptyMap());
 
         // Should see the merged results now
@@ -169,7 +169,7 @@ public class ThresholdingConfigExtensionManagerTest {
         ResourceFilter resourceFilter = mock(ResourceFilter.class);
         when(resourceFilter.getContent()).thenReturn(Optional.of(content));
         when(resourceFilter.getField()).thenReturn(field);
-        when(basethresholddef.getResourceFilters()).thenReturn(Collections.singletonList(resourceFilter));
+        when(basethresholddef.getResourceFilters()).thenReturn(List.of(resourceFilter));
         when(basethresholddef.getTrigger()).thenReturn(trigger);
         when(basethresholddef.getTriggeredUEI()).thenReturn(Optional.of(triggeredUEI));
         when(basethresholddef.getType()).thenReturn(type);

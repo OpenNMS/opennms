@@ -35,8 +35,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.netmgt.mock.MockResourceType;
@@ -107,7 +107,7 @@ public class AttributeMatchingResourceVisitorTest {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Set.of(attribute), ResourcePath.get("foo"));
         m_attributeVisitor.visit(attribute);
 
         doNothing().when(m_attributeVisitor).visit(any(OnmsAttribute.class));

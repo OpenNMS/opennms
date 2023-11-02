@@ -82,14 +82,14 @@ public class ThreshdConfigurationExtensionManagerTest {
         when(excludeRange.getBegin()).thenReturn(excludeRangeBegin);
         String excludeRangeEnd = "1.1.1.1";
         when(excludeRange.getEnd()).thenReturn(excludeRangeEnd);
-        when(packageDefinition1.getExcludeRanges()).thenReturn(Collections.singletonList(excludeRange));
+        when(packageDefinition1.getExcludeRanges()).thenReturn(List.of(excludeRange));
 
         IncludeRange includeRange = mock(IncludeRange.class);
         String includeRangeBegin = "2.2.2.2";
         when(includeRange.getBegin()).thenReturn(includeRangeBegin);
         String includeRangeEnd = "3.3.3.3";
         when(includeRange.getEnd()).thenReturn(includeRangeEnd);
-        when(packageDefinition1.getIncludeRanges()).thenReturn(Collections.singletonList(includeRange));
+        when(packageDefinition1.getIncludeRanges()).thenReturn(List.of(includeRange));
 
         Filter filter1 = mock(Filter.class);
         String filter1Content = "filter 1 content";
@@ -97,13 +97,13 @@ public class ThreshdConfigurationExtensionManagerTest {
         when(packageDefinition1.getFilter()).thenReturn(filter1);
 
         String includeUrl = "include url";
-        when(packageDefinition1.getIncludeUrls()).thenReturn(Collections.singletonList(includeUrl));
+        when(packageDefinition1.getIncludeUrls()).thenReturn(List.of(includeUrl));
 
         String package1Name = "TestPackage1";
         when(packageDefinition1.getName()).thenReturn(package1Name);
 
         String outageCalendar = "outage calendar";
-        when(packageDefinition1.getOutageCalendars()).thenReturn(Collections.singletonList(outageCalendar));
+        when(packageDefinition1.getOutageCalendars()).thenReturn(List.of(outageCalendar));
 
         Service service = mock(Service.class);
         long serviceInterval = 1000;
@@ -117,17 +117,17 @@ public class ThreshdConfigurationExtensionManagerTest {
         when(parameter.getKey()).thenReturn(paramKey);
         String paramVal = "param value";
         when(parameter.getValue()).thenReturn(paramVal);
-        when(service.getParameters()).thenReturn(Collections.singletonList(parameter));
+        when(service.getParameters()).thenReturn(List.of(parameter));
 
         when(service.getStatus()).thenReturn(Optional.of(ServiceStatus.ON));
         when(service.getUserDefined()).thenReturn(true);
 
-        when(packageDefinition1.getServices()).thenReturn(Collections.singletonList(service));
+        when(packageDefinition1.getServices()).thenReturn(List.of(service));
 
         String specific = "specific";
-        when(packageDefinition1.getSpecifics()).thenReturn(Collections.singletonList(specific));
+        when(packageDefinition1.getSpecifics()).thenReturn(List.of(specific));
 
-        when(ext1.getPackages()).thenReturn(Collections.singletonList(packageDefinition1));
+        when(ext1.getPackages()).thenReturn(List.of(packageDefinition1));
 
         manager.onBind(ext1, Collections.emptyMap());
 
@@ -170,7 +170,7 @@ public class ThreshdConfigurationExtensionManagerTest {
         when(packageDefinition2.getServices()).thenReturn(Collections.emptyList());
         when(packageDefinition2.getSpecifics()).thenReturn(Collections.emptyList());
 
-        when(ext2.getPackages()).thenReturn(Collections.singletonList(packageDefinition2));
+        when(ext2.getPackages()).thenReturn(List.of(packageDefinition2));
         manager.onBind(ext2, Collections.emptyMap());
 
         // Should see the merged results now

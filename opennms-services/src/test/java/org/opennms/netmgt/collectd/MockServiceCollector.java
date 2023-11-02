@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -76,7 +77,7 @@ public class MockServiceCollector implements ServiceCollector {
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File("target"));
-        repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
+        repo.setRraList(List.of("RRA:AVERAGE:0.5:1:8928"));
         repo.setStep(300);
         repo.setHeartBeat(2 * 300);
         return repo;

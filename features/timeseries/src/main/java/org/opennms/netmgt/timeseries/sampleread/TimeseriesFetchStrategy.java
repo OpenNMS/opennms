@@ -34,7 +34,6 @@ import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -291,7 +290,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             }
             // aggregate if timeseries implementation didn't do it natively
             if (!shouldAggregateNatively) {
-                final List<Source> currentSources = Collections.singletonList(source);
+                final List<Source> currentSources = List.of(source);
                 timeSeriesData = NewtsLikeSampleAggregator.builder()
                         .resource(resourceId)
                         .start(start)

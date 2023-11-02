@@ -69,7 +69,7 @@ public class TicketerPluginFactory implements FactoryBean<Plugin> {
             throw new IllegalArgumentException("The class "+m_pluginClass+" is not assignable to TicketPlugin class");
         }
         if (m_ticketerPlugin == null) {
-            m_ticketerPlugin = (Plugin)m_pluginClass.newInstance();
+            m_ticketerPlugin = (Plugin)m_pluginClass.getDeclaredConstructor().newInstance();
         }
         return m_ticketerPlugin;
         

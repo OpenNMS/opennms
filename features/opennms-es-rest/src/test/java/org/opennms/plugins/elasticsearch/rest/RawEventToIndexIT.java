@@ -31,8 +31,8 @@ package org.opennms.plugins.elasticsearch.rest;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
@@ -95,7 +95,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 			LOG.debug("ecreated node lost service event:{}", event.toString());
 
 			// forward event to Elasticsearch
-			eventToIndex.forwardEvents(Collections.singletonList(event));
+			eventToIndex.forwardEvents(List.of(event));
 
 			// waiting 5 seconds for index 
 			try {

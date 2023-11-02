@@ -207,7 +207,7 @@ public class Upgrade {
                 if (cls.getAnnotation(Ignore.class) != null) {
                     continue;
                 }
-                OnmsUpgrade upgrade = (OnmsUpgrade) cls.newInstance();
+                OnmsUpgrade upgrade = (OnmsUpgrade) cls.getDeclaredConstructor().newInstance();
                 upgrades.add(upgrade);
                 log("Found upgrade task %s\n", upgrade.getId());
             }

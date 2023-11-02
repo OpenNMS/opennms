@@ -128,7 +128,7 @@ public class BestMatchPinger implements Pinger {
         if (m_pinger == null) {
             final Class<? extends Pinger> pinger = BestMatchPingerFactory.findPinger();
             try {
-                m_pinger = pinger.newInstance();
+                m_pinger = pinger.getDeclaredConstructor().newInstance();
             } catch (final Throwable t) {
                 LOG.error("Failed to initialize best match pinger ({}): {}  Falling back to the null pinger.", pinger, t.getMessage(), t);
                 LOG.trace("Failed to initialize best match pinger ({}).  Falling back to the null pinger.", pinger, t);

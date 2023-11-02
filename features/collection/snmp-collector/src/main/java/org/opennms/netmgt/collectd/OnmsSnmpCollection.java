@@ -544,7 +544,7 @@ public class OnmsSnmpCollection {
         AttributeGroupType groupType = new AttributeGroupType(ifAliasMibObject.getGroupName(), ifAliasMibObject.getGroupIfType());
     
         SnmpAttributeType type = SnmpAttributeType.create(resType, resType.getCollectionName(), ifAliasMibObject, groupType);
-        return Collections.singletonList(type);
+        return List.of(type);
     }
 
     /**

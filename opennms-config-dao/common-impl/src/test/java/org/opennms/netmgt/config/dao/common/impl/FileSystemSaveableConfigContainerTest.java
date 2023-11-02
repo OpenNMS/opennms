@@ -38,8 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -117,10 +117,10 @@ public class FileSystemSaveableConfigContainerTest {
 
         // Create the container and verify it initialized with the content on the filesystem
         SaveableConfigContainer<TestEntity> container = new FileSystemSaveableConfigContainer<>(TestEntity.class,
-                "test", Collections.singleton(e -> {
-                    callbackCalled.incrementAndGet();
-                    callbackValue.set(e);
-                    
+                "test", Set.of(e -> {
+            callbackCalled.incrementAndGet();
+            callbackValue.set(e);
+
         }), xmlFile);
         
         // When the container initialized our callback should have been called for the first time

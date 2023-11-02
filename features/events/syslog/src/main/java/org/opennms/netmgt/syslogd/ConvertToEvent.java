@@ -161,7 +161,7 @@ public class ConvertToEvent {
         bldr.addParam("hostname", message.getHostName());
 
         // Add any syslog message parameters as event parameters.
-        message.getParameters().forEach((k, v) -> bldr.addParam(k.toString(), v));
+        message.getParameters().forEach((k, v) -> bldr.addParam(k, v));
 
         InetAddress hostInetAddress = resolveHostName(locationAwareDnsLookupClient, dnsCache, location, systemId, message);
         if (hostInetAddress != null) {
@@ -239,7 +239,7 @@ public class ConvertToEvent {
         bldr.addParam("service", facilityTxt);
 
         if (message.getProcessId() != null) {
-            bldr.addParam("processid", message.getProcessId().toString());
+            bldr.addParam("processid", message.getProcessId());
         }
 
         return bldr;
@@ -345,7 +345,7 @@ public class ConvertToEvent {
 
         SyslogParser parser = SyslogParser.getParserInstance(config, buffer);
         if (!parser.find()) {
-            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
+            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", SyslogParser.fromByteBuffer(buffer)));
         }
         SyslogMessage message;
         try {
@@ -356,7 +356,7 @@ public class ConvertToEvent {
         }
 
         if (message == null) {
-            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
+            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", SyslogParser.fromByteBuffer(buffer)));
         }
 
         if (LOG.isTraceEnabled()) {

@@ -312,7 +312,7 @@ public class CollectdIT {
         setupInterface(iface);
         setupTransactionManager();
   
-        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(List.of(getCollectionPackageThatMatchesSNMP()));
         when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
 
         // Mock Thresholding
@@ -363,7 +363,7 @@ public class CollectdIT {
         setupInterface(iface);
         setupTransactionManager();
 
-        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.getPackages()).thenReturn(List.of(getCollectionPackageThatMatchesSNMP()));
         when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
 
         assertEquals("scheduler entry count", 0, m_scheduler.getEntryCount());
@@ -403,7 +403,7 @@ public class CollectdIT {
     }
 
     private void setupInterface(OnmsIpInterface iface) {
-        when(m_ipIfDao.findByServiceType("SNMP")).thenReturn(Collections.singletonList(iface));
+        when(m_ipIfDao.findByServiceType("SNMP")).thenReturn(List.of(iface));
         when(m_ipIfDao.load(iface.getId())).thenReturn(iface);
     }
 
@@ -435,7 +435,7 @@ public class CollectdIT {
         collector.setClassName(MockServiceCollector.class.getName());
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(List.of(collector));
         when(m_collectdConfigFactory.getThreads()).thenReturn(1);
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);

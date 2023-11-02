@@ -30,8 +30,8 @@ package org.opennms.netmgt.dao.support;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.jrobin.core.RrdDb;
@@ -117,7 +117,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         File intf = m_fileAnticipator.tempDir(node, childResource.getName());
         
         RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), RrdAttributeType.GAUGE, 600, "U", "U");
-        RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, List.of(rrdDataSource), List.of("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
         File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + m_rrdStrategy.getDefaultFileExtension());
         

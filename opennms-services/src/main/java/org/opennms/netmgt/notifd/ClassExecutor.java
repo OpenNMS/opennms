@@ -58,7 +58,7 @@ public class ClassExecutor implements ExecutorStrategy {
         LOG.debug("Going for the class instance: {}", className);
         NotificationStrategy ns;
         try {
-            ns = (NotificationStrategy) Class.forName(className).newInstance();
+            ns = (NotificationStrategy) Class.forName(className).getDeclaredConstructor().newInstance();
             LOG.debug("{} class created: {}", className, ns.getClass());
         } catch (Throwable e) {
             LOG.error("Execption creating notification strategy class: {}", className, e);

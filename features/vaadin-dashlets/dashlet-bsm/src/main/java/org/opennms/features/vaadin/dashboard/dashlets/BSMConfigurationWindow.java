@@ -409,9 +409,9 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
                     m_dashletSpec.getParameters().put("orderSequence", "Ascending");
                 }
 
-                m_dashletSpec.getParameters().put("resultsLimit", m_limitTextField.getValue().toString());
-                m_dashletSpec.getParameters().put("columnCountBoard", m_columnCountBoardTextField.getValue().toString());
-                m_dashletSpec.getParameters().put("columnCountPanel", m_columnCountPanelTextField.getValue().toString());
+                m_dashletSpec.getParameters().put("resultsLimit", m_limitTextField.getValue());
+                m_dashletSpec.getParameters().put("columnCountBoard", m_columnCountBoardTextField.getValue());
+                m_dashletSpec.getParameters().put("columnCountPanel", m_columnCountPanelTextField.getValue());
 
                 WallboardProvider.getInstance().save();
                 ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");

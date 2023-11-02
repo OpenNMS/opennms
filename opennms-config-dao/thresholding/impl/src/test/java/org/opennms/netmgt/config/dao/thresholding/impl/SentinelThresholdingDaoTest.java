@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 
@@ -54,7 +54,7 @@ public class SentinelThresholdingDaoTest {
         Group groupToServe = new Group();
         groupToServe.setName("test");
         groupToServe.setRrdRepository("test");
-        configToServe.setGroups(Collections.singletonList(groupToServe));
+        configToServe.setGroups(List.of(groupToServe));
 
         JsonStore mockJsonStore = mock(JsonStore.class);
         when(mockJsonStore.getLastUpdated(AbstractThresholdingDao.JSON_STORE_KEY,

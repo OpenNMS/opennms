@@ -37,7 +37,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -96,7 +96,7 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
         int udpPort = SocketUtils.findAvailableUdpPort();
         Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry());
         parser.setThreads(NUM_THREADS);
-        UdpListener listener = new UdpListener("FLOW", Collections.singletonList(parser), new MetricRegistry());
+        UdpListener listener = new UdpListener("FLOW", List.of(parser), new MetricRegistry());
         listener.setPort(udpPort);
         listener.start();
 

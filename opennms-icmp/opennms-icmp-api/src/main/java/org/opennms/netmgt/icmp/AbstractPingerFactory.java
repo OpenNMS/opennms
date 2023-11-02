@@ -70,7 +70,7 @@ public abstract class AbstractPingerFactory implements PingerFactory {
             return m_pingers.get((tc + 1) * isFrag, new Callable<Pinger>() {
                 @Override
                 public Pinger call() throws Exception {
-                    final Pinger pinger = clazz.newInstance();
+                    final Pinger pinger = clazz.getDeclaredConstructor().newInstance();
                     pinger.setTrafficClass(tc);
                     return pinger;
                 }

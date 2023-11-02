@@ -478,7 +478,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         }
         assertNotNull("we should have an exception", ex);
 
-        sendPost("/requisitions", req.toString(), 500, null);
+        sendPost("/requisitions", req, 500, null);
     }
 
     @Test

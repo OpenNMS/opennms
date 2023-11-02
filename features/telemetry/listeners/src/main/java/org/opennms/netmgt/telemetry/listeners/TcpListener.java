@@ -30,9 +30,9 @@ package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -252,7 +252,7 @@ public class TcpListener implements GracefulShutdownListener {
 
     @Override
     public Collection<? extends Parser> getParsers() {
-        return Collections.singleton(this.parser);
+        return Set.of(this.parser);
     }
 
     public String getHost() {

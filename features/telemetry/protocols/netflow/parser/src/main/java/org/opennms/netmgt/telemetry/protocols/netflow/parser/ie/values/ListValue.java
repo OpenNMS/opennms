@@ -33,7 +33,6 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -118,7 +117,7 @@ public class ListValue extends Value<List<List<Value<?>>>> {
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.isReadable()) {
-                    values.add(Collections.singletonList(DataRecord.parseField(field, resolver, buffer)));
+                    values.add(List.of(DataRecord.parseField(field, resolver, buffer)));
                 }
 
                 return new ListValue(name, semantics, semantic, values);

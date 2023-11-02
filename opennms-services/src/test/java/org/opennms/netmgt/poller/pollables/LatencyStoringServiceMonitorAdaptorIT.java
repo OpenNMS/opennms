@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -239,7 +238,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         parameters.put("thresholding-enabled", "true");
 
         FilterDao filterDao = mock(FilterDao.class);
-        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(Collections.singletonList(addr("127.0.0.1")));
+        when(filterDao.getActiveIPAddressList(anyString())).thenReturn(List.of(addr("127.0.0.1")));
         filterDao.flushActiveIpAddressListCache();
         FilterDaoFactory.setInstance(filterDao);
 
@@ -252,7 +251,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         ServiceMonitor service = new MockServiceMonitor(rtValues);
 
         int step = 1;
-        List<String> rras = Collections.singletonList("RRA:AVERAGE:0.5:1:2016");
+        List<String> rras = List.of("RRA:AVERAGE:0.5:1:2016");
         Package pkg = new Package();
         Rrd rrd = new Rrd();
         rrd.setStep(step);

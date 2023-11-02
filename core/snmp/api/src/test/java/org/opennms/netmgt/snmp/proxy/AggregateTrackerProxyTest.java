@@ -115,16 +115,16 @@ public class AggregateTrackerProxyTest {
         // Build responses
         SnmpValue value = mock(SnmpValue.class);
         List<WalkResponse> responses = Lists.newArrayList(
-                new WalkResponse(Collections.singletonList(
+                new WalkResponse(List.of(
                         new SnmpResult(baseOids[0], SnmpInstId.INST_ZERO, value)),
                         "0-0"),
-                new WalkResponse(Collections.singletonList(
+                new WalkResponse(List.of(
                         new SnmpResult(baseOids[1], SnmpInstId.INST_ZERO, value)),
                         "0-1"),
-                new WalkResponse(Collections.singletonList(
+                new WalkResponse(List.of(
                         new SnmpResult(baseOids[2], SnmpInstId.INST_ZERO, value)),
                         "0-2"),
-                new WalkResponse(Collections.singletonList(
+                new WalkResponse(List.of(
                         new SnmpResult(baseOids[3], SnmpInstId.INST_ZERO, value)),
                         "1")
                 );

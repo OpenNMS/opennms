@@ -50,7 +50,7 @@ public class SNMPWalkWithTrackerBuilder extends AbstractSNMPRequestBuilder<Colle
                 .map(req -> {
                     SnmpWalkRequestDTO walkRequest = new SnmpWalkRequestDTO();
                     walkRequest.setCorrelationId(req.getCorrelationId());
-                    walkRequest.setOids(Collections.singletonList(req.getBaseOid()));
+                    walkRequest.setOids(List.of(req.getBaseOid()));
                     walkRequest.setMaxRepetitions(req.getMaxRepetitions());
                     walkRequest.setInstance(req.getInstance());
                     return walkRequest;

@@ -28,7 +28,6 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -47,7 +46,7 @@ public class EventForwarderImpl implements EventForwarder {
 	public void sendNow(Event event) {
 		if (event != null) {
 			LOG.debug("Event to send received: {}", event.toString());
-			sendNow(Collections.singletonList(event));
+			sendNow(List.of(event));
 		}
 	}
 

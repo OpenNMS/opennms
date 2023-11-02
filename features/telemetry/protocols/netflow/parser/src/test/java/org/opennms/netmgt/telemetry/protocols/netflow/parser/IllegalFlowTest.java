@@ -39,7 +39,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -127,7 +127,7 @@ public class IllegalFlowTest {
 
         // setting up listener
 
-        final UdpListener listener = new UdpListener("FLOW", Collections.singletonList(parser), new MetricRegistry());
+        final UdpListener listener = new UdpListener("FLOW", List.of(parser), new MetricRegistry());
 
         listener.setPort(udpPort);
         listener.start();

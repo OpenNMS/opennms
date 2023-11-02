@@ -374,7 +374,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         LOG.debug("PUT {}, formData = {}, expected status code = {}, expected URL suffix = {}", url, formData, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
         if (expectedUrlSuffix != null) {
-            final String location = response.getHeader("Location").toString();
+            final String location = response.getHeader("Location");
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
         return response;
@@ -512,7 +512,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         }
         assertEquals(expectedStatus, response.getStatus());
         if (expectedUrlSuffix != null) {
-            final String location = response.getHeader("Location").toString();
+            final String location = response.getHeader("Location");
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
         Thread.sleep(50);

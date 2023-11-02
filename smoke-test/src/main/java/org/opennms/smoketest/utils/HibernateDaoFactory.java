@@ -69,7 +69,7 @@ public class HibernateDaoFactory {
 
     public <T extends AbstractDaoHibernate<?, ?>> T getDao(Class<T> clazz) {
         try {
-            T dao = clazz.newInstance();
+            T dao = clazz.getDeclaredConstructor().newInstance();
             dao.setHibernateTemplate(m_hibernateTemplate);
             dao.setSessionFactory(m_sessionFactory);
             return dao;

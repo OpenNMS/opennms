@@ -29,7 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;
@@ -89,7 +89,7 @@ public class NodeResourceType extends ResourceType {
      */
     @Override
     public Collection<NodeInfo> getResources() {
-        return Collections.singleton(m_nodeInfo);
+        return Set.of(m_nodeInfo);
     }
 
     /** {@inheritDoc} */

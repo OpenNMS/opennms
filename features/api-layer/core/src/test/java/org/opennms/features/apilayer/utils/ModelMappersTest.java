@@ -45,9 +45,9 @@ import static org.mockito.ArgumentMatchers.any;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.hibernate.ObjectNotFoundException;
@@ -236,7 +236,7 @@ public class ModelMappersTest {
         event.setNodeid(12345L);
         String parmName = "test.parm.name";
         String parmValue = "test.parm.value";
-        event.setParmCollection(Collections.singletonList(new Parm(parmName, parmValue)));
+        event.setParmCollection(List.of(new Parm(parmName, parmValue)));
 
         InMemoryEvent inMemoryEvent = ModelMappers.toEvent(event);
         assertThat(inMemoryEvent.getUei(), equalTo(event.getUei()));
@@ -256,7 +256,7 @@ public class ModelMappersTest {
         event.setId(1);
         String eventName = "test.name";
         String eventValue = "test.value";
-        event.setEventParameters(Collections.singletonList(new OnmsEventParameter(null, eventName, eventValue, null)));
+        event.setEventParameters(List.of(new OnmsEventParameter(null, eventName, eventValue, null)));
 
         DatabaseEvent databaseEvent = ModelMappers.toEvent(event);
         assertThat(databaseEvent.getUei(), equalTo(event.getEventUei()));
@@ -308,20 +308,20 @@ public class ModelMappersTest {
         onmsMetaData.setContext("test.context");
         onmsMetaData.setKey("test.key");
         onmsMetaData.setValue("test.value");
-        List<OnmsMetaData> metaDataList = Collections.singletonList(onmsMetaData);
+        List<OnmsMetaData> metaDataList = List.of(onmsMetaData);
         onmsNode.setMetaData(metaDataList);
 
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setIfDescr("test.ifdescr");
         onmsSnmpInterface.setIfName("test.ifname");
         onmsSnmpInterface.setIfIndex(1);
-        onmsNode.setSnmpInterfaces(Collections.singleton(onmsSnmpInterface));
+        onmsNode.setSnmpInterfaces(Set.of(onmsSnmpInterface));
 
         OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
         onmsIpInterface.setIpAddress(InetAddress.getLocalHost());
         onmsIpInterface.setSnmpInterface(onmsSnmpInterface);
         onmsIpInterface.setMetaData(metaDataList);
-        onmsNode.setIpInterfaces(Collections.singleton(onmsIpInterface));
+        onmsNode.setIpInterfaces(Set.of(onmsIpInterface));
 
         Node node = ModelMappers.toNode(onmsNode);
         assertThat(node.getId(), equalTo(onmsNode.getId()));

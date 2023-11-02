@@ -41,7 +41,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -160,7 +160,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
                                             0,
                                             null,
                                             null,
-                                            Collections.singletonList(source),
+                                            List.of(source),
                                             false);
         } catch (final Exception e) {
             LOG.warn("Failed to fetch statistic: {}", source, e);

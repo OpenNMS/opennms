@@ -74,7 +74,7 @@ public class ColumnTrackerProxyTest {
         WalkResponse response = new WalkResponse(results);
 
         // Resolve the walker
-        tracker.handleWalkResponses(Collections.singletonList(response));
+        tracker.handleWalkResponses(List.of(response));
 
         // We should be finished, and have captured the expected value
         assertThat(tracker.isFinished(), equalTo(true));

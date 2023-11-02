@@ -56,7 +56,7 @@ public class ReportJobFactory implements JobFactory {
         ReportJob job = null;
         
         try {
-            job = jobClass.newInstance();
+            job = jobClass.getDeclaredConstructor().newInstance();
             job.setReportd(getReportd());
             return job;
         } catch (Throwable e) {

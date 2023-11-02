@@ -40,7 +40,6 @@ import java.nio.file.Files;
 import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.After;
@@ -123,7 +122,7 @@ public class MinaSshMonitorIT {
         port = sshd.getPort();
         LOG.info("SshServer started on port {}", port);
 
-        keyPairs = Collections.singletonList(KeyUtils.generateKeyPair(KeyPairProvider.SSH_RSA, 1024));
+        keyPairs = List.of(KeyUtils.generateKeyPair(KeyPairProvider.SSH_RSA, 1024));
         for(KeyPair kp : keyPairs) {
             String fp = KeyUtils.getFingerPrint(kp.getPublic());
             LOG.info("client fingerprint: {}", fp);

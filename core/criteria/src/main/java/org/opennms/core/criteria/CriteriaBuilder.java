@@ -29,7 +29,6 @@
 package org.opennms.core.criteria;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,7 +91,7 @@ public class CriteriaBuilder {
         criteria.setOffset(m_offset);
         criteria.setMultipleAnd(m_isMultipleAnd);
         if ("any".equals(m_matchType)) {
-            criteria.setRestrictions(Collections.singleton(Restrictions.any(m_restrictions.toArray(EMPTY_RESTRICTION_ARRAY))));
+            criteria.setRestrictions(Set.of(Restrictions.any(m_restrictions.toArray(EMPTY_RESTRICTION_ARRAY))));
         } else {
             criteria.setRestrictions(m_restrictions);
         }

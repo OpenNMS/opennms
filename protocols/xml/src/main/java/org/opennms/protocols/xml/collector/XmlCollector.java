@@ -134,7 +134,7 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
                       try {
                           LOG.debug("initialize: instantiating XML collection handler {}", key.getHandlerClass());
                           final Class<?> clazz = Class.forName(key.getHandlerClass());
-                          final XmlCollectionHandler handler = (XmlCollectionHandler) clazz.newInstance();
+                          final XmlCollectionHandler handler = (XmlCollectionHandler) clazz.getDeclaredConstructor().newInstance();
                           handler.setServiceName(key.getServiceName());
                           return handler;
                       } catch (Exception e) {

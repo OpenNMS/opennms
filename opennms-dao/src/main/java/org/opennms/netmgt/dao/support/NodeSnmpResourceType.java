@@ -102,7 +102,7 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
         if (!isResourceTypeOnParent(parent)) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(getResourceForNode(parent));
+        return List.of(getResourceForNode(parent));
     }
 
     /** {@inheritDoc} */

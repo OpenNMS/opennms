@@ -32,12 +32,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 public class EventsTest {
 
@@ -59,7 +58,7 @@ public class EventsTest {
 
     @Test
     public void testDoesNotDuplicateEventsWithPriority() {
-        when(mockPartition.group(mockEvent)).thenReturn(Collections.unmodifiableList(Arrays.asList(".1.3.6.1.2.1.10.166.3")));
+        when(mockPartition.group(mockEvent)).thenReturn(List.of(".1.3.6.1.2.1.10.166.3"));
 
         events.addEvent(mockEvent);
         when(mockEvent.getPriority()).thenReturn(1);

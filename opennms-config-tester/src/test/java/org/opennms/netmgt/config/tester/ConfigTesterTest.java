@@ -38,6 +38,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -54,7 +55,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
@@ -64,8 +64,6 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
-
-import com.google.common.io.Files;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
@@ -89,7 +87,7 @@ public class ConfigTesterTest {
 
     private static void setUpOpennmsHomeInTmpDir() throws IOException {
         String opennmsHomeOriginal = System.getProperty(OPENNMS_HOME_NAME);
-        opennmsHomeDir = Files.createTempDir();
+        opennmsHomeDir = Files.createTempDirectory(null).toFile();
         System.setProperty(OPENNMS_HOME_NAME, opennmsHomeDir.getAbsolutePath());
         FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "etc"), new File(opennmsHomeDir, "etc"));
         FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "../../../../protocols/xml/src/main/etc"), new File(opennmsHomeDir, "etc"));
@@ -658,8 +656,8 @@ public class ConfigTesterTest {
 
     private void testXmlFile(final String directory, final String xml) throws IOException {
         final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(opennmsHomeDir.getPath(), "etc/" + directory));
-        final File file = new File(etcDir.toFile(), "ABC.xml");
-        Files.write(xml, file, StandardCharsets.UTF_8);
+        final Path file = etcDir.resolve("ABC.xml");
+        Files.writeString(file, xml, StandardCharsets.UTF_8);
         testConfigFile(directory);
     }
 
@@ -706,7 +704,7 @@ public class ConfigTesterTest {
         // create broken properties file in opennms.properties.d:
         File file = createFileInPropertiesD("properties");
         String invalidCharacter="'\\u0zb9";
-        Files.write(invalidCharacter, file, StandardCharsets.UTF_8);
+        Files.writeString(file.toPath(), invalidCharacter, StandardCharsets.UTF_8);
 
         // test it => should complain
         testConfigFile("opennms.properties.d");
@@ -725,7 +723,7 @@ public class ConfigTesterTest {
 
     private void saveXmlToPropertiesD(String xml) throws IOException{
         File file = createFileInPropertiesD("xml");
-        Files.write(xml, file, StandardCharsets.UTF_8);
+        Files.writeString(file.toPath(), xml, StandardCharsets.UTF_8);
     }
 
     private void savePropertiesToPropertiesD(Properties properties) throws IOException{

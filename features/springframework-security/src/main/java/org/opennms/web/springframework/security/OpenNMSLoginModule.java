@@ -29,7 +29,6 @@
 package org.opennms.web.springframework.security;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -138,7 +137,7 @@ public class OpenNMSLoginModule implements LoginModule, LoginHandler, OpenNMSLog
     }
 
     public Set<Principal> createPrincipals(final GrantedAuthority authority) {
-        return Collections.singleton(new AuthorityPrincipal(authority));
+        return Set.of(new AuthorityPrincipal(authority));
     }
 
     @Override

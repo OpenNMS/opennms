@@ -119,7 +119,7 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 
 		String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 		try {
-			driver = (Driver)Class.forName(driverClass).newInstance();
+			driver = (Driver)Class.forName(driverClass).getDeclaredConstructor().newInstance();
 			LOG.debug("Loaded JDBC driver: {}", driverClass);
 		} catch (Throwable exp) {
 			throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);

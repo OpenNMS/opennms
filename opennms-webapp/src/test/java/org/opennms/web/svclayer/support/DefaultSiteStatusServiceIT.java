@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -180,11 +179,11 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
         Set<AggregateStatusDefinition> defs = new LinkedHashSet<>();
 
         AggregateStatusDefinition definition;
-        definition = new AggregateStatusDefinition("Routers", Collections.singleton(new OnmsCategory("Routers")));
+        definition = new AggregateStatusDefinition("Routers", Set.of(new OnmsCategory("Routers")));
         defs.add(definition);
-        definition = new AggregateStatusDefinition("Switches", Collections.singleton(new OnmsCategory("Switches")));
+        definition = new AggregateStatusDefinition("Switches", Set.of(new OnmsCategory("Switches")));
         defs.add(definition);
-        definition = new AggregateStatusDefinition("Servers", Collections.singleton(new OnmsCategory("Servers")));
+        definition = new AggregateStatusDefinition("Servers", Set.of(new OnmsCategory("Servers")));
         defs.add(definition);
 
         //        AggregateStatusDefinition definition;

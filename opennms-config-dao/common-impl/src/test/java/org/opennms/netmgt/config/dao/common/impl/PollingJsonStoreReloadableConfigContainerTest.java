@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
@@ -70,7 +70,7 @@ public class PollingJsonStoreReloadableConfigContainerTest {
                                 .build()));
 
         TestEntity testEntity = new TestEntity();
-        testEntity.setTestValues(Collections.singletonList("test"));
+        testEntity.setTestValues(List.of("test"));
         String mappedJson = mapper.writeValueAsString(testEntity);
 
         when(jsonStore.getLastUpdated(key, context)).thenReturn(OptionalLong.of(1));
@@ -80,7 +80,7 @@ public class PollingJsonStoreReloadableConfigContainerTest {
         TestEntity fromJsonStore = container.getConfig();
         assertThat(testEntity, equalTo(fromJsonStore));
 
-        testEntity.setTestValues(Collections.singletonList("tubes"));
+        testEntity.setTestValues(List.of("tubes"));
         mappedJson = mapper.writeValueAsString(testEntity);
         when(jsonStore.getLastUpdated(key, context)).thenReturn(OptionalLong.of(System.currentTimeMillis() + 1));
         when(jsonStore.get(key, context)).thenReturn(Optional.of(mappedJson));
@@ -106,7 +106,7 @@ public class PollingJsonStoreReloadableConfigContainerTest {
                                 .build()));
 
         TestEntity testEntity = new TestEntity();
-        testEntity.setTestValues(Collections.singletonList("test"));
+        testEntity.setTestValues(List.of("test"));
         String mappedJson = mapper.writeValueAsString(testEntity);
 
         when(jsonStore.getLastUpdated(key, context)).thenReturn(OptionalLong.of(1));
@@ -116,7 +116,7 @@ public class PollingJsonStoreReloadableConfigContainerTest {
         TestEntity fromJsonStore = container.getConfig();
         assertThat(testEntity, equalTo(fromJsonStore));
 
-        testEntity.setTestValues(Collections.singletonList("tubes"));
+        testEntity.setTestValues(List.of("tubes"));
         mappedJson = mapper.writeValueAsString(testEntity);
         when(jsonStore.getLastUpdated(key, context)).thenReturn(OptionalLong.of(System.currentTimeMillis() + 1));
         when(jsonStore.get(key, context)).thenReturn(Optional.of(mappedJson));

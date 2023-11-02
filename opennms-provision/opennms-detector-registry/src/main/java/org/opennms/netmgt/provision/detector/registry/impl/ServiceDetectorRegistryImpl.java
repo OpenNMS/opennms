@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.detector.registry.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, Ini
                 // Register the factory
                 onBind(factory, props);
                 // Add the detector to the service registry
-                addAllExtensions(Collections.singleton(detector), ServiceDetector.class);
+                addAllExtensions(Set.of(detector), ServiceDetector.class);
             }
         }
     }

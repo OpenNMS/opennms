@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.SortedMap;
 
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -83,7 +83,7 @@ public class FilterResourceWalker implements ResourceWalker {
      */
     public void walk(OnmsNode node) {
         OnmsResource resource = getResourceDao().getResourceForNode(node);
-        m_resourceWalker.walk(Collections.singleton(resource));
+        m_resourceWalker.walk(Set.of(resource));
     }
 
     /**

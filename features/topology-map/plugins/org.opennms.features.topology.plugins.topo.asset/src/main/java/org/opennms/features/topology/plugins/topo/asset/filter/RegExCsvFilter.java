@@ -52,7 +52,7 @@ public class RegExCsvFilter<T> implements Filter<T> {
     public boolean apply(T value) {
     	String[] values = value.toString().split(",");
     	for(String val:values){
-    		if(regExp.matcher(val.toString()).matches()) {
+    		if(regExp.matcher(val).matches()) {
     		    return true;
             }
     	}

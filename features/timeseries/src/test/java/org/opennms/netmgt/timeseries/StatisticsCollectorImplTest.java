@@ -31,7 +31,6 @@ package org.opennms.netmgt.timeseries;
 import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,7 +75,7 @@ public class StatisticsCollectorImplTest {
         for(int i=2 ; i<noTags; i++) {
             b.metaTag("tagKey", UUID.randomUUID().toString());
         }
-        return Collections.singletonList(ImmutableSample.builder().metric(b.build()).time(Instant.now()).value(42.0).build());
+        return List.of(ImmutableSample.builder().metric(b.build()).time(Instant.now()).value(42.0).build());
     }
 
     private int count(Metric metric) {

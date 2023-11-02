@@ -44,8 +44,8 @@ public class SNMPSingleGetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> 
 
     private static List<SnmpGetRequestDTO> buildGetRequests(SnmpObjId oid) {
         final SnmpGetRequestDTO getRequest = new SnmpGetRequestDTO();
-        getRequest.setOids(Collections.singletonList(oid));
-        return Collections.singletonList(getRequest);
+        getRequest.setOids(List.of(oid));
+        return List.of(getRequest);
     }
 
     @Override
