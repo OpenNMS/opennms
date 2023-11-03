@@ -153,10 +153,6 @@
         <feature>bouncycastle</feature>
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
     </feature>
-    <feature name="jfreechart" version="1.0.19" description="JFree :: JFreeChart">
-        <bundle>wrap:mvn:org.jfree/jfreechart/1.0.19$Bundle-SymbolicName=org.jfree.jfreechart&amp;Bundle-Version=1.0.19</bundle>
-        <bundle>wrap:mvn:org.jfree/jcommon/1.0.24$Bundle-SymbolicName=org.jfree.jcommon&amp;Bundle-Version=1.0.24</bundle>
-    </feature>
     <feature name="jldap" version="${jldapVersion}" description="OpenLDAP :: JLDAP">
         <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}$Bundle-SymbolicName=com.novell.ldap&amp;Bundle-Version=${jldapVersion}</bundle>
     </feature>

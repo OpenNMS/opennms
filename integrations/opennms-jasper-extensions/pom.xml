@@ -26,7 +26,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
           </instructions>
@@ -88,8 +88,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-dependencies</artifactId>
-      <type>pom</type>
+      <artifactId>jasper-shaded</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

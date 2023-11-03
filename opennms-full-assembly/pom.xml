@@ -355,7 +355,6 @@
                 <feature>hibernate36</feature>
                 <feature>hibernate-validator4</feature>
                 <feature>jaxb</feature>
-                <feature>jfreechart</feature>
                 <feature>jolokia</feature>
                 <feature>jrobin</feature>
                 <feature>json-lib</feature>

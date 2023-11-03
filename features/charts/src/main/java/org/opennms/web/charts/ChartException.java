@@ -28,8 +28,12 @@
 
 package org.opennms.web.charts;
 
-public class ChartException extends Exception {
-    private static final long serialVersionUID = 1L;
+public class ChartException extends RuntimeException {
+    private static final long serialVersionUID = 2L;
+
+    public ChartException(final String message) {
+        super(message);
+    }
 
     public ChartException(final String message, final Exception cause) {
         super(message, cause);
