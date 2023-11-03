@@ -1,0 +1,33 @@
+
+[[container-deployment]]
+= Deploy {page-component-title} in a Containerized Environment
+:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment like Kubernetes or Red Hat OpenShift.
+
+If your organization uses Kubernetes or Red Hat OpenShift, OpenNMS makes a Helm chart available to simplify {page-component-title} deployment.
+
+Each deployment through Helm charts has a single Core server, Grafana, a custom Ingress that shares the RRD files and some configuration files, and multiple Sentinels for flow processing.
+
+This section describes the configuration parameters and information you will need to install {page-component-title}.
+
+The OpenNMS Helm Chart is based and tested against the latest {page-component-title}.
+The minimum versions available are Horizon 32.x and Meridian 2023.x.
+
+== Before you begin
+You must have a deep understanding of containerized environments.
+
+
+overview
+architecture diagram of what is installed
+
+== Install
+== Configure
+== Upgrade
+== Uninstall
+
+Do we monitor the containers?
+How is that done?
+
+== Example of ingress with path
+== Example of extra volume mounting
+
+
