@@ -109,7 +109,6 @@
       <feature>commons-jexl</feature>
       <feature>fop</feature>
       <feature>hibernate-validator4</feature>
-      <feature>jfreechart</feature>
       <feature>joda-time</feature>
       <feature>jrobin</feature>
       <feature>json-lib</feature>

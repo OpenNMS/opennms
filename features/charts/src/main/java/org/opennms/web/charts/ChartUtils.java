@@ -125,11 +125,13 @@ public final class ChartUtils {
         
     }
 
-    private static void addSubLabels(JFreeChart barChart, String subLabelClass) {
+    private static void addSubLabels(final JFreeChart barChart, final String subLabelClass) {
         ExtendedCategoryAxis subLabels;
         CategoryPlot plot = barChart.getCategoryPlot();
         try {
-            subLabels = (ExtendedCategoryAxis) Class.forName(subLabelClass).getDeclaredConstructor(String.class).newInstance();
+            final var clazz = Class.forName(subLabelClass);
+            final var constructor = clazz.getDeclaredConstructor(String.class);
+            subLabels = (ExtendedCategoryAxis) constructor.newInstance((String)null);
             List<?> cats = plot.getCategories();
             for(int i=0; i<cats.size(); i++) {
                 subLabels.addSubLabel((Comparable<?>)cats.get(i), cats.get(i).toString());
@@ -152,7 +154,9 @@ public final class ChartUtils {
         final var seriesColorClassOpt = chartConfig.getSeriesColorClass();
         if (seriesColorClassOpt.isPresent()) {
             try {
-                seriesColors = (CustomSeriesColors) Class.forName(seriesColorClassOpt.get()).getDeclaredConstructor().newInstance();
+                final var clazz = Class.forName(seriesColorClassOpt.get());
+                final var constructor = clazz.getDeclaredConstructor();
+                seriesColors = (CustomSeriesColors) constructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             }  
@@ -302,11 +306,13 @@ public final class ChartUtils {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        if(chartConfig != null && chartConfig.getChartBackgroundColor().isPresent()) {
+        if (chartConfig == null) {
+            throw new ChartException("failed to determine chart config for " + chartName);
+        }
+        if(chartConfig.getChartBackgroundColor().isPresent()) {
             setChartBackgroundColor(chartConfig, chart);
         }
-        
-        if(chartConfig != null && chartConfig.getPlotBackgroundColor().isPresent()) {
+        if(chartConfig.getPlotBackgroundColor().isPresent()) {
             setPlotBackgroundColor(chartConfig, chart);
         }
         ImageSize imageSize = chartConfig == null? null : chartConfig.getImageSize();

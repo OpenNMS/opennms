@@ -181,20 +181,8 @@
         <dependencies>
           <dependency>
             <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jasper-dependencies</artifactId>
+            <artifactId>jasper-shaded</artifactId>
             <version>${project.version}</version>
-            <type>pom</type>
-          </dependency>
-          <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-            <version>${jasperreportsVersion}</version>
-            <exclusions>
-              <exclusion>
-                <groupId>eclipse</groupId>
-                <artifactId>jdtcore</artifactId>
-              </exclusion>
-            </exclusions>
           </dependency>
           <dependency>
             <groupId>xerces</groupId>
@@ -723,6 +711,10 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.charts</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.status</groupId>
       <artifactId>org.opennms.features.status.api</artifactId>
       <version>${project.version}</version>
@@ -1061,9 +1053,8 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-dependencies</artifactId>
+      <artifactId>jasper-shaded</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
