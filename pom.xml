@@ -1597,7 +1597,7 @@
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.6</asmVersion>
-    <activemqVersion>5.15.9</activemqVersion>
+    <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.76</bouncyCastleVersion>
