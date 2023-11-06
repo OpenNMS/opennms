@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,16 +47,16 @@ import com.google.common.base.Throwables;
  *
  * @author jwhite
  */
-public class ExceptionToPngRenderer {
-
+public final class ExceptionToPngRenderer {
     private static final String MAX_STACKTRACE_LINES_SYS_PROP = "org.opennms.netmgt.jasper.grafana.maxStackTraceLines";
-
     private static final int MAX_STACKTRACE_LINES =  SystemProperties.getInteger(MAX_STACKTRACE_LINES_SYS_PROP, 5);
 
     /**
      * Use the system default font.
      */
     private static final Font font = new Font(null, Font.PLAIN, 48);
+
+    private ExceptionToPngRenderer() {}
 
     /**
      * Render the given exception to an image.
@@ -113,9 +113,9 @@ public class ExceptionToPngRenderer {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "png", baos);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             // Given that we're writing to a byte array, we don't expect this to ever happen
-            throw new RuntimeException(e);
+            throw new IllegalStateException(ex);
         }
         return baos.toByteArray();
     }
@@ -123,10 +123,10 @@ public class ExceptionToPngRenderer {
     /**
      * Extract the first N lines from the given String.
      */
-    private static String getFirstNLines(String s, int N) {
+    private static String getFirstNLines(String s, int numLines) {
         final String[] lines = s.split("\n");
         final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < Math.min(lines.length, N); i++) {
+        for (int i = 0; i < Math.min(lines.length, numLines); i++) {
             if (i != 0) {
                 sb.append("\n");
             }
