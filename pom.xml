@@ -1589,7 +1589,7 @@
     <!-- dependency versions -->
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
-    <activemqVersion>5.15.5</activemqVersion>
+    <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
