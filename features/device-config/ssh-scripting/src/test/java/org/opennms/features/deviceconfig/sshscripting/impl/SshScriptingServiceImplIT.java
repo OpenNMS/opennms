@@ -82,6 +82,18 @@ public class SshScriptingServiceImplIT {
 
     private static final String AUTH_KEY_PUB = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHm81PfC7688YkSLGVY2m8m0k/jc8gV41A2Rvtbf7RyW1gsbmrYH4hOtrl+HfXX/NuetZVL0V4hURHKrnHjYQfw=";
 
+    private static final String AUTH_KEY_PRIV_ED25519 = String.join("\n",
+                                                                    "-----BEGIN OPENSSH PRIVATE KEY-----",
+                                                                    "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW",
+                                                                    "QyNTUxOQAAACAsQ8BJjNnDpcq+qYor3n6firUk66dgXik/SLfOk75awgAAAJjYQcVg2EHF",
+                                                                    "YAAAAAtzc2gtZWQyNTUxOQAAACAsQ8BJjNnDpcq+qYor3n6firUk66dgXik/SLfOk75awg",
+                                                                    "AAAECOQdPPKj8Viohef2S+IbB8W/ZW6MpdRtAQfZqJgcMy7SxDwEmM2cOlyr6piivefp+K",
+                                                                    "tSTrp2BeKT9It86TvlrCAAAADmZkMTAwNUBvcGVubm1zAQIDBAUGBw==",
+                                                                    "-----END OPENSSH PRIVATE KEY-----");
+    
+
+    private static final String AUTH_KEY_PUB_ED25519 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICxDwEmM2cOlyr6piivefp+KtSTrp2BeKT9It86TvlrC foo@bar";
+    
     @Before
     public void prepare() throws Exception {
         setupSSHServer();
@@ -198,7 +210,7 @@ public class SshScriptingServiceImplIT {
         );
         sshd.setPublickeyAuthenticator(new AuthorizedKeyEntriesPublickeyAuthenticator(null,
                                                                                       null,
-                                                                                      List.of(AuthorizedKeyEntry.parseAuthorizedKeyEntry(AUTH_KEY_PUB)),
+                                                                                      List.of(AuthorizedKeyEntry.parseAuthorizedKeyEntry(AUTH_KEY_PUB), AuthorizedKeyEntry.parseAuthorizedKeyEntry(AUTH_KEY_PUB_ED25519)),
                                                                                       null));
         sshd.start();
     }
@@ -313,5 +325,19 @@ public class SshScriptingServiceImplIT {
 
         var result5 = ss.execute("send:foo\nawait:foo", USER, "wrong", "invalid", new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
         assertThat(result5.isSuccess(), is(false));
+    }
+
+    @Test
+    public void testAuthKey_ed25519() throws Exception {
+        final SshScriptingServiceImpl ss = new SshScriptingServiceImpl();
+
+        var result1 = ss.execute("send:foo\nawait:foo", USER, PASSWORD, AUTH_KEY_PRIV_ED25519, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
+        assertThat(result1.isSuccess(), is(true));
+
+        var result2 = ss.execute("send:foo\nawait:foo", USER, null, AUTH_KEY_PRIV_ED25519, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
+        assertThat(result2.isSuccess(), is(true));
+
+        var result3 = ss.execute("send:foo\nawait:foo", USER, "wrong", AUTH_KEY_PRIV_ED25519, new InetSocketAddress("localhost", sshd.getPort()), null, null, Collections.emptyMap(), Duration.ofMillis(10000));
+        assertThat(result3.isSuccess(), is(true));
     }
 }

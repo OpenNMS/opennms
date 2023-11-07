@@ -1637,6 +1637,7 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
+    <eddsaVersion>0.3.0</eddsaVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
@@ -4236,6 +4237,11 @@
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>5.8</version>
+      </dependency>
+      <dependency>
+        <groupId>net.i2p.crypto</groupId>
+        <artifactId>eddsa</artifactId>
+        <version>${eddsaVersion}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
