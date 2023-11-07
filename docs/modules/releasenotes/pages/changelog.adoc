@@ -26,7 +26,7 @@ The codename for Horizon 32.0.5 is https://volt.fm/genre/6385/deep-swedish-rock[
 
 === Bug
 
-* Local Geo Map (using gwt.openlayers.url ) working in version 29.0.1 is not anymore in 31.0.3-1 (Issue https://issues.opennms.org/browse/NMS-15400[NMS-15400])
+* Local Geo Map (using gwt.openlayers.url) working in version 29.0.1 is not anymore in 31.0.3-1 (Issue https://issues.opennms.org/browse/NMS-15400[NMS-15400])
 * Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
 * Map dashlet for Ops Boards references old map systems (Issue https://issues.opennms.org/browse/NMS-16044[NMS-16044])
 * Reports -> Chart page does not load graphs (Issue https://issues.opennms.org/browse/NMS-16085[NMS-16085])
