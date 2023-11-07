@@ -940,10 +940,20 @@ fi
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
 
 echo ""
-echo " *** Installation complete. You must still run the installer at"
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo " *** Installation is complete. You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
 echo " *** to date before you start OpenNMS. See the install guide and"
-echo " *** release notes for details at https://docs.opennms.com."
+echo " *** release notes for details at: https://docs.opennms.com"
 echo ""
 
 %postun -p /bin/bash core
