@@ -281,6 +281,16 @@ public class Installer {
         }
 
         System.out.println();
+        System.out.println("*** Thanks for using OpenNMS!");
+        System.out.println("***");
+        System.out.println("*** Consider joining our active and supportive online community through");
+        System.out.println("***");
+        System.out.println("*** https://www.opennms.com/participate/");
+        System.out.println("***");
+        System.out.println("*** To connect with users, testers, experts, and contributors.");
+        System.out.println("***");
+        System.out.println("*** Or email us directly at contactus@opennms.com to learn more.");
+        System.out.println();
         System.out.println("Installer completed successfully!");
 
         if (!m_skip_upgrade_tools) {
