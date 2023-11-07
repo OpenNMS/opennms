@@ -1,17 +1,23 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
+import { hasNonEmptyProperty } from '@/lib/utils'
 import {
   Category,
   MonitoringLocation,
   NodeColumnSelectionItem,
   NodeQueryFilter,
   NodePreferences,
-  SetOperator,
-  NodeQuerySnmpParams
+  SetOperator
 } from '@/types'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 
-const { getDefaultNodeQueryFilter, getDefaultNodeQuerySnmpParams } = useNodeQuery()
+const {
+  getDefaultNodeQueryFilter,
+  getDefaultNodeQueryExtendedSearchParams,
+  getDefaultNodeQueryForeignSourceParams,
+  getDefaultNodeQuerySnmpParams,
+  getDefaultNodeQuerySysParams
+} = useNodeQuery()
 
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
@@ -49,24 +55,16 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     }
   }
 
-  const isSnmpParamSelected = (snmpParams?: NodeQuerySnmpParams) => {
-    if (!snmpParams) {
-      return false
-    }
-
-    const keys = Object.getOwnPropertyNames(snmpParams)
-
-    return keys.some(k => !!(snmpParams as any)[k]?.length)
-  }
-
   const isAnyFilterSelected = () => {
     return (
       queryFilter.value.searchTerm?.length > 0 ||
       queryFilter.value.selectedCategories.length > 0 ||
       queryFilter.value.selectedFlows.length > 0 ||
       queryFilter.value.selectedMonitoringLocations.length > 0 ||
-      !!queryFilter.value.ipAddress?.length ||
-      isSnmpParamSelected(queryFilter.value.snmpParams)
+      !!queryFilter.value.extendedSearch?.ipAddress?.length ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.foreignSourceParams) ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.snmpParams) ||
+      hasNonEmptyProperty(queryFilter.value.extendedSearch.sysParams)
     )
   }
 
@@ -114,18 +112,20 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   /**
-   * Set filter with IP address, clearing out any SNMP params (currently these are mutually exclusive extended searches)
+   * Set filter with IP address, clearing out any other extended search params (currently these are mutually exclusive extended searches).
   */
   const setFilterWithIpAddress = async (ipAddress: string) => {
     queryFilter.value = {
       ...queryFilter.value,
-      ipAddress,
-      snmpParams: getDefaultNodeQuerySnmpParams()
+      extendedSearch: {
+        ...getDefaultNodeQueryExtendedSearchParams(),
+        ipAddress
+      }
     }
   }
 
   /**
-   * Set filter with SNMP parameters, clearing out any IP addresses (currently these are mutually exclusive extended searches)
+   * Set filter with SNMP parameters, clearing out any other extended search params.
   */
   const setFilterWithSnmpParams = async (key: string, value: string) => {
     // key should be an actual property of NodeQuerySnmpParams
@@ -136,8 +136,48 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
 
     queryFilter.value = {
       ...queryFilter.value,
-      ipAddress: '',
-      snmpParams
+      extendedSearch: {
+        ...getDefaultNodeQueryExtendedSearchParams(),
+        snmpParams
+      }
+    }
+  }
+
+  /**
+   * Set filter with sys parameters, clearing out any other extended search params.
+  */
+  const setFilterWithSysParams = async (key: string, value: string) => {
+    // key should be an actual on of NodeQuerySysParams
+    const sysParams = {
+      ...getDefaultNodeQuerySysParams(),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...getDefaultNodeQueryExtendedSearchParams(),
+        sysParams
+      }
+    }
+  }
+
+  /**
+   * Set filter with foreign source parameters, clearing out any other extended search params.
+  */
+  const setFilterWithForeignSourceParams = async (key: string, value: string) => {
+    // key should be an actual property of NodeQueryForeignSourceParams
+    const foreignSourceParams = {
+      ...getDefaultNodeQueryForeignSourceParams(),
+      [key]: value
+    }
+
+    queryFilter.value = {
+      ...queryFilter.value,
+      extendedSearch: {
+        ...getDefaultNodeQueryExtendedSearchParams(),
+        foreignSourceParams
+      }
     }
   }
 
@@ -198,8 +238,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
         filter.selectedMonitoringLocations = [...prefs.nodeFilter.selectedMonitoringLocations]
       }
 
-      if (prefs.nodeFilter.snmpParams) {
-        filter.snmpParams = { ...prefs.nodeFilter.snmpParams }
+      if (prefs.nodeFilter.extendedSearch) {
+        filter.extendedSearch = { ...prefs.nodeFilter.extendedSearch }
       }
     }
 
@@ -221,6 +261,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setCategoryMode,
     setFilterWithIpAddress,
     setFilterWithSnmpParams,
+    setFilterWithForeignSourceParams,
+    setFilterWithSysParams,
     setFromNodePreferences,
     setNodeColumnSelection,
     setSearchTerm,

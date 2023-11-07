@@ -222,7 +222,7 @@ const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
 const updatePageNumber = (page: number) => {
   pageNumber.value = page
   const pageSize = queryParameters.value.limit || 0
-  queryParameters.value = { ...queryParameters.value, offset: (page - 1) * pageSize }
+  queryParameters.value = { ...queryParameters.value, offset: Math.max((page - 1) * pageSize, 0) }
   nodeStore.setNodeQueryParameters(queryParameters.value)
 
   updateQuery()

@@ -3,20 +3,32 @@ import {
   Category,
   MonitoringLocation,
   NodeQueryFilter,
+  NodeQueryForeignSourceParams,
   NodeQuerySnmpParams,
+  NodeQuerySysParams,
   QueryParameters,
   SetOperator
 } from '@/types'
 import {
   parseCategories,
   parseFlows,
+  parseForeignSource,
   parseIplike,
   parseMonitoringLocation,
   parseNodeLabel,
-  parseSnmpParams
+  parseSnmpParams,
+  parseSysParams
 } from './queryStringParser'
 
 export const useNodeQuery = () => {
+  const getDefaultNodeQueryForeignSourceParams = () => {
+    return {
+      foreignId: '',
+      foreignSource: '',
+      foreignSourceId: ''
+    } as NodeQueryForeignSourceParams
+  }
+
   const getDefaultNodeQuerySnmpParams = () => {
     return {
       snmpIfAlias: '',
@@ -27,6 +39,25 @@ export const useNodeQuery = () => {
     } as NodeQuerySnmpParams
   }
 
+  const getDefaultNodeQuerySysParams = () => {
+    return {
+      sysContact: '',
+      sysDescription: '',
+      sysLocation: '',
+      sysName: '',
+      sysObjectId: ''
+    } as NodeQuerySysParams
+  }
+
+  const getDefaultNodeQueryExtendedSearchParams = () => {
+    return {
+      ipAddress: '',
+      foreignSourceParams: getDefaultNodeQueryForeignSourceParams(),
+      snmpParams: getDefaultNodeQuerySnmpParams(),
+      sysParams: getDefaultNodeQuerySysParams()
+    }
+  }
+
   const getDefaultNodeQueryFilter = () => {
     return {
       searchTerm: '',
@@ -34,8 +65,7 @@ export const useNodeQuery = () => {
       selectedCategories: [] as Category[],
       selectedFlows: [] as string[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
-      ipAddress: '',
-      snmpParams: getDefaultNodeQuerySnmpParams()
+      extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
   }
 
@@ -57,6 +87,9 @@ export const useNodeQuery = () => {
     return updatedParams as QueryParameters
   }
 
+  /**
+   * Query string search parameters tracked/accepted by the Node Structure page.
+   */
   const trackedNodeQueryStringProperties = new Set([
     'categories',
     'flows',
@@ -72,7 +105,15 @@ export const useNodeQuery = () => {
     'snmpifindex',
     'snmpifname',
     'snmpMatchType',
-    'snmpphysaddr'
+    'snmpphysaddr',
+    'foreignSource',
+    'foreignId',
+    'fsfid',
+    'sysContact',
+    'sysDescription',
+    'sysLocation',
+    'sysName',
+    'sysObjectId'
   ])
 
   /**
@@ -114,13 +155,25 @@ export const useNodeQuery = () => {
     const ip = parseIplike(queryObject)
 
     if (ip) {
-      filter.ipAddress = ip
+      filter.extendedSearch.ipAddress = ip
     }
 
     const snmpParams = parseSnmpParams(queryObject)
 
     if (snmpParams) {
-      filter.snmpParams = snmpParams
+      filter.extendedSearch.snmpParams = snmpParams
+    }
+
+    const sysParams = parseSysParams(queryObject)
+
+    if (sysParams) {
+      filter.extendedSearch.sysParams = sysParams
+    }
+
+    const fsParams = parseForeignSource(queryObject)
+
+    if (fsParams) {
+      filter.extendedSearch.foreignSourceParams = fsParams
     }
 
     return filter
@@ -130,7 +183,10 @@ export const useNodeQuery = () => {
     buildNodeQueryFilterFromQueryString,
     buildUpdatedNodeStructureQueryParameters,
     getDefaultNodeQueryFilter,
+    getDefaultNodeQueryExtendedSearchParams,
+    getDefaultNodeQueryForeignSourceParams,
     getDefaultNodeQuerySnmpParams,
+    getDefaultNodeQuerySysParams,
     queryStringHasTrackedValues
   }
 }
@@ -140,15 +196,17 @@ export const useNodeQuery = () => {
  */
 const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const searchQuery = buildSearchQuery(filter.searchTerm)
-  const ipAddressQuery = buildIpAddressQuery(filter.ipAddress)
+  const ipAddressQuery = buildIpAddressQuery(filter.extendedSearch.ipAddress)
   const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
   const flowsQuery = buildFlowsQuery(filter.selectedFlows)
   const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
-  const snmpQuery = buildSnmpQuery(filter.snmpParams)
+  const foreignSourceQuery = buildForeignSourceQuery(filter.extendedSearch.foreignSourceParams)
+  const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
+  const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
 
   // TODO: filter on regex to screen out bad FIQL characters like ',', ';', etc.
   // and/or restrict characters in the FeatherInput above
-  const query = [searchQuery, ipAddressQuery, snmpQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(';')
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(';')
 
   return query
 }
@@ -228,6 +286,39 @@ const isValidIntegerParam = (value: string) => {
   return isValidParam(value) && isConvertibleToInteger(value.trim())
 }
 
+const isValidFsFidParam = (value: string) => {
+  if (isValidParam(value)) {
+    const arr = value.split(':')
+    return arr && arr.length === 2 && arr[0].length > 0 && arr[1].length > 0
+  }
+
+  return false
+}
+
+const makeWildcard = (value: string) => {
+  const s = value.replace('*', '')
+
+  return `*${s}*`
+}
+
+/**
+ * For now, can only search on FS, FID or FS:FID, but not combinations of these.
+ */
+const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
+  if (fsParams) {
+    if (isValidFsFidParam(fsParams.foreignSourceId)) {
+      const arr = fsParams.foreignSourceId.split(':')
+      return `(node.foreignSource==${arr[0]};node.foreignId==${arr[1]})`
+    } else if (isValidParam(fsParams.foreignSource)) {
+      return `node.foreignSource==${fsParams.foreignSource}`
+    } else if (isValidParam(fsParams.foreignId)) {
+      return `node.foreignId==${fsParams.foreignId}`
+    }
+  }
+
+  return ''
+}
+
 /**
  * Note, FIQL / SNMP search does not currently support 'like' or 'contains' matches, so we always
  * do an 'equals' (exact match) search.
@@ -261,5 +352,25 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
   }
   
+  return ''
+}
+
+const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
+  if (sysParams) {
+    const props = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId']
+    const arr: string[] = []
+
+    props.forEach(p => {
+      const value = (sysParams as any)[p]
+      if (isValidParam(value)) {
+        arr.push(`node.${p}==${makeWildcard(value)}`)
+      }
+    })
+
+    if (arr.length > 0) {
+      return arr.join(';')
+    }
+  }
+
   return ''
 }

@@ -22,3 +22,16 @@ export const ellipsify = (text: string, count: number) => {
 
   return text
 }
+
+/**
+ * Returns whether the object has at least one valid (non-empty) string property.
+ */
+export const hasNonEmptyProperty = (obj?: any) => {
+  if (!obj) {
+    return false
+  }
+
+  const keys = Object.getOwnPropertyNames(obj)
+
+  return keys.some(k => !!((obj as any)[k]?.length))
+}
