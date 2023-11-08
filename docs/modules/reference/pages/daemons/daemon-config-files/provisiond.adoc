@@ -75,17 +75,23 @@ NOTE: Any changes to the thread pools require a restart of the {page-component-t
 This pool determines the number of requisitions that can be imported at one time.
 Increase this number if you have a large number of requisitions.
 
+Import threads will check the requisition against the database to determine what add/change/delete operations are necessary.
+They will also attempt to pull SNMP system information from the node into the database.
+Once this inventory update is complete, the import thread will schedule the node for scanning/rescanning as necessary.
+
 | Scan
 | 10
 | Number of threads to allocate for manual scan/sync requests.
-This pool is used for any manual sync tasks and when requesting a rescan of a single node.
+This pool is used for any manual requisition sync tasks and when requesting a rescan of a single node.
 Increase this number if you have a large number of nodes in a single requisition.
+
+Scan threads are in charge of running detectors against a node.
 
 | Rescan
 | 10
 | Number of threads to allocate for automated rescanning existing nodes.
-This pool is used for rescanning nodes in a requisition on the schedule set in the foreign source definition.
-This value typically should be the same as the Scan thread pool size.
+This pool is used for rescanning nodes in a requisition based on the foreign source definition or the external requisition schedule.
+Rescan threads will spawn a scan thread to process the applicable detectors, so this value typically should be the same as the Scan thread pool size.
 
 | Write
 | 8
