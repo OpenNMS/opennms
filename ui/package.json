@@ -97,7 +97,7 @@
     "happy-dom": "^9.20.3",
     "prettier": "^2.8.8",
     "typescript": "^5.2.2",
-    "unplugin-auto-import": "^0.12.1",
+    "unplugin-auto-import": "^0.16.7",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.3.9",
     "vitest": "^0.34.6",
