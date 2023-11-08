@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>32.0.4</version>
+    <version>32.0.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -30,7 +30,6 @@
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
-    <module>jfreechart</module>
     <module>jinterop</module>
     <module>jmx</module>
     <module>jna</module>

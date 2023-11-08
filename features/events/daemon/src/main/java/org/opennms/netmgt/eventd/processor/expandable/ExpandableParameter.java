@@ -31,6 +31,7 @@ package org.opennms.netmgt.eventd.processor.expandable;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.eventd.ExpandableParameterResolverRegistry;
 import org.opennms.netmgt.xml.event.Event;
@@ -77,7 +78,7 @@ public class ExpandableParameter implements ExpandableToken {
                 ret.append(")");
                 return ret.toString();
             } else {
-                return value;
+                return WebSecurityUtils.sanitizeString(value);
             }
         }
         return "";

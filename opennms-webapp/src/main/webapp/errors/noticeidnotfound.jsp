@@ -40,12 +40,14 @@
     NoticeIdNotFoundException ninfe = ExceptionUtils.getRootCause(exception, NoticeIdNotFoundException.class);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="headTitle" value="Notice ID Not Found" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Notice ID Not Found")
+          .headTitle("Error")
+          .breadcrumb("Error")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h1>Notice ID Not Found</h1>
 

@@ -57,17 +57,15 @@
   String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;    
 %>
 
-<%
-String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Snmp Interface")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("SnmpInterface")
+          .build(request);
 %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Snmp Interface" />
-  <jsp:param name="headTitle" value="Snmp Interface" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
-  <jsp:param name="breadcrumb" value="SnmpInterface" />
-</jsp:include>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
 if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
@@ -217,11 +215,11 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         </tr>
         <tr> 
           <th>Description</th>
-          <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
+          <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfDescription())%></td>
         </tr>
         <tr>
           <th>Alias</th>
-          <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+          <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfAlias())%></td>
         </tr>
       </table>
     </div>

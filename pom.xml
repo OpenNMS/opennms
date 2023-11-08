@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>32.0.4</version>
+  <version>32.0.5</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1496,7 +1496,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.1.2</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.1</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
@@ -1528,7 +1528,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>32.0.4</opennms.osgi.version>
+    <opennms.osgi.version>32.0.5</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1618,7 +1618,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.13.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
-    <commonsNetVersion>3.9.0</commonsNetVersion>
+    <commonsNetVersion>3.10.0</commonsNetVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
@@ -1658,6 +1658,10 @@
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
+    <hibernateVersion>3.6.11.ONMS_RELEASE_1</hibernateVersion>
+    <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
+    <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
+    <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
@@ -1687,8 +1691,8 @@
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.51.v20230217</jettyVersion>
-    <jettyOsgiVersion>9.4.51</jettyOsgiVersion>
+    <jettyVersion>9.4.53.v20231009</jettyVersion>
+    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
@@ -1707,7 +1711,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.11</jschVersion>
-    <jsonVersion>20230618</jsonVersion>
+    <jsonVersion>20231013</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
     <jsonSmartVersion>2.4.8</jsonSmartVersion>
@@ -1727,12 +1731,12 @@
     <log4j2Version>2.20.0</log4j2Version>
     <logbackClassicVersion>1.2.11</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.4</mavenApiVersion>
+    <mavenApiVersion>3.9.5</mavenApiVersion>
     <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
     <minaVersion>2.2.2</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.95.Final</netty4Version>
+    <netty4Version>4.1.100.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
@@ -1765,13 +1769,13 @@
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
+    <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.10.3</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
@@ -1780,7 +1784,7 @@
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.37.0</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.38.0</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
@@ -1798,7 +1802,7 @@
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.5.10</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.10.0</minaSshdVersion>
+    <minaSshdVersion>2.11.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
@@ -1823,13 +1827,13 @@
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.12.1</frontendPluginVersion>
-    <nodeVersion>v16.18.1</nodeVersion>
-    <npmVersion>8.19.3</npmVersion>
+    <frontendPluginVersion>1.14.2</frontendPluginVersion>
+    <nodeVersion>v16.20.2</nodeVersion>
+    <npmVersion>8.19.4</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
-    <xmlschemaVersion>2.3.0</xmlschemaVersion>
+    <xmlschemaVersion>2.3.1</xmlschemaVersion>
 
     <re2jVersion>1.7</re2jVersion>
 
@@ -2523,6 +2527,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.charts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.dhcpd</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2953,12 +2962,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jfreechart-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jinterop-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3377,9 +3380,8 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jasper-dependencies</artifactId>
+        <artifactId>jasper-shaded</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -4261,6 +4263,16 @@
         <artifactId>ehcache</artifactId>
         <version>1.8.0</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${jcommonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>${jfreechartVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>

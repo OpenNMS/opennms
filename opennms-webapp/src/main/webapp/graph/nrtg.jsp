@@ -56,12 +56,12 @@ pageContext.setAttribute("report", report);
 pageContext.setAttribute("resourceId", resourceId);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="NRTG Graphing" />
-  <jsp:param name="quiet" value="true" />
-  <jsp:param name="nobreadcrumbs" value="true" />
-  <jsp:param name="usebackshift" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .flags("nobreadcrumbs", "quiet", "usebackshift")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row-fluid">
     <div class="col-md-12">

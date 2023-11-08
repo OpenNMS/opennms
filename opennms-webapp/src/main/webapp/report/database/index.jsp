@@ -28,15 +28,15 @@
  *******************************************************************************/
 
 --%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
-
-    <jsp:param name="title" value="Database Reports" />
-    <jsp:param name="ngapp" value="onms.reports" />
-    <jsp:param name="headTitle" value="Database Reports" />
-    <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-    <jsp:param name="breadcrumb" value="Database" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Database Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Database")
+          .ngApp("onms.reports")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="onms-reports" />

@@ -50,16 +50,17 @@
   pageContext.setAttribute("isReadOnly", isReadOnly);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="onms-ksc-wizard" />
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="headTitle" value="Performance" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="location" value="ksc" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC Reports" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Performance")
+          .headTitle("Reports")
+          .headTitle("KSC")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("KSC Reports")
+          .ngApp("onms-ksc-wizard")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="container-fluid" ng-controller="KSCWizardCtrl">
 

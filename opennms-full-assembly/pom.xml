@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>32.0.4</version>
+    <version>32.0.5</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -355,7 +355,6 @@
                 <feature>hibernate36</feature>
                 <feature>hibernate-validator4</feature>
                 <feature>jaxb</feature>
-                <feature>jfreechart</feature>
                 <feature>jolokia</feature>
                 <feature>jrobin</feature>
                 <feature>json-lib</feature>
