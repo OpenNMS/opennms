@@ -403,7 +403,6 @@
             ],
             "requires": [
                 "smoke-test-core",
-                "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ]
@@ -445,7 +444,6 @@
             ],
             "requires": [
                 "smoke-test-core",
-                "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ]
@@ -474,7 +472,6 @@
             ],
             "requires": [
                 "smoke-test-core",
-                "smoke-test-flaky",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ]
