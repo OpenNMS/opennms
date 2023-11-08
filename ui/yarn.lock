@@ -1274,10 +1274,10 @@
   resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.14.tgz#94e175b53623384bff1f354cdb3197a8d63cdbe5"
   integrity sha512-5d2RhCard1nQUC3aHcq/gHzWYO6K0WJmAbjO7mQJgCQKtZpgXxv1rOM6O/dBDhDYYVutk1sciOgNSe+5YyfM8A==
 
-"@types/web-bluetooth@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.16.tgz#1d12873a8e49567371f2a75fe3e7f7edca6662d8"
-  integrity sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==
+"@types/web-bluetooth@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.18.tgz#74bd1c8fd3a2058cb6fc76b188fcded50a83d866"
+  integrity sha512-v/ZHEj9xh82usl8LMR3GarzFY1IrbXJw5L4QfQhokjRV91q+SelFqxQWSep1ucXEZ22+dSTwLFkXeur25sPIbw==
 
 "@typescript-eslint/eslint-plugin@^6.2.1":
   version "6.9.0"
@@ -1569,6 +1569,16 @@
     js-beautify "1.14.9"
     vue-component-type-helpers "1.8.4"
 
+"@vueuse/core@^10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-10.5.0.tgz#04d1e6d26592bb997bb755a4830ea7583c3e8612"
+  integrity sha512-z/tI2eSvxwLRjOhDm0h/SXAjNm8N5ld6/SC/JQs6o6kpJ6Ya50LnEL8g5hoYu005i28L0zqB5L5yAl8Jl26K3A==
+  dependencies:
+    "@types/web-bluetooth" "^0.0.18"
+    "@vueuse/metadata" "10.5.0"
+    "@vueuse/shared" "10.5.0"
+    vue-demi ">=0.14.6"
+
 "@vueuse/core@^8.3.1":
   version "8.9.4"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-8.9.4.tgz#c7db40f19390b3c9f4ff9294a30461497f62ec19"
@@ -1579,37 +1589,27 @@
     "@vueuse/shared" "8.9.4"
     vue-demi "*"
 
-"@vueuse/core@^9.13.0":
-  version "9.13.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.13.0.tgz#2f69e66d1905c1e4eebc249a01759cf88ea00cf4"
-  integrity sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==
-  dependencies:
-    "@types/web-bluetooth" "^0.0.16"
-    "@vueuse/metadata" "9.13.0"
-    "@vueuse/shared" "9.13.0"
-    vue-demi "*"
+"@vueuse/metadata@10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-10.5.0.tgz#7501a88cf5cbf7a515a03f0b8bbe3cecf30cad11"
+  integrity sha512-fEbElR+MaIYyCkeM0SzWkdoMtOpIwO72x8WsZHRE7IggiOlILttqttM69AS13nrDxosnDBYdyy3C5mR1LCxHsw==
 
 "@vueuse/metadata@8.9.4":
   version "8.9.4"
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-8.9.4.tgz#a4132db33e4c1b1023636acfa20aa7b37ab3d978"
   integrity sha512-IwSfzH80bnJMzqhaapqJl9JRIiyQU0zsRGEgnxN6jhq7992cPUJIRfV+JHRIZXjYqbwt07E1gTEp0R0zPJ1aqw==
 
-"@vueuse/metadata@9.13.0":
-  version "9.13.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.13.0.tgz#bc25a6cdad1b1a93c36ce30191124da6520539ff"
-  integrity sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==
+"@vueuse/shared@10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-10.5.0.tgz#b3ac8c190a5dae41db5e1b60fe304a9b4247393c"
+  integrity sha512-18iyxbbHYLst9MqU1X1QNdMHIjks6wC7XTVf0KNOv5es/Ms6gjVFCAAWTVP2JStuGqydg3DT+ExpFORUEi9yhg==
+  dependencies:
+    vue-demi ">=0.14.6"
 
 "@vueuse/shared@8.9.4":
   version "8.9.4"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-8.9.4.tgz#c9741c30ffb666b50d62f0dd80b76119fd47573e"
   integrity sha512-wt+T30c4K6dGRMVqPddexEVLa28YwxW5OFIPmzUHICjphfAuBFTTdDoyqREZNDOFJZ44ARH1WWQNCUK8koJ+Ag==
-  dependencies:
-    vue-demi "*"
-
-"@vueuse/shared@9.13.0":
-  version "9.13.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.13.0.tgz#089ff4cc4e2e7a4015e57a8f32e4b39d096353b9"
-  integrity sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==
   dependencies:
     vue-demi "*"
 
@@ -4095,7 +4095,7 @@ vue-component-type-helpers@1.8.4:
   resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-1.8.4.tgz#302d85fac912519cdf0dd2fb51402e5215d85628"
   integrity sha512-6bnLkn8O0JJyiFSIF0EfCogzeqNXpnjJ0vW/SZzNHfe6sPx30lTtTXlE5TFs2qhJlAtDFybStVNpL73cPe3OMQ==
 
-vue-demi@*, vue-demi@>=0.14.5:
+vue-demi@*, vue-demi@>=0.14.5, vue-demi@>=0.14.6:
   version "0.14.6"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.6.tgz#dc706582851dc1cdc17a0054f4fec2eb6df74c92"
   integrity sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==
