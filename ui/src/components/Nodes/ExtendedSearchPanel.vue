@@ -5,7 +5,7 @@
       :options="searchOptions"
       :textProp="'title'"
       v-model="currentSelection"
-      @update:modelValue="onSelectionUpdated"
+      @update:modelValue="onSearchTypeSelectionUpdated"
     />
 
     <FeatherInput
@@ -24,14 +24,25 @@ import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { NodeQueryFilter, UpdateModelFunction } from '@/types'
 
 const searchOptions: ISelectItemType[] = [
+  { title: 'Foreign Source', value: 'foreignSource' },
+  { title: 'Foreign ID', value: 'foreignId' },
+  { title: 'Foreign Source:Foreign ID', value: 'foreignSourceId' },
   { title: 'IP Address', value: 'ipAddress' },
+  { title: 'Sys Contact', value: 'sysContact' },
+  { title: 'Sys Description', value: 'sysDescription' },
+  { title: 'Sys Location', value: 'sysLocation' },
+  { title: 'Sys Name', value: 'sysName' },
+  { title: 'Sys Object Id', value: 'sysObjectId' },
   { title: 'SNMP Alias', value: 'snmpIfAlias' },
   { title: 'SNMP Description', value: 'snmpIfDescription' },
   { title: 'SNMP Index', value: 'snmpIfIndex' },
   { title: 'SNMP Name', value: 'snmpIfName' },
   { title: 'SNMP Type', value: 'snmpIfType' }
 ]
+
+const foreignSourceKeys = ['foreignSource', 'foreignId', 'foreignSourceId']
 const snmpKeys = ['snmpIfAlias', 'snmpIfDescription', 'snmpIfIndex', 'snmpIfName', 'snmpIfType']
+const sysKeys = ['sysContact', 'sysDescription', 'sysLocation', 'sysName', 'sysObjectId']
 
 const nodeStructureStore = useNodeStructureStore()
 const searchTerm = ref('')
@@ -39,33 +50,56 @@ const currentSelection = ref<ISelectItemType | undefined>(undefined)
 
 const onCurrentSearchUpdated = (updatedValue: any) => {
   const item = (updatedValue as string) ?? ''
-  const curSel = currentSelection.value?.value as string || ''
+  const searchType = currentSelection.value?.value as string || ''
 
-  if (curSel === 'ipAddress') {
-    if ((item === '' || isIP(item)) && item != nodeStructureStore.queryFilter.ipAddress) {
+  if (searchType === 'ipAddress') {
+    if ((item === '' || isIP(item)) && item !== nodeStructureStore.queryFilter.extendedSearch.ipAddress) {
       nodeStructureStore.setFilterWithIpAddress(item)
     }
-  } else if (curSel.startsWith('snmp')) {
-    if (!nodeStructureStore.queryFilter.snmpParams || ((nodeStructureStore.queryFilter.snmpParams as any)[curSel] !== item)) {
-      nodeStructureStore.setFilterWithSnmpParams((currentSelection.value?.value as string), item)
+  } else if (searchType.startsWith('foreign')) {
+    const params = nodeStructureStore.queryFilter.extendedSearch.foreignSourceParams
+    const storeItem = (params && (params as any)[searchType]) ?? ''
+
+    if (item !== storeItem) {
+      nodeStructureStore.setFilterWithForeignSourceParams(searchType, item)
+    }
+  } else if (searchType.startsWith('snmp')) {
+    const params = nodeStructureStore.queryFilter.extendedSearch.snmpParams
+    const storeItem = (params && (params as any)[searchType]) ?? ''
+
+    if (item !== storeItem) {
+      nodeStructureStore.setFilterWithSnmpParams(searchType, item)
+    }
+  } else if (searchType.startsWith('sys')) {
+    const params = nodeStructureStore.queryFilter.extendedSearch.sysParams
+    const storeItem = (params && (params as any)[searchType]) ?? ''
+
+    if (item !== storeItem) {
+      nodeStructureStore.setFilterWithSysParams(searchType, item)
     }
   }
 }
 
-const onSelectionUpdated: UpdateModelFunction = (selected: any) => {
+const onSearchTypeSelectionUpdated: UpdateModelFunction = (selected: any) => {
   if (selected.value === 'ipAddress') {
     nodeStructureStore.setFilterWithIpAddress(searchTerm.value)
+  } else if ((selected.value as string || '').startsWith('foreign')) {
+    nodeStructureStore.setFilterWithForeignSourceParams(selected.value, searchTerm.value)
+  } else if ((selected.value as string || '').startsWith('sys')) {
+    nodeStructureStore.setFilterWithSysParams(selected.value, searchTerm.value)
   } else if ((selected.value as string || '').startsWith('snmp')) {
     nodeStructureStore.setFilterWithSnmpParams(selected.value, searchTerm.value)
   }
 }
 
 // helper used in getOptionFromFilter
-const getOptionFromObj = (obj: any, key: string) => {
-  if (obj[key]) {
-    return {
-      value: obj[key],
-      searchOption: searchOptions.find(x => x.value === key)
+const getAnySearchOptionFromObj = (obj: any, keys: string[]) => {
+  for (let key of keys) {
+    if (obj[key]) {
+      return {
+        value: obj[key],
+        searchOption: searchOptions.find(x => x.value === key)
+      }
     }
   }
 
@@ -77,17 +111,28 @@ const getOptionFromObj = (obj: any, key: string) => {
  * This prioritizes which search item is used.
 */
 const getOptionFromFilter = (queryFilter: NodeQueryFilter) => {
-  if (queryFilter.ipAddress) {
-    return getOptionFromObj(queryFilter, 'ipAddress')
-  } else if (queryFilter.snmpParams) {
-    const p = queryFilter.snmpParams
+  if (queryFilter.extendedSearch.ipAddress) {
+    return getAnySearchOptionFromObj(queryFilter.extendedSearch, ['ipAddress'])
+  }
 
-    for (let key of snmpKeys) {
-      const o = getOptionFromObj(p, key)
+  if (queryFilter.extendedSearch.foreignSourceParams) {
+    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.foreignSourceParams, foreignSourceKeys)
+    if (o) {
+      return o
+    }
+  }
 
-      if (o) {
-        return o
-      }
+  if (queryFilter.extendedSearch.snmpParams) {
+    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.snmpParams, snmpKeys)
+    if (o) {
+      return o
+    }
+  }
+
+  if (queryFilter.extendedSearch.sysParams) {
+    const o = getAnySearchOptionFromObj(queryFilter.extendedSearch.sysParams, sysKeys)
+    if (o) {
+      return o
     }
   }
 

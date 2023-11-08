@@ -1,3 +1,4 @@
+import { isString } from './../lib/utils';
 import { SORT } from '@featherds/table'
 
 export type UpdateModelFunction = (_value: any) => any
@@ -89,6 +90,7 @@ export interface Node {
   assetRecord: {
     longitude: string
     latitude: string
+    category: string
     description: string
     maintcontract: string
   }
@@ -506,6 +508,12 @@ export enum MatchType {
   Contains = 2
 }
 
+export interface NodeQueryForeignSourceParams {
+  foreignId: string
+  foreignSource: string
+  foreignSourceId: string
+}
+
 export interface NodeQuerySnmpParams {
   snmpIfAlias: string
   snmpIfDescription: string
@@ -515,15 +523,29 @@ export interface NodeQuerySnmpParams {
   snmpMatchType: MatchType
 }
 
+export interface NodeQuerySysParams {
+  sysContact: string
+  sysDescription: string
+  sysLocation: string
+  sysName: string
+  sysObjectId: string
+}
+
+export interface NodeQueryExtendedSearchParams {
+  ipAddress?: string
+  foreignSourceParams?: NodeQueryForeignSourceParams
+  snmpParams?: NodeQuerySnmpParams
+  sysParams?: NodeQuerySysParams
+}
+
 /** All components of a node structure query */
 export interface NodeQueryFilter {
   searchTerm: string
-  ipAddress?: string
   categoryMode: SetOperator
   selectedCategories: Category[]
   selectedFlows: string[]
   selectedMonitoringLocations: MonitoringLocation[]
-  snmpParams?: NodeQuerySnmpParams
+  extendedSearch: NodeQueryExtendedSearchParams
 }
 
 export interface NodePreferences {

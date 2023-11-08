@@ -1,6 +1,6 @@
 <template>
   <FeatherDialog :modelValue="visible" relative :labels="labels" @update:modelValue="$emit('close')">
-    <div class="content">
+    <div class="node-details-content">
       <div class="feather-row" v-for="item in nodeItems" :key="item.label">
         <div class="feather-col-4">
           <span class="label">{{ item.label }}</span>
@@ -62,9 +62,15 @@ const nodeItems = computed(() => {
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },
-    { label: 'Sys Location', text: props.node?.sysLocation || EMPTY },
     { label: 'Sys Description', text: props.node?.sysDescription || EMPTY },
-    { label: 'Flows', text: flowsText(props.node) }
+    { label: 'Sys Location', text: props.node?.sysLocation || EMPTY },
+    { label: 'Sys Name', text: props.node?.sysName || EMPTY },
+    { label: 'Sys Object Id', text: props.node?.sysObjectId || EMPTY },
+    { label: 'Flows', text: flowsText(props.node) },
+    { label: 'Latitude/Longitude', text: `${props.node?.assetRecord.latitude ?? EMPTY} / ${props.node?.assetRecord.longitude ?? EMPTY}` },
+    { label: 'Asset Category', text: props.node?.assetRecord.category || EMPTY },
+    { label: 'Asset Description', text: props.node?.assetRecord.description || EMPTY },
+    { label: 'Maintenance Contract', text: props.node?.assetRecord.maintcontract || EMPTY }
   ]
 })
 
@@ -84,9 +90,11 @@ const flowsText = (node?: Node) => {
 </script>
 
 <style scoped lang="scss">
-.content {
+.node-details-content {
   min-height: 300px;
   min-width: 550px;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
 

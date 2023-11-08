@@ -2,7 +2,9 @@ import {
   Category,
   MatchType,
   MonitoringLocation,
+  NodeQueryForeignSourceParams,
   NodeQuerySnmpParams,
+  NodeQuerySysParams,
   SetOperator
 } from '@/types'
 import { isIP } from 'is-ip'
@@ -100,6 +102,22 @@ export const parseIplike = (queryObject: any) => {
   return null
 }
 
+export const parseForeignSource = (queryObject: any) => {
+  const foreignSource = queryObject.foreignSource || ''
+  const foreignId = queryObject.foreignId || ''
+  const foreignSourceId = queryObject.fsfid || ''
+
+  if (foreignSource || foreignId || foreignSourceId) {
+    return {
+      foreignSource,
+      foreignId,
+      foreignSourceId
+    } as NodeQueryForeignSourceParams
+  }
+
+  return null
+}
+
 export const parseSnmpParams = (queryObject: any) => {
   const snmpIfAlias = queryObject.snmpifalias as string || ''
   const snmpIfDescription = queryObject.snmpifdescription as string || ''
@@ -115,6 +133,26 @@ export const parseSnmpParams = (queryObject: any) => {
       snmpIfName,
       snmpMatchType
     } as NodeQuerySnmpParams
+  }
+
+  return null
+}
+
+export const parseSysParams = (queryObject: any) => {
+  const sysContact = queryObject.sysContact as string || ''
+  const sysDescription = queryObject.sysDescription as string || ''
+  const sysLocation = queryObject.sysLocation as string || ''
+  const sysName = queryObject.sysName as string || ''
+  const sysObjectId = queryObject.sysObjectId as string || ''
+
+  if (sysContact || sysDescription || sysLocation || sysName || sysObjectId) {
+    return {
+      sysContact,
+      sysDescription,
+      sysLocation,
+      sysName,
+      sysObjectId
+    } as NodeQuerySysParams
   }
 
   return null

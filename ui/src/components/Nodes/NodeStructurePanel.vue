@@ -15,18 +15,14 @@
     </template>
     <template #default>
       <div class="category-button-group">
-        <FeatherButton
-          class="switcher-button"
-          :primary="categoryMode === SetOperator.Union"
-          :secondary="categoryMode !== SetOperator.Union"
-          @click="categoryModeUpdated(SetOperator.Union)"
-        >Any</FeatherButton>
-        <FeatherButton
-          class="switcher-button"
-          :primary="categoryMode === SetOperator.Intersection"
-          :secondary="categoryMode !== SetOperator.Intersection"
-          @click="categoryModeUpdated(SetOperator.Intersection)"
-        >All</FeatherButton>
+        <div class="category-switcher-container">
+          <span>Match All </span>
+          <SwitchRender
+            class="category-switcher-right"
+            :checked="categorySwitchChecked"
+            @click="onCategorySwitchClick"
+          />
+        </div>
       </div>
       <FeatherList class="category-list">
         <FeatherListItem
@@ -91,6 +87,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherList, FeatherListItem } from '@featherds/list'
+import { SwitchRender } from '@featherds/switch'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { Category, MonitoringLocation, SetOperator } from '@/types'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
@@ -99,16 +96,13 @@ const nodeStructureStore = useNodeStructureStore()
 const clearIcon = ref(ClearIcon)
 const flowTypes = computed<string[]>(() => ['Ingress', 'Egress'])
 const categoryMode = computed(() => nodeStructureStore.queryFilter.categoryMode)
+const categorySwitchChecked = computed<boolean>(() => nodeStructureStore.queryFilter.categoryMode === SetOperator.Intersection)
 
 const locations = computed<MonitoringLocation[]>(() => nodeStructureStore.monitoringLocations)
 const selectedCategoryCount = computed<number>(() => nodeStructureStore.queryFilter.selectedCategories?.length || 0)
 const selectedFlowCount = computed<number>(() => nodeStructureStore.queryFilter.selectedFlows?.length || 0)
 const selectedLocationCount = computed<number>(() => nodeStructureStore.queryFilter.selectedMonitoringLocations?.length || 0)
 const isAnyFilterSelected = computed<boolean>(() => nodeStructureStore.isAnyFilterSelected())
-
-const categoryModeUpdated = (val: any) => {
-  nodeStructureStore.setCategoryMode(val)
-}
 
 const isCategorySelected = (cat: Category) => {
   return nodeStructureStore.queryFilter.selectedCategories.some(c => c.id === cat.id)
@@ -120,6 +114,11 @@ const isFlowSelected = (flow: string) => {
 
 const isLocationSelected = (loc: MonitoringLocation) => {
   return nodeStructureStore.queryFilter.selectedMonitoringLocations.some(x => x.name === loc.name)
+}
+
+const onCategorySwitchClick = () => {
+  const newMode = categoryMode.value === SetOperator.Union ? SetOperator.Intersection : SetOperator.Union
+  nodeStructureStore.setCategoryMode(newMode)
 }
 
 const onClearCategories = () => {
@@ -181,12 +180,14 @@ const onLocationClick = (loc: MonitoringLocation) => {
 }
 
 div.category-button-group {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 
-  > button.btn.switcher-button {
-    &.btn-primary, &.btn-secondary {
-      margin-left: 0;
-    }
+  .category-switcher-container {
+    line-height: 2.25rem;
+  }
+
+  .category-switcher-right {
+    float: right;
   }
 }
 
