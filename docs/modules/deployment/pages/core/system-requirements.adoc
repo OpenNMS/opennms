@@ -92,3 +92,6 @@ Components marked with an asterisk are required:
 | Browser *
 | Latest https://www.mozilla.org[Mozilla Firefox] or https://www.google.com/intl/en_us/chrome/[Google Chrome]
 |===
+
+== Containerized environments
+See xref:deployment:core/containers.adoc[containerized deployment] for information on deploying {page-component-title} via Kubernetes or OpenShift.

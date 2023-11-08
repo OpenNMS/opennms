@@ -2,6 +2,37 @@
 
 = Changelog
 
+[[releasenotes-changelog-32.0.5]]
+
+== Release 32.0.5
+
+Release 32.0.5 contains a bunch of security updates to Drools, Hibernate, Jetty, and more, plus a number of other bug fixes and a slew of documentation updates.
+
+The codename for Horizon 32.0.5 is https://volt.fm/genre/6385/deep-swedish-rock[_Deep Swedish Rock_].
+
+=== Enhancement
+
+* BMP docs could use some TLC (Issue https://issues.opennms.org/browse/NMS-13891[NMS-13891])
+* Provisiond threads description discrepancies (Issue https://issues.opennms.org/browse/NMS-14766[NMS-14766])
+* OpenShift: Documentation (Issue https://issues.opennms.org/browse/NMS-16108[NMS-16108])
+* Backport Drools 8.x to foundation 2023 to address a couple of CVEs (Issue https://issues.opennms.org/browse/NMS-16179[NMS-16179])
+* Integrate hibernate-core related patch from Debian (Issue https://issues.opennms.org/browse/NMS-16181[NMS-16181])
+* Version bump of json for CVE-2023-5072 (Issue https://issues.opennms.org/browse/NMS-16191[NMS-16191])
+* Version bump of jetty to 9.4.53 version (Issue https://issues.opennms.org/browse/NMS-16192[NMS-16192])
+* Bump to the latest netty 4 version (Issue https://issues.opennms.org/browse/NMS-16193[NMS-16193])
+* Version bump of snappy java (Issue https://issues.opennms.org/browse/NMS-16194[NMS-16194])
+* Docs: Remove deprecated resourcecli section (Issue https://issues.opennms.org/browse/NMS-16216[NMS-16216])
+* Post install/upgrade instructions on how to join OpenNMS Community (Issue https://issues.opennms.org/browse/NMS-16213[NMS-16213])
+
+=== Bug
+
+* Local Geo Map (using gwt.openlayers.url) working in version 29.0.1 is not anymore in 31.0.3-1 (Issue https://issues.opennms.org/browse/NMS-15400[NMS-15400])
+* Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
+* Map dashlet for Ops Boards references old map systems (Issue https://issues.opennms.org/browse/NMS-16044[NMS-16044])
+* Reports -> Chart page does not load graphs (Issue https://issues.opennms.org/browse/NMS-16085[NMS-16085])
+* Event parameters with `<>` not rendering in event/alarm views (Issue https://issues.opennms.org/browse/NMS-16157[NMS-16157])
+* Add Basic Auth to OpenConfig gNMI for Call Credentials (Issue https://issues.opennms.org/browse/NMS-16158[NMS-16158])
+
 [[releasenotes-changelog-32.0.4]]
 
 == Release 32.0.4
