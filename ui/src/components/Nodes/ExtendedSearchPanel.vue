@@ -32,7 +32,7 @@ const searchOptions: ISelectItemType[] = [
   { title: 'Sys Description', value: 'sysDescription' },
   { title: 'Sys Location', value: 'sysLocation' },
   { title: 'Sys Name', value: 'sysName' },
-  { title: 'Sys Object Id', value: 'sysObjectId' },
+  { title: 'Sys Object ID', value: 'sysObjectId' },
   { title: 'SNMP Alias', value: 'snmpIfAlias' },
   { title: 'SNMP Description', value: 'snmpIfDescription' },
   { title: 'SNMP Index', value: 'snmpIfIndex' },
