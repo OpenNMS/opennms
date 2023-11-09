@@ -110,8 +110,6 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/sentinel/confd/
 RUN chmod +x /opt/sentinel/confd/scripts/*
-COPY ./sentinel-config-schema.yml /opt/sentinel/confd/
-RUN touch /opt/sentinel/sentinel-config.yaml
 
 VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 
