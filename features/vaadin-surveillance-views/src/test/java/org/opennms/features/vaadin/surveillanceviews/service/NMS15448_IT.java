@@ -78,6 +78,8 @@ public class NMS15448_IT implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
+    private static final Date EVENT_DATE = new Date();
+
     @Before
     public void setUp() {
         databasePopulator.populateDatabase();
@@ -100,13 +102,13 @@ public class NMS15448_IT implements InitializingBean {
         alarm.setServiceType(databasePopulator.getServiceTypeDao().findByName("ICMP"));
         if (acknowledged) {
             alarm.setAlarmAckUser("foobar");
-            alarm.setAlarmAckTime(new Date());
+            alarm.setAlarmAckTime(EVENT_DATE);
         }
         return alarm;
     }
 
     @Test
-    public void testSomething() {
+    public void testThatOnlyUnacknowledgedAlarmsAppear() {
         final DefaultSurveillanceViewService surveillanceViewService = new DefaultSurveillanceViewService();
         surveillanceViewService.setTransactionOperations(transactionOperations);
         surveillanceViewService.setMonitoredServiceDao(databasePopulator.getMonitoredServiceDao());
@@ -115,13 +117,15 @@ public class NMS15448_IT implements InitializingBean {
         final OnmsCategory cat1 = databasePopulator.getCategoryDao().findByName("Routers");
         final OnmsCategory cat2 = databasePopulator.getCategoryDao().findByName("DEV_AC");
 
+        // query to assert, that one unacknowledged alarms already exist after database creation
         final List<OnmsAlarm> alarmsBefore = surveillanceViewService.getAlarmsForCategories(Sets.newHashSet(cat1), Sets.newHashSet(cat2));
 
         Assert.assertEquals(1, alarmsBefore.size());
 
+        // we add two unacknowledged and one acknowledged alarms, so we have three unacknowledged alarms in total
         final OnmsEvent event1 = databasePopulator.buildEvent(distPoller);
-        event1.setEventCreateTime(new Date(1436881548292L));
-        event1.setEventTime(new Date(1436881548292L));
+        event1.setEventCreateTime(EVENT_DATE);
+        event1.setEventTime(EVENT_DATE);
         databasePopulator.getEventDao().save(event1);
         databasePopulator.getEventDao().flush();
 
@@ -130,8 +134,8 @@ public class NMS15448_IT implements InitializingBean {
         databasePopulator.getAlarmDao().flush();
 
         final OnmsEvent event2 = databasePopulator.buildEvent(distPoller);
-        event2.setEventCreateTime(new Date(1436881548292L));
-        event2.setEventTime(new Date(1436881548292L));
+        event2.setEventCreateTime(EVENT_DATE);
+        event2.setEventTime(EVENT_DATE);
         databasePopulator.getEventDao().save(event2);
         databasePopulator.getEventDao().flush();
 
@@ -140,8 +144,8 @@ public class NMS15448_IT implements InitializingBean {
         databasePopulator.getAlarmDao().flush();
 
         final OnmsEvent event3 = databasePopulator.buildEvent(distPoller);
-        event3.setEventCreateTime(new Date(1436881548292L));
-        event3.setEventTime(new Date(1436881548292L));
+        event3.setEventCreateTime(EVENT_DATE);
+        event3.setEventTime(EVENT_DATE);
         databasePopulator.getEventDao().save(event3);
         databasePopulator.getEventDao().flush();
 
@@ -149,8 +153,8 @@ public class NMS15448_IT implements InitializingBean {
         databasePopulator.getAlarmDao().save(alarm3);
         databasePopulator.getAlarmDao().flush();
 
+        // check for three unacknowledged alarms
         final List<OnmsAlarm> alarmsAfter = surveillanceViewService.getAlarmsForCategories(Sets.newHashSet(cat1), Sets.newHashSet(cat2));
-
-        Assert.assertEquals(3, alarmsAfter.size());
+        Assert.assertEquals("Only three unacknowledged alarms should appear", 3, alarmsAfter.size());
     }
 }
