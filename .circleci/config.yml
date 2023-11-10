@@ -92,6 +92,7 @@ workflows:
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
             antora-playbook-local.yml      trigger-docs        true
+            Makefile                       trigger-docs        true
 
   pre-build-with-flaky:
     when:
@@ -112,6 +113,7 @@ workflows:
             .circleci/main/jobs/build/build-docs.yml trigger-docs        true
             .circleci/main/jobs/build/build-ui.yml trigger-ui        true
             antora-playbook-local.yml      trigger-docs        true
+            Makefile                       trigger-docs        true
 
   automation:
     when:
