@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
-Depends: opennms-common (=${binary:Version}), opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version}), opennms-plugin-cloud (>= 1.0.0)
+Depends: opennms-common (=${binary:Version}), opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
 Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | java11-jdk | temurin-11-jdk | jdk-17 | openjdk-17-jdk-headless | openjdk-17-jdk | adoptopenjdk-17-openj9xl | adoptopenjdk-17-openj9 | adoptopenjdk-17-hotspot | java17-jdk
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
