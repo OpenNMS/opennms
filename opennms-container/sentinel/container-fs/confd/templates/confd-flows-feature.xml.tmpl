@@ -1,0 +1,29 @@
+{{- /* Upon updating this file please ensure that the schema sentinel-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if ls "/telemetry/flows/adapters"}}
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="flows-features" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+
+    <feature name="confd-flows-auto" version="1.0" install="auto">
+
+{{$flowsPath := "/telemetry/flows" -}}
+{{range lsdir (print $flowsPath "/adapters") -}}
+{{$adaptersPath := (print $flowsPath "/adapters/" .) -}}
+{{$adapterName := base $adaptersPath -}}
+        <config name="org.opennms.features.telemetry.adapters-{{$adapterName}}">
+            name={{$adapterName}}
+            class-name={{getv (print $adaptersPath "/class-name")}}
+            {{range gets (print $adaptersPath "/parameters/*") -}}
+                parameters.{{base .Key}}={{.Value}}
+            {{end -}}
+        </config>
+{{end -}}
+
+    </feature>
+    <feature>sentinel-flows</feature>
+    <feature>sentinel-jsonstore-postgres</feature>
+    <feature>sentinel-blobstore-noop</feature>
+
+</features>
+{{end -}}

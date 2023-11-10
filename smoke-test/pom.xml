@@ -66,7 +66,6 @@
     <netty4Version>4.1.99.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
-    <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -154,52 +153,6 @@
                 <goal>integration-test</goal>
                 <goal>verify</goal>
               </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.6.0</version>
-          <executions>
-          <execution>
-            <id>copy-jar-with-dependencies</id>
-            <phase>process-resources</phase>
-            <goals><goal>copy</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.plugins.cloud</groupId>
-                  <artifactId>it-test</artifactId>
-                  <version>${cloudPluginAssemblyVersion}</version>
-                  <type>jar</type>
-                  <classifier>jar-with-dependencies</classifier>
-                  <destFileName>org.opennms.plugins.cloud-mock-with-dependencies.jar</destFileName>
-                  <outputDirectory>${project.build.directory}/cloud-mock-with-dependencies</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <stripVersion>true</stripVersion>
-              <stripClassifier>true</stripClassifier>
-            </configuration>
-          </execution>
-            <execution>
-              <id>copy-kar</id>
-              <phase>process-resources</phase>
-              <goals><goal>copy</goal></goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.opennms.plugins.cloud.assembly</groupId>
-                    <artifactId>org.opennms.plugins.cloud.assembly.kar</artifactId>
-                    <version>${cloudPluginAssemblyVersion}</version>
-                    <type>kar</type>
-                    <destFileName>org.opennms.plugins.cloud-assembly.kar</destFileName>
-                    <outputDirectory>${project.build.directory}/plugin-cloud-assembly</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-                <stripVersion>true</stripVersion>
-                <stripClassifier>true</stripClassifier>
-              </configuration>
             </execution>
           </executions>
         </plugin>
