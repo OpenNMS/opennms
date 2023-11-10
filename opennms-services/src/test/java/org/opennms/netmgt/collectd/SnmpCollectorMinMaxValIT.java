@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,9 +84,10 @@ import org.springframework.transaction.annotation.Transactional;
     TestContextAwareExecutionListener.class
 })
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-entity-scope-provider.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",

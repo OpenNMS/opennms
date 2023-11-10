@@ -143,7 +143,11 @@
         <dependency>
           <groupId>org.opennms.core.ipc.rpc</groupId>
           <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
-          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opennms.core.mate</groupId>
+          <artifactId>org.opennms.core.mate.model</artifactId>
           <scope>test</scope>
         </dependency>
         <dependency>

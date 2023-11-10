@@ -29,5 +29,6 @@
     <module>api</module>
     <module>model</module>
     <module>shell-commands</module>
+    <module>test-api</module>
   </modules>
 </project>

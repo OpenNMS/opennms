@@ -32,6 +32,10 @@
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
+    <dependency>
       <!-- Required for the DefaultCollectionAgentFactory implementation -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
@@ -56,6 +60,10 @@
       <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.test-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

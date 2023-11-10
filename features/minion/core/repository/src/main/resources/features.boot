@@ -1,5 +1,6 @@
-# make sure Guava gets pulled in early or things go weird
+# make sure Guava and Netty get pulled in early or things go weird
 guava
+netty/${netty4Version}
 
 # Minion Core Features
 minion-core

@@ -173,6 +173,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.common</artifactId>
       <version>${project.version}</version>

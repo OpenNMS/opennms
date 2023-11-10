@@ -58,6 +58,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows.classification.engine</groupId>
       <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
       <version>${project.version}</version>

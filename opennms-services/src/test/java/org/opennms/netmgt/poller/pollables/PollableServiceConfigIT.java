@@ -43,7 +43,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -91,6 +90,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-entity-scope-provider.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",

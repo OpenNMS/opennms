@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.mock.MockEntityScopeProvider;
+import org.opennms.core.mate.test.MockEntityScopeProvider;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -83,7 +83,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
 import org.opennms.netmgt.threshd.ThresholdingServiceImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;

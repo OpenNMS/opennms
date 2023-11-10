@@ -35,8 +35,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
@@ -47,7 +45,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,7 +55,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -82,7 +78,6 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
-import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
@@ -110,6 +105,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-entity-scope-provider.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"

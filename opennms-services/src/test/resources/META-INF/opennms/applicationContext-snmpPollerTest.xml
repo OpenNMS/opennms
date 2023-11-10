@@ -76,7 +76,7 @@
 
     <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry" />
     
-    <bean name="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl" primary="true"/>
+    <onmsgi:reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" />
 
     <bean id="sessionUtils" class="org.opennms.netmgt.dao.hibernate.DefaultSessionUtils" />
 

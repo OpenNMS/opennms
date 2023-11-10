@@ -524,6 +524,11 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
       <type>pom</type>

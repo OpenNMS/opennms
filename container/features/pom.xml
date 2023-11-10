@@ -234,9 +234,16 @@
                           <feature>eventadmin</feature>
                       </framework>
                       <features>
-                          <!-- core features -->
+                          <!-- core/3rdparty features -->
                           <feature>bouncycastle</feature>
                           <feature>bson</feature>
+                          <feature>camel-amqp</feature>
+                          <feature>camel-blueprint</feature>
+                          <feature>camel-core</feature>
+                          <feature>camel-http</feature>
+                          <feature>camel-jms</feature>
+                          <feature>camel-netty4</feature>
+                          <feature>camel-spring</feature>
                           <feature>cassandra-driver</feature>
                           <feature>commons-beanutils</feature>
                           <feature>commons-cli</feature>

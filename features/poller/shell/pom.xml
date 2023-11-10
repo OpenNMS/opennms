@@ -50,5 +50,9 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -28,10 +28,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.core.mate</groupId>
-      <artifactId>org.opennms.core.mate.model</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
     </dependency>

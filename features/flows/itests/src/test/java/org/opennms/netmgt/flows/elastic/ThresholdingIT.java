@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,20 +52,17 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.collectd.DefaultResourceTypeMapper;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.integration.api.v1.flows.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
@@ -74,6 +71,8 @@ import org.opennms.netmgt.flows.classification.exception.InvalidFilterException;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.ProcessingOptions;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
+import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.FlowThresholdingImpl;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -82,6 +81,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import com.google.common.collect.Lists;
 
 
@@ -91,6 +91,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mock-entity-scope-provider.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-shared.xml",
@@ -113,9 +114,6 @@ public class ThresholdingIT {
     private DatabasePopulator databasePopulator;
 
     @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    @Autowired
     private TransactionTemplate transactionTemplate;
 
     @Autowired
@@ -134,9 +132,6 @@ public class ThresholdingIT {
     private PersisterFactory persisterFactory;
 
     private List<org.opennms.netmgt.flows.classification.persistence.api.Rule> rules;
-
-    @Autowired
-    private FilterDao filterDao;
 
     private FlowThresholdingImpl thresholding;
 

@@ -29,6 +29,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
@@ -79,16 +80,6 @@
     <bean id="rpcTargetHelper" class="org.opennms.core.rpc.utils.RpcTargetHelper">
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
-
-    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-        <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
-        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-        <property name="sessionUtils" ref="sessionUtils"/>
-        <property name="scv" ref="secureCredentialsVault"/>
-    </bean>
-    <service interface="org.opennms.core.mate.api.EntityScopeProvider" ref="entityScopeProvider"/>
 
     <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl" />
     <reference-list interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" availability="optional">

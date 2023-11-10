@@ -152,7 +152,6 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.ssh</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -258,7 +257,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
       <artifactId>org.opennms.core.mate.model</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.device-config</groupId>
@@ -472,7 +476,6 @@
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.mock-impl</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

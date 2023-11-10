@@ -617,6 +617,10 @@
     </dependency>
     -->
     <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
     </dependency>

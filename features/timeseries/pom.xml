@@ -83,8 +83,21 @@
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
       <artifactId>config</artifactId>
-      <version>${opennmsApiVersion}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.model</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.test-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -115,10 +128,6 @@
     </dependency>
 
     <!-- Testing -->
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.lib</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>

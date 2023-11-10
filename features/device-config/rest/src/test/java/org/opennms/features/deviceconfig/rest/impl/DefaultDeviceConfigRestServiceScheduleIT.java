@@ -99,6 +99,7 @@ import static org.junit.Assert.assertNotNull;
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-dao.xml",
     "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
+    "classpath:/META-INF/opennms/applicationContext-entity-scope-provider.xml",
     "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })

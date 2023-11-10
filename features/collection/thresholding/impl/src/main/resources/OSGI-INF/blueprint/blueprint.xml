@@ -1,22 +1,10 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
+    <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" />
+    <reference id="ifLabelDao" interface="org.opennms.netmgt.dao.api.IfLabel"/>
+    <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
     <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao"/>
     <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
-    <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
-    <reference id="ifLabelDao" interface="org.opennms.netmgt.dao.api.IfLabel"/>
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
-    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
-    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
-    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
-    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
-    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
-
-    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
-        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-        <property name="sessionUtils" ref="sessionUtils"/>
-        <property name="scv" ref="secureCredentialsVault"/>
-    </bean>
     
     <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">
         <property name="threshdDao" ref="threshdDao"/>

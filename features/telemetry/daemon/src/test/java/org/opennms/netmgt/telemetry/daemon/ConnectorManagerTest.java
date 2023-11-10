@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.rpc.mock.MockEntityScopeProvider;
+import org.opennms.core.mate.test.MockEntityScopeProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.telemetry.config.model.PackageConfig;

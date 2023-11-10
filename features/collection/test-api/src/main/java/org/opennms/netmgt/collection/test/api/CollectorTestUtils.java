@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
-import org.opennms.core.rpc.mock.MockEntityScopeProvider;
+import org.opennms.core.mate.test.MockEntityScopeProvider;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -63,6 +63,8 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 public abstract class CollectorTestUtils {
+
+    private CollectorTestUtils() {}
 
     public static LocationAwareCollectorClient createLocationAwareCollectorClient() {
         final DefaultServiceCollectorRegistry serviceCollectorRegistry = new DefaultServiceCollectorRegistry();
