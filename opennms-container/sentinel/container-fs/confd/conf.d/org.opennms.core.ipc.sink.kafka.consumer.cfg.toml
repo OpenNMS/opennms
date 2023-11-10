@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.core.ipc.sink.kafka.consumer.cfg.tmpl"
+dest = "/opt/sentinel/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
+keys = [
+    "/ipc/kafka"
+]
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
