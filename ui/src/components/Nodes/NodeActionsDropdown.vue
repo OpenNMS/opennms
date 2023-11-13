@@ -52,14 +52,14 @@ const linkItems = [
   { name: 'view-outages', label: 'Outages' },
   { name: 'assets', label: 'Assets' },
   { name: 'metadata', label: 'Metadata' },
-  { name: 'hardware', label: 'Hardware Info' },
+  { name: 'hardware', label: 'Hardware Inventory' },
   { name: 'availability', label: 'Availability' },
   { name: 'graphs', label: 'Resource Graphs' },
-  { name: 'rescan', label: 'Rescan' },
-  { name: 'admin', label: 'Admin' },
-  { name: 'updateSnmp', label: 'Update SNMP' },
+  { name: 'rescan', label: 'Node Rescan' },
+  { name: 'admin', label: 'Admin / Node Management' },
+  { name: 'updateSnmp', label: 'Update SNMP Information' },
   { name: 'schedule-outage', label: 'Schedule an Outage' },
-  { name: 'topology', label: 'View in Topology' }
+  { name: 'topology', label: 'View Topology Map' }
 ]
 
 const onNodeLink = (name: string, node: Node) => {

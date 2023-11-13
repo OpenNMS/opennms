@@ -65,7 +65,7 @@ const nodeItems = computed(() => {
     { label: 'Sys Description', text: props.node?.sysDescription || EMPTY },
     { label: 'Sys Location', text: props.node?.sysLocation || EMPTY },
     { label: 'Sys Name', text: props.node?.sysName || EMPTY },
-    { label: 'Sys Object Id', text: props.node?.sysObjectId || EMPTY },
+    { label: 'Sys Object ID', text: props.node?.sysObjectId || EMPTY },
     { label: 'Flows', text: flowsText(props.node) },
     { label: 'Latitude/Longitude', text: `${props.node?.assetRecord.latitude ?? EMPTY} / ${props.node?.assetRecord.longitude ?? EMPTY}` },
     { label: 'Asset Category', text: props.node?.assetRecord.category || EMPTY },
