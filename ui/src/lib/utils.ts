@@ -3,6 +3,10 @@ export const isNumber = (value: any) => {
 }
 
 export const isConvertibleToInteger = (value: any) => {
+  if (value === null || value === undefined || value === '') {
+    return false
+  }
+
   const num = Number(value)
 
   return !Number.isNaN(num) && Number.isInteger(num)
@@ -33,5 +37,8 @@ export const hasNonEmptyProperty = (obj?: any) => {
 
   const keys = Object.getOwnPropertyNames(obj)
 
-  return keys.some(k => !!((obj as any)[k]?.length))
+  return keys.some(k => {
+    const value = (obj as any)[k]
+    return value && isString(value) && value.length > 0
+  })
 }

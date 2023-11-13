@@ -1,4 +1,3 @@
-import { isString } from './../lib/utils';
 import { SORT } from '@featherds/table'
 
 export type UpdateModelFunction = (_value: any) => any
@@ -165,7 +164,7 @@ export interface Event {
 
 export interface MonitoringLocation {
   tags: string[]
-  geolocation: string
+  geolocation: string | null
   longitude: number
   latitude: number
   priority: number
@@ -517,7 +516,7 @@ export interface NodeQueryForeignSourceParams {
 export interface NodeQuerySnmpParams {
   snmpIfAlias: string
   snmpIfDescription: string
-  snmpIfIndex: string
+  snmpIfIndex: string | number
   snmpIfName: string
   snmpIfType: string
   snmpMatchType: MatchType
