@@ -3,13 +3,12 @@
 = Structured Node List
 :description: Learn about the structured node list in OpenNMS Horizon/Meridian, which lets users perform enhanced data display, search, filter, and export node information.
 
-The Horizon 33 Web UI includes a new feature, the Structured Node List.
 The structured node list is a Vue-based page that displays node information and lets the user perform enhanced data display, search, filter, and export data.
 
 The main display shows a paginated table of nodes corresponding to the current search and filtering parameters.
 You can sort most of the columns in ascending or descending order.
 
-You can choose among 10, 20 or 50 entries per page, navigate between pages, or go to the start or end of the currently filtered set.
+You can choose among 10, 20, or 50 entries per page, navigate among pages, or go to the start or end of the currently filtered set.
 
 .Structured Node List
 image::structured-node-list/node-structure-overview.png["{page-component-title} web UI showing structured node list."]
@@ -22,7 +21,7 @@ The first column of each node has an Action menu where the user can do the follo
 
 The **Export** symbol image:structured-node-list/node-export-button.png[width=32] lets you export the current data in either CSV or JSON format.
 
-A gear icon image:structured-node-list/node-preferences-button.png[width=32] opens the Node Preferences window that allows you to configure the columns displayed and their order.
+A *gear* symbol image:structured-node-list/node-preferences-button.png[width=32] opens the Node Preferences window that allows you to configure the columns displayed and their order.
 Saving this configuration also saves the current search and filtering options.
 
 An input field above the table lets you search by node label.
@@ -53,7 +52,7 @@ The Action menu next to each node provides options to display the Node Details d
 * Availability
 * Resource Graphs
 * Node Rescan
-* Admin / Node Management
+* Admin/Node Management
 * Update SNMP Information
 * Schedule an Outage
 * View Topology Map
@@ -70,7 +69,7 @@ image::structured-node-list/node-details.png["{page-component-title} Node Detail
 
 == Download current node data
 
-Click the Download symbol to export the current node data (depending on search and filter configuration) in either CSV or JSON format.
+Click the **download** symbol to export the current node data (depending on search and filter configuration) in either CSV or JSON format.
 
 .Download/Export
 image::structured-node-list/node-download-menu.png["{page-component-title} Node download/export menu."]
@@ -98,7 +97,7 @@ Click **Save and Close** to save your settings and your current search and filte
 
 Click the "X" to close without saving to local storage.
 
-== Filter and Search
+== Filter and search
 
 You can filter and search via the Filtering and Extended Search sections in the left panel, and by the **Search node label** search box above the node table.
 Note that searches combine the results of all configured filters and search parameters.
@@ -112,17 +111,17 @@ Entering `cal` will match nodes have the label `localhost` as well as `californi
 
 === Filtering
 
-You can filter by Category (for example, Surveillance Category), flows, and monitoring locations.
+You can filter by category (for example, surveillance category), flows, and monitoring locations.
 
 Click on an item to filter by that item.
 You can select more than one item per section.
 
-As items are selected, the number of items selected for that section will display.
+As you choose items, the number of items selected for that section will display.
 A check symbol lets you clear the selected items for that section.
 
 Use **Clear All** to clear all filters and search parameters.
 
-Use **Match All** in the Categories section to display only nodes corresponding to *all* the selected categories.
+Use **Match All** in the Categories section to display only nodes corresponding to all the selected categories.
 
 For example, you could filter on nodes that are in both the *Routers* and *Production* categories.
 
@@ -131,7 +130,7 @@ image::structured-node-list/category-filter-match-all.png["{page-component-title
 
 === Extended search
 
-This allows you to search by various additional fields.
+This lets you to search by additional fields.
 Note that some fields perform wildcard searches and some are exact searches.
 Also note that some fields, for example SNMP fields, are not displayed in the table, but will display in the Node Details dialog.
 
