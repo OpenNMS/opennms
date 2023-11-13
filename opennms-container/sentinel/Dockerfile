@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.2.0.b245-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.2.0.b247-jre-17"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -82,7 +82,13 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
     ln -s /usr/share/sentinel /opt/sentinel
 
-COPY ./container-fs/* /
+# Install entrypoint wrapper and health check script
+COPY container-fs/entrypoint.sh /
+COPY container-fs/health.sh /
+
+# Install confd.io configuration files and scripts and ensure they are executable
+COPY ./container-fs/confd/ /opt/sentinel/confd/
+RUN chmod +x /opt/sentinel/confd/scripts/*
 
 VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 

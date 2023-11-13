@@ -227,7 +227,11 @@
                           <!-- base API features -->
                           <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-health</feature>
+                          <feature>opennms-events-sink-dispatcher</feature>
                           <feature>opennms-health-api</feature>
+                          <feature>opennms-mate-api</feature>
+                          <feature>opennms-mate-impl</feature>
+                          <feature>opennms-mate-shell</feature>
                           <feature>opennms-newts</feature>
                           <feature>opennms-timeseries-api</feature>
 

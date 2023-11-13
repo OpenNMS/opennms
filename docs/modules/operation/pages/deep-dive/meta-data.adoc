@@ -268,7 +268,7 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 * xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml
 * xref:reference:ticketing/introduction.adoc[Ticketer configuration]: jira.properties, remedy.properties, tsrm.properties
 * xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd configuration]: trapd-configuration.xml
-* xref:reference:service-assurance/monitors/VmwareMonitor.adoc[VMware monitor], xref:reference:performance-data-collection/collectors/VMware.adoc[VMware collector]: vmware-config.xml
+* xref:reference:service-assurance/monitors/VmwareMonitor.adoc[VMware monitor], xref:reference:performance-data-collection/collectors/vmware.adoc[VMware collector]: vmware-config.xml
 * xref:reference:service-assurance/monitors/WmiMonitor.adoc[WMI monitor], xref:reference:performance-data-collection/collectors/wmi.adoc[WMI collector]: wmi-config.xml
 * xref:reference:performance-data-collection/collectors/xml.adoc[XML collector]: xml-datacollection-config.xml, xml-datacollection-config/*.xml
 

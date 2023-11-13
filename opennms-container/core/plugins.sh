@@ -4,7 +4,6 @@ set -euo pipefail
 IFS=$'\n\t'
 
 export ALEC_VERSION="latest"
-export CLOUD_VERSION="latest"
 export CORTEX_VERSION="latest"
 export VELOCLOUD_VERSION="latest"
 
@@ -26,18 +25,6 @@ find . -name '*.kar' -exec mv '{}' "$DEPLOY_FOLDER" \;
 
 cd ~/ || exit
 rm -rf test
-mkdir ~/test
-cd ~/test || exit
-
-artifact_urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:rpm" opennms/common -F json  | jq -r '.data[].cdn_url')
-for url in $artifact_urls; do
-    curl -sS -L -O "$url"
-done
-rpm2cpio *-plugin-cloud*.rpm | cpio -id
-find . -name '*.kar' -exec mv '{}' "$DEPLOY_FOLDER" \;
-
-cd ..
-rm -r test
 
 cd "$DEPLOY_FOLDER" || exit 
 if [ "$CORTEX_VERSION" == "latest" ]
