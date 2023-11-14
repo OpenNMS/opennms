@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-enterprise-reporting</artifactId>
-    <version>32.0.3-SNAPSHOT</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reportd</artifactId>
@@ -62,8 +62,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-dependencies</artifactId>
-      <type>pom</type>
+      <artifactId>jasper-shaded</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.events</groupId>

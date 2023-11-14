@@ -129,20 +129,20 @@
     <feature name="dom4j" version="${dom4jVersion}" description="DOM4J">
         <bundle dependency="true">wrap:mvn:org.dom4j/dom4j/${dom4jVersion}$Bundle-SymbolicName=org.dom4j&amp;Bundle-Version=${dom4jVersion}</bundle>
     </feature>
-    <feature name="hibernate36" version="3.6.10.Final" description="Hibernate :: Hibernate ORM">
+    <feature name="hibernate36" version="${hibernateVersion}" description="Hibernate :: Hibernate ORM">
         <feature>commons-collections</feature>
         <feature>dom4j</feature>
         <bundle dependency="true">wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.ast</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.javassist/javassist/${javassistVersion}</bundle>
         <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final$Bundle-SymbolicName=org.hibernate.jpa20.api&amp;Bundle-Version=1.0.1</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=3.6.10&amp;Export-Package=org.hibernate*;version="3.6.10"</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=3.2.0</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-core/${hibernateVersion}$Bundle-SymbolicName=org.hibernate.core&amp;Bundle-Version=${hibernateOsgiVersion}&amp;Export-Package=org.hibernate*;version="${hibernateOsgiVersion}"</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/${hibernateAnnotationsVersion}$Bundle-SymbolicName=org.hibernate.commons.annotations&amp;Bundle-Version=${hibernateAnnotationsOsgiVersion}</bundle>
     </feature>
-    <feature name="hibernate-validator41" version="4.1.0.Final" description="Hibernate :: Hibernate Validator">
+    <feature name="hibernate-validator4" version="${hibernateValidatorVersion}" description="Hibernate :: Hibernate Validator">
         <feature>javax.validation</feature>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator.annotation-processor&amp;Bundle-Version=4.1.0</bundle>
-        <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final$Bundle-SymbolicName=org.hibernate.validator&amp;Bundle-Version=4.1.0</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/${hibernateValidatorAnnotationProcessorVersion}$Bundle-SymbolicName=org.hibernate.validator.annotation-processor&amp;Bundle-Version=${hibernateValidatorAnnotationProcessorVersion}</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate-validator/${hibernateValidatorVersion}$Bundle-SymbolicName=org.hibernate.validator&amp;Bundle-Version=${hibernateValidatorVersion}</bundle>
     </feature>
     <feature name="jaxb" version="${eclipselinkVersion}" description="EclipseLink :: MOXy">
         <feature>javax.mail</feature>
@@ -154,10 +154,6 @@
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bouncycastle</feature>
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
-    </feature>
-    <feature name="jfreechart" version="1.0.19" description="JFree :: JFreeChart">
-        <bundle>wrap:mvn:org.jfree/jfreechart/1.0.19$Bundle-SymbolicName=org.jfree.jfreechart&amp;Bundle-Version=1.0.19</bundle>
-        <bundle>wrap:mvn:org.jfree/jcommon/1.0.24$Bundle-SymbolicName=org.jfree.jcommon&amp;Bundle-Version=1.0.24</bundle>
     </feature>
     <feature name="jldap" version="${jldapVersion}" description="OpenLDAP :: JLDAP">
         <bundle>wrap:mvn:com.novell.ldap/jldap/${jldapVersion}$Bundle-SymbolicName=com.novell.ldap&amp;Bundle-Version=${jldapVersion}</bundle>
@@ -274,6 +270,7 @@
     <feature name="opennms-util" version="${project.version}" description="OpenNMS :: Util">
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-io</feature>
         <feature>commons-jexl</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
@@ -405,11 +402,11 @@
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
         <feature>opennms-core-db</feature>
+        <feature>opennms-mate-api</feature>
         <feature>opennms-poller-api</feature>
         <feature>opennms-rrd-api</feature>
         <feature>opennms-snmp</feature>
         <feature>scv-api</feature>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0$Bundle-SymbolicName=com.googlecode.concurrent-locks&amp;Bundle-Version=1.0.0</bundle>
         <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}$Bundle-SymbolicName=org.jasypt&amp;Bundle-Version=${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
@@ -493,18 +490,16 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-health-api</feature>
         <feature>opennms-rpc-utils</feature>
-        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-rpc-utils" version="${project.version}" description="OpenNMS :: Core :: IPC : RPC :: Utils">
+        <feature>opennms-mate-api</feature>
+        <feature>opennms-mate-shell</feature>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -542,7 +537,7 @@
     <feature name="opennms-dao" version="${project.version}" description="OpenNMS :: DAO">
         <feature>commons-jxpath</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature>hibernate-validator41</feature>
+        <feature>hibernate-validator4</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-collection-core</feature>
         <feature>opennms-collection-persistence-rrd</feature>
@@ -581,6 +576,7 @@
     <feature name="opennms-events-sink-dispatcher" version="${project.version}" description="OpenNMS :: Events :: Sink Dispatcher">
         <feature>opennms-config-api</feature>
         <feature>opennms-events-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
@@ -1121,6 +1117,7 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -1518,6 +1515,7 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-jest</feature>
+        <feature>opennms-mate-impl</feature>
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
@@ -1550,10 +1548,28 @@
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
     </feature>
+    <feature name="opennms-mate-api" version="${project.version}" description="OpenNMS :: Features :: Metadata :: API">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>opennms-core</feature>
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-impl" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Implementation">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-shell" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Karaf Shell Commands">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
+    </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature>opennms-dao-api</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
     </feature>
     <feature name="org.opennms.features.topologies.service.api" version="${project.version}" description="OpenNMS :: Features :: Topologies :: Service :: API">
@@ -1937,6 +1953,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>newts-api</feature>
 
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>

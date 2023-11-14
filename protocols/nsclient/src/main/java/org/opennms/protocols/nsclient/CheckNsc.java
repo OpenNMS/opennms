@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,6 +109,7 @@ public abstract class CheckNsc {
         }
         catch (Throwable e) {
         	usage(options, cmd, "An error occurred creating a new NsclientManager.", e);
+        	System.exit(1);
         }
         
         if (cmd.hasOption("password")) {

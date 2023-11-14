@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>32.0.3-SNAPSHOT</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -299,6 +299,12 @@
     <dependency>
       <groupId>org.jolokia</groupId>
       <artifactId>jolokia-client-java</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>bsh</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -328,9 +334,8 @@
       <artifactId>org.opennms.config-dao.poll-outages.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- BeanShell scripting language -->
     <dependency>
-      <groupId>bsh</groupId>
+      <groupId>org.apache-extras.beanshell</groupId>
       <artifactId>bsh</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -513,5 +518,11 @@
           <artifactId>resilience4j-bulkhead</artifactId>
           <version>${resilience4jVersion}</version>
       </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>

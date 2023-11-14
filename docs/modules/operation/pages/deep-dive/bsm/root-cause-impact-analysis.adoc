@@ -1,6 +1,6 @@
 
 = Root Cause and Impact Analysis
-:description: Overview of root cause operation in OpenNMS Horizon/Meridian to identify underlying reduction keys of edges.
+:description: Overview of root cause operation in {page-component-title} to identify underlying reduction keys of edges.
 
 The root cause operation can quickly identify the underlying reduction keys of edges that contribute to an element's current operational status.
 The impact analysis operation identifies all business services that are affected by a given element.

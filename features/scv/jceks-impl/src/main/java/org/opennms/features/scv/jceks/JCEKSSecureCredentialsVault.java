@@ -38,6 +38,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -78,6 +80,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     private final int m_iterationCount;
     private final int m_keyLength;
     private final HashMap<String, Credentials> m_credentialsCache = new HashMap<>();
+
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+
+    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
         this(keystoreFile, password, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
@@ -209,5 +215,26 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         } catch (KeyStoreException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private static String getKeystoreFilename() {
+        String opennmsHome = System.getProperty("opennms.home");
+        if (opennmsHome == null) {
+            try {
+                System.err.println("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
+                opennmsHome = Files.createTempDirectory("opennms-home-").toString();
+            } catch (final IOException e) {
+                throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
+            }
+        }
+        return Paths.get(opennmsHome, "etc", "scv.jce").toString();
+    }
+
+    private static String getKeystorePassword() {
+        return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+    }
+
+    public static JCEKSSecureCredentialsVault defaultScv() {
+        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
     }
 }

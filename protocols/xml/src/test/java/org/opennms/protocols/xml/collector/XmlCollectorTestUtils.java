@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -47,7 +49,7 @@ public class XmlCollectorTestUtils {
 
     public static CollectionSet doCollect(XmlCollector collector, CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
         ResourceTypeMapper.getInstance().setResourceTypeMapper(type -> getResourceType(type));
-        final Map<String, Object> runtimeAttributes = collector.getRuntimeAttributes(agent, parameters);
+        final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, parameters), EmptyScope.EMPTY);
         Map<String, Object> allParams = new HashMap<>();
         allParams.putAll(parameters);
         allParams.putAll(runtimeAttributes);

@@ -97,13 +97,15 @@
 
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Event List" />
-  <jsp:param name="headTitle" value="List" />
-  <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href= 'event/index' title='Events System Page'>Events</a>" />
-  <jsp:param name="breadcrumb" value="List" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("List")
+          .headTitle("Events")
+          .breadcrumb("Events", "event/index")
+          .breadcrumb("List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
   <script type="text/javascript">
     function checkAllCheckboxes() {

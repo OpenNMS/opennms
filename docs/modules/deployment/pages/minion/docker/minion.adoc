@@ -101,7 +101,7 @@ Next, we need to create the keystore file and add the credentials for connecting
 ----
 mkdir keystore
 chown -R 10001:10001 keystore<1>
-docker-compose run -v $(pwd)/keystore:/keystore minion -s<2>
+docker-compose run --rm -v $(pwd)/keystore:/keystore minion -s<2>
 ----
 <1> Assign ownership so the container user account can write within the directory.
 <2> When prompted, enter the username and password for a `ROLE_MINION` user account on the {page-component-title} server.

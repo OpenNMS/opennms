@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -196,10 +196,10 @@ public class VarbindMapping {
         String oid = getOid();
         String instance = evaluate(getInstance(), alarm);
         if (instance != null) {
-            oid += isNumber(instance) ? "." + instance : encode(instance);
+            oid += isNumber(instance) ? ("." + instance) : encode(instance);
         }
         String value = evaluate(getValue(), alarm);
-        if (getType().equals(VarbindType.TYPE_SNMP_OCTET_STRING) && getMax() > 0 && getType().value().length() > getMax()) {
+        if (value != null && getType() == VarbindType.TYPE_SNMP_OCTET_STRING && getMax() > 0 && getType().value().length() > getMax()) {
             value = value.substring(0, getMax());
         }
         final Parm parm = new Parm(oid, value);

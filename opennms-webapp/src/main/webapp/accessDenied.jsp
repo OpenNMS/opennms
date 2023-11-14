@@ -36,9 +36,11 @@
 <%@ page import="org.springframework.security.AuthenticationException" %>
 --%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Access denied" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h2>Access denied</h2>
 

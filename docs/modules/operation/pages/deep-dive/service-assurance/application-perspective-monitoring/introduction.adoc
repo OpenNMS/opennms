@@ -1,6 +1,6 @@
 
 = Application Perspective Monitoring
-:description: Overview of application perspective monitoring in OpenNMS Horizon/Meridian to view availability of remote services from another service.
+:description: Overview of application perspective monitoring in {page-component-title} to view availability of remote services from another service.
 
 Application Perspective Monitoring in {page-component-title} lets you see the availability of a remote service.
 For example, the service may be hosted in Houston, but accessed in Seattle from your central location in New York.

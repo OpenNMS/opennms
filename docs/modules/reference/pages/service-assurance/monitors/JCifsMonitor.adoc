@@ -1,8 +1,9 @@
 
 [[poller-jcifs-monitor]]
 = JCifsMonitor
+:description: Learn about the JCifsMonitor in {page-component-title} that tests a file-sharing service based on the CIFS/SMB protocol.
 
-This monitor lets you to test a file-sharing service based on the CIFS/SMB protocol.
+This monitor tests a file-sharing service based on the CIFS/SMB protocol.
 
 IMPORTANT: The use of the JCifsMonitor requires the installation of the `opennms-plugin-protocol-cifs` package before polling will start.
 
@@ -142,3 +143,6 @@ Note that you must include the `monitor` section for each service in your defini
 <3> Password to access the share.
 <4> Path to the folder inside of the share as part of the SMB URL.
 <5> Mode is set to `folder_empty`.
+
+NOTE: Metadata expressions can also be used in the parameter values.
+This allows the user to also reference credentials stored in the secure credentials vault.

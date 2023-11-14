@@ -38,6 +38,9 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,7 @@ public class CredentialsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CredentialsParser.class);
 
-    public Map<AuthScope, Credentials> parse(final List<CredentialsScope> credentialsScopes) {
+    public Map<AuthScope, Credentials> parse(final List<CredentialsScope> credentialsScopes, final EntityScopeProvider entityScopeProvider) {
         final Map<AuthScope, Credentials> credentialsMap = new HashMap<>();
         if (credentialsScopes != null) {
             for (CredentialsScope scope : credentialsScopes) {
@@ -70,9 +73,10 @@ public class CredentialsParser {
                 try {
                     final URL url = new URL(urlString);
                     final HttpHost httpHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
+                    final Scope scvScope = entityScopeProvider.getScopeForScv();
                     credentialsMap.put(
                             new AuthScope(httpHost),
-                            new UsernamePasswordCredentials(scope.getUsername(), scope.getPassword()));
+                            new UsernamePasswordCredentials(Interpolator.interpolate(scope.getUsername(), scvScope).output, Interpolator.interpolate(scope.getPassword(), scvScope).output));
                 } catch (MalformedURLException ex) {
                     LOG.error("Defined url is invalid: {}", ex.getMessage());
                 }

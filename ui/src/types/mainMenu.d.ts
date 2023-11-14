@@ -23,6 +23,12 @@ export interface Notices {
   status: string | null
 }
 
+export interface TileProviderItem {
+  name: string
+  url: string
+  attribution: string
+}
+
 export interface MainMenu {
   baseHref: string
   homeUrl: string
@@ -32,6 +38,7 @@ export interface MainMenu {
   baseNodeUrl: string
   copyrightDates: string
   version: string
+  userTileProviders?: TileProviderItem[]
   
   menus: TopMenuItem[]
   helpMenu: TopMenuItem | null

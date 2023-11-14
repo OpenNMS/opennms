@@ -1,5 +1,5 @@
 import { filesToFolders, sortFilesAndFolders, getExtensionFromFilenameSafely } from '@/components/FileEditor/utils'
-import { IFile } from '../src/store/fileEditor/state'
+import { IFile } from '../src/stores/fileEditorStore'
 import { assert, test, expect } from 'vitest'
 
 test('Creating folders', () => {

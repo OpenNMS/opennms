@@ -32,30 +32,36 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Download from '@featherds/icon/action/DownloadFile'
 import Compare from '@/assets/Compare.vue'
-import { useStore } from 'vuex'
-import { DeviceConfigBackup } from '@/types/deviceConfig'
 import DCBDiff from './DCBDiff.vue'
+import { DeviceConfigBackup } from '@/types/deviceConfig'
+import { useDeviceStore } from '@/stores/deviceStore'
 
 const emit = defineEmits(['onCompare'])
 
-const store = useStore()
+const deviceStore = useDeviceStore()
 const selectedConfig = ref<DeviceConfigBackup>()
-const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
+const { historyModalBackups } = storeToRefs(deviceStore)
 
-watch(historyModalBackups, (historyModalBackups) => {
-  if (historyModalBackups) {
-    selectedConfig.value = historyModalBackups[0]
+watch(historyModalBackups, (backups) => {
+  if (backups) {
+    selectedConfig.value = backups[0]
   }
 })
 
-const onDownload = () => store.dispatch('deviceModule/downloadByConfig', selectedConfig.value)
+const onDownload = () => {
+  if (selectedConfig.value?.id) {
+    deviceStore.downloadByConfig([selectedConfig.value.id])
+  }
+}
+
 const setSelectedConfig = (config: DeviceConfigBackup) => selectedConfig.value = config
 
-onMounted(() => store.dispatch('deviceModule/getHistoryByIpInterface'))
+onMounted(() => deviceStore.getHistoryByIpInterface())
 </script>
 
 <style scoped lang="scss">

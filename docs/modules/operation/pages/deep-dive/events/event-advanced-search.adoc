@@ -1,6 +1,6 @@
 
 = Advanced Event Search
-:description: List and definitions of criteria you can use in advanced event searches in OpenNMS Horizon/Meridian.
+:description: List and definitions of criteria you can use in advanced event searches in {page-component-title}.
 
 When searching your environment's events list, you may want to customize your query to narrow your search.
 The {page-component-title} Event Detail page has a button to filter your searches based on different criteria:

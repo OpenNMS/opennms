@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -180,6 +180,10 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
     }
 
     private String getMessageForAlarmCountMap(final Map<String, Long> alarmCountMap) {
+        if (alarmCountMap == null || alarmCountMap.isEmpty()) {
+            return "Alarms: no alarms found";
+        }
+
         StringBuilder alarmCountString = new StringBuilder();
         for (final String alarmSeverity : VALID_VSPHERE_ALARM_STATES) {
             if (alarmCountMap.containsKey(alarmSeverity)) {

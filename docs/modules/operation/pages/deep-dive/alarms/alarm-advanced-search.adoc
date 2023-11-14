@@ -1,6 +1,6 @@
 
 = Advanced Alarm Search
-:description: List and description of search criteria in OpenNMS Horizon/Meridian for advance alarm searches.
+:description: List and description of search criteria in {page-component-title} for advance alarm searches.
 
 When searching your environment's alarms list, you may want to customize your query to narrow your search.
 The {page-component-title} Alarm List page has a button to filter your searches based on different criteria:

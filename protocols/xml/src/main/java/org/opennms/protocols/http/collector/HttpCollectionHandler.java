@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,6 +82,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
                 Elements el = elements.select(object.getXpath());
                 if (el == null) {
                     LOG.info("No value found for object named '{}'. Skipping.", object.getName());
+                    continue;
                 }
                 builder.withAttribute(collectionResource, group.getName(), object.getName(), el.html(), object.getDataType());
             }

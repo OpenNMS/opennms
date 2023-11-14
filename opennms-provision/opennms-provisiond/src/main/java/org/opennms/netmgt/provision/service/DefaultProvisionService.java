@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -280,6 +280,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
+            if (primary == null) {
+                LOG.debug("Unable to determine interface for node {}, skipping hostname update", node.getId());
+                return;
+            }
+
             final InetAddress primaryAddr = primary.getIpAddress();
             final String primaryHostname = getHostnameResolver().getHostname(primaryAddr, node.getLocation().getLocationName());
 
@@ -524,17 +529,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
     }
 
-    /** {@inheritDoc} */
-    @Transactional
-    @Override
-    public OnmsMonitoredService addMonitoredService(final Integer ipInterfaceId, final String svcName, final String monitorKey) {
-        final OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
-        assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
-        return addMonitoredService(iface, svcName, monitorKey);
-
-    }
-
-    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey) {
+    private OnmsMonitoredService addMonitoredService(final OnmsIpInterface iface, final String svcName, final String monitorKey, List<OnmsMetaData> metaData) {
         final OnmsServiceType svcType = createServiceTypeIfNecessary(svcName);
 
         return new CreateIfNecessaryTemplate<OnmsMonitoredService, MonitoredServiceDao>(m_transactionManager, m_monitoredServiceDao) {
@@ -548,6 +543,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsMonitoredService doInsert() {
                 final OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
                 svc.setStatus("A");
+                svc.setMetaData(metaData);
                 m_ipInterfaceDao.saveOrUpdate(iface);
                 m_ipInterfaceDao.flush();
 
@@ -563,10 +559,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName, final String monitorKey) {
+    public OnmsMonitoredService addMonitoredService(final Integer nodeId, final String ipAddress, final String svcName, final String monitorKey, List<OnmsMetaData> metaData) {
         final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
-        return addMonitoredService(iface, svcName, monitorKey);
+        return addMonitoredService(iface, svcName, monitorKey, metaData);
     }
 
     @Transactional
@@ -1360,6 +1356,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 if (r == null) {
                     r = new Requisition(m_foreignSource);
                 }
+            }
+
+            if (r == null) {
+                LOG.error("Unable to determine requisition for foreign source {}", m_foreignSource);
+                return false;
             }
 
             r.updateDateStamp();

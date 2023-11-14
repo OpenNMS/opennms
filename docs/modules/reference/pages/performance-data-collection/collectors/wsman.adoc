@@ -1,7 +1,7 @@
 
 [[ga-performance-mgmt-collectors-wsman-collector]]
 = WsManCollector
-:description: Learn how to configure the WsManCollector in OpenNMS Horizon/Meridian to collect performance metrics using the Web Services-Management protocol.
+:description: Learn how to configure the WsManCollector in {page-component-title} to collect performance metrics using the Web Services-Management protocol.
 
 The WsManCollector collects performance metrics using the Web Services-Management (WS-Management) protocol.
 
@@ -142,6 +142,9 @@ Here is an example with several definitions:
     </definition>
 </wsman-config>
 ----
+
+NOTE: Metadata expressions can also be used in attributes of the `wsman-config.xml` configuration file.
+This allows the user to also reference credentials stored in the secure credentials vault.
 
 .Collector configuration attributes
 [options="header"]

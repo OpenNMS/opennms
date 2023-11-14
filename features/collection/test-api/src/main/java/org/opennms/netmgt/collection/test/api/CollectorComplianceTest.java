@@ -39,6 +39,8 @@ import java.util.Map;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -133,7 +135,7 @@ public abstract class CollectorComplianceTest {
 
         // getRuntimeAttributes() should return a valid map
         final Map<String, Object> requiredParams = getRequiredParameters();
-        final Map<String, Object> runtimeAttrs = opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams));
+        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), EmptyScope.EMPTY);
 
         // collect() should return a valid collection set
         final Map<String, Object> allParms = new HashMap<>();
@@ -172,7 +174,7 @@ public abstract class CollectorComplianceTest {
 
         // getRuntimeAttributes() should return a valid map
         final Map<String, Object> requiredParams = getRequiredParameters();
-        final Map<String, Object> runtimeAttrs = opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams));
+        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), EmptyScope.EMPTY);
 
         // marshalParameters() should marshal all parameters to strings
         final Map<String, Object> allParms = new HashMap<>();

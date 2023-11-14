@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
 import org.opennms.netmgt.filter.api.FilterParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -61,6 +63,8 @@ import org.opennms.netmgt.filter.api.FilterParseException;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  */
 public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseSchemaConfigFactory.class);
+
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -218,8 +222,12 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      */
     private void finishConstruction() {
         Set<String> joinableSet = new HashSet<>();
-        final Map<String, Join> primaryJoins = new ConcurrentHashMap<String, Join>();
-        joinableSet.add(getPrimaryTable().getName());
+        final Map<String, Join> primaryJoins = new ConcurrentHashMap<>();
+        final var primaryTable = getPrimaryTable();
+        if (primaryTable == null) {
+            LOG.warn("no primary table!");
+        }
+        joinableSet.add(primaryTable.getName());
         // loop until we stop adding entries to the set
         int joinableCount = 0;
         while (joinableCount < joinableSet.size()) {

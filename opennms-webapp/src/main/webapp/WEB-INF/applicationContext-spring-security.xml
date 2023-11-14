@@ -14,7 +14,7 @@
     <headers defaults-disabled="true" />
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
-    <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS,','ROLE_REST,','ROLE_ADMIN,','ROLE_USER,','ROLE_MOBILE,','ROLE_FILESYSTEM_EDITOR')"/>
+    <intercept-url pattern="/rest/alarms/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
 
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/*\?ack=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
@@ -23,12 +23,12 @@
     <intercept-url pattern="/rest/alarms/*\?clear=true" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
 
     <!-- read-only calls should be allowed for any user -->
-    <intercept-url pattern="/rest/alarms/**" method="GET" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN,','ROLE_MOBILE,','ROLE_USER')"/>
-    <intercept-url pattern="/rest/alarms/**" method="HEAD" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN,','ROLE_MOBILE,','ROLE_USER')"/>
+    <intercept-url pattern="/rest/alarms/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/alarms/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- read-write calls should be allowed for the REST and ADMIN roles -->
-    <intercept-url pattern="/rest/alarms/**" method="DELETE" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN')"/>
-    <intercept-url pattern="/rest/alarms/**" method="POST" access="hasAnyRole('ROLE_REST,','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/alarms/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/alarms/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
 
@@ -222,6 +222,10 @@
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
           <beans:constructor-arg name="pattern" value="/admin/account/selfService/newPasswordAction"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/admin/account/selfService/passwordGateAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">

@@ -32,6 +32,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.netmgt.ticketer.jira.Config;
 import org.opennms.netmgt.ticketer.jira.JiraConnectionFactory;
 import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
@@ -50,6 +51,8 @@ import com.google.common.base.Strings;
  */
 public abstract class AbstractJiraCommand extends OsgiCommandSupport implements Action {
 
+    protected EntityScopeProvider entityScopeProvider;
+
     protected static final String LINE = "------------------------------";
 
     protected static final String DEFAULT_ROW_FORMAT = "%-10.10s %-30.30s %-100.100s";
@@ -65,6 +68,10 @@ public abstract class AbstractJiraCommand extends OsgiCommandSupport implements 
 
     @Option(name="-a", aliases="--anonymous", description="Defines that no authentication is used. Cannot be used with <username> and <password> alltogether")
     public boolean noAuthentication;
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
+    }
 
     protected JiraRestClient createJiraClient() throws PluginException {
         final Config config = getConfig();
@@ -96,7 +103,7 @@ public abstract class AbstractJiraCommand extends OsgiCommandSupport implements 
     }
 
     protected Config getConfig() {
-        return JiraTicketerPlugin.getConfig();
+        return JiraTicketerPlugin.getConfig(entityScopeProvider);
     }
 
     abstract protected void doExecute(JiraRestClient jiraRestClient) throws Exception;

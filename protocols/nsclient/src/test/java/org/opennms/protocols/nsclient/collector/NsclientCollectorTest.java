@@ -34,14 +34,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockPlatformTransactionManager;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -70,6 +77,9 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     private IpInterfaceDao m_ipInterfaceDao;
 
     private CollectionAgent m_collectionAgent;
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final class CountResourcesVisitor extends AbstractCollectionSetVisitor {
 
@@ -108,6 +118,10 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         String nsclient_config = "<nsclient-config port=\"" + getServer().getLocalPort() + "\" retry=\"1\" timeout=\"3000\" />";
         NSClientPeerFactory.setInstance(new NSClientPeerFactory(new ByteArrayInputStream(nsclient_config.getBytes())));
         NSClientDataCollectionConfigFactory.setInstance(new NSClientDataCollectionConfigFactory("src/test/resources/nsclient-datacollection-config.xml"));
+
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        NSClientPeerFactory.getInstance().setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
 
         // Initialize Collection Agent
         m_collectionAgent = DefaultCollectionAgent.create(1, m_ipInterfaceDao, m_transactionManager);

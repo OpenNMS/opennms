@@ -1,6 +1,6 @@
 
 = IFTTT Integration
-:description: How to integrate the IFTTT service with OpenNMS Horizon/Meridian to combine web applications and trigger actions of other services.
+:description: How to integrate the IFTTT service with {page-component-title} to combine web applications and trigger actions of other services.
 
 The IFTTT service lets you combine web applications using simple conditional instructions.
 Each supported service has several triggers that you can use to trigger the actions of other services.
@@ -158,3 +158,5 @@ This is useful for sending messages or operating LED displays via IFTTT.
     <trigger-package>
 </ifttt-config>
 ----
+NOTE: Metadata expressions can also be used in the key attribute of the `ifttt-config.xml` configuration file.
+This allows the user to also reference an API key stored in the secure credentials vault.

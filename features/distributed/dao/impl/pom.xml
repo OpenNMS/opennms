@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.dao</artifactId>
-        <version>32.0.3-SNAPSHOT</version>
+        <version>33.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.distributed</groupId>
@@ -73,10 +73,10 @@
                             org.hibernate.type,
                             org.hibernate.annotations,
                             org.hibernate.proxy,
-                            org.hibernate.validator;version="[4.1,4.2)",
-                            org.hibernate.validator.constraints;version="[4.1,4.2)",
-                            org.hibernate.validator.messageinterpolation;version="[4.1,4.2)",
-                            org.hibernate.validator.resourceloading;version="[4.1,4.2)",
+                            org.hibernate.validator;version="${hibernateValidatorVersion}",
+                            org.hibernate.validator.constraints;version="${hibernateValidatorVersion}",
+                            org.hibernate.validator.messageinterpolation;version="${hibernateValidatorVersion}",
+                            org.hibernate.validator.resourceloading;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.ap,
                             org.hibernate.validator.ap.checks,
                             org.hibernate.validator.ap.util,

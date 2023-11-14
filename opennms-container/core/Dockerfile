@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b237-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.2.0.b247-jre-17"
 
 FROM ${BASE_IMAGE} as core-tarball
 
@@ -33,34 +33,12 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 FROM ${BASE_IMAGE} as core-base
 
-ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
-
-ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
+ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
 
 SHELL ["/bin/bash", "-c"]
 
-# Prevent setup prompt
-ENV DEBIAN_FRONTEND=noninteractive
-
-# import keys
-RUN apt-get update && \
-    apt-get \
-        --no-install-recommends \
-        -yq \
-        install \
-            gnupg \
-            ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
-    echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
-    apt-get update && \
-    apt-get \
-        --no-install-recommends \
-        -yq \
-        install \
-            ${REQUIRED_DEBS} && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /var/cache/apt
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
 
 # Create OpenNMS user with a specific group ID
 RUN groupadd \
@@ -124,7 +102,7 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
-RUN chmod -R g=u /usr/share/opennms/etc
+RUN chmod -R g=u /usr/share/opennms
 RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Arguments for labels should not invalidate caches

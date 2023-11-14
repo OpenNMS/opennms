@@ -1,6 +1,6 @@
 
 = Step 3: Provision Inventory
-:description: Step 3 of OpenNMS Horizon/Meridian setup: configure SNMP for provisioning, create a requisition, and configure a discovery.
+:description: Step 3 of {page-component-title} setup: configure SNMP for provisioning, create a requisition, and configure a discovery.
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you identify and catalog (provision) the managed entities (nodes, IP interfaces, SNMP interfaces, and services) that you want to monitor.
 The default configuration also enables self-monitoring of the OpenNMS service, and discovers a single node with the interface `127.0.0.1` (see xref:deployment:core/getting-started.adoc#first-monitored-node[First monitored node]).
@@ -48,6 +48,9 @@ image::provisioning/SNMP_Config.png["SNMP community name configuration page with
 
 These settings are automatically optimized into `snmp-config.xml`.
 For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
+
+NOTE: It is possible to use metadata expressions in the fields Security Name, Read Community, Write Community, Auth Passphrase, and Privacy Passphrase to reference credentials stored in the Secure Credentials Vault.
+Please note that only the global scope is available here.
 
 [[requisition-create]]
 == Create a requisition

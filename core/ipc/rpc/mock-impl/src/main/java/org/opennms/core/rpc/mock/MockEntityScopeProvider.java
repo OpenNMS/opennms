@@ -35,6 +35,12 @@ import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Scope;
 
 public final class MockEntityScopeProvider implements EntityScopeProvider {
+
+    @Override
+    public Scope getScopeForScv() {
+        return EmptyScope.EMPTY;
+    }
+
     @Override
     public Scope getScopeForNode(final Integer nodeId) {
         return EmptyScope.EMPTY;

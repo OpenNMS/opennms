@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.trapd;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.diff.JsonDiff;
+import static org.opennms.netmgt.trapd.TrapListenerTest.createUser;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,12 +43,11 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.opennms.netmgt.trapd.TrapListenerTest.createUser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.diff.JsonDiff;
 
 public class TrapListenerConfigTest {
 
@@ -89,7 +90,7 @@ public class TrapListenerConfigTest {
 
         // Check removal
         SnmpV3User user3 = new SnmpV3User("engineId", "horizon", "MD5",
-                "OpenNMS", "DES", "OpenNMS");
+                "OpenNMS", "DES", "OpenNMS", null);
         trapListenerConfig.setSnmpV3Users(new ArrayList<>());
         trapListenerConfig.getSnmpV3Users().add(user3);
         updatedBytes = objectMapper.writeValueAsBytes(trapListenerConfig);

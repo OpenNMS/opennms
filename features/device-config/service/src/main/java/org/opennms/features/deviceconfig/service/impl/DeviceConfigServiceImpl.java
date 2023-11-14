@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -128,6 +129,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Override
     public List<RetrievalDefinition> getRetrievalDefinitions(final String ipAddress, final String location) {
         final var iface = findMatchingInterface(ipAddress, location, null);
+
+        if (iface == null) {
+            return Collections.emptyList();
+        }
 
         return iface
                 // Get all device config services defined for this interface

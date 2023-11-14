@@ -26,7 +26,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 --%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -37,39 +36,38 @@
 %>
 
 <%@ page import="org.opennms.web.account.selfService.NewPasswordActionServlet" %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Change Password" />
-  <jsp:param name="headTitle" value="Change Password" />
-  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
-  <jsp:param name="breadcrumb" value="Change Password" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Change Password")
+          .breadcrumb("Self-Service", "account/selfService/index.jsp")
+          .breadcrumb("Change Password")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
-  function verifyGoForm()
-  {
-    if (document.goForm.pass1.value == document.goForm.pass2.value)
-    {
-      let newPassword=document.goForm.pass1.value
-      const passwordRegex=/${fn:escapeXml(NewPasswordActionServlet.PASSWORD_REGEX)}/;
-      const sameCharacterRegex=/${fn:escapeXml(NewPasswordActionServlet.SAME_CHARACTER_REGEX)}/;
+  function verifyGoForm() {
+    if (document.goForm.pass1.value == document.goForm.pass2.value) {
+      let newPassword = document.goForm.pass1.value
+      const passwordRegex = /${fn:escapeXml(NewPasswordActionServlet.PASSWORD_REGEX)}/;
+      const sameCharacterRegex = /${fn:escapeXml(NewPasswordActionServlet.SAME_CHARACTER_REGEX)}/;
 
-      if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
-      {
-        document.goForm.currentPassword.value=document.goForm.oldpass.value;
-        document.goForm.newPassword.value=document.goForm.pass1.value;
+      if (newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex)) {
+        document.goForm.currentPassword.value = document.goForm.oldpass.value;
+        document.goForm.newPassword.value = document.goForm.pass1.value;
         return true;
       } else {
         alert("Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
+        return false;
       }
     }
     else
     {
       alert("The two new password fields do not match!");
+      return false;
     }
   }
 </script>
-
 
 <div class="row">
   <div class="col-md-4">

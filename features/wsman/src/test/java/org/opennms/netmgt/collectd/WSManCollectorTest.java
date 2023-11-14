@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.opennms.core.collection.test.CollectionSetUtils;
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.netmgt.collection.api.AttributeType;
@@ -249,7 +251,7 @@ public class WSManCollectorTest {
 
         Map<String, Object> collectionParams = Maps.newHashMap();
         collectionParams.put("collection", "default");
-        collectionParams.putAll(collector.getRuntimeAttributes(agent, collectionParams));
+        collectionParams.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, collectionParams), EmptyScope.EMPTY));
         CollectionSet collectionSet = collector.collect(agent, collectionParams);
 
         assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());

@@ -62,6 +62,8 @@
 *** xref:deep-dive/device-config-backup/dcb-requisition.adoc[]
 *** xref:deep-dive/device-config-backup/dcb.adoc[]
 
+** xref:deep-dive/structured-node-list/introduction.adoc[]
+
 ** xref:deep-dive/performance-data-collection/introduction.adoc[]
 *** xref:deep-dive/performance-data-collection/collectd/collection-packages.adoc[]
 *** xref:deep-dive/performance-data-collection/collectd/configuration.adoc[]

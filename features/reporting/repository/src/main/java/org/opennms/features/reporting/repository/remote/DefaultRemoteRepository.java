@@ -41,11 +41,15 @@ import javax.ws.rs.core.GenericType;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.cxf.common.util.Base64Utility;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.sdo.RemoteReportSDO;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +79,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     private String m_jasperReportsVersion;
 
-    private final String m_authorizationHeader;
+    final String m_authorizationHeader;
 
     /**
      * Default constructor to initialize the ReST HTTP client
@@ -84,11 +88,22 @@ public class DefaultRemoteRepository implements ReportRepository {
      * @param jasperReportsVersion       a {@link java.lang.String} object
      */
     public DefaultRemoteRepository(
-            RemoteRepositoryDefinition remoteRepositoryDefinition,
-            String jasperReportsVersion) {
+            final RemoteRepositoryDefinition remoteRepositoryDefinition,
+            final String jasperReportsVersion) {
+        this(remoteRepositoryDefinition, jasperReportsVersion, org.opennms.core.spring.BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class));
+    }
+
+    public DefaultRemoteRepository(
+            final RemoteRepositoryDefinition remoteRepositoryDefinition,
+            final String jasperReportsVersion,
+            final SecureCredentialsVault secureCredentialsVault) {
         this.m_remoteRepositoryDefintion = remoteRepositoryDefinition;
         this.m_jasperReportsVersion = jasperReportsVersion;
-        m_authorizationHeader = "Basic " + Base64Utility.encode((m_remoteRepositoryDefintion.getLoginUser() + ":" + m_remoteRepositoryDefintion.getLoginRepoPassword()).getBytes());
+
+        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+        final String loginUser = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginUser(), scope).output;
+        final String loginRepoPassword = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginRepoPassword(), scope).output;
+        m_authorizationHeader = "Basic " + Base64Utility.encode((loginUser + ":" + loginRepoPassword).getBytes());
     }
 
     /**

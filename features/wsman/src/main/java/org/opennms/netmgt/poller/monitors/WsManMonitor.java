@@ -29,13 +29,13 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
@@ -87,10 +87,9 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
         }
 
         final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(svc.getAddress());
-        final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, svc.getAddress());
+        WsmanEndpointUtils.toMap(WSManConfigDao.getEndpoint(config, svc.getAddress())).forEach((key, value) -> runtimeAttributes.put(key, Interpolator.pleaseInterpolate(value)));
 
         runtimeAttributes.put(WSMAN_RETRY_KEY, config.getRetry());
-        runtimeAttributes.putAll(WsmanEndpointUtils.toMap(endpoint));
         return runtimeAttributes;
     }
 

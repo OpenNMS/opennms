@@ -28,12 +28,19 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Optional;
+
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 import junit.framework.TestCase;
-
-import org.opennms.core.test.ConfigurationTestUtils;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -47,6 +54,41 @@ public class WmiPeerFactoryTest extends TestCase {
         WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
         factory.afterPropertiesSet();
         return factory;
+    }
+
+    public void testMetadata() throws IOException {
+        final TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("wmi", new Credentials("foo", "bar"));
+
+        final String wmiConfigXml = "<?xml version=\"1.0\"?>\n" +
+                "<wmi-config retry=\"3\" timeout=\"800\"\n" +
+                "   username=\"${scv:wmi:username}\" password=\"${scv:wmi:password}\">\n" +
+                "   <definition>\n" +
+                "       <range begin=\"192.168.0.6\" end=\"192.168.0.10\"/>\n" +
+                "       <range begin=\"fe80:0000:0000:0000:0000:0000:0000:0006\" end=\"fe80:0000:0000:0000:0000:0000:0000:0010\"/>\n" +
+                "       <specific>192.168.0.5</specific>\n" +
+                "       <specific>fe80:0000:0000:0000:0000:0000:0000:0005</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "</wmi-config>\n" +
+                "";
+
+        final WmiPeerFactory factory = getFactory(wmiConfigXml);
+        factory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
+
+        assertEquals(Optional.of("${scv:wmi:username}"), factory.getConfig().getUsername());
+        assertEquals(Optional.of("${scv:wmi:password}"), factory.getConfig().getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("192.168.0.6")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("192.168.0.6")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0005")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0005")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0006")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0006")).getPassword());
     }
 
     /**

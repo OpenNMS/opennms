@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>32.0.3-SNAPSHOT</version>
+    <version>33.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -66,6 +66,20 @@
               <skip>${skipNodeJSBuild}</skip>
               <nodeVersion>${nodeVersion}</nodeVersion>
               <yarnVersion>${yarnVersion}</yarnVersion>
+            </configuration>
+          </execution>
+          <!--
+            yarn occasionally fails due to node-gyp not having been installed.
+            Installing it here so it's done before 'yarn install'.
+            Ideally should be able to remove this.
+          -->
+          <execution>
+            <id>yarn add node-gyp</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>global add node-gyp</arguments>
             </configuration>
           </execution>
           <execution>

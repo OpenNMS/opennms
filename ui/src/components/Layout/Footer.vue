@@ -12,11 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
 
-const store = useStore()
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const menuStore = useMenuStore()
+
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 </script>
 

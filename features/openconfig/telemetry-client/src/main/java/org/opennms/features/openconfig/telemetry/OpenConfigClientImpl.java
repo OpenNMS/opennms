@@ -29,7 +29,22 @@
 package org.opennms.features.openconfig.telemetry;
 
 
-import static io.grpc.ConnectivityState.READY;
+import com.google.common.base.Splitter;
+import io.grpc.ConnectivityState;
+import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
+import io.grpc.stub.StreamObserver;
+import org.opennms.core.grpc.common.GrpcClientBuilder;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.StringUtils;
+import org.opennms.features.openconfig.api.OpenConfigClient;
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
+import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
+import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
+import org.opennms.features.openconfig.proto.jti.Telemetry;
+import org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -49,23 +64,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.opennms.core.grpc.common.GrpcClientBuilder;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.StringUtils;
-import org.opennms.features.openconfig.api.OpenConfigClient;
-import org.opennms.features.openconfig.proto.gnmi.Gnmi;
-import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
-import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
-import org.opennms.features.openconfig.proto.jti.Telemetry;
-import org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
-
-import io.grpc.ConnectivityState;
-import io.grpc.ManagedChannel;
-import io.grpc.stub.StreamObserver;
+import static io.grpc.ConnectivityState.READY;
 
 /**
  * OpenConfig Client makes a gRPC connection and subscribes to telemetry data for the paths specified.
@@ -91,6 +90,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final String INTERVAL = "interval";
     private static final String RETRIES = "retries";
     private static final String JTI_MODE = "jti";
+    private static final String USERNAME_FIELD = "username";
+    private static final String PASSWORD_FIELD = "password";
     private ManagedChannel channel;
     private final InetAddress host;
     private Integer port;
@@ -131,7 +132,22 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                         .filter(configuration -> configuration.getKey().contains("tls"))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
             });
-            this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
+            var optionalUsername =
+                    this.paramList.stream().filter(entry -> entry.get(USERNAME_FIELD) != null).findFirst();
+            var optionalPassword =
+                    this.paramList.stream().filter(entry -> entry.get(PASSWORD_FIELD) != null).findFirst();
+            if (optionalUsername.isPresent() && optionalPassword.isPresent()) {
+                String username = optionalUsername.get().get(USERNAME_FIELD);
+                String password = optionalPassword.get().get(PASSWORD_FIELD);
+                Metadata metadata = new Metadata();
+                metadata.put(Metadata.Key.of(USERNAME_FIELD, Metadata.ASCII_STRING_MARSHALLER), username);
+                metadata.put(Metadata.Key.of(PASSWORD_FIELD, Metadata.ASCII_STRING_MARSHALLER), password);
+                var clientInterceptor = new GrpcClientInterceptor(metadata);
+                this.channel = GrpcClientBuilder.getChannelWithInterceptor(host.getHostAddress(), port, tlsFilePaths, clientInterceptor);
+            } else {
+                this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
+            }
+
             if (READY.equals(retrieveChannelState())) {
                 subscribeToTelemetry(handler);
                 return true;
@@ -158,6 +174,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
             LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
         } else {
+
             gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();

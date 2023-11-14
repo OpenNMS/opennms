@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -345,12 +345,14 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
         return aPath.equals(bPath);
     }
 
+    @SuppressWarnings("java:S2259") // sonar doesn't know that StringUtils.hasText null-checks
     private String getPath(final Resource resource) {
         String ret = null;
         if (resource instanceof UrlResource) {
             try {
                 ret = resource.getURL().toExternalForm();
             } catch (final IOException e) {
+                return null;
             }
         } else if (resource instanceof ClassPathResource) {
             ret = ((ClassPathResource) resource).getPath();
@@ -361,9 +363,13 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
             try {
                 ret = resource.getURL().getPath();
             } catch (final IOException e) {
+                return null;
             }
         }
-        return StringUtils.hasText(ret)? ret.startsWith("/")? ret.substring(1) : ret : null;
+        if (StringUtils.hasText(ret)) {
+            return ret.startsWith("/")? ret.substring(1) : ret;
+        }
+        return null;
     }
 
     @Override

@@ -1,7 +1,7 @@
 
 [[gu-bsm-edges]]
 = Edges
-:description: How to use edges to map alarm status monitoring with OpenNMS Horizon/Meridian: child service, IP service, reduction key, and application.
+:description: How to use edges to map alarm status monitoring with {page-component-title}: child service, IP service, reduction key, and application.
 
 Edges map the alarm status monitoring with OpenNMS.
 

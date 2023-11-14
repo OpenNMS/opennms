@@ -33,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
@@ -45,19 +44,25 @@ import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'
 import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
+import { useAppStore } from '@/stores/appStore'
+import { useLogStore } from '@/stores/logStore'
 
-const theme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dracula'
-  return 'xcode'
-})
-
-const store = useStore()
+const appStore = useAppStore()
+const logStore = useLogStore()
 const reverseLog = ref(false)
 const content = ref('')
-const logString = computed(() => store.state.logsModule.log)
-const selectedLog = computed(() => store.state.logsModule.selectedLog)
+const logString = computed(() => logStore.log)
+const selectedLog = computed(() => logStore.selectedLog)
 const editorRef = ref()
+
+const theme = computed(() => {
+  const theme = appStore.theme
+  if (theme === 'open-dark') {
+    return 'dracula'
+  }
+
+  return 'xcode'
+})
 
 onKeyStroke('f', (e) => {
   if (e.ctrlKey || e.metaKey) {
@@ -67,15 +72,15 @@ onKeyStroke('f', (e) => {
 })
 
 const getLog = (reverse: boolean) => {
-  store.dispatch('logsModule/setReverseLog', reverse)
-  store.dispatch('logsModule/getLog', selectedLog.value)
+  logStore.setReverseLog(reverse)
+  logStore.getLog(selectedLog.value)
   reverseLog.value = reverse
 }
 
 watchEffect(() => content.value = logString.value)
 const init = (editor: any) => {
   // activate and hide seach box
-  ace.config.loadModule('ace/ext/searchbox', (m) => m.Search(editor))
+  ace.config.loadModule('ace/ext/searchbox', (m: any) => m.Search(editor))
   editor.searchBox.hide()
 
   editor.setFontSize(15)

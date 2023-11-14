@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -130,7 +130,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
 
         PollStatus status = null;
         
-        for(tracker.reset(); tracker.shouldRetry() && !status.isAvailable(); tracker.nextAttempt()) {
+        for(tracker.reset(); tracker.shouldRetry() && (status == null || !status.isAvailable()); tracker.nextAttempt()) {
             Socket socket = null;
             try {
                 //

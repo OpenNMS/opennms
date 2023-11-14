@@ -112,17 +112,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useMapStore } from '@/stores/mapStore'
 import { Coordinates, Node, FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
-const store = useStore()
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const mapStore = useMapStore()
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 
 const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
-  store.dispatch('mapModule/setMapCenter', coordinate)
+  mapStore.setMapCenter(coordinate)
 }
 
 const sortStates: any = reactive({
@@ -144,17 +144,18 @@ const sortChanged = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
     sortStates[key] = SORT.NONE
   }
+
   sortStates[`${sortObj.property}`] = sortObj.value
-  store.dispatch('mapModule/setNodeSortObject', sortObj)
+  mapStore.setNodeSortObject(sortObj)
 }
 
 const onNodeIdClick = (nodeId: string) => {
   const searchTerm = `nodeid == ${nodeId}`
-  store.dispatch('mapModule/setNodeSearchTerm', searchTerm)
+  mapStore.setNodeSearchTerm(searchTerm)
 }
 
 const onNodeLabelClick = (label: string) => {
-  store.dispatch('mapModule/setNodeSearchTerm', label)
+  mapStore.setNodeSearchTerm(label)
 }
 
 onMounted(() => {
@@ -163,7 +164,7 @@ onMounted(() => {
 
   if (wrap && thead) {
     wrap.addEventListener('scroll', function () {
-      let translate = 'translate(0,' + this.scrollTop + 'px)'
+      const translate = `translate(0, ${this.scrollTop}px)`
       thead.style.transform = translate
     })
   }

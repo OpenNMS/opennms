@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
@@ -143,7 +144,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
         final Definition agentConfig = m_wsManConfigDao.getAgentConfig(agent.getAddress());
         final Groups groups = new Groups(m_wsManDataCollectionConfigDao.getGroupsForAgent(collection, agent, agentConfig, node));
 
-        runtimeAttributes.put(WSMAN_AGENT_CONFIG_KEY, agentConfig);
+        runtimeAttributes.put(WSMAN_AGENT_CONFIG_KEY, Interpolator.pleaseInterpolate(agentConfig));
         runtimeAttributes.put(WSMAN_GROUPS_KEY, groups);
         return runtimeAttributes;
     }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -507,15 +507,13 @@ public class VmwareConfigBuilder {
 
         TrustManager[] trustAllCerts = new TrustManager[] { new AnyServerX509TrustManager() };
 
-        SSLContext sc = null;
+        SSLContext sc;
         try {
             sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, null);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new IllegalStateException("unable to initialize SSL");
+        } 
 
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 

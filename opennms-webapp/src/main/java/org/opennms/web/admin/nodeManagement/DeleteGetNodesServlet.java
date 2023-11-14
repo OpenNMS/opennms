@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,35 +86,22 @@ public class DeleteGetNodesServlet extends HttpServlet {
     /**
      */
     private List<ManagedNode> getAllNodes(HttpSession userSession) throws SQLException {
-        Connection connection = null;
         List<ManagedNode> allNodes = new ArrayList<>();
         int lineCount = 0;
 
-        try {
-            connection = DataSourceFactory.getInstance().getConnection();
-
-            Statement stmt = connection.createStatement();
-            ResultSet nodeSet = stmt.executeQuery(NODE_QUERY);
-
-            if (nodeSet != null) {
-                while (nodeSet.next()) {
-                    ManagedNode newNode = new ManagedNode();
-                    newNode.setNodeID(nodeSet.getInt(1));
-                    newNode.setNodeLabel(nodeSet.getString(2));
-                    allNodes.add(newNode);
-                    lineCount++;
-                }
+        try (
+            final Connection connection = DataSourceFactory.getInstance().getConnection();
+            final Statement stmt = connection.createStatement();
+            final ResultSet nodeSet = stmt.executeQuery(NODE_QUERY);
+        ) {
+            while (nodeSet.next()) {
+                ManagedNode newNode = new ManagedNode();
+                newNode.setNodeID(nodeSet.getInt(1));
+                newNode.setNodeLabel(nodeSet.getString(2));
+                allNodes.add(newNode);
+                lineCount++;
             }
             userSession.setAttribute("lineItems.delete.jsp", Integer.valueOf(lineCount));
-
-            nodeSet.close();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
         }
 
         return allNodes;

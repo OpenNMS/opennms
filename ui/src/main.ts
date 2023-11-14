@@ -1,17 +1,15 @@
 import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
-import App from './App.vue'
-import router, { isLegacyPlugin } from './router'
-import store from './store'
 import VueDiff from 'vue-diff'
+import router, { isLegacyPlugin } from './router'
 import { createPinia } from 'pinia'
 import API from '@/services'
+import App from './App.vue'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
-import * as Vuex from 'vuex'
 import * as VueRouter from 'vue-router'
 
 import '@featherds/styles'
@@ -30,6 +28,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // TODO: Move to separate fil
 // See: https://fontawesome.com/docs/web/use-with/vue/ and following
 import {
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
@@ -48,6 +48,8 @@ import {
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
@@ -71,7 +73,6 @@ library.add(...icons);
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
 (window as any).Pinia = Pinia;
-(window as any).Vuex = Vuex;
 (window as any).VueRouter = VueRouter;
 (window as any)['VRouter'] = router
 
@@ -113,7 +114,6 @@ createApp({
 })
   .use(VueDiff)
   .use(router)
-  .use(store)
   .use(createPinia())
   .component('font-awesome-icon', FontAwesomeIcon)
   .directive('date', dateFormatDirective)

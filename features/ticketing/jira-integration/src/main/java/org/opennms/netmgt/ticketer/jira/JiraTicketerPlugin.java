@@ -47,6 +47,9 @@ import java.util.stream.Collectors;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.ticketer.jira.cache.Cache;
 import org.opennms.netmgt.ticketer.jira.cache.TimeoutRefreshPolicy;
 import org.opennms.netmgt.ticketer.jira.fieldmapper.FieldMapper;
@@ -90,7 +93,10 @@ public class JiraTicketerPlugin implements Plugin {
 
     private final LoadingCache<FieldSchema, FieldMapper> fieldMapFunctionCache;
 
-    public JiraTicketerPlugin() {
+    private static EntityScopeProvider entityScopeProvider;
+
+    public JiraTicketerPlugin(final EntityScopeProvider entityScopeProvider) {
+        JiraTicketerPlugin.entityScopeProvider = entityScopeProvider;
         Long cacheReloadTime = getConfig().getCacheReloadTime();
         if (cacheReloadTime == null || cacheReloadTime < 0) {
             LOG.warn("Cache Reload time was set to {} ms. Negative or null values are not supported. Setting to 5 minutes.", cacheReloadTime);
@@ -171,7 +177,7 @@ public class JiraTicketerPlugin implements Plugin {
      * @param ticketStatusName
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
-    private static Ticket.State getStateFromStatusName(String ticketStatusName) {
+    private Ticket.State getStateFromStatusName(String ticketStatusName) {
         // Mapping of property key names to ticket states
         // The values for the properties at these keys should contain
         // a comma-separated list of known JIRA status names that map
@@ -195,8 +201,12 @@ public class JiraTicketerPlugin implements Plugin {
         return Ticket.State.OPEN;
     }
 
-    public static Config getConfig() {
-        return new Config(getProperties());
+    public static Config getConfig(final EntityScopeProvider entityScopeProvider) {
+        return new Config(getProperties(entityScopeProvider));
+    }
+
+    private Config getConfig() {
+        return getConfig(this.entityScopeProvider);
     }
 
     /**
@@ -204,7 +214,7 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a <code>java.util.Properties object containing jira plugin defined properties
      */
-    private static Properties getProperties() {
+    private static Properties getProperties(final EntityScopeProvider entityScopeProvider) {
         File home = new File(System.getProperty("opennms.home"));
         File etc = new File(home, "etc");
         File config = new File(etc, "jira.properties");
@@ -217,10 +227,17 @@ public class JiraTicketerPlugin implements Plugin {
             LOG.error("Unable to load {} ignoring.", config, e);
         }
 
-        LOG.debug("Loaded user: {}", props.getProperty("jira.username"));
-        LOG.debug("Loaded type: {}", props.getProperty("jira.type"));
+        final Scope scope = entityScopeProvider.getScopeForScv();
+        final Properties interpolatedProperties = new Properties();
 
-        return props;
+        for(final Entry<Object, Object> entry : props.entrySet()) {
+            interpolatedProperties.put(entry.getKey(), Interpolator.interpolate((String) entry.getValue(), scope).output);
+        }
+
+        LOG.debug("Loaded user: {}", interpolatedProperties.getProperty("jira.username"));
+        LOG.debug("Loaded type: {}", interpolatedProperties.getProperty("jira.type"));
+
+        return interpolatedProperties;
     }
 
     /*
@@ -367,5 +384,13 @@ public class JiraTicketerPlugin implements Plugin {
             LOG.error("Error while retrieving (custom) field definitions from JIRA.", ex);
             return new ArrayList<>();
         }
+    }
+
+    public EntityScopeProvider getEntityScopeProvider() {
+        return entityScopeProvider;
+    }
+
+    public void setEntityScopeProvider(final EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

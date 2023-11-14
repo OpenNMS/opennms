@@ -59,9 +59,33 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="page")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_method","m_httpVersion","m_userAgent","m_virtualHost","m_scheme","m_userInfo","m_host","m_requireIPv6","m_requireIPv4","m_disableSslVerification","m_port","m_path","m_query","m_fragment","m_failureMatch","m_failureMessage","m_successMatch","m_locationMatch","m_responseRange","m_dsName", "m_parameters", "m_headers", "m_sessionVariables"})
+@XmlType(propOrder={
+        "m_method",
+        "m_httpVersion",
+        "m_userAgent",
+        "m_virtualHost",
+        "m_scheme",
+        "m_userInfo",
+        "m_preemptiveAuth",
+        "m_host",
+        "m_requireIPv6",
+        "m_requireIPv4",
+        "m_disableSslVerification",
+        "m_port",
+        "m_path",
+        "m_query",
+        "m_fragment",
+        "m_failureMatch",
+        "m_failureMessage",
+        "m_successMatch",
+        "m_locationMatch",
+        "m_responseRange",
+        "m_dsName",
+        "m_parameters",
+        "m_headers",
+        "m_sessionVariables"})
 public class Page implements Serializable {
-    private static final long serialVersionUID = -8690979689322573975L;
+    private static final long serialVersionUID = -568663444768205075L;
 
     @XmlAttribute(name="method")
     private String m_method = "GET";
@@ -80,6 +104,9 @@ public class Page implements Serializable {
 
     @XmlAttribute(name="user-info")
     private String m_userInfo;
+
+    @XmlAttribute(name="preemptive-auth")
+    private String m_preemptiveAuth = null;
 
     @XmlAttribute(name="host")
     private String m_host = "${ipaddr}";
@@ -187,6 +214,14 @@ public class Page implements Serializable {
 
     public void setScheme(final String scheme) {
         m_scheme = scheme == null? null : scheme.intern();
+    }
+
+    public String getPreemptiveAuth() {
+        return m_preemptiveAuth;
+    }
+
+    public void setPreemptiveAuth(String m_preemptiveAuth) {
+        this.m_preemptiveAuth = m_preemptiveAuth;
     }
 
     public String getUserInfo() {
@@ -406,6 +441,7 @@ public class Page implements Serializable {
         result = prime * result + ((m_successMatch == null) ? 0 : m_successMatch.hashCode());
         result = prime * result + ((m_userAgent == null) ? 0 : m_userAgent.hashCode());
         result = prime * result + ((m_userInfo == null) ? 0 : m_userInfo.hashCode());
+        result = prime * result + ((m_preemptiveAuth == null) ? 0 : m_preemptiveAuth.hashCode());
         result = prime * result + ((m_virtualHost == null) ? 0 : m_virtualHost.hashCode());
         return result;
     }
@@ -569,6 +605,13 @@ public class Page implements Serializable {
         } else if (!m_userInfo.equals(other.m_userInfo)) {
             return false;
         }
+        if (m_preemptiveAuth == null) {
+            if (other.m_preemptiveAuth != null) {
+                return false;
+            }
+        } else if (!m_preemptiveAuth.equals(other.m_preemptiveAuth)) {
+            return false;
+        }
         if (m_virtualHost == null) {
             if (other.m_virtualHost != null) {
                 return false;
@@ -585,7 +628,7 @@ public class Page implements Serializable {
                 + m_userInfo + ", host=" + m_host + ", requireIPv6=" + m_requireIPv6 + ", requireIPv4=" + m_requireIPv4 + ", disableSslVerification=" + m_disableSslVerification + ", port="
                 + m_port + ", path=" + m_path + ", query=" + m_query + ", fragment=" + m_fragment + ", failureMatch=" + m_failureMatch + ", failureMessage=" + m_failureMessage
                 + ", successMatch=" + m_successMatch + ", locationMatch=" + m_locationMatch + ", responseRange=" + m_responseRange + ", dsName=" + m_dsName + ", parameters=" + m_parameters
-                + ", sessionVariables=" + m_sessionVariables + "]";
+                + ", sessionVariables=" + m_sessionVariables + ", preemptiveAuth=" + m_preemptiveAuth + "]";
     }
 
 

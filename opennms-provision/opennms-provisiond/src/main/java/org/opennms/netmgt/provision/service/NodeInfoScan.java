@@ -265,15 +265,20 @@ final class NodeInfoScan implements RunInBatch {
 
         try {
             Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
-                                                        .getAgentConfigFromProfiles(primaryAddress, getLocationName())
+                                                        .getAgentConfigFromProfiles(primaryAddress, getLocationName(), false)
                                                         .get();
+
             if (validConfig.isPresent()) {
                 SnmpAgentConfig agentConfig = validConfig.get();
                 getAgentConfigFactory().saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
                 LOG.info("IP address {} is fitted with profile {}", primaryAddress.getHostAddress(), agentConfig.getProfileLabel());
                 SystemGroup systemGroup = new SystemGroup(primaryAddress);
+
+                final SnmpAgentConfig interpolatedAgentConfig = m_provisionService.getSnmpProfileMapper()
+                        .getAgentConfigFromProfiles(primaryAddress, getLocationName())
+                        .get().orElse(agentConfig);
                 try {
-                    m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, systemGroup)
+                    m_provisionService.getLocationAwareSnmpClient().walk(interpolatedAgentConfig, systemGroup)
                             .withDescription("systemGroup")
                             .withLocation(getLocationName())
                             .execute()

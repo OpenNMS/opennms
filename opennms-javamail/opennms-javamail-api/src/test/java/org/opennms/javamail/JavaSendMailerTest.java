@@ -30,9 +30,19 @@ package org.opennms.javamail;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailHost;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
@@ -40,6 +50,15 @@ import org.opennms.netmgt.config.javamail.UserAuth;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 
 public class JavaSendMailerTest {
+
+    @Before
+    public void setup() {
+        final Map<ContextKey, String> map = new HashMap<>();
+        map.put(new ContextKey("scv","javamailer:username"), "john");
+        map.put(new ContextKey("scv","javamailer:password"), "doe");
+
+        JavaMailerConfig.setSecureCredentialsVaultScope(new MapScope(Scope.ScopeName.GLOBAL, map));
+    }
 
     private JavaSendMailer createSendMailer() throws JavaMailerException {
 
@@ -125,5 +144,18 @@ public class JavaSendMailerTest {
 
         assertEquals(1, mimeMessage.getReplyTo().length);
         assertEquals("root@foo.bar.com", mimeMessage.getReplyTo()[0].toString());
+    }
+
+    @Test
+    public void testMetadata() throws Exception {
+        final JavaSendMailer javaSendMailer = createSendMailer();
+
+        Authenticator authenticator = javaSendMailer.createAuthenticator("${scv:javamailer:username|ABC}", "${scv:javamailer:password|DEF}");
+        final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
+        method.setAccessible(true);
+        final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);
+
+        assertEquals("john", passwordAuthentication.getUserName());
+        assertEquals("doe", passwordAuthentication.getPassword());
     }
 }

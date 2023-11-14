@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -131,7 +131,10 @@ public class NrtController {
         List<CollectionJob> collectionJobs = createCollectionJobs(reportResource, prefabGraph, nrtCollectionTaskId);
         for (CollectionJob collectionJob : collectionJobs) {
             m_nrtBroker.publishCollectionJob(collectionJob);
-            getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
+            final var jobMap = getCollectionJobMap(httpSession, true);
+            if (jobMap != null) {
+                jobMap.put(nrtCollectionTaskId, collectionJob);
+            }
         }
 
         ModelAndView modelAndView = new ModelAndView("nrt/realtime.json");

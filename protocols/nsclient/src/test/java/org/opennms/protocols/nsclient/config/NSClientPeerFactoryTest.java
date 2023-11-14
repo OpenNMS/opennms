@@ -31,10 +31,17 @@ package org.opennms.protocols.nsclient.config;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -68,6 +75,31 @@ public class NSClientPeerFactoryTest {
         factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinition().size());
+    }
+
+    @Test
+    public final void testMetadata() throws IOException {
+        final TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("nsclient", new Credentials("foo", "bar"));
+
+        final String nsClientConfigXml = "<?xml version=\"1.0\"?>\n" +
+                "<nsclient-config retry=\"3\" timeout=\"800\"\n" +
+                "   password=\"${scv:nsclient:password}\">\n" +
+                "   <definition>\n" +
+                "       <specific>192.168.0.5</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "</nsclient-config>\n" +
+                "";
+
+        final NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(nsClientConfigXml.getBytes(StandardCharsets.UTF_8)));
+        factory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
+
+        assertEquals("${scv:nsclient:password}", factory.getConfig().getPassword());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
     }
 
     /**

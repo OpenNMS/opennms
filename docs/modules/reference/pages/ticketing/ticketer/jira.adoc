@@ -1,6 +1,7 @@
 
 [[ref-ticketing-jira]]
 = Jira Ticketing Plugin
+:description: Learn how to set up and use the Jira Ticketing Plugin to create Jira issues in response to {page-component-title} alarms.
 
 The Jira ticketing plugin creates Jira issues in response to {page-component-title} alarms.
 
@@ -87,6 +88,9 @@ The plugin should now be ready to use.
 Open the Karaf shell and run the `opennms:jira-verify` command to check your configuration.
 
 NOTE: The `jira.verify` command will not work until the `jira.properties` file has been configured.
+
+NOTE: Metadata expressions can also be used in the fields of the `jira.properties` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
 
 == Jira commands
 

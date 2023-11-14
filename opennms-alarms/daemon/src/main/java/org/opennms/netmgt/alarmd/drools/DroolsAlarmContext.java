@@ -461,6 +461,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         if (alarm.getNode() != null) {
             // Allow rules to use the categories on the associated node
             Hibernate.initialize(alarm.getNode().getCategories());
+            // Allow rules to use metadata of the associated node
+            Hibernate.initialize(alarm.getNode().getMetaData());
         }
     }
 

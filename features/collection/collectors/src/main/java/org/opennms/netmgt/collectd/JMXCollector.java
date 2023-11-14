@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import javax.management.ObjectName;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
@@ -184,7 +185,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
         if (jmxCollection == null) {
             throw new IllegalArgumentException(String.format("JMXCollector: No collection found with name '%s'.", collectionName));
         }
-        runtimeAttributes.put(JMX_COLLECTION_KEY, jmxCollection);
+        runtimeAttributes.put(JMX_COLLECTION_KEY, Interpolator.pleaseInterpolate(jmxCollection));
 
         // Retrieve the agent config.
         final Map<String, String> parameterStringMap = new HashMap<String, String>();
@@ -195,7 +196,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
         }
         final MBeanServer mBeanServer = JmxUtils.getMBeanServer(m_jmxConfigDao, agent.getHostAddress(), parameterStringMap);
         if (mBeanServer != null) {
-            runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, mBeanServer);
+            runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, Interpolator.pleaseInterpolate(mBeanServer));
         }
 
         return runtimeAttributes;

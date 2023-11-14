@@ -286,6 +286,19 @@ rm -rf "${ROOT_INST}/repositories/.local"
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
+echo ""
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo ""
+
 ### PRE-UN-INSTALLATION ###
 
 %preun -p /bin/bash

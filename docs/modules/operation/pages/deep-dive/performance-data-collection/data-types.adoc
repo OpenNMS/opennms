@@ -1,7 +1,7 @@
 
 [[data-types]]
 = Data Types
-:description: Overview of data types collected in OpenNMS Horizon/Meridian including counter, gauge, integer, IpAddress, OctetString, Opaque, String, and TimeTicks.
+:description: Overview of data types collected in {page-component-title} including counter, gauge, integer, IpAddress, OctetString, Opaque, String, and TimeTicks.
 
 {page-component-title} supports collecting a variety of data types as defined by https://datatracker.ietf.org/doc/html/rfc2578#section-7.1[RFC 2578].
 When creating or modifying data collection definition files, use the closest match to the type of data that the node provides.

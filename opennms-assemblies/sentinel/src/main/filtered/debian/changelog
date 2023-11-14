@@ -1,3 +1,26 @@
+opennms-sentinel (32.0.5-1) stable; urgency=high
+
+  * Release 32.0.5 contains a bunch of security updates to Drools,
+    Hibernate, Jetty, and more, plus a number of other bug fixes and
+    a slew of documentation updates.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/32.0.5/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Nov 2023 13:08:00 -0500
+
+opennms-sentinel (32.0.4-1) stable; urgency=low
+
+  * Release 32.0.4 contains documentation updates as well as a number of
+    bug fixes and enhancements including Sentinel fixes, improvements to
+    running in containers, metadata support improvements, and some other
+    small changes.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/32.0.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Oct 2023 12:49:00 -0400
+
 opennms-sentinel (32.0.3-1) stable; urgency=medium
 
   * Minor release containing several bug fixes and documentation improvements.

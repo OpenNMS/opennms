@@ -1,0 +1,5 @@
+{{- /* Upon updating this file please ensure that the schema sentinel-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if exists "/org.opennms.instance.id" -}}
+org.opennms.instance.id = {{getv "/org.opennms.instance.id"}}
+{{end -}}

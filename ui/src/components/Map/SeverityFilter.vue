@@ -13,10 +13,10 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import { FeatherSelect } from '@featherds/select'
+import { useMapStore } from '@/stores/mapStore'
 
-const store = useStore()
+const mapStore = useMapStore()
 
 const options = [
   { id: 'NORMAL', option: 'Normal' },
@@ -27,7 +27,7 @@ const options = [
 ]
 const selectedSeverity = ref(options[0])
 
-const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', selectedSeverity.value.id)
+const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.value.id)
 </script>
 
 <style lang="scss">
@@ -50,4 +50,3 @@ const onSeveritySelect = () => store.dispatch('mapModule/setSelectedSeverity', s
   }
 }
 </style>
-

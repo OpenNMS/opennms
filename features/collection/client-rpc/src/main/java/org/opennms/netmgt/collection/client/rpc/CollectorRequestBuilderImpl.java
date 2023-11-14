@@ -33,11 +33,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.opennms.core.rpc.api.RpcRequest;
-import org.opennms.core.rpc.api.RpcTarget;
-import org.opennms.core.mate.api.MetadataConstants;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MetadataConstants;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -122,10 +123,12 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             throw new IllegalArgumentException("Agent is required.");
         }
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new FallbackScope(
+        final Scope scope = new FallbackScope(
                 this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId()),
                 this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress()))
-        ));
+        );
+
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, scope);
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(agent.getNodeId())
@@ -153,7 +156,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
         // which should be included in the request
-        final Map<String, Object> runtimeAttributes = serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes);
+        final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes), scope);
         final Map<String, Object> allAttributes = new HashMap<>();
         allAttributes.putAll(interpolatedAttributes);
         allAttributes.putAll(runtimeAttributes);

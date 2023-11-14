@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,10 @@ public abstract class TestingNewStructure {
             System.out.println("The number of objects retrieved: " + wos.count());
             for(int i=0; i<wos.count(); i++) {
                 final OnmsWbemObject obj = wos.get(i);
-                if(obj == null)
-                    System.out.println("Received null object.");
+                if(obj == null) {
+                    System.out.println("Received null object. Skipping.");
+                    continue;
+                }
                 //System.out.println("+++++ Testing Object PropertySet +++++");
                 final OnmsWbemPropertySet propSet = obj.getWmiProperties();
                 //System.out.println("Object has " + propSet.count() + " properties available.");

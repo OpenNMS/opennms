@@ -1,7 +1,7 @@
 
 = JmxCollector
 
-:description: Learn how to configure and use the JmxCollector in OpenNMS Horizon/Meridian to collect performance data via Java Management Extensions (JMX).
+:description: Learn how to configure and use the JmxCollector in {page-component-title} to collect performance data via Java Management Extensions (JMX).
 
 The JmxCollector collects performance data via Java Management Extensions (JMX).
 Attributes are extracted from the available MBeans.
@@ -94,6 +94,9 @@ NOTE: Replace the deprecated parameters port, protocol, urlPath, rmiServerPort, 
 If url is not defined, the collector falls back to legacy mode and uses the deprecated parameters to build the connection url.
 
 If a service requires different configuration, use an entry in `$OPENNMS_HOME/etc/jmx-config.xml` to overwrite it.
+
+NOTE: Metadata expressions can also be used in attributes of the `jmx-config.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
 
 == JMX collection configuration
 

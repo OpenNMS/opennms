@@ -139,6 +139,7 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 
 # fix the permissions-fixing scripts
 sed -i \
+	-e 's,^\([ \t]*\)*OPENNMS_HOME[ \t]*=.*$,\1SENTINEL_HOME="%{sentinelinstprefix}",g' \
     -e 's,OPENNMS_HOME,SENTINEL_HOME,g' \
     -e 's,opennms,sentinel,g' \
     '%{buildroot}%{sentinelinstprefix}/bin/fix-permissions' \
@@ -220,6 +221,19 @@ fi
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
+
+echo ""
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo ""
 
 %preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

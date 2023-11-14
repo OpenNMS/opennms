@@ -106,23 +106,27 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
 
         if (!exporterNodeId.isPresent()) {
-            LOG.info("Unable to find node for exporter address: {}", exporterAddress);
-
             if (message.hasBgpId()) {
                 final String bgpId = InetAddressUtils.toIpAddrString(address(message.getBgpId()));
+                LOG.info("Unable to find node for exporter address: {} at location: {}. Trying to lookup by bgpId: {}",
+                        exporterAddress, messageLog.getLocation(), bgpId);
                 final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), bgpId);
 
                 if (nodes.size() > 0) {
+                    Integer effectiveId = nodes.get(0).getId();
+
                     if (nodes.size() > 1) {
-                        LOG.warn("More that one node match bgpId: {}", bgpId);
+                        LOG.warn("More that one node match bgpId: {}. Using the first: {}", bgpId, effectiveId);
                     }
 
-                    exporterNodeId = Optional.of(nodes.get(0).getId());
+                    exporterNodeId = Optional.of(effectiveId);
                 } else {
-                    LOG.warn("Unable to find node for bgpId: {}", bgpId);
+                    LOG.warn("Unable to find node for bgpId: {}. Message will be ignored.", bgpId);
                     return;
                 }
             } else {
+                LOG.info("Unable to find node for exporter address: {} at location: {}. Message has no bgpId. Message will be ignored.",
+                        exporterAddress, messageLog.getLocation());
                 return;
             }
         }

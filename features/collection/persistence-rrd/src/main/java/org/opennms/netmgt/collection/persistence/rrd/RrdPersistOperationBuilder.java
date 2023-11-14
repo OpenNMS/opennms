@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,12 +61,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-/**
- * <p>PersistOperationBuilder class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(RrdPersistOperationBuilder.class);
 
@@ -287,7 +281,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
 
             return true;
         } catch (Throwable e) {
-            String path = directory + File.separator + rrdName + rrdStrategy.getDefaultFileExtension();
+            final var path = directory + File.separator + rrdName + (rrdStrategy == null? "" : rrdStrategy.getDefaultFileExtension());
             LOG.error("createRRD: An error occurred creating rrdfile {}", path, e);
             throw new org.opennms.netmgt.rrd.RrdException("An error occurred creating rrdfile " + path + ": " + e, e);
         }

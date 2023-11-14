@@ -189,7 +189,8 @@ public final class TrapdConfigFactory implements TrapdConfig {
                     user.getAuthProtocol(),
                     user.getAuthPassphrase(),
                     user.getPrivacyProtocol(),
-                    user.getPrivacyPassphrase()));
+                    user.getPrivacyPassphrase(),
+                    user.getSecurityLevel()));
         }
         return snmpUsers;
     }

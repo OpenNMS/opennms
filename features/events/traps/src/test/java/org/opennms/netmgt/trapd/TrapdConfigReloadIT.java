@@ -43,8 +43,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -86,7 +84,7 @@ public class TrapdConfigReloadIT {
 	public void setUp() {
 		this.events.setSynchronous(true);
 		this.events.getEventAnticipator().reset();
-
+		this.trapd.setSecureCredentialsVault(new TrapdIT.MockSecureCredentialsVault());
 		this.trapd.onStart();
 	}
 
@@ -99,7 +97,7 @@ public class TrapdConfigReloadIT {
 
 	@Test
 	public void testSnmpV3UserUpdate() throws Exception {
-		final var user = this.trapdConfig.getConfig().getSnmpv3User(0);
+		final var user = this.trapd.interpolateUser(this.trapdConfig.getConfig().getSnmpv3User(0));
 
 		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/default/trap", "trapd")
 																  .setInterface(LOCALHOST).getEvent());
