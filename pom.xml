@@ -1312,7 +1312,6 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
@@ -1337,7 +1336,6 @@
           <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
           <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
           <reuseForks>false</reuseForks>
-          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
           <useModulePath>false</useModulePath>
         </configuration>
@@ -1837,7 +1835,6 @@
     <re2jVersion>1.7</re2jVersion>
 
     <!-- CI Settings -->
-    <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
   </properties>
