@@ -32,7 +32,7 @@ export const parseCategories = (queryObject: any, categories: Category[]) => {
   if (categories.length > 0) {
     categoryMode = queryCategories.includes(';') ? SetOperator.Intersection : SetOperator.Union
 
-    const cats: string[] = queryCategories.replace(';', ',').split(',')
+    const cats: string[] = queryCategories.replace(/;/g, ',').split(',')
 
     // add any valid categories
     cats.forEach(c => {
@@ -105,7 +105,7 @@ export const parseIplike = (queryObject: any) => {
 export const parseForeignSource = (queryObject: any) => {
   const foreignSource = queryObject.foreignSource || ''
   const foreignId = queryObject.foreignId || ''
-  const foreignSourceId = queryObject.fsfid || ''
+  const foreignSourceId = queryObject.foreignSourceId || queryObject.fsfid || ''
 
   if (foreignSource || foreignId || foreignSourceId) {
     return {
@@ -123,14 +123,16 @@ export const parseSnmpParams = (queryObject: any) => {
   const snmpIfDescription = queryObject.snmpifdescription as string || ''
   const snmpIfIndex = queryObject.snmpifindex as string || ''
   const snmpIfName = queryObject.snmpifname as string || ''
+  const snmpIfType = queryObject.snmpiftype as string || ''
   const snmpMatchType = (queryObject.snmpMatchType as string) === 'contains' ? MatchType.Contains : MatchType.Equals
 
-  if (snmpIfAlias || snmpIfDescription || snmpIfIndex || snmpIfName) {
+  if (snmpIfAlias || snmpIfDescription || snmpIfIndex || snmpIfName || snmpIfType) {
     return {
       snmpIfAlias,
       snmpIfDescription,
       snmpIfIndex,
       snmpIfName,
+      snmpIfType,
       snmpMatchType
     } as NodeQuerySnmpParams
   }

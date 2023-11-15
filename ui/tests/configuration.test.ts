@@ -29,14 +29,16 @@ const mockProps = {
 
 const wrapper = mount(ConfigurationTable, {
   global: {
-    plugins: [createTestingPinia()]
+    plugins: [createTestingPinia()],
+    stubs: ['router-link']
   },
   propsData: mockProps
 })
 
 const provisionDConfig = mount(ProvisionDConfig, {
   global: {
-    plugins: [createTestingPinia()]
+    plugins: [createTestingPinia()],
+    stubs: ['router-link']
   }
 })
 

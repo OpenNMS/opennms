@@ -123,7 +123,12 @@ const buildCsvExport = (columns: NodeColumnSelectionItem[], nodes: any[]): strin
 
   const rows = nodes.map(node => {
     const cols: string[] = selectedColumns.map(col => getCsvString(node[col.id]))
-    return cols.join(',')
+    const joined = cols.join(',')
+
+    if (joined.endsWith(',')) {
+      return joined.slice(0, joined.length - 1)
+    }
+    return joined
   })
 
   return [header, ...rows]

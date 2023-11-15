@@ -1,0 +1,7 @@
+{
+  "csv": [
+    "ID,Node Label,IP Address,Location,Foreign Source,Foreign ID,Sys Contact,Sys Location,Sys Description,Flows",
+    "1,Node1,192.168.0.1,Location 0,selfmonitor,1,Administrator <postmaster@example.com>,\"Right here, right now\",Darwin REMMUSERNAME 22.6.0 Darwin Kernel Version 22.6.0:,\"Ingress, Egress\"",
+    "106,WI_racine-store-pos,192.168.99.106,Default,Demo_Stores,WI_racine-store-pos,Administrator <racineadmin@example.com>,\"Racine, WI\",Alpine Linux"
+  ]
+}

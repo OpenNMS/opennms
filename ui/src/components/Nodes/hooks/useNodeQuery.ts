@@ -120,7 +120,7 @@ export const useNodeQuery = () => {
    * Check if vue-router route.query object has any query string values we are tracking.
    */
   const queryStringHasTrackedValues = (queryObject: any) => {
-    return Object.getOwnPropertyNames(queryObject).some(x => trackedNodeQueryStringProperties.has(x))
+    return Object.getOwnPropertyNames(queryObject).some(x => trackedNodeQueryStringProperties.has(x) && !!queryObject[x])
   }
 
   /**
@@ -335,7 +335,7 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
       arr.push(getSnmpSearchTerm('ifDescr', snmpParams.snmpIfDescription))
     }
 
-    if (isValidIntegerParam(snmpParams.snmpIfIndex)) {
+    if (isValidIntegerParam('' + snmpParams.snmpIfIndex)) {
       arr.push(getSnmpSearchTerm('ifIndex', snmpParams.snmpIfIndex))
     }
 

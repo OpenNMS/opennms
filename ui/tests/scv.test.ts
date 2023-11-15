@@ -14,7 +14,10 @@ const mockCredentials: SCVCredentials = {
 
 const wrapper = mount(SCV, {
   global: {
-    plugins: [createTestingPinia({ stubActions: false })]
+    plugins: [
+      createTestingPinia({ stubActions: false })
+    ],
+    stubs: ['router-link']
   }
 })
 
@@ -27,8 +30,10 @@ describe('scvStore test', () => {
 
     // expect add btn to start disabled
     expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+
     // adding a value to alias should enable the add btn
     await aliasInput.setValue('some alias')
+    await nextTick()
     expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
   })
 
