@@ -1638,7 +1638,7 @@
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
-    <felixBridgeVersion>4.0.12</felixBridgeVersion>
+    <felixBridgeVersion>4.2.14</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
