@@ -35,4 +35,5 @@ public class TileProviderItem {
     public String name;
     public String url;
     public String attribution;
+    public Boolean userDefinedAsDefault;
 }
