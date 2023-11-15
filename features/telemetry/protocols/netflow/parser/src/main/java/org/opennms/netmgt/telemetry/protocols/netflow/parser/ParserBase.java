@@ -202,7 +202,9 @@ public abstract class ParserBase implements Parser {
                     try {
                         // If we're not shutdown, then block until there's room in the queue
                         if (!executor.isShutdown()) {
-                            executor.getQueue().put(r);
+                            while (!executor.getQueue().offer(r, 1, TimeUnit.SECONDS)) {
+                                LOG.error("Worker queue full - parser stalling");
+                            }
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
