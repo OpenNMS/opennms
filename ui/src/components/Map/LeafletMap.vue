@@ -103,7 +103,7 @@ import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { Coordinates, IpInterface, Node } from '@/types'
-import { MainMenu } from '@/types/mainMenu'
+import { MainMenu, TileProviderItem } from '@/types/mainMenu'
 
 const ipInterfaceStore = useIpInterfacesStore()
 const mapStore = useMapStore()
@@ -345,7 +345,8 @@ const invalidateSizeFn = () => leafletObject.value.invalidateSize()
  * in 'opennms/etc/opennms.properties' file, gwt.openlayers.url and gwt.openlayers.options.attribution
  * properties.
  */
-const tileProviders = [
+
+const defaultTileProviders: TileProviderItem[] = [
   {
     name: 'OpenStreetMap',
     visible: true,
@@ -362,18 +363,36 @@ const tileProviders = [
   }
 ]
 
+const tileProviders = ref<TileProviderItem[]>(defaultTileProviders)
+
+/**
+ * Check if there is a user-defined tile provider and update our list if so.
+ */
+const updateTileProviders = () => {
+  if (mainMenu.value.userTileProviders && mainMenu.value.userTileProviders?.length > 0) {
+    const userTileProvider = mainMenu.value.userTileProviders[0]
+
+    if (userTileProvider.userDefinedAsDefault) {
+      tileProviders.value = [
+        { ...userTileProvider, visible: true },
+        ...defaultTileProviders.map(p => ({ ...p, visible: false }))
+      ]
+    } else {
+      tileProviders.value.push({
+        ...userTileProvider,
+        visible: false
+      })
+    }
+  }
+}
+
 onMounted(async () => {
   mapStore.fetchNodes()
   mapStore.fetchAlarms()
   nodeStore.getNodes()
   ipInterfaceStore.getAllIpInterfaces()
 
-  if (mainMenu.value.userTileProviders && mainMenu.value.userTileProviders?.length > 0) {
-    tileProviders.push({
-      ...mainMenu.value.userTileProviders[0],
-      visible: false
-    })
-  }
+  updateTileProviders()
 })
 
 defineExpose({ invalidateSizeFn })

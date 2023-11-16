@@ -450,17 +450,22 @@ public class MenuProvider {
      * These are specified in the `opennms/etc/opennms.properties' file.
      * The tile providers are used in the Vue Geographical Map, for example if the user wants to specify
      * a map tile provider server in their own private network.
+     * If 'userDefinedAsDefault' is true, the user-defined tile provider will appear first on the Geographical Map
+     * and be loaded by default.
      */
     private List<TileProviderItem> getTileProviders() {
         final var list = new ArrayList<TileProviderItem>();
+        final String name = System.getProperty("gwt.openlayers.name");
         final String url = System.getProperty("gwt.openlayers.url");
         final String attribution = System.getProperty("gwt.openlayers.options.attribution");
+        final String userDefinedAsDefault = System.getProperty("gwt.openlayers.userDefinedAsDefault");
 
         if (!Strings.isNullOrEmpty(url)) {
             var item = new TileProviderItem();
-            item.name = "User-Defined";
+            item.name = !Strings.isNullOrEmpty(name) ? name : "User-Defined";
             item.url = url;
             item.attribution = !Strings.isNullOrEmpty(attribution) ? attribution : "";
+            item.userDefinedAsDefault = !Strings.isNullOrEmpty(userDefinedAsDefault) && userDefinedAsDefault.equals("true");
 
             list.add(item);
         }
