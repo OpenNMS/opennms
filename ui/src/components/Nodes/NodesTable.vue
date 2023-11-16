@@ -253,7 +253,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     order: sortObj.value
   }
 
-  updateQuery()
+  updateQuery({ orderBy: sortObj.property, order: sortObj.value })
 }
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
@@ -305,11 +305,20 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
-const updateQuery = () => {
+const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
   // make sure anything setting nodeStore.nodeQueryParameters has been processed
   nextTick()
 
-  const updatedParams = buildUpdatedNodeStructureQueryParameters(nodeStore.nodeQueryParameters, nodeStructureStore.queryFilter)
+  const queryParamsToUse =
+    options?.orderBy ?
+      {
+        ...nodeStore.nodeQueryParameters,
+        orderBy: options.orderBy,
+        order: options.order || SORT.ASCENDING
+      }
+      : nodeStore.nodeQueryParameters
+
+  const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParamsToUse, nodeStructureStore.queryFilter)
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
