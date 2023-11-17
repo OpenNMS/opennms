@@ -59,7 +59,7 @@ image:geographical-map/tile-provider-list.png[Radio button menu with three map o
 
 === Tile provider configuration
 
-To configure a a user-defined tile provider, follow these steps:
+To configure a user-defined tile provider, follow these steps:
 
 . In `etc/opennms.properties`, use the configuration below.
 In this case the local tile provider is found at `192.168.0.99`.
