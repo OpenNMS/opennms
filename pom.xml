@@ -1064,7 +1064,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
-        <version>3.3.0</version>
+        <version>3.4.1</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
