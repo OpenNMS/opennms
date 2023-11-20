@@ -1051,7 +1051,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- 3.0.0 is out, but we're affected by https://issues.apache.org/jira/browse/MENFORCER-393 -->
-        <version>3.3.0</version>
+        <version>3.4.1</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -1728,7 +1728,7 @@
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
     <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
-    <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
+    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1738,7 +1738,7 @@
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.5</mavenApiVersion>
     <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
-    <minaVersion>2.2.2</minaVersion>
+    <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.100.Final</netty4Version>
