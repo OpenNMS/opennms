@@ -1721,7 +1721,7 @@
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
     <karafVersion>4.3.6</karafVersion>
-    <kafkaBundleVersion>3.3.2_1</kafkaBundleVersion>
+    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.3.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
