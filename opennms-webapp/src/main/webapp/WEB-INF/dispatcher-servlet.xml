@@ -337,7 +337,7 @@
                                 <property name="locationMatch" value="nodelist"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Nodes (Preview)"/>
+                                <property name="name" value="Structured Node List"/>
                                 <property name="url" value="ui/index.html#/nodes"/>
                                 <property name="locationMatch" value="configurationManagement"/>
                             </bean>
