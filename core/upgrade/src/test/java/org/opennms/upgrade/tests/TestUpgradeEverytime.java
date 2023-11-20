@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,73 +32,47 @@ import org.opennms.upgrade.api.OnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.support.UpgradeHelper;
 
-/**
- * The Class TestUpgradeB.
- * <p>This is an example implementation for the JUnit tests.</p>
- * 
- * @author Alejandro Galue <agalue@opennms.org>
- */
-public class TestUpgradeB implements OnmsUpgrade {
-
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
-     */
+public class TestUpgradeEverytime implements OnmsUpgrade {
     @Override
     public int getOrder() {
-        return 300;
+        return 301;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getId()
-     */
     @Override
     public String getId() {
         return getClass().getName();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getDescription()
-     */
     @Override
     public String getDescription() {
-        return "Testing class B";
+        return "Testing class that runs everytime";
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#preExecute()
-     */
     @Override
     public void preExecute() throws OnmsUpgradeException {
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#postExecute()
-     */
     @Override
     public void postExecute() throws OnmsUpgradeException {
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#rollback()
-     */
     @Override
     public void rollback() throws OnmsUpgradeException {
         UpgradeHelper.addRolledBack(getId());
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#execute()
-     */
     @Override
     public void execute() throws OnmsUpgradeException {
         UpgradeHelper.addExecuted(getId());
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#requiresOnmsRunning()
-     */
     @Override
     public boolean requiresOnmsRunning() {
+        return false;
+    }
+
+    @Override
+    public boolean runOnlyOnce() {
         return false;
     }
 }
