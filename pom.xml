@@ -1729,7 +1729,7 @@
     <karafVersion>4.3.6</karafVersion>
     <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.3.2</kafkaVersion>
+    <kafkaVersion>3.6.0</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
