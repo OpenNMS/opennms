@@ -1639,6 +1639,7 @@
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
@@ -4219,6 +4220,11 @@
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>5.8</version>
+      </dependency>
+      <dependency>
+        <groupId>net.i2p.crypto</groupId>
+        <artifactId>eddsa</artifactId>
+        <version>${eddsaVersion}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>

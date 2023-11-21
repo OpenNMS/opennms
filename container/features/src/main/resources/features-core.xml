@@ -338,6 +338,7 @@
         <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:net.i2p.crypto/eddsa/${eddsaVersion}</bundle>
     </feature>
 
     <feature name="health-api" version="${project.version}" description="Health API">
