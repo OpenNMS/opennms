@@ -64,7 +64,7 @@ There are a few known issues and limitations with installation on OpenShift, rel
 Make sure to remove `CAP_NET_RAW` from `allowedCapabilities` when you set `allowPrivilegeEscalation` to false.
 
 * By default, OpenNMS will create a ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount.
-The user who installs OpenNMS must have the required permissions to make these modifications the OpenShift cluster, including admin access.
+The user who installs OpenNMS must have the required permissions to make these modifications to the OpenShift cluster, including admin access.
 There are options to disable the creation of these elements, but if you disable them, you will need to determine a way to get the pods to work.
 
 To install {page-component-title} on OpenShift, follow these steps:
