@@ -4,6 +4,8 @@
 sudo dnf -y install java-11-openjdk-headless
 ----
 
+NOTE: On some distributions, such as Oracle Linux 8, you may also need to manually install the `tzdata-java` package.
+
 ifeval::["{page-component-title}" == "Horizon"]
 include::../../repos/rhel-centos/horizon-rhel8.adoc[]
 endif::[]

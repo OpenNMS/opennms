@@ -48,7 +48,7 @@
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <camelVersion>2.19.1</camelVersion>
+    <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
@@ -71,7 +71,7 @@
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- for surefire and failsafe -->
-    <maven.testing.plugin.version>3.2.1</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.2</maven.testing.plugin.version>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
     <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
