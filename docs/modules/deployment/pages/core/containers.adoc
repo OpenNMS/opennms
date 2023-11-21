@@ -58,14 +58,14 @@ For a list of values and their defaults, see https://github.com/OpenNMS/helm-cha
 
 == Installation on OpenShift
 
-There are a few known issues and limitations with installation on OpenShift:
+There are a few known issues and limitations with installation on OpenShift, related to user permissions:
 
-* Removing `CAP_NET_RAW` capability or setting allowPrivilegeEscalation to false will impact ICMP and auto discovery features.
-  ** WORKAROUND: Use a Minion that is located outside of the OpenShift cluster.
+* If you set `allowPrivilegeEscalation` to false, you cannot use ICMP and the auto discovery feature from the {page-component-title} core.
+Make sure to remove `CAP_NET_RAW` from `allowedCapabilities` when you set `allowPrivilegeEscalation` to false.
 
-  * By default, OpenNMS will create a ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount.
-  The user used to install OpenNMS must have the required permissions to make these modifications the OpenShift Cluster, including admin access.
-  There are options to disable the creation of these elements, but if you do so, you will need to figure out a way to get the pods to work.
+* By default, OpenNMS will create a ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount.
+The user who installs OpenNMS must have the required permissions to make these modifications to the OpenShift cluster, including admin access.
+Disabling ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount along with setting `allowPrivilegeEscalation` to false will run the {page-component-title} core in unprivileged mode.
 
 To install {page-component-title} on OpenShift, follow these steps:
 
