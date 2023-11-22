@@ -1,6 +1,5 @@
 
 = FtpMonitor
-= DskTableMonitor
 :description: Learn about the FtpMonitor in {page-component-title} that validates an FTP connection's login processes.
 
 The FtpMonitor validates an FTP connection's login processes.
