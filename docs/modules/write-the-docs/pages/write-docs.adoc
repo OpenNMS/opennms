@@ -2,6 +2,7 @@
 :imagesdir: write-the-docs:images
 
 = Write the Documentation
+:description: Learn the best practices for writing and editing the OpenNMS {page-component-title} documentation. All contributions welcome!
 
 When writing documentation, place a single sentence on each line.
 This makes it easy to move content around, and to spot long or fragmented sentences.

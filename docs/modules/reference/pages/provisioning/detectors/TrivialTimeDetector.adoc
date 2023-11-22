@@ -1,5 +1,5 @@
 = TrivialTimeDetector
-:description: Learn how the TrivialTimeDetector in {page-component-title} finds and assigns services based on a timely response from a Trivial Time Service.
+:description: Learn how the TrivialTimeDetector in OpenNMS {page-component-title} finds and assigns services based on a timely response from a Trivial Time Service.
 
 The TrivialTimeDetector finds and assigns services based on a timely response from a Trivial Time Service.
 

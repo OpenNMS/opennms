@@ -1,6 +1,6 @@
 [[adapter-rdns]]
 = Reverse DNS
-:description: Learn how the RDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system when {page-component-title} provisions nodes.
+:description: Learn how the RDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system when OpenNMS {page-component-title} provisions nodes.
 
 The RDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 

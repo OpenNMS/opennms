@@ -1,6 +1,7 @@
 
 [[telemetryd-bmp-peer-status-adapter]]
 = BMP Peer Status Adapter
+:description: Learn about the BMP Peer Status adapter in OpenNMS {page-component-title} that creates events for peer status changes.
 
 The BMP peer status adapter creates events for peer status changes.
 It handles BMP Peer Up and Down messages that the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses, and converts them to {page-component-title} events.

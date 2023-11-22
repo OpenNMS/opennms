@@ -1,4 +1,5 @@
 
 = Troubleshooting and Support
+:description: Overview of troubleshooting section in the OpenNMS {page-component-title} documentation.
 
 This section describes common troubleshooting strategies and how to get support with various {page-component-title} issues.

@@ -1,5 +1,6 @@
 
 = Develop Documentation
+:description: Learn about how to write and contribute to the OpenNMS {page-component-title} documentation. We value your contribution.
 
 There are different ways to contribute documentation, each suitable for different use cases:
 
