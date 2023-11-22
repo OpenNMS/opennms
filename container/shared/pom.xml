@@ -90,7 +90,7 @@
 
                         <!-- OPENNMS: Additional or overrided tools -->
                         <feature>hawtio</feature>
-                        <feature>jolokia</feature>
+                        <feature>jolokia/${jolokiaVersion}</feature>
                         <feature>ssh/${karafSshdVersion}</feature>
                     </bootFeatures>
                     <blacklistedFeatures>

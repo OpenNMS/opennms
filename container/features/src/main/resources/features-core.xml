@@ -280,6 +280,16 @@
         </capability>
     </feature>
 
+    <feature name="jolokia" description="Jolokia monitoring support" version="${jolokiaVersion}">
+        <config name="org.jolokia.osgi">
+org.jolokia.user=karaf
+org.jolokia.realm=karaf
+org.jolokia.authMode=jaas
+        </config>
+        <bundle>mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}</bundle>
+        <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
+    </feature>
+
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
