@@ -1,5 +1,6 @@
 
 = {page-component-title} Log Files
+:description: Learn how to use log files in OpenNMS {page-component-title} to help with troubleshooting, and how to set the debugging level.
 
 This section describes common log files to look at when troubleshooting.
 

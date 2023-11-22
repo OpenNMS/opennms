@@ -1,5 +1,5 @@
 = Web Detector
-:description: Learn how the WebDetector in {page-component-title} finds and assigns services based on HTTP.
+:description: Learn how the WebDetector in OpenNMS {page-component-title} finds and assigns services based on HTTP.
 
 The WebDetector finds and assigns services based on HTTP.
 
