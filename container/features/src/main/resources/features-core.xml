@@ -237,13 +237,13 @@
     </feature>
 
     <!-- override 1.7.1 in karaf-standard features -->
-    <feature name="jolokia" description="Jolokia monitoring support" version="${jolokiaClientVersion}">
+    <feature name="jolokia" description="Jolokia monitoring support" version="${jolokiaVersion}">
         <config name="org.jolokia.osgi">
 org.jolokia.user=karaf
 org.jolokia.realm=karaf
 org.jolokia.authMode=jaas
         </config>
-        <bundle>mvn:org.jolokia/jolokia-osgi/${jolokiaClientVersion}</bundle>
+        <bundle>mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}</bundle>
         <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
     </feature>
 
