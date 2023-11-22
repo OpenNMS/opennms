@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,79 +26,69 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.upgrade.tests;
+package org.opennms.upgrade.implementations;
 
-import org.opennms.upgrade.api.OnmsUpgrade;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-import org.opennms.upgrade.support.UpgradeHelper;
 
-/**
- * The Class TestUpgradeB.
- * <p>This is an example implementation for the JUnit tests.</p>
- * 
- * @author Alejandro Galue <agalue@opennms.org>
- */
-public class TestUpgradeB implements OnmsUpgrade {
+public class ClearKarafCacheMigratorOffline  extends AbstractOnmsUpgrade {
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
-     */
+    private final Path opennmsDataPath;
+
+    public ClearKarafCacheMigratorOffline() throws OnmsUpgradeException {
+         this.opennmsDataPath = Path.of(ConfigFileConstants.getHome()).resolve("data");
+    }
+
     @Override
     public int getOrder() {
-        return 300;
+        return 16;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getId()
-     */
-    @Override
-    public String getId() {
-        return getClass().getName();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getDescription()
-     */
     @Override
     public String getDescription() {
-        return "Testing class B";
+        return String.format("Clears the Karaf cache in '%s', see NMS-16226", this.opennmsDataPath);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#preExecute()
-     */
     @Override
     public void preExecute() throws OnmsUpgradeException {
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#postExecute()
-     */
     @Override
     public void postExecute() throws OnmsUpgradeException {
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#rollback()
-     */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        UpgradeHelper.addRolledBack(getId());
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#execute()
-     */
     @Override
     public void execute() throws OnmsUpgradeException {
-        UpgradeHelper.addExecuted(getId());
+        final Path historyFilePath = this.opennmsDataPath.resolve("history.txt");
+        try {
+            Files.walk(this.opennmsDataPath)
+                    .filter((path) -> !path.equals(historyFilePath) && !path.equals(this.opennmsDataPath))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            throw new OnmsUpgradeException(String.format("Error pruning Karaf's data directory '%s'.", this.opennmsDataPath), e);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#requiresOnmsRunning()
-     */
     @Override
     public boolean requiresOnmsRunning() {
+        return false;
+    }
+
+    @Override
+    public boolean runOnlyOnce() {
         return false;
     }
 }
