@@ -1743,7 +1743,7 @@
     <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
     <paxWebVersion>7.3.23</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
-    <protobufVersion>3.16.3</protobufVersion>
+    <protobufVersion>3.25.1</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
