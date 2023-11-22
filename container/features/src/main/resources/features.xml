@@ -161,12 +161,12 @@
     <feature name="joda-time" version="${jodaTimeVersion}" description="Joda :: Joda-Time">
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
     </feature>
-    <feature name="jolokia-client" version="${jolokiaClientVersion}" description="Jolokia-Client">
+    <feature name="jolokia-client" version="${jolokiaVersion}" description="Jolokia-Client">
         <feature>javax.servlet</feature>
         <feature>json-simple</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>mvn:org.jolokia/jolokia-client-java/${jolokiaClientVersion}</bundle>
+        <bundle>mvn:org.jolokia/jolokia-client-java/${jolokiaVersion}</bundle>
     </feature>
     <feature name="jrobin" version="1.6.0" description="JRobin">
         <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
