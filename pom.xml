@@ -1705,7 +1705,7 @@
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
-    <jolokiaClientVersion>1.7.2</jolokiaClientVersion>
+    <jolokiaVersion>1.7.2</jolokiaVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
@@ -4734,7 +4734,7 @@
       <dependency>
         <groupId>org.jolokia</groupId>
         <artifactId>jolokia-client-java</artifactId>
-        <version>${jolokiaClientVersion}</version>
+        <version>${jolokiaVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>
