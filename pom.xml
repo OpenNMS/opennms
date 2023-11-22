@@ -1499,7 +1499,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-    <maven.karaf.plugin.version>4.4.3</maven.karaf.plugin.version>
+    <maven.karaf.plugin.version>4.4.4</maven.karaf.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.5.1</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
