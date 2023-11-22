@@ -108,6 +108,15 @@ public interface OnmsUpgrade {
      * if OpenNMS must be stopped.
      */
     boolean requiresOnmsRunning();
+
+    /**
+     * Run only once and mark when successfully executed?
+     *
+     * @return true, whether this job should only be run once
+     */
+    default boolean runOnlyOnce() {
+        return true;
+    }
 }
 
 
