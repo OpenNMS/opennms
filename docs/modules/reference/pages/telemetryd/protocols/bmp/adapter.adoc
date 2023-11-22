@@ -1,6 +1,7 @@
 
 [[telemetryd-bmp-statistics-adapter]]
 = BMP Telemetry Adapter
+:description: Learn about the BMP telemetry adapter in {page-component-title} that handles BMP statistics that the BMP parser receives and parses.
 
 The BMP telemetry adapter handles BMP statistics that the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses.
 Statistics received from the router are associated as performance data with that router.
