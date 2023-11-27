@@ -1,6 +1,6 @@
 
 = NSClientCollector
-:description: Learn how to configure and use the NSClientCollector in {page-component-title} to collect performance data over HTTP from NSClient.
+:description: Learn how to configure and use the NSClientCollector in OpenNMS {page-component-title} to collect performance data over HTTP from NSClient.
 
 The NSClientCollector collects performance data over HTTP from NSClient.
 
