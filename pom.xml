@@ -1729,6 +1729,7 @@
     <karafVersion>4.3.6</karafVersion>
     <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
+    <eclipseOsgiVersion>3.17.200</eclipseOsgiVersion>
     <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
     <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixConfigadminPluginInterpolationVersion>1.1.4</felixConfigadminPluginInterpolationVersion>
@@ -1737,6 +1738,7 @@
     <felixConverterVersion>1.0.14</felixConverterVersion>
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
+    <istackCommonsRuntimeVersion>3.0.10</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.0</jansiVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
     <paxUrlAetherVersion>2.6.10</paxUrlAetherVersion>
@@ -4457,7 +4459,7 @@
       <dependency>
         <groupId>com.sun.istack</groupId>
         <artifactId>istack-commons-runtime</artifactId>
-        <version>3.0.10</version>
+        <version>${istackCommonsRuntimeVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
