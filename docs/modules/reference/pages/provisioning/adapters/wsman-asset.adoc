@@ -23,9 +23,9 @@ NOTE: By default, this adapter runs 5 minutes after a provisiond `nodeScanComple
 To use this feature you have to install the WS-Man asset provisioning plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-wsman-asset`
+** `yum install {package-prefix}-plugin-provisioning-wsman-asset`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-wsman-asset`
+** `apt-get install {package-prefix}-plugin-provisioning-wsman-asset`
 
 == Configuration
 
