@@ -1,4 +1,5 @@
 = ActiveMQ Detector
+:description: Learn how the ActiveMQ detector in OpenNMS {page-component-title} finds and assigns services based on the existence of ActiveMQ broker services.
 
 The ActiveMQDetector finds and assigns services based on the existence of ActiveMQ broker services.
 

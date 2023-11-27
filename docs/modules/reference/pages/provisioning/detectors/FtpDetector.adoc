@@ -1,4 +1,5 @@
 = FTP Service Detector
+:description: Learn how the FTPDetector in OpenNMS {page-component-title} lets you find FTP services for monitoring in your network.
 
 The FTPDetector lets you find FTP services for monitoring in your network.
 It finds an FTP server on multiple ports and can use login credentials for service detection.
