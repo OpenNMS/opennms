@@ -9,12 +9,7 @@ endif::[]
 .Install {page-component-title} with all built-in dependencies
 [source, console]
 ----
-ifeval::["{page-component-title}" == "Horizon"]
-sudo yum -y install opennms
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
-sudo yum -y install meridian
-endif::[]
+sudo yum -y install {package-prefix}
 ----
 
 If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.

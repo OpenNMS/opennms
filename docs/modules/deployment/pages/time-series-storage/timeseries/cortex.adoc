@@ -88,7 +88,7 @@ bulkheadMaxWaitDurationInMs=9223372036854775807
 . Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/cortex.boot` to configure the plugin to remain installed after {page-component-title} restarts:
 +
 [source, properties]
-opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
+{package-prefix}-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin
 
 . Restart the {page-component-title} service.
 
