@@ -487,7 +487,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafMavenPluginVersion}</version>
+        <version>${maven.karaf.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1358,7 +1358,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafMavenPluginVersion}</version>
+        <version>${maven.karaf.plugin.version}</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -1727,8 +1727,24 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.6</karafVersion>
-    <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
+    <karafVersion>4.3.10</karafVersion>
+    <!-- BEGIN: versions must match versions provided by embedded Karaf -->
+    <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
+    <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
+    <felixConfigadminPluginInterpolationVersion>1.2.8</felixConfigadminPluginInterpolationVersion>
+    <felixCoordinatorVersion>1.0.2</felixCoordinatorVersion>
+    <felixConfiguratorVersion>1.0.16</felixConfiguratorVersion>
+    <felixConverterVersion>1.0.14</felixConverterVersion>
+    <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
+    <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
+    <jansiVersion>2.4.0</jansiVersion>
+    <osgiUtilVersion>1.2.0</osgiUtilVersion>
+    <paxLoggingVersion>2.0.19</paxLoggingVersion>
+    <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
+    <paxUrlAetherVersion>2.6.14</paxUrlAetherVersion>
+    <paxWebVersion>7.3.29</paxWebVersion>
+    <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
+    <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.6.0</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
@@ -1747,9 +1763,6 @@
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
-    <paxLoggingVersion>2.0.14</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
-    <paxWebVersion>7.3.23</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.22.5</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
