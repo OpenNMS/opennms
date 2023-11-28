@@ -2,6 +2,7 @@
 [[telemetryd-bmp-parser]]
 
 = BMP TCP Parser
+:description: Learn about the BMP parser in OpenNMS {page-component-title} that accepts BMP connections from router packets using a TCP listener.
 
 The BMP parser accepts BMP connections from router packets using a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
 
