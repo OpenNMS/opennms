@@ -1062,6 +1062,11 @@
   </pluginManagement>
    <plugins>
      <plugin>
+       <groupId>io.github.git-commit-id</groupId>
+       <artifactId>git-commit-id-maven-plugin</artifactId>
+       <version>7.0.0</version>
+     </plugin>
+     <plugin>
        <groupId>org.commonjava.maven.plugins</groupId>
        <artifactId>directory-maven-plugin</artifactId>
        <version>1.0</version>
@@ -1461,6 +1466,8 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+
+    <project.build.outputTimestamp>${git.commit.time}</project.build.outputTimestamp>
 
     <!--
       Surefire forked JVM arguments
