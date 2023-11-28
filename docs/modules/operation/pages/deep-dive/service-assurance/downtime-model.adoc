@@ -30,5 +30,19 @@ The scheduler changed the polling interval back to five minutes.
 
 Note that after five days of an ongoing outage, the service will be polled only once per hour.
 
-//what status do services have? A and N? What does that stand for?
-// does editing a model affect current outages or only new ones?
+Any edits to the downtime model take effect immediately with existing and new outages.
+For example, if an existing outage is being polled every 30 seconds for five minutes, but you change the downtime model during that period to a 45-second interval, the outage will be polled every 45 seconds for the remainder of the five minutes.
+
+== Service statuses
+The following list describes service statuses.
+Only MANAGED (A) are scheduled for polling.
+The others are "do not poll".
+
+* MANAGED = "A"
+* UNMANAGED = "U"
+* DELETED = "D"
+* FORCE_UNMANAGED = "F"
+* NOT_MONITORED = "N"
+* RESCAN_TO_RESUME = "R"
+* RESCAN_TO_SUSPEND = "S"
+* REMOTELY_MONITORED = "X"
