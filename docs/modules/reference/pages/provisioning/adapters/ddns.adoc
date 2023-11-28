@@ -11,9 +11,9 @@ For every IP address found, a corresponding forward DNS zone must exist on your 
 To use this feature you have to install the DNS provisioning plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-dns`
+** `yum install {package-prefix}-plugin-provisioning-dns`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-dns`
+** `apt-get install {package-prefix}-plugin-provisioning-dns`
 
 == Configuration
 
