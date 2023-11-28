@@ -33,4 +33,4 @@ Note that after five days of an ongoing outage, the service will be polled only 
 Any edits to the downtime model take effect after restarting the pollerd daemon, and apply to both existing and new outages.
 For example, if an existing outage is being polled every 30 seconds for five minutes, but you change the downtime model during that period to a 45-second interval, the outage will be polled every 45 seconds for the remainder of the five minutes.
 
-
+Pollerd identifies the services as either up or down.
