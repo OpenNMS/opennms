@@ -778,207 +778,6 @@
         <artifactId>jetty-jspc-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
       </plugin>
-      <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-      <plugin>
-        <groupId>org.eclipse.m2e</groupId>
-        <artifactId>lifecycle-mapping</artifactId>
-        <version>1.0.0</version>
-        <configuration>
-          <lifecycleMappingMetadata>
-            <pluginExecutions>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.gmaven</groupId>
-                  <artifactId>gmaven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>execute</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.gmaven</groupId>
-                  <artifactId>gmaven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>compile</goal>
-                    <goal>testCompile</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.commonjava.maven.plugins</groupId>
-                  <artifactId>directory-maven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>directory-of</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>com.sun.tools.jxc.maven2</groupId>
-                  <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-                  <versionRange>[1.2,2.0)</versionRange>
-                  <goals>
-                    <goal>generate</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.eclipse.jetty</groupId>
-                  <artifactId>jetty-jspc-maven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>jspc</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>build-helper-maven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>add-source</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <execute>
-                    <runOnConfiguration>true</runOnConfiguration>
-                    <runOnIncremental>true</runOnIncremental>
-                  </execute>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-checkstyle-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>check</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-dependency-plugin</artifactId>
-                  <versionRange>[1.0.0,)</versionRange>
-                  <goals>
-                    <goal>copy</goal>
-                    <goal>copy-dependencies</goal>
-                    <goal>unpack</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-dependency-plugin</artifactId>
-                  <versionRange>[1.0.0,)</versionRange>
-                  <goals>
-                    <goal>properties</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.apache.servicemix.tooling </groupId>
-                  <artifactId>depends-maven-plugin</artifactId>
-                  <versionRange>[1.2,)</versionRange>
-                  <goals>
-                    <goal>generate-depends-file</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <execute/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>gwt-maven-plugin</artifactId>
-                  <versionRange>[2.5.1,)</versionRange>
-                  <goals>
-                    <goal>resources</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>com.vaadin</groupId>
-                  <artifactId>vaadin-maven-plugin</artifactId>
-                  <versionRange>[1.0.2,)</versionRange>
-                  <goals>
-                    <goal>resources</goal>
-                    <goal>update-widgetset</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore></ignore>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>exec-maven-plugin</artifactId>
-                  <versionRange>[1.0,)</versionRange>
-                  <goals>
-                    <goal>java</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                    <execute></execute>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.apache.karaf.tooling</groupId>
-                  <artifactId>karaf-maven-plugin</artifactId>
-                  <versionRange>[4.0,)</versionRange>
-                  <goals>
-                    <goal>assembly</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-            </pluginExecutions>
-          </lifecycleMappingMetadata>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
@@ -1065,6 +864,18 @@
        <groupId>io.github.git-commit-id</groupId>
        <artifactId>git-commit-id-maven-plugin</artifactId>
        <version>7.0.0</version>
+       <executions>
+         <execution>
+           <id>git-commit-id</id>
+           <goals>
+             <goal>revision</goal>
+           </goals>
+           <configuration>
+             <injectAllReactorProjects>true</injectAllReactorProjects>
+             <commitIdGenerationMode>full</commitIdGenerationMode>
+           </configuration>
+         </execution>
+       </executions>
      </plugin>
      <plugin>
        <groupId>org.commonjava.maven.plugins</groupId>
@@ -1207,7 +1018,6 @@
              <descriptors>
                <descriptor>src/assembly/source.xml</descriptor>
              </descriptors>
-             <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
              <overrideUid>0</overrideUid>
              <overrideGid>0</overrideGid>
