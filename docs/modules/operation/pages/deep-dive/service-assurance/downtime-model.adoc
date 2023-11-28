@@ -29,7 +29,6 @@ The scheduler changed the polling interval back to five minutes.
 <3> After 12 hours of an ongoing outage until 5 days, set the polling interval to 10 minutes.
 
 Note that after five days of an ongoing outage, the service will be polled only once per hour.
-Services are not deleted during this time.
 
 //what status do services have? A and N? What does that stand for?
 // does editing a model affect current outages or only new ones?
