@@ -117,6 +117,9 @@
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1</bundle>
                         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1</bundle>
                         <bundle>mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
+
+                        <!-- OPENNMS: initialize the config APIs at startup -->
+                        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
                     </installedBundles>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
