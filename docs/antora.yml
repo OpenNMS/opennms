@@ -4,7 +4,7 @@ title: Horizon
 asciidoc:
   attributes:
     full-display-version: '32.0.6-SNAPSHOT'
-    package-prefix: horizon
+    package-prefix: opennms
     experimental: true
     source-language: asciidoc@
     xrefstyle: short@
