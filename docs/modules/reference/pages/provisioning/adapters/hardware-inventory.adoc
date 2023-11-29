@@ -16,9 +16,9 @@ The optional hardware inventory extension of the provisiond service will add the
 To use this feature you have to install the SNMP hardware inventory plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-snmp-hardware-inventory`
+** `yum install {package-prefix}-plugin-provisioning-snmp-hardware-inventory`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
+** `apt-get install {package-prefix}-plugin-provisioning-snmp-hardware-inventory`
 
 == Configuration
 

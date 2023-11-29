@@ -1740,6 +1740,7 @@
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.0</jansiVersion>
+    <jlineVersion>3.21.0</jlineVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
     <paxLoggingVersion>2.0.19</paxLoggingVersion>
     <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
