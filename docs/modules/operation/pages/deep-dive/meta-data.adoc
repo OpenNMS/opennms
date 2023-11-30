@@ -21,6 +21,7 @@ You can view the metadata that is currently assigned to nodes, interfaces, and s
 .Node metadata
 image::metadata/metadata-view.png["{page-component-title} web UI showing a node's associated metadata"]
 
+[[metadata-contexts]]
 == Contexts
 
 Contexts distinguish different kinds of metadata use.
