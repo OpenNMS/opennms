@@ -77,7 +77,7 @@ Increase this number if you have a large number of requisitions.
 
 Import threads will check the requisition against the database to determine what add, change, or delete operations are necessary.
 They will also attempt to pull SNMP system information from the node into the database.
-Once this inventory update is complete, the import thread will schedule a node scan as necessary.
+Once this inventory update is complete, the import thread will schedule the node for scanning or rescanning as necessary.
 
 | Scan
 | 10
