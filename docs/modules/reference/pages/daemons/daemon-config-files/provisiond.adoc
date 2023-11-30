@@ -77,15 +77,15 @@ Increase this number if you have a large number of requisitions.
 
 Import threads will check the requisition against the database to determine what add/change/delete operations are necessary.
 They will also attempt to pull SNMP system information from the node into the database.
-Once this inventory update is complete, the import thread will schedule the node for scanning/rescanning as necessary.
+Once this inventory update is complete, the import thread will schedule a node scan as necessary.
 
 | Scan
 | 10
-| Number of threads to allocate for manual scan/sync requests.
-This pool is used for any manual requisition sync tasks and when requesting a rescan of a single node.
+| Number of threads to allocate for node scan tasks.
+This pool is used for running detectors against a node.
+This applies to both the initial scan and rescans of existing nodes and requisitions.
 Increase this number if you have a large number of nodes in a single requisition.
 
-Scan threads are in charge of running detectors against a node.
 
 | Rescan
 | 10
