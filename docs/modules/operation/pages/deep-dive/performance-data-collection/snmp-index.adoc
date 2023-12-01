@@ -126,7 +126,7 @@ You must make sure that you add your new report to the `reports` parameter in th
 In the example above, the report name is `mib2.storage.usage`.
 
 .Example of `reports` parameter, which configures available reports
-[source, xml]
+[source, properties]
 ----
 reports=mib2.bits, mib2.percentdiscards, mib2.percenterrors, \
 ...
