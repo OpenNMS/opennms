@@ -8,11 +8,11 @@ parameters:
   previous_branch:
     description: the previous branch, if any
     type: string
-    default: foundation-2024
+    default: release-33.x
   previous_branch_label:
     description: the previous branch, if any (escaped, no slashes)
     type: string
-    default: foundation-2024
+    default: release-33.x
   main_branch:
     description: the auto-merge main branch
     type: string
