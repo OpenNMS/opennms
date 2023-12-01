@@ -460,7 +460,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                         alarm.getLastEvent().getId(),
                         alarm.getLastEvent().getEventUei(),
                         alarm.getLastEvent().getEventSource(),
-                        alarm.getId()==null?"":alarm.getId());
+                        alarm.getId());
                 alarm.setLastEvent(null);
             }
         }
