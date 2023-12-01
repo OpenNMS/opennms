@@ -3,7 +3,6 @@
 * xref:core/introduction.adoc[]
 ** xref:core/system-requirements.adoc[]
 ** xref:core/getting-started.adoc[]
-** xref:core/containers.adoc[]
 ** xref:core/setup-message-broker.adoc[]
 ** xref:core/admin-password-reset.adoc[]
 * xref:minion/introduction.adoc[]
@@ -13,6 +12,14 @@
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
+
+* Containerized Deployment
+** Docker
+*** xref:containers/core-docker.adoc[]
+*** xref:containers/minion-docker.adoc[]
+*** xref:containers/sentinel-docker.adoc[]
+** xref:containers/helm.adoc[]
+
 
 * xref:time-series-storage/timeseries/time-series-storage.adoc[]
 ** xref:time-series-storage/timeseries/rrdtool.adoc[]

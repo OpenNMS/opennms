@@ -22,7 +22,7 @@ sudo vi deploy/jdbc-mysql.xml
 ----
 
 .Add the following content to download the MySQL JDBC driver
-[source, jdbc-mysql.xml]
+[source, xml]
 [subs="verbatim,attributes"]
 -----
 <?xml version="1.0" encoding="UTF-8"?>

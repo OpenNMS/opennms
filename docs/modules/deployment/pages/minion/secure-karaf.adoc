@@ -14,7 +14,7 @@ config:property-set encryption.name jasypt
 config:update
 ----
 
-WARNING: If you set the `encryption.name` option, you will need to reset any existing passwords that were created while `encryption.enabled` was set to `true`. 
+WARNING: If you set the `encryption.name` option, you will need to reset any existing passwords that were created while `encryption.enabled` was set to `true`.
 
 .Set a new secure admin password
 [source, karaf]
