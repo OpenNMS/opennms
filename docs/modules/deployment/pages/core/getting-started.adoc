@@ -34,7 +34,6 @@ Use this quick starting point to evaluate and explore how to configure Horizon b
 
 endif::[]
 
-
 == Requirements
 
 The following components and settings are required to set up a new {page-component-title} instance:
@@ -63,6 +62,36 @@ include::../time-sync.adoc[]
 
 TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
 If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before installing the {page-component-title} core instance.
+
+[[iplike-install]]
+=== Installing IPLIKE
+
+IPLIKE is a group of SQL statements (stored procedure) that provides more flexible searching of IP addresses.
+It uses a flexible search format that allows you to search IP addresses by any of the octets of a TCP/IP address.
+An asterisk (*) in place of any octet matches any value for that octet.
+Indicate ranges with two numbers separated by a dash, using a comma for list demarcation.
+
+For example, the following search fields are all valid and would each create the same result set--all TCP/IP addresses from 192.168.0.0 through 192.168.255.255:
+
+* 192.168.*.*
+* 192.168.0-255.0-255
+* 192.168.*.0-255
+
+You cannot mix lists and ranges within the same octet.
+For example, the following filter is not allowed:
+
+* 192.168.0,1,2,4-255.*
+
+Instead you must use two separate rules:
+
+* 192.168.0,1,2.*
+* 192.168.4-255.*
+
+The following example uses iplike in a query's where clause:
+
+`iplike(ipaddr, '192.8.*.*')`
+
+//add IPLIKE detailed example from the wiki?
 
 [{tabs}]
 ====

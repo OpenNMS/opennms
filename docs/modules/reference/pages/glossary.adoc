@@ -104,6 +104,8 @@ instance:: (1) A single, unique occurrence of an element, document, or running p
 interface availability:: The percentage of time that a node interface is detected as being accessible.
 {page-component-title} typically shows availability statistics for the past 24 hours; this is calculated by subtracting the amount of outage time for an interface during the given time period.
 
+IPLIKE:: IPLIKE is a stored procedure you can install with the PostgreSQL database that provides more flexible searching of IP addresses. (See xref:deployment: core/getting-started.adoc#iplike-install[Installing IPLIKE]).
+
 == J
 
 Java Management Extensions (JMX):: A set of tools for managing and monitoring services, resources, and service-oriented networks.
@@ -232,6 +234,8 @@ The OpenNMS Appliance Service uses snaps to distribute operating system packages
 SNMP Management Information Base (MIB):: A hardware or software vendor file that describes SNMP objects their products provide.
 MIB files can be processed to convert the definition into data collection and event objects for {page-component-title} to work with.
 Many of the major vendor MIB definitions are included out of the box.
+
+Stored procedure:: A group of SQL statements stored in a database that can be reused.
 
 == T
 
