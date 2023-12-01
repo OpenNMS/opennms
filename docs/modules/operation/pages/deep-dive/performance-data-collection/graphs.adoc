@@ -6,11 +6,7 @@
 Collecting performance data is only good if you can view the metrics that have been persisted.
 {page-component-title} can display resource graphs that have been defined using link:https://oss.oetiker.ch/rrdtool/doc/rrdgraph.en.html[RRDTool] graphing syntax.
 
-NOTE: {page-component-title} defaults to showing graphs using our Backshift rendering engine.
-This is feature-compatible with rrdgraph commands, but runs in the browser as opposed to on the server back end.
-The graph rendering engine can be changed via `opennms.properties` settings.
-
-TIP: When using the xref:deep-dive/admin/mib.adoc[MIB Compiler] to generate collection definitions, the compiler will also create graph definitions for all the numeric values found in the MIB.
+NOTE: When using the xref:deep-dive/admin/mib.adoc[MIB Compiler] to generate collection definitions, the compiler will also create graph definitions for all the numeric values found in the MIB.
 
 As an alternative to creating graphs within {page-component-title}, you can also utilize our link:https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] to create dashboards displaying various resource graphs.
 
@@ -19,20 +15,21 @@ As an alternative to creating graphs within {page-component-title}, you can also
 Graphs are defined in in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory via `.properties` file.
 These files are re-read whenever the "Resource Graphs" page is loaded in the Web UI and do not require restarting any daemons to apply changes.
 When the Resource Graphs page is loaded for a node, {page-component-title} will look at the available metrics for the node, and will only display graphs where there are metrics for the `columns` defined in the graph.
-
+Within the configuration files, each graph is referred to as a "report".
 
 NOTE: While the graph directory name says `snmp-graph`, this system is used for displaying metrics regardless of which collector class was used.
 
-The definition file should start with a `reports` property that is a list of report names that are defined later on in the file.
+The definition file should start with a `reports` property that is a comma-separated list of report names that are defined later on in the file.
+The list of report names should be followed by a group of definition properties.
 
-
+.Graph definition properties
 [cols="1,2"]
 |===
 | Property | Description
 
 | name
 | The name of the graph.
-This is dispalyed next to the graph in the Web UI.
+This is displayed next to the graph in the Web UI.
 The `command` parameter can also include a `title` attribute that will render a title within the graph itself.
 
 | columns
@@ -58,6 +55,7 @@ This would be used if you have similar graphs based on different metrics and onl
 === Example report
 
 Below is an example of a graph from the default `mib2-graph.properties` file.
+The `reports=` setting at the top of the file should include a reference to `mib2.HCbits`.
 
 [source, properties]
 ----
@@ -93,9 +91,10 @@ report.mib2.HCbits.command=--title="Bits In/Out (High Speed)" \ <5>
 ----
 <1> The name of the graph to display.
 <2> Suppresses the `mib2.bits` graph from displaying if this graph can be rendered.
+This assumes there is another section that defines a graph with the property `report.mib2.HCbits.name`.
 <3> List of metric alias names to include.
 These are referenced in the `DEF` commands based on the order they are listed.
-In this example, `ifHCInOctets` is `{rrd1}` and `ifHCOutOctets` is `{rrd2}`
+In this example, `ifHCInOctets` is `\{rrd1}` and `ifHCOutOctets` is `\{rrd2}`
 <4> The resource type of the graph.
 In this example, the `columns` defined should be collected as part of the SNMP Interface.
 <5> The RRDTool command to render the graph.
