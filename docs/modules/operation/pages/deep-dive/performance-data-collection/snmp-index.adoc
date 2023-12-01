@@ -96,10 +96,11 @@ This code snippet shows that the group for `mib2-host-resources-storage` was add
 == Create a report in snmp-graph.properties
 
 Finally, you can create a report in `snmp-graph.properties` like you normally would, with the exception that you must set the type to match the resource type's name.
+See xref:deep-dive/performance-data-collection/graphs.adoc[Graphing Metrics] for more information on creating resource graphs.
 
 This code snippet creates a report for `hrStorageIndex` disk utilization data:
 
-[source, xml]
+[source, properties]
 ----
 report.mib2.storage.usage.name=Storage Utilization (MIB-2 Host Resources)
 report.mib2.storage.usage.columns=hrStorageSize, hrStorageUsed, hrStorageAllocUnits
