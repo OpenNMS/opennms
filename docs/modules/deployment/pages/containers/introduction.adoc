@@ -1,22 +1,10 @@
-
-[[minion-docker]]
-= Minion on Docker
+[[containers]]
+= Containerized Deployment
 :description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
 
-* To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
+This section covers basics for getting a containerized OpenNMS instance running.
+For more advanced examples see our link:https://github.com/opennms-forge/stack-play[stack-play repository] or xref:containers/helm.adoc[Helm charts].
 
-
-postrgres
-
-
-include::core/postgresql.adoc[]
-
-
-setup
-
-include::core/core.adoc[]
-
-
-initialize
-
-include::core/initialize.adoc[]
+OpenNMS Horizon container images are published to Docker Hub.
+Meridian images are available in a private container repository.
+Contact your account manager for access information.

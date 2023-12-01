@@ -3,14 +3,18 @@
 = Minion on Docker
 :description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
 
+== Requirements
+
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
+== Setup container definition
 
-setup
+The steps below can be used to bring up a basic Minion instance.
+See the xref:reference:configuration/minion-docker.adoc[configuration reference] for details on how to customize your deployment.
 
 include::minion/minion.adoc[]
 
+== Secure access to Karaf shell
 
-secure
-
+By default the Minion container uses default (`admin`/`admin`) credentials.
 include::minion/secure-karaf.adoc[]

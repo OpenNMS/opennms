@@ -13,7 +13,7 @@
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 
-* Containerized Deployment
+* xref:containers/introduction.adoc[]
 ** Docker
 *** xref:containers/core-docker.adoc[]
 *** xref:containers/minion-docker.adoc[]
