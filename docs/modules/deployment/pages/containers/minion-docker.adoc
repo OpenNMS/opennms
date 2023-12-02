@@ -7,7 +7,7 @@
 
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
-== Setup container definition
+== Setup container environment
 
 The steps below can be used to bring up a basic Minion instance.
 See the xref:reference:configuration/minion-docker.adoc[configuration reference] for details on how to customize your deployment.

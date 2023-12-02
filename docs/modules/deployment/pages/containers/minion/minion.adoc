@@ -58,7 +58,9 @@ Initially this line should be commented out, and will need to be activated after
 The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
 We open the listener for privileged (514/udp, 162/udp) and don't have to give additional permissions to the Minion process in the container.
 
-CAUTION: Some environments do not allow the use of ICMP (ping) for non-root users.
+[CAUTION]
+====
+Some environments do not allow the use of ICMP (ping) for non-root users.
 {page-component-title} Minion runs as a non-privileged user in the container with `userid=10001, groupid=10001`.
 You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in the allowed group range.
 If not, add the following lines in your service definition in the `docker-compose.yml` file.
@@ -68,6 +70,7 @@ If not, add the following lines in your service definition in the `docker-compos
 sysctls:
   net.ipv4.ping_group_range: "10001 10001"
 ----
+====
 
 .Create a file with the configuration for connectivity and features
 [source, minion-config.yaml]
