@@ -28,51 +28,6 @@
          <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}" />
       </service>
    </package>
-   <package name="vmware3" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware3')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-VirtualMachine3}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-HostSystem3}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-   </package>
-   <package name="vmware4" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware4')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-VirtualMachine4}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-HostSystem4}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-   </package>
-   <package name="vmware5" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware5')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-VirtualMachine5}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-HostSystem5}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
-         <parameter key="thresholding-enabled" value="true" />
-      </service>
-   </package>
    <package name="vmware6" remote="false">
       <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware6')</filter>
       <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
