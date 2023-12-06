@@ -1735,7 +1735,7 @@
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.4.7</zookeeperVersion>
+    <zookeeperVersion>3.4.8</zookeeperVersion>
     <zookeeper2Version>3.5.8</zookeeper2Version>
     <zstdJniVersion>1.4.5-6</zstdJniVersion>
 
