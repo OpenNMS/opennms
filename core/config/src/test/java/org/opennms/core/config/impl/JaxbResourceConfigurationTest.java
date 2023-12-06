@@ -64,7 +64,7 @@ public class JaxbResourceConfigurationTest {
         assertNotNull(collectd);
         final CollectdConfiguration config = collectd.get();
         assertNotNull(config);
-        assertEquals(5, config.getPackages().size());
+        assertEquals(2, config.getPackages().size());
     }
 
     @Test(expected=org.opennms.core.config.api.ConfigurationResourceException.class)
@@ -82,13 +82,13 @@ public class JaxbResourceConfigurationTest {
         assertNotNull(collectd);
         CollectdConfiguration config = collectd.get();
         assertNotNull(config);
-        assertEquals(5, config.getPackages().size());
+        assertEquals(2, config.getPackages().size());
         config.removePackage(config.getPackages().get(0));
-        assertEquals(4, config.getPackages().size());
+        assertEquals(1, config.getPackages().size());
         collectd.save(config);
 
         config = collectd.get();
         assertNotNull(config);
-        assertEquals(4, config.getPackages().size());
+        assertEquals(1, config.getPackages().size());
     }
 }
