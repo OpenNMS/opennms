@@ -135,6 +135,11 @@ public class DestinationPathFactory extends DestinationPathManager {
      */
     @Override
     public void update() throws IOException, FileNotFoundException {
+        // see NMS-16151
+        if (!initialized) {
+            init();
+        }
+
         if (m_lastModified != m_pathsConfFile.lastModified()) {
             reload();
         }
