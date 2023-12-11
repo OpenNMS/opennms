@@ -78,12 +78,14 @@
     }
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Change Node Label" />
-  <jsp:param name="headTitle" value="Change Node Label" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Change Node Label" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Change Node Label")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Change Node Label")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-12">

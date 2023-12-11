@@ -62,13 +62,15 @@
 	}
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="User Detail" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/users/list.jsp'>User List</a>" />
-  <jsp:param name="breadcrumb" value="User Detail" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Users and Groups", "admin/userGroupView/index.jsp")
+          .breadcrumb("User List", "admin/userGroupView/users/list.jsp")
+          .breadcrumb("User Detail")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-6">

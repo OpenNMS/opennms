@@ -230,6 +230,7 @@ rm -rf %{buildroot}
 %attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
+%attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/*.boot
 
 %files container
 

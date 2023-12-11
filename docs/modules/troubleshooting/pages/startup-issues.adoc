@@ -1,5 +1,6 @@
 
 = {page-component-title} Startup
+:description: Learn how to troubleshoot problems you may encounter while OpenNMS {page-component-title} starts.
 
 This section describes troubleshooting steps for problems encountered while {page-component-title} starts.
 

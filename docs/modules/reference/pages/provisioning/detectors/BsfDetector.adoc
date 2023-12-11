@@ -1,4 +1,5 @@
 = BSF Detector
+:description: Learn how the BSFDetector in OpenNMS {page-component-title} lets you run scripts using the Bean Scripting Framework (BSF) to determine if a service exists.
 
 The BSFDetector lets you run arbitrary scripts using the Bean Scripting Framework (BSF) to determine if a service exists.
 This can be a script written in any of the languages BSF supports.

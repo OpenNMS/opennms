@@ -1,4 +1,5 @@
 = TCP Service Detector
+:description: Learn how the TCPDetector in OpenNMS {page-component-title} lets you find TCP-based services for monitoring in your network.
 
 The TCPDetector lets you find TCP-based services for monitoring in your network.
 

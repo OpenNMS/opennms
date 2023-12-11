@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,9 +61,14 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
         }
     }
 
+    /*
+     * It is not obvious what this does from the name, but if the value is the
+     * default of true, the blueprint tests will not start the context
+     * automatically at setUp() time.
+     */
     @Override
     public boolean isUseAdviceWith() {
-        return true;
+        return false;
     }
 
     @Override

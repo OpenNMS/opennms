@@ -7,7 +7,7 @@
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.21.5.xsd
 ">
 
   <context:annotation-config />
@@ -39,7 +39,7 @@
     <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext id="sinkServer" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="sinkServer" registerEndpointIdsFromRoute="true" xmlns="http://camel.apache.org/schema/spring">
     <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
     <properties>
       <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>

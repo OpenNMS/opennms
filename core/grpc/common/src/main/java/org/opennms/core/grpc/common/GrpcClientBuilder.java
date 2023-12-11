@@ -28,22 +28,20 @@
 
 package org.opennms.core.grpc.common;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import javax.net.ssl.SSLException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Strings;
-
+import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 public class GrpcClientBuilder {
 
@@ -65,6 +63,27 @@ public class GrpcClientBuilder {
                     .build();
         } else {
             return channelBuilder.usePlaintext().build();
+        }
+    }
+
+    public static ManagedChannel getChannelWithInterceptor(String host, int port,
+                                                           Map<String, String> properties,
+                                                           ClientInterceptor clientInterceptor) throws IOException {
+
+        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, port)
+                .keepAliveWithoutCalls(true);
+        boolean tlsEnabled = Boolean.parseBoolean(properties.get(TLS_ENABLED));
+        if (tlsEnabled) {
+            return channelBuilder
+                    .negotiationType(NegotiationType.TLS)
+                    .intercept(clientInterceptor)
+                    .sslContext(buildSslContext(properties).build())
+                    .build();
+        } else {
+            return channelBuilder
+                    .usePlaintext()
+                    .intercept(clientInterceptor)
+                    .build();
         }
     }
 

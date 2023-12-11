@@ -33,6 +33,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
 import io.grpc.stub.StreamObserver;
 import org.opennms.core.grpc.common.GrpcClientBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -93,6 +94,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final String JTI_MODE = "jti";
     private static final String ORIGIN = "origin";
     private static final String DEFAULT_ORIGIN = "openconfig";
+    private static final String USERNAME_FIELD = "username";
+    private static final String PASSWORD_FIELD = "password";
     private ManagedChannel channel;
     private final InetAddress host;
     private Integer port;
@@ -133,7 +136,22 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                         .filter(configuration -> configuration.getKey().contains("tls"))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
             });
-            this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
+            var optionalUsername =
+                    this.paramList.stream().filter(entry -> entry.get(USERNAME_FIELD) != null).findFirst();
+            var optionalPassword =
+                    this.paramList.stream().filter(entry -> entry.get(PASSWORD_FIELD) != null).findFirst();
+            if (optionalUsername.isPresent() && optionalPassword.isPresent()) {
+                String username = optionalUsername.get().get(USERNAME_FIELD);
+                String password = optionalPassword.get().get(PASSWORD_FIELD);
+                Metadata metadata = new Metadata();
+                metadata.put(Metadata.Key.of(USERNAME_FIELD, Metadata.ASCII_STRING_MARSHALLER), username);
+                metadata.put(Metadata.Key.of(PASSWORD_FIELD, Metadata.ASCII_STRING_MARSHALLER), password);
+                var clientInterceptor = new GrpcClientInterceptor(metadata);
+                this.channel = GrpcClientBuilder.getChannelWithInterceptor(host.getHostAddress(), port, tlsFilePaths, clientInterceptor);
+            } else {
+                this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
+            }
+
             if (READY.equals(retrieveChannelState())) {
                 subscribeToTelemetry(handler);
                 return true;
@@ -160,6 +178,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
             LOG.info("Subscribed to OpenConfig telemetry stream at {}/{}", InetAddressUtils.str(host), port);
         } else {
+
             gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();

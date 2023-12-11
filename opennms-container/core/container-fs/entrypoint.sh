@@ -49,7 +49,7 @@ usage() {
   echo "-h: Show this help."
   echo "-i: Initialize or update database and configuration files and do *NOT* start."
   echo "-s: Initialize or update database and configuration files and start OpenNMS."
-  echo "-t: Run the config-tester, e.g -t -h to show help and available options."
+  echo "-t: Run the config-tester against the configuration files."
   echo ""
 }
 
@@ -202,7 +202,7 @@ while getopts "fhist" flag; do
       ;;
     t)
       shift $((OPTIND - 1))
-      configTester "${@}"
+      configTester -a
       exit
       ;;
     *)

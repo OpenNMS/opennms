@@ -30,7 +30,6 @@ package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
 
-import org.jfree.util.Log;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,10 +103,10 @@ public class IpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "</node>";
         sendPost("/nodes", node1, 201);
 
-        Log.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 204));
-        Log.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 404));
-        Log.warn(sendRequest(GET, "/ipinterfaces", 204));
-        Log.warn(sendRequest(GET, "/ipinterfaces/10.10.10.10", 404));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 404));
+        LOG.warn(sendRequest(GET, "/ipinterfaces", 204));
+        LOG.warn(sendRequest(GET, "/ipinterfaces/10.10.10.10", 404));
 
         String ipInterface1 = "<ipInterface snmpPrimary=\"P\">" +
                 "<ipAddress>10.10.10.10</ipAddress>" +

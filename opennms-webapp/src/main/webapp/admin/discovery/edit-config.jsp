@@ -52,19 +52,17 @@
 		response.setHeader("Cache-Control", "no-cache");
 	}
 %>
-<% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
-<% String breadcrumb2 = "<a href='admin/discovery/index.jsp'> Discovery </a>"; %>
-<% String breadcrumb3 = "Modify Configuration"; %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Modify Discovery Configuration" />
-  <jsp:param name="headTitle" value="Discovery" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Discovery")
+          .headTitle("Admin")
+          .breadcrumb("Admin","admin/index.jsp")
+          .breadcrumb("Discovery", "admin/discovery/index.jsp")
+          .breadcrumb("Modify Configuration")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
 function addSpecific(){

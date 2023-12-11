@@ -41,15 +41,16 @@
     throw new org.opennms.web.servlet.MissingParameterException("nodelabel");
   }
 %>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-	<jsp:param name="ngapp" value="onms-interfaces-config" />
-	<jsp:param name="title" value="Select SNMP Interfaces" />
-	<jsp:param name="headTitle" value="Select SNMP Interfaces" />
-	<jsp:param name="headTitle" value="Admin"/>
-	<jsp:param name="location" value="admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Select SNMP Interfaces")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Select SNMP Interfaces")
+          .ngApp("onms-interfaces-config")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="angular-js" />

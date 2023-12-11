@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -242,6 +242,13 @@ public class KarafExtender {
     public List<Repository> getRepositories() throws IOException {
         final List<Path> repositoryPaths = getRepositoryFolders(m_repositories);
 
+        final Path systemFolder = m_karafHome.resolve("system");
+        if (isValidPath(systemFolder)) {
+            repositoryPaths.add(systemFolder);
+        } else {
+            LOG.info("system folder {} does not exist.", systemFolder);
+        }
+
         final List<Repository> repositories = Lists.newLinkedList();
         for (Path repositoryPath : repositoryPaths) {
             try {
@@ -369,28 +376,36 @@ public class KarafExtender {
         return files;
     }
 
-    private static List<Path> getRepositoryFolders(Path folder) throws IOException {
+    private static List<Path> getRepositoryFolders(final Path folder) throws IOException {
         final List<Path> paths = Lists.newLinkedList();
+
         if (!folder.toFile().exists()) {
-            LOG.info("Repository folder {} does not exist. No repositories will be added.", folder);
+            LOG.info("Repository folder {} does not exist. No sub-repositories will be added.", folder);
             return paths;
         }
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folder)) {
             for (Path path : directoryStream) {
-                if (!path.toFile().isDirectory()) {
-                    continue;
+                if (isValidPath(path)) {
+                    paths.add(path);
                 }
-                if (path.getFileName().toString().startsWith(".")) {
-                    // Ignore dot folders
-                    continue;
-                }
-                paths.add(path);
             }
         }
         Collections.sort(paths);
 
         return paths;
+    }
+
+    private static boolean isValidPath(final Path path) {
+        if (!path.toFile().isDirectory()) {
+            // Ignore non-directories
+            return false;
+        }
+        if (path.getFileName().toString().startsWith(".")) {
+            // Ignore dot folders
+            return false;
+        }
+        return true;
     }
 
     private static List<String> getLinesIn(Path file) throws IOException {

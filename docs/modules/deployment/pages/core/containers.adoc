@@ -1,0 +1,90 @@
+
+[[container-deployment]]
+= Containerized Deployment
+:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment like Kubernetes or Red Hat OpenShift.
+
+If your organization uses Kubernetes or Red Hat OpenShift, OpenNMS makes a Helm chart available to simplify {page-component-title} deployment.
+For information on deploying in a Docker environment, see the Docker tabs in https://docs.opennms.com/horizon/latest/deployment/core/getting-started.html[installation and configuration].
+
+The OpenNMS Helm Chart is based and tested against the latest {page-component-title}.
+The minimum version available is
+ifeval::["{page-component-title}" == "Horizon"]
+Horizon 32.x.
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+Meridian 2023.x.
+endif::[]
+
+== Before you begin
+
+You must have a deep understanding of containerized environments (https://kubernetes.io/docs/home/[Kubernetes], https://access.redhat.com/documentation/en-us/openshift_container_platform/[Red Hat OpenShift]) and https://helm.sh/docs[Helm], which is the package manager for Kubernetes.
+
+You should also be familiar with {page-component-title}, its components, and how the environment works.
+
+== Requirements
+
+* https://kubernetes.io/docs/reference/kubectl/[kubectl]
+* https://kubernetes.io/docs/reference/kubectl/[Helm] version 3
+* Kubernetes 1.20+ OR Red Hat OpenShift 4.12+
+
+=== External dependencies
+
+{page-component-title} requires the following as part of its monitoring environment.
+Make sure to set them up, with SSL enabled, before deploying {page-component-title}.
+
+* PostgreSQL server as the central database for OpenNMS and Grafana.
+** For Google Cloud, the solution was tested using Google SQL for PostgreSQL with SSL and a private IP.
+* Elasticsearch cluster for flow persistence
+* Grafana Loki server for log aggregation
+** https://grafana.com/docs/loki/v2.8.x/tools/logcli/[logcli] helps extract OpenNMS logs from the command line for troubleshooting purposes.
+* https://cert-manager.io/docs/[cert-manager] to provide HTTPS/TLS support to the web-based services the ingress controller manages.
+** A `ClusterIssuer` to use it across multiple independent {page-component-title} installations.
+* Nginx Ingress Controller, as the solution has not been tested with other Ingress implementations.
+
+== Deployment on Kubernetes
+Once you have set up Helm properly, use the following commands to deploy {page-component-title} on Kubernetes:
+
+[source, console]
+----
+helm repo add opennms https://opennms.github.io/helm-charts
+
+helm install monms opennms/horizon --set domain=domain1.com  --create-namespace
+----
+
+Update configuration values in the `values.yml` file, as required, for your environment.
+These values include various passwords (Kafka, database, PostgreSQL), timezone, CPU limits, and so on.
+For a list of values and their defaults, see https://github.com/OpenNMS/helm-charts/blob/main/horizon/README.md#values[Values] in the project's readme file on GitHub.
+
+== Installation on OpenShift
+
+There are a few known issues and limitations with installation on OpenShift, related to user permissions:
+
+* If you set `allowPrivilegeEscalation` to false, you cannot use ICMP and the auto discovery feature from the {page-component-title} core.
+Make sure to remove `CAP_NET_RAW` from `allowedCapabilities` when you set `allowPrivilegeEscalation` to false.
+
+* By default, OpenNMS will create a ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount.
+The user who installs OpenNMS must have the required permissions to make these modifications to the OpenShift cluster, including admin access.
+Disabling ClusterRole, ClusterRoleBinding, Route, SecurityContextConstraints, and ServiceAccount along with setting `allowPrivilegeEscalation` to false will run the {page-component-title} core in unprivileged mode.
+
+To install {page-component-title} on OpenShift, follow these steps:
+
+1. Log in to OpenShift and switch to Developer view.
+2. Create a project with a unique name.
+3. Go to the Helm section.
+4. In the Create drop-down menu, select Repository.
+    * In the Create Repository page,
+    * Add a unique name and display name.
+    * Use https://opennms.github.io/helm-charts/ for the URL.
+    * Save the changes.
+5. In the Create drop-down menu, select Helm Release.
+6. Under Repository, select the newly created repository entry.
+7. Click on Horizon.
+8.	Make sure that the project name matches the name you set in step 2.
+    * Skip this step if you are setting “CreateNamespace” option to true.
+9.	Make the required modifications (for example, set the PostgreSQL information).
+10.	Click Create.
+11.	Wait for the pods to come up. This may take a few minutes.
+
+NOTE: The process to install the Minion is similar.
+

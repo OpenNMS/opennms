@@ -101,5 +101,4 @@ public class TestUpgradeB implements OnmsUpgrade {
     public boolean requiresOnmsRunning() {
         return false;
     }
-
 }

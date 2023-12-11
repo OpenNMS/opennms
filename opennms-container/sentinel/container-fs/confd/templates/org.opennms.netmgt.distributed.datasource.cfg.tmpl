@@ -1,0 +1,14 @@
+{{- /* Upon updating this file please ensure that the schema sentinel-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if exists "/datasource/url" -}}
+datasource.url = {{getv "/datasource/url"}}
+{{end -}}
+{{if exists "/datasource/username" -}}
+datasource.username = {{getv "/datasource/username"}}
+{{end -}}
+{{if exists "/datasource/password" -}}
+datasource.password = {{getv "/datasource/password"}}
+{{end -}}
+{{if exists "/datasource/database-name" -}}
+datasource.databaseName = {{getv "/datasource/database-name"}}
+{{end -}}

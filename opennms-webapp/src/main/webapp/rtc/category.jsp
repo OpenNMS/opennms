@@ -99,14 +99,16 @@
 %>
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Category Service Level Monitoring" />
-  <jsp:param name="headTitle" value="<%=category.getName()%>" />
-  <jsp:param name="headTitle" value="Category" />
-  <jsp:param name="headTitle" value="SLM" />
-  <jsp:param name="breadcrumb" value="<a href='rtc/index.jsp'>SLM</a>" />
-  <jsp:param name="breadcrumb" value="<%=category.getName()%>"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(category.getName())
+          .headTitle("Category")
+          .headTitle("SLM")
+          .breadcrumb("SLM", "rtc/index.jsp")
+          .breadcrumb(category.getName())
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
       <% if( category.getComment() != null ) { %>      
         <p><c:out value="<%=category.getComment()%>"/></p>

@@ -74,16 +74,18 @@
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Modify User" />
-  <jsp:param name="headTitle" value="Modify" />
-  <jsp:param name="headTitle" value="Users" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/userGroupView/users/list.jsp'>User List</a>" />
-  <jsp:param name="breadcrumb" value="Modify User" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Modify")
+          .headTitle("Users")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "${baseHref}admin/index.jsp")
+          .breadcrumb("Users and Groups", "${baseHref}admin/userGroupView/index.jsp")
+          .breadcrumb("User List", "${baseHref}admin/userGroupView/users/list.jsp")
+          .breadcrumb("Modify User")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
 

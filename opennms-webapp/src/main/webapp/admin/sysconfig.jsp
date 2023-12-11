@@ -41,14 +41,15 @@
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="OpenNMS System Configuration" />
-  <jsp:param name="headTitle" value="System Configuration" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="System Configuration" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("System Configuration")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("System Configuration")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
         function cancel()

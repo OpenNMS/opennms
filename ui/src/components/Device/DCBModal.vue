@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable-next-line vue/no-mutating-props -->
-  <FeatherDialog v-model="visible" relative :labels="labels" @update:modelValue="$emit('close')">
+  <FeatherDialog :modelValue="visible" relative :labels="labels" @update:modelValue="$emit('close')">
     <div class="content">
       <slot name="content" />
     </div>
