@@ -79,9 +79,6 @@
       <include-collection dataCollectionGroup="SUN Microsystems"/>
       <include-collection dataCollectionGroup="Trango"/>
       <include-collection dataCollectionGroup="VMware-Cim"/>
-      <include-collection dataCollectionGroup="VMware3"/>
-      <include-collection dataCollectionGroup="VMware4"/>
-      <include-collection dataCollectionGroup="VMware5"/>
       <include-collection dataCollectionGroup="VMware6"/>
       <include-collection dataCollectionGroup="VMware7"/>
       <include-collection dataCollectionGroup="WMI"/>
