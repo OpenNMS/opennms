@@ -310,6 +310,8 @@
                           <feature>opennms-timeseries-api</feature>
 
                           <!-- minion features -->
+                          <feature>dominion-grpc-client</feature>
+                          <feature>dominion-secure-credentials-vault</feature>
                           <feature>minion-api-layer</feature>
                           <feature>minion-heartbeat-producer</feature>
                           <feature>minion-snmp-proxy</feature>
