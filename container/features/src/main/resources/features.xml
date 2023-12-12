@@ -903,6 +903,7 @@
         <feature>json-simple</feature>
         <feature>jcifs</feature>
         <feature>bsf</feature>
+        <feature>ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dhcpd</feature>
