@@ -72,6 +72,8 @@ The data contains metadata and is structured as a list of `key:value` pairs.
         <parameter key="port" value="${requisition:oc.port|9000}"/>
         <parameter key="retries" value="12"/>
         <parameter key="interval" value="300"/>
+        <parameter key="username" value="admin"/>
+        <parameter key="password" value="admin"/>
         <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
         <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
         <!-- Use groups to separate paths that need to be streamed at different frequencies -->
@@ -84,6 +86,11 @@ The data contains metadata and is structured as a list of `key:value` pairs.
     </package>
 </connector>
 ----
+
+
+=== Service
+For any interface that needs to enable OpenConfig streaming, we need to add a service on a given interface.
+This denotes `service-name` in above configuration which is defined as `OpenConfig`.
 
 === Packages
 At least one package must be present for the connector to function.
@@ -115,7 +122,7 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | none
 
 | frequency
-| Frequency at which OpenConfig data can be streamed.
+| Frequency at which OpenConfig data can be streamed. This is parsed as milliseconds(ms) for jti and nanoseconds(ns) for gnmi
 | 300000
 
 3+| *Optional*
@@ -125,7 +132,7 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | 0
 
 | interval
-| Interval at which client tries to make a connection when failed.
+| Interval at which client tries to make a connection when failed in seconds.
 | 300
 
 | tls.enabled
@@ -135,6 +142,23 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | tls.trust.cert.path
 | Server trust certificate path.
 | none
+
+| origin
+| Origin that need to be subscribed to, only relevant for gnmi.
+| openconfig
+
+| username
+| Username that can be used to authenticate, sent as metadata to the server.
+| none
+
+| password
+| Password that can be used to authenticate, sent as metadata to the server.
+| none
+
+
+| mode
+| Specify mode for stream format. Options include gnmi or jti.
+| gnmi
 |===
 
 == OpenConfig adapter
@@ -168,7 +192,7 @@ Use the script extension to extract the desired metrics from the OpenConfig stre
 3+| *Optional*
 
 | mode
-| Specify mode for stream format.
+| Specify mode for stream format. Options include gnmi or jti.
 Options are `gnmi` or `jti`.
 | gnmi
 |===
