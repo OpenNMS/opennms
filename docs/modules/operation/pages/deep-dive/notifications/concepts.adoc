@@ -94,3 +94,20 @@ This switch specifies the logic used when deciding whether to send a notice for 
 If the switch is `off`, notices will never be sent to the target.
 If the switch is `on`, notices will always be sent to the target.
 If the switch is set to `auto`, the system deploys heuristics aimed at "doing the right thing."
+
+== Variable bindings
+
+Event parameters can additionally act as a filter method.
+This can be very helpful for events that don't have an association to a specific node, because the common filters only match against interfaces.
+A good example is a Business Service Monitor event.
+By defining the `vbname` and `vbvalue`, the notification will only be send with a positiv match.
+
+Example:
+
+[source, xml]
+----
+<varbind>
+    <vbname>businessServiceName</vbname>
+    <vbvalue>~^BSM-Service.*</vbvalue>
+</varbind>
+----
