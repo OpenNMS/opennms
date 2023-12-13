@@ -283,4 +283,88 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
     }
+
+    @DELETE
+    @Path("{serviceName}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") final String serviceName, @PathParam("context") final String context) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
+            }
+            service.removeMetaData(context);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{serviceName}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") final String serviceName, @PathParam("context") final String context, @PathParam("key") final String key) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find service " + serviceName);
+            }
+            service.removeMetaData(context, key);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{serviceName}/metadata")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response postMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") final String serviceName, final OnmsMetaData entity) {
+        checkUserDefinedMetadataContext(entity.getContext());
+
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find service " + serviceName);
+            }
+            service.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{serviceName}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response putMetaData(@Context final UriInfo uriInfo, @PathParam("serviceName") final String serviceName, @PathParam("context") final String context, @PathParam("key") final String key, @PathParam("value") final String value) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsMonitoredService service = getService(uriInfo, serviceName);
+
+            if (serviceName == null) {
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find service " + serviceName);
+            }
+            service.addMetaData(context, key, value);
+            getDao().update(service);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 }

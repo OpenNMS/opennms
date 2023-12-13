@@ -32,7 +32,10 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -50,6 +53,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -222,5 +226,89 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return new OnmsMetaDataList(intf.getMetaData().stream()
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
+    }
+
+    @DELETE
+    @Path("{ipAddress}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") final String ipAddress, @PathParam("context") final String context) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find interface " + ipAddress);
+            }
+            intf.removeMetaData(context);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{ipAddress}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") final String ipAddress, @PathParam("context") String context, @PathParam("key") final String key) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find interface " + ipAddress);
+            }
+            intf.removeMetaData(context, key);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{ipAddress}/metadata")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response postMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") final String ipAddress, final OnmsMetaData entity) {
+        checkUserDefinedMetadataContext(entity.getContext());
+
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find interface " + ipAddress);
+            }
+            intf.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{ipAddress}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response putMetaData(@Context final UriInfo uriInfo, @PathParam("ipAddress") final String ipAddress, @PathParam("context") final String context, @PathParam("key") final String key, @PathParam("value") final String value) {        checkUserDefinedMetadataContext(context);
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsIpInterface intf = getInterface(uriInfo, ipAddress);
+
+            if (intf == null) {
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find interface " + ipAddress);
+            }
+            intf.addMetaData(context, key, value);
+            getDao().update(intf);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
     }
 }
