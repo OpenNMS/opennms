@@ -42,7 +42,7 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<core/system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
+* A Linux physical server, or a virtual machine running a <<system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
