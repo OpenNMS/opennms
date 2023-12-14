@@ -15,6 +15,7 @@ set -x
 
 umask 002
 export OPENNMS_HOME="/usr/share/opennms"
+export KARAF_HOME="${OPENNMS_HOME}"
 
 OPENNMS_OVERLAY="/opt/opennms-overlay"
 OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"

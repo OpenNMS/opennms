@@ -37,7 +37,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.opennms.smoketest.containers.CassandraContainer;
+import org.opennms.smoketest.containers.OpenNMSCassandraContainer;
 import org.opennms.smoketest.containers.ElasticsearchContainer;
 import org.opennms.smoketest.containers.JaegerContainer;
 import org.opennms.smoketest.containers.LocalOpenNMS;
@@ -106,7 +106,7 @@ public final class OpenNMSStack implements TestRule {
 
     private final ElasticsearchContainer elasticsearchContainer;
 
-    private final CassandraContainer cassandraContainer;
+    private final OpenNMSCassandraContainer cassandraContainer;
 
     private final List<MinionContainer> minionContainers;
 
@@ -174,7 +174,7 @@ public final class OpenNMSStack implements TestRule {
         }
 
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            cassandraContainer = new CassandraContainer();
+            cassandraContainer = new OpenNMSCassandraContainer();
             cassandraContainer.withNetwork(Network.SHARED)
                     .withNetworkAliases(OpenNMSContainer.CASSANDRA_ALIAS);
             chain = chain.around(cassandraContainer);

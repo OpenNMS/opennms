@@ -69,6 +69,11 @@ JAVA_OPENS=(
     "java.sql/java.sql=ALL-UNNAMED"
 )
 
+JAVA_PATCHES=(
+    "java.base=${KARAF_HOME}/lib/endorsed/org.apache.karaf.specs.locator-${karafVersion}.jar" \
+    "java.xml=${KARAF_HOME}/lib/endorsed/org.apache.karaf.specs.java.xml-${karafVersion}.jar"
+)
+
 # Java 9+, add required modules
 OIFS="$IFS"
 IFS=","
@@ -84,3 +89,7 @@ done
 for OPEN in "${JAVA_OPENS[@]}"; do
     printf -- '--add-opens %s ' "${OPEN}"
 done
+# this was in newer Karaf init, but I'm not convinced it works for us
+#for PATCH in "${JAVA_PATCHES[@]}"; do
+#    printf -- '--patch-module %s ' "${PATCH}"
+#done
