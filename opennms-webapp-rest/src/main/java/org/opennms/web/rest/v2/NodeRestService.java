@@ -34,7 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -58,6 +60,7 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
@@ -336,5 +339,85 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return new OnmsMetaDataList(node.getMetaData().stream()
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
+    }
+
+    @DELETE
+    @Path("{nodeCriteria}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+            }
+            node.removeMetaData(context);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{nodeCriteria}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+            }
+            node.removeMetaData(context, key);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{nodeCriteria}/metadata")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response postMetaData(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsMetaData entity) {
+        checkUserDefinedMetadataContext(entity.getContext());
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find node " + nodeCriteria);
+            }
+            node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response putMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key, @PathParam("value") final String value) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find node " + nodeCriteria);
+            }
+            node.addMetaData(context, key, value);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
     }
 }
