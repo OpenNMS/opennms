@@ -118,7 +118,10 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "tarball-assembly-only",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         }
     },
