@@ -245,17 +245,23 @@
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.jaeger-tracer/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+    <feature name="opennms-activemq" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ">
         <feature>activemq-client</feature>
         <feature>asm</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
         <feature version="[4.2,4.3)">spring</feature>
+        <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+        <feature>opennms-activemq</feature>
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-activemq-shell" description="OpenNMS :: Features :: ActiveMQ :: Shell" version="${project.version}">
+      <feature>opennms-activemq</feature>
       <!-- Additional dependenices are expected to be pulled from the root classloader -->
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.shell/${project.version}</bundle>
     </feature>
@@ -306,12 +312,9 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
-        <feature>activemq-client</feature>
-        <feature>asm</feature>
-        <feature>camel-jms</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>opennms-activemq</feature>
         <feature>opennms-activemq-pool</feature>
-        <feature>opennms-core</feature>
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>

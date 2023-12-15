@@ -52,7 +52,6 @@
               org.opennms.features.activemq.broker.impl;resolution:=optional,
               *
             </Import-Package>
-            <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
