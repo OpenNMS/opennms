@@ -70,7 +70,7 @@ ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \
-  -Dtest.fork.count=0 \
+  -Dtest.fork.count=1 \
   -Dit.test="$IT_TESTS" \
   --fail-fast \
   --batch-mode \
