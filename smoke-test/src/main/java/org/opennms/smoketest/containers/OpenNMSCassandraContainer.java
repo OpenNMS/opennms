@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,13 @@ package org.opennms.smoketest.containers;
 
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Network;
+import org.testcontainers.utility.DockerImageName;
 
-public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
+public class OpenNMSCassandraContainer extends org.testcontainers.containers.CassandraContainer<OpenNMSCassandraContainer> {
 
-    public CassandraContainer() {
+    public OpenNMSCassandraContainer() {
+        // support 3 + 4, but always test against latest 3
+        super(DockerImageName.parse("cassandra").withTag("3"));
         // Reduce JVM heap to 512m
         withEnv("JVM_OPTS", "-Xms512m -Xmx512m")
                 .withNetwork(Network.SHARED)

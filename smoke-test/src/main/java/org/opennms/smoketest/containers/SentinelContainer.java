@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -125,7 +125,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
-            withEnv("JAVA_DEBUG_PORT", "*:" + SENTINEL_DEBUG_PORT);
+            withEnv("JAVA_DEBUG_PORT", "" + SENTINEL_DEBUG_PORT);
         }
 
         // Help make development/debugging easier
