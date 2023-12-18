@@ -208,6 +208,12 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
     </feature>
 
+    <feature name="jackson-jaxrs" version="${jackson2Version}" description="Jackson 2 :: JAXRS">
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
+    </feature>
+
     <feature name="javax.mail" version="${javaxMailVersion}" description="javax.mail">
         <bundle start-level="${systemStartLevel}" dependency="true">mvn:javax.mail/mail/${javaxMailVersion}</bundle>
     </feature>

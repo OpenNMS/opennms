@@ -130,6 +130,31 @@
                   <token>\[4\.\d,5\)</token>
                   <value>[4.2,4.3)</value>
                 </replacement>
+                <!-- update to the latest version of jackson dependencies -->
+                <replacement>
+                  <token>com.fasterxml.jackson.core/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.core/$1/${jackson2Version}</value>
+                </replacement>
+                <replacement>
+                  <token>com.fasterxml.jackson.dataformat/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.dataformat/$1/${jackson2Version}</value>
+                </replacement>
+                <replacement>
+                  <token>com.fasterxml.jackson.datatype/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.datatype/$1/${jackson2Version}</value>
+                </replacement>
+                <replacement>
+                  <token>com.fasterxml.jackson.jaxrs/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.jaxrs/$1/${jackson2Version}</value>
+                </replacement>
+                <replacement>
+                  <token>com.fasterxml.jackson.jr/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.jr/$1/${jackson2Version}</value>
+                </replacement>
+                <replacement>
+                  <token>com.fasterxml.jackson.module/([^/]*)/[\d\.]+</token>
+                  <value>com.fasterxml.jackson.module/$1/${jackson2Version}</value>
+                </replacement>
                 <!-- standardize on the "final" version of jms-api 2.x -->
                 <replacement>
                   <token>org.apache.geronimo.specs/geronimo-jms_2.0_spec/1.0-alpha-2</token>

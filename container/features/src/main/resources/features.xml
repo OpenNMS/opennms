@@ -1172,6 +1172,7 @@
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
         <details>Core module which provides features to install to listen for rest related services,
             such as @Path annotated interfaces.</details>
+        <feature>jackson-jaxrs</feature>
         <feature>jax-rs-connector</feature>
         <feature>jax-rs-provider-jackson</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.rest-provider/${project.version}</bundle>
@@ -1911,6 +1912,7 @@
     <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="${project.version}">
         <feature>org.json</feature>
         <feature>opennms-health-rest</feature>
+        <feature>jackson-jaxrs</feature>
         <feature version="${cxfVersion}">cxf-core</feature>
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
         <!-- early start-level to override jettison version in 3rd-party feature files -->
