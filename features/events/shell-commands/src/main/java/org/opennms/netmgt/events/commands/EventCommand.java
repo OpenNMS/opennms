@@ -53,21 +53,26 @@ public class EventCommand implements Action {
     @Reference
     public EventDao eventDao;
 
-    @Argument(name = "id", description = "Event Id to match (exact).", required = false, multiValued = false)
+    @Argument(name = "id", description = "Event Id to match (exact). If no argument is given, the most recent event will be displayed.", required = false, multiValued = false)
     Integer id;
 
-    @Reference(optional = true)
+    @Reference
     Terminal terminal;
 
     @Override
     public Object execute() {
-        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsEvent.class)
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsEvent.class)
                 .orderBy("eventTime").desc()
-                .eq("id", id)
                 .alias("node", "node", Alias.JoinType.LEFT_JOIN)
                 .alias("alarm", "alarm", Alias.JoinType.LEFT_JOIN)
                 .alias("eventParameters", "event_parameters", Alias.JoinType.LEFT_JOIN)
-                .alias("serviceType", "serviceType", Alias.JoinType.LEFT_JOIN);
+                .alias("serviceType", "serviceType", Alias.JoinType.LEFT_JOIN)
+                .orderBy("id", false)
+                .limit(1);
+
+        if (id != null) {
+            criteriaBuilder = criteriaBuilder.eq("id", id);
+        }
 
         final var onmsEvents = eventDao.findMatching(criteriaBuilder.toCriteria());
 
@@ -97,7 +102,7 @@ public class EventCommand implements Action {
         fillTable(eventPropertyTable, "eventLogGroup", onmsEvent.getEventLogGroup());
         fillTable(eventPropertyTable, "eventLogMsg", onmsEvent.getEventLogMsg());
         fillTable(eventPropertyTable, "eventSeverity", onmsEvent.getEventSeverity());
-        fillTable(eventPropertyTable, "ifINdex", onmsEvent.getIfIndex());
+        fillTable(eventPropertyTable, "ifIndex", onmsEvent.getIfIndex());
         fillTable(eventPropertyTable, "eventPathOutage", onmsEvent.getEventPathOutage());
         fillTable(eventPropertyTable, "eventCorrelation", onmsEvent.getEventCorrelation());
         fillTable(eventPropertyTable, "eventSurpressedCount", onmsEvent.getEventSuppressedCount());
