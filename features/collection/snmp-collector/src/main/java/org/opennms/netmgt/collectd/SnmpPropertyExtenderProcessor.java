@@ -128,6 +128,8 @@ public class SnmpPropertyExtenderProcessor {
             if (targetAttribute != null) {
                 LOG.debug("updateCollectionResource: adding property {} to resource {} with value {}", targetAttribute.getName(), targetResource, targetAttribute.getStringValue());
                 targetResource.setAttributeValue((SnmpAttributeType) targetAttribute.getAttributeType(), targetAttribute.getValue());
+            } else {
+                LOG.debug("updateCollectionResource: no match for resource {} (instance={}, class-name={})", targetResource, property.getInstance(), clazz.getSimpleName());
             }
         } catch (Exception e) {
             LOG.error("Cannot update collection resource {}", targetResource, e);
