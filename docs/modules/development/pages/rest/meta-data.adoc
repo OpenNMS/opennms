@@ -5,7 +5,7 @@
 You can query, add, modify, or delete the actual metadata of nodes, interfaces, and services via REST endpoints.
 
 Modification of metadata entries is limited to user defined contexts (starting with `X-`).
-Read about xref:operation:deep-dive/admin/metadata.adoc#metadata-contexts[how metadata contexts work] for further details.
+Read about xref:operation:deep-dive/meta-data.adoc#metadata-contexts[how metadata contexts work] for further details.
 
 WARNING: It is highly recommended to not modify any metadata using this interface but use the provided requisition mechanisms instead.
 Nodes provisioned via requisition may have metadata overwritten during the resynchronization process.
