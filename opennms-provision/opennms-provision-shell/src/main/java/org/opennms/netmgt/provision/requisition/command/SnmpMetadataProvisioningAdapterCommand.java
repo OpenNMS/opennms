@@ -55,7 +55,7 @@ import com.google.common.primitives.Booleans;
 
 @Command(scope = "opennms", name = "snmp-metadata-provisioning-adapter", description = "Trigger SnmpMetadataProvisioningAdapter for a set of nodes")
 @Service
-public class SnmpMetadataProvisingAdapterCommand implements Action {
+public class SnmpMetadataProvisioningAdapterCommand implements Action {
     @Reference
     public TransactionOperations transactionOperations;
 
