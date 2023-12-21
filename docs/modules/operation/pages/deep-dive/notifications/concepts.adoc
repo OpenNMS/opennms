@@ -101,7 +101,7 @@ Event parameters can additionally act as a filter method.
 This can be helpful for events that don't have an association to a specific node and the common filters only match against interfaces.
 By defining the `vbname` and `vbvalue`, the notification will only be sent with if the event parameter matches the given value.
 
-Example:
+Example 1:
 
 In this example, notifications on a SNMP Link Down event would be suppressed for trunk ports.
 
@@ -118,6 +118,28 @@ In this example, notifications on a SNMP Link Down event would be suppressed for
       <varbind>
          <vbname>ifAlias</vbname> <1>
          <vbvalue>~^.*Trunk.*</vbvalue> <2>
+      </varbind>
+   </notification>
+----
+<1> Varbind or parameter name to filter
+<2> Value to match for the specified varbind/parameter.
+If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
+
+Example 2:
+
+.Example `notifications.xml` definition
+[source, xml]
+----
+   <notification name="BusinessServiceMonitor notification" status="off" writeable="yes">
+      <uei>uei.opennms.org/bsm/serviceProblem</uei>
+      <rule>(ipaddr != '0.0.0.0')</rule>
+      <destinationPath>Email-Admin</destinationPath>
+      <text-message>BSM Root Cause Analysis: %parm[rootCause]%</text-message>
+      <subject>%parm[businessServiceName]% is impacted</subject>
+      <numeric-message>111-%noticeid%</numeric-message>
+      <varbind>
+         <vbname>businessServiceName</vbname> <1>
+         <vbvalue>~^MailCluster.*</vbvalue> <2>
       </varbind>
    </notification>
 ----
