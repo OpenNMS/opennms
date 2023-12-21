@@ -28,13 +28,7 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import org.opennms.netmgt.alarmd.AlarmTransactionExecutor;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -48,6 +42,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class DefaultAlarmService implements AlarmService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmService.class);
@@ -65,6 +66,9 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private EventForwarder eventForwarder;
+
+    private AlarmTransactionExecutor alarmTransactionExecutor;
+
 
     @Override
     @Transactional
@@ -98,13 +102,17 @@ public class DefaultAlarmService implements AlarmService {
                 priorRelatedAlarms.put(situation, new HashSet<OnmsAlarm>(situation.getRelatedAlarms()));
             }
         }
-        alarmDao.delete(alarmInTrans);
+        alarmTransactionExecutor.updateAlarm(alarmInTrans, (action) -> {
+            alarmDao.delete(alarmInTrans);
+            return alarmInTrans;
+        });
         // fire notifications after alarm has been deleted
         for (Entry<OnmsAlarm, Set<OnmsAlarm>> entry : priorRelatedAlarms.entrySet()) {
             alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
         }
         alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
     }
+
 
     @Override
     @Transactional
@@ -220,5 +228,13 @@ public class DefaultAlarmService implements AlarmService {
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.eventForwarder = eventForwarder;
+    }
+
+    public AlarmTransactionExecutor getAlarmTransactionExecutor() {
+        return alarmTransactionExecutor;
+    }
+
+    public void setAlarmTransactionExecutor(AlarmTransactionExecutor alarmTransactionExecutor) {
+        this.alarmTransactionExecutor = alarmTransactionExecutor;
     }
 }

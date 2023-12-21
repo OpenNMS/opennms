@@ -14,7 +14,6 @@
 
   <!-- Drools integration -->
 
-  <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
 
   <bean id="defaultAlarmTicketerService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmTicketerService" />
 
@@ -28,7 +27,11 @@
 
   <!-- Daemon -->
 
-  <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" />
+  <bean id="alarmTransactionExecutor" class="org.opennms.netmgt.alarmd.AlarmTransactionExecutor"/>
+
+  <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" >
+    <property name="alarmTransactionExecutor" ref="alarmTransactionExecutor"/>
+  </bean>
 
   <onmsgi:list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
     <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
@@ -41,6 +44,12 @@
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+
+
+  <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService">
+    <property name="alarmTransactionExecutor" ref="alarmTransactionExecutor"/>
   </bean>
 
   <!-- Northbounders -->

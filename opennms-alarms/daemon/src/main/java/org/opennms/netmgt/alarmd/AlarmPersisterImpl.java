@@ -28,18 +28,9 @@
 
 package org.opennms.netmgt.alarmd;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Striped;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -58,9 +49,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.Striped;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 /**
  * Singleton to persist OnmsAlarms.
@@ -92,6 +91,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     @Autowired
     private AlarmEntityNotifier m_alarmEntityNotifier;
 
+    private AlarmTransactionExecutor alarmTransactionExecutor;
+
+
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
     private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
@@ -106,25 +108,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
         }
-
-        // Lock both the reduction and clear keys (if set) using a fair striped lock
-        // We do this to ensure that clears and triggers are processed in the same order
-        // as the calls are made
-        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
-        final OnmsAlarm alarm;
-        try {
-            locks.forEach(Lock::lock);
-            // Process the alarm inside a transaction
-            alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
-        } finally {
-            locks.forEach(Lock::unlock);
-        }
-
-        return alarm;
+        return alarmTransactionExecutor.reduceEvent(event, (action) -> addOrReduceEventAsAlarm(event));
     }
 
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
@@ -433,6 +420,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
     }
 
+    private static Collection<String> getLockKeys(OnmsAlarm alarm) {
+        if (alarm.getClearKey() == null) {
+            return Collections.singletonList(alarm.getReductionKey());
+        } else {
+            return Arrays.asList(alarm.getReductionKey(), alarm.getClearKey());
+        }
+    }
+
     public TransactionOperations getTransactionOperations() {
         return m_transactionOperations;
     }
@@ -526,5 +521,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void setLegacyAlarmState(boolean legacyAlarmState) {
         m_legacyAlarmState = legacyAlarmState;
+    }
+
+    public AlarmTransactionExecutor getAlarmTransactionExecutor() {
+        return alarmTransactionExecutor;
+    }
+
+    public void setAlarmTransactionExecutor(AlarmTransactionExecutor alarmTransactionExecutor) {
+        this.alarmTransactionExecutor = alarmTransactionExecutor;
     }
 }
