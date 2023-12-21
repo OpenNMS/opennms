@@ -103,7 +103,7 @@ By defining the `vbname` and `vbvalue`, the notification will only be sent with 
 
 Example 1:
 
-In this example, notifications on a SNMP Link Down event would be suppressed for trunk ports.
+In this example, notifications would only be triggered on SNMP Link Down events that contain the string `Trunk`.
 
 .Example `notifications.xml` definition
 [source, xml]
