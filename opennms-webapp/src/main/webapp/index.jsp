@@ -3,8 +3,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,6 +64,12 @@
 			if (Boolean.parseBoolean(showApplicationsProblems)) { %>
 		<jsp:include page="/application/summary-box.htm" flush="false" />
 		<% } %>
+
+        <!-- News Feed Panel -->
+        <% String showNewsFeedPanel = System.getProperty("opennms.newsFeedPanel.show", "true");
+            if (Boolean.parseBoolean(showNewsFeedPanel)) { %>
+                <jsp:include page="/newsfeed/newsFeedPanel.htm" flush="false" />
+        <% } %>
 	</div>
 
 	<!-- Middle Column -->
