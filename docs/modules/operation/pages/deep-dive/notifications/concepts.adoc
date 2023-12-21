@@ -127,6 +127,8 @@ If the value starts with a `~`, it will be processed as a regular expression, ot
 
 Example 2:
 
+In this example, Business Service Monitoring problem events would only trigger notifications if there is a parameter match with the specified business service name pattern.
+
 .Example `notifications.xml` definition
 [source, xml]
 ----
