@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -102,6 +101,60 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
         queryNode(nodeId);
     }
 
+    public List<OnmsMetaData> createMetadata(final OnmsNode node, final OnmsIpInterface primaryInterface) throws SnmpMetadataException {
+        // now get the sysObjectId
+        if (node.getSysObjectId() == null) {
+            LOG.debug("Node {} does not support SNMP. Skipping...", node.getNodeId());
+            return null;
+        }
+
+        // get all configs that apply to the node's sysObjectId
+        final List<Config> configs = snmpMetadataAdapterConfigDao.getContainer().getObject().getConfigs().stream()
+                .filter(c -> {
+                    if (Strings.isNullOrEmpty(c.getSysObjectId())) {
+                        return false;
+                    } else {
+                        if (c.getSysObjectId().startsWith("~")) {
+                            // regex
+                            final String regExp = c.getSysObjectId().substring(1);
+                            return node.getSysObjectId().matches(regExp);
+                        } else {
+                            // non-regex
+                            return node.getSysObjectId().equals(c.getSysObjectId());
+                        }
+                    }
+                })
+                .collect(Collectors.toList());
+
+        final OnmsMonitoringLocation location = node.getLocation();
+        final String locationName = (location == null) ? null : location.getLocationName();
+        final SnmpAgentConfig agentConfig = snmpConfigDao.getAgentConfig(primaryInterface.getIpAddress(), locationName);
+
+        final List<OnmsMetaData> results = new ArrayList<>();
+
+        for (final Config config : configs) {
+            final SnmpObjId rootOId = SnmpObjId.get(config.getTree());
+
+            final CompletableFuture<List<SnmpResult>> resultFuture = locationAwareSnmpClient.walk(agentConfig, rootOId)
+                    .withDescription("walk" + "_" + config.getName() + "_" + node.getLabel())
+                    .withLocation(locationName)
+                    .execute();
+
+            try {
+                for (final Entry entry : config.getEntries()) {
+                    results.addAll(processEntry(CONTEXT, rootOId.append(entry.getTree()), config.getName(), entry, resultFuture.get(), new ArrayList<>()));
+                }
+            } catch (ExecutionException e) {
+                LOG.error("Aborting SNMP walk for " + agentConfig, e);
+                throw new SnmpMetadataException("Agent failed for OId " + config.getTree() + ": " + e.getMessage());
+            } catch (final InterruptedException e) {
+                throw new SnmpMetadataException("SNMP walk interrupted, exiting");
+            }
+        }
+
+        return results;
+    }
+
     public void queryNode(final int nodeId) {
         // retrieve the node
         final OnmsNode node = nodeDao.get(nodeId);
@@ -116,59 +169,13 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
             throw new ProvisioningAdapterException("Can't find primary interface for nodeId: " + nodeId);
         }
 
-        final InetAddress ipAddress = primaryInterface.getIpAddress();
-
         EventBuilder ebldr = null;
 
         try {
-            // now get the sysObjectId
-            if (node.getSysObjectId() == null) {
-                LOG.debug("Node {} does not support SNMP. Skipping...", nodeId);
+            final List<OnmsMetaData> results = createMetadata(node, primaryInterface);
+
+            if (results == null) {
                 return;
-            }
-
-            // get all configs that apply to the node's sysObjectId
-            final List<Config> configs = snmpMetadataAdapterConfigDao.getContainer().getObject().getConfigs().stream()
-                    .filter(c -> {
-                        if (Strings.isNullOrEmpty(c.getSysObjectId())) {
-                            return false;
-                        } else {
-                            if (c.getSysObjectId().startsWith("~")) {
-                                // regex
-                                final String regExp = c.getSysObjectId().substring(1);
-                                return node.getSysObjectId().matches(regExp);
-                            } else {
-                                // non-regex
-                                return node.getSysObjectId().equals(c.getSysObjectId());
-                            }
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-            final OnmsMonitoringLocation location = node.getLocation();
-            final String locationName = (location == null) ? null : location.getLocationName();
-            final SnmpAgentConfig agentConfig = snmpConfigDao.getAgentConfig(ipAddress, locationName);
-
-            final List<OnmsMetaData> results = new ArrayList<>();
-
-            for (final Config config : configs) {
-                final SnmpObjId rootOId = SnmpObjId.get(config.getTree());
-
-                final CompletableFuture<List<SnmpResult>> resultFuture = locationAwareSnmpClient.walk(agentConfig, rootOId)
-                        .withDescription("walk" + "_" + config.getName() + "_" + node.getLabel())
-                        .withLocation(locationName)
-                        .execute();
-
-                try {
-                    for (final Entry entry : config.getEntries()) {
-                        results.addAll(processEntry(CONTEXT, rootOId.append(entry.getTree()), config.getName(), entry, resultFuture.get(), new ArrayList<>()));
-                    }
-                } catch (ExecutionException e) {
-                    LOG.error("Aborting SNMP walk for " + agentConfig, e);
-                    throw new SnmpMetadataException("Agent failed for OId " + config.getTree() + ": " + e.getMessage());
-                } catch (final InterruptedException e) {
-                    throw new SnmpMetadataException("SNMP walk interrupted, exiting");
-                }
             }
 
             if (snmpMetadataAdapterConfigDao.getContainer().getObject().getResultsBehavior().equals("update")) {
@@ -188,13 +195,13 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, PREFIX + NAME);
             ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
-            ebldr.setInterface(ipAddress);
+            ebldr.setInterface(primaryInterface.getIpAddress());
             getEventForwarder().sendNow(ebldr.getEvent());
         } catch (Throwable e) {
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, PREFIX + NAME);
             ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
-            ebldr.setInterface(ipAddress);
+            ebldr.setInterface(primaryInterface.getIpAddress());
             ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             getEventForwarder().sendNow(ebldr.getEvent());
         }
