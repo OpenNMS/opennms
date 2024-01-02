@@ -30,7 +30,7 @@
   <onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
   <!-- Conditionally start a local ActiveMQ broker. -->
-  <bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/>
+  <!-- TEST bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/ -->
 
   <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" lazy-init="true">
     <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false&amp;jms.useAsyncSend=true')}" />
