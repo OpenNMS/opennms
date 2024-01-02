@@ -118,6 +118,8 @@
         },
         "experimental": {
             "extends": [
+                "build",
+                "tarball-assembly-only",
                 "smoke-test-sentinel"
             ]
         }
