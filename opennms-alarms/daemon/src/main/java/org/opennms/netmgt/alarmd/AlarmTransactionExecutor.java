@@ -87,4 +87,8 @@ public class AlarmTransactionExecutor {
             locks.forEach(Lock::unlock);
         }
     }
+
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+        this.transactionOperations = transactionOperations;
+    }
 }
