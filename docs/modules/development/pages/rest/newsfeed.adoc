@@ -1,7 +1,8 @@
 
 = News Feed
 
-Gets processed news feed data from the OpenNMS RSS site. Used by the UI to display the News Feed panel.
+Gets processed news feed data from the OpenNMS RSS site.
+Used by the UI to display the News Feed panel.
 
 == GETs (reading data)
 
