@@ -45,6 +45,7 @@
 *** xref:rest/maps.adoc[]
 *** xref:rest/measurements.adoc[]
 *** xref:rest/meta-data.adoc[]
+*** xref:rest/newsfeed.adoc[]
 *** xref:rest/nodes.adoc[]
 *** xref:rest/node_links.adoc[]
 *** xref:rest/notifications.adoc[]
