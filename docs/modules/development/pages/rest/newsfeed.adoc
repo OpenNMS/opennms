@@ -1,0 +1,19 @@
+
+= News Feed
+
+Gets processed news feed data from the OpenNMS RSS site.
+Used by the UI to display the News Feed panel.
+
+== GETs (reading data)
+
+[caption=]
+.News Feed API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/newsfeed
+| Get the latest news feed items.
+Items include categories, tags, title, link, description, and a short description.
+
+|===
