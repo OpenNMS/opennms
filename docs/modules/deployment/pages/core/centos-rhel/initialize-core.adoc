@@ -21,25 +21,39 @@ sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 +
 [source, xml]
 ----
+...
 <jdbc-data-source name="opennms"
                     database-name="opennms" <1>
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://localhost:5432/opennms"
-                    user-name="${scv:postgres:username}" <2>
-                    password="${scv:postgres:password}" /> <3>
+                    url="jdbc:postgresql://localhost:5432/opennms" <2>
+                    user-name="${scv:postgres:username}" <3>
+                    password="${scv:postgres:password}" /> <4>
 
 <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="${scv:postgres-admin:username}" <4>
-                    password="${scv:postgres-admin:password}" /> <5>
+                    url="jdbc:postgresql://localhost:5432/template1" <5>
+                    user-name="${scv:postgres-admin:username}" <6>
+                    password="${scv:postgres-admin:password}" /> <7>
+...
+<jdbc-data-source name="opennms-monitor"
+                    database-name="postgres"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/postgres" <8>
+                    user-name="${scv:postgres-admin:username}" <9>
+                    password="${scv:postgres-admin:password}" /> <10>
+...
 ----
 <1> Set the database name that {page-component-title} should use.
-<2> Set the user name to access the opennms database table.
-<3> Set the password to access the opennms database table.
-<4> Set the postgres user for administrative access to PostgreSQL.
-<5> Set the password for administrative access to PostgreSQL.
+<2> Set the JDBC connection string to your Postregres server for the instance database.
+<3> Set the user name to access the opennms database table.
+<4> Set the password to access the opennms database table.
+<5> Set the JDBC connection string to your Postregres server for the schema database
+<6> Set the postgres user for administrative access to PostgreSQL.
+<7> Set the password for administrative access to PostgreSQL.
+<8> Set the JDBC connection string to your Postregres server for the system database.
+<9> Set the postgres user for administrative access to PostgreSQL.
+<10> Set the password for administrative access to PostgreSQL.
 
 .Detect and assign Java environment and persist in /opt/opennms/etc/java.conf
 [source, console]
