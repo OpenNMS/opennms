@@ -36,8 +36,6 @@
     <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
         <constructor-arg ref="dispatcherServletPath"/>
     </bean>
-    <bean id="newsfeedProvider" class="org.opennms.web.rest.support.newsfeed.NewsFeedProvider">
-    </bean>
 
     <!-- CXF OpenApiFeature -->
     <bean id="securityScheme" class="io.swagger.v3.oas.models.security.SecurityScheme">
