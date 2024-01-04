@@ -17,14 +17,14 @@
   <jdbc-data-source name="opennms"
                     database-name="{{getv "/opennms/dbname" "opennms"}}"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/{{getv "/opennms/dbname" "opennms"}}?sslmode={{getv "/postgres/ssl/mode" "disable"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/{{getv "/opennms/dbname" "opennms"}}?sslmode={{getv "/postgres/ssl/mode" "prefer"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
                     user-name="{{getv "/opennms/dbuser" "opennms"}}"
                     password="{{getv "/opennms/dbpass" "opennms"}}" />
 
   <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/template1?sslmode={{getv "/postgres/ssl/mode" "disable"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/template1?sslmode={{getv "/postgres/ssl/mode" "prefer"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
                     user-name="{{getv "/postgres/user" "postgres"}}"
                     password="{{getv "/postgres/password" "postgres"}}">
     <connection-pool idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
@@ -36,7 +36,7 @@
   <jdbc-data-source name="opennms-monitor"
                     database-name="postgres"
                     class-name="org.postgresql.Driver"
-                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/postgres?sslmode={{getv "/postgres/ssl/mode" "disable"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
+                    url="jdbc:postgresql://{{getv "/postgres/host" "database"}}:{{getv "/postgres/port" "5432"}}/postgres?sslmode={{getv "/postgres/ssl/mode" "prefer"}}&amp;sslfactory={{getv "/postgres/ssl/factory" "org.postgresql.ssl.LibPQFactory"}}"
                     user-name="{{getv "/postgres/user" "postgres"}}"
                     password="{{getv "/postgres/password" "postgres"}}">
     <connection-pool idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
