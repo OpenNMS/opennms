@@ -824,7 +824,8 @@ if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	JPDA_ADDRESS="8001"
 else
 	# Java 9+, add required modules
-	JAVA_CMD=("${JAVA_CMD[@]}" $("${OPENNMS_HOME}/bin/_module_opts.sh"))
+	JAVA_MODULES=$("${OPENNMS_HOME}/bin/_module_opts.sh")
+	JAVA_CMD=("${JAVA_CMD[@]}" "${JAVA_MODULES}")
 
 	# extra options that aren't shared with Minion and Sentinel
 	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
