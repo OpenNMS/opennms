@@ -4,6 +4,11 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11.0.14.0.9-b8239"
 
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-temp
+
+COPY ./rpms /tmp/rpms
+COPY ./tarball /tmp/tarball
+
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
 ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
@@ -48,9 +53,6 @@ ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting ope
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
 
-COPY ./rpms /tmp/rpms
-COPY ./tarball /tmp/tarball
-
 SHELL ["/bin/bash", "-c"]
 
 # we want these to break the caching so yum will re-install now that
@@ -67,7 +69,8 @@ ARG REVISION
 # the directory structure is unified, the links for /opt/opennms/share
 # and /opt/opennms/logs introduced by RPM installs are removed.
 
-RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
+RUN --mount=type=bind,source=/tmp/rpms/,target=/tmp/rpms/,from=horizon-temp \
+    echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && \
         tar -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
@@ -76,15 +79,6 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local RPMs from filesystem" && \
         dnf -y install /tmp/rpms/*.rpm && \
-        rm -rf /opt/opennms/logs \
-               /opt/opennms/share && \
-        mv /var/opennms /opt/opennms/share && \
-        mv /var/log/opennms /opt/opennms/logs; \
-    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
-        echo "installing local RPMs over HTTP" && \
-        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
-        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${ONMS_PACKAGES} && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
@@ -98,7 +92,6 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
         mv /var/log/opennms /opt/opennms/logs; \
     fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms /tmp/tarball && \
     dnf clean all && \
     rm -rf /var/cache/yum && \
     rm -rf /opt/opennms/share/rrd \
