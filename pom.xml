@@ -1650,7 +1650,6 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
