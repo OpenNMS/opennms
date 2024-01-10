@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<form class="form-inline" name="event_search" action="event/query" method="get" onsubmit="return Blank_TextField_Validator()">
+<form class="form-inline" name="event_search" action="event/query" method="post" onsubmit="return Blank_TextField_Validator()">
   <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <div class="input-group">
       <input class="form-control" type="text" name="eventtext" placeholder="Event Text"/>

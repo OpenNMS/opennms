@@ -10,4 +10,4 @@ Understanding xref:operation:deep-dive/performance-data-collection/resource-type
 
 == Supported collectors
 
-For information on supported collectors and how to configure them, see xref:operation:deep-dive/performance-data-collection/introduction.adoc[Performance Management].
+For information on supported collectors and how to configure them, see xref:reference:performance-data-collection/introduction.adoc[Collectors].

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export ALEC_VERSION="latest"
-export CLOUD_VERSION="latest"
 export CORTEX_VERSION="latest"
 export VELOCLOUD_VERSION="latest"
 
@@ -24,18 +23,6 @@ find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
 
 cd ~/ || exit
 rm -rf test
-mkdir ~/test
-cd ~/test || exit
-
-artifact_urls=$(cloudsmith list packages --query="opennms-plugin-cloud version:$CLOUD_VERSION format:deb" opennms/common -F json  | jq -r '.data[].cdn_url')
-for url in $artifact_urls; do
-    wget "$url"
-done
-dpkg-deb -R *-plugin-cloud_*_all.deb ./
-find . -name '*.kar' -exec mv {} $DEPLOY_FOLDER \;
-
-cd ..
-rm -r test
 
 cd $DEPLOY_FOLDER || exit 
 if [ $CORTEX_VERSION == "latest" ]

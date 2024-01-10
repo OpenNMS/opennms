@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.alarms</groupId>
     <artifactId>org.opennms.features.alarms.history</artifactId>
-    <version>32.0.5</version>
+    <version>32.0.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.alarms.history</groupId>
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.elasticsearch</artifactId>
-      <version>32.0.5</version>
+      <version>32.0.6</version>
     </dependency>
   </dependencies>
 </project>

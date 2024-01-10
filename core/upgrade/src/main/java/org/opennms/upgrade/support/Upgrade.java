@@ -146,8 +146,12 @@ public class Upgrade {
         try {
             log("- Running execution phase\n");
             upg.execute();
-            log("- Saving the execution state\n");
-            markAsExecuted(upg);
+            if (upg.runOnlyOnce()) {
+                log("- Saving the execution state\n");
+                markAsExecuted(upg);
+            } else {
+                log("- Ignore the execution status, as this task is executed with every call\n");
+            }
         } catch (OnmsUpgradeException executeException) {
             log("  Warning: can't perform the upgrade operation because: %s\n", executeException.getMessage());
             try {

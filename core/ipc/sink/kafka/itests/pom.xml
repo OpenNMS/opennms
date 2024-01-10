@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.kafka</artifactId>
-    <version>32.0.5</version>
+    <version>32.0.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink.kafka</groupId>
@@ -13,6 +13,17 @@
   <properties>
     <skipITs>true</skipITs>
   </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <excludes>**/org/apache/**/*</excludes>
+        </configuration>
+      </plugin>
+	</plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.ipc.sink.kafka</groupId>

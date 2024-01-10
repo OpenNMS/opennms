@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>32.0.5</version>
+  <version>32.0.6</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -48,7 +48,7 @@
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <camelVersion>2.19.1</camelVersion>
+    <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.14</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
@@ -66,13 +66,12 @@
     <netty4Version>4.1.99.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
-    <cloudPluginAssemblyVersion>1.0.3</cloudPluginAssemblyVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
 
     <!-- for surefire and failsafe -->
-    <maven.testing.plugin.version>3.2.1</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.2</maven.testing.plugin.version>
 
     <!-- fix xerces/xalan pollution, use built-in factories -->
     <argLineMemory>-Xms2g -Xmx2g -XX:+UseG1GC</argLineMemory>
@@ -154,52 +153,6 @@
                 <goal>integration-test</goal>
                 <goal>verify</goal>
               </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.6.0</version>
-          <executions>
-          <execution>
-            <id>copy-jar-with-dependencies</id>
-            <phase>process-resources</phase>
-            <goals><goal>copy</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.plugins.cloud</groupId>
-                  <artifactId>it-test</artifactId>
-                  <version>${cloudPluginAssemblyVersion}</version>
-                  <type>jar</type>
-                  <classifier>jar-with-dependencies</classifier>
-                  <destFileName>org.opennms.plugins.cloud-mock-with-dependencies.jar</destFileName>
-                  <outputDirectory>${project.build.directory}/cloud-mock-with-dependencies</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <stripVersion>true</stripVersion>
-              <stripClassifier>true</stripClassifier>
-            </configuration>
-          </execution>
-            <execution>
-              <id>copy-kar</id>
-              <phase>process-resources</phase>
-              <goals><goal>copy</goal></goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.opennms.plugins.cloud.assembly</groupId>
-                    <artifactId>org.opennms.plugins.cloud.assembly.kar</artifactId>
-                    <version>${cloudPluginAssemblyVersion}</version>
-                    <type>kar</type>
-                    <destFileName>org.opennms.plugins.cloud-assembly.kar</destFileName>
-                    <outputDirectory>${project.build.directory}/plugin-cloud-assembly</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-                <stripVersion>true</stripVersion>
-                <stripClassifier>true</stripClassifier>
-              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -867,6 +820,11 @@
       <groupId>com.github.mwiede</groupId>
       <artifactId>jsch</artifactId>
       <version>0.2.11</version>
+    </dependency>
+    <dependency>
+      <groupId>net.i2p.crypto</groupId>
+      <artifactId>eddsa</artifactId>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>

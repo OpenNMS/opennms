@@ -11,7 +11,7 @@
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.21.5.xsd
 ">
 
   <context:annotation-config />
@@ -56,7 +56,7 @@
       <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="rpcClient" registerEndpointIdsFromRoute="true" xmlns="http://camel.apache.org/schema/spring">
     <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
     <properties>
       <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>

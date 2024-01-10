@@ -1,3 +1,14 @@
+opennms (32.0.6-1) stable; urgency=medium
+
+  * Release 32.0.6 contains a bunch of changes including UI cleanups, a number
+    of access/role fixes, and other bug fixes, plus a ton of documentation
+    updates and a new feature to show news and tips from an RSS feed in the UI.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/32.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Jan 2024 14:02:00 -0500
+
 opennms (32.0.5-1) stable; urgency=high
 
   * Release 32.0.5 contains a bunch of security updates to Drools,

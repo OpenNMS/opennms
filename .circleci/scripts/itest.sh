@@ -156,7 +156,6 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -Dfailsafe.failIfNoSpecifiedTests=false \
            -DrunPingTests=false \
            -DskipITs=false \
-           -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \

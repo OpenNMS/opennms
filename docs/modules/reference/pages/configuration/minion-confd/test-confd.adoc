@@ -1,7 +1,7 @@
 
 [[confd-template-test]]
 = Test confd Templates
-:description: Learn how to test confd template changes locally using a Minion Docker container in {page-component-title}.
+:description: Learn how to test confd template changes locally using a Minion Docker container in OpenNMS {page-component-title}.
 
 To locally test `confd` template changes, run a Minion container and map the corresponding files into the container.
 The following procedure, which requires a Minion Docker container, might be useful:
