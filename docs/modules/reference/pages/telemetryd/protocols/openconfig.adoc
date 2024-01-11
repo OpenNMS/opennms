@@ -137,7 +137,7 @@ Parameters are passed to the connector and are interpolated for node/interface a
 
 | hostname
 | The HostName OpenNMS needs to make a gRPC connection instead of using Node primary IpAddress.
-| 0
+| none
 
 | tls.enabled
 | Enable TLS authentication.
