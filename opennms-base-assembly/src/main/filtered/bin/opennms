@@ -816,6 +816,7 @@ if [ -z "$JAVA_SHORT_VERSION" ]; then
 fi
 
 
+KARAF_HOME="${OPENNMS_HOME}"
 JPDA_ADDRESS="*:8001"
 JPDA_SUSPEND="n"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then

@@ -75,11 +75,14 @@
                     </startupFeatures>
                     <bootFeatures>
                         <!-- Karaf "standard" features to include in the core -->
-                        <feature>standard</feature>
-                        <feature>jaas</feature>
-                        <feature>jasypt-encryption</feature>
+                        <feature>aries-blueprint</feature>
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
+                        <feature>jaas</feature>
+                        <feature>jaas-deployer</feature>
+                        <feature>jasypt-encryption</feature>
+                        <feature>shell-compat</feature>
+                        <feature>standard</feature>
                         <feature>war</feature>
 
                         <!-- OPENNMS: Add our enhancements to the container -->
@@ -90,7 +93,7 @@
 
                         <!-- OPENNMS: Additional or overrided tools -->
                         <feature>hawtio</feature>
-                        <feature>jolokia</feature>
+                        <feature>jolokia/${jolokiaVersion}</feature>
                         <feature>ssh/${karafSshdVersion}</feature>
                     </bootFeatures>
                     <blacklistedFeatures>

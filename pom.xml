@@ -1607,6 +1607,7 @@
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
+    <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.2</commonsCliVersion>
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
@@ -1614,16 +1615,22 @@
     <commonsCompressVersion>1.23.0</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
+    <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
+    <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.2</commonsExecVersion>
+    <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
+    <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.13.0</commonsIoVersion>
+    <commonsIoVersion>2.15.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.13.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.10.0</commonsNetVersion>
+    <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
+    <commonsTextVersion>1.11.0</commonsTextVersion>
     <commonsValidatorVersion>1.7</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
@@ -1643,7 +1650,6 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
@@ -3858,12 +3864,12 @@
       <dependency>
         <groupId>commons-chain</groupId>
         <artifactId>commons-chain</artifactId>
-        <version>1.2</version>
+        <version>${commonsChainVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.2</version>
+        <version>${commonsCliVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -3892,9 +3898,14 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>commons-daemon</groupId>
+        <artifactId>commons-daemon</artifactId>
+        <version>${commonsDaemonVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
-        <version>1.4</version>
+        <version>${commonsDbcpVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-digester</groupId>
@@ -3910,7 +3921,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.3</version>
+        <version>${commonsExecVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commonsFileuploadVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -4042,7 +4058,12 @@
       <dependency>
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
-        <version>1.6</version>
+        <version>${commonsPoolVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commonsTextVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -5197,6 +5218,17 @@
         <artifactId>xmlunit</artifactId>
         <version>1.6</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-jexl3</artifactId>
+        <version>${commonsJexl3Version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

@@ -30,6 +30,7 @@ package org.opennms.features.openconfig.telemetry;
 
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
@@ -82,6 +83,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
+    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300 * 10^9; // 5mins in nano seconds
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
     private static final String PORT = "port";
     private static final String MODE = "mode";
@@ -90,6 +92,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final String INTERVAL = "interval";
     private static final String RETRIES = "retries";
     private static final String JTI_MODE = "jti";
+    private static final String ORIGIN = "origin";
+    private static final String DEFAULT_ORIGIN = "openconfig";
     private static final String USERNAME_FIELD = "username";
     private static final String PASSWORD_FIELD = "password";
     private ManagedChannel channel;
@@ -172,34 +176,36 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
             });
             asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
-            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}/{}", InetAddressUtils.str(host), port);
         } else {
 
             gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();
             paramList.forEach(entry -> {
-                Integer frequency = StringUtils.parseInt(entry.get(FREQUENCY), DEFAULT_FREQUENCY);
+                Long frequency = StringUtils.parseLong(entry.get(FREQUENCY), DEFAULT_FREQUENCY_FOR_GNMI);
                 String pathString = entry.get(PATHS);
+                String origin = entry.get(ORIGIN);
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> {
-                    Gnmi.Path gnmiPath = buildGnmiPath(path);
+                    Gnmi.Path gnmiPath = buildGnmiPath(path, origin);
                     Gnmi.Subscription subscription = Gnmi.Subscription.newBuilder()
                             .setPath(gnmiPath)
                             .setSampleInterval(frequency)
                             .setMode(Gnmi.SubscriptionMode.SAMPLE).build();
                     subscriptionListBuilder.addSubscription(subscription);
+                    subscriptionListBuilder.setMode(Gnmi.SubscriptionList.Mode.STREAM);
                 });
             });
             requestBuilder.setSubscribe(subscriptionListBuilder.build());
             StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, host, port));
             requestStreamObserver.onNext(requestBuilder.build());
-            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}/{}", InetAddressUtils.str(host), port);
         }
     }
 
     // Builds gnmi path based on https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-path-conventions.md
-    static Gnmi.Path buildGnmiPath(String path) {
+    static Gnmi.Path buildGnmiPath(String path, String origin) {
         Gnmi.Path.Builder gnmiPathBuilder = Gnmi.Path.newBuilder();
         List<String> elemList =  Splitter.on(PATH_SEPARATOR).omitEmptyStrings().splitToList(path);
         elemList.forEach(elem -> {
@@ -214,6 +220,11 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 gnmiPathBuilder.addElem(Gnmi.PathElem.newBuilder().setName(elem).build());
             }
         });
+        if (Strings.isNullOrEmpty(origin)) {
+            gnmiPathBuilder.setOrigin(DEFAULT_ORIGIN);
+        } else {
+            gnmiPathBuilder.setOrigin(origin);
+        }
         return gnmiPathBuilder.build();
     }
 

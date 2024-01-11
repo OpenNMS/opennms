@@ -36,7 +36,6 @@
     <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
         <constructor-arg ref="dispatcherServletPath"/>
     </bean>
-
     <!-- CXF OpenApiFeature -->
     <bean id="securityScheme" class="io.swagger.v3.oas.models.security.SecurityScheme">
         <property name="type">
@@ -66,6 +65,9 @@
         <property name="useContextBasedConfig" value="true" />
         <property name="scan" value="false" />
         <property name="scannerClass" value="io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner"/>
+    </bean>
+
+    <bean id="newsfeedProvider" class="org.opennms.web.rest.support.newsfeed.NewsFeedProvider">
     </bean>
 
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">

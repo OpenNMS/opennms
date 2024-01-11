@@ -14,6 +14,8 @@ set -e
 
 umask 002
 export SENTINEL_HOME="/opt/sentinel"
+export KARAF_HOME="${SENTINEL_HOME}"
+
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"

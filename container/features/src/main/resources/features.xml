@@ -890,6 +890,7 @@
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">
         <feature>activemq-client</feature>
+        <feature>bsf</feature>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
         <feature>commons-io</feature>
@@ -902,7 +903,6 @@
         <feature>jolokia-client</feature>
         <feature>json-simple</feature>
         <feature>jcifs</feature>
-        <feature>bsf</feature>
         <feature>ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>

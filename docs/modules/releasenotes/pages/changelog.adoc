@@ -2,6 +2,48 @@
 
 = Changelog
 
+[[releasenotes-changelog-32.0.6]]
+
+== Release 32.0.6
+
+Release 32.0.6 contains a bunch of changes including UI cleanups, a number
+of access/role fixes, and other bug fixes, plus a ton of documentation
+updates and a new feature to show news and tips from an RSS feed in the UI.
+
+The codename for Horizon 32.0.6 is https://wikipedia.org/wiki/Breakcore[_Breakcore_].
+
+=== Bug
+
+* Missing information in downtime model docs (Issue https://issues.opennms.org/browse/NMS-10133[NMS-10133])
+* R-Core fails to install following the Horizon 30 Install Docs (Issue https://issues.opennms.org/browse/NMS-14777[NMS-14777])
+* Surveillance Dashboard shows acknowledged Alarms (Issue https://issues.opennms.org/browse/NMS-15448[NMS-15448])
+* Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
+* Event parameters with `<>` not rendering in event/alarm views (Issue https://issues.opennms.org/browse/NMS-16157[NMS-16157])
+* Users with ROLE_READONLY can add, modify, and delete alarm memos (Issue https://issues.opennms.org/browse/NMS-16162[NMS-16162])
+* Events: filter and advanced search / method GET is not supported (Issue https://issues.opennms.org/browse/NMS-16232[NMS-16232])
+* VmwareCimMonitor/VmwareCimCollector not working anymore (Issue https://issues.opennms.org/browse/NMS-16236[NMS-16236])
+* OpenConfig Connector parameter frequency in incorrect unit (Issue https://issues.opennms.org/browse/NMS-16253[NMS-16253])
+* Container flag `-t` does not pass correct arguments (Issue https://issues.opennms.org/browse/NMS-16265[NMS-16265])
+* OpenConfig server logs invalid sample interval unit ?s when frequency is set to 4 digits or higher (Issue https://issues.opennms.org/browse/NMS-16280[NMS-16280])
+* LegacyDatetimeFormatterTest.testParse fails to parse date time when locale is set to `en_CA-UTF-8` (Issue https://issues.opennms.org/browse/NMS-16288[NMS-16288])
+
+=== Enhancement
+
+* Add command to Karaf shell to manually trigger Metadata Adapter (Issue https://issues.opennms.org/browse/NMS-13922[NMS-13922])
+* Karaf command to display event details (Issue https://issues.opennms.org/browse/NMS-15130[NMS-15130])
+* Add debug logging to SNMP Property Extenders on match failure (Issue https://issues.opennms.org/browse/NMS-15743[NMS-15743])
+* Remove plugin 'opennms-cloud-plugin' from installation (Issue https://issues.opennms.org/browse/NMS-16219[NMS-16219])
+* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
+* Docs: Remove reference to 'opennms-cloud-plugin' plugin (Issue https://issues.opennms.org/browse/NMS-16231[NMS-16231])
+* OpenShift: Document the impact of disabling allowPrivilegeEscalation (Issue https://issues.opennms.org/browse/NMS-16239[NMS-16239])
+* RSS Feeds Panel showing OpenNMS Blog content (Issue https://issues.opennms.org/browse/NMS-16250[NMS-16250])
+* Document RSS feature (Issue https://issues.opennms.org/browse/NMS-16255[NMS-16255])
+* Docs: Create documentation on how to create graph definitions (Issue https://issues.opennms.org/browse/NMS-16258[NMS-16258])
+* News Feed: UI Panel and REST Service (Issue https://issues.opennms.org/browse/NMS-16282[NMS-16282])
+* Docs: Update install docs for monitoring database connection (Issue https://issues.opennms.org/browse/NMS-16286[NMS-16286])
+* Update container confd to default Postgres SSL to prefer (Issue https://issues.opennms.org/browse/NMS-16287[NMS-16287])
+
+
 [[releasenotes-changelog-32.0.5]]
 
 == Release 32.0.5
