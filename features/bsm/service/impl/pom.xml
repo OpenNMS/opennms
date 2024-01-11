@@ -28,9 +28,9 @@
   </build>
   <dependencies>
     <dependency>
-	  <groupId>org.opennms.features.bsm</groupId>
-	  <artifactId>org.opennms.features.bsm.service.api</artifactId>
-	  <version>${project.version}</version>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.api</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
