@@ -121,8 +121,8 @@ In this example, notifications would only be triggered on SNMP Link Down events 
       </varbind>
    </notification>
 ----
-<1> Varbind or parameter name to filter
-<2> Value to match for the specified varbind/parameter.
+<1> Event parameter name to filter
+<2> Value to match for the specified event parameter.
 If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
 
 Example 2:
@@ -145,6 +145,6 @@ In this example, Business Service Monitoring problem events would only trigger n
       </varbind>
    </notification>
 ----
-<1> Varbind or parameter name to filter
-<2> Value to match for the specified varbind/parameter.
+<1> Event parameter name to filter
+<2> Value to match for the specified event parameter.
 If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
