@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,19 @@
 
 package org.opennms.features.datachoices.internal;
 
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.CmProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * Maintains state in cfg file:
@@ -57,13 +59,33 @@ public class StateManager {
     private static final Logger LOG = LoggerFactory.getLogger(StateManager.class);
 
     private static final String PROPERTIES_CONFIG_NAME = "org.opennms.features.datachoices";
+
+    /**
+     * Whether data choices / Usage Statistics Sharing is enabled.
+     */
     private static final String ENABLED_KEY = "enabled";
     private static final String SYSTEM_ID_KEY = "systemid";
     private static final String ACKNOWLEDGED_BY_KEY = "acknowledged-by";
     private static final String ACKNOWLEDGED_AT_KEY = "acknowledged-at";
+
+    /**
+     * Whether the Usage Statistics Sharing notice was acknowledged.
+     */
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_KEY = "initialNoticeAcknowledged";
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY = "initialNoticeAcknowledgedAt";
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_BY_KEY = "initialNoticeAcknowledgedBy";
+
+    /**
+     * Whether a user opted-in to User Data Collection.
+     */
+    private static final String USER_DATA_COLLECTION_OPTED_IN_KEY = "userDataCollectionOptedIn";
+
+    /**
+     * Whether the User Data Collection notice was acknowledged.
+     */
+    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY = "userDataCollectionNoticeAcknowledged";
+    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_AT_KEY = "userDataCollectionNoticeAcknowledgedAt";
+    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_BY_KEY = "userDataCollectionNoticeAcknowledgedBy";
 
     private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
     private final CmProperties propertiesCache;
@@ -101,8 +123,27 @@ public class StateManager {
         propertiesCache.setProperty(INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
     }
 
+    public Boolean isUserDataCollectionNoticeAcknowledged() throws IOException {
+        return (Boolean) propertiesCache.getProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY);
+    }
+
+    public void setUserDataCollectionNoticeAcknowledged(boolean status, String user) throws Exception {
+        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY, status);
+        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
+        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
+    }
+
+    public Boolean isUserDataCollectionOptedIn() throws IOException {
+        return (Boolean) propertiesCache.getProperty(USER_DATA_COLLECTION_OPTED_IN_KEY);
+    }
+
+    public void setUserDataCollectionOptedIn(boolean status) throws Exception {
+        propertiesCache.setProperty(USER_DATA_COLLECTION_OPTED_IN_KEY, status);
+    }
+
     public String getOrGenerateSystemId() throws IOException {
         String systemId = (String) propertiesCache.getProperty(SYSTEM_ID_KEY);
+
         if (systemId == null) {
             LOG.debug("No existing system id was found. Generating a new system id.");
             systemId = UUID.randomUUID().toString();
