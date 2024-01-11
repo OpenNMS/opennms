@@ -135,13 +135,29 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | Interval at which client tries to make a connection when failed in seconds.
 | 300
 
+| hostname
+| The HostName OpenNMS needs to make a gRPC connection instead of using Node primary IpAddress.
+| none
+
 | tls.enabled
 | Enable TLS authentication.
 | false
 
 | tls.trust.cert.path
-| Server trust certificate path.
+| Root CA certificate for verifying server certs
 | none
+
+| tls.client.key.path
+| Client private key path
+| none
+
+| tls.client.cert.path
+| Client public certificate path
+| none
+
+| tls.skip.verify
+| Skip TLS signature verification (TLS certs are still used, test purposes only)
+| false
 
 | origin
 | Origin that need to be subscribed to, only relevant for gnmi.
