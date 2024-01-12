@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections15.Transformer;
 import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -50,6 +49,8 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
+
+import com.google.common.base.Function;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
@@ -168,17 +169,14 @@ public class D3LayoutTest extends AbstractLayoutTest {
         return layout;
     }
 
-    protected Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final Dimension dim) {
-        return new Transformer<VertexRef, Point2D>() {
-            @Override
-            public Point2D transform(VertexRef v) {
-                if (v == null) {
-                    LOG.info("Algorithm tried to layout a null vertex");
-                    return new java.awt.Point(0,0);
-                }
-                org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-                return new Point2D.Double(location.getX() + dim.getWidth()/2.0 , location.getY() + dim.getHeight()/2.0 );
+    protected Function<VertexRef, Point2D> initializer(final Layout graphLayout, final Dimension dim) {
+        return (VertexRef v) -> {
+            if (v == null) {
+                LOG.info("Algorithm tried to layout a null vertex");
+                return new java.awt.Point(0,0);
             }
+            org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
+            return new Point2D.Double(location.getX() + dim.getWidth()/2.0 , location.getY() + dim.getHeight()/2.0 );
         };
     }
 

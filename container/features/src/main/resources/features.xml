@@ -93,6 +93,9 @@
     <feature name="commons-collections" version="${commonsCollectionsVersion}" description="Apache :: commons-collections">
         <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
+    <feature name="commons-collections4" version="${commonsCollections4Version}" description="Apache :: commons-collections 4.x">
+        <bundle dependency="true">mvn:org.apache.commons/commons-collections4/${commonsCollections4Version}</bundle>
+    </feature>
     <feature name="commons-configuration" version="${commonsConfigurationVersion}" description="Apache :: commons-configuration">
         <feature>commons-beanutils</feature>
         <feature>commons-codec</feature>
@@ -1425,6 +1428,7 @@
         <feature>opennms-core</feature>
         <feature>opennms-topology-api</feature>
         <feature>geolocation</feature>
+        <feature>commons-collections4</feature>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.history/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
