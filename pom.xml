@@ -1771,6 +1771,7 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.5.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.5.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
