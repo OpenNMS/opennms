@@ -58,7 +58,7 @@ Use it for the notifications you want to go to the second channel.
 Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 
 [source, properties]
-org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
+org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/A00000000/X00000000/XXXXXXXXXXXXXXXXXXXXXXXX
 
 Customize its values as appropriate for your organization.
 
