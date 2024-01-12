@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
@@ -40,6 +39,8 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.google.common.base.Function;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -51,7 +52,7 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 		final Layout graphLayout = graph.getLayout();
 
-		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
+		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<>();
 
 		Collection<Vertex> vertices = graph.getDisplayVertices();
 
@@ -65,7 +66,7 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
 
-		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
+		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<>(jungGraph);
 		// Initialize the vertex positions to the last known positions from the layout
         Dimension size = selectLayoutSize(graph);
         layout.setInitializer(initializer(graphLayout, (int)size.getWidth()/2, (int)size.getHeight()/2));
@@ -82,13 +83,10 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 	}
 
-    protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
-        return new Transformer<VertexRef, Point2D>() {
-            @Override
-            public Point2D transform(VertexRef v) {
-                org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-                return new Point2D.Double(location.getX()+xOffset, location.getY()+yOffset);
-            }
+    protected static Function<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
+        return (VertexRef v) -> {
+            org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
+            return new Point2D.Double(location.getX()+xOffset, location.getY()+yOffset);
         };
     }
 }

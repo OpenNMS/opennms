@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,8 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import com.google.common.base.Function;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
@@ -60,7 +60,7 @@ public class ISOMLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		 * {@link RandomLocationTransformer}.
 		 */
 		@Override
-		public void setInitializer(Transformer<VertexRef,Point2D> ignoreMe) {
+		public void setInitializer(final Function<VertexRef,Point2D> ignoreMe) {
 			super.setInitializer(initializer(m_layout));
 		}
 

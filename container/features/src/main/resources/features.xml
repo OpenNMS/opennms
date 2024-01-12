@@ -1345,6 +1345,7 @@
         <feature>opennms-core</feature>
         <feature>opennms-topology-api</feature>
         <feature>geolocation</feature>
+        <feature>commons-collections4</feature>
         <feature>commons-lang3</feature>
         <feature>commons-net</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>

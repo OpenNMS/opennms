@@ -59,6 +59,10 @@
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
 
+    <feature name="commons-collections4" version="${commonsCollections4Version}" description="Apache :: commons-collections 4.x">
+        <bundle dependency="true">mvn:org.apache.commons/commons-collections4/${commonsCollections4Version}</bundle>
+    </feature>
+
     <feature name="commons-compress" version="${commonsCompressVersion}" description="Apache :: commons-compress">
         <bundle dependency="true">mvn:org.apache.commons/commons-compress/${commonsCompressVersion}</bundle>
     </feature>
