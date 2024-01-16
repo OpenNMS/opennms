@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.datachoices.web;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -39,9 +40,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
+
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
+import org.opennms.features.datachoices.internal.UserDataCollectionStatusDTO;
 
 @Path("/datachoices")
 public interface DataChoiceRestService {
@@ -52,7 +54,7 @@ public interface DataChoiceRestService {
     @GET
     @Path("status")
     @Produces(value={MediaType.APPLICATION_JSON})
-    UsageStatisticsStatusDTO getStatus() throws ServletException, IOException;
+    Response getStatus() throws ServletException, IOException;
 
     @POST
     @Path("status")
@@ -62,5 +64,15 @@ public interface DataChoiceRestService {
     @GET
     @Path("meta")
     @Produces(value={MediaType.APPLICATION_JSON})
-    UsageStatisticsMetadataDTO getMetadata() throws ServletException, IOException;
+    Response getMetadata() throws ServletException, IOException;
+
+    @GET
+    @Path("userdatacollection")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    Response getUserDataCollectionStatus() throws ServletException, IOException;
+
+    @POST
+    @Path("userdatacollection")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response setUserDataCollectionStatus(@Context HttpServletRequest request, UserDataCollectionStatusDTO dto) throws ServletException, IOException;
 }

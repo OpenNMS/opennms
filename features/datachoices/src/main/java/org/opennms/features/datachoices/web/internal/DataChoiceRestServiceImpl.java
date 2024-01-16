@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,25 @@
 
 package org.opennms.features.datachoices.web.internal;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+
 import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
 import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
+import org.opennms.features.datachoices.internal.UserDataCollectionStatusDTO;
 import org.opennms.features.datachoices.web.DataChoiceRestService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** 
  * Rest-Endpoint mounted at /datachoices. Supported paths are:
@@ -56,6 +61,7 @@ import org.opennms.features.datachoices.web.DataChoiceRestService;
  * @author mvrueden
  */
 public class DataChoiceRestServiceImpl implements DataChoiceRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(DataChoiceRestServiceImpl.class);
     private StateManager m_stateManager;
     private UsageStatisticsReporter m_usageStatisticsReporter;
 
@@ -67,17 +73,17 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     }
 
     @Override
-    public UsageStatisticsStatusDTO getStatus() throws ServletException, IOException {
+    public Response getStatus() throws ServletException, IOException {
         UsageStatisticsStatusDTO dto = new UsageStatisticsStatusDTO();
 
         try {
             dto.setEnabled(m_stateManager.isEnabled());
             dto.setInitialNoticeAcknowledged(m_stateManager.isInitialNoticeAcknowledged());
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            return getExceptionResponse("Error getting Usage Statistics status.", e);
         }
 
-        return dto;
+        return Response.ok(dto).build();
     }
 
     @Override
@@ -93,24 +99,57 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
                 m_stateManager.setInitialNoticeAcknowledged(dto.getInitialNoticeAcknowledged().booleanValue(), remoteUser);
             }
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            return getExceptionResponse("Error setting Usage Statistics status.", e);
         }
 
         return Response.accepted().build();
     }
 
     @Override
-    public UsageStatisticsMetadataDTO getMetadata() {
+    public Response getUserDataCollectionStatus() throws ServletException, IOException {
+        UserDataCollectionStatusDTO dto = new UserDataCollectionStatusDTO();
+
+        try {
+            dto.setNoticeAcknowledged(m_stateManager.isUserDataCollectionNoticeAcknowledged());
+            dto.setOptedIn(m_stateManager.isUserDataCollectionOptedIn());
+        } catch (Exception e) {
+            return getExceptionResponse("Error getting User Data Collection status.", e);
+        }
+
+        return Response.ok(dto).build();
+    }
+
+    @Override
+    public Response setUserDataCollectionStatus(HttpServletRequest request, UserDataCollectionStatusDTO dto) throws ServletException, IOException {
+        try {
+            final String remoteUser = request.getRemoteUser();
+
+            if (dto.getOptedIn() != null) {
+                m_stateManager.setUserDataCollectionOptedIn(dto.getOptedIn());
+            }
+
+            if (dto.getNoticeAcknowledged() != null) {
+                m_stateManager.setUserDataCollectionNoticeAcknowledged(dto.getNoticeAcknowledged(), remoteUser);
+            }
+        } catch (Exception e) {
+            return getExceptionResponse("Error setting User Data Collection status.", e);
+        }
+
+        return Response.accepted().build();
+    }
+
+    @Override
+    public Response getMetadata() {
         UsageStatisticsMetadataDTO dto = null;
 
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(METADATA_RESOURCE_PATH)) {
             ObjectMapper mapper = new ObjectMapper();
             dto = mapper.readValue(inputStream, UsageStatisticsMetadataDTO.class);
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            return getExceptionResponse("Error getting Usage Statistics metadata.", e);
         }
 
-        return dto;
+        return Response.ok(dto).build();
     }
 
     public void setStateManager(StateManager stateManager) {
@@ -119,5 +158,10 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
 
     public void setUsageStatisticsReporter(UsageStatisticsReporter usageStatisticsReporter) {
         m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
+    }
+
+    private Response getExceptionResponse(String msg, Throwable e) {
+        LOG.error(msg, e);
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
     }
 }
