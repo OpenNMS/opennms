@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,42 +31,26 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.collections4.map.LazyMap;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.map.LazyMap;
-import org.opennms.features.topology.api.DblBoundingBox;
-import org.opennms.features.topology.app.internal.jung.QuadTree.Node;
-import org.opennms.features.topology.app.internal.jung.QuadTree.Visitor;
 
 public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements IterativeContext {
 
     private static final double LINK_DISTANCE = 150.0;
     private static final double LINK_STRENGTH = 2.0;
     private static final int DEFAULT_CHARGE = -1200;
-    private double EPSILON = 0.00000000001D;
     private int m_charge = -30;
-    private double m_thetaSquared = .64;
 
     private double m_alpha = 0.1;
-    private Map<V, VertexData> m_vertexData = LazyMap.decorate(new HashMap<V, VertexData>(), new Factory<VertexData>(){
+    private Map<V, VertexData> m_vertexData = LazyMap.lazyMap(new HashMap<V, VertexData>(), VertexData::new);
 
-        @Override
-        public VertexData create() {
-            return new VertexData();
-        }
-    });
-
-    private Map<E, EdgeData> m_edgeData = LazyMap.decorate(new HashMap<E, EdgeData>(), new Factory<EdgeData>() {
-
-        @Override
-        public EdgeData create() {
-            return new EdgeData();
-        }
-    });
+    private Map<E, EdgeData> m_edgeData = LazyMap.lazyMap(new HashMap<E, EdgeData>(), EdgeData::new);
 
 
 
@@ -80,7 +64,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         for(V v : getGraph().getVertices()) {
             VertexData vData = getVertexData(v);
             vData.setWeight(1);
-            Point2D location = transform(v);
+            Point2D location = apply(v);
             vData.setLocation(location);
             vData.setPrevious(location);
         }
@@ -112,7 +96,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
         double currentForce;
 
-        //guass-seidel relaxation for links
+        //Gauss-Seidel relaxation for links
         for (E e : getGraph().getEdges()) {
             Pair<V> endPoints = getGraph().getEndpoints(e);
             VertexData srcVertexData = getVertexData(endPoints.getFirst());
@@ -187,7 +171,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             double y = vData.getY() + (vData.getPrevious().getY() - vData.getY())*getFriction();
             vData.setLocation(x, y);
             vData.setPrevious(tempX, tempY);
-            Point2D location = transform(v);
+            Point2D location = apply(v);
             location.setLocation(vData.getX(), vData.getY());
         }
         
@@ -224,11 +208,12 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         return m_charge;
     }
 
-    public void setDefaultCharge(int m_charge) {
-        this.m_charge = m_charge;
+    public void setDefaultCharge(int charge) {
+        this.m_charge = charge;
     }
 
-    protected static class VertexData extends Point2D.Double{
+    protected static class VertexData extends Point2D.Double {
+        private static final long serialVersionUID = 1L;
 
         private int m_weight;
         private double m_distance = LINK_DISTANCE;
@@ -236,27 +221,24 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         private int m_charge = DEFAULT_CHARGE;
         private Point2D m_previous = null;
 
-        protected void offset(double x, double y) {
+        protected void offset(final double x, final double y) {
             this.x += x;
             this.y += y;
         }
         
-        protected void offsetPrevious(double x, double y) {
+        protected void offsetPrevious(final double x, final double y) {
             if (m_previous == null) {
                 m_previous = new Point2D.Double(this.x, this.y);
             }
             m_previous.setLocation(m_previous.getX()+x, m_previous.getY()+y);
         }
         
-        public void setPrevious(Point2D location) {
+        public void setPrevious(final Point2D location) {
             m_previous = (Point2D) location.clone();
         }
         
-        public void setPrevious(double x, double y) {
+        public void setPrevious(final double x, final double y) {
             m_previous = new Point2D.Double(x, y);
-        }
-
-        private void print(String before, String after) {
         }
 
         protected double norm()
@@ -264,7 +246,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             return Math.sqrt(x*x + y*y);
         }
 
-        protected void setWeight(int weight){
+        protected void setWeight(final int weight) {
             m_weight = weight;
         }
 
@@ -272,7 +254,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             return m_weight;
         }
 
-        protected void setDistance(int distance) {
+        protected void setDistance(final int distance) {
             m_distance = distance;
         }
 
@@ -280,7 +262,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             return m_distance;
         }
 
-        protected void setStrength(double strength) {
+        protected void setStrength(final double strength) {
             m_strength = strength;
         }
 
@@ -288,7 +270,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             return m_strength;
         }
 
-        protected void setCharge(int charge) {
+        protected void setCharge(final int charge) {
             m_charge = charge;
         }
 
@@ -299,6 +281,32 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         protected Point2D getPrevious() {
             return m_previous;
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + Objects.hash(m_charge, m_distance, m_previous, m_strength, m_weight);
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!super.equals(obj)) {
+                return false;
+            }
+            if (!(obj instanceof VertexData)) {
+                return false;
+            }
+            final VertexData that = (VertexData) obj;
+            return m_charge == that.m_charge
+                    && java.lang.Double.doubleToLongBits(m_distance) == java.lang.Double.doubleToLongBits(that.m_distance)
+                    && Objects.equals(m_previous, that.m_previous) && java.lang.Double.doubleToLongBits(m_strength) == java.lang.Double.doubleToLongBits(that.m_strength)
+                    && m_weight == that.m_weight;
+        }
         
     }
 
@@ -306,7 +314,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         private double m_distance = LINK_DISTANCE;
         private double m_strength = LINK_STRENGTH;
 
-        protected void setDistance(double distance) {
+        protected void setDistance(final double distance) {
             m_distance = distance;
         }
 
@@ -318,8 +326,8 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             return m_strength;
         }
 
-        public void setStrength(double m_strength) {
-            this.m_strength = m_strength;
+        public void setStrength(final double strength) {
+            this.m_strength = strength;
         }
     }
 }

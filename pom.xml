@@ -1839,7 +1839,7 @@
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
-    <jungVersion>2.0.1</jungVersion>
+    <jungVersion>2.1.1</jungVersion>
     <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
