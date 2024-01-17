@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.userdatacollection;
 
-import java.util.ArrayList;
-import java.util.List;
+public class UserDataCollectionStatusDTO {
+    // note, these can be null (user never chose a status)
+    private Boolean optedIn;
 
-public class UsageStatisticsMetadataDTO {
-    public static class UsageStatisticsMetadataItem {
-        public String key;
-        public String name;
-        public String description;
-        public String datatype; // "string", "number", "object"
+    private Boolean noticeAcknowledged;
 
-        public UsageStatisticsMetadataItem() {
-        }
-
-        public UsageStatisticsMetadataItem(String key, String name, String description, String datatype) {
-            this.key = key;
-            this.name = name;
-            this.description = description;
-            this.datatype = datatype;
-        }
+    public Boolean getOptedIn() {
+        return optedIn;
     }
 
-    private List<UsageStatisticsMetadataItem> metadata = new ArrayList<>();
-
-    public UsageStatisticsMetadataDTO() {
+    public void setOptedIn(Boolean status) {
+        optedIn = status;
     }
 
-    public List<UsageStatisticsMetadataItem> getMetadata() {
-        return metadata;
+    public Boolean getNoticeAcknowledged() {
+        return noticeAcknowledged;
     }
 
-    public void setMetadata(List<UsageStatisticsMetadataItem> list) {
-        this.metadata = list;
+    public void setNoticeAcknowledged(Boolean status) {
+        this.noticeAcknowledged = status;
     }
 }

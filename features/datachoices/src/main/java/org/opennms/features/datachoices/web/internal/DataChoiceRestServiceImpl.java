@@ -37,11 +37,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.opennms.features.datachoices.internal.StateManager;
-import org.opennms.features.datachoices.internal.UsageStatisticsMetadataDTO;
-import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
-import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
-import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
-import org.opennms.features.datachoices.internal.UserDataCollectionStatusDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsMetadataDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReporter;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsStatusDTO;
+import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionFormData;
+import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionService;
+import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionStatusDTO;
 import org.opennms.features.datachoices.web.DataChoiceRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +53,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /** 
  * Rest-Endpoint mounted at /datachoices. Supported paths are:
  *
- * POST /opennms/rest/datachoices?action=enable
- * POST /opennms/rest/datachoices?action=disable
  * GET /opennms/rest/datachoices
  * GET /opennms/rest/datachoices/status
+ * POST /opennms/rest/datachoices/status
  * GET /opennms/rest/datachoices/meta
+ * GET /opennms/rest/datachoices/userdatacollection/status
+ * POST /opennms/rest/datachoices/userdatacollection/status
+ * POST /opennms/rest/datachoices/userdatacollection/submit
+ *
+ * These are no longer supported:
+ * POST /opennms/rest/datachoices?action=enable
+ * POST /opennms/rest/datachoices?action=disable
  *
  * @author jwhite
  * @author mvrueden
@@ -64,6 +72,8 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     private static final Logger LOG = LoggerFactory.getLogger(DataChoiceRestServiceImpl.class);
     private StateManager m_stateManager;
     private UsageStatisticsReporter m_usageStatisticsReporter;
+
+    private UserDataCollectionService userDataCollectionService;
 
     private static final String METADATA_RESOURCE_PATH = "web/datachoicesMetadata.json";
 
@@ -152,12 +162,35 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
         return Response.ok(dto).build();
     }
 
+    @Override
+    public Response submitUserDataCollectionData(HttpServletRequest request, UserDataCollectionFormData data) throws ServletException, IOException {
+        String show = System.getProperty("opennms.userDataCollection.show", "true");
+
+        // don't process User Data Collection if disabled by configuration
+        if (show != null && show.equalsIgnoreCase("false")) {
+            String msg = "User Data Collection has been disabled by the 'opennms.userDataCollection.show' configuration point.";
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+
+        try {
+            userDataCollectionService.submit(data);
+        } catch (Exception e) {
+            return getExceptionResponse("Error submitting User Data Collection form data.", e);
+        }
+
+        return Response.accepted().build();
+    }
+
     public void setStateManager(StateManager stateManager) {
         m_stateManager = stateManager;
     }
 
     public void setUsageStatisticsReporter(UsageStatisticsReporter usageStatisticsReporter) {
         m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
+    }
+
+    public void setUserDataCollectionService(UserDataCollectionService service) {
+        this.userDataCollectionService = service;
     }
 
     private Response getExceptionResponse(String msg, Throwable e) {
