@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,8 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import com.google.common.base.Function;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
@@ -44,8 +44,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
     
     private static final Logger LOG = LoggerFactory.getLogger(AbstractLayoutAlgorithm.class);
 
-	@Override
-	public abstract void updateLayout(Graph graph);
+    protected AbstractLayoutAlgorithm() {}
 
 	protected static Dimension selectLayoutSize(Graph graph) {
 	    int vertexCount = graph.getDisplayVertices().size();
@@ -60,27 +59,21 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 	    return dim;
 	}
 
-	protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout) {
-		return new Transformer<VertexRef, Point2D>() {
-			@Override
-			public Point2D transform(VertexRef v) {
-				if (v == null) {
-					LOG.warn("Algorithm tried to layout a null vertex");
-					return new Point(0,0);
-				}
-				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-				return new Point2D.Double(location.getX(), location.getY());
+	protected static Function<VertexRef, Point2D> initializer(final Layout graphLayout) {
+		return (final VertexRef v) -> {
+			if (v == null) {
+				LOG.warn("Algorithm tried to layout a null vertex");
+				return new Point(0,0);
 			}
+			org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
+			return new Point2D.Double(location.getX(), location.getY());
 		};
 	}
 
-	protected static Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
-		return new Transformer<VertexRef, Point2D>() {
-			@Override
-			public Point2D transform(VertexRef v) {
-				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
-				return new Point2D.Double(location.getX()-xOffset, location.getY()-yOffset);
-			}
+	protected static Function<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
+		return (final VertexRef v) -> {
+			org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
+			return new Point2D.Double(location.getX()-xOffset, location.getY()-yOffset);
 		};
 	}
 
