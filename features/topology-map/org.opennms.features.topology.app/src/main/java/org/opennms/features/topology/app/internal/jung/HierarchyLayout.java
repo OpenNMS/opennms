@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,10 +43,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.map.LazyMap;
+import org.apache.commons.collections4.map.LazyMap;
 import org.opennms.features.topology.api.topo.LevelAware;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -66,15 +66,9 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
 
     private Dimension size = new Dimension(600, 600);
     private Graph<V, E> graph;
-    private Map<V, Integer> basePositions = new HashMap<V, Integer>();
+    private Map<V, Integer> basePositions = new HashMap<>();
 
-    private Map<V, Point2D> locations =
-            LazyMap.decorate(new HashMap<V, Point2D>(),
-                    new Transformer<V, Point2D>() {
-                        public Point2D transform(V arg0) {
-                            return new Point2D.Double();
-                        }
-                    });
+    private Map<V, Point2D> locations = LazyMap.lazyMap(new HashMap<V, Point2D>(), (V arg0) -> new Point2D.Double());
 
     private final int distX;
     private int distY;
@@ -293,7 +287,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     }
 
     @Override
-    public void setInitializer(Transformer<V, Point2D> initializer) {
+    public void setInitializer(final Function<V, Point2D> initializer) {
     }
 
     @Override
@@ -302,7 +296,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     }
 
     @Override
-    public Point2D transform(V v) {
+    public Point2D apply(V v) {
         return locations.get(v);
     }
 }

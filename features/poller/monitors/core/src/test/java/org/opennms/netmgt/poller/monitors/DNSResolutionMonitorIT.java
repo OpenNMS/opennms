@@ -206,7 +206,7 @@ public class DNSResolutionMonitorIT {
 
     @Test
     public void pollIPv4CNAME() throws Exception {
-        MockMonitoredService cname = new MockMonitoredService(1, "www.opennms.org", InetAddress.getLocalHost(), "RESOLVE");
+        MockMonitoredService cname = new MockMonitoredService(1, "opennms.org", InetAddress.getLocalHost(), "RESOLVE");
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
