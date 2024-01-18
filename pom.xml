@@ -1591,7 +1591,6 @@
     <hawtio.version>2.17.5</hawtio.version>
 
     <!-- dependency versions -->
-    <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.6</asmVersion>
@@ -1612,7 +1611,7 @@
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.23.0</commonsCompressVersion>
+    <commonsCompressVersion>1.25.0</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
@@ -1702,7 +1701,7 @@
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
-    <jettisonVersion>1.4.1</jettisonVersion>
+    <jettisonVersion>1.5.4</jettisonVersion>
     <jettyVersion>9.4.53.v20231009</jettyVersion>
     <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
@@ -1726,7 +1725,9 @@
     <jsonVersion>20231013</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
-    <jsonSmartVersion>2.4.8</jsonSmartVersion>
+    <jsonSmartVersion>2.5.0</jsonSmartVersion>
+    <!-- generally tied with json-smart -->
+    <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
@@ -1778,6 +1779,7 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
@@ -1845,7 +1847,7 @@
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
-    <jungVersion>2.0.1</jungVersion>
+    <jungVersion>2.1.1</jungVersion>
     <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
