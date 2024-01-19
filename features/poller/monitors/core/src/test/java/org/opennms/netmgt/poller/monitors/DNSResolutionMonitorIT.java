@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -206,7 +206,7 @@ public class DNSResolutionMonitorIT {
 
     @Test
     public void pollIPv4CNAME() throws Exception {
-        MockMonitoredService cname = new MockMonitoredService(1, "opennms.org", InetAddress.getLocalHost(), "RESOLVE");
+        MockMonitoredService cname = new MockMonitoredService(1, "www.opennms.org", InetAddress.getLocalHost(), "RESOLVE");
 
         DNSResolutionMonitor monitor = new DNSResolutionMonitor();
 
@@ -226,6 +226,7 @@ public class DNSResolutionMonitorIT {
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
         parms.put(PARM_LOOKUP, "wipv6day.opennms.org");
+        parms.put(PARM_NAMESERVER, "[::1]:9153");
 
         assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
     }
@@ -239,6 +240,7 @@ public class DNSResolutionMonitorIT {
         Map<String, Object> parms = new HashMap<String, Object>();
         parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
         parms.put(PARM_LOOKUP, "{nodeLabel}");
+        parms.put(PARM_NAMESERVER, "[::1]:9153");
 
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(lookup, parms);
         // this would normally happen in the poller request builder implementation
