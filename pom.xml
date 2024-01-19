@@ -1845,6 +1845,7 @@
     <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
+    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.1.1</jungVersion>
