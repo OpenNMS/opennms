@@ -118,6 +118,35 @@ initConfigWhenEmpty() {
   fi
 }
 
+detectOverlayEvents() {
+  EVENT_LIST=""
+  if [ -d "${OPENNMS_OVERLAY}/etc/events" ]; then
+      for EVENT_XML_FILE in "${OPENNMS_OVERLAY}"/etc/events/*.xml; do
+          if [ -e "${EVENT_XML_FILE}" ]; then
+              RELATIVE_PATH=$(realpath --relative-to="${OPENNMS_OVERLAY}/etc" "${EVENT_XML_FILE}")
+              EVENT_LIST+="<event-file>${RELATIVE_PATH}</event-file>\n   "
+          fi
+      done
+  fi
+
+  if [ -d "${OPENNMS_OVERLAY_ETC}/events" ]; then
+      for EVENT_XML_FILE in "${OPENNMS_OVERLAY_ETC}"/events/*.xml; do
+          if [ -e "${EVENT_XML_FILE}" ]; then
+              RELATIVE_PATH=$(realpath --relative-to="${OPENNMS_OVERLAY_ETC}" "${EVENT_XML_FILE}")
+              EVENT_LIST+="<event-file>${RELATIVE_PATH}</event-file>\n   "
+          fi
+      done
+  fi
+
+  if [ -n "${EVENT_LIST}" ]; then
+      EVENT_SOURCE_TEXT="<!-- Custom event configs go here -->"
+      sed -i "s|${EVENT_SOURCE_TEXT}|${EVENT_LIST}|" /opt/opennms/etc/eventconf.xml
+      echo "Overlay contains XML files. Updating eventconf.xml to import the event files."
+  else
+      echo "No XML files found in the overlay directory. Skipping eventconf.xml update."
+  fi
+}
+
 applyOverlayConfig() {
   # Overlay relative to the root of the install dir
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
@@ -143,6 +172,7 @@ applyOverlayConfig() {
   else
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi
+  detectOverlayEvents
 }
 
 # Start opennms in foreground
