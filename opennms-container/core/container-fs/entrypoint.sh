@@ -141,9 +141,38 @@ detectOverlayEvents() {
   if [ -n "${EVENT_LIST}" ]; then
       EVENT_SOURCE_TEXT="<!-- Custom event configs go here -->"
       sed -i "s|${EVENT_SOURCE_TEXT}|${EVENT_LIST}|" /opt/opennms/etc/eventconf.xml
-      echo "Overlay contains XML files. Updating eventconf.xml to import the event files."
+      echo "Overlay contains Event XML files. Updating eventconf.xml to import the event files."
   else
-      echo "No XML files found in the overlay directory. Skipping eventconf.xml update."
+      echo "No Event XML files found in the overlay directory. Skipping eventconf.xml update."
+  fi
+}
+
+detectOverlaySyslog() {
+  SYSLOG_LIST=""
+  if [ -d "${OPENNMS_OVERLAY}/etc/syslog" ]; then
+      for EVENT_XML_FILE in "${OPENNMS_OVERLAY}"/etc/syslog/*.xml; do
+          if [ -e "${EVENT_XML_FILE}" ]; then
+              RELATIVE_PATH=$(realpath --relative-to="${OPENNMS_OVERLAY}/etc" "${EVENT_XML_FILE}")
+              SYSLOG_LIST+="<import-file>${RELATIVE_PATH}</import-file>\n   "
+          fi
+      done
+  fi
+
+  if [ -d "${OPENNMS_OVERLAY_ETC}/syslog" ]; then
+      for EVENT_XML_FILE in "${OPENNMS_OVERLAY_ETC}"/syslog/*.xml; do
+          if [ -e "${EVENT_XML_FILE}" ]; then
+              RELATIVE_PATH=$(realpath --relative-to="${OPENNMS_OVERLAY_ETC}" "${EVENT_XML_FILE}")
+              SYSLOG_LIST+="<import-file>${RELATIVE_PATH}</import-file>\n   "
+          fi
+      done
+  fi
+
+  if [ -n "${SYSLOG_LIST}" ]; then
+      SYSLOG_SOURCE_TEXT="<!-- Custom syslog configs go here -->"
+      sed -i "s|${SYSLOG_SOURCE_TEXT}|${SYSLOG_LIST}|" /opt/opennms/etc/syslogd-configuration.xml
+      echo "Overlay contains Syslog XML files. Updating syslogd-configuration.xml to import the syslog files."
+  else
+      echo "No Syslog XML files found in the overlay directory. Skipping syslogd-configuration.xml update."
   fi
 }
 
@@ -173,6 +202,7 @@ applyOverlayConfig() {
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi
   detectOverlayEvents
+  detectOverlaySyslog
 }
 
 # Start opennms in foreground
