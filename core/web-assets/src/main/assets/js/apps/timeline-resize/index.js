@@ -34,8 +34,14 @@ const RELATIVE_SIZE = 0.5;
 const getSize = function(element) {
   // if we can get the offset width of the actual <td>, use it
   const td = element.closest('td')[0];
+
   if (td !== undefined) {
-    return Math.round(td.offsetWidth);
+    // get the td's padding
+    const s = getComputedStyle(td).padding;
+    // remove 'px' from string like '4.8px' and convert to float
+    const p = parseFloat(s.substr(0, s.length - 2));
+    // subtract the padding twice
+    return Math.round(td.offsetWidth - 2 * p);
   }
 
   // otherwise, fall back to the old way of calculating
