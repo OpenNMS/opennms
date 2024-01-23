@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * SnmpPoller daemon class
@@ -233,10 +234,10 @@ public class SnmpPoller extends AbstractServiceDaemon {
      * <p>scheduleExistingSnmpInterface</p>
      */
     protected void scheduleExistingSnmpInterface() {
-        
-    	for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
-            schedulePollableInterface(iface);    		
-    	}
+        ExecutorService executor = getExecutorService();
+        for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
+            executor.execute(() -> schedulePollableInterface(iface));
+        }
     }   
 
     /**
@@ -566,4 +567,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         getNetwork().suspend(Long.valueOf(event.getNodeid()).intValue());
     }
 
+    private ExecutorService getExecutorService() {
+        return m_scheduler.getRunner();
+    }
 }
