@@ -7,7 +7,7 @@
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
 
-    <bean name="assetLocator" class="org.opennms.web.assets.impl.AssetLocatorImpl" />
-    <onmsgi:service ref="assetLocator" interface="org.opennms.web.assets.api.AssetLocator" />
+    <bean name="assetLocator" class="org.opennms.web.utils.assets.AssetLocatorImpl" />
+    <onmsgi:service ref="assetLocator" interface="org.opennms.web.utils.assets.AssetLocator" />
 
 </beans>

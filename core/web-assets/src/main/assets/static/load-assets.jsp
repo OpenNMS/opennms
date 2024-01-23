@@ -1,8 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="
 java.lang.*,
 java.util.*,
-org.opennms.web.assets.api.*,
-org.opennms.web.assets.impl.*,
+org.opennms.web.utils.assets.*,
 org.slf4j.*
 " %>
 <%@ page import="org.owasp.encoder.Encode" %>
