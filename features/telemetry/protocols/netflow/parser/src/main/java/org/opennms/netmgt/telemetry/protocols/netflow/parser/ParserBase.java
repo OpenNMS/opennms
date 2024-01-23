@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -133,9 +134,9 @@ public abstract class ParserBase implements Parser {
 
     private boolean dnsLookupsEnabled = true;
 
-    private LoadingCache<InetAddress, RateLimiter> clockSkewEventLimiters;
+    private LoadingCache<InetAddress, Optional<RateLimiter>> clockSkewEventLimiters;
 
-    private LoadingCache<InetAddress, RateLimiter> illegalFlowEventLimiters;
+    private LoadingCache<InetAddress, Optional<RateLimiter>> illegalFlowEventLimiters;
 
     private ExecutorService executor;
 
@@ -226,7 +227,9 @@ public abstract class ParserBase implements Parser {
 
         this.clockSkewEventLimiters = CacheBuilder.newBuilder()
                 .expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS)
-                .build(CacheLoader.from(() -> RateLimiter.create(1.0 / this.clockSkewEventRate)));
+                .build(CacheLoader.from(() -> this.clockSkewEventRate > 0
+                        ? Optional.of(RateLimiter.create(1.0 / this.clockSkewEventRate))
+                        : Optional.empty()));
     }
 
     public void setIllegalFlowEventRate(final long illegalFlowEventRate) {
@@ -234,7 +237,9 @@ public abstract class ParserBase implements Parser {
 
         this.illegalFlowEventLimiters = CacheBuilder.newBuilder()
                 .expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS)
-                .build(CacheLoader.from(() -> RateLimiter.create(1.0 / this.clockSkewEventRate)));
+                .build(CacheLoader.from(() -> this.illegalFlowEventRate > 0
+                        ? Optional.of(RateLimiter.create(1.0 / this.illegalFlowEventRate))
+                        : Optional.empty()));
     }
 
     public long getIllegalFlowEventRate() {
