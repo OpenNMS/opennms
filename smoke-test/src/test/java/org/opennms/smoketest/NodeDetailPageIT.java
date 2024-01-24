@@ -156,9 +156,10 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             createNodeWithInterfaces("nodeWith11Interfaces", 11);
             
             getDriver().get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
-            waitForElement(By.id("availability-box"));
+            waitForElement(By.id("onms-interfaces"));
 
             setImplicitWait(1, SECONDS);
+            Assert.assertEquals(1, driver.findElements(By.id("availability-box")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.1")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.2")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.3")).size());
@@ -173,7 +174,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             setImplicitWait();
 
             driver.get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
-            waitForElement(By.id("availability-box"));
+            waitForElement(By.id("onms-interfaces"));
 
             setImplicitWait(1, SECONDS);
             Assert.assertEquals(0, driver.findElements(By.id("availability-box")).size());
