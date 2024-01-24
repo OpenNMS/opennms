@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.assets.impl;
+package org.opennms.web.utils.assets;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,8 +56,6 @@ import org.json.JSONObject;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.web.assets.api.AssetLocator;
-import org.opennms.web.assets.api.AssetResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -363,7 +361,9 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
             } catch (final IOException e) {
             }
         }
-        return StringUtils.hasText(ret)? ret.startsWith("/")? ret.substring(1) : ret : null;
+        if (ret == null) return null;
+        final var retString = StringUtils.trim(ret);
+        return retString.startsWith("/")? retString.substring(1) : retString;
     }
 
     @Override
