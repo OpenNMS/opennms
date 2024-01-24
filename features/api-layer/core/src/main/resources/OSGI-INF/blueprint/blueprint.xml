@@ -42,7 +42,7 @@
   <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
   <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
   <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory"/>
-  <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+  <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore" availability="mandatory"/>
   <reference id="secureCredentialsVaultInternal" interface="org.opennms.features.scv.api.SecureCredentialsVault" /><!-- Reference to internal (opennms) SCV-->
   <reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig" />
   <reference id="collectdConfig" interface="org.opennms.netmgt.config.api.CollectdConfigFactory" />
