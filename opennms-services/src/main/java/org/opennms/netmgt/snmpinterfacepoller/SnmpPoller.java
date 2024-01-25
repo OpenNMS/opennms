@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SnmpPoller daemon class
@@ -237,6 +238,17 @@ public class SnmpPoller extends AbstractServiceDaemon {
         ExecutorService executor = getExecutorService();
         for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
             executor.execute(() -> schedulePollableInterface(iface));
+        }
+        try {
+            if (executor.awaitTermination(60, TimeUnit.MINUTES)){
+                LOG.info("All snmp interfaces were scheduled successfully!");
+            } else {
+                LOG.error("Scheduling timeout occurred, Failed to schedule snmp interfaces");
+                this.stop();
+            }
+        } catch (InterruptedException exception) {
+            LOG.error("Failed to schedule snmp interfaces");
+            this.stop();
         }
     }   
 
