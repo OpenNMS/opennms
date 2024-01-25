@@ -1103,6 +1103,7 @@
                 <exclude>**/*.py</exclude>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/*.txt</exclude>
+                <exclude>**/*.TXT</exclude>
                 <exclude>**/*.xml</exclude>
                 <exclude>**/*.xsl</exclude>
                 <exclude>**/*.yaml</exclude>
