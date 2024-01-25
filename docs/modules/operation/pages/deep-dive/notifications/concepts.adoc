@@ -97,7 +97,7 @@ If the switch is set to `auto`, the system deploys heuristics aimed at "doing th
 
 == Variable bindings filters
 
-Event parameters can additionally act as a filter method.
+Event parameters can be used to filter which events trigger a notification.
 This can be helpful for events that don't have an association to a specific node and the common filters only match against interfaces.
 By defining the `vbname` and `vbvalue`, the notification will only be sent with if the event parameter matches the given value.
 
