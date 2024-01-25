@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <changeSet author="cpape" id="NMS-16199-ospf-nodeid-idx">
+    <sql>
+      DELETE FROM ospfelement WHERE (nodeid, id) NOT IN (
+        SELECT nodeid, MIN(id) FROM ospfelement GROUP BY nodeid
+      );
+    </sql>
+    <createIndex tableName="ospfelement" indexName="ospfelement_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+    <dropIndex tableName="ospfelement" indexName="ospfelement_nodeid_idx" />
+  </changeSet>
+
+  <changeSet author="cpape" id="NMS-16199-isis-nodeid-idx">
+    <sql>
+      DELETE FROM isiselement WHERE (nodeid, id) NOT IN (
+        SELECT nodeid, MIN(id) FROM isiselement GROUP BY nodeid
+      );
+    </sql>
+    <createIndex tableName="isiselement" indexName="isiselement_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+    <dropIndex tableName="isiselement" indexName="isiselement_nodeid_idx" />
+  </changeSet>
+
+  <changeSet author="cpape" id="NMS-16199-lldp-nodeid-idx">
+    <sql>
+      DELETE FROM lldpelement WHERE (nodeid, id) NOT IN (
+        SELECT nodeid, MIN(id) FROM lldpelement GROUP BY nodeid
+      );
+    </sql>
+    <createIndex tableName="lldpelement" indexName="lldpelement_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+    <dropIndex tableName="lldpelement" indexName="lldpelement_nodeid_idx" />
+  </changeSet>
+
+  <changeSet author="cpape" id="NMS-16199-cdp-nodeid-idx">
+    <sql>
+      DELETE FROM cdpelement WHERE (nodeid, id) NOT IN (
+        SELECT nodeid, MIN(id) FROM cdpelement GROUP BY nodeid
+      );
+    </sql>
+    <createIndex tableName="cdpelement" indexName="cdpelement_unique_nodeid_idx" unique="true">
+      <column name="nodeid" />
+    </createIndex>
+    <dropIndex tableName="cdpelement" indexName="cdpelement_nodeid_idx" />
+  </changeSet>
+
+</databaseChangeLog>
