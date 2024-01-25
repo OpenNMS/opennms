@@ -95,7 +95,8 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-        new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" }
+        new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" },
+        new String[] { "User Data Collection", "//div[contains(@class, 'admin-user-data-collection-form-wrapper')]" }
     };
 
     @Before
