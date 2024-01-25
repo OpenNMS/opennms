@@ -206,12 +206,12 @@ public class EnLinkdElementFactory implements InitializingBean,
         // set local info
         if (link.getOspfIfIndex() != null) {
             snmpiface = snmpInterfaceCache.get(nodeid, link.getOspfIfIndex());
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             snmpiface = snmpInterfaceCache.get(nodeid, link.getOspfAddressLessIndex());
         }
 
         if (snmpiface != null) {
-            if (link.getOspfAddressLessIndex() > 0) {
+            if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
                 linknode.setOspfLocalPort(getPortString(snmpiface,
                                                         "address less", null));
             } else {
@@ -220,7 +220,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             linknode.setOspfLocalPortUrl(getSnmpInterfaceUrl(nodeid,
                                                              snmpiface.getIfIndex()));
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             linknode.setOspfLocalPort(getPortString(link.getOspfAddressLessIndex(),
                                                     "address less", null));
         } else if (link.getOspfIfIndex() != null && ipaddr != null) {
@@ -277,7 +277,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         OnmsSnmpInterface remsnmpiface = null;
 
         if (remNodeid != null) {
-            if (link.getOspfRemAddressLessIndex() > 0) {
+            if (link.getOspfRemAddressLessIndex() != null && link.getOspfRemAddressLessIndex() > 0) {
                 remsnmpiface = snmpInterfaceCache.get(remNodeid, link.getOspfAddressLessIndex());
             } else {
                 OnmsIpInterface remipiface = m_ipInterfaceDao.findByNodeIdAndIpAddress(remNodeid,
@@ -289,7 +289,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
 
         if (remsnmpiface != null) {
-            if (link.getOspfRemAddressLessIndex() > 0) {
+            if (link.getOspfRemAddressLessIndex() != null && link.getOspfRemAddressLessIndex() > 0) {
                 linknode.setOspfRemPort(getPortString(remsnmpiface,
                                                       "address less", null));
             } else {
@@ -298,7 +298,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             linknode.setOspfRemPortUrl(getSnmpInterfaceUrl(remNodeid,
                                                            remsnmpiface.getIfIndex()));
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             linknode.setOspfRemPort(getPortString(link.getOspfRemAddressLessIndex(),
                                                   "address less", null));
         } else if (remipaddr != null) {
