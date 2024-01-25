@@ -35,7 +35,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReporter;
 
 /**
  * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.

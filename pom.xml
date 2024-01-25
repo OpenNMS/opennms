@@ -1931,6 +1931,32 @@
       </repositories>
     </profile>
     <profile>
+      <id>sbom</id>
+      <activation>
+        <property>
+          <name>build.sbom</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <version>2.7.11</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>makeAggregateBom</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>coverage</id>
       <activation>
         <property>

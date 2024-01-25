@@ -26,27 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.usagestatistics;
 
-public class UsageStatisticsStatusDTO {
-    // note, these can be null (user never chose a status)
-    private Boolean isEnabled;
+import java.util.ArrayList;
+import java.util.List;
 
-    private Boolean initialNoticeAcknowledged;
+public class UsageStatisticsMetadataDTO {
+    public static class UsageStatisticsMetadataItem {
+        public String key;
+        public String name;
+        public String description;
+        public String datatype; // "string", "number", "object"
 
-    public Boolean getEnabled() {
-        return isEnabled;
+        public UsageStatisticsMetadataItem() {
+        }
+
+        public UsageStatisticsMetadataItem(String key, String name, String description, String datatype) {
+            this.key = key;
+            this.name = name;
+            this.description = description;
+            this.datatype = datatype;
+        }
     }
 
-    public void setEnabled(Boolean enabled) {
-        isEnabled = enabled;
+    private List<UsageStatisticsMetadataItem> metadata = new ArrayList<>();
+
+    public UsageStatisticsMetadataDTO() {
     }
 
-    public Boolean getInitialNoticeAcknowledged() {
-        return initialNoticeAcknowledged;
+    public List<UsageStatisticsMetadataItem> getMetadata() {
+        return metadata;
     }
 
-    public void setInitialNoticeAcknowledged(Boolean status) {
-        this.initialNoticeAcknowledged = status;
+    public void setMetadata(List<UsageStatisticsMetadataItem> list) {
+        this.metadata = list;
     }
 }
