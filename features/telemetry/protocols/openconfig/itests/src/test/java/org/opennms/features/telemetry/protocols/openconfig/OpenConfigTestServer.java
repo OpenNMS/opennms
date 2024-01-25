@@ -28,6 +28,16 @@
 
 package org.opennms.features.telemetry.protocols.openconfig;
 
+import io.grpc.Server;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.stub.StreamObserver;
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
+import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
+import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
+import org.opennms.features.openconfig.proto.jti.Telemetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -36,17 +46,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.opennms.features.openconfig.proto.gnmi.Gnmi;
-import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
-import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
-import org.opennms.features.openconfig.proto.jti.Telemetry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.grpc.Server;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.grpc.stub.StreamObserver;
 
 public class OpenConfigTestServer {
 
@@ -136,10 +135,15 @@ public class OpenConfigTestServer {
             Gnmi.SubscriptionList subscriptionList =   subscribeRequest.getSubscribe();
             subscriptionList.getSubscriptionList().forEach( subscription -> {
                 Gnmi.SubscribeResponse.Builder responseBuilder = Gnmi.SubscribeResponse.newBuilder();
-                Gnmi.Path.Builder pathBuilder = Gnmi.Path.newBuilder().addElem(Gnmi.PathElem.newBuilder().setName("eth1").build())
+                Gnmi.Path.Builder pathBuilder = Gnmi.Path.newBuilder()
                         .addElem(Gnmi.PathElem.newBuilder().setName("ifInOctets"));
                 responseBuilder.setUpdate(Gnmi.Notification.newBuilder().setTimestamp(System.currentTimeMillis())
-                        .addUpdate(Gnmi.Update.newBuilder().setPath(pathBuilder.build()).setVal(Gnmi.TypedValue.newBuilder().setUintVal(4000).build()).build()).build());
+                        .addUpdate(Gnmi.Update.newBuilder().setPath(pathBuilder.build())
+                                .setVal(Gnmi.TypedValue.newBuilder().setUintVal(4000).build()).build())
+                        .setPrefix(Gnmi.Path.newBuilder()
+                                .addElem(Gnmi.PathElem.newBuilder().setName("interfaces").build())
+                                .addElem(Gnmi.PathElem.newBuilder().setName("interface").putKey("name", "eth1")).build())).build();
+
                 executor.scheduleAtFixedRate(() ->
                         gnmiStream.onNext(responseBuilder.build()), 0, subscription.getSampleInterval(), TimeUnit.MILLISECONDS);
             });

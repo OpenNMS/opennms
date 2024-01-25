@@ -50,6 +50,7 @@ public class OpenConfigAdapterTest {
     private static final String INSTANCE_NAME = "abc-32/0/2";
     private static final String ATTRIBUTE_NAME = "in-forwarded-pkts";
     private static final long ATTRIBUTE_VALUE = 1000L;
+
     @Test
     public void testGroovyScriptForGnmi() throws ScriptException, IOException {
 
@@ -86,6 +87,17 @@ public class OpenConfigAdapterTest {
                         .build())
                 .addUpdate(updateBuilder).build());
         return builder.build();
+    }
+    
+    private Gnmi.SubscribeResponse generateCustomGnmiMessage() {
+            Gnmi.SubscribeResponse.Builder responseBuilder = Gnmi.SubscribeResponse.newBuilder();
+            Gnmi.Path.Builder pathBuilder = Gnmi.Path.newBuilder()
+                    .addElem(Gnmi.PathElem.newBuilder().setName("eth1").build())
+                    .addElem(Gnmi.PathElem.newBuilder().setName("ifInOctets"));
+            return responseBuilder.setUpdate(Gnmi.Notification.newBuilder().setTimestamp(System.currentTimeMillis())
+                    .addUpdate(Gnmi.Update.newBuilder().setPath(pathBuilder.build())
+                            .setVal(Gnmi.TypedValue.newBuilder().setUintVal(4000).build()).build())
+                    .build()).build();
     }
 
     private class MockPersister extends AbstractCollectionSetVisitor {
