@@ -377,11 +377,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public Properties getSystemProperties() {
         final Properties props = new Properties();
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "kafka");
             props.put("org.opennms.core.ipc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
             props.put("org.opennms.core.ipc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
         }
+
         if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "osgi");
         }
@@ -403,6 +405,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             props.put("org.opennms.core.tracer", "jaeger");
             props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
+
+        // disable User Data Collection
+        props.put("opennms.userDataCollection.show", "false");
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures
         props.put("karaf.log.console", "INFO");
