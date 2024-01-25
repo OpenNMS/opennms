@@ -41,9 +41,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
-import org.opennms.features.datachoices.internal.UsageStatisticsStatusDTO;
-import org.opennms.features.datachoices.internal.UserDataCollectionStatusDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsStatusDTO;
+import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionFormData;
+import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionStatusDTO;
 
 @Path("/datachoices")
 public interface DataChoiceRestService {
@@ -52,27 +53,32 @@ public interface DataChoiceRestService {
     UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException;
 
     @GET
-    @Path("status")
+    @Path("/status")
     @Produces(value={MediaType.APPLICATION_JSON})
     Response getStatus() throws ServletException, IOException;
 
     @POST
-    @Path("status")
+    @Path("/status")
     @Consumes({MediaType.APPLICATION_JSON})
     Response setStatus(@Context HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException;
 
     @GET
-    @Path("meta")
+    @Path("/meta")
     @Produces(value={MediaType.APPLICATION_JSON})
     Response getMetadata() throws ServletException, IOException;
 
     @GET
-    @Path("userdatacollection")
+    @Path("/userdatacollection/status")
     @Produces(value={MediaType.APPLICATION_JSON})
     Response getUserDataCollectionStatus() throws ServletException, IOException;
 
     @POST
-    @Path("userdatacollection")
+    @Path("/userdatacollection/status")
     @Consumes({MediaType.APPLICATION_JSON})
     Response setUserDataCollectionStatus(@Context HttpServletRequest request, UserDataCollectionStatusDTO dto) throws ServletException, IOException;
+
+    @POST
+    @Path("/userdatacollection/submit")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response submitUserDataCollectionData(@Context HttpServletRequest request, UserDataCollectionFormData data) throws ServletException, IOException;
 }

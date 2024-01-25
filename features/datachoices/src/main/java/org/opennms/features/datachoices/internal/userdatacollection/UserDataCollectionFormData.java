@@ -26,27 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.userdatacollection;
 
-public class UserDataCollectionStatusDTO {
-    // note, these can be null (user never chose a status)
-    private Boolean optedIn;
-
-    private Boolean noticeAcknowledged;
-
-    public Boolean getOptedIn() {
-        return optedIn;
-    }
-
-    public void setOptedIn(Boolean status) {
-        optedIn = status;
-    }
-
-    public Boolean getNoticeAcknowledged() {
-        return noticeAcknowledged;
-    }
-
-    public void setNoticeAcknowledged(Boolean status) {
-        this.noticeAcknowledged = status;
-    }
+/**
+ * Data received from user UI input, sent to DataChoiceRestService.
+ */
+public class UserDataCollectionFormData {
+    public Boolean consent;
+    public String firstName;
+    public String lastName;
+    public String email;
+    public String company;
 }

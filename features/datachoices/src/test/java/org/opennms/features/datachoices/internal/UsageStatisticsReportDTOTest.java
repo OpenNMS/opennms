@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.junit.Test;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
 
 import com.google.common.collect.Maps;
 

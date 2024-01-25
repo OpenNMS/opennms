@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.usagestatistics;
 
 import java.io.IOException;
 import java.util.Collections;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.usagestatistics;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +65,7 @@ import org.opennms.core.rpc.common.RpcStrategy;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
