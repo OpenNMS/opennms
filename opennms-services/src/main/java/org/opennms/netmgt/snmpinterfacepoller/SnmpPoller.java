@@ -239,6 +239,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
             executor.execute(() -> schedulePollableInterface(iface));
         }
+        executor.shutdown();
         try {
             if (executor.awaitTermination(60, TimeUnit.MINUTES)){
                 LOG.info("All snmp interfaces were scheduled successfully!");
