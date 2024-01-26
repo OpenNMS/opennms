@@ -7,6 +7,7 @@
          <rra>RRA:MAX:0.5:288:366</rra>
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
+      <!-- Custom collection groups for the default collection go here -->
       <include-collection dataCollectionGroup="MIB2"/>
       <include-collection dataCollectionGroup="3Com"/>
       <include-collection dataCollectionGroup="Acme Packet"/>
@@ -85,6 +86,8 @@
       <include-collection dataCollectionGroup="Zertico"/>
       <include-collection dataCollectionGroup="Zeus"/>
    </snmp-collection>
+
+   <!-- Custom collection packages go here -->
 
    <!--
       We need a dedicated collection with a different RRD setup for EJN equipment because
