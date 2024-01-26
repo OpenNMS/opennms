@@ -1,5 +1,5 @@
 [[core-docker]]
-= Core Docker
+= {page-component-title} Docker Configuration
 :description: Learn about startup arguments and environment variables for the Docker with the OpenNMS {page-component-title} core.
 
 == Startup arguments

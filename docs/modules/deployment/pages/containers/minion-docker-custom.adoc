@@ -1,0 +1,1 @@
+include::reference:configuration/minion-docker.adoc[]

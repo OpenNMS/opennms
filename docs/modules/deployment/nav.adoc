@@ -16,8 +16,10 @@
 * xref:containers/introduction.adoc[]
 ** Docker
 *** xref:containers/core-docker.adoc[]
+**** xref:containers/core-docker-custom.adoc[]
 *** xref:containers/minion-docker.adoc[]
-*** xref:containers/sentinel-docker.adoc[]
+**** xref:containers/minion-docker-custom.adoc[]
+**** xref:containers/minion-docker-confd.adoc[]
 ** xref:containers/helm.adoc[]
 
 

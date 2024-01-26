@@ -1,13 +1,13 @@
 
 [[minion-docker]]
 = Minion on Docker
-:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
+:description: Learn how to install OpenNMS Minion in a containerized environment.
 
 == Requirements
 
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
-== Setup container environment
+== Setup the Minion container environment
 
 The steps below can be used to bring up a basic Minion instance.
 See the xref:reference:configuration/minion-docker.adoc[configuration reference] for details on how to customize your deployment.

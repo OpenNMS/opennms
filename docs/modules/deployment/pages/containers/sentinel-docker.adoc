@@ -1,22 +1,12 @@
 
 [[sentinel-docker]]
 = Sentinel on Docker
-:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
+:description: Learn how to install OpenNMS Sentinel in a containerized environment.
+
+== Requirements
 
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
+== Set up the Sentinel container environment
 
-postrgres
-
-
-include::core/postgresql.adoc[]
-
-
-setup
-
-include::core/core.adoc[]
-
-
-initialize
-
-include::core/initialize.adoc[]
+include::sentinel/sentinel.adoc[]

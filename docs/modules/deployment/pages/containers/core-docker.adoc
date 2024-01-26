@@ -3,20 +3,25 @@
 = {page-component-title} on Docker
 :description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
 
+== Requirements
+
 * To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
+== Set up the PostgreSQL container
 
-postrgres
-
+NOTE: These instructions will bring up a basic PostgreSQL server.
+You can customize the config as needed for your environment.
+Just be sure to note the connectivity and credential information for configuring on your {page-component-title} configuration.
 
 include::core/postgresql.adoc[]
 
 
-setup
+== Set up the {page-component-title} container environment
+
+The steps below can be used to bring up a basic {page-component-title} instance.
+See the xref:reference:configuration/core-docker.adoc[configuration reference] for details on how to customize your deployment.
+You can combine the above PostgreSQL service and volumes in the same compose file if desired.
 
 include::core/core.adoc[]
-
-
-initialize
 
 include::core/initialize.adoc[]

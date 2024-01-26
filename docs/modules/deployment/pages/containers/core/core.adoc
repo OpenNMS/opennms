@@ -1,7 +1,3 @@
-:docker-version-tag: bleeding
-ifeval::["{prerelease}" == "false"]
-:docker-version-tag: {full-display-version}
-endif::[]
 
 .Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
 [source, console]
