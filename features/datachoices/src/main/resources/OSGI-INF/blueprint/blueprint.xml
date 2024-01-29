@@ -134,6 +134,15 @@
         </service-properties>
     </service>
 
+    <bean id="userDataCollectionAdminPageNavEntry" class="org.opennms.features.datachoices.web.internal.UserDataCollectionAdminPageNavEntry"/>
+    <service interface="org.opennms.web.navigate.PageNavEntry" ref="userDataCollectionAdminPageNavEntry">
+        <service-properties>
+            <entry key="Page" value="admin" />
+            <entry key="Category" value="operations" />
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
             <action class="org.opennms.features.datachoices.shell.internal.SendUsageReportCommand">
