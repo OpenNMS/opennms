@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required RPMS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b246-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.3.0.b253-jre-17"
 
 FROM ${BASE_IMAGE} as core-tarball
 
