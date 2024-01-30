@@ -314,6 +314,7 @@
     </feature>
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+        <feature prerequisite="true">zookeeper-dependencies</feature>
         <feature>activemq-client</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
@@ -478,8 +479,8 @@
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
         <feature>jackson-core</feature>
+        <feature>zookeeper-dependencies</feature>
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
@@ -1838,4 +1839,13 @@
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
+
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.13.0</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.13.0</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.13.0</bundle>
+    </feature>
+
 </features>
