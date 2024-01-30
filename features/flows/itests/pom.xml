@@ -266,7 +266,14 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- used by test runtime SSL bits -->
+        <!-- used by test runtime bits -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <!-- use newer Zookeeper runtime during tests -->
+            <version>${zookeeper2Version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
