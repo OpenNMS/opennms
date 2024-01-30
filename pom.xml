@@ -1739,7 +1739,7 @@
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.4.7</zookeeperVersion>
+    <zookeeperVersion>3.4.14</zookeeperVersion>
     <zookeeper2Version>3.5.8</zookeeper2Version>
     <zstdJniVersion>1.4.5-6</zstdJniVersion>
 
@@ -4739,6 +4739,21 @@
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
         <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>${zookeeperVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>

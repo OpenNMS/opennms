@@ -353,6 +353,7 @@
     </feature>
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+        <feature prerequisite="true">zookeeper-dependencies</feature>
         <feature>activemq-client</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
@@ -1831,4 +1832,13 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
+
+    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature>jackson-core</feature>
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.13.0</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.13.0</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.13.0</bundle>
+    </feature>
+
 </features>
