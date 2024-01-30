@@ -1769,7 +1769,7 @@
     <xmlApisVersion>1.4.01</xmlApisVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.4.7</zookeeperVersion>
+    <zookeeperVersion>3.4.14</zookeeperVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
@@ -4777,6 +4777,21 @@
         <artifactId>spock-core</artifactId>
         <version>${spockVersion}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>${zookeeperVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
