@@ -59,7 +59,7 @@
         "ngtemplate-loader": "^2.0.1",
         "parallel-webpack": "^2.6.0",
         "phantomjs-prebuilt": "^2.1.16",
-        "postcss-loader": "^3.0.0",
+        "postcss-loader": "^8.1.0",
         "prettier": "^3.0.0",
         "sass": "^1.49.8",
         "sass-loader": "^10.2.1",
