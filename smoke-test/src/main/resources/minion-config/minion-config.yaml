@@ -22,6 +22,7 @@ telemetry:
 netmgt:
   traps:
     trapd.listen.interface: "0.0.0.0"
+    trapd.useAddressFromVarbind: true
 
 karaf:
   shell:
